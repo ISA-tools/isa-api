@@ -19,7 +19,7 @@ log = logging.getLogger('isatools')
 
 __author__ = 'massi'
 
-ELEMENT_TYPES = dict(SCREEN='screen', WHASHOUT='washout', FOLLOW_UP='follow-up')
+ELEMENT_TYPES = dict(SCREEN='screen', WASHOUT='washout', FOLLOW_UP='follow-up')
 
 INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      BEHAVIOURAL='behavioural intervention',
@@ -130,6 +130,10 @@ class NonTreatment(Element):
             self.__type = element_type
         else:
             raise ValueError('invalid treatment type provided: ')
+
+    @property
+    def factor_values(self):
+        return {self.__duration}
 
     @property
     def duration(self):
@@ -247,10 +251,8 @@ class StudyCell(object):
     def __repr__(self):
         return 'isatools.create.models.StudyCell(' \
                'name={study_epoch.name}, ' \
-               'rank={study_epoch.rank}, ' \
-               'treatments={num_treatments}, ' \
-               'sample_plan={study_epoch.sample_plan}' \
-               ')'.format(study_epoch=self, num_treatments=len(self.elements))
+               'elements={elements}, ' \
+               ')'.format(study_epoch=self, elements=repr(self.elements))
 
     def __hash__(self):
         return hash(repr(self))
@@ -277,17 +279,20 @@ class StudyCell(object):
 
     @elements.setter
     def elements(self, x):
-        if not isinstance(x, Iterable):
-            raise AttributeError('elements must be an Iterable')
+        if not isinstance(x, (Element,Iterable)):
+            raise AttributeError('elements must be an Element or an Iterable')
         self.__elements.clear()
-        for element in x:
-            self.add_element(element)
+        if isinstance(x, Element):
+            self.add_element(x)
+        else:
+            for element in x:
+                self.add_element(element)
 
     def add_element(self, element):
         new_element_duration_factor = next(factor_value for factor_value in element.factor_values
                                            if factor_value.factor_name == DURATION_FACTOR)
-        if new_element_duration_factor == self.duration:
-            self.__elements.update(element)
+        if not self.elements or new_element_duration_factor == self.duration:
+            self.__elements.add(element)
         else:
             raise ValueError('New element {0} duration does not match cell duration'.format(element))
 
@@ -304,7 +309,7 @@ class StudyArm(object):
     We call this mapping arm_map
     """
 
-    def __init__(self, name, arm_map, group_size=0):
+    def __init__(self, name, arm_map=None, group_size=0):
         self.name = name
         self.__group_size = group_size if isinstance(group_size, int) else 0
         self.__arm_map = OrderedDict()

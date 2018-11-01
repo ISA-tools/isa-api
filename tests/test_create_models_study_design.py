@@ -20,6 +20,11 @@ TEST_STUDY_ARM_NAME = 'test arm'
 
 TEST_EPOCH_0_RANK = 0
 
+SCREEN_DURATION_VALUE = 100
+FOLLOW_UP_DURATION_VALUE = 5 * 366
+WASHOUT_DURATION_VALUE = 30
+DURATION_UNIT = OntologyAnnotation(term='day')
+
 
 # class SamplePlanTest(unittest.TestCase):
 #
@@ -107,38 +112,44 @@ class TreatmentTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
                          "isatools.create.models.Treatment(type=chemical intervention, "
-                         "factor_values=[isatools.model.FactorValue("
-                         "factor_name='AGENT', value='nitroglycerin', "
-                         "unit=None), isatools.model.FactorValue("
-                         "factor_name='DURATION', value=100.0, unit='s'), "
-                         "isatools.model.FactorValue(factor_name='INTENSITY', "
-                         "value=5, unit='kg/m^3')], group_size=0)")
+                         "factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='AGENT'"
+                         ", factor_type=isatools.model.OntologyAnnotation(term='perturbation agent', term_source=None, "
+                         "term_accession='', comments=[]), comments=[]), value='nitroglycerin', unit=None), "
+                         "isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION', "
+                         "factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, "
+                         "term_accession='', comments=[]), comments=[]), value=100.0, "
+                         "unit=isatools.model.OntologyAnnotation(term='s', term_source=None, term_accession='', "
+                         "comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor("
+                         "name='INTENSITY', factor_type=isatools.model.OntologyAnnotation(term='intensity', "
+                         "term_source=None, term_accession='', comments=[]), comments=[]), value=5, "
+                         "unit=isatools.model.OntologyAnnotation(term='kg/m^3', term_source=None, term_accession='', "
+                         "comments=[]))], group_size=0)")
 
     def test_hash(self):
         self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
 
     def test_eq(self):
         same_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
         self.assertEqual(self.treatment, same_treatment)
         self.assertEqual(hash(self.treatment), hash(same_treatment))
 
     def test_ne(self):
         other_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
         ))
         self.assertNotEqual(self.treatment, other_treatment)
         self.assertNotEqual(hash(self.treatment), hash(other_treatment))
@@ -146,21 +157,22 @@ class TreatmentTest(unittest.TestCase):
 
 class StudyCellTest(unittest.TestCase):
 
-    SCREEN_DURATION_VALUE = 100
-    FOLLOW_UP_DURATION_VALUE = 5*366
-    DURATION_UNIT = OntologyAnnotation(term='day')
-
     def setUp(self):
         self.cell = StudyCell(name=TEST_EPOCH_0_NAME)
         self.first_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
         self.second_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE_ALT),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
         ))
 
     def test__init__(self):
@@ -168,28 +180,66 @@ class StudyCellTest(unittest.TestCase):
 
     def test_elements_property(self):
         elements = (self.first_treatment, self.second_treatment)
+        self.assertEqual(self.cell.elements, set(), 'The initialized elements set is empty')
+        self.cell.elements = elements
+        self.assertEqual(self.cell.elements, set(elements), 'After assignment the elements set contains two elements')
 
+    def test_add_element(self):
+        self.assertEqual(self.cell.elements, set(), 'The initialized elements set is empty')
+        self.cell.add_element(self.first_treatment)
+        self.assertEqual(self.cell.elements, set([self.first_treatment]), "One Treatment has been added")
+        self.cell.add_element(self.second_treatment)
+        self.assertEqual(self.cell.elements, set([self.first_treatment, self.second_treatment]),
+                         "A second Treatment has been added")
+        self.assertRaises(ValueError, self.cell.add_element, self.third_treatment)
 
 
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
         self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
-        self.cell = StudyCell()
-        self.test_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        self.fist_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
-        self.test_screen = NonTreatment(duration_value=self.SCREEN_DURATION_VALUE, duration_unit=self.DURATION_UNIT)
-        self.test_follow_up = NonTreatment()
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.screen = NonTreatment(element_type=ELEMENT_TYPES['SCREEN'],
+                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.washout = NonTreatment(element_type=ELEMENT_TYPES['WASHOUT'],
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=ELEMENT_TYPES['FOLLOW_UP'],
+                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.cell_0 = StudyCell('SCREEN', elements=self.screen)
+        self.cell_1 = StudyCell('CONCOMITANT TREATMENTS', elements=(self.second_treatment, self.fist_treatment))
+        self.cell_2 = StudyCell('WASHOUT', elements=self.washout)
+        self.cell_3 = StudyCell('SINGLE TREATMENT', elements=self.third_treatment)
+        self.cell_4 = StudyCell('FOLLOW-UP', elements=self.follow_up)
         self.sample_assay_plan = SampleAssayPlan()
 
     def test__init__(self):
         self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
 
-    def test_add_epoch2sample_assay_plan_mapping(self):
-        pass
+    def test_add_item_to_arm_map(self):
+        self.assertEqual(len(self.arm.arm_map.keys()), 0)
+        self.arm.add_item_to_arm_map(self.cell_0, self.sample_assay_plan)
+        self.arm.add_item_to_arm_map(self.cell_1, self.sample_assay_plan)
+        self.arm.add_item_to_arm_map(self.cell_2, self.sample_assay_plan)
+        self.arm.add_item_to_arm_map(self.cell_3, self.sample_assay_plan)
+        self.arm.add_item_to_arm_map(self.cell_4, self.sample_assay_plan)
+        self.assertEqual(len(self.arm.arm_map.keys()), 5)
+        for cell, sample_assay_plan in self.arm.arm_map.items():
+            self.assertTrue(isinstance(cell, StudyCell))
+            self.assertTrue(isinstance(sample_assay_plan, SampleAssayPlan))
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -1252,3 +1302,21 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 11)
         self.assertEqual(len(study.protocols), 6)
+
+
+if __name__ == '__main__':
+    # Run only the tests in the specified classes
+
+    test_classes_to_run = [NonTreatmentTest, TreatmentTest, StudyCellTest]
+
+    loader = unittest.TestLoader()
+
+    suites_list = []
+    for test_class in test_classes_to_run:
+        suite = loader.loadTestsFromTestCase(test_class)
+        suites_list.append(suite)
+
+    big_suite = unittest.TestSuite(suites_list)
+
+    runner = unittest.TextTestRunner()
+    results = runner.run(big_suite)
