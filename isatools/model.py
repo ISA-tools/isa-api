@@ -2991,7 +2991,7 @@ class FactorValue(Commentable):
     Attributes:
         factor_name: Reference to an instance of a relevant StudyFactor.
         value: The value of the factor at hand.
-        unit: If numeric, the unit qualifier for the value.
+        unit: str/OntologyAnnotation. If numeric, the unit qualifier for the value. (?? what does this mean ??)
         comments: Comments associated with instances of this class.
     """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
@@ -3042,9 +3042,10 @@ class FactorValue(Commentable):
 
     @unit.setter
     def unit(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        # FIXME can this be a string as well?
+        if val is not None and not isinstance(val, (OntologyAnnotation, str)):
             raise ISAModelAttributeError(
-                'FactorValue.unit must be a OntologyAnnotation, or None; '
+                'FactorValue.unit must be an OntologyAnnotation, o string, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
             self.__unit = val
