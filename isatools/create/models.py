@@ -13,13 +13,21 @@ from numbers import Number
 import copy
 from isatools.model import *
 from abc import ABC, abstractmethod
+import inspect
+import pdb
 
 
 log = logging.getLogger('isatools')
 
 __author__ = 'massi'
 
-ELEMENT_TYPES = dict(SCREEN='screen', WASHOUT='washout', FOLLOW_UP='follow-up')
+# NON TREATMENT TYPES
+SCREEN = 'screen'
+RUN_IN = 'run in'
+WASHOUT = 'washout'
+FOLLOW_UP = 'follow-up'
+
+ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)
 
 INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      BEHAVIOURAL='behavioural intervention',
@@ -91,6 +99,10 @@ class Element(ABC):
     @type.setter
     def type(self, element_type):
         self.__type = element_type
+
+    @property
+    def factor_values(self):
+        return set()
 
     @property
     def duration(self):
@@ -240,11 +252,12 @@ class StudyCell(object):
     Under the current design all elements in a a cell are intended to be concomitant
     PROBLEM: what if different elements within a cell have different durations?
     ANSWER: this must not be allowed
+    PROBLEM: only allow concomitant treatments: concomitant non-treatments make no sense
     """
 
     def __init__(self, name, elements=None):
         self.__name = name if isinstance(name, str) else None # FIXME can we allow name to be none?
-        self.__elements = set()
+        self.__elements = list()
         if elements is not None:
             self.elements = elements
 
@@ -279,22 +292,113 @@ class StudyCell(object):
 
     @elements.setter
     def elements(self, x):
-        if not isinstance(x, (Element,Iterable)):
-            raise AttributeError('elements must be an Element or an Iterable')
+        if not isinstance(x, (Element, list, tuple)):
+            raise ValueError('elements must be an Element, a list of Elements, or a tuple of Elements')
         self.__elements.clear()
         if isinstance(x, Element):
-            self.add_element(x)
+            self.insert_element(x)
         else:
             for element in x:
-                self.add_element(element)
+                self.insert_element(element)
 
-    def add_element(self, element):
+    @staticmethod
+    def _non_treatment_check(previous_elements, new_element, insertion_index=None):
+        """
+        Private method, to be called within insert_element()
+        :param previous_elements: the list of previous elements
+        :param new_element: the element to insert in the list of previous elements
+        :param insertion_index: the position in the list where the new element will be inserted
+        :return: bool 
+        """
+        if insertion_index is None:
+            insertion_index = len(previous_elements)
+
+        def check_screen():
+            if len(previous_elements) > 1:
+                return False
+            if len(previous_elements) == 1:
+                if previous_elements[0].type == RUN_IN and insertion_index == 0:
+                    return True
+                else:
+                    return False
+            return True
+
+        def check_run_in():
+            if len(previous_elements) > 1:
+                return False
+            if len(previous_elements) == 1:
+                if previous_elements[0].type == SCREEN and abs(insertion_index) == 1:
+                    return True
+                else:
+                    return False
+            return True
+
+        def check_washout():
+            next_element = previous_elements[insertion_index + 1] \
+                if insertion_index < len(previous_elements) - 1 else None
+            previous_element = previous_elements[insertion_index - 1] if insertion_index > 0 else None
+            if isinstance(next_element, NonTreatment) or isinstance(previous_element, NonTreatment):
+                return False
+            return True
+
+        def check_follow_up():
+            return not bool(len(previous_elements))
+
+        switcher = {
+            SCREEN: check_screen,
+            RUN_IN: check_run_in,
+            WASHOUT: check_washout,
+            FOLLOW_UP: check_follow_up
+        }
+        func = switcher.get(new_element.type, lambda: False)
+        lines = inspect.getsource(func)
+        # print('Element type: {element_type} \nfunc: {func}'.format(element_type=new_element.type, func=lines))
+        return func()
+
+    @staticmethod
+    def _treatment_check(previous_elements):
+        """
+        :param previous_elements: the list of previous elements 
+        :return: bool
+        """
+        not_allowed_elements = filter(lambda el: getattr(el, 'type', None) in [SCREEN, WASHOUT, FOLLOW_UP],
+                                      previous_elements)
+        return not bool(len(list(not_allowed_elements)))
+
+    def _concomitant_treatments_check(self, element_set):
+        if not self._treatment_check(self.elements):
+            return False
+        if any(not isinstance(el, Treatment) for el in element_set):
+            return False
+        duration_set = {el.duration for el in element_set}
+        return True if len(duration_set) == 1 else False
+
+    def insert_element(self, element, element_index=None):
+        """
+        Add an Element object to a StudyCell
+        :param element: an Element or a set of Treatments (to represent concomitant treatments)
+        :param element_index (int)
+        Rules to insert an element or a set of elements:
+        - Screen NonTreatments must either be in a 1-element StudyCell or in a 2-element if followed by a Run-in
+        - Run-in NonTreatments must either be in a 1-element StudyCell or in a 2-element if preceeded by a Screen
+        - A Follow-up NonTreatment must be in a 1-element StudyCell
+        - Rest NonTreatments cannot be chained one after the other
+        - Concomitant Treatments (if provided in a set) must have the same duration 
+        :return: 
+        """
+        index = element_index if element_index is None or abs(element_index) < len(self.elements) else len(self.elements)
+        if not isinstance(element, (Element, set)):
+            raise ValueError('element must be either an Element or a set of treatments')
+        if isinstance(element, NonTreatment):
+            is_valid = self._non_treatment_check(element, index)
+        """
         new_element_duration_factor = next(factor_value for factor_value in element.factor_values
                                            if factor_value.factor_name == DURATION_FACTOR)
         if not self.elements or new_element_duration_factor == self.duration:
-            self.__elements.add(element)
+            self.__elements.insert(index, element)
         else:
             raise ValueError('New element {0} duration does not match cell duration'.format(element))
+        """
 
     @property
     def duration(self):
