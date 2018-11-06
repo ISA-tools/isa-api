@@ -361,7 +361,7 @@ class StudyCell(object):
         :param previous_elements: the list of previous elements 
         :return: bool
         """
-        not_allowed_elements = filter(lambda el: getattr(el, 'type', None) in [SCREEN, WASHOUT, FOLLOW_UP],
+        not_allowed_elements = filter(lambda el: getattr(el, 'type', None) in [SCREEN, RUN_IN, FOLLOW_UP],
                                       previous_elements)
         return not bool(len(list(not_allowed_elements)))
 
