@@ -386,25 +386,27 @@ class StudyCell(object):
         - Concomitant Treatments (if provided in a set) must have the same duration 
         :return: 
         """
-        index = element_index if element_index is None or abs(element_index) < len(self.elements) else len(self.elements)
+        index = len(self.elements) if not isinstance(element_index, int) else \
+            element_index if abs(element_index) < len(self.elements) else len(self.elements)
         if not isinstance(element, (Element, set)):
             raise ValueError('element must be either an Element or a set of treatments')
-        if isinstance(element, NonTreatment):
-            is_valid = self._non_treatment_check(element, index)
-        """
-        new_element_duration_factor = next(factor_value for factor_value in element.factor_values
-                                           if factor_value.factor_name == DURATION_FACTOR)
-        if not self.elements or new_element_duration_factor == self.duration:
+        is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
+            self._treatment_check(self.elements) if isinstance(element, Treatment) else \
+            self._concomitant_treatments_check(element) if isinstance(element, set) else False
+        if is_valid:
             self.__elements.insert(index, element)
         else:
-            raise ValueError('New element {0} duration does not match cell duration'.format(element))
-        """
+            raise ValueError('Element is not valid')
 
     @property
     def duration(self):
+        # TODO recompute as sum of durations
+        pass
+        """
         element = next(iter(self.elements))
         return next(factor_value for factor_value in element.factor_values
                     if factor_value.factor_name == DURATION_FACTOR)
+        """
 
 
 class StudyArm(object):
