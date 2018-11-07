@@ -334,8 +334,7 @@ class StudyCell(object):
             return True
 
         def check_washout():
-            next_element = previous_elements[insertion_index + 1] \
-                if insertion_index < len(previous_elements) - 1 else None
+            next_element = previous_elements[insertion_index] if insertion_index < len(previous_elements) else None
             previous_element = previous_elements[insertion_index - 1] if insertion_index > 0 else None
             if isinstance(next_element, NonTreatment) or isinstance(previous_element, NonTreatment):
                 return False
@@ -351,7 +350,7 @@ class StudyCell(object):
             FOLLOW_UP: check_follow_up
         }
         func = switcher.get(new_element.type, lambda: False)
-        lines = inspect.getsource(func)
+        # lines = inspect.getsource(func)
         # print('Element type: {element_type} \nfunc: {func}'.format(element_type=new_element.type, func=lines))
         return func()
 

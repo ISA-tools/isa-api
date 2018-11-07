@@ -304,9 +304,9 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__treatment_cell_02(self):
         self.assertTrue(self.cell._non_treatment_check([self.first_treatment], self.washout),
-                        'A WASHOUT element cannot be added to a cell with a treatment after the treatment')
+                        'A WASHOUT element can be added to a cell with a treatment after the treatment')
         self.assertTrue(self.cell._non_treatment_check([self.first_treatment], self.washout, 0),
-                        'A WASHOUT element cannot be added to a cell with a treatment before the treatment')
+                        'A WASHOUT element can be added to a cell with a treatment before the treatment')
 
     def test_non_treatment_check__treatment_cell_03(self):
         self.assertFalse(self.cell._non_treatment_check([self.first_treatment], self.follow_up),
@@ -314,6 +314,34 @@ class StudyCellTest(unittest.TestCase):
         self.assertFalse(self.cell._non_treatment_check([self.first_treatment], self.follow_up, 0),
                          'A FOLLOW-UP element cannot be added to a cell with a treatment after the treatment')
 
+    def test_non_treatment_check__multi_element_cell_00(self):
+        self.assertTrue(self.cell._non_treatment_check([self.first_treatment, self.washout, self.second_treatment],
+                                                       self.washout),
+                        'A WASHOUT element can be added at the end of a cell with 2 treatments intersped by a washout')
+        self.assertTrue(self.cell._non_treatment_check([
+            self.first_treatment, self.washout, self.second_treatment
+        ], self.washout), 'A WASHOUT element can be added at the beginning of a cell with 2 treatments '
+                          'intersped by a washout')
+
+    def test_non_treatment_check_multi_element_cell_01(self):
+        self.assertTrue(self.cell._non_treatment_check([
+            {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment
+        ], self.washout), 'A WASHOUT element can be added at the end of a cell with a treatment set and a treatment '
+                          'intersped by a washout')
+        self.assertTrue(self.cell._non_treatment_check([
+            {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment
+        ], self.washout, 0), 'A WASHOUT element can be added at the beginning of a cell with a treatment set and a '
+                             'treatment intersped by a washout')
+
+    def test_non_treatment_check_multi_element_cell_02(self):
+        self.assertTrue(self.cell._non_treatment_check([
+            self.first_treatment, self.washout, {self.fourth_treatment, self.second_treatment}
+        ], self.washout), 'A WASHOUT element can be added at the end of a cell with a treatment and a treatment set'
+                          'intersped by a washout')
+        self.assertTrue(self.cell._non_treatment_check([
+            self.first_treatment, self.washout, {self.fourth_treatment, self.second_treatment}
+        ], self.washout, 0), 'A WASHOUT element can be added at the beginning of a cell with a treatment and a '
+                             'treatment set intersped by a washout')
 
     # _treatment_check() tests
     def test_treatment_check__screen_cell(self):
@@ -489,8 +517,8 @@ class StudyCellTest(unittest.TestCase):
                          'A washout can be added to a cell with two treatments at the end')
         self.assertRaises(ValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0,
-                          'A washout cannot be added if there is one after the position where it is to be inserted')
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
+        self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
         self.cell.insert_element({self.first_treatment, self.second_treatment, self.fourth_treatment})
         self.assertEqual(self.cell.elements, [
             self.washout, self.first_treatment, self.washout, self.second_treatment, self.washout, {
@@ -521,14 +549,14 @@ class StudyCellTest(unittest.TestCase):
             self.washout], 'A washout can be added to a cell with a treatment set and a treatment, at the end')
         self.assertRaises(ValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0,
-                          'A washout cannot be added if there is one after the position where it is to be inserted')
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
+        self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
 
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
-        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
-        self.fist_treatment = Treatment(factor_values=(
+        self.cell = StudyCell(name=TEST_EPOCH_0_NAME)
+        self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
@@ -543,17 +571,37 @@ class StudyArmTest(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
         ))
-        self.screen = NonTreatment(element_type=ELEMENT_TYPES['SCREEN'],
+        self.fourth_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.washout = NonTreatment(element_type=ELEMENT_TYPES['WASHOUT'],
+        self.run_in = NonTreatment(element_type=RUN_IN,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.follow_up = NonTreatment(element_type=ELEMENT_TYPES['FOLLOW_UP'],
+        self.washout = NonTreatment(element_type=WASHOUT,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.cell_0 = StudyCell('SCREEN', elements=self.screen)
-        self.cell_1 = StudyCell('CONCOMITANT TREATMENTS', elements=(self.second_treatment, self.fist_treatment))
-        self.cell_2 = StudyCell('WASHOUT', elements=self.washout)
-        self.cell_3 = StudyCell('SINGLE TREATMENT', elements=self.third_treatment)
-        self.cell_4 = StudyCell('FOLLOW-UP', elements=self.follow_up)
+        self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
+                                                          duration_unit=FACTORS_2_UNIT)
+        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
+        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
+        self.cell_screen_and_run_in = StudyCell('SCREEN AND RUN-IN', elements=[self.screen, self.run_in])
+        self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
+                                                     elements=([{self.second_treatment, self.fist_treatment}]))
+        self.cell_washout = StudyCell(WASHOUT, elements=(self.washout,))
+        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
+        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
+                                             elements=[{self.first_treatment, self.second_treatment,
+                                                        self.fourth_treatment}, self.washout, self.second_treatment])
+        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
+                                                    elements=[self.first_treatment, self.washout, {
+                                                        self.second_treatment,
+                                                        self.fourth_treatment
+                                                    }, self.washout, self.third_treatment, self.washout])
+        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
         self.sample_assay_plan = SampleAssayPlan()
 
     def test__init__(self):
