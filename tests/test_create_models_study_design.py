@@ -555,7 +555,7 @@ class StudyCellTest(unittest.TestCase):
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
-        self.cell = StudyCell(name=TEST_EPOCH_0_NAME)
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
@@ -590,9 +590,11 @@ class StudyArmTest(unittest.TestCase):
         self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
         self.cell_screen_and_run_in = StudyCell('SCREEN AND RUN-IN', elements=[self.screen, self.run_in])
         self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
-                                                     elements=([{self.second_treatment, self.fist_treatment}]))
+                                                     elements=([{self.second_treatment, self.fourth_treatment}]))
         self.cell_washout = StudyCell(WASHOUT, elements=(self.washout,))
-        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
+        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
+        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
         self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
                                              elements=[{self.first_treatment, self.second_treatment,
                                                         self.fourth_treatment}, self.washout, self.second_treatment])
@@ -607,17 +609,44 @@ class StudyArmTest(unittest.TestCase):
     def test__init__(self):
         self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
 
-    def test_add_item_to_arm_map(self):
-        self.assertEqual(len(self.arm.arm_map.keys()), 0)
-        self.arm.add_item_to_arm_map(self.cell_0, self.sample_assay_plan)
-        self.arm.add_item_to_arm_map(self.cell_1, self.sample_assay_plan)
-        self.arm.add_item_to_arm_map(self.cell_2, self.sample_assay_plan)
-        self.arm.add_item_to_arm_map(self.cell_3, self.sample_assay_plan)
-        self.arm.add_item_to_arm_map(self.cell_4, self.sample_assay_plan)
-        self.assertEqual(len(self.arm.arm_map.keys()), 5)
-        for cell, sample_assay_plan in self.arm.arm_map.items():
-            self.assertTrue(isinstance(cell, StudyCell))
-            self.assertTrue(isinstance(sample_assay_plan, SampleAssayPlan))
+    def test_add_item_to_arm__single_unit_cells_00(self):
+        self.arm.add_item_to_arm_map(self.cell_screen, None)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(cells, 1, 'One mapping has been added to the arm')
+        self.assertEqual(cells[0], self.screen, 'The SCREEN cell has been added to the arm')
+        self.assertEqual(plans[0], None, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_run_in, None)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(cells, 2, 'One mapping has been added to the arm')
+        self.assertEqual(cells[1], self.run_in, 'The RUN-IN cell has been added to the arm')
+        self.assertEqual(plans[1], None, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_single_treatment_00, self.sample_assay_plan)
+        self.assertEqual(cells, 3, 'One mapping has been added to the arm')
+        self.assertEqual(cells[2], self.cell_single_treatment_00, 'The 1st treatment cell has been added to the arm')
+        self.assertEqual(plans[2], self.sample_assay_plan, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.washout, None)
+        self.assertEqual(cells, 4, 'One mapping has been added to the arm')
+        self.assertEqual(cells[3], self.washout, 'The WASHOUT cell has been added to the arm')
+        self.assertEqual(plans[3], None, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_single_treatment_02, self.sample_assay_plan)
+        self.assertEqual(cells, 5, 'One mapping has been added to the arm')
+        self.assertEqual(cells[4], self.cell_single_treatment_00, 'The 3rd treatment cell has been added to the arm')
+        self.assertEqual(plans[4], self.sample_assay_plan, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.washout, None)
+        self.assertEqual(cells, 6, 'One mapping has been added to the arm')
+        self.assertEqual(cells[5], self.washout, 'The WASHOUT cell has been added to the arm')
+        self.assertEqual(plans[5], None, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_concomitant_treatments, self.sample_assay_plan)
+        self.assertEqual(cells, 7, 'One mapping has been added to the arm')
+        self.assertEqual(cells[6], self.cell_concomitant_treatments, 'The concomitant treatments cell '
+                                                                     'has been added to the arm')
+        self.assertEqual(plans[6], self.sample_assay_plan, 'There is non sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
+        self.assertEqual(cells, 8, 'One mapping has been added to the arm')
+        self.assertEqual(cells[7], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
+        self.assertEqual(plans[7], self.sample_assay_plan, 'There is non sample plan for this specific cell')
+
+
 
 
 class TreatmentFactoryTest(unittest.TestCase):
