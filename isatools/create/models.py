@@ -447,7 +447,7 @@ class StudyArm(object):
     def add_item_to_arm_map(self, cell, sample_assay_plan):
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
-        if not isinstance(sample_assay_plan, SampleAssayPlan):
+        if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAssayPlan):
             raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
         self.__arm_map[cell] = sample_assay_plan
 
@@ -974,6 +974,7 @@ class MSInjectionMode(object):
                 acquisition_modes=list(self.acquisition_modes),
                 derivatizations=list(self.derivatizations)
         )
+
 
 class MSTopologyModifiers(object):
 
