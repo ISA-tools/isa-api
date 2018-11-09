@@ -402,7 +402,7 @@ class StudyCell(object):
         else:
             raise ISAModelValueError('Element is not valid')
 
-    def contains_non_treatment_by_type(self, non_treatment_type):
+    def contains_non_treatment_element_by_type(self, non_treatment_type):
         """
         Evaluates whether the current cell contains a NonTreatment of a specific type
         :param non_treatment_type: str - specifies whether it is a SCREEN, RUN-IN, WASHOUT, or FOLLOW-UP
@@ -457,11 +457,34 @@ class StudyArm(object):
         for cell, sample_assay_plan in arm_map.items():
             self.add_item_to_arm_map(cell, sample_assay_plan)
 
-    def add_item_to_arm_map(self, cell, sample_assay_plan):
+    def add_item_to_arm_map(self, cell, sample_assay_plan=None):
+        """
+        inserts a mapping StudyCell -> SampleAssayPlan to the StudyArm arm_map
+        There are a few insertion rules for cells
+        - To insert a cell containing a SCREEN the arm_map *must* be empty
+        - To insert a cell containing a RUN-IN alone the arm_map *must* contain a SCREEN-only cell and no other cells
+        - To insert a cell containing one or more Treatments (and washouts) the arm_map must not contain a FOLLOW-UP 
+            cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a 
+            NonTreatment of any type as the latest element
+        - To insert a cell containing a FOLLOW-UP the arm_map *must not* contain already a FOLLOW-UP cell
+            Moreover, this cell cannot be inserted immediately afer a SCREEN or a RUN-IN cell
+        :param cell: (StudyCell)
+        :param sample_assay_plan: (SampleAssayPlan/None) 
+        :return: 
+        """
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
         if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAssayPlan):
             raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
+        if cell.contains_non_treatment_element_by_type(SCREEN):
+            if len(self.arm_map.keys()):
+                raise ISAModelValueError('A SCREEN cell can only be inserted into an empty arm_map')
+            self.__arm_map[cell] = sample_assay_plan
+        elif cell.contains_non_treatment_element_by_type(RUN_IN):
+            if len(self.arm_map.keys()) == 1 and self.arm_map.keys()[0].contains_non_treatment_element_by_type(SCREEN):
+                self.__arm_map[cell] = sample_assay_plan
+            else:
+                raise ISAModelValueError('A RUN-IN cell can only be inserted into an arm_map containing a SCREEN')
         self.__arm_map[cell] = sample_assay_plan
 
     @property
@@ -596,7 +619,8 @@ class TreatmentFactory(object):
 
 class AssayType(object):
     """
-       A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers (of type AssayTopologyModifiers).
+       A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers 
+       (of type AssayTopologyModifiers).
     """
 
     def __init__(self, measurement_type=None, technology_type=None,
