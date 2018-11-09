@@ -553,6 +553,73 @@ class StudyCellTest(unittest.TestCase):
         self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout, 0)
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
 
+    def test_contains_non_treatment_by_type_empty_cell(self):
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False, 'An empty cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False, 'An empty cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), False, 'An empty cell contains no WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                                                                  'An empty cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_screen_cell(self):
+        self.cell.elements = [self.screen]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), True,
+                         'A SCREEN cell contains a SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False,
+                         'A SCREEN cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), False,
+                         'A SCREEN cell contains no WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                         'A SCREEN cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_run_in_cell(self):
+        self.cell.elements = [self.run_in]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False,
+                         'A RUN-IN cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), True,
+                         'A RUN-IN cell contains a RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), False,
+                         'A RUN-IN cell contains no WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                         'A RUN-IN cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_washout_cell(self):
+        self.cell.elements = [self.washout]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False, 'A WASHOUT cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False, 'A WASHOUT cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), True, 'A WASHOUT cell contains a WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                         'A WASHOUT cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_follow_up_cell(self):
+        self.cell.elements = [self.follow_up]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False, 'A FOLLOW-UP cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False, 'A FOLLOW-UP cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), False, 'A FOLLOW-UP cell contains a WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), True, 'A FOLLOW-UP cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_single_treatment_cell(self):
+        self.cell.elements = [self.first_treatment]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False,
+                         'A single treatment cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False,
+                         'A single treatment cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), False,
+                         'A single treatment cell contains a WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                         'A single treatment cell contains no FOLLOW_UP')
+
+    def test_contains_non_treatment_by_type_multi_treatment_cell(self):
+        self.cell.elements = [self.first_treatment, self.washout, {self.second_treatment, self.fourth_treatment},
+                              self.washout]
+        self.assertEqual(self.cell.contains_non_treatment_by_type(SCREEN), False,
+                         'This multi-treatment cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(RUN_IN), False,
+                         'This multi-treatment cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(WASHOUT), True,
+                         'This multi-treatment cell contains two WASHOUT elements')
+        self.assertEqual(self.cell.contains_non_treatment_by_type(FOLLOW_UP), False,
+                         'This multi-treatment cell contains no FOLLOW_UP')
+
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
@@ -617,6 +684,11 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(len(cells), 1, 'One mapping has been added to the arm')
         self.assertEqual(cells[0], self.cell_screen, 'The SCREEN cell has been added to the arm')
         self.assertEqual(plans[0], None, 'There is non sample plan for this specific cell')
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+                                                       'StudyArm') as exc_cm:
+            self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
+        exception = ewc_cm.exception
+        pdb.set_trace()
         self.arm.add_item_to_arm_map(self.cell_run_in, None)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')

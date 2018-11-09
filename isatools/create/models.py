@@ -297,11 +297,14 @@ class StudyCell(object):
         if not isinstance(x, (Element, list, tuple)):
             raise ISAModelAttributeError('elements must be an Element, a list of Elements, or a tuple of Elements')
         self.__elements.clear()
-        if isinstance(x, Element):
-            self.insert_element(x)
-        else:
-            for element in x:
-                self.insert_element(element)
+        try:
+            if isinstance(x, Element):
+                self.insert_element(x)
+            else:
+                for element in x:
+                    self.insert_element(element)
+        except ISAModelValueError as e:
+            raise ISAModelAttributeError(e)
 
     @staticmethod
     def _non_treatment_check(previous_elements, new_element, insertion_index=None):
@@ -398,6 +401,14 @@ class StudyCell(object):
             self.__elements.insert(index, element)
         else:
             raise ISAModelValueError('Element is not valid')
+
+    def contains_non_treatment_by_type(self, non_treatment_type):
+        """
+        Evaluates whether the current cell contains a NonTreatment of a specific type
+        :param non_treatment_type: str - specifies whether it is a SCREEN, RUN-IN, WASHOUT, or FOLLOW-UP
+        :return: bool 
+        """
+        return any(el for el in self.elements if isinstance(el, NonTreatment) and el.type == non_treatment_type)
 
     @property
     def duration(self):
