@@ -16,6 +16,8 @@ from abc import ABC, abstractmethod
 import inspect
 import pdb
 
+from isatools.errors import ISAModelValueError, ISAModelAttributeError
+
 
 log = logging.getLogger('isatools')
 
@@ -293,7 +295,7 @@ class StudyCell(object):
     @elements.setter
     def elements(self, x):
         if not isinstance(x, (Element, list, tuple)):
-            raise ValueError('elements must be an Element, a list of Elements, or a tuple of Elements')
+            raise ISAModelAttributeError('elements must be an Element, a list of Elements, or a tuple of Elements')
         self.__elements.clear()
         if isinstance(x, Element):
             self.insert_element(x)
@@ -388,14 +390,14 @@ class StudyCell(object):
         index = len(self.elements) if not isinstance(element_index, int) else \
             element_index if abs(element_index) < len(self.elements) else len(self.elements)
         if not isinstance(element, (Element, set)):
-            raise ValueError('element must be either an Element or a set of treatments')
+            raise ISAModelValueError('element must be either an Element or a set of treatments')
         is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
             self._treatment_check(self.elements) if isinstance(element, Treatment) else \
             self._concomitant_treatments_check(element) if isinstance(element, set) else False
         if is_valid:
             self.__elements.insert(index, element)
         else:
-            raise ValueError('Element is not valid')
+            raise ISAModelValueError('Element is not valid')
 
     @property
     def duration(self):

@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 from isatools.model import *
 from isatools.create.models import *
+from isatools.errors import ISAModelAttributeError, ISAModelValueError
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -415,16 +416,16 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.screen)
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
                                'A treatment cannot be added to a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ValueError, self.cell.insert_element, {
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, {
             self.first_treatment, self.fourth_treatment
         }, 'A treatment set cannot be added to a cell with a SCREEN')
         self.cell.insert_element(self.run_in)
@@ -435,16 +436,16 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.run_in)
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a RUN-IN after the RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
                           'A treatment cannot be added to a cell with a RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ValueError, self.cell.insert_element, {
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, {
             self.first_treatment, self.fourth_treatment
         }, 'A treatment set cannot be added to a cell with a RUN-IN')
         self.cell.insert_element(self.screen, 0)
@@ -455,13 +456,13 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.washout)
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ValueError, self.cell.insert_element, self.run_in,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.run_in,
                           'A RUN-IN cannot be added to a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
         self.cell.insert_element({self.first_treatment, self.fourth_treatment})
@@ -483,18 +484,18 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.follow_up)
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
                           'A treatment cannot be added to a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ValueError, self.cell.insert_element, {self.first_treatment, self.fourth_treatment},
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, {self.first_treatment, self.fourth_treatment},
                           'A treatment set cannot be added to a cell with a FOLLOW-UP')
-        self.assertRaises(ValueError, self.cell.insert_element, self.run_in,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.run_in,
                           'A RUN-IN cannot be added to a cell with a FOLLOW-UP')
 
     def test_insert_element_treatment(self):
@@ -515,9 +516,9 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements,
                          [self.washout, self.first_treatment, self.washout, self.second_treatment, self.washout],
                          'A washout can be added to a cell with two treatments at the end')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout, 0)
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
         self.cell.insert_element({self.first_treatment, self.second_treatment, self.fourth_treatment})
         self.assertEqual(self.cell.elements, [
@@ -547,9 +548,9 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, [
             self.washout, {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment,
             self.washout], 'A washout can be added to a cell with a treatment set and a treatment, at the end')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout,
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
+        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout, 0)
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
 
 class StudyArmTest(unittest.TestCase):
