@@ -410,6 +410,16 @@ class StudyCell(object):
         """
         return any(el for el in self.elements if isinstance(el, NonTreatment) and el.type == non_treatment_type)
 
+    def get_all_elements(self):
+        all_elements = []
+        for el in self.elements:
+            if isinstance(el, Element):
+                all_elements.append(el)
+            elif isinstance(el, set):
+                for concomitant_el in el:
+                    all_elements.append(concomitant_el)
+        return all_elements
+
     @property
     def duration(self):
         # TODO recompute as sum of durations
@@ -422,6 +432,13 @@ class StudyCell(object):
 
 
 class StudyArm(object):
+
+    SCREEN_ERROR_MESSAGE = 'A SCREEN cell can only be inserted into an empty arm_map'
+    RUN_IN_ERROR_MESSAGE = 'A RUN-IN cell can only be inserted into an arm_map containing a SCREEN'
+    WASHOUT_ERROR_MESSAGE = 'A WASHOUT cell cannot be put next to a cell ending with a WASHOUT'
+    COMPLETE_ARM_ERROR_MESSAGE = 'StudyArm complete. No more cells can be added after a FOLLOW-UP cell'
+    FOLLOW_UP_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be attached next to a SCREEN or a RUN-IN cell'
+
     """
     Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
     We call this mapping arm_map
@@ -457,6 +474,14 @@ class StudyArm(object):
         for cell, sample_assay_plan in arm_map.items():
             self.add_item_to_arm_map(cell, sample_assay_plan)
 
+    def is_completed(self):
+        """
+        A StudyArm is considered completed if it contains a FOLLOW-UP cells
+        :return: bool
+        """
+        return bool([el for cell in self.arm_map.keys() for el in cell.get_all_elements()
+                     if el.type == FOLLOW_UP])
+
     def add_item_to_arm_map(self, cell, sample_assay_plan=None):
         """
         inserts a mapping StudyCell -> SampleAssayPlan to the StudyArm arm_map
@@ -476,15 +501,31 @@ class StudyArm(object):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
         if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAssayPlan):
             raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
+        if self.is_completed():
+            raise ISAModelValueError(self.COMPLETE_ARM_ERROR_MESSAGE)
         if cell.contains_non_treatment_element_by_type(SCREEN):
             if len(self.arm_map.keys()):
-                raise ISAModelValueError('A SCREEN cell can only be inserted into an empty arm_map')
+                raise ISAModelValueError(self.SCREEN_ERROR_MESSAGE)
             self.__arm_map[cell] = sample_assay_plan
         elif cell.contains_non_treatment_element_by_type(RUN_IN):
-            if len(self.arm_map.keys()) == 1 and self.arm_map.keys()[0].contains_non_treatment_element_by_type(SCREEN):
+            previous_cells = list(self.arm_map.keys())
+            if len(previous_cells) == 1 and previous_cells[0].contains_non_treatment_element_by_type(SCREEN):
                 self.__arm_map[cell] = sample_assay_plan
             else:
-                raise ISAModelValueError('A RUN-IN cell can only be inserted into an arm_map containing a SCREEN')
+                raise ISAModelValueError(self.RUN_IN_ERROR_MESSAGE)
+        elif cell.contains_non_treatment_element_by_type(WASHOUT) and cell.get_all_elements()[0].type == WASHOUT:
+            latest_cell = list(self.arm_map.keys())[-1]
+            latest_element = latest_cell.get_all_elements()[-1]
+            if isinstance(latest_element, NonTreatment):
+                raise ISAModelValueError(self.WASHOUT_ERROR_MESSAGE)
+        elif cell.contains_non_treatment_element_by_type(FOLLOW_UP):
+            previous_cells = list(self.arm_map.keys())
+            if not len(previous_cells):
+                raise ISAModelValueError(self.FOLLOW_UP_ERROR_MESSAGE) # FIXME change message
+            latest_cell = list(self.arm_map.keys())[-1]
+            if latest_cell.contains_non_treatment_element_by_type(SCREEN) or \
+                    latest_cell.contains_non_treatment_element_by_type(RUN_IN):
+                raise ISAModelValueError(self.FOLLOW_UP_ERROR_MESSAGE)
         self.__arm_map[cell] = sample_assay_plan
 
     @property

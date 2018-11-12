@@ -656,6 +656,7 @@ class StudyArmTest(unittest.TestCase):
                                                           duration_unit=FACTORS_2_UNIT)
         self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
         self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
+        self.cell_other_run_in = StudyCell('OTHER RUN-IN', elements=(self.run_in,))
         self.cell_screen_and_run_in = StudyCell('SCREEN AND RUN-IN', elements=[self.screen, self.run_in])
         self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
                                                      elements=([{self.second_treatment, self.fourth_treatment}]))
@@ -693,16 +694,44 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
         self.assertEqual(cells[1], self.cell_run_in, 'The RUN-IN cell has been added to the arm')
         self.assertEqual(plans[1], None, 'There is non sample plan for this specific cell')
+
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+                                                       'StudyArm') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a run-in cannot be added to the '
+                                                       'StudyArm') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+
         self.arm.add_item_to_arm_map(self.cell_single_treatment_00, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 3, 'One mapping has been added to the arm')
         self.assertEqual(cells[2], self.cell_single_treatment_00, 'The 1st treatment cell has been added to the arm')
         self.assertEqual(plans[2], self.sample_assay_plan, 'There is non sample plan for this specific cell')
+
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+                                                       'StudyArm') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a run-in cannot be added to the '
+                                                       'StudyArm') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+
         self.arm.add_item_to_arm_map(self.cell_washout_00, None)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 4, 'One mapping has been added to the arm')
         self.assertEqual(cells[3], self.cell_washout_00, 'The WASHOUT cell has been added to the arm')
         self.assertEqual(plans[3], None, 'There is non sample plan for this specific cell')
+
+        with self.assertRaises(ISAModelValueError, msg='Another cell containing a WASHOUT cannot be added to the '
+                                                       'StudyArm') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_washout_01, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+
         self.arm.add_item_to_arm_map(self.cell_single_treatment_02, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 5, 'One mapping has been added to the arm')
@@ -725,8 +754,43 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[7], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
         self.assertEqual(plans[7], self.sample_assay_plan, 'There is non sample plan for this specific cell')
 
+        with self.assertRaises(ISAModelValueError, msg='No more items can be added after a FOLLOW-UP') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
 
+    def test_add_item_to_arm__multi_unit_cells_00(self):
+        self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
+        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
+                                                       'an ARM ending with a RUN-IN') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_washout_00, self.sample_assay_plan)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
+        self.assertEqual(cells[1], self.cell_multi_elements, 'The multi-step treatment cell has been added to the arm')
+        self.assertEqual(plans[1], self.sample_assay_plan, 'There is a sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(len(cells), 3, 'One mapping has been added to the arm')
+        self.assertEqual(cells[2], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
+        self.assertEqual(plans[2], self.sample_assay_plan, 'There is a sample plan for this specific cell')
 
+    def test_add_item_to_arm__multi_unit_cells_01(self):
+        self.arm.add_item_to_arm_map(self.cell_screen, None)
+        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
+                                                       'an ARM ending with a SCREEB') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_follow_up, None)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_ERROR_MESSAGE)
+        self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
+        self.assertEqual(cells[1], self.cell_multi_elements_padded, 'The multi-step treatment cell has been added to the arm')
+        self.assertEqual(plans[1], self.sample_assay_plan, 'There is a sample plan for this specific cell')
+        self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
+        cells, plans = zip(*self.arm.arm_map.items())
+        self.assertEqual(len(cells), 3, 'One mapping has been added to the arm')
+        self.assertEqual(cells[2], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
+        self.assertEqual(plans[2], self.sample_assay_plan, 'There is a sample plan for this specific cell')
 
 class TreatmentFactoryTest(unittest.TestCase):
 
