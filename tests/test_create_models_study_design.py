@@ -620,6 +620,22 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.contains_non_treatment_element_by_type(FOLLOW_UP), False,
                          'This multi-treatment cell contains no FOLLOW_UP')
 
+    def test_get_all_elements_00(self):
+        self.cell.elements = [self.first_treatment, self.washout, self.second_treatment, self.fourth_treatment,
+                              self.washout]
+        self.assertEqual(self.cell.get_all_elements(), [self.first_treatment, self.washout, self.second_treatment,
+                                                        self.fourth_treatment, self.washout])
+
+    def test_get_all_elements_01(self):
+        self.cell.elements = [self.first_treatment, self.washout, {self.second_treatment, self.fourth_treatment},
+                              self.washout]
+        self.assertEqual(set(self.cell.get_all_elements()), {self.first_treatment, self.washout,
+                                                             self.second_treatment, self.fourth_treatment})
+
+    def test_get_all_elements_02(self):
+        self.cell.elements = [self.follow_up]
+        self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
+
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
@@ -688,7 +704,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], 'A SCREEN cell can only be inserted into an empty arm_map')
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_run_in, None)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -778,7 +794,7 @@ class StudyArmTest(unittest.TestCase):
     def test_add_item_to_arm__multi_unit_cells_01(self):
         self.arm.add_item_to_arm_map(self.cell_screen, None)
         with self.assertRaises(ISAModelValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
-                                                       'an ARM ending with a SCREEB') as ex_cm:
+                                                       'an ARM ending with a SCREEN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
@@ -791,6 +807,85 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(len(cells), 3, 'One mapping has been added to the arm')
         self.assertEqual(cells[2], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
         self.assertEqual(plans[2], self.sample_assay_plan, 'There is a sample plan for this specific cell')
+
+    def test_add_item_to_arm__follow_up_to_empty_cell(self):
+        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
+                                                       'an empty arm.') as ex_cm:
+            self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
+
+    def test_group_size_property(self):
+        self.assertEqual(self.arm.group_size, 10)
+        self.arm.group_size = 100
+        self.assertEqual(self.arm.group_size, 100)
+
+    def test_group_size_property_fail_00(self):
+        with self.assertRaises(ISAModelAttributeError,
+                               msg='Only positive integers can be assinged to group_size') as ex_cm:
+            self.arm.group_size = -5
+        self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
+
+    def test_arm_map_property_success_00(self):
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
+        ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
+                                (self.cell_single_treatment_00, self.sample_assay_plan),
+                                (self.cell_washout_00, None),
+                                (self.cell_single_treatment_01, self.sample_assay_plan),
+                                (self.cell_washout_01, None), (self.cell_follow_up, self.sample_assay_plan)
+                                ])
+        self.arm.arm_map = ord_dict
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been correctly'
+                                                 'set for single-treatment cells.')
+    def test_arm_map_property_success_01(self):
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
+        ord_dict = OrderedDict([(self.cell_screen, None),
+                                (self.cell_multi_elements_padded, self.sample_assay_plan),
+                                (self.cell_follow_up, self.sample_assay_plan)
+                                ])
+        self.arm.arm_map = ord_dict
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been correctly'
+                                                 'set for single-treatment cells.')
+
+    def test_arm_map_property_fail_wrong_type(self):
+        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong type is '
+                                                           'provided to the assignment.') as ex_cm:
+            self.arm.arm_map = ['wrong', 'object']
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.ARM_MAP_ASSIGNMENT_ERROR)
+
+    def test_arm_map_property_fail_wrong_value_00(self):
+        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong value is '
+                                                           'provided to the assignment.') as ex_cm:
+            ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
+                                (self.cell_single_treatment_00, self.sample_assay_plan),
+                                (self.cell_washout_00, None),
+                                (self.cell_single_treatment_01, self.sample_assay_plan),
+                                (self.cell_follow_up, self.sample_assay_plan),
+                                (self.cell_washout_01, None)
+                                ])
+            self.arm.arm_map = ord_dict
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
+
+    def test_arm_map_property_fail_wrong_value_01(self):
+        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong value is '
+                                                           'provided to the assignment.') as ex_cm:
+            ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
+                                (self.cell_single_treatment_00, self.sample_assay_plan),
+                                (self.cell_single_treatment_01, self.sample_assay_plan),
+                                (self.cell_washout_00, None),
+                                (self.cell_washout_01, None),
+                                (self.cell_follow_up, self.sample_assay_plan)
+                                ])
+            self.arm.arm_map = ord_dict
+        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+
+    def test_treatments_property(self):
+        self.arm.arm_map = OrderedDict([(self.cell_screen, None),
+                                        (self.cell_multi_elements_padded, self.sample_assay_plan),
+                                        (self.cell_follow_up, self.sample_assay_plan)])
+        self.assertEqual(self.arm.treatments, {
+            self.first_treatment, self.second_treatment, self.fourth_treatment, self.third_treatment
+        })
+
 
 class TreatmentFactoryTest(unittest.TestCase):
 

@@ -265,18 +265,18 @@ class StudyCell(object):
 
     def __repr__(self):
         return 'isatools.create.models.StudyCell(' \
-               'name={study_epoch.name}, ' \
+               'name={name}, ' \
                'elements={elements}, ' \
-               ')'.format(study_epoch=self, elements=repr(self.elements))
+               ')'.format(name=self.name, elements=repr(self.elements))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
+        return isinstance(other, StudyCell) and self.name == other.name and self.elements == other.elements
 
     def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
+        return not self == other
 
     @property
     def name(self):
@@ -432,24 +432,46 @@ class StudyCell(object):
 
 
 class StudyArm(object):
-
-    SCREEN_ERROR_MESSAGE = 'A SCREEN cell can only be inserted into an empty arm_map'
-    RUN_IN_ERROR_MESSAGE = 'A RUN-IN cell can only be inserted into an arm_map containing a SCREEN'
-    WASHOUT_ERROR_MESSAGE = 'A WASHOUT cell cannot be put next to a cell ending with a WASHOUT'
-    COMPLETE_ARM_ERROR_MESSAGE = 'StudyArm complete. No more cells can be added after a FOLLOW-UP cell'
-    FOLLOW_UP_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be attached next to a SCREEN or a RUN-IN cell'
-
     """
     Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
     We call this mapping arm_map
     """
 
+    SCREEN_ERROR_MESSAGE = 'A SCREEN cell can only be inserted into an empty arm_map.'
+    RUN_IN_ERROR_MESSAGE = 'A RUN-IN cell can only be inserted into an arm_map containing a SCREEN.'
+    WASHOUT_ERROR_MESSAGE = 'A WASHOUT cell cannot be put next to a cell ending with a WASHOUT.'
+    COMPLETE_ARM_ERROR_MESSAGE = 'StudyArm complete. No more cells can be added after a FOLLOW-UP cell.'
+    FOLLOW_UP_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be put next to a SCREEN or a RUN-IN cell.'
+    FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be put into an empty StudyArm.'
+
+    ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
+
     def __init__(self, name, arm_map=None, group_size=0):
         self.name = name
-        self.__group_size = group_size if isinstance(group_size, int) else 0
+        self.__group_size = None
         self.__arm_map = OrderedDict()
+        self.group_size = group_size
         if arm_map is not None:
             self.arm_map = arm_map
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyArm(' \
+               'name={name}, ' \
+               'group_size={group_size}, ' \
+               'cells={cells}, ' \
+               'sample_assay_plans={sample_assay_plans)'.format(name=self.name, group_size=self.group_size,
+                                                                cells=self.cells,
+                                                                sample_assay_plans=self.sample_assay_plans)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, StudyArm) and self.name == other.name and self.group_size == other.group_size and \
+               self.arm_map == other.arm_map
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def group_size(self):
@@ -457,10 +479,10 @@ class StudyArm(object):
 
     @group_size.setter
     def group_size(self, group_size):
-        if isinstance(group_size, int):
+        if isinstance(group_size, int) and group_size >= 0:
             self.__group_size = group_size
         else:
-            raise TypeError('group_size must be an integer; {0} provided'.format(group_size))
+            raise ISAModelAttributeError('group_size must be a positive integer; {0} provided'.format(group_size))
 
     @property
     def arm_map(self):
@@ -469,10 +491,21 @@ class StudyArm(object):
     @arm_map.setter
     def arm_map(self, arm_map):
         if not isinstance(arm_map, OrderedDict):
-            raise TypeError('arm_map must be an OrderedDict')
+            raise ISAModelAttributeError(self.ARM_MAP_ASSIGNMENT_ERROR)
         self.__arm_map.clear()
-        for cell, sample_assay_plan in arm_map.items():
-            self.add_item_to_arm_map(cell, sample_assay_plan)
+        try:
+            for cell, sample_assay_plan in arm_map.items():
+                self.add_item_to_arm_map(cell, sample_assay_plan)
+        except ISAModelValueError as ve:
+            raise ISAModelAttributeError(ve.args[0])
+
+    @property
+    def cells(self):
+        return list(self.arm_map.keys())
+
+    @property
+    def sample_assay_plans(self):
+        return list(self.arm_map.values())
 
     def is_completed(self):
         """
@@ -521,7 +554,7 @@ class StudyArm(object):
         elif cell.contains_non_treatment_element_by_type(FOLLOW_UP):
             previous_cells = list(self.arm_map.keys())
             if not len(previous_cells):
-                raise ISAModelValueError(self.FOLLOW_UP_ERROR_MESSAGE) # FIXME change message
+                raise ISAModelValueError(self.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
             latest_cell = list(self.arm_map.keys())[-1]
             if latest_cell.contains_non_treatment_element_by_type(SCREEN) or \
                     latest_cell.contains_non_treatment_element_by_type(RUN_IN):
@@ -530,24 +563,12 @@ class StudyArm(object):
 
     @property
     def treatments(self):
-        treatment_set = set()
-        for cell in self.arm_map.keys():
-            treatment_set = treatment_set.union([elem for elem in cell.elements if isinstance(elem, Treatment)])
-        return treatment_set
-
-    def __repr__(self):
-        return 'isatools.create.models.StudyArm(' \
-               'name={study_arm.name}, ' \
-               'cells={list_of_epoch_names})'.format(study_arm=self, list_of_epoch_names=[x.name for x in self.epochs])
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
-
-    def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
+        """
+        Returns all the Treatment elements contained in a StudyArm
+        :return set - all the treatments in the StudyArm
+        """
+        # TODO should this be a set or a list or something else?
+        return {elem for cell in self.arm_map.keys() for elem in cell.get_all_elements() if isinstance(elem, Treatment)}
 
 
 class StudyDesign(object):
