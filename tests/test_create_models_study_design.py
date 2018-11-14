@@ -18,7 +18,12 @@ FACTORS_2_UNIT = OntologyAnnotation(term='s')
 TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
 TEST_EPOCH_2_NAME = 'test epoch 2'
-TEST_STUDY_ARM_NAME = 'test arm'
+
+TEST_STUDY_ARM_NAME_00 = 'test arm'
+TEST_STUDY_ARM_NAME_01 = 'another arm'
+TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+
+TEST_STUDY_DESIGN_NAME = 'test study design'
 
 TEST_EPOCH_0_RANK = 0
 
@@ -639,7 +644,7 @@ class StudyCellTest(unittest.TestCase):
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
-        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME, group_size=10)
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
@@ -693,7 +698,7 @@ class StudyArmTest(unittest.TestCase):
         self.sample_assay_plan = SampleAssayPlan()
 
     def test__init__(self):
-        self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
+        self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME_00)
 
     def test_add_item_to_arm__single_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen, None)
@@ -800,7 +805,8 @@ class StudyArmTest(unittest.TestCase):
         self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
-        self.assertEqual(cells[1], self.cell_multi_elements_padded, 'The multi-step treatment cell has been added to the arm')
+        self.assertEqual(cells[1], self.cell_multi_elements_padded, 'The multi-step treatment cell has been added to '
+                                                                    'the arm')
         self.assertEqual(plans[1], self.sample_assay_plan, 'There is a sample plan for this specific cell')
         self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -834,8 +840,8 @@ class StudyArmTest(unittest.TestCase):
                                 (self.cell_washout_01, None), (self.cell_follow_up, self.sample_assay_plan)
                                 ])
         self.arm.arm_map = ord_dict
-        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been correctly'
-                                                 'set for single-treatment cells.')
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been '
+                                                     'correctly set for single-treatment cells.')
     def test_arm_map_property_success_01(self):
         self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None),
@@ -843,8 +849,8 @@ class StudyArmTest(unittest.TestCase):
                                 (self.cell_follow_up, self.sample_assay_plan)
                                 ])
         self.arm.arm_map = ord_dict
-        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been correctly'
-                                                 'set for single-treatment cells.')
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been '
+                                                     'correctly set for single-treatment cells.')
 
     def test_arm_map_property_fail_wrong_type(self):
         with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong type is '
@@ -885,6 +891,127 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(self.arm.treatments, {
             self.first_treatment, self.second_treatment, self.fourth_treatment, self.third_treatment
         })
+
+
+class StudyDesignTest(unittest.TestCase):
+
+    def setUp(self):
+
+        self.first_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.fourth_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.screen = NonTreatment(element_type=SCREEN,
+                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.run_in = NonTreatment(element_type=RUN_IN,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.washout = NonTreatment(element_type=WASHOUT,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
+                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
+                                                          duration_unit=FACTORS_2_UNIT)
+        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
+        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
+        self.cell_other_run_in = StudyCell('OTHER RUN-IN', elements=(self.run_in,))
+        self.cell_screen_and_run_in = StudyCell('SCREEN AND RUN-IN', elements=[self.screen, self.run_in])
+        self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
+                                                     elements=([{self.second_treatment, self.fourth_treatment}]))
+        self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
+        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout))
+        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
+        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
+        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
+                                             elements=[{self.first_treatment, self.second_treatment,
+                                                        self.fourth_treatment}, self.washout, self.second_treatment])
+        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
+                                                    elements=[self.first_treatment, self.washout, {
+                                                        self.second_treatment,
+                                                        self.fourth_treatment
+                                                    }, self.washout, self.third_treatment, self.washout])
+        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+        self.sample_assay_plan = SampleAssayPlan()
+        self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_00, self.sample_assay_plan),
+            (self.cell_follow_up, self.sample_assay_plan)
+        ]))
+        self.second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=25, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_multi_elements, self.sample_assay_plan),
+            (self.cell_follow_up, self.sample_assay_plan)
+        ]))
+        self.third_arm = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=20, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_multi_elements_padded, self.sample_assay_plan),
+            (self.cell_follow_up, self.sample_assay_plan)
+        ]))
+        self.arm_same_name_as_third = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_01, self.sample_assay_plan),
+            (self.cell_follow_up, self.sample_assay_plan)
+        ]))
+        self.study_design = StudyDesign()
+
+    def test_init(self):
+        self.assertIsInstance(getattr(self.study_design, '_StudyDesign__name', None), str,
+                              'The __name has been initialized as a string')
+        self.assertEqual(getattr(self.study_design, '_StudyDesign__study_arms', None), set(),
+                         'An empty set has been initialized for __study_arms')
+
+    def test_name_property(self):
+        self.assertEqual(self.study_design.name, 'Study Design')
+        self.study_design.name = TEST_STUDY_DESIGN_NAME
+        self.assertEqual(self.study_design.name, TEST_STUDY_DESIGN_NAME)
+        with self.assertRaises(ISAModelAttributeError, msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
+            self.study_design.name = 128
+        self.assertEqual(ex_cm.exception.args[0], StudyDesign.NAME_PROPERTY_ASSIGNMENT_ERROR)
+
+    def test_study_arms_property(self):
+        pass
+
+    def test_add_study_arm_00(self):
+        self.study_design.add_study_arm(self.first_arm)
+        self.assertIn(self.first_arm, self.study_design.study_arms, 'The Study Arm has been correctly added to the '
+                                                                    'StudyDesign')
+
+    def test_add_study_arm_01(self):
+        self.study_design.add_study_arm(self.third_arm)
+        self.assertIn(self.third_arm, self.study_design.study_arms, 'The Study Arm has been correctly added to the '
+                                                                    'StudyDesign')
+        self.study_design.add_study_arm(self.second_arm)
+        self.assertIn(self.second_arm, self.study_design.study_arms, 'The Study Arm has been correctly added to the '
+                                                                    'StudyDesign')
+        with self.assertRaises(ISAModelValueError,
+                               msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
+            self.study_design.add_study_arm(self.arm_same_name_as_third)
+        self.assertEqual(ex_cm.exception.args[0], StudyDesign.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
+        self.assertEqual(self.study_design.study_arms, [self.second_arm, self.third_arm])
+        self.study_design.add_study_arm(self.first_arm)
+        self.assertEqual(self.study_design.study_arms, [self.second_arm, self.first_arm, self.third_arm])
+
+    def test_add_study_arm_02(self):
+        with self.assertRaises(ISAModelTypeError,
+                               msg='A Treatment cannot be added to a StudyDesign, only StudyArms') as ex_cm:
+            self.study_design.add_study_arm(self.second_treatment)
+        self.assertIn(StudyDesign.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
+
+    def test_treatments_property(self):
+        pass
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -1346,48 +1473,6 @@ class SampleAssayPlanTest(unittest.TestCase):
             term='organism part'), value=OntologyAnnotation(term='blood'))
         self.assertRaises(ValueError, self.plan.add_assay_plan_record,
                           blood_sample_type, ngs_assay_type)
-
-
-class StudyDesignTest(unittest.TestCase):
-
-    def setUp(self):
-        self.design = StudyDesign()
-        self.agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
-        self.intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
-        self.duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
-        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-            FactorValue(factor_name=self.agent, value='crack'),
-            FactorValue(factor_name=self.intensity, value='low'),
-            FactorValue(factor_name=self.duration, value='medium')
-        ))
-        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-            FactorValue(factor_name=self.agent, value='crack'),
-            FactorValue(factor_name=self.intensity, value='high'),
-            FactorValue(factor_name=self.duration, value='medium')
-        ))
-        # self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
-        self.test_arm = StudyArm()
-        self.sample_plan = SampleAssayPlan(group_size=10)
-
-    def test_sequences_plan_property(self):
-        # other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
-        other_test_arm = StudyArm()
-        other_sample_plan = SampleAssayPlan(group_size=12)
-        """
-        sequences_plan = {
-            self.test_sequence: self.sample_plan,
-            other_test_sequence: other_sample_plan
-        }
-        """
-        self.design.sequences_plan = sequences_plan
-        self.assertEqual(self.design.sequences_plan, sequences_plan)
-
-    def test_sequences_plan_properties(self):
-        not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
-        self.assertRaises(TypeError, self.design.study_arms, not_a_sequences_plan_object)
-
-    def test_sample_types_property(self):
-        pass
 
 
 class IsaModelObjectFactoryTest(unittest.TestCase):

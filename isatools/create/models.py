@@ -12,11 +12,11 @@ from collections import OrderedDict
 from numbers import Number
 import copy
 from isatools.model import *
+from isatools.errors import *
 from abc import ABC, abstractmethod
 import inspect
 import pdb
 
-from isatools.errors import ISAModelValueError, ISAModelAttributeError
 
 
 log = logging.getLogger('isatools')
@@ -258,7 +258,7 @@ class StudyCell(object):
     """
 
     def __init__(self, name, elements=None):
-        self.__name = name if isinstance(name, str) else None # FIXME can we allow name to be none?
+        self.__name = name if isinstance(name, str) else None   # FIXME can we allow name to be none?
         self.__elements = list()
         if elements is not None:
             self.elements = elements
@@ -459,9 +459,9 @@ class StudyArm(object):
                'name={name}, ' \
                'group_size={group_size}, ' \
                'cells={cells}, ' \
-               'sample_assay_plans={sample_assay_plans)'.format(name=self.name, group_size=self.group_size,
-                                                                cells=self.cells,
-                                                                sample_assay_plans=self.sample_assay_plans)
+               'sample_assay_plans={sample_assay_plans})'.format(name=self.name, group_size=self.group_size,
+                                                                 cells=self.cells,
+                                                                 sample_assay_plans=self.sample_assay_plans)
 
     def __hash__(self):
         return hash(repr(self))
@@ -572,51 +572,83 @@ class StudyArm(object):
 
 
 class StudyDesign(object):
+
+    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
+    STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
+    ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
+    ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
+
     """
     A class representing a study design, which is composed of a collection of
     study arms.
+    StudyArms of different lengths (i.e. different number of cells) are allowed.
     """
 
-    def __init__(self, study_arms=None):
-        if study_arms is None:
-            self.__study_arms = set()
-        else:
+    def __init__(self, name='Study Design', study_arms=None):
+        """
+        
+        :param study_arms: Iterable
+        """
+        self.__study_arms = set()
+        self.__name = name if isinstance(name, str) else 'Study Design'
+        if study_arms:
             self.study_arms = study_arms
 
     @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise ISAModelAttributeError(self.NAME_PROPERTY_ASSIGNMENT_ERROR)
+        self.__name = name
+
+    @property
     def study_arms(self):
-        return self.__study_arms
+        return sorted(self.__study_arms, key=lambda arm: arm.name)
 
     @study_arms.setter
     def study_arms(self, study_arms):
         if not isinstance(study_arms, Iterable):
-            raise TypeError('study_arms must be an iterable')
-        for arm in study_arms:
-            self.add_study_arm(arm)
+            raise ISAModelAttributeError(self.STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR)
+        try:
+            for arm in study_arms:
+                self.add_study_arm(arm)
+        except (ISAModelTypeError, ISAModelValueError) as e:
+            raise ISAModelAttributeError(e.args[0])
 
     def add_study_arm(self, study_arm):
-        if isinstance(study_arm, StudyArm):
-            self.__study_arms.add(study_arm)
-        else:
-            raise TypeError('Not a valid study arm: {0}'.format(study_arm))
+        """
+        add a StudyArm object to the study_arm set. 
+        Arms of diff 
+        :param study_arm: StudyArm
+        """
+        if not isinstance(study_arm, StudyArm):
+            raise ISAModelTypeError('{0}: {1}'.format(self.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, study_arm))
+        if any({arm for arm in self.study_arms if arm.name == study_arm.name}):
+            raise ISAModelValueError('{0}'.format(self.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR))
+        self.__study_arms.add(study_arm)
 
     @property
     def treatments(self):
         treatment_set = set()
-        for arm in self.study_arms:
-            treatment_set = treatment_set.union(arm.elements)
         return treatment_set
 
     def __repr__(self):
         return 'isatools.create.models.StudyDesign(' \
-               'study_arms={list_of_arm_names}' \
-               ')'.format(list_of_arm_names=[x.name for x in self.study_arms])
+               'name={name}, ' \
+               'study_arms={study_arms}' \
+               ')'.format(study_arms=self.study_arms, name=self.name)
+
+    def __hash__(self):
+        return hash(repr(self))
 
     def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
+        return isinstance(other, StudyDesign) and self.name == other.name and self.study_arms == other.study_arms
 
     def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
+        return not self == other
 
 
 class TreatmentFactory(object):
