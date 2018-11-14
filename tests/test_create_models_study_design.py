@@ -1013,6 +1013,14 @@ class StudyDesignTest(unittest.TestCase):
     def test_treatments_property(self):
         pass
 
+    def test_get_epoch_0th_index(self):
+        self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
+        epoch_cells = self.study_design.get_epoch(0)
+        self.assertEqual(type(epoch_cells), list)
+        self.assertEqual(len(epoch_cells), len(self.study_design.study_arms))
+        for cell in epoch_cells:
+            self.assertEqual(cell, self.cell_screen)
+
 
 class TreatmentFactoryTest(unittest.TestCase):
 

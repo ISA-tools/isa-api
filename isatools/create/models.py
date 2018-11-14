@@ -635,6 +635,14 @@ class StudyDesign(object):
         treatment_set = set()
         return treatment_set
 
+    def get_epoch(self, index=0):
+        """
+        Slices the StudyDesign at a specific epoch
+        :param index: int the epoch idex
+        :return: list containing StudyCells one per arm, sliced at that epoch
+        """
+        return [arm.cells[index] if len(arm.cells) > index else None for arm in self.study_arms]
+
     def __repr__(self):
         return 'isatools.create.models.StudyDesign(' \
                'name={name}, ' \
