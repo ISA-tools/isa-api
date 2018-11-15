@@ -19,3 +19,9 @@ class ISAModelValueError(ValueError):
     """
 
 
+class ISAModelIndexError(IndexError):
+    """
+    If an index is out of bounds
+    """
+
+
