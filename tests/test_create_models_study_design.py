@@ -2,8 +2,11 @@ import unittest
 from collections import OrderedDict
 
 from isatools.model import *
+from isatools.errors import *
+
 from isatools.create.models import *
-from isatools.errors import ISAModelAttributeError, ISAModelValueError
+
+import json
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -641,6 +644,65 @@ class StudyCellTest(unittest.TestCase):
         self.cell.elements = [self.follow_up]
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
+
+class StudyCellEncoderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
+        self.first_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.fourth_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.screen = NonTreatment(element_type=SCREEN,
+                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.run_in = NonTreatment(element_type=RUN_IN,
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.washout = NonTreatment(element_type=WASHOUT,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
+                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
+                                                          duration_unit=FACTORS_2_UNIT)
+        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
+        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
+        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
+                                             elements=[{self.first_treatment, self.second_treatment,
+                                                        self.fourth_treatment}, self.washout, self.second_treatment])
+        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
+                                                    elements=[self.first_treatment, self.washout, {
+                                                        self.second_treatment,
+                                                        self.fourth_treatment
+                                                    }, self.washout, self.third_treatment, self.washout])
+        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+
+    def test_encode_single_treatment_cell(self):
+        json_cell = json.dumps(self.cell_single_treatment, cls=StudyCellEncoder)
+        self.assertEqual(json_cell, '{"name": "SINGLE TREATMENT", "elements": ['
+                                    '{ "__treatment__": true, "type": "chemical intervention", '
+                                    'factor_values: [{"factor": {"name": "AGENT", "type": {"term": "perturbation agent"}}, "value": "nitroglycerin" }, '
+                                    '{"factor": {"name": "INTENSITY", "type": {"term": "intensity"}}, "value": 5, "unit": {"term": "kg/m^3"}}, '
+                                    '{"factor_name": {"name": "DURATION", "type": {"term": "time"}}, "value": 100, "unit": {"term": "s"}}]'
+                                    '}'
+                                    ']}')
+
+
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
@@ -961,6 +1023,11 @@ class StudyDesignTest(unittest.TestCase):
             (self.cell_multi_elements_padded, self.sample_assay_plan),
             (self.cell_follow_up, self.sample_assay_plan)
         ]))
+        self.third_arm_no_run_in = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=20, arm_map=OrderedDict([
+            (self.cell_screen, None),
+            (self.cell_multi_elements_padded, self.sample_assay_plan),
+            (self.cell_follow_up, self.sample_assay_plan)
+        ]))
         self.arm_same_name_as_third = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_01, self.sample_assay_plan),
             (self.cell_follow_up, self.sample_assay_plan)
@@ -1010,16 +1077,42 @@ class StudyDesignTest(unittest.TestCase):
             self.study_design.add_study_arm(self.second_treatment)
         self.assertIn(StudyDesign.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
 
-    def test_treatments_property(self):
-        pass
+    def test_treatments_property_00(self):
+        self.study_design.study_arms = [self.first_arm, self.second_arm]
+        treatment_set = self.study_design.treatments
+        self.assertEqual(treatment_set, {self.first_treatment, self.second_treatment, self.fourth_treatment})
 
-    def test_get_epoch_0th_index(self):
+    def test_treatments_property_01(self):
+        self.study_design.study_arms = [self.first_arm, self.third_arm]
+        treatment_set = self.study_design.treatments
+        self.assertEqual(treatment_set, {self.first_treatment, self.second_treatment,
+                                         self.third_treatment, self.fourth_treatment})
+
+    def test_get_epoch_ith_index(self):
         self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
-        epoch_cells = self.study_design.get_epoch(0)
+        for i in range(4):
+            epoch_cells = self.study_design.get_epoch(i)
+            self.assertEqual(type(epoch_cells), list)
+            self.assertEqual(len(epoch_cells), len(self.study_design.study_arms))
+            self.assertEqual(epoch_cells[0], self.second_arm.cells[i])
+            self.assertEqual(epoch_cells[1], self.first_arm.cells[i])
+            self.assertEqual(epoch_cells[2], self.third_arm.cells[i])
+
+    def test_get_epoch_4th_index_shorter_arm(self):
+        self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm_no_run_in]
+        epoch_cells = self.study_design.get_epoch(3)
         self.assertEqual(type(epoch_cells), list)
         self.assertEqual(len(epoch_cells), len(self.study_design.study_arms))
-        for cell in epoch_cells:
-            self.assertEqual(cell, self.cell_screen)
+        self.assertEqual(epoch_cells[0], self.second_arm.cells[3])
+        self.assertEqual(epoch_cells[1], self.first_arm.cells[3])
+        self.assertEqual(epoch_cells[2], None)
+
+    def test_get_epoch_out_of_bounds_index(self):
+        self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
+        with self.assertRaises(ISAModelIndexError, msg='An index error is reaised if the epoch is out of bounds '
+                                                       'for all the StudyArms.') as ex_cm:
+            epoch_cells = self.study_design.get_epoch(4)
+        self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
 
 
 class TreatmentFactoryTest(unittest.TestCase):

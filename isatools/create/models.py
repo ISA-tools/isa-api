@@ -184,12 +184,10 @@ class Treatment(Element):
             self.__factor_values = set()
         else:
             self.factor_values = factor_values
-        self.__group_size = group_size
-    
+
     def __repr__(self):
-        return 'isatools.create.models.Treatment(type={0}, factor_values={1}, ' \
-               'group_size={2})'.format(self.type, sorted(
-                self.factor_values, key=lambda x: repr(x)), self.group_size)
+        return 'isatools.create.models.Treatment(type={0}, factor_values={1}'.format(
+            self.type, sorted(self.factor_values, key=lambda x: repr(x)))
 
     def __hash__(self):
         return hash(repr(self))
@@ -197,25 +195,10 @@ class Treatment(Element):
     def __eq__(self, other):
         return isinstance(other, Treatment) \
                and self.type == other.type \
-               and self.factor_values == other.factor_values \
-               and self.group_size == other.group_size
+               and self.factor_values == other.factor_values
 
     def __ne__(self, other):
         return not self == other
-
-    # TODO move group_size to StudyArm
-    @property
-    def group_size(self):
-        return self.__group_size
-
-    @group_size.setter
-    def group_size(self, group_size):
-        if not isinstance(group_size, int):
-            raise TypeError('{} is not a valid value for group_size. Please '
-                            'provide an integer.'.format(group_size))
-        if group_size < 0:
-            raise ValueError('group_size must be greater than 0.')
-        self.__group_size = group_size
 
     @property
     def type(self):
@@ -431,6 +414,13 @@ class StudyCell(object):
         """
 
 
+class StudyCellEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, StudyCell):
+            return {}
+
+
 class StudyArm(object):
     """
     Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
@@ -577,6 +567,7 @@ class StudyDesign(object):
     STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
     ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
     ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
+    GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the bounds of the StudyDesign.'
 
     """
     A class representing a study design, which is composed of a collection of
@@ -632,8 +623,7 @@ class StudyDesign(object):
 
     @property
     def treatments(self):
-        treatment_set = set()
-        return treatment_set
+        return {treatment for arm in self.study_arms for treatment in arm.treatments}
 
     def get_epoch(self, index=0):
         """
@@ -641,7 +631,10 @@ class StudyDesign(object):
         :param index: int the epoch idex
         :return: list containing StudyCells one per arm, sliced at that epoch
         """
-        return [arm.cells[index] if len(arm.cells) > index else None for arm in self.study_arms]
+        epoch_cells = [arm.cells[index] if len(arm.cells) > index else None for arm in self.study_arms]
+        if all([cell is None for cell in epoch_cells]):
+            raise ISAModelIndexError(self.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
+        return epoch_cells
 
     def __repr__(self):
         return 'isatools.create.models.StudyDesign(' \
@@ -706,14 +699,13 @@ class TreatmentFactory(object):
         Treatments
         """
         factor_values = [
-            [ FactorValue(
+            [FactorValue(
                 factor_name=factor_name, value=value, unit=None
               ) for value in values]
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
-            return { Treatment(treatment_type=self.intervention_type,
-                              factor_values=treatment_factors)
+            return {Treatment(treatment_type=self.intervention_type, factor_values=treatment_factors)
                     for treatment_factors in itertools.product(*factor_values)}
         else:
             return set()
@@ -3209,6 +3201,7 @@ class SampleAssayPlanDecoder(object):
         return sample_assay_plan
 
 
+"""
 class StudyEpochEncoder(json.JSONEncoder):
 
     def default(self, o):
@@ -3221,7 +3214,7 @@ class StudyEpochDecoder(object):
     pass
 
 
-"""
+
 class TreatmentSequenceEncoder(json.JSONEncoder):
 
     def get_ontology_annotation(self, ontology_annotation):
