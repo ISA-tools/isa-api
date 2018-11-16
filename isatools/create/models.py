@@ -140,7 +140,7 @@ class NonTreatment(Element):
 
     @type.setter
     def type(self, element_type):
-        if element_type in INTERVENTIONS.values():
+        if element_type in ELEMENT_TYPES.values():
             self.__type = element_type
         else:
             raise ValueError('invalid treatment type provided: ')
@@ -416,9 +416,36 @@ class StudyCell(object):
 
 class StudyCellEncoder(json.JSONEncoder):
 
+    def factor_value(self, obj):
+        if isinstance(obj, FactorValue):
+            return {
+                "value": obj.value
+            }
+
+    def element(self, obj):
+        if isinstance(obj, Treatment):
+            return {
+                "__treatment": True,
+                "type": obj.type,
+                "factorValues": [self.factor_value(fv) for fv in obj.factor_values]
+            }
+        if isinstance(obj, NonTreatment):
+            return {
+                "__treatment": False,
+                "type": obj.type,
+                "factorValues": [self.factor_value(fv) for fv in obj.factor_values]
+            }
+        if isinstance(obj, set):
+            return {
+                "concomitantTreatments": [self.element(el) for el in obj]
+            }
+
     def default(self, obj):
         if isinstance(obj, StudyCell):
-            return {}
+            return {
+                "name": obj.name,
+                "elements": [self.element(el) for el in obj.elements]
+            }
 
 
 class StudyArm(object):

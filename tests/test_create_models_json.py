@@ -16,34 +16,101 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
     else:
         return o
 
+NAME = 'name'
+
+FACTORS_0_VALUE = 'nitroglycerin'
+FACTORS_0_VALUE_ALT = 'alchohol'
+FACTORS_0_VALUE_THIRD = 'water'
+FACTORS_1_VALUE = 5
+FACTORS_1_UNIT = OntologyAnnotation(term='kg/m^3')
+FACTORS_2_VALUE = 100.0
+FACTORS_2_VALUE_ALT = 50.0
+FACTORS_2_UNIT = OntologyAnnotation(term='s')
+
+TEST_EPOCH_0_NAME = 'test epoch 0'
+TEST_EPOCH_1_NAME = 'test epoch 1'
+TEST_EPOCH_2_NAME = 'test epoch 2'
+
+TEST_STUDY_ARM_NAME_00 = 'test arm'
+TEST_STUDY_ARM_NAME_01 = 'another arm'
+TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+
+TEST_STUDY_DESIGN_NAME = 'test study design'
+
+TEST_EPOCH_0_RANK = 0
+
+SCREEN_DURATION_VALUE = 100
+FOLLOW_UP_DURATION_VALUE = 5 * 366
+WASHOUT_DURATION_VALUE = 30
+DURATION_UNIT = OntologyAnnotation(term='day')
+
+
+class StudyCellEncoderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
+        self.first_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.fourth_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.screen = NonTreatment(element_type=SCREEN,
+                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.run_in = NonTreatment(element_type=RUN_IN,
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.washout = NonTreatment(element_type=WASHOUT,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
+                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
+                                                          duration_unit=FACTORS_2_UNIT)
+        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
+        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
+        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
+                                             elements=[{self.first_treatment, self.second_treatment,
+                                                        self.fourth_treatment}, self.washout, self.second_treatment])
+        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
+                                                    elements=[self.first_treatment, self.washout, {
+                                                        self.second_treatment,
+                                                        self.fourth_treatment
+                                                    }, self.washout, self.third_treatment, self.washout])
+        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+
+    def test_encode_single_treatment_cell(self):
+        actual_json_cell = json.dumps(self.cell_single_treatment, cls=StudyCellEncoder)
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'single-treatment-cell.json')) as expected_json_fp:
+            expected_json_cell = json.dumps(json.load(expected_json_fp))
+        self.assertEqual(actual_json_cell, expected_json_cell)
+
+    def test_encode_multi_treatment_cell(self):
+        json_cell = json.dumps(self.cell_multi_elements_padded, cls=StudyCellEncoder)
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'multi-treatment-padded-cell.json')) as expected_json_fp:
+            expected_json_cell = json.dumps(json.load(expected_json_fp))
+        self.assertEqual(json_cell, expected_json_cell)
+
 
 class EncodeToJsonTests(unittest.TestCase):
 
     def setUp(self):
-        self.plan = SampleAssayPlan()
-        self.plan.group_size = 20
-        self.plan.add_sample_type('liver')
-        self.plan.add_sample_type('tissue')
-        self.plan.add_sample_plan_record('liver', 3)
-        self.plan.add_sample_plan_record('tissue', 5)
-
-        self.top_mods = DNAMicroAssayTopologyModifiers()
-        self.top_mods.technical_replicates = 2
-        self.top_mods.array_designs = {'A-AFFY-27', 'A-AFFY-28'}
-
-        self.assay_type = AssayType(measurement_type='genome sequencing',
-                                    technology_type='DNA microarray')
-
-        factory = TreatmentFactory(intervention_type=INTERVENTIONS['CHEMICAL'],
-                                   factors=BASE_FACTORS)
-        factory.add_factor_value(BASE_FACTORS[0], 'calpol')
-        factory.add_factor_value(BASE_FACTORS[0], 'no agent')
-        factory.add_factor_value(BASE_FACTORS[1], 'low')
-        factory.add_factor_value(BASE_FACTORS[1], 'high')
-        factory.add_factor_value(BASE_FACTORS[2], 'short')
-        factory.add_factor_value(BASE_FACTORS[2], 'long')
-        self.treatment_sequence = TreatmentSequence(
-            ranked_treatments=factory.compute_full_factorial_design())
+        pass
 
     @unittest.skip(
         'Serialization implementation incomplete (out of sync with model)')

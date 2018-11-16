@@ -645,64 +645,6 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
 
-class StudyCellEncoderTest(unittest.TestCase):
-
-    def setUp(self):
-        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
-        self.first_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
-        ))
-        self.second_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
-            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
-        ))
-        self.third_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
-            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
-        ))
-        self.fourth_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
-            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
-        ))
-        self.screen = NonTreatment(element_type=SCREEN,
-                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.run_in = NonTreatment(element_type=RUN_IN,
-                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.washout = NonTreatment(element_type=WASHOUT,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
-                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
-        self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
-                                                          duration_unit=FACTORS_2_UNIT)
-        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
-        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
-        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
-        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
-                                             elements=[{self.first_treatment, self.second_treatment,
-                                                        self.fourth_treatment}, self.washout, self.second_treatment])
-        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
-                                                    elements=[self.first_treatment, self.washout, {
-                                                        self.second_treatment,
-                                                        self.fourth_treatment
-                                                    }, self.washout, self.third_treatment, self.washout])
-        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-
-    def test_encode_single_treatment_cell(self):
-        json_cell = json.dumps(self.cell_single_treatment, cls=StudyCellEncoder)
-        self.assertEqual(json_cell, '{"name": "SINGLE TREATMENT", "elements": ['
-                                    '{ "__treatment__": true, "type": "chemical intervention", '
-                                    'factor_values: [{"factor": {"name": "AGENT", "type": {"term": "perturbation agent"}}, "value": "nitroglycerin" }, '
-                                    '{"factor": {"name": "INTENSITY", "type": {"term": "intensity"}}, "value": 5, "unit": {"term": "kg/m^3"}}, '
-                                    '{"factor_name": {"name": "DURATION", "type": {"term": "time"}}, "value": 100, "unit": {"term": "s"}}]'
-                                    '}'
-                                    ']}')
-
-
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
