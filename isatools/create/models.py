@@ -416,7 +416,8 @@ class StudyCell(object):
 
 class StudyCellEncoder(json.JSONEncoder):
 
-    def ontology_annotation(self, obj):
+    @staticmethod
+    def ontology_annotation(obj):
         if isinstance(obj, OntologyAnnotation):
             return {
                 "term": obj.term
@@ -425,16 +426,19 @@ class StudyCellEncoder(json.JSONEncoder):
     def study_factor(self, obj):
         if isinstance(obj, StudyFactor):
             return {
-                "name": obj.name
+                "name": obj.name,
                 "type": self.ontology_annotation(obj.factor_type)
             }
 
     def factor_value(self, obj):
         if isinstance(obj, FactorValue):
-            return {
+            res = {
+                "factor": self.study_factor(obj.factor_name),
                 "value": obj.value
-                "factor": self.study_factor(obj.factor_name)
             }
+            if obj.unit:
+                res["unit"] = self.ontology_annotation(obj.unit)
+            return res
 
     def element(self, obj):
         if isinstance(obj, Treatment):

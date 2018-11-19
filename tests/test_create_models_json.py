@@ -93,18 +93,19 @@ class StudyCellEncoderTest(unittest.TestCase):
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
 
     def test_encode_single_treatment_cell(self):
-        actual_json_cell = json.dumps(self.cell_single_treatment, cls=StudyCellEncoder)
+        actual_json_cell = json.loads(json.dumps(self.cell_single_treatment, cls=StudyCellEncoder))
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'single-treatment-cell.json')) as expected_json_fp:
-            expected_json_cell = json.dumps(json.load(expected_json_fp))
-        self.assertEqual(actual_json_cell, expected_json_cell)
+            expected_json_cell = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_cell), ordered(expected_json_cell))
 
     def test_encode_multi_treatment_cell(self):
-        json_cell = json.dumps(self.cell_multi_elements_padded, cls=StudyCellEncoder)
+        self.maxDiff = None
+        json_cell = json.loads(json.dumps(self.cell_multi_elements_padded, cls=StudyCellEncoder))
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
-            expected_json_cell = json.dumps(json.load(expected_json_fp))
-        self.assertEqual(json_cell, expected_json_cell)
+            expected_json_cell = json.load(expected_json_fp)
+        self.assertEqual(ordered(json_cell), ordered(expected_json_cell))
 
 
 class EncodeToJsonTests(unittest.TestCase):
