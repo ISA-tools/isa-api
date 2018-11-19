@@ -166,19 +166,19 @@ class Treatment(Element):
     model v1) and a treatment type
     A Treatment is an extension of the basic Element
     """
-    def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'],
+    def __init__(self, element_type=INTERVENTIONS['CHEMICAL'],
                  factor_values=None, group_size=0):
         """
         Creates a new Treatment
-        :param treatment_type: treatment type
+        :param element_type: treatment type
         :param factor_values: set of isatools.model.v1.FactorValue
         :param group_size: number of subjects in this group
         """
         super(Treatment, self).__init__()
-        if treatment_type not in INTERVENTIONS.values():
+        if element_type not in INTERVENTIONS.values():
             raise ValueError('invalid treatment type provided: ')
 
-        self.__type = treatment_type
+        self.__type = element_type
 
         if factor_values is None:
             self.__factor_values = set()
@@ -417,11 +417,25 @@ class StudyCell(object):
 class StudyCellEncoder(json.JSONEncoder):
 
     @staticmethod
-    def ontology_annotation(obj):
-        if isinstance(obj, OntologyAnnotation):
+    def ontology_source(obj):
+        if isinstance(obj, OntologySource):
             return {
+                "name": obj.name,
+                "file": obj.file,
+                "version": obj.version,
+                "description": obj.description
+            }
+
+    def ontology_annotation(self, obj):
+        if isinstance(obj, OntologyAnnotation):
+            res = {
                 "term": obj.term
             }
+            if obj.term_accession:
+                res["termAccession"] = obj.term_accession
+            if obj.term_source:
+                res["termSource"] = self.ontology_source(obj.term_source)
+            return res
 
     def study_factor(self, obj):
         if isinstance(obj, StudyFactor):
@@ -464,6 +478,35 @@ class StudyCellEncoder(json.JSONEncoder):
                 "name": obj.name,
                 "elements": [self.element(el) for el in obj.elements]
             }
+
+
+class StudyCellDecoder(object):
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def loads_factor_value(factor_value_dict):
+        unit = OntologyAnnotation(term=factor_value_dict["unit"]["term"]) if "unit" in factor_value_dict else None
+        study_factor_type = OntologyAnnotation(term=factor_value_dict["factor"]["type"]["term"])
+        study_factor = StudyFactor(name=factor_value_dict["factor"]["name"], factor_type=study_factor_type)
+        return FactorValue(factor_name=study_factor, value=factor_value_dict["value"], unit=unit)
+
+    def loads_element(self, element_dict):
+        print(element_dict)
+        if "concomitantTreatments" in element_dict:
+            return {self.loads_element(el_dict) for el_dict in element_dict["concomitantTreatments"]}
+        if element_dict["__treatment"] is True:
+            factor_values = [self.loads_factor_value(factor_value_dict)
+                             for factor_value_dict in element_dict["factorValues"]]
+            return Treatment(element_type=element_dict["type"], factor_values=factor_values)
+
+    def loads(self, json_text):
+        json_dict = json.loads(json_text)
+        cell = StudyCell(name=json_dict["name"])
+        for element in json_dict["elements"]:
+            cell.insert_element(self.loads_element(element))
+        return cell
 
 
 class StudyArm(object):
@@ -750,7 +793,7 @@ class TreatmentFactory(object):
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
-            return {Treatment(treatment_type=self.intervention_type, factor_values=treatment_factors)
+            return {Treatment(element_type=self.intervention_type, factor_values=treatment_factors)
                     for treatment_factors in itertools.product(*factor_values)}
         else:
             return set()

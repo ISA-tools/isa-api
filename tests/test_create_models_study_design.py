@@ -1100,92 +1100,92 @@ class TreatmentFactoryTest(unittest.TestCase):
 
         full_factorial = self.factory.compute_full_factorial_design()
         self.assertEqual(full_factorial, {
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='cocaine'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='crack'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
-            Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
                 FactorValue(factor_name=agent, value='aether'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
@@ -1531,12 +1531,12 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         self.intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
         self.duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
-        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+        self.first_treatment = Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
             FactorValue(factor_name=self.agent, value='crack'),
             FactorValue(factor_name=self.intensity, value='low'),
             FactorValue(factor_name=self.duration, value='medium')
         ))
-        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+        self.second_treatment = Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
             FactorValue(factor_name=self.agent, value='crack'),
             FactorValue(factor_name=self.intensity, value='high'),
             FactorValue(factor_name=self.duration, value='medium')

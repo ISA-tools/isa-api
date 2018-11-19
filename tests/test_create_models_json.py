@@ -44,8 +44,7 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
-
-class StudyCellEncoderTest(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
         self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
@@ -92,6 +91,12 @@ class StudyCellEncoderTest(unittest.TestCase):
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
 
+
+class StudyCellEncoderTest(BaseTestCase):
+
+    def setUp(self):
+        return super(StudyCellEncoderTest, self).setUp()
+
     def test_encode_single_treatment_cell(self):
         actual_json_cell = json.loads(json.dumps(self.cell_single_treatment, cls=StudyCellEncoder))
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
@@ -106,6 +111,28 @@ class StudyCellEncoderTest(unittest.TestCase):
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
             expected_json_cell = json.load(expected_json_fp)
         self.assertEqual(ordered(json_cell), ordered(expected_json_cell))
+
+
+class StudyCellDecoderTest(BaseTestCase):
+
+    def setUp(self):
+        return super(StudyCellDecoderTest, self).setUp()
+
+    def test_decode_single_treatment_cell(self):
+        decoder = StudyCellDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'single-treatment-cell.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_cell = decoder.loads(json_text)
+        self.assertEqual(self.cell_single_treatment, actual_cell)
+
+    def test_decode_multi_treatment_cell(self):
+        decoder = StudyCellDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'multi-treatment-padded-cell.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_cell = decoder.loads(json_text)
+        self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
 
 class EncodeToJsonTests(unittest.TestCase):
