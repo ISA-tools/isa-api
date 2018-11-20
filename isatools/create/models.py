@@ -167,7 +167,7 @@ class Treatment(Element):
     A Treatment is an extension of the basic Element
     """
     def __init__(self, element_type=INTERVENTIONS['CHEMICAL'],
-                 factor_values=None, group_size=0):
+                 factor_values=None):
         """
         Creates a new Treatment
         :param element_type: treatment type
@@ -217,13 +217,12 @@ class Treatment(Element):
 
     @factor_values.setter
     def factor_values(self, factor_values=()):
-        if isinstance(factor_values, tuple) \
+        if isinstance(factor_values, (tuple, list, set)) \
                 and all([isinstance(factor_value, FactorValue)
                          for factor_value in factor_values]):
             self.__factor_values = factor_values
         else:
-            raise TypeError('Data supplied is not correctly formatted for '
-                            'Treatment')
+            raise ISAModelAttributeError('Data supplied is not correctly formatted for Treatment')
 
     @property
     def duration(self):
@@ -235,7 +234,7 @@ class StudyCell(object):
     """
     A StudyCell consists of a set of Elements who can be Treatment or NonTreatment Elements
     Under the current design all elements in a a cell are intended to be concomitant
-    PROBLEM: what if different elements within a cell have different durations?
+    PROBLEM: what if different concomitant treatments within a cell have different durations?
     ANSWER: this must not be allowed
     PROBLEM: only allow concomitant treatments: concomitant non-treatments make no sense
     """
@@ -353,6 +352,12 @@ class StudyCell(object):
         return not bool(len(list(not_allowed_elements)))
 
     def _concomitant_treatments_check(self, element_set):
+        """
+        This method checks that the duration value and unit are the same for all treatments within
+        the provided element_set
+        :param element_set: set
+        :return: bool
+        """
         if not self._treatment_check(self.elements):
             return False
         if any(not isinstance(el, Treatment) for el in element_set):
@@ -367,9 +372,9 @@ class StudyCell(object):
         :param element_index (int)
         Rules to insert an element or a set of elements:
         - Screen NonTreatments must either be in a 1-element StudyCell or in a 2-element if followed by a Run-in
-        - Run-in NonTreatments must either be in a 1-element StudyCell or in a 2-element if preceeded by a Screen
+        - Run-in NonTreatments must either be in a 1-element StudyCell or in a 2-element if preceded by a Screen
         - A Follow-up NonTreatment must be in a 1-element StudyCell
-        - Rest NonTreatments cannot be chained one after the other
+        - WAshout NonTreatments cannot be chained one after the other
         - Concomitant Treatments (if provided in a set) must have the same duration 
         :return: 
         """
@@ -603,7 +608,7 @@ class StudyArm(object):
             cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a 
             NonTreatment of any type as the latest element
         - To insert a cell containing a FOLLOW-UP the arm_map *must not* contain already a FOLLOW-UP cell
-            Moreover, this cell cannot be inserted immediately afer a SCREEN or a RUN-IN cell
+            Moreover, this cell cannot be inserted immediately after a SCREEN or a RUN-IN cell
         :param cell: (StudyCell)
         :param sample_assay_plan: (SampleAssayPlan/None) 
         :return: 
@@ -716,7 +721,7 @@ class StudyDesign(object):
     def get_epoch(self, index=0):
         """
         Slices the StudyDesign at a specific epoch
-        :param index: int the epoch idex
+        :param index: int the epoch index
         :return: list containing StudyCells one per arm, sliced at that epoch
         """
         epoch_cells = [arm.cells[index] if len(arm.cells) > index else None for arm in self.study_arms]

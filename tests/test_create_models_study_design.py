@@ -507,7 +507,7 @@ class StudyCellTest(unittest.TestCase):
                           'A RUN-IN cannot be added to a cell with a FOLLOW-UP')
 
     def test_insert_element_treatment(self):
-        self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
+        self.assertEqual(self.cell.elements, list(), 'The initialized elements list is empty')
         self.cell.insert_element(self.first_treatment)
         self.assertEqual(self.cell.elements, [self.first_treatment])
         self.cell.insert_element(self.second_treatment)

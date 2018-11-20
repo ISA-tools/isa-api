@@ -44,6 +44,7 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
+
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -124,7 +125,21 @@ class StudyCellDecoderTest(BaseTestCase):
                                'single-treatment-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
-        self.assertEqual(self.cell_single_treatment, actual_cell)
+        print(self.cell_single_treatment)
+        print('\n')
+        print(actual_cell)
+        self.assertEqual(self.cell_single_treatment.name, actual_cell.name)
+        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[0],
+                         actual_cell.elements[0].factor_values[0])
+        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[1],
+                         actual_cell.elements[0].factor_values[1])
+        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[2],
+                         actual_cell.elements[0].factor_values[2])
+        self.assertEqual(self.cell_single_treatment.elements[0].type, actual_cell.elements[0].type)
+        self.assertEqual(self.cell_single_treatment.elements[0].factor_values,
+                         actual_cell.elements[0].factor_values)
+        # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
+        # self.assertEqual(self.cell_single_treatment, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
         decoder = StudyCellDecoder()
