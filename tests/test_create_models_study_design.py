@@ -164,6 +164,12 @@ class TreatmentTest(unittest.TestCase):
         self.assertNotEqual(self.treatment, other_treatment)
         self.assertNotEqual(hash(self.treatment), hash(other_treatment))
 
+    def test_factor_values_property(self):
+        self.assertIsInstance(self.treatment.factor_values, set)
+        self.assertEqual(self.treatment.factor_values, {FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)})
+
 
 class StudyCellTest(unittest.TestCase):
 

@@ -128,18 +128,8 @@ class StudyCellDecoderTest(BaseTestCase):
         print(self.cell_single_treatment)
         print('\n')
         print(actual_cell)
-        self.assertEqual(self.cell_single_treatment.name, actual_cell.name)
-        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[0],
-                         actual_cell.elements[0].factor_values[0])
-        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[1],
-                         actual_cell.elements[0].factor_values[1])
-        self.assertEqual(self.cell_single_treatment.elements[0].factor_values[2],
-                         actual_cell.elements[0].factor_values[2])
-        self.assertEqual(self.cell_single_treatment.elements[0].type, actual_cell.elements[0].type)
-        self.assertEqual(self.cell_single_treatment.elements[0].factor_values,
-                         actual_cell.elements[0].factor_values)
         # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
-        # self.assertEqual(self.cell_single_treatment, actual_cell)
+        self.assertEqual(self.cell_single_treatment, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
         decoder = StudyCellDecoder()

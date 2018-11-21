@@ -220,7 +220,7 @@ class Treatment(Element):
         if isinstance(factor_values, (tuple, list, set)) \
                 and all([isinstance(factor_value, FactorValue)
                          for factor_value in factor_values]):
-            self.__factor_values = factor_values
+            self.__factor_values = set(factor_values)
         else:
             raise ISAModelAttributeError('Data supplied is not correctly formatted for Treatment')
 
@@ -505,12 +505,21 @@ class StudyCellDecoder(object):
             factor_values = [self.loads_factor_value(factor_value_dict)
                              for factor_value_dict in element_dict["factorValues"]]
             return Treatment(element_type=element_dict["type"], factor_values=factor_values)
+        else:
+
+            return NonTreatment(element_type=element_dict["type"],
+                                duration_value=element_dict["factorValues"][0]["value"],
+                                duration_unit=element_dict["factorValues"][0][""])
 
     def loads(self, json_text):
         json_dict = json.loads(json_text)
         cell = StudyCell(name=json_dict["name"])
         for element in json_dict["elements"]:
-            cell.insert_element(self.loads_element(element))
+            try:
+                cell.insert_element(self.loads_element(element))
+            except ISAModelValueError as e:
+                print('Element triggers error: {0}'.format(element))
+                raise e
         return cell
 
 
