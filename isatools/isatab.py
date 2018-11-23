@@ -1076,8 +1076,8 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
-        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
-                         comment='#').dropna(axis=1, how='all')
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8').dropna(axis=1, how='all') #,comment='#' should fix issue323 reported by Ken, even though could require deeper investigation. only lines starting with '#' ought to be ignored
+
         df = df.T
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
