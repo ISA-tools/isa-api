@@ -15,13 +15,13 @@ and ``a_...txt`` files):
 
    from isatools.convert import isatab2json
    # we run the conversion from ISA-Tab to JSON (by default, the converter will perform validation. IMPORTANT: the converter does not serialise. The writing to file (serialization) needs to be explicitly invoked (see next step).
-   isa_json = isatab2json.convert('./tabdir/', use_new_parser=True,)
+   isa_json = isatab2json.convert('./tabdir/', use_new_parser=True)
 
    # we now write to file:
    try:
     with open(output_file_path, 'w') as out_fp:
         json.dump(isa_json, out_fp, indent=4)
-   except IOError as e:
+    except IOError as e:
         print("something went wrong:", e)
 
 .. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skip the validation step, set the ``validate_first`` parameter to ``False`` by doing something like ``converter.convert('./my/path/', validate_first=False)``.
@@ -31,20 +31,18 @@ and ``a_...txt`` files):
    from isatools.convert import isatab2json
    isa_json = isatab2json.convert('./tabdir/',use_new_parser=True, validate_first=False)
 
-.. hint:: The conversions by default use a legacy ISA-Tab parser, which has now been replaced with a faster version. To specify using the old parser, set the ``use_new_parser`` parameter to ``False`` by doing something like ``isatab2json.convert('./my/path/', use_new_parser=False) or drop the argument entirely. The older version is invoked by default.``.
+    # we now write to file:...(see first block of code)
+
+.. hint:: The conversions by default use a legacy ISA-Tab parser, which has now been replaced with a faster version. To specify using the old parser, set the ``use_new_parser`` parameter to ``False`` by doing something like ``isatab2json.convert('./my/path/', use_new_parser=False)``
+ or drop the argument entirely. The older version is invoked by default.
 
 .. code-block:: python
 
    from isatools.convert import isatab2json
    # we run the conversion from ISA-Tab to JSON (by default, the converter will perform validation. IMPORTANT: the converter does not serialise. The writing to file (serialization) needs to be explicitly invoked (see next step).
-   isa_json = isatab2json.convert(directory_1)
+   isa_json = isatab2json.convert('./tabdir/')
 
-   # we now write to file:
-   try:
-    with open(output_file_path, 'w') as out_fp:
-        json.dump(isa_json, out_fp, indent=4)
-   except IOError as e:
-        print("something went wrong:", e)
+   # we now write to file: ...(see first block of code)
 
 
 
