@@ -506,10 +506,11 @@ class StudyCellDecoder(object):
                              for factor_value_dict in element_dict["factorValues"]]
             return Treatment(element_type=element_dict["type"], factor_values=factor_values)
         else:
-
+            duration_unit = OntologyAnnotation(**element_dict["factorValues"][0]["unit"]) if \
+                type(element_dict["factorValues"][0]["unit"]) == dict else element_dict["factorValues"][0]["unit"]
             return NonTreatment(element_type=element_dict["type"],
                                 duration_value=element_dict["factorValues"][0]["value"],
-                                duration_unit=element_dict["factorValues"][0][""])
+                                duration_unit=duration_unit)
 
     def loads(self, json_text):
         json_dict = json.loads(json_text)
@@ -1080,7 +1081,6 @@ class MSAcquisitionMode(object):
             raise ValueError('Technical repeats must be specified in integer'
                              'numbers')
         self.__technical_repeats = val
-
 
     def __repr__(self):
         return 'MSAcquisitionMode(' \

@@ -125,18 +125,25 @@ class StudyCellDecoderTest(BaseTestCase):
                                'single-treatment-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
-        print(self.cell_single_treatment)
-        print('\n')
-        print(actual_cell)
+        # print(self.cell_single_treatment)
+        # print('\n')
+        # print(actual_cell)
         # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
         self.assertEqual(self.cell_single_treatment, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
+        self.maxDiff = None
         decoder = StudyCellDecoder()
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
+        self.assertEqual(len(self.cell_multi_elements_padded.elements), len(actual_cell.elements))
+        for i in range(len(actual_cell.elements)):
+            print(i)
+            print(actual_cell.elements[i])
+            print(self.cell_multi_elements_padded.elements[i])
+            self.assertEqual(self.cell_multi_elements_padded.elements[i], actual_cell.elements[i])
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
 
