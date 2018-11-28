@@ -48,7 +48,6 @@ DURATION_UNIT = OntologyAnnotation(term='day')
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10)
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
@@ -81,7 +80,9 @@ class BaseTestCase(unittest.TestCase):
                                                           duration_unit=FACTORS_2_UNIT)
         self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
         self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
-        self.cell_single_treatment = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
+        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
+        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
         self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
                                              elements=[{self.first_treatment, self.second_treatment,
                                                         self.fourth_treatment}, self.washout, self.second_treatment])
@@ -91,6 +92,14 @@ class BaseTestCase(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+        self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
+        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=[self.washout])
+        self.sample_assay_plan = SampleAssayPlan()
+        self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+            [self.cell_screen, None], [self.cell_run_in, None],
+            [self.cell_single_treatment_00, self.sample_assay_plan], [self.cell_washout_00, self.sample_assay_plan],
+            [self.cell_single_treatment_01, self.sample_assay_plan], [self.cell_follow_up, self.sample_assay_plan]
+        ]))
 
 
 class StudyCellEncoderTest(BaseTestCase):
@@ -99,7 +108,7 @@ class StudyCellEncoderTest(BaseTestCase):
         return super(StudyCellEncoderTest, self).setUp()
 
     def test_encode_single_treatment_cell(self):
-        actual_json_cell = json.loads(json.dumps(self.cell_single_treatment, cls=StudyCellEncoder))
+        actual_json_cell = json.loads(json.dumps(self.cell_single_treatment_00, cls=StudyCellEncoder))
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'single-treatment-cell.json')) as expected_json_fp:
             expected_json_cell = json.load(expected_json_fp)
@@ -129,7 +138,7 @@ class StudyCellDecoderTest(BaseTestCase):
         # print('\n')
         # print(actual_cell)
         # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
-        self.assertEqual(self.cell_single_treatment, actual_cell)
+        self.assertEqual(self.cell_single_treatment_00, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
         self.maxDiff = None
@@ -145,6 +154,24 @@ class StudyCellDecoderTest(BaseTestCase):
             print(self.cell_multi_elements_padded.elements[i])
             self.assertEqual(self.cell_multi_elements_padded.elements[i], actual_cell.elements[i])
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
+
+
+class StudyArmEncoderTest(BaseTestCase):
+
+    def setUp(self):
+        return super(StudyArmEncoderTest, self).setUp()
+
+    def test_encode_arm(self):
+        pass
+
+
+class StudyArmDecoderTest(BaseTestCase):
+
+    def setUp(self):
+        return super(StudyArmDecoderTest, self).setUp()
+
+    def test_encode_arm(self):
+        pass
 
 
 class EncodeToJsonTests(unittest.TestCase):

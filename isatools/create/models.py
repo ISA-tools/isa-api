@@ -664,6 +664,26 @@ class StudyArm(object):
         return {elem for cell in self.arm_map.keys() for elem in cell.get_all_elements() if isinstance(elem, Treatment)}
 
 
+class StudyArmEncoder(json.JSONEncoder):
+
+    def default(self, o):
+        if isinstance(o, StudyArm):
+            res = dict(cells=[], sample_assay_plans=[], mappings=[])
+            i = 0
+            for cell, sample_assay_plan in o.arm_map.items():
+                res['cells'].append(json.dumps(cell))
+                res['sample_assay_plans'].append(json.dumps(cell))
+                res['mappings'].append([])
+                i += 1
+            return res
+
+
+class StudyArmDecoder(object):
+
+    def loads(self):
+        pass
+
+
 class StudyDesign(object):
 
     NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
