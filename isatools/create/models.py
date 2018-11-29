@@ -670,11 +670,12 @@ class StudyArmEncoder(json.JSONEncoder):
 
     def default(self, o):
         if isinstance(o, StudyArm):
-            res = dict(cells=[], sample_assay_plans=[], mappings=[])
+            res = dict(cells=[], sampleAssayPlans=[], mappings=[],
+                       name=o['name'], groupSize=o['group_size'])
             i = 0
             for cell, sample_assay_plan in o.arm_map.items():
                 res['cells'].append(json.dumps(cell))
-                res['sample_assay_plans'].append(json.dumps(cell))
+                res['sample_assay_plans'].append(json.loads(json.dumps(cell, cls=StudyCellEncoder)))
                 res['mappings'].append([])
                 i += 1
             return res

@@ -171,8 +171,19 @@ class StudyArmEncoderTest(BaseTestCase):
     def setUp(self):
         return super(StudyArmEncoderTest, self).setUp()
 
-    def test_encode_arm(self):
-        pass
+    def test_encode_arm_with_single_element_cells(self):
+        actual_json_arm = json.loads(json.dumps(self.single_treatment_cell_arm, cls=StudyArmEncoder))
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-arm-with-single-element-cells.json')) as expected_json_fp:
+            expected_json_arm = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
+
+    def test_encode_arm_with_multi_element_cell(self):
+        actual_json_arm = json.loads(json.dumps(self.multi_treatment_cell_arm, cls=StudyArmEncoder))
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-arm-with-multi-element-cell.json')) as expected_json_fp:
+            expected_json_arm = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
 
 
 class StudyArmDecoderTest(BaseTestCase):
