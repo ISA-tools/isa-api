@@ -70,6 +70,8 @@ BASE_FACTORS = [
     DURATION_FACTOR,
 ]
 
+DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
+
 
 class Element(ABC):
     """
@@ -1383,12 +1385,12 @@ class SampleAssayPlan(object):
     A class representing the sampling plan and the assay plan.
     """
 
-    def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
-                 sample_qc_plan=None):
-        self.__group_size = 0
+    def __init__(self, name=DEFAULT_SAMPLE_ASSAY_PLAN_NAME, sample_plan=None, assay_plan=None, sample_qc_plan=None):
+        self.__name = None
+        # self.__group_size = 0   This has been moved to StudyArm
         self.__sample_types = set()
         self.__assay_types = set()
-        self.group_size = group_size
+        # self.group_size = group_size
         if sample_plan is None:
             self.__sample_plan = {}
         else:
@@ -1407,7 +1409,19 @@ class SampleAssayPlan(object):
             self.__sample_qc_plan = sample_qc_plan
         self.__pre_run_batch = None
         self.__post_run_batch = None
+        self.name = name
 
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise ISAModelAttributeError("SampleAssayPlan name must be a string.\n {0} provided")
+        self.__name = name
+
+    """
     @property
     def group_size(self):
         return self.__group_size
@@ -1420,6 +1434,7 @@ class SampleAssayPlan(object):
         if group_size < 0:
             raise ValueError('group_size must be greater than 0.')
         self.__group_size = group_size
+    """
 
     def add_sample_type(self, sample_type):
         if isinstance(sample_type, Characteristic):
@@ -1602,8 +1617,8 @@ class SampleAssayPlan(object):
         self.__post_run_batch = qc_batch
 
     def __repr__(self):
+        # FIXME
         return 'isatools.create.models.SampleAssayPlan(' \
-               'group_size={sample_assay_plan.group_size}, ' \
                'sample_plan={sample_plan}, assay_plan={assay_plan}, ' \
                'sample_qc_plan={sample_qc_plan})'.format(
                 sample_assay_plan=self,
@@ -1612,9 +1627,11 @@ class SampleAssayPlan(object):
                 sample_qc_plan=set(map(lambda x: x, self.sample_qc_plan)))
 
     def __eq__(self, other):
+        # FIXME
         return hash(repr(self)) == hash(repr(other))
 
     def __ne__(self, other):
+        # FIXME
         return hash(repr(self)) != hash(repr(other))
 
 
@@ -3193,7 +3210,7 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             return self.get_assay_type(o)
         elif isinstance(o, SampleAssayPlan):
             sample_assay_plan_json = {
-                'group_size': o.group_size,
+                'name': o.name,
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
                 'assay_types': [self.get_assay_type(x) for x in o.assay_types],
                 'sample_plan': self.get_sample_plan(o.sample_plan),
@@ -3280,7 +3297,8 @@ class SampleAssayPlanDecoder(object):
         sample_assay_plan_json = json.load(fp)
 
         sample_assay_plan = SampleAssayPlan(
-            group_size=sample_assay_plan_json['group_size'],
+            name=sample_assay_plan_json['name'],
+            # group_size=sample_assay_plan_json['group_size'],
         )
 
         for sample_type in sample_assay_plan_json['sample_types']:

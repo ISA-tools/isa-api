@@ -78,27 +78,37 @@ class BaseTestCase(unittest.TestCase):
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
                                                           duration_unit=FACTORS_2_UNIT)
-        self.cell_screen = StudyCell(SCREEN, elements=(self.screen,))
-        self.cell_run_in = StudyCell(RUN_IN, elements=(self.run_in,))
-        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
-        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
-        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
-        self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
+        self.cell_screen = StudyCell('SCREEN CELL', elements=(self.screen,))
+        self.cell_run_in = StudyCell('RUN-IN CELL', elements=(self.run_in,))
+        self.cell_single_treatment_00 = StudyCell('SINGLE-TREATMENT CELL', elements=[self.first_treatment])
+        self.cell_single_treatment_01 = StudyCell('ANOTHER SINGLE-TREATMENT CELL', elements=[self.second_treatment])
+        self.cell_single_treatment_02 = StudyCell('YET ANOTHER SINGLE-TREATMENT CELL', elements=[self.third_treatment])
+        self.cell_multi_elements = StudyCell('MULTI-ELEMENT CELL',
                                              elements=[{self.first_treatment, self.second_treatment,
                                                         self.fourth_treatment}, self.washout, self.second_treatment])
-        self.cell_multi_elements_padded = StudyCell('MULTI ELEMENTS PADDED',
+        self.cell_multi_elements_padded = StudyCell('PADDED MULTI-ELEMENT CELL',
                                                     elements=[self.first_treatment, self.washout, {
                                                         self.second_treatment,
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
-        self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
+        self.cell_follow_up = StudyCell('FOLLOW-UP CELL', elements=(self.follow_up,))
+        self.cell_washout_00 = StudyCell('WASHOUT CELL', elements=(self.washout,))
         self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=[self.washout])
-        self.sample_assay_plan = SampleAssayPlan()
+        self.sample_assay_plan_for_screening = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR SCREENING')
+        self.sample_assay_plan_for_treatments = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
+        self.sample_assay_plan_for_washout = SampleAssayPlan(name='WASHOUT SAMPLE ASSAY PLAN')
+        self.sample_assay_plan_for_follow_up = SampleAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
         self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             [self.cell_screen, None], [self.cell_run_in, None],
-            [self.cell_single_treatment_00, self.sample_assay_plan], [self.cell_washout_00, self.sample_assay_plan],
-            [self.cell_single_treatment_01, self.sample_assay_plan], [self.cell_follow_up, self.sample_assay_plan]
+            [self.cell_single_treatment_00, self.sample_assay_plan_for_treatments],
+            [self.cell_washout_00, self.sample_assay_plan_for_washout],
+            [self.cell_single_treatment_01, self.sample_assay_plan_for_treatments],
+            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+        ]))
+        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=35, arm_map=OrderedDict([
+            [self.cell_screen, self.sample_assay_plan_for_screening],
+            [self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments],
+            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
 
 
@@ -913,7 +923,7 @@ class EncodeToJsonTests(unittest.TestCase):
 
         actual = ordered(
             json.loads(
-                json.dumps(self.treatment_sequence, cls=TreatmentSequenceEncoder)
+                json.dumps(self.treatment_sequence, cls=None)
             )
         )
         self.assertTrue(expected == actual)
