@@ -670,14 +670,22 @@ class StudyArmEncoder(json.JSONEncoder):
 
     def default(self, o):
         if isinstance(o, StudyArm):
+            study_cell_encoder = StudyCellEncoder()
+            sample_assay_plan_encoder = SampleAssayPlanEncoder()
             res = dict(cells=[], sampleAssayPlans=[], mappings=[],
-                       name=o['name'], groupSize=o['group_size'])
+                       name=o.name, groupSize=o.group_size)
             i = 0
+            sample_assay_plan_set = set()
             for cell, sample_assay_plan in o.arm_map.items():
-                res['cells'].append(json.dumps(cell))
-                res['sample_assay_plans'].append(json.loads(json.dumps(cell, cls=StudyCellEncoder)))
-                res['mappings'].append([])
+                print('Now appending cell {0}'.format(cell.name))
+                res['cells'].append(study_cell_encoder.default(cell))
+                if sample_assay_plan is not None and sample_assay_plan not in sample_assay_plan_set:
+                    print('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
+                    res['sampleAssayPlans'].append(sample_assay_plan_encoder.default(sample_assay_plan))
+                    sample_assay_plan_set.add(sample_assay_plan)
+                res['mappings'].append([cell.name, sample_assay_plan.name if sample_assay_plan is not None else None])
                 i += 1
+            print('Mappings: {0}'.format(res['mappings']))
             return res
 
 
@@ -1620,12 +1628,16 @@ class SampleAssayPlan(object):
     def __repr__(self):
         # FIXME
         return 'isatools.create.models.SampleAssayPlan(' \
+               'name={sample_assay_plan.name}, ' \
                'sample_plan={sample_plan}, assay_plan={assay_plan}, ' \
                'sample_qc_plan={sample_qc_plan})'.format(
                 sample_assay_plan=self,
                 sample_plan=set(map(lambda x: x, self.sample_plan)),
                 assay_plan=set(map(lambda x: x, self.assay_plan)),
                 sample_qc_plan=set(map(lambda x: x, self.sample_qc_plan)))
+
+    def __hash__(self):
+        return hash(repr(self))
 
     def __eq__(self, other):
         # FIXME

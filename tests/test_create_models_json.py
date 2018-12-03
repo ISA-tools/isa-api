@@ -12,7 +12,7 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
     if isinstance(o, dict):
         return sorted((k, ordered(v)) for k, v in o.items())
     if isinstance(o, list):
-        return sorted(ordered(x) for x in o)
+        return sorted(ordered(x) for x in o if x is not None)
     else:
         return o
 
@@ -48,6 +48,7 @@ DURATION_UNIT = OntologyAnnotation(term='day')
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
@@ -96,7 +97,7 @@ class BaseTestCase(unittest.TestCase):
         self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=[self.washout])
         self.sample_assay_plan_for_screening = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR SCREENING')
         self.sample_assay_plan_for_treatments = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
-        self.sample_assay_plan_for_washout = SampleAssayPlan(name='WASHOUT SAMPLE ASSAY PLAN')
+        self.sample_assay_plan_for_washout = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
         self.sample_assay_plan_for_follow_up = SampleAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
         self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             [self.cell_screen, None], [self.cell_run_in, None],
@@ -151,7 +152,6 @@ class StudyCellDecoderTest(BaseTestCase):
         self.assertEqual(self.cell_single_treatment_00, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
-        self.maxDiff = None
         decoder = StudyCellDecoder()
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
@@ -176,6 +176,7 @@ class StudyArmEncoderTest(BaseTestCase):
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
+        print(actual_json_arm)
         self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
 
     def test_encode_arm_with_multi_element_cell(self):
