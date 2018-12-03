@@ -513,9 +513,7 @@ class StudyCellDecoder(object):
             return NonTreatment(element_type=element_dict["type"],
                                 duration_value=element_dict["factorValues"][0]["value"],
                                 duration_unit=duration_unit)
-
-    def loads(self, json_text):
-        json_dict = json.loads(json_text)
+    def loads_cells(self, json_dict):
         cell = StudyCell(name=json_dict["name"])
         for element in json_dict["elements"]:
             try:
@@ -524,6 +522,10 @@ class StudyCellDecoder(object):
                 print('Element triggers error: {0}'.format(element))
                 raise e
         return cell
+
+    def loads(self, json_text):
+        json_dict = json.loads(json_text)
+        return self.loads_cells(json_dict)
 
 
 class StudyArm(object):
@@ -691,8 +693,27 @@ class StudyArmEncoder(json.JSONEncoder):
 
 class StudyArmDecoder(object):
 
-    def loads(self):
-        pass
+    def __init__(self):
+        self.cell_decoder = StudyCellDecoder()
+        self.sample_assay_plan_decoder = SampleAssayPlanDecoder()
+
+    def loads(self, json_text):
+        json_dict = json.loads(json_text)
+        arm = StudyArm(name=json_dict['name'], group_size=json_dict['groupSize'])
+        sample_assay_plan_set = {
+            self.sample_assay_plan_decoder.load_sample_assay_plan(json_sample_assay_plan)
+            for json_sample_assay_plan in json_dict['sampleAssayPlans']
+        }
+        for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):
+            print('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
+            json_cell = json_dict['cells'][i]
+            if json_cell['name'] != cell_name:
+                raise ISAModelValueError()   # FIXME which is the right error type here?
+            cell = self.cell_decoder.loads_cells(json_cell)
+            sample_assay_plan = next(sap for sap in sample_assay_plan_set if sap.name == sample_assay_plan_name) \
+                if sample_assay_plan_name is not None else None
+            arm.add_item_to_arm_map(cell, sample_assay_plan)
+        return arm
 
 
 class StudyDesign(object):
@@ -3306,52 +3327,59 @@ class SampleAssayPlanDecoder(object):
         )
         return assay_type
 
-    def load(self, fp):
-        sample_assay_plan_json = json.load(fp)
-
+    def load_sample_assay_plan(self, sample_assay_plan_dict):
         sample_assay_plan = SampleAssayPlan(
-            name=sample_assay_plan_json['name'],
+            name=sample_assay_plan_dict['name'],
             # group_size=sample_assay_plan_json['group_size'],
         )
 
-        for sample_type in sample_assay_plan_json['sample_types']:
+        for sample_type in sample_assay_plan_dict['sample_types']:
             sample_assay_plan.add_sample_type(sample_type=sample_type)
-        for sample_plan_record in sample_assay_plan_json['sample_plan']:
+        for sample_plan_record in sample_assay_plan_dict['sample_plan']:
             sample_assay_plan.add_sample_plan_record(
                 sample_type=sample_plan_record['sample_type'],
                 sampling_size=sample_plan_record['sampling_size']
             )
 
-        for assay_type in sample_assay_plan_json['assay_types']:
+        for assay_type in sample_assay_plan_dict['assay_types']:
             sample_assay_plan.add_assay_type(
                 assay_type=self.load_assay_type(assay_type))
-        for assay_plan_record in sample_assay_plan_json['assay_plan']:
+        for assay_plan_record in sample_assay_plan_dict['assay_plan']:
             sample_assay_plan.add_assay_plan_record(
                 sample_type=assay_plan_record['sample_type'],
                 assay_type=self.load_assay_type(assay_plan_record['assay_type'])
             )
 
-        for sample_qc_plan_record in sample_assay_plan_json['sample_qc_plan']:
+        for sample_qc_plan_record in sample_assay_plan_dict['sample_qc_plan']:
             sample_assay_plan.add_sample_qc_plan_record(
                 material_type=sample_qc_plan_record['sample_type'],
                 injection_interval=sample_qc_plan_record['injection_interval']
             )
         try:
-            pre_run_batch_json =  sample_assay_plan_json['pre_run_batch']
+            pre_run_batch_json =  sample_assay_plan_dict['pre_run_batch']
             pre_run_batch = SampleQCBatch()
             pre_run_batch.material = pre_run_batch_json['material']
             sample_assay_plan.pre_run_batch = pre_run_batch
         except KeyError:
             pass
         try:
-            post_run_batch_json = sample_assay_plan_json['post_run_batch']
+            post_run_batch_json = sample_assay_plan_dict['post_run_batch']
             post_run_batch = SampleQCBatch()
             post_run_batch.material = post_run_batch_json['material']
-            sample_assay_plan.post_run_batch = sample_assay_plan_json['post_run_batch']
+            sample_assay_plan.post_run_batch = sample_assay_plan_dict['post_run_batch']
         except KeyError:
             pass
 
         return sample_assay_plan
+
+    def load(self, fp):
+        sample_assay_plan_dict = json.load(fp)
+        return self.load_sample_assay_plan(sample_assay_plan_dict)
+
+    def loads(self, json_text):
+        sample_assay_plan_dict = json.loads(json_text)
+        return self.load_sample_assay_plan(sample_assay_plan_dict)
+
 
 
 """
