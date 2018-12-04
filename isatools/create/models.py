@@ -807,6 +807,16 @@ class StudyDesign(object):
         return not self == other
 
 
+class StudyDesignEncoder(json.JSONEncoder):
+    pass
+
+
+class StudyDesignDecoder(object):
+
+    def default(self, obj):
+        if isinstance(obj, StudyDesign):
+            pass
+
 class TreatmentFactory(object):
     """
       A factory class to build a set of Treatments given an intervention_type and a set of factors.

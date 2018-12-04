@@ -69,6 +69,15 @@ class BaseTestCase(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
+        self.fifth_treatment = Treatment(element_type=INTERVENTIONS['SURGICAL'], factor_values=(
+            FactorValue(), FactorValue(), FactorValue()
+        ))
+        self.sixth_treatment = Treatment(element_type=INTERVENTIONS['RADIOLOGICAL'], factor_values=(
+            FactorValue(), FactorValue(), FactorValue()
+        ))
+        self.seventh_treatment = Treatment(element_type=INTERVENTIONS['BIOLOGICAL'], factor_values=(
+            FactorValue(), FactorValue(), FactorValue()
+        ))
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
