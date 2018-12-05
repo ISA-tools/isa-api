@@ -44,6 +44,24 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
+DIETARY_FACTOR_0_VALUE = 'Vitamin A'
+DIETARY_FACTOR_1_VALUE = 30.0
+DIETARY_FACTOR_1_UNIT = OntologyAnnotation(term='mg')
+DIETARY_FACTOR_2_VALUE = 50
+DIETARY_FACTOR_2_UNIT = OntologyAnnotation(term='day')
+
+RADIOLOGICAL_FACTOR_0_VALUE = 'Gamma ray'
+RADIOLOGICAL_FACTOR_1_VALUE = 12e-3
+RADIOLOGICAL_FACTOR_1_UNIT = OntologyAnnotation(term='Gy')
+RADIOLOGICAL_FACTOR_2_VALUE = 5
+RADIOLOGICAL_FACTOR_2_UNIT = OntologyAnnotation(term='hour')
+
+BIOLOGICAL_FACTOR_0_VALUE = 'Anthrax'
+BIOLOGICAL_FACTOR_1_VALUE = 12e-3
+BIOLOGICAL_FACTOR_1_UNIT = OntologyAnnotation(term='mg')
+BIOLOGICAL_FACTOR_2_VALUE = 7
+BIOLOGICAL_FACTOR_2_UNIT = OntologyAnnotation(term='day')
+
 
 class BaseTestCase(unittest.TestCase):
 
@@ -69,14 +87,22 @@ class BaseTestCase(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
-        self.fifth_treatment = Treatment(element_type=INTERVENTIONS['SURGICAL'], factor_values=(
-            FactorValue(), FactorValue(), FactorValue()
+        self.fifth_treatment = Treatment(element_type=INTERVENTIONS['DIET'], factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=DIETARY_FACTOR_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=DIETARY_FACTOR_1_VALUE, unit=DIETARY_FACTOR_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=DIETARY_FACTOR_2_VALUE, unit=DIETARY_FACTOR_2_UNIT)
         ))
         self.sixth_treatment = Treatment(element_type=INTERVENTIONS['RADIOLOGICAL'], factor_values=(
-            FactorValue(), FactorValue(), FactorValue()
+            FactorValue(factor_name=BASE_FACTORS[0], value=RADIOLOGICAL_FACTOR_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=RADIOLOGICAL_FACTOR_1_VALUE,
+                        unit=RADIOLOGICAL_FACTOR_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=RADIOLOGICAL_FACTOR_2_VALUE,
+                        unit=RADIOLOGICAL_FACTOR_2_UNIT)
         ))
         self.seventh_treatment = Treatment(element_type=INTERVENTIONS['BIOLOGICAL'], factor_values=(
-            FactorValue(), FactorValue(), FactorValue()
+            FactorValue(factor_name=BASE_FACTORS[0], value=BIOLOGICAL_FACTOR_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=BIOLOGICAL_FACTOR_1_VALUE, unit=BIOLOGICAL_FACTOR_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=BIOLOGICAL_FACTOR_2_VALUE, unit=BIOLOGICAL_FACTOR_2_UNIT)
         ))
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
@@ -93,6 +119,9 @@ class BaseTestCase(unittest.TestCase):
         self.cell_single_treatment_00 = StudyCell('SINGLE-TREATMENT CELL', elements=[self.first_treatment])
         self.cell_single_treatment_01 = StudyCell('ANOTHER SINGLE-TREATMENT CELL', elements=[self.second_treatment])
         self.cell_single_treatment_02 = StudyCell('YET ANOTHER SINGLE-TREATMENT CELL', elements=[self.third_treatment])
+        self.cell_single_treatment_diet = StudyCell('DIET CELL', elements=[self.fifth_treatment])
+        self.cell_single_treatment_radiological = StudyCell('RADIOLOGICAL CELL', elements=[self.sixth_treatment])
+        self.cell_single_treatment_biological = StudyCell('BIOLOGICAL CELL', elements=[self.seventh_treatment])
         self.cell_multi_elements = StudyCell('MULTI-ELEMENT CELL',
                                              elements=[{self.first_treatment, self.second_treatment,
                                                         self.fourth_treatment}, self.washout, self.second_treatment])
@@ -101,6 +130,13 @@ class BaseTestCase(unittest.TestCase):
                                                         self.second_treatment,
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
+        self.cell_multi_elements_bio_diet = StudyCell('MULTI-ELEMENT CELL BIO-DIET',
+                                                     elements=[{
+                                                           self.second_treatment,
+                                                           self.fourth_treatment,
+                                                           self.first_treatment
+                                                       }, self.washout, self.fifth_treatment, self.washout,
+                                                           self.seventh_treatment])
         self.cell_follow_up = StudyCell('FOLLOW-UP CELL', elements=(self.follow_up,))
         self.cell_washout_00 = StudyCell('WASHOUT CELL', elements=(self.washout,))
         self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=[self.washout])
@@ -115,9 +151,28 @@ class BaseTestCase(unittest.TestCase):
             [self.cell_single_treatment_01, self.sample_assay_plan_for_treatments],
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
+        self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
+            [self.cell_screen, None], [self.cell_run_in, None],
+            [self.cell_single_treatment_00, self.sample_assay_plan_for_treatments],
+            [self.cell_washout_00, self.sample_assay_plan_for_washout],
+            [self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments],
+            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+        ]))
+        self.single_treatment_cell_arm_02 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=24, arm_map=OrderedDict([
+            [self.cell_screen, None], [self.cell_run_in, None],
+            [self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments],
+            [self.cell_washout_00, self.sample_assay_plan_for_washout],
+            [self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments],
+            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+        ]))
         self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=35, arm_map=OrderedDict([
             [self.cell_screen, self.sample_assay_plan_for_screening],
             [self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments],
+            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+        ]))
+        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=5, arm_map=OrderedDict([
+            [self.cell_screen, self.sample_assay_plan_for_screening],
+            [self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments],
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
 
