@@ -698,8 +698,7 @@ class StudyArmDecoder(object):
         self.cell_decoder = StudyCellDecoder()
         self.sample_assay_plan_decoder = SampleAssayPlanDecoder()
 
-    def loads(self, json_text):
-        json_dict = json.loads(json_text)
+    def loads_arm(self, json_dict):
         arm = StudyArm(name=json_dict['name'], group_size=json_dict['groupSize'])
         sample_assay_plan_set = {
             self.sample_assay_plan_decoder.load_sample_assay_plan(json_sample_assay_plan)
@@ -715,6 +714,10 @@ class StudyArmDecoder(object):
                 if sample_assay_plan_name is not None else None
             arm.add_item_to_arm_map(cell, sample_assay_plan)
         return arm
+
+    def loads(self, json_text):
+        json_dict = json.loads(json_text)
+        return self.loads_arm(json_dict)
 
 
 class StudyDesign(object):
@@ -827,8 +830,18 @@ class StudyDesignEncoder(json.JSONEncoder):
 
 class StudyDesignDecoder(object):
 
+    def __init__(self):
+        self.arm_decoder = StudyArmDecoder()
+
     def loads(self, json_text):
-        return StudyDesign()
+
+        json_dict = json.loads(json_text)
+        for name, arm_dict in json_dict["studyArms"].items():
+            arm_dict['name'] = name
+        study_arms = {self.arm_decoder.loads_arm(arm_dict) for arm_dict in json_dict["studyArms"].values()}
+
+        study_design = StudyDesign(name=json_dict['name'], study_arms=study_arms)
+        return study_design
 
 
 class TreatmentFactory(object):

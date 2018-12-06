@@ -327,6 +327,13 @@ class StudyDesignDecoderTest(BaseTestCase):
                                'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
+        print("\nExpected:\n")
+        print(self.three_arm_study_design)
+        print("\nActual:\n")
+        print(actual_arm)
+        print("\nDifference:\n")
+        import difflib
+        difflib.ndiff(repr(self.three_arm_study_design), repr(actual_arm))
         self.assertEqual(self.three_arm_study_design, actual_arm)
 
     def test_decode_study_design_with_two_arms_with_multi_element_cells(self):
