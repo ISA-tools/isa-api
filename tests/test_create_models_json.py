@@ -31,11 +31,13 @@ TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
 TEST_EPOCH_2_NAME = 'test epoch 2'
 
-TEST_STUDY_ARM_NAME_00 = 'test arm'
-TEST_STUDY_ARM_NAME_01 = 'another arm'
-TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+TEST_STUDY_ARM_NAME_00 = 'first arm'
+TEST_STUDY_ARM_NAME_01 = 'second arm'
+TEST_STUDY_ARM_NAME_02 = 'third arm'
 
 TEST_STUDY_DESIGN_NAME = 'test study design'
+TEST_STUDY_DESIGN_NAME_THREE_ARMS = 'TEST STUDY DESIGN WITH THREE ARMS'
+TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS = 'TEST STUDY DESIGN WITH TWO ARMS (MULTI-ELEMENT CELLS)'
 
 TEST_EPOCH_0_RANK = 0
 
@@ -165,12 +167,12 @@ class BaseTestCase(unittest.TestCase):
             [self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments],
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
-        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=35, arm_map=OrderedDict([
+        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
             [self.cell_screen, self.sample_assay_plan_for_screening],
             [self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments],
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
-        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=5, arm_map=OrderedDict([
+        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
             [self.cell_screen, self.sample_assay_plan_for_screening],
             [self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments],
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
@@ -271,6 +273,69 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertEqual(self.multi_treatment_cell_arm, actual_arm)
+
+
+class StudyDesignEncoderTest(BaseTestCase):
+
+    def setUp(self):
+        super(StudyDesignEncoderTest, self).setUp()
+        self.three_arm_study_design = StudyDesign(name=TEST_STUDY_DESIGN_NAME_THREE_ARMS, study_arms={
+            self.single_treatment_cell_arm,
+            self.single_treatment_cell_arm_01,
+            self.single_treatment_cell_arm_02
+        })
+        self.multi_element_cell_two_arm_study_design = StudyDesign(
+            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS, study_arms=[
+                self.multi_treatment_cell_arm,
+                self.multi_treatment_cell_arm_01
+            ])
+
+    def test_encode_study_design_with_three_arms(self):
+        actual_json_study_design = json.loads(json.dumps(self.three_arm_study_design, cls=StudyDesignEncoder))
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
+            expected_json_study_design = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_study_design), ordered(expected_json_study_design))
+
+    def test_encode_study_design_with_two_arms_with_multi_element_cells(self):
+        actual_json_study_design = json.loads(json.dumps(self.multi_element_cell_two_arm_study_design,
+                                                         cls=StudyDesignEncoder))
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-design-with-two-arms-multi-element-cells.json')) as expected_json_fp:
+            expected_json_study_design = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_study_design), ordered(expected_json_study_design))
+
+
+class StudyDesignDecoderTest(BaseTestCase):
+
+    def setUp(self):
+        super(StudyDesignDecoderTest, self).setUp()
+        self.three_arm_study_design = StudyDesign(name=TEST_STUDY_DESIGN_NAME_THREE_ARMS, study_arms={
+            self.single_treatment_cell_arm,
+            self.single_treatment_cell_arm_01,
+            self.single_treatment_cell_arm_02
+        })
+        self.multi_element_cell_two_arm_study_design = StudyDesign(
+            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS, study_arms=[
+                self.multi_treatment_cell_arm,
+                self.multi_treatment_cell_arm_01
+            ])
+
+    def test_decode_study_design_with_three_arms(self):
+        decoder = StudyDesignDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_arm = decoder.loads(json_text)
+        self.assertEqual(self.three_arm_study_design, actual_arm)
+
+    def test_decode_study_design_with_two_arms_with_multi_element_cells(self):
+        decoder = StudyDesignDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-design-with-two-arms-multi-element-cells.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_arm = decoder.loads(json_text)
+        self.assertEqual(self.multi_element_cell_two_arm_study_design, actual_arm)
 
 
 class EncodeToJsonTests(unittest.TestCase):

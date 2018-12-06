@@ -513,6 +513,7 @@ class StudyCellDecoder(object):
             return NonTreatment(element_type=element_dict["type"],
                                 duration_value=element_dict["factorValues"][0]["value"],
                                 duration_unit=duration_unit)
+
     def loads_cells(self, json_dict):
         cell = StudyCell(name=json_dict["name"])
         for element in json_dict["elements"]:
@@ -808,14 +809,27 @@ class StudyDesign(object):
 
 
 class StudyDesignEncoder(json.JSONEncoder):
-    pass
+
+    def default(self, obj):
+        if isinstance(obj, StudyDesign):
+            arm_encoder = StudyArmEncoder()
+            study_arms_dict = {
+                arm.name: arm_encoder.default(arm) for arm in obj.study_arms
+            }
+            print(study_arms_dict)
+            for arm in study_arms_dict.values():
+                arm.pop('name')
+            return {
+                'name': obj.name,
+                'studyArms': study_arms_dict
+            }
 
 
 class StudyDesignDecoder(object):
 
-    def default(self, obj):
-        if isinstance(obj, StudyDesign):
-            pass
+    def loads(self, json_text):
+        return StudyDesign()
+
 
 class TreatmentFactory(object):
     """
