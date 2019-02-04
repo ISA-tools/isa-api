@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA study design assay plan schema",
+    "name": "ISA study design assay plan schema",
+    "description": "JSON-schema representing an ISA study design assay plan in the ISA create model",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "assay_type": {
+                    "type":"array",
+                    "items" : {
+                        "$ref": "isa_study_design_assay_type_schema.json#"
+                    }
+        },
+        "sample_type": {
+                    "type": "string"
+        } 
+    },
+    "additionalProperties": false,
+    "required": ["sample_type","assay_type"]
+}
