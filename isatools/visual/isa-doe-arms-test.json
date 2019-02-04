@@ -1,5 +1,5 @@
-{"arms": [
-    {
+[
+  "root":  {
         "id": "arm1",
         "name": "first study arm",
         "cells": [
@@ -127,4 +127,4 @@
             }
         ]
     }
-]}
+]
