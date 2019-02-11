@@ -1524,6 +1524,63 @@ class SampleAssayPlanTest(unittest.TestCase):
                           blood_sample_type, ngs_assay_type)
 
 
+class StudyDesignFactoryTest(unittest.TestCase):
+
+    def setUp(self):
+        self.factory = StudyDesignFactory()
+        self.first_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.third_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.fourth_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE_THIRD),
+            FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+
+        self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
+        self.sample_assay_plan = SampleAssayPlan()
+        self.sample_assay_plan_list = [SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan()]
+
+    def test_property_treatments(self):
+        self.assertEqual(self.factory.treatments, None)
+
+        self.factory.treatments = self.treatments
+        self.assertEqual(self.factory.treatments, self.treatments)
+
+    def test_property_sample_assay_plan(self):
+        self.assertEqual(self.factory.sample_assay_plans, None)
+        self.factory.sample_assay_plans = self.sample_assay_plan
+        self.assertEqual(self.factory.sample_assay_plans, self.sample_assay_plan)
+        self.factory.sample_assay_plans = self.sample_assay_plan_list
+        self.assertEqual(self.factory.sample_assay_plans, self.sample_assay_plan_list)
+
+    def test_property_sample_plans(self):
+        pass
+
+    def test_compute_crossover_design_00(self):
+        pass
+
+    def test_compute_parallel_design_00(self):
+        pass
+
+    def test_compute_single_arm_design_00(self):
+        pass
+
+    def test_compute_single_epoch_design_00(self):
+        pass
+
 class IsaModelObjectFactoryTest(unittest.TestCase):
 
     def setUp(self):

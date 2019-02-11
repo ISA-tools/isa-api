@@ -1730,17 +1730,42 @@ class StudyDesignFactory(object):
     # TODO: Add follow up epoch
     # TODO: Add Rest/washout epochs?
 
-    def __init__(self, treatments, sample_plan):
-        self.__treatments = treatments
-        self.__sample_plan = sample_plan
+    def __init__(self, treatments=None, sample_assay_plans=None):
+        self.__treatments = None
+        self.__sample_assay_plans = None
+        if treatments is not None:
+            self.treatments = treatments
+        if sample_assay_plans is not None:
+            self.sample_assay_plans = sample_assay_plans
 
     @property
     def treatments(self):
         return self.__treatments
 
+    @treatments.setter
+    def treatments(self, treatments):
+        if isinstance(treatments, (tuple, list)) and all([isinstance(treatment, Treatment)
+                                                          for treatment in treatments]):
+            self.__treatments = list(treatments)
+        elif isinstance(treatments, Treatment):
+            self.__treatments = treatments
+        else:
+            raise ISAModelAttributeError('Data supplied is not correctly formatted for Treatment')
+
     @property
-    def sample_plan(self):
-        return self.__sample_plan
+    def sample_assay_plans(self):
+        return self.__sample_assay_plans
+
+    @sample_assay_plans.setter
+    def sample_assay_plans(self, sample_assay_plans):
+        if isinstance(sample_assay_plans, (tuple, list)) \
+                and all([isinstance(sample_assay_plan, SampleAssayPlan)
+                         for sample_assay_plan in sample_assay_plans]):
+            self.__sample_assay_plans = list(sample_assay_plans)
+        elif isinstance(sample_assay_plans, SampleAssayPlan):
+            self.__sample_assay_plans = sample_assay_plans
+        else:
+            raise ISAModelAttributeError('Data supplied is not correctly formatted for SampleAssayFactory')
 
     def compute_crossover_design(self, screen=False, follow_up=False):
         """
