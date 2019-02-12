@@ -269,7 +269,7 @@ class StudyCell(object):
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            raise ISAModelAttributeError('Epoch name must be a string')
+            raise ISAModelAttributeError('StudyCell name must be a string')
         self.__name = name
 
     @property
@@ -545,9 +545,10 @@ class StudyArm(object):
     ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
 
     def __init__(self, name, arm_map=None, group_size=0):
-        self.name = name
+        self.__name = ''
         self.__group_size = None
         self.__arm_map = OrderedDict()
+        self.name = name
         self.group_size = group_size
         if arm_map is not None:
             self.arm_map = arm_map
@@ -570,6 +571,16 @@ class StudyArm(object):
 
     def __ne__(self, other):
         return not self == other
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise ISAModelAttributeError('StudyArm name must be a string')
+        self.__name = name
 
     @property
     def group_size(self):
@@ -1730,6 +1741,7 @@ class StudyDesignFactory(object):
     # TODO: Add follow up epoch
     # TODO: Add Rest/washout epochs?
 
+    """
     def __init__(self, treatments=None, sample_assay_plans=None):
         self.__treatments = None
         self.__sample_assay_plans = None
@@ -1766,27 +1778,20 @@ class StudyDesignFactory(object):
             self.__sample_assay_plans = sample_assay_plans
         else:
             raise ISAModelAttributeError('Data supplied is not correctly formatted for SampleAssayFactory')
+    """
 
-    def compute_crossover_design(self, screen=False, follow_up=False):
+    @staticmethod
+    def compute_crossover_design(treatments_map, screen_map=None, run_in_map=None,
+                                 washout_map=None, follow_up_map=None):
         """
         Computes the crossover trial design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
         treatment or an ordered set of sample plans that matches the number of
         treatments (otherwise raises an error).
 
-        :return: set - the crossover design as a set of StudyArms
+        :return: StudyDesign - the crossover design as a set of StudyArms
         """
-        if set() not in self.treatments:
-            return [
-            StudyArm(name='arm_{i}'.format(i=i),
-                     epochs=[StudyCell(
-                         name='epoch_{j}'.format(j=j), rank=j, elements=[y],
-                         sample_plan=self.sample_plan) for j, y
-                             in enumerate(x)]) for i, x in
-                enumerate(itertools.product(self.treatments))
-            ]
-        else:
-            return set()
+        pass
 
     def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):
         """

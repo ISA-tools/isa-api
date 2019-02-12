@@ -1526,6 +1526,7 @@ class SampleAssayPlanTest(unittest.TestCase):
 
 class StudyDesignFactoryTest(unittest.TestCase):
 
+
     def setUp(self):
         self.factory = StudyDesignFactory()
         self.first_treatment = Treatment(factor_values=(
@@ -1548,11 +1549,19 @@ class StudyDesignFactoryTest(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
-
+        self.screen = NonTreatment(element_type=SCREEN,
+                                   duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.run_in = NonTreatment(element_type=RUN_IN,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.washout = NonTreatment(element_type=WASHOUT,
+                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+        self.follow_up = NonTreatment(element_type=FOLLOW_UP,
+                                      duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
         self.sample_assay_plan = SampleAssayPlan()
         self.sample_assay_plan_list = [SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan()]
 
+    """
     def test_property_treatments(self):
         self.assertEqual(self.factory.treatments, None)
 
@@ -1565,12 +1574,39 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(self.factory.sample_assay_plans, self.sample_assay_plan)
         self.factory.sample_assay_plans = self.sample_assay_plan_list
         self.assertEqual(self.factory.sample_assay_plans, self.sample_assay_plan_list)
-
-    def test_property_sample_plans(self):
-        pass
+    """
 
     def test_compute_crossover_design_00(self):
-        pass
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan)]
+        crossover_design = self.factory.compute_crossover_design(
+            treatments_map=treatments_map,
+            screen_map=(self.screen, None),
+            washout_map=(self.washout, None),
+            follow_up_map=(self.follow_up, self.sample_assay_plan)
+        )
+        self.assertIsInstance(crossover_design, StudyDesign)
+        self.assertEqual(len(crossover_design.study_arms), len(treatments_map))
+        self.assertEqual(crossover_design.study_arms[0],
+                         StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+        self.assertEqual(crossover_design.study_arms[1],
+                         StudyArm(name='ARM_01', group_size=10, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_01_CELL_01', elements=(self.second_treatment,)), self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_02', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_01_CELL_03', elements=(self.first_treatment,)), self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
 
     def test_compute_parallel_design_00(self):
         pass
