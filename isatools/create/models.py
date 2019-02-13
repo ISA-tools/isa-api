@@ -1780,6 +1780,9 @@ class StudyDesignFactory(object):
             raise ISAModelAttributeError('Data supplied is not correctly formatted for SampleAssayFactory')
     """
 
+    TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
+                          'with (Treatment, StudyAssayPlan) pairs.'
+
     @staticmethod
     def compute_crossover_design(treatments_map, screen_map=None, run_in_map=None,
                                  washout_map=None, follow_up_map=None):
@@ -1791,7 +1794,19 @@ class StudyDesignFactory(object):
 
         :return: StudyDesign - the crossover design as a set of StudyArms
         """
-        pass
+        if not isinstance(treatments_map, list) or not all(isinstance(el, tuple) for el in treatments_map):
+            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+        treatments, sample_plans = zip(*treatments_map)
+        if not all(isinstance(treatment, Treatment) for treatment in treatments) or not all(
+                isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
+            raise ISAModelTypeError('treatment_map must be a list containing tuples '
+                                    'with (Treatment, StudyAssayPlan) pairs.')
+        for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
+                                (follow_up_map, FOLLOW_UP)]:
+            if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
+                    or not nt_map[0].type == nt_type or not (
+                            nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
+                raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
 
     def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):
         """
