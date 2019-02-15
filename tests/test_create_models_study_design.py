@@ -1581,6 +1581,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.second_treatment, self.sample_assay_plan)]
         crossover_design = self.factory.compute_crossover_design(
             treatments_map=treatments_map,
+            group_sizes = 10,
             screen_map=(self.screen, None),
             washout_map=(self.washout, None),
             follow_up_map=(self.follow_up, self.sample_assay_plan)
@@ -1611,7 +1612,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
     def test_compute_crossover_design_raises_00(self):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
-            StudyDesignFactory.compute_crossover_design(treatments_map)
+            StudyDesignFactory.compute_crossover_design(treatments_map, 10)
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
 
     def test_compute_parallel_design_00(self):

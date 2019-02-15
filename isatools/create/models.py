@@ -1782,9 +1782,11 @@ class StudyDesignFactory(object):
 
     TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
                           'with (Treatment, StudyAssayPlan) pairs.'
+    GROUP_SIZES_ERROR = 'no group sizes have been provided. Group size(s) must be provided either as an integer or as' \
+                        'a tuple or list of interegers'
 
     @staticmethod
-    def compute_crossover_design(treatments_map, screen_map=None, run_in_map=None,
+    def compute_crossover_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
                                  washout_map=None, follow_up_map=None):
         """
         Computes the crossover trial design on the basis of the set of
@@ -1794,19 +1796,47 @@ class StudyDesignFactory(object):
 
         :return: StudyDesign - the crossover design as a set of StudyArms
         """
-        if not isinstance(treatments_map, list) or not all(isinstance(el, tuple) for el in treatments_map):
-            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+        if not isinstance(group_sizes, int):
+            if not all(isinstance(el, int) for el in group_sizes):
+                raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        if not isinstance(treatments_map, list):
+            if not all(isinstance(el, tuple) for el in treatments_map):
+                raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         treatments, sample_plans = zip(*treatments_map)
-        if not all(isinstance(treatment, Treatment) for treatment in treatments) or not all(
-                isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
-            raise ISAModelTypeError('treatment_map must be a list containing tuples '
-                                    'with (Treatment, StudyAssayPlan) pairs.')
+        if not all(isinstance(treatment, Treatment) for treatment in treatments):
+            if not all(isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
+                raise ISAModelTypeError('treatment_map must be a list containing tuples '
+                                        'with (Treatment, StudyAssayPlan) pairs.')
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
                                 (follow_up_map, FOLLOW_UP)]:
+            if nt_map is None:
+                continue
             if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
                     or not nt_map[0].type == nt_type or not (
                             nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
                 raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
+        treatment_permutations = list(itertools.permutations(treatments))
+        design = StudyDesign()
+        for i, permutation in enumerate(treatment_permutations):
+            arm_map = []
+            if screen_map:
+                arm_map.append(screen_map)
+            if run_in_map:
+                arm_map.append(run_in_map)
+            for j, treatment in enumerate(permutation):
+                # pdb.set_trace()
+                sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(3), str(j).zfill(3)),
+                                          elements=[treatment]), sa_plan])
+                if washout_map:
+                    arm_map.append(washout_map)
+            if follow_up_map:
+                arm_map.append(follow_up_map)
+            group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
+            print(arm_map)
+            design.study_arms.append(StudyArm('ARM{0}'.format(str(i).zfill(3)), group_size=group_size,
+                                              arm_map=OrderedDict(arm_map)))
+        return design
 
     def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):
         """
