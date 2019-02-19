@@ -1818,24 +1818,35 @@ class StudyDesignFactory(object):
         treatment_permutations = list(itertools.permutations(treatments))
         design = StudyDesign()
         for i, permutation in enumerate(treatment_permutations):
+            counter = 0
             arm_map = []
             if screen_map:
-                arm_map.append(screen_map)
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[screen_map[0]]), screen_map[1]])
+                counter += 1
             if run_in_map:
-                arm_map.append(run_in_map)
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[run_in_map[0]]), run_in_map[1]])
+                counter += 1
             for j, treatment in enumerate(permutation):
                 # pdb.set_trace()
                 sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
-                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(3), str(j).zfill(3)),
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                           elements=[treatment]), sa_plan])
-                if washout_map:
-                    arm_map.append(washout_map)
+                counter += 1
+                if washout_map and j < len(permutation) - 1: # do not add a washout after the last treatment cell
+                    arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                              elements=[washout_map[0]]), washout_map[1]])
+                    counter += 1
             if follow_up_map:
-                arm_map.append(follow_up_map)
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[follow_up_map[0]]), follow_up_map[1]])
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
-            print(arm_map)
-            design.study_arms.append(StudyArm('ARM{0}'.format(str(i).zfill(3)), group_size=group_size,
-                                              arm_map=OrderedDict(arm_map)))
+            for el in arm_map:
+                print('Cell: {0}'.format(el[0]))
+                print('SampleAssayPlan: {0}'.format(el[1]))
+            arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            design.add_study_arm(arm)
         return design
 
     def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):

@@ -1608,12 +1608,13 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                  [StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
                              ]
                          )))
-
+    """
     def test_compute_crossover_design_raises_00(self):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, 10)
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+    """
 
     def test_compute_parallel_design_00(self):
         pass
