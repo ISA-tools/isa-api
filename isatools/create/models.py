@@ -14,6 +14,7 @@ import copy
 from isatools.model import *
 from isatools.errors import *
 from abc import ABC, abstractmethod
+from math import factorial
 import inspect
 import pdb
 
@@ -1797,16 +1798,17 @@ class StudyDesignFactory(object):
         :return: StudyDesign - the crossover design as a set of StudyArms
         """
         if not isinstance(group_sizes, int):
-            if not all(isinstance(el, int) for el in group_sizes):
+            if not all(isinstance(el, int) for el in group_sizes) or \
+                    not len(group_sizes) == factorial(len(treatments_map)):
                 raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
         if not isinstance(treatments_map, list):
             if not all(isinstance(el, tuple) for el in treatments_map):
                 raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         treatments, sample_plans = zip(*treatments_map)
         if not all(isinstance(treatment, Treatment) for treatment in treatments):
-            if not all(isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
-                raise ISAModelTypeError('treatment_map must be a list containing tuples '
-                                        'with (Treatment, StudyAssayPlan) pairs.')
+            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+        if not all(isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
+            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
                                 (follow_up_map, FOLLOW_UP)]:
             if nt_map is None:

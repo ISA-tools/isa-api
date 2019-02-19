@@ -1576,7 +1576,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(self.factory.sample_assay_plans, self.sample_assay_plan_list)
     """
 
-    def test_compute_crossover_design_00(self):
+    def test_compute_crossover_design_2_treatments(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan)]
         crossover_design = self.factory.compute_crossover_design(
@@ -1608,13 +1608,82 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                  [StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
                              ]
                          )))
-    """
-    def test_compute_crossover_design_raises_00(self):
+
+    def test_compute_crossover_design_3_treatments(self):
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        crossover_design = self.factory.compute_crossover_design(
+            treatments_map=treatments_map,
+            group_sizes=(10, 15, 12, 15, 12, 20),
+            screen_map=(self.screen, None),
+            run_in_map=(self.run_in, None),
+            washout_map=(self.washout, None),
+            follow_up_map=(self.follow_up, self.sample_assay_plan)
+        )
+        self.assertEqual(len(crossover_design.study_arms), 6) # three treatments means six permutations
+        self.assertEqual(crossover_design.study_arms[0],
+                         StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_00_CELL_04', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+        self.assertEqual(crossover_design.study_arms[1],
+                         StudyArm(name='ARM_01', group_size=15, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_01_CELL_02', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_03', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_01_CELL_04', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_05', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_01_CELL_06', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+        self.assertEqual(crossover_design.study_arms[2],
+                         StudyArm(name='ARM_02', group_size=12, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_02_CELL_02', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_02_CELL_03', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_02_CELL_04', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_02_CELL_05', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_02_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_02_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+
+    def test_compute_crossover_design_raises_treatment_map_error(self):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, 10)
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
-    """
+
+    def test_compute_crossover_design_raises_group_sizes_error(self):
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
+            StudyDesignFactory.compute_crossover_design(treatments_map, [10, 12, 19])
+        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
     def test_compute_parallel_design_00(self):
         pass
