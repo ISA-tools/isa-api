@@ -1738,69 +1738,14 @@ class StudyDesignFactory(object):
       A factory class to build a set of study arms.
     """
 
-    # TODO: Add screen epoch
-    # TODO: Add follow up epoch
-    # TODO: Add Rest/washout epochs?
-
-    """
-    def __init__(self, treatments=None, sample_assay_plans=None):
-        self.__treatments = None
-        self.__sample_assay_plans = None
-        if treatments is not None:
-            self.treatments = treatments
-        if sample_assay_plans is not None:
-            self.sample_assay_plans = sample_assay_plans
-
-    @property
-    def treatments(self):
-        return self.__treatments
-
-    @treatments.setter
-    def treatments(self, treatments):
-        if isinstance(treatments, (tuple, list)) and all([isinstance(treatment, Treatment)
-                                                          for treatment in treatments]):
-            self.__treatments = list(treatments)
-        elif isinstance(treatments, Treatment):
-            self.__treatments = treatments
-        else:
-            raise ISAModelAttributeError('Data supplied is not correctly formatted for Treatment')
-
-    @property
-    def sample_assay_plans(self):
-        return self.__sample_assay_plans
-
-    @sample_assay_plans.setter
-    def sample_assay_plans(self, sample_assay_plans):
-        if isinstance(sample_assay_plans, (tuple, list)) \
-                and all([isinstance(sample_assay_plan, SampleAssayPlan)
-                         for sample_assay_plan in sample_assay_plans]):
-            self.__sample_assay_plans = list(sample_assay_plans)
-        elif isinstance(sample_assay_plans, SampleAssayPlan):
-            self.__sample_assay_plans = sample_assay_plans
-        else:
-            raise ISAModelAttributeError('Data supplied is not correctly formatted for SampleAssayFactory')
-    """
-
     TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
                           'with (Treatment, StudyAssayPlan) pairs.'
     GROUP_SIZES_ERROR = 'no group sizes have been provided. Group size(s) must be provided either as an integer or as' \
                         'a tuple or list of interegers'
 
     @staticmethod
-    def compute_crossover_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
-                                 washout_map=None, follow_up_map=None):
-        """
-        Computes the crossover trial design on the basis of the set of
-        treatments and either a single sample plan uniformly applied at each
-        treatment or an ordered set of sample plans that matches the number of
-        treatments (otherwise raises an error).
-
-        :return: StudyDesign - the crossover design as a set of StudyArms
-        """
-        if not isinstance(group_sizes, int):
-            if not all(isinstance(el, int) for el in group_sizes) or \
-                    not len(group_sizes) == factorial(len(treatments_map)):
-                raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+    def _validate_maps(treatments_map, screen_map=None, run_in_map=None, washout_map=None, follow_up_map=None):
+        """Validates treatment and NonTreatment maps"""
         if not isinstance(treatments_map, list):
             if not all(isinstance(el, tuple) for el in treatments_map):
                 raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
@@ -1817,6 +1762,24 @@ class StudyDesignFactory(object):
                     or not nt_map[0].type == nt_type or not (
                             nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
                 raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
+
+    @staticmethod
+    def compute_crossover_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
+                                 washout_map=None, follow_up_map=None):
+        """
+        Computes the crossover trial design on the basis of the set of
+        treatments and either a single sample plan uniformly applied at each
+        treatment or an ordered set of sample plans that matches the number of
+        treatments (otherwise raises an error).
+
+        :return: StudyDesign - the crossover design as a set of StudyArms
+        """
+        if not isinstance(group_sizes, int):
+            if not all(isinstance(el, int) for el in group_sizes) or \
+                    not len(group_sizes) == factorial(len(treatments_map)):
+                raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps(treatments_map, screen_map, run_in_map, washout_map, follow_up_map)
+        treatments, sample_plans = zip(*treatments_map)
         treatment_permutations = list(itertools.permutations(treatments))
         design = StudyDesign()
         for i, permutation in enumerate(treatment_permutations):
@@ -1831,7 +1794,6 @@ class StudyDesignFactory(object):
                                           elements=[run_in_map[0]]), run_in_map[1]])
                 counter += 1
             for j, treatment in enumerate(permutation):
-                # pdb.set_trace()
                 sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                           elements=[treatment]), sa_plan])
@@ -1851,7 +1813,9 @@ class StudyDesignFactory(object):
             design.add_study_arm(arm)
         return design
 
-    def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):
+    @staticmethod
+    def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
+                                washout_map=None, follow_up_map=None):
         """
         Computes the parallel trial design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1860,28 +1824,37 @@ class StudyDesignFactory(object):
 
         :return: set - the parallel design as a set of StudyArms
         """
-        if set() not in self.treatments:
-            study_arms = []
-            for _ in range(0, num_arms):
-                arm = self.compute_single_arm_design()[-1]
-                arm.name = 'arm_{}'.format(_)
-                study_arms.append(arm)
-            # rank_before_tmin = min(x.rank for x in next(iter(study_arms))) - 1
-            # rank_after_tmax = max(x.rank for x in next(iter(study_arms))) + 1
-            # for arm in study_arms:
-            #     if screen:
-            #         arm.add(StudyCell(name='screen',
-            #                            rank=rank_before_tmin,
-            #                            sample_plan=self.sample_plan))
-            #     if follow_up:
-            #         arm.add(StudyCell(name='follow_up',
-            #                            rank=rank_after_tmax,
-            #                            sample_plan=self.sample_plan))
-            return study_arms
-        else:
-            return set()
+        if not isinstance(group_sizes, int):
+            if not all(isinstance(el, int) for el in group_sizes) or not len(group_sizes) == len(treatments_map):
+                raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps(treatments_map, screen_map=screen_map, run_in_map=run_in_map,
+                                          follow_up_map=follow_up_map)
+        treatments, sample_plans = zip(*treatments_map)
+        design = StudyDesign()
+        for i, treatment in enumerate(treatments):
+            counter = 0
+            arm_map = []
+            if screen_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[screen_map[0]]), screen_map[1]])
+                counter += 1
+            if run_in_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[run_in_map[0]]), run_in_map[1]])
+                counter += 1
+            arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                      elements=[treatment]), sample_plans[i]])
+            counter += 1
+            if follow_up_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[follow_up_map[0]]), follow_up_map[1]])
+            group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
+            arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            design.add_study_arm(arm)
+        return design
 
-    def compute_single_arm_design(self, screen=False, follow_up=False):
+    @staticmethod
+    def compute_single_arm_design(screen=False, follow_up=False):
         """
         Computes the single arm design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1890,6 +1863,8 @@ class StudyDesignFactory(object):
 
         :return: set - the single arm design as a set of StudyArms
         """
+        pass
+        '''
         if len(set([x.group_size for x in self.treatments])) != 1:
            raise ValueError('Group size for all treatments must be the same if '
                             'computing a single-arm design. Found {}'.format(
@@ -1903,6 +1878,7 @@ class StudyDesignFactory(object):
             return [arm]
         else:
             return set()
+        '''
 
     def compute_single_epoch_design(self, screen=False, follow_up=False):
         """
@@ -1972,7 +1948,7 @@ class IsaModelObjectFactory(object):
             self.__study_design = study_design
 
     def create_study_from_plan(self):
-        # FIXME remove all the refernces to a TreatmentSequence.
+        # FIXME remove all the references to a TreatmentSequence.
         # FIXME This method will need refactoring anyway (massi 17/10/2018)
 
         study_arm = self.study_design.study_arms  # only get first arm for now
@@ -1987,8 +1963,7 @@ class IsaModelObjectFactory(object):
                            description='Ontology for Biomedical Investigations')
         ]
         study.protocols = [
-            Protocol(name='sample collection', protocol_type=
-                OntologyAnnotation(term='sample collection'))
+            Protocol(name='sample collection', protocol_type=OntologyAnnotation(term='sample collection'))
         ]
 
         sample_collection = study.get_prot('sample collection')
@@ -2101,11 +2076,11 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_plan is not defined')
         sample_plan = sample_assay_plan.sample_plan
         ranked_treatment_set = set()
-        for x, _ in treatment_sequence.ranked_treatments: #FIXME
+        for x, _ in treatment_sequence.ranked_treatments:                # FIXME
             ranked_treatment_set.add(x)
         groups_ids = [
             (str(i+1).zfill(3), x) for i, x in enumerate(ranked_treatment_set)]
-        ranks = set([y for _, y in treatment_sequence.ranked_treatments]) #FIXME
+        ranks = set([y for _, y in treatment_sequence.ranked_treatments])            # FIXME
 
         group_rank_map = dict()
         for group_id, rank in itertools.product(groups_ids, ranks):
