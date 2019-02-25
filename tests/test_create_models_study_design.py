@@ -1728,18 +1728,60 @@ class StudyDesignFactoryTest(unittest.TestCase):
                              ]
                          )))
 
-    def test_compute_single_arm_design_group_sizes_error(self):
+    def test_compute_parallel_design_group_sizes_error(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
         with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
-                                                                     group_sizes=[10, 12])
+                                                                           group_sizes=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
+    def test_compute_single_arm_design_tree_treatments(self):
+        treatments_map =  [(self.second_treatment, self.sample_assay_plan),
+                          (self.fourth_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        parallel_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
+                                                                       group_size=19,
+                                                                       screen_map=(self.screen, None),
+                                                                       run_in_map=(self.run_in, None),
+                                                                       washout_map=(self.washout, None),
+                                                                       follow_up_map=(self.follow_up,
+                                                                                      self.sample_assay_plan)
+                                                                       )
+        self.assertEqual(len(parallel_design.study_arms), 1)
+        self.assertEqual(parallel_design.study_arms[0],
+                         StudyArm(name='ARM_00', group_size=19, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_00_CELL_02', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_00_CELL_04', elements=(self.fourth_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None],
+                                 [StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
 
-    def test_compute_single_epoch_design_00(self):
-        pass
+    def test_compute_single_arm_design_raises_treatment_map_error(self):
+        treatments_map = [(self.first_treatment, self.second_treatment)]
+        with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
+            StudyDesignFactory.compute_single_arm_design(treatments_map, group_size=12)
+        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+
+    def test_compute_single_arm_design_group_sizes_error(self):
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+            single_arm_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
+                                                                             group_size=[10, 12])
+        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+
 
 class IsaModelObjectFactoryTest(unittest.TestCase):
 

@@ -1741,7 +1741,8 @@ class StudyDesignFactory(object):
     TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
                           'with (Treatment, StudyAssayPlan) pairs.'
     GROUP_SIZES_ERROR = 'no group sizes have been provided. Group size(s) must be provided either as an integer or as' \
-                        'a tuple or list of interegers'
+                        'a tuple or list of integers'
+    GROUP_SIZE_ERROR = 'no group_size have been provided. Group size must be provided as an integer.'
 
     @staticmethod
     def _validate_maps(treatments_map, screen_map=None, run_in_map=None, washout_map=None, follow_up_map=None):
@@ -1854,7 +1855,8 @@ class StudyDesignFactory(object):
         return design
 
     @staticmethod
-    def compute_single_arm_design(screen=False, follow_up=False):
+    def compute_single_arm_design(treatments_map, group_size, screen_map=None, run_in_map=None,
+                                  washout_map=None, follow_up_map=None):
         """
         Computes the single arm design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1863,22 +1865,37 @@ class StudyDesignFactory(object):
 
         :return: set - the single arm design as a set of StudyArms
         """
-        pass
-        '''
-        if len(set([x.group_size for x in self.treatments])) != 1:
-           raise ValueError('Group size for all treatments must be the same if '
-                            'computing a single-arm design. Found {}'.format(
-               set([x.group_size for x in self.treatments])))
-        if set() not in self.treatments:
-            arm = StudyArm(name='arm_0')
-            arm.epochs = [
-                StudyCell(name='epoch_{i}'.format(i=i), rank=i, elements=[x],
-                          sample_plan=self.sample_plan)
-                for i, x in enumerate(self.treatments)]
-            return [arm]
-        else:
-            return set()
-        '''
+        if not isinstance(group_size, int):
+            raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps(treatments_map, screen_map=screen_map, run_in_map=run_in_map,
+                                          washout_map=washout_map, follow_up_map=follow_up_map)
+        treatments, sample_plans = zip(*treatments_map)
+        design = StudyDesign()
+        counter = 0
+        arm_map = []
+        if screen_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[screen_map[0]]), screen_map[1]])
+            counter += 1
+        if run_in_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[run_in_map[0]]), run_in_map[1]])
+            counter += 1
+        for j, treatment in enumerate(treatments):
+            sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[treatment]), sa_plan])
+            counter += 1
+            if washout_map and j < len(treatments) - 1:  # do not add a washout after the last treatment cell
+                arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                          elements=[washout_map[0]]), washout_map[1]])
+                counter += 1
+        if follow_up_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[follow_up_map[0]]), follow_up_map[1]])
+        arm = StudyArm('ARM_00', group_size=group_size, arm_map=OrderedDict(arm_map))
+        design.add_study_arm(arm)
+        return design
 
     def compute_single_epoch_design(self, screen=False, follow_up=False):
         """
