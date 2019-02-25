@@ -115,7 +115,11 @@ class Element(ABC):
 
 
 class NonTreatment(Element):
-
+    """
+        A NonTreatment is defined only by 1 factor values specifying its duration
+        and a type. Allowed types are SCREEN, RUN-IN, WASHOUT and FOLLOW-UP.
+        A NonTreatment is an extension of the basic Element
+    """
     def __init__(self, element_type=ELEMENT_TYPES['SCREEN'], duration_value=0.0, duration_unit=None):
         super(NonTreatment, self).__init__()
         if element_type not in ELEMENT_TYPES.values():
@@ -165,7 +169,7 @@ class NonTreatment(Element):
 
 class Treatment(Element):
     """
-    A Treatment is defined as a tuple of factor values (as defined in the ISA
+    A Treatment is defined as a set of factor values (as defined in the ISA
     model v1) and a treatment type
     A Treatment is an extension of the basic Element
     """
@@ -734,17 +738,17 @@ class StudyArmDecoder(object):
 
 class StudyDesign(object):
 
-    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
-    STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
-    ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
-    ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
-    GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the bounds of the StudyDesign.'
-
     """
     A class representing a study design, which is composed of a collection of
     study arms.
     StudyArms of different lengths (i.e. different number of cells) are allowed.
     """
+
+    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
+    STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
+    ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
+    ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
+    GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the bounds of the StudyDesign.'
 
     def __init__(self, name='Study Design', study_arms=None):
         """
@@ -1768,12 +1772,25 @@ class StudyDesignFactory(object):
     def compute_crossover_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
                                  washout_map=None, follow_up_map=None):
         """
-        Computes the crossover trial design on the basis of the set of
-        treatments and either a single sample plan uniformly applied at each
-        treatment or an ordered set of sample plans that matches the number of
-        treatments (otherwise raises an error).
-
-        :return: StudyDesign - the crossover design as a set of StudyArms
+        Computes the crossover trial design on the basis of a number of
+        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
+        
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
+                                      If an integer is provided all the output arms will have the same group_size
+                                      If a tuple/list of integers is provided its length must euqual T! where
+                                      T is the number of Treatments in the treatment map
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the crossover design. It contains T! study_arms, where T is the number of Treatments
+                               provided in the treatment_map
         """
         if not isinstance(group_sizes, int):
             if not all(isinstance(el, int) for el in group_sizes) or \
@@ -1818,12 +1835,25 @@ class StudyDesignFactory(object):
     def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
                                 washout_map=None, follow_up_map=None):
         """
-        Computes the parallel trial design on the basis of the set of
-        treatments and either a single sample plan uniformly applied at each
-        treatment or an ordered set of sample plans that matches the number of
-        treatments (otherwise raises an error).
+        Computes the parallel trial design on the basis of a number of
+        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
-        :return: set - the parallel design as a set of StudyArms
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
+                                      If an integer is provided all the output arms will have the same group_size
+                                      If a tuple/list of integers is provided its length must equal T where
+                                      T is the number of Treatments in the treatment map
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the parallel design. It contains T study_arms, where T is the number of Treatments
+                               provided in the treatment_map
         """
         if not isinstance(group_sizes, int):
             if not all(isinstance(el, int) for el in group_sizes) or not len(group_sizes) == len(treatments_map):
@@ -1858,12 +1888,21 @@ class StudyDesignFactory(object):
     def compute_single_arm_design(treatments_map, group_size, screen_map=None, run_in_map=None,
                                   washout_map=None, follow_up_map=None):
         """
-        Computes the single arm design on the basis of the set of
-        treatments and either a single sample plan uniformly applied at each
-        treatment or an ordered set of sample plans that matches the number of
-        treatments (otherwise raises an error).
+        Computes the single arm trial design on the basis of a number of
+        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
-        :return: set - the single arm design as a set of StudyArms
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param group_size - int The size of the group of the study arm.
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
         """
         if not isinstance(group_size, int):
             raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
@@ -1897,7 +1936,7 @@ class StudyDesignFactory(object):
         design.add_study_arm(arm)
         return design
 
-    def compute_single_epoch_design(self, screen=False, follow_up=False):
+    def compute_single_epoch_design(self, screen=False, follow_up=False): #FIXME
         """
         Computes the single arm design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
