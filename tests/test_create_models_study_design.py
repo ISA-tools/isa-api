@@ -1782,6 +1782,30 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                                                              group_size=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
+    def test_compute_concomitant_treatment_design_three_treatments(self):
+        treatments = [self.first_treatment, self.second_treatment, self.fourth_treatment]
+        concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
+            treatments, self.sample_assay_plan, group_size=30, follow_up_map=(self.follow_up, self.sample_assay_plan)
+        )
+        self.assertEqual(len(concomitant_treatment_design.study_arms), 1)
+        self.assertEqual(concomitant_treatment_design.study_arms[0],
+                            StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
+                                [StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
+                                                                       self.second_treatment,
+                                                                       self.first_treatment},)),
+                                 self.sample_assay_plan],
+                                [StudyCell('ARM_00_CELL_01', elements=(self.follow_up,)), self.sample_assay_plan]
+                            ]))
+                        )
+
+    def test_compute_concomitant_treatment_design_group_size_error(self):
+        treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
+        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+            concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
+                treatments, self.sample_assay_plan, group_size=[10, 12, 13]
+            )
+        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+
     def test_compute_crossover_design_multi_element_cell_three_treatments(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
         crossover_design_with_multi_element_cell = StudyDesignFactory.compute_crossover_design_multi_element_cell(

@@ -1790,7 +1790,7 @@ class StudyDesignFactory(object):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         if not isinstance(sample_assay_plan, SampleAssayPlan):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
-        if not isinstance(washout, NonTreatment) or not washout.type == WASHOUT:
+        if washout and (not isinstance(washout, NonTreatment) or not washout.type == WASHOUT):
             raise ISAModelTypeError('{0} is not a valid NonTreatment of type WASHOUT'.format(washout))
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (follow_up_map, FOLLOW_UP)]:
             if nt_map is None:
@@ -1968,31 +1968,49 @@ class StudyDesignFactory(object):
         design.add_study_arm(arm)
         return design
 
-    def compute_single_epoch_design(self, screen=False, follow_up=False): # FIXME
+    @staticmethod
+    def compute_concomitant_treatments_design(treatments, sample_assay_plan, group_size, screen_map=None,
+                                              run_in_map=None, follow_up_map=None):
         """
-        Computes the single arm design on the basis of the set of
-        treatments and either a single sample plan uniformly applied at each
-        treatment or an ordered set of sample plans that matches the number of
-        treatments (otherwise raises an error).
-
-        :return: set - the single arm design as a set of StudyArms
+        Computes a study design with only one treatment cell. All treatments provided as input are considered
+        concomitant within that cell
+        :param treatments - a list containing Treatment(s).
+        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+                                   cell built from the treatments provided a the first parameter
+        :param group_size - int The size of the group of the study arm.
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN 
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the single arm design. It contains 1 study arm
         """
-        if len(set([x.group_size for x in self.treatments])) != 1:
-           raise ValueError('Group size for all treatments must be the same if '
-                            'computing a single-arm design. Found {}'.format(
-               set([x.group_size for x in self.treatments])))
-        if set() not in self.treatments:
-            arms = []
-            for i, treatment_group in enumerate(self.treatments):
-                arm = StudyArm(name='arm_{}'.format(i))
-                arm.epochs = [
-                    StudyCell(name='epoch_{i}'.format(i=0), rank=0,
-                              elements=[treatment_group],
-                              sample_plan=self.sample_plan)]
-                arms.append(arm)
-            return arms
-        else:
-            return set()
+        if not isinstance(group_size, int):
+            raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, screen_map=screen_map,
+                                                             run_in_map=run_in_map, follow_up_map=follow_up_map)
+        design = StudyDesign()
+        counter = 0
+        arm_map = []
+        if screen_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[screen_map[0]]), screen_map[1]])
+            counter += 1
+        if run_in_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[run_in_map[0]]), run_in_map[1]])
+            counter += 1
+        concomitant_treatments = set(treatments)
+        arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)), elements=[concomitant_treatments]),
+                        sample_assay_plan])
+        counter += 1
+        if follow_up_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[follow_up_map[0]]), follow_up_map[1]])
+        arm = StudyArm('ARM_00', group_size=group_size, arm_map=OrderedDict(arm_map))
+        design.add_study_arm(arm)
+        return design
 
     @staticmethod
     def compute_crossover_design_multi_element_cell(treatments, sample_assay_plan, group_sizes, washout=None,
@@ -2063,7 +2081,8 @@ class StudyDesignFactory(object):
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
         :param treatments - a list containing Treatments.
-        :param sample_assay_plan
+        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+                                   cell built from the treatments provided a the first parameter
         :param group_size - int The size of the group of the study arm.
         :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
                          A WASHOUT cell will be added between each pair of Treatment cell
