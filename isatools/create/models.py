@@ -2003,6 +2003,8 @@ class StudyDesignFactory(object):
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
         :param treatments - a list containing Treatment(s).
+        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+                                   cell built from the treatments provided a the first parameter
         :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
                                       If an integer is provided all the output arms will have the same group_size
                                       If a tuple/list of integers is provided its length must euqual T! where
@@ -2050,6 +2052,53 @@ class StudyDesignFactory(object):
                 print('SampleAssayPlan: {0}'.format(el[1]))
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
+        return design
+
+    @staticmethod
+    def compute_single_arm_design_multi_element_cell(treatments, sample_assay_plan, group_size, washout=None,
+                                                     screen_map=None, run_in_map=None, follow_up_map=None):
+        """
+        Computes the single arm trial design on the basis of a number of
+        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
+
+        :param treatments - a list containing Treatments.
+        :param sample_assay_plan
+        :param group_size - int The size of the group of the study arm.
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+                         A WASHOUT cell will be added between each pair of Treatment cell
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN 
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
+        """
+        if not isinstance(group_size, int):
+            raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, washout, screen_map,
+                                                             run_in_map, follow_up_map)
+        design = StudyDesign()
+        counter = 0
+        arm_map = []
+        if screen_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[screen_map[0]]), screen_map[1]])
+            counter += 1
+        if run_in_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[run_in_map[0]]), run_in_map[1]])
+            counter += 1
+        multi_element_cell = StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                       elements=intersperse(treatments, washout) if washout else treatments)
+        arm_map.append([multi_element_cell, sample_assay_plan])
+        counter += 1
+        if follow_up_map:
+            arm_map.append([StudyCell('ARM_00_CELL_{0}'.format(str(counter).zfill(2)),
+                                      elements=[follow_up_map[0]]), follow_up_map[1]])
+        arm = StudyArm('ARM_00', group_size=group_size, arm_map=OrderedDict(arm_map))
+        design.add_study_arm(arm)
         return design
 
 
