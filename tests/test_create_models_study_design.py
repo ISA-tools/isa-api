@@ -1782,6 +1782,63 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                                                              group_size=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
+    def test_compute_crossover_design_multi_element_cell_three_treatments(self):
+        treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
+        crossover_design_with_multi_element_cell = StudyDesignFactory.compute_crossover_design_multi_element_cell(
+            treatments, self.sample_assay_plan, group_sizes=(10, 15, 12, 15, 12, 20), washout=self.washout,
+            screen_map=(self.screen, None),
+            run_in_map=(self.run_in, None),
+            follow_up_map=(self.follow_up, self.sample_assay_plan)
+        )
+        self.assertEqual(len(crossover_design_with_multi_element_cell.study_arms), 6)  # three treatments means
+                                                                                       # six permutations
+        self.assertEqual(crossover_design_with_multi_element_cell.study_arms[0],
+                         StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment, self.washout,
+                                                                        self.third_treatment, self.washout,
+                                                                        self.fourth_treatment)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+        self.assertEqual(crossover_design_with_multi_element_cell.study_arms[1],
+                         StudyArm(name='ARM_01', group_size=15, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_01_CELL_02', elements=(self.first_treatment, self.washout,
+                                                                        self.fourth_treatment, self.washout,
+                                                                        self.third_treatment)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_01_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+        self.assertEqual(crossover_design_with_multi_element_cell.study_arms[2],
+                         StudyArm(name='ARM_02', group_size=12, arm_map=OrderedDict(
+                             [
+                                 [StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None],
+                                 [StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None],
+                                 [StudyCell('ARM_02_CELL_02', elements=(self.third_treatment, self.washout,
+                                                                        self.first_treatment, self.washout,
+                                                                        self.fourth_treatment)),
+                                  self.sample_assay_plan],
+                                 [StudyCell('ARM_02_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                             ]
+                         )))
+
+    def test_compute_crossover_design_multi_element_cell_group_sizes_error(self):
+        treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
+        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+            crossover_design_with_multi_element_cell = StudyDesignFactory.compute_crossover_design_multi_element_cell(
+                treatments, self.sample_assay_plan, group_sizes=(10, 15, 12, 15, 12), washout=self.washout,
+                screen_map=(self.screen, None),
+                run_in_map=(self.run_in, None),
+                follow_up_map=(self.follow_up, self.sample_assay_plan)
+            )
+        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
 class IsaModelObjectFactoryTest(unittest.TestCase):
 

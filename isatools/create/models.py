@@ -73,6 +73,17 @@ BASE_FACTORS = [
 
 DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
 
+def intersperse(lst, item):
+    """
+    Utility method to intersperse an item in a list
+    :param lst: 
+    :param item: the item to be interspersed
+    :return: 
+    """
+    result = [item] * (len(lst) * 2 - 1)
+    result[0::2] = lst
+    return result
+
 
 class Element(ABC):
     """
@@ -1750,7 +1761,8 @@ class StudyDesignFactory(object):
 
     @staticmethod
     def _validate_maps(treatments_map, screen_map=None, run_in_map=None, washout_map=None, follow_up_map=None):
-        """Validates treatment and NonTreatment maps"""
+        """Validates Treatment and NonTreatment maps"""
+        # TODO allow concomitant treatments as first element in a treatment map???
         if not isinstance(treatments_map, list):
             if not all(isinstance(el, tuple) for el in treatments_map):
                 raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
@@ -1761,6 +1773,26 @@ class StudyDesignFactory(object):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
                                 (follow_up_map, FOLLOW_UP)]:
+            if nt_map is None:
+                continue
+            if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
+                    or not nt_map[0].type == nt_type or not (
+                            nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
+                raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
+
+    @staticmethod
+    def _validate_maps_multi_element_cell(treatments, sample_assay_plan, washout=None, screen_map=None,
+                                          run_in_map=None, follow_up_map=None):
+        """Validates Treatment and NonTreatment maps"""
+        # TODO allow concomitant treatments as first element in a treatment map???
+        if not isinstance(treatments, (list, tuple)) or \
+                not all(isinstance(treatment, Treatment) for treatment in treatments):
+            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+        if not isinstance(sample_assay_plan, SampleAssayPlan):
+            raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+        if not isinstance(washout, NonTreatment) or not washout.type == WASHOUT:
+            raise ISAModelTypeError('{0} is not a valid NonTreatment of type WASHOUT'.format(washout))
+        for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (follow_up_map, FOLLOW_UP)]:
             if nt_map is None:
                 continue
             if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
@@ -1936,7 +1968,7 @@ class StudyDesignFactory(object):
         design.add_study_arm(arm)
         return design
 
-    def compute_single_epoch_design(self, screen=False, follow_up=False): #FIXME
+    def compute_single_epoch_design(self, screen=False, follow_up=False): # FIXME
         """
         Computes the single arm design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1961,6 +1993,64 @@ class StudyDesignFactory(object):
             return arms
         else:
             return set()
+
+    @staticmethod
+    def compute_crossover_design_multi_element_cell(treatments, sample_assay_plan, group_sizes, washout=None,
+                                                    screen_map=None, run_in_map=None, follow_up_map=None):
+        """
+        Computes the crossover trial design on the basis of a number of
+        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
+
+        :param treatments - a list containing Treatment(s).
+        :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
+                                      If an integer is provided all the output arms will have the same group_size
+                                      If a tuple/list of integers is provided its length must euqual T! where
+                                      T is the number of Treatments in the treatment map
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+                         A WASHOUT cell will be added between each pair of Treatment cell
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type SCREEN
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type RUN-IN
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+                            must be of type FOLLOW-UP
+        :return: StudyDesign - the crossover design. It contains T! study_arms, where T is the number of Treatments
+                               provided in the treatment_map
+        """
+        if not isinstance(group_sizes, int):
+            if not all(isinstance(el, int) for el in group_sizes) or \
+                    not len(group_sizes) == factorial(len(treatments)):
+                raise ISAModelTypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+        StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, washout, screen_map,
+                                                             run_in_map, follow_up_map)
+        treatment_permutations = list(itertools.permutations(treatments))
+        design = StudyDesign()
+        for i, permutation in enumerate(treatment_permutations):
+            counter = 0
+            arm_map = []
+            if screen_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[screen_map[0]]), screen_map[1]])
+                counter += 1
+            if run_in_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[run_in_map[0]]), run_in_map[1]])
+                counter += 1
+            multi_element_cell = StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                           elements=intersperse(permutation, washout) if washout else permutation)
+            arm_map.append([multi_element_cell, sample_assay_plan])
+            counter += 1
+            if follow_up_map:
+                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                          elements=[follow_up_map[0]]), follow_up_map[1]])
+            group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
+            for el in arm_map:
+                print('Cell: {0}'.format(el[0]))
+                print('SampleAssayPlan: {0}'.format(el[1]))
+            arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            design.add_study_arm(arm)
+        return design
 
 
 class IsaModelObjectFactory(object):
