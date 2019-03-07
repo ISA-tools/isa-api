@@ -13,8 +13,10 @@ from numbers import Number
 import copy
 from isatools.model import *
 from isatools.errors import *
-from abc import ABC, abstractmethod
+from abc import ABC
 from math import factorial
+import os
+import yaml
 import inspect
 import pdb
 
@@ -190,7 +192,6 @@ class Treatment(Element):
         Creates a new Treatment
         :param element_type: treatment type
         :param factor_values: set of isatools.model.v1.FactorValue
-        :param group_size: number of subjects in this group
         """
         super(Treatment, self).__init__()
         if element_type not in INTERVENTIONS.values():
@@ -821,6 +822,17 @@ class StudyDesign(object):
         if all([cell is None for cell in epoch_cells]):
             raise ISAModelIndexError(self.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
         return epoch_cells
+
+    def generate_isa_study(self):
+        """
+        this is the core method to return the fully populated ISA Study object from the StudyDesign
+        :return: isatool.model.Study
+        """
+        with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
+                               'study-creator-config.yaml')) as yaml_file:
+            study_config = yaml.load(yaml_file)
+        study = Study(filename=study_config['filename'])
+        return study
 
     def __repr__(self):
         return 'isatools.create.models.StudyDesign(' \
@@ -2121,6 +2133,7 @@ class StudyDesignFactory(object):
         return design
 
 
+
 class IsaModelObjectFactory(object):
     """
     A factory class to create ISA content given a StudyDesign object.
@@ -2165,11 +2178,11 @@ class IsaModelObjectFactory(object):
         # FIXME remove all the references to a TreatmentSequence.
         # FIXME This method will need refactoring anyway (massi 17/10/2018)
 
-        study_arm = self.study_design.study_arms  # only get first arm for now
+        # study_arm = self.study_design.study_arms  # only get first arm for now
 
         study = Study(filename='s_study_arm01.txt')
         # set default declarations in study
-        study.ontology_source_references  = [
+        study.ontology_source_references = [
             OntologySource(name='OBI',
                            file='https://raw.githubusercontent.com/obi-ontology'
                                 '/obi/v2018-02-12/obi.owl',
@@ -2196,17 +2209,15 @@ class IsaModelObjectFactory(object):
         )
 
         def generate_sources(arms):
-            sources_map = dict()
-            for arm in arms:
-                sources = set()
-                for epoch in arm.epochs:
-                    for subjn in (str(x).zfill(3) for x in
-                                  range(1, epoch.sample_plan.group_size + 1)):
-                        source = copy.copy(source_prototype)
-                        source.name = self._idgen(arm.name, subjn)
-                        sources.add(source)
-                    sources_map[arm.name] = list(sources)
-            return sources_map
+            src_map = dict()
+            for s_arm in arms:
+                srcs = set()
+                for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
+                    src = copy.copy(source_prototype)
+                    src.name = self._idgen(arm.name, subj_n)
+                    srcs.add(src)
+                src_map[arm.name] = list(srcs)
+            return src_map
 
         sources_map = generate_sources(self.study_design.study_arms)
         for x in sources_map.values():
@@ -2223,17 +2234,16 @@ class IsaModelObjectFactory(object):
         for arm in self.study_design.study_arms:  # each arm set Group
             group_id = arm.name
             group_sources = sources_map[arm.name]
-            for epoch in arm.epochs:  # each epoch is a rank in group
-                epoch_name = epoch.name
-                rank = epoch.rank
-                sample_plan = epoch.sample_plan
-                for treatment in epoch.elements:
-                    fvs = treatment.factor_values
+            for cell, sample_assay_plan in arm.arm_map.items():
+                # epoch_name = epoch.name
+                # rank = epoch.rank
+                for element in cell.get_all_elements():
+                    fvs = element.factor_values
                     for factor in [x.factor_name for x in fvs]:
                         factors.add(factor)
                     for source in group_sources:
                         for sample_type, sampling_size in \
-                                sample_plan.sample_plan.items():
+                                sample_assay_plan.sample_plan.items():
                             if sample_type.value.term_source:
                                 ontology_sources.add(
                                     sample_type.value.term_source)
@@ -2262,7 +2272,7 @@ class IsaModelObjectFactory(object):
                                     ParameterValue(
                                         category=sample_collection.get_param(
                                             'collection event rank'),
-                                        value=str(rank)))
+                                        value=str(cell.name)))
                                 process_sequence.append(process)
         study.characteristic_categories = list(
             set(study.characteristic_categories))
@@ -2288,7 +2298,7 @@ class IsaModelObjectFactory(object):
 
         if sample_assay_plan.sample_plan == {}:
             raise ISAModelAttributeError('sample_plan is not defined')
-        sample_plan = sample_assay_plan.sample_plan
+        sample_assay_plan = sample_assay_plan.sample_plan
         ranked_treatment_set = set()
         for x, _ in treatment_sequence.ranked_treatments:                # FIXME
             ranked_treatment_set.add(x)
@@ -2395,9 +2405,9 @@ class IsaModelObjectFactory(object):
                     samples.append(sample)
                     process_sequence.append(process)
         # Main batch
-        for (group_id, treatment), ranks in group_rank_map.items():
-            fvs = treatment.factor_values
-            group_size = treatment.group_size
+        for (group_id, element), ranks in group_rank_map.items():
+            fvs = element.factor_values
+            group_size = element.group_size
             for factor in [x.factor_name for x in fvs]:
                 factors.add(factor)
             for subjn in (str(x).zfill(3) for x in range(1, group_size+1)):
@@ -2425,7 +2435,7 @@ class IsaModelObjectFactory(object):
                             source.characteristics.append(Characteristic(
                                 category=var_characteristic))
                 sources.append(source)
-                for sample_type, sampling_size in sample_plan.items():
+                for sample_type, sampling_size in sample_assay_plan.items():
                     if sample_type.value.term_source:
                         ontology_sources.add(sample_type.value.term_source)
                     sampc = 0

@@ -1,0 +1,18 @@
+study:
+  filename: 's_study_01.txt'
+  ontology_source_references:
+    - name: 'OBI'
+      file: 'https://raw.githubusercontent.com/obi-ontology/obi/v2018-02-12/obi.owl'
+      version: 'v2018-02-12'
+      description: 'Ontology for Biomedical Investigations'
+  protocols:
+    - name: 'sample collection'
+      protocol_type: 'sample_collection'
+
+source_prototype:
+  characteristics:
+    - category: 'Material Type'
+    - value:
+        term: 'specimen'
+        term_source: 'OBI'
+        term_accession: '0100051'

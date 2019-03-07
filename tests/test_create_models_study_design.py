@@ -1062,6 +1062,14 @@ class StudyDesignTest(unittest.TestCase):
             epoch_cells = self.study_design.get_epoch(4)
         self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
 
+    def test_generate_isa_study_00(self):
+        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
+                               'study-creator-config.yaml')) as yaml_file:
+            study_config = yaml.load(yaml_file)
+        self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
+        study = self.study_design.generate_isa_study()
+        self.assertIsInstance(study, Study)
+        self.assertEqual(study.filename, yaml_file['filename'])
 
 class TreatmentFactoryTest(unittest.TestCase):
 
