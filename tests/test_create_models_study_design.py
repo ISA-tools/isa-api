@@ -1065,11 +1065,13 @@ class StudyDesignTest(unittest.TestCase):
     def test_generate_isa_study_00(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
-            study_config = yaml.load(yaml_file)
+            config = yaml.load(yaml_file)
+        study_config = config['study']
+        print('study_config: {0}'.format(study_config))
         self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
         study = self.study_design.generate_isa_study()
         self.assertIsInstance(study, Study)
-        self.assertEqual(study.filename, yaml_file['filename'])
+        self.assertEqual(study.filename, study_config['filename'])
 
 class TreatmentFactoryTest(unittest.TestCase):
 

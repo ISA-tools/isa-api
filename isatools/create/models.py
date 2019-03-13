@@ -830,8 +830,30 @@ class StudyDesign(object):
         """
         with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
-            study_config = yaml.load(yaml_file)
+            config = yaml.load(yaml_file)
+        study_config = config['study']
         study = Study(filename=study_config['filename'])
+        study.ontology_source_references = [
+            OntologySource(**study_config['ontology_source_references'][0])
+        ]
+        study.protocols = [
+            Protocol(**study_config['protocols'])
+        ]
+
+        sample_collection = study.get_prot('sample collection')
+        sample_collection.add_param('run order')
+        sample_collection.add_param('collection event rank')
+
+        source_prototype = Source(
+            characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(
+                        term='specimen',
+                        term_source=study.ontology_source_references[0],
+                        term_accession='0100051'))
+            ]
+        )
         return study
 
     def __repr__(self):
@@ -2131,7 +2153,6 @@ class StudyDesignFactory(object):
         arm = StudyArm('ARM_00', group_size=group_size, arm_map=OrderedDict(arm_map))
         design.add_study_arm(arm)
         return design
-
 
 
 class IsaModelObjectFactory(object):

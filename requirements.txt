@@ -12,3 +12,4 @@ mzml2isa
 biopython
 progressbar2
 deepdiff
+PyYAML==3.13
