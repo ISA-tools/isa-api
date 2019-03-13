@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Source": "obo:BFO_0000040",
+    "identifier": {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "obo:IAO_0000590"
+    },
+    "roles": "obo:BFO_0000023",
+    "characteristics": {
+      "@id" : "obo:RO_0000086",
+      "@type" : "obo:quality"
+    }
+  }
+}

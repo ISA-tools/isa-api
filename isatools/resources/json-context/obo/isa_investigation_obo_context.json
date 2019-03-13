@@ -1,0 +1,46 @@
+{
+  "@context":{
+     "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Investigation": "obo:OBI_0000066",
+    "identifier" : {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "obo:OBI_0001622"
+    },
+    "description" : {
+         "@id": "obo:IAO_0000300"
+    } ,
+    "submissionDate" : {
+      "@id":"obo:RO_0002537",
+      "@type": "xsd:date"
+    } ,
+    "publicReleaseDate" : {
+      "@id":"obo:RO_0002537",
+      "@type": "xsd:date"
+    } ,
+    "publications" : {
+                "@id":"obo:",
+                "@type":"obo:IAO_0000013"
+    },
+    "people" : {
+                "@id":"obo:",
+      "@type":"obo:AGRO_00000380"
+    },
+    "ontologySourceReferences": {
+        "@id":"obo:STATO_0000001",
+      "@type":"obo:ENM_8000073"
+    },
+    "studies": { 
+            "@id":"obo:BFO_0000051",
+            "@type":"obo:IAO_0000013"
+    },
+    "comments" : {
+              "@id" : "obo:TODO",
+      "@type" : "obo:IAO_0000300"
+    }
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio": "http://purl.obolibrary.orgsio/",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person": {"@id": "obo:OBI_0000245"},
+    "identifier": {"@id": "obo:IAO_0000577"},
+    "firstName": {"@id": "obo:IAO_0000302"},
+    "lastName": {"@id": "obo:IAO_0000302"},
+    "midInitials": {"@id": "sio:SIO_001318"},
+    "email": {"@id": "obo:IAO_0000429"},
+    "phone": {"@id": "obo:"},
+    "fax" : {"@id": "obo:"},
+    "affiliations":
+    {
+      "@id":"obo:IAO_0000303",
+      "@type":"obo:OBI_0000245"
+    } ,
+    "roles":  {"@id": "obo:BFO_0000023"}
+  }
+}

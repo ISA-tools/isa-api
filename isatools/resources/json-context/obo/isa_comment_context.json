@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Comment": "obo:IAO_0000590",
+        "name": {
+      "@id": "obo:IAO_0000590"
+    },
+     "value": {
+      "@id": "obo:IAO_0000590",
+      "@type" : ["obo:IAO_0000300", "obo:","obo:"]
+    }
+  }
+}

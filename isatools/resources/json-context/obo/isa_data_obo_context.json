@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Data": "obo:OBI_0000047",
+    "type" :{
+        "@id" : "",
+        "@type" : ["obo:IAO_0000101","obo:NMR:1400119", "obo:NMR:1002006", "obo:MS_1000577", "obo:EFO_0004098", "obo:EFO_0004097", "obo:EFO_0004099", "obo:EFO_0004096"]
+    },
+    "identifier": {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "obo:IAO_0000590"
+    },
+    "comments": {
+      "@id" : "obo:",
+      "@type" : "obo:IAO_0000300"
+    }
+  }
+}

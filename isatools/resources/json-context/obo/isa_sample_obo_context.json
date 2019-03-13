@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Sample": "obo:OBI_0100051",
+    "identifier": {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "obo:IAO_0000590"
+    },
+    "characteristics": {
+      "@id" : "obo:RO_0000086",
+      "@type" : "obo:quality"
+    },
+     "roles": {
+        "@id": "obo:BFO_0000023",
+        "@type" : "obo:OBI_0000740"
+        },
+    "derivesFrom": {
+      "@id" : "obo:RO_0001000",
+      "@type" : "obo:OBI_0100026"
+    }
+  }
+}
