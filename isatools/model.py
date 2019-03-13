@@ -18,11 +18,13 @@ import logging
 import networkx as nx
 import warnings
 
+from collections.abc import Iterable
 
 from isatools.errors import ISAModelAttributeError
 
 
 log = logging.getLogger('isatools')
+
 
 def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
@@ -2099,11 +2101,12 @@ class Protocol(Commentable):
 
         self.id = id_
         self.__name = name
+        self.__protocol_type = None
 
         if protocol_type is None:
-            self.__protocol_type = OntologyAnnotation()
+            self.protocol_type = OntologyAnnotation()
         else:
-            self.__protocol_type = protocol_type
+            self.protocol_type = protocol_type
 
         self.__description = description
         self.__uri = uri
@@ -2141,10 +2144,12 @@ class Protocol(Commentable):
 
     @protocol_type.setter
     def protocol_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Protocol.protocol_type must be a OntologyAnnotation or '
+                'Protocol.protocol_type must be a OntologyAnnotation, a string or '
                 'None; got {0}:{1}'.format(val, type(val)))
+        if isinstance(val, str):
+            self.__protocol_type = OntologyAnnotation(term=val)
         else:
             self.__protocol_type = val
 
@@ -2198,22 +2203,24 @@ class Protocol(Commentable):
 
     @parameters.setter
     def parameters(self, val):
-        if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, ProtocolParameter) for x in val):
-                self.__parameters = list(val)
-        else:
-            raise ISAModelAttributeError('Protocol.parameters must be iterable '
+        if val is None or not isinstance(val, Iterable):
+            raise ISAModelAttributeError('Protocol.parameters must be an iterable '
                                          'containing ProtocolParameters')
+        for el in val:
+            self.add_param(el)
+
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
             pass
         else:
             if isinstance(parameter_name, str):
-                self.parameters.append(ProtocolParameter(
+                self.__parameters.append(ProtocolParameter(
                     parameter_name=OntologyAnnotation(term=parameter_name)))
+            elif isinstance(parameter_name, ProtocolParameter):
+                self.__parameters.append(parameter_name)
             else:
-                raise ISAModelAttributeError('Parameter name must be a string')
+                raise ISAModelAttributeError('Parameter name must be either a string or a ProtocolParameter')
 
     def get_param(self, parameter_name):
         param = None
