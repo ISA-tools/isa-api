@@ -2209,7 +2209,6 @@ class Protocol(Commentable):
         for el in val:
             self.add_param(el)
 
-
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
             pass

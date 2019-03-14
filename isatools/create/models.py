@@ -75,6 +75,11 @@ BASE_FACTORS = [
 
 DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
 
+# constants specific to the sampling plan in the study generation from the study design
+RUN_ORDER = 'run order'
+STUDY_CELL = 'study cell'
+
+
 def intersperse(lst, item):
     """
     Utility method to intersperse an item in a list
@@ -823,6 +828,98 @@ class StudyDesign(object):
             raise ISAModelIndexError(self.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
         return epoch_cells
 
+    @staticmethod
+    def _idgen(gid='', subn='', samn='', samt=''):
+        """
+        Identifiers generator
+        :param gid: 
+        :param subn: 
+        :param samn: 
+        :param samt: 
+        :return: 
+        """
+        idarr = []
+        if gid != '':
+            idarr.append('Group-{}'.format(gid))  # study group
+        if subn != '':
+            idarr.append('Subject-{}'.format(subn))
+        if samt != '':
+            idarr.append(samt)
+        if samn != '':
+            idarr.append('{}'.format(samn))
+        return '.'.join(idarr)
+
+    def _generate_sources(self, ontology_source_references):
+        """
+        Private method to be used in 'generate_isa_study'.
+        :return: 
+        """
+        source_prototype = Source(
+            characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(
+                        term='specimen',
+                        term_source=ontology_source_references[0],
+                        term_accession='0100051'))
+            ]
+        )
+        src_map = dict()
+        for s_arm in self.study_arms:
+            srcs = set()
+            for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
+                src = copy.copy(source_prototype)
+                src.name = self._idgen(s_arm.name, subj_n)
+                srcs.add(src)
+            src_map[s_arm.name] = list(srcs)
+        return src_map
+
+    def _generate_samples(self, sources_map, sampling_protocol, performer):
+        """
+        Private method to be used in 'generate_isa_study'.
+        :param sources_map: dict - the output of '_generate_sources'
+        :param sampling_protocol: isatools.model.Protocol
+        :return: 
+        """
+        factors = set()
+        ontology_sources = set()
+        samples = []
+        sample_count = 0
+        process_sequence = []
+        for arm in self.study_arms:
+            for cell, sample_assay_plan in arm.arm_map.items():
+                for element in cell.get_all_elements():
+                    factors.update([f_val.factor_name for f_val in element.factor_values])
+                    for source in sources_map[arm.name]:
+                        if not sample_assay_plan:
+                            continue
+                        for sample_type, sampling_size in sample_assay_plan.sample_plan.items():
+                            if sample_type.value.term_source:
+                                ontology_sources.add(sample_type.value.term_source)
+                            for samp_idx in range(0, sampling_size):
+                                sample = Sample(name=self._idgen(arm.name, source.name, str(samp_idx+1),
+                                                                 sample_type.value.term_source),
+                                                factor_values=element.factor_values,
+                                                characteristics=[sample_type], derives_from=[source])
+                                samples.append(sample)
+                                sample_count += 1
+                                process = Process(
+                                    executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
+                                    performer=performer,
+                                    date_=datetime.date.isoformat(datetime.date.today()),
+                                    parameter_values=[
+                                        ParameterValue(
+                                            category=sampling_protocol.get_param(RUN_ORDER),
+                                            value=str(sample_count).zfill(3)
+                                        ), ParameterValue(
+                                            category=sampling_protocol.get_param(STUDY_CELL),
+                                            value=str(cell.name)
+                                        )
+                                    ]
+                                )
+                                process_sequence.append(process)
+        return factors, samples, process_sequence, ontology_sources
+
     def generate_isa_study(self):
         """
         this is the core method to return the fully populated ISA Study object from the StudyDesign
@@ -837,23 +934,12 @@ class StudyDesign(object):
             OntologySource(**study_config['ontology_source_references'][0])
         ]
         study.protocols = [
-            Protocol(**study_config['protocols'])
+            Protocol(**protocol_config) for protocol_config in study_config['protocols']
         ]
-
-        sample_collection = study.get_prot('sample collection')
-        sample_collection.add_param('run order')
-        sample_collection.add_param('collection event rank')
-
-        source_prototype = Source(
-            characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(
-                        term='specimen',
-                        term_source=study.ontology_source_references[0],
-                        term_accession='0100051'))
-            ]
-        )
+        sources_map = self._generate_sources(study.ontology_source_references)
+        study.sources = [source for sources in sources_map.values() for source in sources]
+        study.factors, study.samples, study.process_sequence, study.ontology_source_references = \
+            self._generate_samples(sources_map, study.protocols[0], study_config['performers'][0])
         return study
 
     def __repr__(self):
@@ -2235,9 +2321,9 @@ class IsaModelObjectFactory(object):
                 srcs = set()
                 for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
                     src = copy.copy(source_prototype)
-                    src.name = self._idgen(arm.name, subj_n)
+                    src.name = self._idgen(s_arm.name, subj_n)
                     srcs.add(src)
-                src_map[arm.name] = list(srcs)
+                src_map[s_arm.name] = list(srcs)
             return src_map
 
         sources_map = generate_sources(self.study_design.study_arms)

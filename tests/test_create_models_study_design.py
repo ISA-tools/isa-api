@@ -1072,6 +1072,9 @@ class StudyDesignTest(unittest.TestCase):
         study = self.study_design.generate_isa_study()
         self.assertIsInstance(study, Study)
         self.assertEqual(study.filename, study_config['filename'])
+        self.assertEqual(len(study.sources), self.first_arm.group_size + self.second_arm.group_size +
+                         self.third_arm.group_size)
+        print('Sources: {0}'.format(study.sources))
 
 class TreatmentFactoryTest(unittest.TestCase):
 

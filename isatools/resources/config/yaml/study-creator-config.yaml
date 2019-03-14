@@ -8,6 +8,15 @@ study:
   protocols:
     - name: 'sample collection'
       protocol_type: 'sample_collection'
+      parameters: [ 'run order', 'study cell' ]
+  performers:
+    - name: 'Bob'
+    - name: 'Alice'
+    - name:  'Carol'
+    - name: 'Dan'
+    - name: 'Erin'
+    - name: 'Frank'
+
 
 source_prototype:
   characteristics:
