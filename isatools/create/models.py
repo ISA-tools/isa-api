@@ -75,6 +75,12 @@ BASE_FACTORS = [
 
 DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
 
+# Allowed types of product nodes in ISA create mode
+SOURCE = 'source'
+SAMPLE = 'sample'
+DATA_FILE = 'data file'
+
+
 # constants specific to the sampling plan in the study generation from the study design
 RUN_ORDER = 'run order'
 STUDY_CELL = 'study cell'
@@ -549,6 +555,47 @@ class StudyCellDecoder(object):
     def loads(self, json_text):
         json_dict = json.loads(json_text)
         return self.loads_cells(json_dict)
+
+
+class SequenceNode(ABC):
+    pass
+
+
+class ProtocolNode(SequenceNode, Protocol):
+
+    def __init__(self, id_='', name='', protocol_type=None, uri='',
+                 description='', version='', parameters=None, components=None,
+                 comments=None):
+        Protocol.__init__(self, id_, name, protocol_type, uri, description, version, parameters, components, comments)
+
+
+class ProductNode(SequenceNode):
+
+    ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
+
+    def __init__(self, node_type=SOURCE):
+        self.__type = None
+        self.__characteristics = None
+        self.__size = None
+        self.type = node_type
+
+    @property
+    def type(self):
+        return self.__type
+
+    @type.setter
+    def type(self, node_type):
+        if node_type not in self.ALLOWED_TYPES:
+            raise AttributeError('')
+        self.type = node_type
+
+    @property
+    def characteristics(self):
+        return self.__characteristics
+
+    @property
+    def size(self):
+        return self.__size
 
 
 class StudyArm(object):
