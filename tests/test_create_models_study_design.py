@@ -651,6 +651,23 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
 
+class SampleAssaySequenceTest(unittest.TestCase):
+
+    def setUp(self):
+        self.sample_assay_sequence = SampleAssaySequence()
+
+    def test_add_first_node(self):
+        first_node = ProductNode(node_type=SOURCE, size=10)
+        self.sample_assay_sequence.add_node(first_node)
+        self.assertEqual(len(self.sample_assay_sequence), 1)
+        self.assertEqual(self.head, first_node)
+
+    def test_add_three_nodes_success(self):
+        source_node = ProductNode(node_type=SOURCE, size=12)
+        protocol_node = ProtocolNode(name='', protocol_type='', parameters=[])
+        sample_node = ProductNode(node_type=SAMPLE, )
+
+
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):

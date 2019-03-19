@@ -558,7 +558,24 @@ class StudyCellDecoder(object):
 
 
 class SequenceNode(ABC):
+
     pass
+    """
+    NEXT_LINKED_NODE_ERROR = 'Linked Item must be instance of isatools.create.models.SequenceNode'
+    
+    def __init__(self):
+        self.__next = None
+
+    @property
+    def next(self):
+        return self.__next
+
+    @next.setter
+    def next(self, next_item):
+        if not isinstance(next_item, SequenceNode):
+            raise AttributeError(self.NEXT_LINKED_NODE_ERROR)
+        self.__next = next_item
+    """
 
 
 class ProtocolNode(SequenceNode, Protocol):
@@ -567,17 +584,54 @@ class ProtocolNode(SequenceNode, Protocol):
                  description='', version='', parameters=None, components=None,
                  comments=None):
         Protocol.__init__(self, id_, name, protocol_type, uri, description, version, parameters, components, comments)
+        SequenceNode.__init__(self)
+
+    def __repr__(self):
+        return 'isatools.create.models.ProtocolNode(id={0.id}, name={0.name}, protocol_type={0.protocol_type}, ' \
+               'uri={0.uri}, description={0.description}, version={0.version}, parameters={0.parameters}, ' \
+               'components={0.components}, comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ProtocolNode) and self.id == other.id and self.name == other.name \
+               and self.protocol_type == other.protocol_type and self.uri == other.uri \
+               and self.description == other.description and self.version == other.version \
+               and self.parameters == other.parameters and self.components == other.components \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ProductNode(SequenceNode):
 
     ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
+    NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values :{}'
+    SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
 
-    def __init__(self, node_type=SOURCE):
+    def __init__(self, node_type=SOURCE, characteristics='', size=0):
+        super().__init__()
         self.__type = None
         self.__characteristics = None
         self.__size = None
         self.type = node_type
+        self.size = size
+
+    def __repr__(self):
+        return 'isatools.create.models.ProductNode(type={0}, characteristics={1}, size={2})'.format(
+            self.type, self.characteristics, self.size)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ProductNode) and self.type == other.type \
+               and self.characteristics == other.characteristics and self.size == other.size
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def type(self):
@@ -586,16 +640,88 @@ class ProductNode(SequenceNode):
     @type.setter
     def type(self, node_type):
         if node_type not in self.ALLOWED_TYPES:
-            raise AttributeError('')
-        self.type = node_type
+            raise AttributeError(self.NOT_ALLOWED_TYPE_ERROR.format(self.ALLOWED_TYPES))
+        self.__type = node_type
 
     @property
     def characteristics(self):
         return self.__characteristics
 
+    @characteristics.setter
+    def characteristics(self, characteristics):
+        pass
+
     @property
     def size(self):
         return self.__size
+
+    @size.setter
+    def size(self, size):
+        if not isinstance(size, int) or size < 0:
+            raise AttributeError(self.SIZE_ERROR)
+        self.__size = size
+
+
+class SampleAssayGraph(object):
+
+    INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
+    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are" \
+                         "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
+    MISSING_NODE_ERROR = "Start or target node have not been added to the SampleAssayGraph yet"
+
+    def __init__(self, graph_dict=None):
+        """ 
+        initializes a SampleAssayGraph object 
+        If no dictionary or None is given, 
+        an empty dictionary will be used
+        """
+        self.__graph_dict = None
+        if graph_dict is not None:
+            self.graph_dict = graph_dict
+
+    @property
+    def graph_dict(self):
+        return self.__graph_dict
+
+    @graph_dict.setter
+    def graph_dict(self, graph_dict):
+        try:
+            for node in graph_dict.keys():
+                self.add_node(node)
+            for start_node, target_nodes in graph_dict.items():
+                for target_node in target_nodes:
+                    self.add_link(start_node, target_node)
+        except (TypeError, ValueError) as e:
+            raise AttributeError(e)
+
+    @property
+    def nodes(self):
+        return self.__graph_dict.keys()
+
+    def add_node(self, node):
+        if not isinstance(node, SequenceNode):
+            raise TypeError(self.INVALID_NODE_ERROR.format(type(node)))
+        self.__graph_dict[node] = []
+
+    @property
+    def links(self):
+        """ 
+        A private method generating the edges of the 
+        graph "graph". 
+        """
+        return set([node, target_node] for node, target_nodes in self.__graph_dict.items()
+                   for target_node in target_nodes)
+
+    def add_link(self, start_node, target_node):
+        if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
+                not (isinstance(start_node, ProtocolNode) and isinstance(target_node, ProductNode)):
+            raise TypeError(self.INVALID_LINK_ERROR)
+        if start_node not in self.__graph_dict.keys() or target_node not in self.__graph_dict.keys():
+            raise ValueError(self.MISSING_NODE_ERROR)
+        self.__graph_dict[start_node].append(target_node)
+
+    def __repr__(self):
+        pass
 
 
 class StudyArm(object):
