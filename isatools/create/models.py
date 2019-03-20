@@ -611,8 +611,9 @@ class ProductNode(SequenceNode):
     NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values :{}'
     SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
 
-    def __init__(self, node_type=SOURCE, characteristics='', size=0):
+    def __init__(self, id_='', node_type=SOURCE, characteristics='', size=0):
         super().__init__()
+        self.__id = id_
         self.__type = None
         self.__characteristics = None
         self.__size = None
@@ -632,6 +633,10 @@ class ProductNode(SequenceNode):
 
     def __ne__(self, other):
         return not self == other
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def type(self):
@@ -711,6 +716,37 @@ class SampleAssayGraph(object):
         """
         return set([node, target_node] for node, target_nodes in self.__graph_dict.items()
                    for target_node in target_nodes)
+
+    @property
+    def start_nodes(self):
+        return set(self.__graph_dict.keys()) - set(target_node for target_nodes in self.__graph_dict.values()
+                                                   for target_node in target_nodes)
+
+    @property
+    def end_nodes(self):
+        return set(node for node in self.__graph_dict.keys() if not self.__graph_dict[node])
+
+    def find_paths(self, start_node, end_node, path=[]):
+        if start_node not in self.nodes or end_node not in self.nodes:
+            raise ValueError(self.MISSING_NODE_ERROR)
+        path += [start_node]
+        if start_node == end_node:
+            return [path]
+        paths = []
+        for node in self.__graph_dict[start_node]:
+            if node not in path:
+                extended_paths = self.find_paths(node, end_node, path)
+
+                for p in extended_paths:
+                    paths.append(p)
+        return paths
+
+    def find_all_paths(self):
+        paths = []
+        for start_node in self.start_nodes:
+            for end_node in self.end_nodes:
+                paths += self.find_paths(start_node, end_node)
+        return paths
 
     def add_link(self, start_node, target_node):
         if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
