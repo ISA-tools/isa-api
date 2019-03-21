@@ -7,6 +7,7 @@ from isatools.errors import *
 from isatools.create.models import *
 
 import json
+import uuid
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -651,15 +652,31 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
 
-class SampleAssaySequenceTest(unittest.TestCase):
+class ProtocolNodeTest(unittest.TestCase):
+
+    def test_constructor(self):
+        node = ProtocolNode(name='sampling', protocol_type='sampling')
+        self.assertIsInstance(node, ProtocolNode)
+
+
+class ProductNodeTest(unittest.TestCase):
 
     def setUp(self):
-        self.sample_assay_sequence = SampleAssaySequence()
+        self.node = ProductNode()
+
+    def test_id_property(self):
+        self.assertIsInstance(self.node.id, uuid.uuid4)
+
+
+class SampleAssayGraphTest(unittest.TestCase):
+
+    def setUp(self):
+        self.sample_assay_graph = SampleAssayGraph()
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
-        self.sample_assay_sequence.add_node(first_node)
-        self.assertEqual(len(self.sample_assay_sequence), 1)
+        self.sample_assay_graph.add_node(first_node)
+        self.assertEqual(len(self.sample_assay_graph), 1)
         self.assertEqual(self.head, first_node)
 
     def test_add_three_nodes_success(self):
@@ -1093,6 +1110,7 @@ class StudyDesignTest(unittest.TestCase):
                          self.third_arm.group_size)
         print('Sources: {0}'.format(study.sources))
 
+
 class TreatmentFactoryTest(unittest.TestCase):
 
     def setUp(self):
@@ -1443,6 +1461,7 @@ class TreatmentSequenceTest(unittest.TestCase):
         self.sequence.subject_count = subject_count
         self.assertTrue(self.sequence.subject_count, subject_count)
 """
+
 
 class SampleAssayPlanTest(unittest.TestCase):
 

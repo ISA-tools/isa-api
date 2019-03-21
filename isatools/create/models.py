@@ -17,6 +17,7 @@ from abc import ABC
 from math import factorial
 import os
 import yaml
+import uuid
 import inspect
 import pdb
 
@@ -580,7 +581,7 @@ class SequenceNode(ABC):
 
 class ProtocolNode(SequenceNode, Protocol):
 
-    def __init__(self, id_='', name='', protocol_type=None, uri='',
+    def __init__(self, id_=uuid.uuid4(), name='', protocol_type=None, uri='',
                  description='', version='', parameters=None, components=None,
                  comments=None):
         Protocol.__init__(self, id_, name, protocol_type, uri, description, version, parameters, components, comments)
@@ -608,16 +609,18 @@ class ProtocolNode(SequenceNode, Protocol):
 class ProductNode(SequenceNode):
 
     ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
-    NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values :{}'
+    NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values: {0}'
     SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
+    CHARACTERISTIC_TYPE_ERROR = 'A characteristic must be either a string or a Characteristic, {0} supplied'
 
-    def __init__(self, id_='', node_type=SOURCE, characteristics='', size=0):
+    def __init__(self, id_=uuid.uuid4(), node_type=SOURCE, characteristics=[], size=0):
         super().__init__()
         self.__id = id_
         self.__type = None
-        self.__characteristics = None
+        self.__characteristics = []
         self.__size = None
         self.type = node_type
+        self.characteristics = characteristics
         self.size = size
 
     def __repr__(self):
@@ -654,7 +657,21 @@ class ProductNode(SequenceNode):
 
     @characteristics.setter
     def characteristics(self, characteristics):
-        pass
+        self.__characteristics = []
+        try:
+            for characteristic in characteristics:
+                self.add_characteristic(characteristic)
+        except TypeError as e:
+            raise AttributeError(e)
+
+    def add_characteristic(self, characteristic):
+        if not isinstance(characteristic, (str, Characteristic)):
+            raise TypeError(self.CHARACTERISTIC_TYPE_ERROR.format(type(characteristic)))
+        if isinstance(characteristic, Characteristic):
+            self.__characteristics.append(characteristic)
+        if isinstance(characteristic, str):
+            self.__characteristics.append(Characteristic(value=characteristic))
+
 
     @property
     def size(self):
