@@ -668,21 +668,58 @@ class ProductNodeTest(unittest.TestCase):
         self.assertIsInstance(self.node.id, uuid.uuid4)
 
 
-class SampleAssayGraphTest(unittest.TestCase):
+class SampleAndAssayPlanTest(unittest.TestCase):
 
     def setUp(self):
-        self.sample_assay_graph = SampleAssayGraph()
+        self.plan = SampleAndAssayPlan()
+        self.tissue_char = Characteristic(category='organism part', value='tissue')
+        self.dna_char = Characteristic(category='nucleic acid', value='DNA')
+        self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
+        self.mrna_char = Characteristic(category='nucleic acid', value='mRNA')
+        self.sample_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.tissue_char])
+        self.protocol_node_dna = ProtocolNode(name='DNA extraction')
+        self.protocol_node_rna = ProtocolNode(name='RNA extraction')
+        self.dna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.dna_char])
+        self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
+        self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
-        self.sample_assay_graph.add_node(first_node)
-        self.assertEqual(len(self.sample_assay_graph), 1)
-        self.assertEqual(self.head, first_node)
+        self.plan.add_node(first_node)
+        self.assertEqual(len(self.plan.nodes), 1)
+        self.assertEqual(self.plan.nodes[0], first_node)
 
-    def test_add_three_nodes_success(self):
-        source_node = ProductNode(node_type=SOURCE, size=12)
-        protocol_node = ProtocolNode(name='', protocol_type='', parameters=[])
-        sample_node = ProductNode(node_type=SAMPLE, )
+    def test_create_three_level_graph_success(self):
+        self.plan.add_node(self.sample_node)
+        self.plan.add_node(self.protocol_node_dna)
+        self.plan.add_node(self.protocol_node_rna)
+        self.plan.add_node(self.dna_node)
+        self.plan.add_node(self.mrna_node)
+        self.plan.add_node(self.mirna_node)
+        self.plan.add_link(self.sample_node, self.protocol_node_rna)
+        self.plan.add_link(self.sample_node, self.protocol_node_dna)
+        self.plan.add_link(self.protocol_node_dna, self.dna_node)
+        self.plan.add_link(self.protocol_node_rna, self.mrna_node)
+        self.plan.add_link(self.protocol_node_rna, self.mrna_node)
+        self.assertEqual(len(self.plan.nodes), 6)
+        self.assertIn(self.sample_node, self.plan.nodes)
+        self.assertIn(self.dna_node, self.plan.nodes)
+        self.assertIn(self.mrna_node, self.plan.nodes)
+        self.assertIn(self.mirna_node, self.plan.nodes)
+        self.assertIn((self.protocol_node_dna, self.dna_node), self.plan.links)
+        self.assertIn((self.protocol_node_rna, self.mrna_node), self.plan.links)
+        self.assertIn((self.protocol_node_rna, self.mrna_node), self.plan.links)
+        
+    def test_add_nodes_and_links_success(self):
+        nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
+        links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
+                 (self.protocol_node_rna, self.mirna_node)]
+        self.plan.add_nodes(nodes)
+        self.plan.add_links(links)
+        self.assertEqual(len(self.plan.nodes), len(nodes))
+        self.assertEqual(set(self.plan.nodes), set(nodes))
+        self.assertEqual(len(self.plan.links), len(links))
+
 
 
 class StudyArmTest(unittest.TestCase):
@@ -712,7 +749,7 @@ class StudyArmTest(unittest.TestCase):
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.washout = NonTreatment(element_type=WASHOUT,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
@@ -1575,7 +1612,6 @@ class SampleAssayPlanTest(unittest.TestCase):
 
 class StudyDesignFactoryTest(unittest.TestCase):
 
-
     def setUp(self):
         self.factory = StudyDesignFactory()
         self.first_treatment = Treatment(factor_values=(
@@ -1601,7 +1637,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.washout = NonTreatment(element_type=WASHOUT,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,

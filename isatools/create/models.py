@@ -672,7 +672,6 @@ class ProductNode(SequenceNode):
         if isinstance(characteristic, str):
             self.__characteristics.append(Characteristic(value=characteristic))
 
-
     @property
     def size(self):
         return self.__size
@@ -684,12 +683,13 @@ class ProductNode(SequenceNode):
         self.__size = size
 
 
-class SampleAssayGraph(object):
+class SampleAndAssayPlan(object):
 
     INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
-    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are" \
+    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
                          "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
     MISSING_NODE_ERROR = "Start or target node have not been added to the SampleAssayGraph yet"
+    NODE_ALREADY_PRESENT = "The node {0.id} is already present in the SampleAndAssayPlan"
 
     def __init__(self, graph_dict=None):
         """ 
@@ -697,7 +697,7 @@ class SampleAssayGraph(object):
         If no dictionary or None is given, 
         an empty dictionary will be used
         """
-        self.__graph_dict = None
+        self.__graph_dict = {}
         if graph_dict is not None:
             self.graph_dict = graph_dict
 
@@ -718,12 +718,18 @@ class SampleAssayGraph(object):
 
     @property
     def nodes(self):
-        return self.__graph_dict.keys()
+        return list(self.__graph_dict.keys())
 
     def add_node(self, node):
         if not isinstance(node, SequenceNode):
             raise TypeError(self.INVALID_NODE_ERROR.format(type(node)))
+        if node in self.__graph_dict.keys():
+            raise ValueError(self.NODE_ALREADY_PRESENT.format(node))
         self.__graph_dict[node] = []
+
+    def add_nodes(self, nodes):
+        for node in nodes:
+            self.add_node(node)
 
     @property
     def links(self):
@@ -731,8 +737,25 @@ class SampleAssayGraph(object):
         A private method generating the edges of the 
         graph "graph". 
         """
-        return set([node, target_node] for node, target_nodes in self.__graph_dict.items()
+        return set((node, target_node) for node, target_nodes in self.__graph_dict.items()
                    for target_node in target_nodes)
+
+    def add_link(self, start_node, target_node):
+        if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
+                not (isinstance(start_node, ProtocolNode) and isinstance(target_node, ProductNode)):
+            raise TypeError(self.INVALID_LINK_ERROR)
+        if start_node not in self.__graph_dict.keys() or target_node not in self.__graph_dict.keys():
+            raise ValueError(self.MISSING_NODE_ERROR)
+        self.__graph_dict[start_node].append(target_node)
+
+    def add_links(self, links):
+        """
+        Add multiple links at once
+        :param links: a list of two-elements lists/tuples. The two elemts must be valid nodes
+        :return:
+        """
+        for link in links:
+            self.add_link(*link)
 
     @property
     def start_nodes(self):
@@ -765,16 +788,16 @@ class SampleAssayGraph(object):
                 paths += self.find_paths(start_node, end_node)
         return paths
 
-    def add_link(self, start_node, target_node):
-        if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
-                not (isinstance(start_node, ProtocolNode) and isinstance(target_node, ProductNode)):
-            raise TypeError(self.INVALID_LINK_ERROR)
-        if start_node not in self.__graph_dict.keys() or target_node not in self.__graph_dict.keys():
-            raise ValueError(self.MISSING_NODE_ERROR)
-        self.__graph_dict[start_node].append(target_node)
-
     def __repr__(self):
         pass
+
+
+class SampleAndAssayPlanEncoder():
+    pass
+
+
+class SampleAndAssayPlanDecoder():
+    pass
 
 
 class StudyArm(object):
