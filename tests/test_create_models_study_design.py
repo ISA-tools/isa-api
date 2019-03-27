@@ -721,7 +721,6 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(self.plan.links), len(links))
 
 
-
 class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
@@ -763,7 +762,7 @@ class StudyArmTest(unittest.TestCase):
         self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
                                                      elements=([{self.second_treatment, self.fourth_treatment}]))
         self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
-        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout))
+        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout, ))
         self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
         self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
         self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
@@ -1306,6 +1305,7 @@ class TreatmentFactoryTest(unittest.TestCase):
 
         full_factorial = self.factory.compute_full_factorial_design()
         self.assertEqual(full_factorial, set())
+
 
 """
 class TreatmentSequenceTest(unittest.TestCase):
@@ -1983,6 +1983,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
             )
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
+
+"""
 class IsaModelObjectFactoryTest(unittest.TestCase):
 
     def setUp(self):
@@ -2540,7 +2542,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 11)
         self.assertEqual(len(study.protocols), 6)
-
+"""
 
 if __name__ == '__main__':
     # Run only the tests in the specified classes

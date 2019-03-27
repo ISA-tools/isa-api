@@ -232,6 +232,29 @@ class StudyCellDecoderTest(BaseTestCase):
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
 
+class SampleAndAssayPlanEncoderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.plan = SampleAndAssayPlan()
+        self.tissue_char = Characteristic(category='organism part', value='tissue')
+        self.dna_char = Characteristic(category='nucleic acid', value='DNA')
+        self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
+        self.mrna_char = Characteristic(category='nucleic acid', value='mRNA')
+        self.sample_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.tissue_char])
+        self.protocol_node_dna = ProtocolNode(name='DNA extraction')
+        self.protocol_node_rna = ProtocolNode(name='RNA extraction')
+        self.dna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.dna_char])
+        self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
+        self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
+
+    def test_json_encoding_simple(self):
+        actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
+            expected_json_plan = json.load(expected_json_fp)
+        self.assertEqual(ordered(actual_json_plan), ordered(expected_json_plan))
+
+
 class StudyArmEncoderTest(BaseTestCase):
 
     def setUp(self):

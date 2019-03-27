@@ -792,11 +792,15 @@ class SampleAndAssayPlan(object):
         pass
 
 
-class SampleAndAssayPlanEncoder():
-    pass
+class SampleAndAssayPlanEncoder(json.JSONEncoder):
+
+    def default(self, o):
+        return {
+
+        }
 
 
-class SampleAndAssayPlanDecoder():
+class SampleAndAssayPlanDecoder(object):
     pass
 
 
