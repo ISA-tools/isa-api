@@ -794,10 +794,40 @@ class SampleAndAssayPlan(object):
 
 class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
-    def default(self, o):
-        return {
+    def node(self, obj):
+        if isinstance(obj, ProtocolNode):
+            return {
+                "@id": obj.id,
+                "name": obj.name,
+                "@type": obj.protocol_type,
+                "description": obj.description,
+                "uri": obj.uri,
+                "version": obj.version,
+                "parameters": [],
+                "components": []
+            }
+        if isinstance(obj, ProductNode):
+            return {
+                "@id": obj.id,
+                "@type": obj.type,
+                "size": obj.size,
+                "characteristics": [{
+                    "category": char.category,
+                    "value": char.value
+                } for char in obj.characteristics if isinstance(char, Characteristic)]
+            }
 
-        }
+    def link(self, obj):
+        if isinstance(obj, tuple):
+            start_node, end_node = obj
+            return [start_node.id, end_node.id]
+
+    def default(self, obj):
+        if isinstance(obj, SampleAndAssayPlan):
+            return {
+                "nodes": [self.node(node) for node in obj.nodes],
+                "links": [self.link(link) for link in obj.links]
+            }
 
 
 class SampleAndAssayPlanDecoder(object):

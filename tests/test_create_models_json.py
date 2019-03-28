@@ -240,12 +240,22 @@ class SampleAndAssayPlanEncoderTest(unittest.TestCase):
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
         self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
         self.mrna_char = Characteristic(category='nucleic acid', value='mRNA')
-        self.sample_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.tissue_char])
-        self.protocol_node_dna = ProtocolNode(name='DNA extraction')
-        self.protocol_node_rna = ProtocolNode(name='RNA extraction')
-        self.dna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.dna_char])
-        self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
-        self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
+        self.sample_node = ProductNode(id_='product-node/0000', node_type=SAMPLE, size=3,
+                                       characteristics=[self.tissue_char])
+        self.protocol_node_dna = ProtocolNode(id_='protocol-node/0000', name='DNA extraction', version="1.0.0")
+        self.protocol_node_rna = ProtocolNode(id_='protocol-node/0001', name='RNA extraction', version="0.1")
+        self.dna_node = ProductNode(id_='product-node/0001', node_type=SAMPLE, size=3,
+                                    characteristics=[self.dna_char])
+        self.mrna_node = ProductNode(id_='product-node/0002', node_type=SAMPLE, size=3,
+                                     characteristics=[self.mrna_char])
+        self.mirna_node = ProductNode(id_='product-node/0003', node_type=SAMPLE, size=5,
+                                      characteristics=[self.mirna_char])
+        self.plan.add_nodes([self.sample_node, self.protocol_node_rna, self.protocol_node_dna,
+                             self.mrna_node, self.mirna_node, self.dna_node])
+        self.plan.add_links([(self.sample_node, self.protocol_node_rna), (self.sample_node, self.protocol_node_dna),
+                             (self.protocol_node_rna, self.mrna_node), (self.protocol_node_rna, self.mirna_node),
+                             (self.protocol_node_dna, self.dna_node)
+                             ])
 
     def test_json_encoding_simple(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))
