@@ -450,7 +450,7 @@ class StudyCell(object):
         """
 
 
-class StudyCellEncoder(json.JSONEncoder):
+class OntologyAnnotationEncoder(json.JSONEncoder):
 
     @staticmethod
     def ontology_source(obj):
@@ -473,21 +473,27 @@ class StudyCellEncoder(json.JSONEncoder):
                 res["termSource"] = self.ontology_source(obj.term_source)
             return res
 
-    def study_factor(self, obj):
+
+class StudyCellEncoder(json.JSONEncoder):
+
+    @staticmethod
+    def study_factor(obj):
         if isinstance(obj, StudyFactor):
+            onto_encoder = OntologyAnnotationEncoder()
             return {
                 "name": obj.name,
-                "type": self.ontology_annotation(obj.factor_type)
+                "type": onto_encoder.ontology_annotation(obj.factor_type)
             }
 
     def factor_value(self, obj):
         if isinstance(obj, FactorValue):
+            onto_encoder = OntologyAnnotationEncoder()
             res = {
                 "factor": self.study_factor(obj.factor_name),
                 "value": obj.value
             }
             if obj.unit:
-                res["unit"] = self.ontology_annotation(obj.unit)
+                res["unit"] = onto_encoder.ontology_annotation(obj.unit)
             return res
 
     def element(self, obj):
@@ -796,10 +802,11 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
     def node(self, obj):
         if isinstance(obj, ProtocolNode):
+            onto_encoder = OntologyAnnotationEncoder()
             return {
                 "@id": obj.id,
                 "name": obj.name,
-                "@type": obj.protocol_type,
+                "@type": onto_encoder.ontology_annotation(obj.protocol_type),
                 "description": obj.description,
                 "uri": obj.uri,
                 "version": obj.version,

@@ -235,6 +235,7 @@ class StudyCellDecoderTest(BaseTestCase):
 class SampleAndAssayPlanEncoderTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.plan = SampleAndAssayPlan()
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
