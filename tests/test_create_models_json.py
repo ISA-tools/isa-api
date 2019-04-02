@@ -232,7 +232,7 @@ class StudyCellDecoderTest(BaseTestCase):
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
 
-class SampleAndAssayPlanEncoderTest(unittest.TestCase):
+class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
@@ -258,12 +258,20 @@ class SampleAndAssayPlanEncoderTest(unittest.TestCase):
                              (self.protocol_node_dna, self.dna_node)
                              ])
 
-    def test_json_encoding_simple(self):
+    def test_encode_dna_rna_extraction_plan(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             expected_json_plan = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_plan), ordered(expected_json_plan))
+
+    def test_decode_dna_rna_extraction_plan(self):
+        decoder = SampleAndAssayPlanDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_plan = decoder.loads(json_text)
+        self.assertEqual(self.plan, actual_plan)
 
 
 class StudyArmEncoderTest(BaseTestCase):

@@ -824,7 +824,8 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 } for char in obj.characteristics if isinstance(char, Characteristic)]
             }
 
-    def link(self, obj):
+    @staticmethod
+    def link(obj):
         if isinstance(obj, tuple):
             start_node, end_node = obj
             return [start_node.id, end_node.id]
@@ -838,7 +839,13 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
 
 class SampleAndAssayPlanDecoder(object):
-    pass
+
+    def loads_node(self, node_dict):
+        return None
+
+    def loads(self, json_text):
+        json_dict = json.loads(json_text)
+        return SampleAndAssayPlan()
 
 
 class StudyArm(object):
