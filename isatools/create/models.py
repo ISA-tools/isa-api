@@ -594,9 +594,10 @@ class ProtocolNode(SequenceNode, Protocol):
         SequenceNode.__init__(self)
 
     def __repr__(self):
-        return 'isatools.create.models.ProtocolNode(id={0.id}, name={0.name}, protocol_type={0.protocol_type}, ' \
-               'uri={0.uri}, description={0.description}, version={0.version}, parameters={0.parameters}, ' \
-               'components={0.components}, comments={0.comments})'.format(self)
+        return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
+               'uri={2.uri}, description={2.description}, version={2.version}, parameters={2.parameters}, ' \
+               'components={2.components}, comments={2.comments})'.format(self.__class__.__module__,
+                                                                          self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -630,14 +631,14 @@ class ProductNode(SequenceNode):
         self.size = size
 
     def __repr__(self):
-        return 'isatools.create.models.ProductNode(type={0}, characteristics={1}, size={2})'.format(
-            self.type, self.characteristics, self.size)
+        return '{0}.{1}(type={2.type}, characteristics={2.characteristics}, size={2.size})'.format(
+            self.__class__.__module__, self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, ProductNode) and self.type == other.type \
+        return isinstance(other, ProductNode) and self.id == other.id and self.type == other.type \
                and self.characteristics == other.characteristics and self.size == other.size
 
     def __ne__(self, other):
@@ -795,7 +796,11 @@ class SampleAndAssayPlan(object):
         return paths
 
     def __repr__(self):
-        pass
+        return '{0}.{1}(nodes={2.nodes})'.format(self.__class__.__module__, self.__class__.__name__, self)
+
+
+def get_full_class_name(instance):
+    return "{0}.{1}".format(instance.__class__.__module__, instance.__class__.__name__)
 
 
 class SampleAndAssayPlanEncoder(json.JSONEncoder):
@@ -805,8 +810,9 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
             onto_encoder = OntologyAnnotationEncoder()
             return {
                 "@id": obj.id,
+                "@type": get_full_class_name(obj),
                 "name": obj.name,
-                "@type": onto_encoder.ontology_annotation(obj.protocol_type),
+                "type": onto_encoder.ontology_annotation(obj.protocol_type),
                 "description": obj.description,
                 "uri": obj.uri,
                 "version": obj.version,
@@ -816,7 +822,8 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
         if isinstance(obj, ProductNode):
             return {
                 "@id": obj.id,
-                "@type": obj.type,
+                "@type": get_full_class_name(obj),
+                "type": obj.type,
                 "size": obj.size,
                 "characteristics": [{
                     "category": char.category,
@@ -841,11 +848,22 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 class SampleAndAssayPlanDecoder(object):
 
     def loads_node(self, node_dict):
-        return None
+        if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
+            return ProtocolNode(id_=node_dict["@id"], name=node_dict["name"], description=node_dict["description"],
+                                uri=node_dict["uri"], version=node_dict["version"], parameters=[], components=[],
+                                protocol_type='')
+        if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
+            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], characteristics=[])
 
     def loads(self, json_text):
         json_dict = json.loads(json_text)
-        return SampleAndAssayPlan()
+        plan = SampleAndAssayPlan()
+        nodes = [self.loads_node(node_dict) for node_dict in json_dict["nodes"]]
+        plan.add_nodes(nodes)
+        for [start_node_id, end_node_id] in json_dict["links"]:
+            plan.add_link(next(node for node in plan.nodes if node.id == start_node_id),
+                          next(node for node in plan.nodes if node.id == end_node_id))
+        return plan
 
 
 class StudyArm(object):
