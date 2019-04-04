@@ -251,8 +251,8 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                      characteristics=[self.mrna_char])
         self.mirna_node = ProductNode(id_='product-node/0003', node_type=SAMPLE, size=5,
                                       characteristics=[self.mirna_char])
-        self.plan.add_nodes([self.sample_node, self.protocol_node_rna, self.protocol_node_dna,
-                             self.mrna_node, self.mirna_node, self.dna_node])
+        self.plan.add_nodes([self.sample_node, self.protocol_node_dna, self.protocol_node_rna, self.dna_node,
+                             self.mrna_node, self.mirna_node])
         self.plan.add_links([(self.sample_node, self.protocol_node_rna), (self.sample_node, self.protocol_node_dna),
                              (self.protocol_node_rna, self.mrna_node), (self.protocol_node_rna, self.mirna_node),
                              (self.protocol_node_dna, self.dna_node)
@@ -271,6 +271,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
+        # pdb.set_trace()
         self.assertEqual(self.plan, actual_plan)
 
 

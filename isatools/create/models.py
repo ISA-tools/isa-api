@@ -725,7 +725,7 @@ class SampleAndAssayPlan(object):
 
     @property
     def nodes(self):
-        return list(self.__graph_dict.keys())
+        return set(self.__graph_dict.keys()) # should this be a list rather than a set?
 
     def add_node(self, node):
         if not isinstance(node, SequenceNode):
@@ -796,7 +796,18 @@ class SampleAndAssayPlan(object):
         return paths
 
     def __repr__(self):
-        return '{0}.{1}(nodes={2.nodes})'.format(self.__class__.__module__, self.__class__.__name__, self)
+        links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
+        return '{0}.{1}(nodes={2.nodes}, links={3})'.format(self.__class__.__module__, self.__class__.__name__,
+                                                            self, links)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, SampleAndAssayPlan) and self.nodes == other.nodes and self.links == other.links
+
+    def __ne__(self, other):
+        return not self == other
 
 
 def get_full_class_name(instance):
@@ -847,13 +858,28 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
 class SampleAndAssayPlanDecoder(object):
 
+    def loads_parameter(self, parameter_dict):
+        return ProtocolParameter(parameter_name=parameter_dict["protocol_name"]) if isinstance(parameter_dict, dict) \
+            else ProtocolParameter(parameter_name=parameter_dict)
+
+    def loads_component(self, component_dict):
+        return None # TODO: not implemented yet
+
+    def loads_characteristic(self, characteristic_dict):
+        return Characteristic(category=characteristic_dict['category'],
+                              value=characteristic_dict['value'],
+                              unit=characteristic_dict['unit'] if 'unit' in characteristic_dict else None)
+
     def loads_node(self, node_dict):
         if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
             return ProtocolNode(id_=node_dict["@id"], name=node_dict["name"], description=node_dict["description"],
-                                uri=node_dict["uri"], version=node_dict["version"], parameters=[], components=[],
+                                uri=node_dict["uri"], version=node_dict["version"],
+                                parameters=[self.loads_parameter(param) for param in node_dict["parameters"]],
+                                components=[self.loads_component(cmp) for cmp in node_dict["components"]],
                                 protocol_type='')
         if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
-            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], characteristics=[])
+            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], node_type=node_dict["type"],
+                               characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
 
     def loads(self, json_text):
         json_dict = json.loads(json_text)

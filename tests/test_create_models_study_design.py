@@ -687,7 +687,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         first_node = ProductNode(node_type=SOURCE, size=10)
         self.plan.add_node(first_node)
         self.assertEqual(len(self.plan.nodes), 1)
-        self.assertEqual(self.plan.nodes[0], first_node)
+        self.assertEqual(self.plan.nodes.pop(), first_node)
 
     def test_create_three_level_graph_success(self):
         self.plan.add_node(self.sample_node)
@@ -719,6 +719,30 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(self.plan.nodes), len(nodes))
         self.assertEqual(set(self.plan.nodes), set(nodes))
         self.assertEqual(len(self.plan.links), len(links))
+
+    def test_eq(self):
+        nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
+        links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
+                 (self.protocol_node_rna, self.mirna_node)]
+        first_plan = SampleAndAssayPlan()
+        first_plan.add_nodes(nodes)
+        first_plan.add_links(links)
+        second_plan = SampleAndAssayPlan()
+        second_plan.add_nodes(nodes[::-1])
+        second_plan.add_links(links[::-1])
+        self.assertEqual(first_plan, second_plan)
+
+    def test_ne(self):
+        nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
+        links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node)]
+        first_plan = SampleAndAssayPlan()
+        first_plan.add_nodes(nodes)
+        first_plan.add_links(links)
+        second_plan = SampleAndAssayPlan()
+        links.append((self.protocol_node_rna, self.mirna_node))
+        second_plan.add_nodes(nodes)
+        second_plan.add_links(links)
+        self.assertNotEqual(first_plan, second_plan)
 
 
 class StudyArmTest(unittest.TestCase):
