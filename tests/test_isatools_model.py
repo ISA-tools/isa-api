@@ -501,12 +501,7 @@ class CharacteristicTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual("isatools.model.Characteristic("
-                         "category=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), "
-                         "value=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), unit=None, comments=[])",
+                         "category=None, value=None, unit=None, comments=[])",
                          repr(self.characteristic_default))
         self.assertEqual("isatools.model.Characteristic("
                          "category=isatools.model.OntologyAnnotation("
@@ -690,9 +685,7 @@ class ProtocolParameterTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual("isatools.model.ProtocolParameter("
-                         "parameter_name=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), comments=[])",
+                         "parameter_name=None, comments=[])",
                          repr(self.parameter_default))
         self.assertEqual("isatools.model.ProtocolParameter("
                          "parameter_name=isatools.model.OntologyAnnotation("

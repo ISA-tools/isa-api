@@ -2295,13 +2295,9 @@ class ProtocolParameter(Commentable):
     """
     def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
-
         self.id = id_
-
-        if parameter_name is None:
-            self.__parameter_name = OntologyAnnotation()
-        else:
-            self.__parameter_name = parameter_name
+        self.__parameter_name = None
+        self.parameter_name = parameter_name
 
     @property
     def parameter_name(self):
@@ -2311,9 +2307,9 @@ class ProtocolParameter(Commentable):
 
     @parameter_name.setter
     def parameter_name(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'ProtocolParameter.parameter_name must be a OntologyAnnotation '
+                'ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__parameter_name = val
@@ -2615,19 +2611,15 @@ class Characteristic(Commentable):
             numeric).
         """
     def __init__(self, category=None, value=None, unit=None, comments=None):
+
         super().__init__(comments)
+        self.__category = None
+        self.__value = None
+        self.__unit = None
 
-        if category is None:
-            self.__category = OntologyAnnotation()
-        else:
-            self.__category = category
-
-        if value is None:
-            self.__value = OntologyAnnotation()
-        else:
-            self.__value = value
-
-        self.__unit = unit
+        self.category = category
+        self.value = value
+        self.unit = unit
 
     @property
     def category(self):
@@ -2637,9 +2629,9 @@ class Characteristic(Commentable):
 
     @category.setter
     def category(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Characteristic.category must be a OntologyAnnotation,'
+                'Characteristic.category must be either a string ot an OntologyAnnotation,'
                 ' or None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__category = val
@@ -2668,9 +2660,9 @@ class Characteristic(Commentable):
 
     @unit.setter
     def unit(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Characteristic.unit must be a OntologyAnnotation, or None; '
+                'Characteristic.unit must be either a string ot an OntologyAnnotation, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
             self.__unit = val
@@ -2691,7 +2683,7 @@ class Characteristic(Commentable):
 )""".format(characteristic=self,
            category=self.category.term if self.category else '',
            value=self.value.term if isinstance(
-               self.value, OntologyAnnotation) else self.value,
+               self.value, OntologyAnnotation) else self.value if self.value is not None else '',
            unit=self.unit.term if self.unit else '',
            num_comments=len(self.comments))
 
