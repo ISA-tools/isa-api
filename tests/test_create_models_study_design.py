@@ -744,6 +744,84 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
 
+    def test_from_sample_and_assay_plan_dict_no_validation(self):
+        ms_assay_dict = OrderedDict([
+            ('sample', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'liver',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'blood',
+                    'size': 5,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'heart',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('extraction', {}),
+            ('extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'polar fraction',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'lipids',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('labelling', {}),
+            ('labelled extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'labelled extract type',
+                    'characteristics_value': '',
+                    'size': 2,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('mass spectrometry', {
+                'parameters': {
+                    'instrument': ['Agilent QTQF §'],
+                    'injection_mode': ['FIA', 'LC'],
+                    'acquisition_mode': ['positive mode']
+                }
+            }),
+            ('raw spectral data file', [
+                {
+                    'node_type': DATA_FILE,
+                    'size': 1,
+                    'technical_replicates': 2,
+                    'is_input_to_next_protocols': False
+                }
+            ])
+        ])
+        ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
+        self.assertEqual(len(ms_assay_plan.nodes), 60)
+        self.assertEqual(len(ms_assay_plan.links), 57)
+
 
 class StudyArmTest(unittest.TestCase):
 
