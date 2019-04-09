@@ -708,6 +708,35 @@ class SampleAndAssayPlan(object):
         if graph_dict is not None:
             self.graph_dict = graph_dict
 
+    @classmethod
+    def from_sample_and_assay_plan_dict(cls, sample_and_assay_plan_dict, validation_template=None):
+        """
+        An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
+        OrderedDict, which can optionally be validated against a validation_schema
+        :param sample_and_assay_plan_dict: OrderedDict
+        :param validation_template: dict/OrderedDict
+        :return: SampleAndAssayPlan
+        """
+        res = cls()
+        for node_key, node_params in sample_and_assay_plan_dict.items():
+            if isinstance(node_params, list):    # the node is a ProductNode
+                for node_params_dict in node_params:
+                    product_node = ProductNode(node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                                               characteristics=[
+                                                   Characteristic(category=node_params_dict['characteristics_category'],
+                                                                  value=node_params_dict['characteristics_value'])
+                                               ] if 'characteristics_category' in node_params_dict else [])
+                    res.add_node(product_node)
+            else:       # the node is a ProtocolNode
+                protocol_node = ProtocolNode(
+                    name=node_key, protocol_type=node_key,
+                    parameters=[
+                        ProtocolParameter(parameter_name=parameter_name) for parameter_name, parameter_values
+                        in node_params.get('parameters', {}).items()
+                    ])
+                res.add_node(protocol_node)
+        return res
+
     @property
     def graph_dict(self):
         return self.__graph_dict
