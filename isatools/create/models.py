@@ -588,10 +588,27 @@ class SequenceNode(ABC):
 class ProtocolNode(SequenceNode, Protocol):
 
     def __init__(self, id_=uuid.uuid4(), name='', protocol_type=None, uri='',
-                 description='', version='', parameters=None, components=None,
+                 description='', version='', parameters=None, parameter_values=None, components=None,
                  comments=None):
-        Protocol.__init__(self, id_, name, protocol_type, uri, description, version, parameters, components, comments)
+        Protocol.__init__(self, id_=id_, name=name, protocol_type=protocol_type,
+                          uri=uri, description=description, version=version)
         SequenceNode.__init__(self)
+        self.__parameter_values = []
+
+    @property
+    def parameter_values(self):
+        return self.__parameter_values
+
+    @parameter_values.setter
+    def parameter_values(self, parameter_values):
+        if not isinstance(parameter_values, Iterable) and \
+                not all(isinstance(parameter_value, ParameterValue) for parameter_value in parameter_values):
+            raise AttributeError()
+        self.__parameter_values = list(parameter_values)
+
+    def add_parameter_value(self, protocol_parameter, value, unit):
+        parameter_value = ParameterValue(category=protocol_parameter, value=value, unit=unit)
+        self.__parameter_values.append(parameter_value)
 
     def __repr__(self):
         return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
@@ -617,13 +634,15 @@ class ProductNode(SequenceNode):
 
     ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
     NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values: {0}'
+    NAME_ERROR = 'ProductNode name must be a string, {0} supplied of type {1}'
     SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
     CHARACTERISTIC_TYPE_ERROR = 'A characteristic must be either a string or a Characteristic, {0} supplied'
 
-    def __init__(self, id_=uuid.uuid4(), node_type=SOURCE, characteristics=[], size=0):
+    def __init__(self, id_=uuid.uuid4(), node_type=SOURCE, name='', characteristics=[], size=0):
         super().__init__()
         self.__id = id_
         self.__type = None
+        self.__name = None
         self.__characteristics = []
         self.__size = None
         self.type = node_type
@@ -657,6 +676,16 @@ class ProductNode(SequenceNode):
         if node_type not in self.ALLOWED_TYPES:
             raise AttributeError(self.NOT_ALLOWED_TYPE_ERROR.format(self.ALLOWED_TYPES))
         self.__type = node_type
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError(self.NAME_ERROR.format(name, type(name)))
+        self.__name = name
 
     @property
     def characteristics(self):
