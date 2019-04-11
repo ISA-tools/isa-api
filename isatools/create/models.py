@@ -891,18 +891,22 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 "@id": obj.id,
                 "@type": get_full_class_name(obj),
                 "name": obj.name,
-                "type": onto_encoder.ontology_annotation(obj.protocol_type),
+                "protocolType": onto_encoder.ontology_annotation(obj.protocol_type),
                 "description": obj.description,
                 "uri": obj.uri,
                 "version": obj.version,
-                "parameters": [],
-                "components": []
+                "parameterValues": [{
+                    "name": parameter_value.category.parameter_name,
+                    "value": parameter_value.value,
+                    "unit": parameter_value.unit
+                } for parameter_value in obj.parameter_values],
+                # "components": []
             }
         if isinstance(obj, ProductNode):
             return {
                 "@id": obj.id,
                 "@type": get_full_class_name(obj),
-                "type": obj.type,
+                "productType": obj.type,
                 "size": obj.size,
                 "characteristics": [{
                     "category": char.category,
@@ -926,12 +930,12 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
 class SampleAndAssayPlanDecoder(object):
 
-    def loads_parameter(self, parameter_dict):
-        return ProtocolParameter(parameter_name=parameter_dict["protocol_name"]) if isinstance(parameter_dict, dict) \
-            else ProtocolParameter(parameter_name=parameter_dict)
+    def loads_parameter_value(self, pv_dict):
+        return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
+                              unit=pv_dict.get('unit', None))
 
-    def loads_component(self, component_dict):
-        return None # TODO: not implemented yet
+    def loads_protocol_type(self, pt_dict):
+        return OntologyAnnotation(**pt_dict)
 
     def loads_characteristic(self, characteristic_dict):
         return Characteristic(category=characteristic_dict['category'],
@@ -942,11 +946,12 @@ class SampleAndAssayPlanDecoder(object):
         if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
             return ProtocolNode(id_=node_dict["@id"], name=node_dict["name"], description=node_dict["description"],
                                 uri=node_dict["uri"], version=node_dict["version"],
-                                parameters=[self.loads_parameter(param) for param in node_dict["parameters"]],
-                                components=[self.loads_component(cmp) for cmp in node_dict["components"]],
-                                protocol_type='')
+                                parameter_values=[
+                                    self.loads_parameter_value(param) for param in node_dict["parameterValues"]
+                                ],
+                                protocol_type=self.loads_protocol_type(node_dict["protocolType"]))
         if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
-            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], node_type=node_dict["type"],
+            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], node_type=node_dict["productType"],
                                characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
 
     def loads(self, json_text):

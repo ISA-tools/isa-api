@@ -243,8 +243,12 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.mrna_char = Characteristic(category='nucleic acid', value='mRNA')
         self.sample_node = ProductNode(id_='product-node/0000', node_type=SAMPLE, size=3,
                                        characteristics=[self.tissue_char])
-        self.protocol_node_dna = ProtocolNode(id_='protocol-node/0000', name='DNA extraction', version="1.0.0")
-        self.protocol_node_rna = ProtocolNode(id_='protocol-node/0001', name='RNA extraction', version="0.1")
+        self.extraction_instrument = ParameterValue(category=ProtocolParameter(parameter_name='instrument'),
+                                                    value='Maxwell RSC 48')
+        self.protocol_node_dna = ProtocolNode(id_='protocol-node/0000', name='DNA extraction', version="1.0.0",
+                                              parameter_values=[self.extraction_instrument])
+        self.protocol_node_rna = ProtocolNode(id_='protocol-node/0001', name='RNA extraction', version="0.1",
+                                              parameter_values=[self.extraction_instrument])
         self.dna_node = ProductNode(id_='product-node/0001', node_type=SAMPLE, size=3,
                                     characteristics=[self.dna_char])
         self.mrna_node = ProductNode(id_='product-node/0002', node_type=SAMPLE, size=3,
