@@ -587,13 +587,15 @@ class SequenceNode(ABC):
 
 class ProtocolNode(SequenceNode, Protocol):
 
+    PARAMETERS_CANNOT_BE_SET_ERROR = 'The parameters property cannot be set directly. Set parameter_values instead.'
+
     def __init__(self, id_=uuid.uuid4(), name='', protocol_type=None, uri='',
-                 description='', version='', parameters=None, parameter_values=None, components=None,
-                 comments=None):
+                 description='', version='', parameter_values=None):
         Protocol.__init__(self, id_=id_, name=name, protocol_type=protocol_type,
                           uri=uri, description=description, version=version)
         SequenceNode.__init__(self)
         self.__parameter_values = []
+        self.parameter_values = parameter_values
 
     @property
     def parameter_values(self):
@@ -610,9 +612,18 @@ class ProtocolNode(SequenceNode, Protocol):
         parameter_value = ParameterValue(category=protocol_parameter, value=value, unit=unit)
         self.__parameter_values.append(parameter_value)
 
+    @property
+    def parameters(self):
+        return [parameter_value.category for parameter_value in self.parameter_values]
+
+    @parameters.setter
+    def parameters(self, parameters):
+        raise AttributeError(self.PARAMETERS_CANNOT_BE_SET_ERROR)
+
     def __repr__(self):
         return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
-               'uri={2.uri}, description={2.description}, version={2.version}, parameters={2.parameters}, ' \
+               'uri={2.uri}, description={2.description}, version={2.version}, ' \
+               'parameter_values={2.parameter_values}, ' \
                'components={2.components}, comments={2.comments})'.format(self.__class__.__module__,
                                                                           self.__class__.__name__, self)
 
@@ -750,19 +761,18 @@ class SampleAndAssayPlan(object):
         for node_key, node_params in sample_and_assay_plan_dict.items():
             if isinstance(node_params, list):    # the node is a ProductNode
                 for node_params_dict in node_params:
-                    product_node = ProductNode(node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                                               characteristics=[
-                                                   Characteristic(category=node_params_dict['characteristics_category'],
-                                                                  value=node_params_dict['characteristics_value'])
-                                               ] if 'characteristics_category' in node_params_dict else [])
+                    product_node = ProductNode(
+                        name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                        characteristics=[
+                            Characteristic(category=node_params_dict['characteristics_category'],
+                                           value=node_params_dict['characteristics_value'])
+                        ] if 'characteristics_category' in node_params_dict else [])
                     res.add_node(product_node)
             else:       # the node is a ProtocolNode
                 protocol_node = ProtocolNode(
                     name=node_key, protocol_type=node_key,
-                    parameters=[
-                        ProtocolParameter(parameter_name=parameter_name) for parameter_name, parameter_values
-                        in node_params.get('parameters', {}).items()
-                    ])
+                    parameter_values=[]
+                )
                 res.add_node(protocol_node)
         return res
 
