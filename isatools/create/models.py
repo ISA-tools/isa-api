@@ -587,7 +587,10 @@ class SequenceNode(ABC):
 
 class ProtocolNode(SequenceNode, Protocol):
 
-    PARAMETERS_CANNOT_BE_SET_ERROR = 'The parameters property cannot be set directly. Set parameter_values instead.'
+    PARAMETER_VALUES_ERROR = 'The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue ' \
+                             'objects. {0} was supplied.'
+    PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
+    COMPONENTS_CANNOT_BE_SET_ERROR = 'The \'components\' property cannot be set.'
 
     def __init__(self, id_=uuid.uuid4(), name='', protocol_type=None, uri='',
                  description='', version='', parameter_values=None):
@@ -595,7 +598,8 @@ class ProtocolNode(SequenceNode, Protocol):
                           uri=uri, description=description, version=version)
         SequenceNode.__init__(self)
         self.__parameter_values = []
-        self.parameter_values = parameter_values
+        if parameter_values is not None:
+            self.parameter_values = parameter_values
 
     @property
     def parameter_values(self):
@@ -603,12 +607,14 @@ class ProtocolNode(SequenceNode, Protocol):
 
     @parameter_values.setter
     def parameter_values(self, parameter_values):
-        if not isinstance(parameter_values, Iterable) and \
+        if not isinstance(parameter_values, Iterable) or \
                 not all(isinstance(parameter_value, ParameterValue) for parameter_value in parameter_values):
-            raise AttributeError()
+            raise AttributeError(self.PARAMETER_VALUES_ERROR.format(parameter_values))
         self.__parameter_values = list(parameter_values)
 
-    def add_parameter_value(self, protocol_parameter, value, unit):
+    def add_parameter_value(self, protocol_parameter, value, unit=None):
+        if isinstance(protocol_parameter, str):
+            protocol_parameter = ProtocolParameter(parameter_name=protocol_parameter)
         parameter_value = ParameterValue(category=protocol_parameter, value=value, unit=unit)
         self.__parameter_values.append(parameter_value)
 
@@ -620,12 +626,19 @@ class ProtocolNode(SequenceNode, Protocol):
     def parameters(self, parameters):
         raise AttributeError(self.PARAMETERS_CANNOT_BE_SET_ERROR)
 
+    @property
+    def components(self):
+        return None
+
+    @components.setter
+    def components(self, components):
+        raise AttributeError(self.COMPONENTS_CANNOT_BE_SET_ERROR)
+
     def __repr__(self):
         return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
                'uri={2.uri}, description={2.description}, version={2.version}, ' \
-               'parameter_values={2.parameter_values}, ' \
-               'components={2.components}, comments={2.comments})'.format(self.__class__.__module__,
-                                                                          self.__class__.__name__, self)
+               'parameter_values={2.parameter_values}).'.format(self.__class__.__module__,
+                                                                self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -634,8 +647,7 @@ class ProtocolNode(SequenceNode, Protocol):
         return isinstance(other, ProtocolNode) and self.id == other.id and self.name == other.name \
                and self.protocol_type == other.protocol_type and self.uri == other.uri \
                and self.description == other.description and self.version == other.version \
-               and self.parameters == other.parameters and self.components == other.components \
-               and self.comments == other.comments
+               and self.parameter_values == other.parameter_values
 
     def __ne__(self, other):
         return not self == other

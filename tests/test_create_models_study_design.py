@@ -658,6 +658,30 @@ class ProtocolNodeTest(unittest.TestCase):
         node = ProtocolNode(name='sampling', protocol_type='sampling')
         self.assertIsInstance(node, ProtocolNode)
 
+    def test_add_parameter_value(self):
+        node = ProtocolNode()
+        test_parameter_name = 'test param'
+        test_parameter_value = 'param value'
+        node.add_parameter_value(test_parameter_name, test_parameter_value)
+        actual_parameter_value = node.parameter_values[0]
+        self.assertIsInstance(actual_parameter_value, ParameterValue)
+        self.assertEqual(actual_parameter_value.category, ProtocolParameter(parameter_name=test_parameter_name))
+        self.assertEqual(actual_parameter_value.value, test_parameter_value)
+        self.assertEqual(actual_parameter_value.unit, None)
+
+    def test_properties(self):
+        node = ProtocolNode()
+        self.assertEqual(node.parameter_values, [])
+        self.assertEqual(node.parameters, [])
+        self.assertEqual(node.components, None)
+        test_parameter_values = [
+            ParameterValue(category=ProtocolParameter(parameter_name='test param'), value='tot'),
+            ParameterValue(category=ProtocolParameter(parameter_name='another test param'), value='quot', unit='z')
+        ]
+        node.parameter_values = test_parameter_values
+        self.assertEqual(node.parameter_values, test_parameter_values)
+        self.assertEqual(node.parameters, [test_pv.category for test_pv in test_parameter_values])
+
 
 class ProductNodeTest(unittest.TestCase):
 
