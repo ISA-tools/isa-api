@@ -770,6 +770,10 @@ class SampleAndAssayPlan(object):
         :return: SampleAndAssayPlan
         """
         res = cls()
+
+        def generate_current_nodes(node_name, node_params, previous_nodes):
+            pass
+
         for node_key, node_params in sample_and_assay_plan_dict.items():
             if isinstance(node_params, list):    # the node is a ProductNode
                 for node_params_dict in node_params:
@@ -781,11 +785,18 @@ class SampleAndAssayPlan(object):
                         ] if 'characteristics_category' in node_params_dict else [])
                     res.add_node(product_node)
             else:       # the node is a ProtocolNode
-                protocol_node = ProtocolNode(
-                    name=node_key, protocol_type=node_key,
-                    parameter_values=[]
-                )
-                res.add_node(protocol_node)
+                pv_names, pv_all_values = node_params.keys(), node_params.values()
+                pv_combinations = itertools.product(*[val for val in pv_all_values])
+                for pv_combination in pv_combinations:
+                    protocol_node = ProtocolNode(
+                        name=node_key, protocol_type=node_key,
+                        parameter_values=[
+                            ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                           value=pv)
+                            for ix, pv in enumerate(pv_combination)
+                        ]
+                    )
+                    res.add_node(protocol_node)
         return res
 
     @property

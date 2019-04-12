@@ -827,11 +827,9 @@ class SampleAndAssayPlanTest(unittest.TestCase):
                 }
             ]),
             ('mass spectrometry', {
-                'parameters': {
-                    'instrument': ['Agilent QTQF §'],
-                    'injection_mode': ['FIA', 'LC'],
-                    'acquisition_mode': ['positive mode']
-                }
+                'instrument': ['Agilent QTQF §'],
+                'injection_mode': ['FIA', 'LC'],
+                'acquisition_mode': ['positive mode']
             }),
             ('raw spectral data file', [
                 {
