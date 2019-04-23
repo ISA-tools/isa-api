@@ -640,6 +640,9 @@ class ProtocolNode(SequenceNode, Protocol):
                'parameter_values={2.parameter_values}).'.format(self.__class__.__module__,
                                                                 self.__class__.__name__, self)
 
+    def __str__(self):
+        return repr(self)
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -669,19 +672,22 @@ class ProductNode(SequenceNode):
         self.__characteristics = []
         self.__size = None
         self.type = node_type
+        self.name = name
         self.characteristics = characteristics
         self.size = size
 
     def __repr__(self):
-        return '{0}.{1}(type={2.type}, characteristics={2.characteristics}, size={2.size})'.format(
-            self.__class__.__module__, self.__class__.__name__, self)
+        return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
+               'characteristics={2.characteristics}, size={2.size})'.format(
+                self.__class__.__module__, self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, ProductNode) and self.id == other.id and self.type == other.type \
-               and self.characteristics == other.characteristics and self.size == other.size
+               and self.name == other.name and self.characteristics == other.characteristics \
+               and self.size == other.size
 
     def __ne__(self, other):
         return not self == other
@@ -771,32 +777,54 @@ class SampleAndAssayPlan(object):
         """
         res = cls()
 
-        def generate_current_nodes(node_name, node_params, previous_nodes):
-            pass
-
+        previous_nodes = []
+        current_nodes = []
         for node_key, node_params in sample_and_assay_plan_dict.items():
+
             if isinstance(node_params, list):    # the node is a ProductNode
                 for node_params_dict in node_params:
-                    product_node = ProductNode(
-                        name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                        characteristics=[
-                            Characteristic(category=node_params_dict['characteristics_category'],
-                                           value=node_params_dict['characteristics_value'])
-                        ] if 'characteristics_category' in node_params_dict else [])
-                    res.add_node(product_node)
+                    if not previous_nodes:
+                        product_node = ProductNode(
+                            id_=uuid.uuid4(),
+                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            characteristics=[
+                                Characteristic(category=node_params_dict['characteristics_category'],
+                                               value=node_params_dict['characteristics_value'])
+                            ] if 'characteristics_category' in node_params_dict else [])
+                        res.add_node(product_node)
+                        current_nodes.append(product_node)
+                    else:
+                        for prev_node in previous_nodes:
+                            product_node = ProductNode(
+                                id_=uuid.uuid4(),
+                                name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                                characteristics=[
+                                    Characteristic(category=node_params_dict['characteristics_category'],
+                                                   value=node_params_dict['characteristics_value'])
+                                ] if 'characteristics_category' in node_params_dict else [])
+                            res.add_node(product_node)
+                            res.add_link(prev_node, product_node)
+                            current_nodes.append(product_node)
             else:       # the node is a ProtocolNode
-                pv_names, pv_all_values = node_params.keys(), node_params.values()
+                pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for pv_combination in pv_combinations:
-                    protocol_node = ProtocolNode(
-                        name=node_key, protocol_type=node_key,
-                        parameter_values=[
-                            ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                           value=pv)
-                            for ix, pv in enumerate(pv_combination)
-                        ]
-                    )
-                    res.add_node(protocol_node)
+                    print(pv_combination)
+                    for prev_node in previous_nodes:
+                        protocol_node = ProtocolNode(
+                            id_=uuid.uuid4(), name=node_key, protocol_type=node_key,
+                            parameter_values=[
+                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                               value=pv)
+                                for ix, pv in enumerate(pv_combination)
+                            ]
+                        )
+                        print(protocol_node)
+                        res.add_node(protocol_node)
+                        res.add_link(prev_node, protocol_node)
+                        current_nodes.append(protocol_node)
+            previous_nodes = current_nodes
+            current_nodes = []
         return res
 
     @property
