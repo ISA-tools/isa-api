@@ -841,6 +841,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
             ])
         ])
         ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
+        print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(ms_assay_plan.nodes), 60)
         self.assertEqual(len(ms_assay_plan.links), 57)
 

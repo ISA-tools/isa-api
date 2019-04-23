@@ -2266,8 +2266,8 @@ class Protocol(Commentable):
 )""".format(protocol=self, protocol_type=
             self.protocol_type.term if self.protocol_type else '',
             num_parameters=len(self.parameters),
-            num_components=len(self.components),
-            num_comments=len(self.comments))
+            num_components=len(self.components) if self.components else 0,
+            num_comments=len(self.comments) if self.comments else 0)
 
     def __hash__(self):
         return hash(repr(self))
