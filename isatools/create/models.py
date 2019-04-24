@@ -18,6 +18,7 @@ from math import factorial
 import os
 import yaml
 import uuid
+import networkx as nx
 import inspect
 import pdb
 
@@ -913,6 +914,15 @@ class SampleAndAssayPlan(object):
             for end_node in self.end_nodes:
                 paths += self.find_paths(start_node, end_node)
         return paths
+
+    def as_networkx_graph(self):
+        """leverage the Networkx graph library to draw the SampleAssayPlanGraph"""
+        nx_graph = nx.Graph()
+        for node in self.nodes:
+            nx_graph.add_node(node.id, node_type=node.__class__.__name__, name=node.name)
+        for start_node, end_node in self.links:
+            nx_graph.add_edge(start_node.id, end_node.id)
+        return nx_graph
 
     def __repr__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
