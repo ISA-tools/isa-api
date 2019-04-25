@@ -917,7 +917,7 @@ class SampleAndAssayPlan(object):
 
     def as_networkx_graph(self):
         """leverage the Networkx graph library to draw the SampleAssayPlanGraph"""
-        nx_graph = nx.Graph()
+        nx_graph = nx.DiGraph()
         for node in self.nodes:
             nx_graph.add_node(node.id, node_type=node.__class__.__name__, name=node.name)
         for start_node, end_node in self.links:

@@ -6,7 +6,7 @@ from isatools.errors import *
 
 from isatools.create.models import *
 
-import json
+import networkx as nx
 import uuid
 
 NAME = 'name'
@@ -706,6 +706,18 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.dna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.dna_char])
         self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
         self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
+        self.graph_dict = {
+            self.sample_node: [self.protocol_node_rna, self.protocol_node_dna],
+            self.protocol_node_dna: [self.dna_node],
+            self.protocol_node_rna: [self.mirna_node, self.mrna_node],
+            self.dna_node: [],
+            self.mrna_node: [],
+            self.mirna_node: []
+        }
+
+    def test_init(self):
+        self.plan = SampleAndAssayPlan(graph_dict=self.graph_dict)
+        self.assertEqual(self.plan.graph_dict, self.graph_dict)
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -767,6 +779,17 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         second_plan.add_nodes(nodes)
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
+
+    def test_as_networkx_graph(self):
+        self.plan.graph_dict = self.graph_dict
+        nx_graph = self.plan.as_networkx_graph()
+        self.assertIsInstance(nx_graph, nx.DiGraph)
+        self.assertEqual(set(nx_graph.nodes), {
+            node.id for node in self.plan.nodes
+        })
+        self.assertEqual(nx_graph.edges, {
+            (u.id, v.id) for u, v in self.plan.links
+        })
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         ms_assay_dict = OrderedDict([
@@ -1047,6 +1070,7 @@ class StudyArmTest(unittest.TestCase):
         self.arm.arm_map = ord_dict
         self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been '
                                                      'correctly set for single-treatment cells.')
+
     def test_arm_map_property_success_01(self):
         self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None),
