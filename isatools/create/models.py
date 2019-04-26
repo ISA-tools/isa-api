@@ -796,6 +796,7 @@ class SampleAndAssayPlan(object):
                         current_nodes.append(product_node)
                     else:
                         for j, prev_node in enumerate(previous_nodes):
+                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             product_node = ProductNode(
                                 id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
                                     node_key, str(i).zfill(3), str(j).zfill(3)),
@@ -810,11 +811,13 @@ class SampleAndAssayPlan(object):
             else:       # the node is a ProtocolNode
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
-                for pv_combination in pv_combinations:
-                    print(pv_combination)
-                    for i, prev_node in enumerate(previous_nodes):
+                for i, pv_combination in enumerate(pv_combinations):
+                    print('pv_combination: {0}'.format(pv_combination))
+                    for j, prev_node in enumerate(previous_nodes):
+                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         protocol_node = ProtocolNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
+                                                                                    str(j).zfill(3)),
                             name=node_key, protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
@@ -822,7 +825,7 @@ class SampleAndAssayPlan(object):
                                 for ix, pv in enumerate(pv_combination)
                             ]
                         )
-                        print(protocol_node)
+                        # print(protocol_node)
                         res.add_node(protocol_node)
                         res.add_link(prev_node, protocol_node)
                         current_nodes.append(protocol_node)

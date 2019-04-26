@@ -864,9 +864,9 @@ class SampleAndAssayPlanTest(unittest.TestCase):
             ])
         ])
         ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
-        print([node.name for node in ms_assay_plan.nodes])
-        self.assertEqual(len(ms_assay_plan.nodes), 60)
-        self.assertEqual(len(ms_assay_plan.links), 57)
+        # print([node.name for node in ms_assay_plan.nodes])
+        self.assertEqual(len(ms_assay_plan.nodes), 48)
+        self.assertEqual(len(ms_assay_plan.links), 45)
 
 
 class StudyArmTest(unittest.TestCase):
@@ -1229,7 +1229,7 @@ class StudyDesignTest(unittest.TestCase):
                                                                     'StudyDesign')
         self.study_design.add_study_arm(self.second_arm)
         self.assertIn(self.second_arm, self.study_design.study_arms, 'The Study Arm has been correctly added to the '
-                                                                    'StudyDesign')
+                                                                     'StudyDesign')
         with self.assertRaises(ISAModelValueError,
                                msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.add_study_arm(self.arm_same_name_as_third)
