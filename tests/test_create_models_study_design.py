@@ -867,6 +867,14 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(ms_assay_plan.nodes), 48)
         self.assertEqual(len(ms_assay_plan.links), 45)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'sample', ms_assay_plan.nodes))), 3)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_plan.nodes))), 3)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'extract', ms_assay_plan.nodes))), 6)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'labelling', ms_assay_plan.nodes))), 6)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'labelled extract', ms_assay_plan.nodes))), 6)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_plan.nodes))), 12)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
+                                         ms_assay_plan.nodes))), 12)
 
 
 class StudyArmTest(unittest.TestCase):
