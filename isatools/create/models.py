@@ -1033,7 +1033,7 @@ class SampleAndAssayPlanDecoder(object):
 
 class StudyArm(object):
     """
-    Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
+    Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAndAssayPlan
     We call this mapping arm_map
     """
 
@@ -1143,7 +1143,7 @@ class StudyArm(object):
         """
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
-        if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAssayPlan):
+        if sample_assay_plan is not None and not isinstance(sample_assay_plan, (SampleAssayPlan, SampleAndAssayPlan)):
             raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
         if self.is_completed():
             raise ISAModelValueError(self.COMPLETE_ARM_ERROR_MESSAGE)
@@ -2369,7 +2369,7 @@ class StudyDesignFactory(object):
         treatments, sample_plans = zip(*treatments_map)
         if not all(isinstance(treatment, Treatment) for treatment in treatments):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
-        if not all(isinstance(sample_plan, SampleAssayPlan) for sample_plan in sample_plans):
+        if not all(isinstance(sample_plan, (SampleAssayPlan, SampleAndAssayPlan)) for sample_plan in sample_plans):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
                                 (follow_up_map, FOLLOW_UP)]:
@@ -2377,7 +2377,7 @@ class StudyDesignFactory(object):
                 continue
             if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
                     or not nt_map[0].type == nt_type or not (
-                            nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
+                            nt_map[1] is None or isinstance(nt_map[1], (SampleAssayPlan, SampleAndAssayPlan))):
                 raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
 
     @staticmethod
@@ -2388,7 +2388,7 @@ class StudyDesignFactory(object):
         if not isinstance(treatments, (list, tuple)) or \
                 not all(isinstance(treatment, Treatment) for treatment in treatments):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
-        if not isinstance(sample_assay_plan, SampleAssayPlan):
+        if not isinstance(sample_assay_plan, (SampleAssayPlan, SampleAndAssayPlan)):
             raise ISAModelTypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
         if washout and (not isinstance(washout, NonTreatment) or not washout.type == WASHOUT):
             raise ISAModelTypeError('{0} is not a valid NonTreatment of type WASHOUT'.format(washout))
@@ -2397,7 +2397,7 @@ class StudyDesignFactory(object):
                 continue
             if not isinstance(nt_map, tuple) or not isinstance(nt_map[0], NonTreatment) \
                     or not nt_map[0].type == nt_type or not (
-                            nt_map[1] is None or isinstance(nt_map[1], SampleAssayPlan)):
+                            nt_map[1] is None or isinstance(nt_map[1], (SampleAssayPlan, SampleAndAssayPlan))):
                 raise ISAModelTypeError('Map for NonTreatment {0} is not correctly set.'.format(nt_type))
 
     @staticmethod
