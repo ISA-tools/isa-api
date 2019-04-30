@@ -895,6 +895,10 @@ class SampleAndAssayPlan(object):
                                                    for target_node in target_nodes)
 
     @property
+    def sample_nodes(self):
+        return filter(node for node in self.start_nodes if node.type == SAMPLE)
+
+    @property
     def end_nodes(self):
         return set(node for node in self.__graph_dict.keys() if not self.__graph_dict[node])
 
