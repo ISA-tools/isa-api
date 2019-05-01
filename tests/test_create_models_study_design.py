@@ -36,6 +36,78 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
+ms_assay_dict = OrderedDict([
+    ('sample', [
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'organism part',
+            'characteristics_value': 'liver',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'organism part',
+            'characteristics_value': 'blood',
+            'size': 5,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'organism part',
+            'characteristics_value': 'heart',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('extraction', {}),
+    ('extract', [
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'polar fraction',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'lipids',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('labelling', {}),
+    ('labelled extract', [
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'labelled extract type',
+            'characteristics_value': '',
+            'size': 2,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('mass spectrometry', {
+        'instrument': ['Agilent QTQF §'],
+        'injection_mode': ['FIA', 'LC'],
+        'acquisition_mode': ['positive mode']
+    }),
+    ('raw spectral data file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 1,
+            'technical_replicates': 2,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
+
 
 # class SamplePlanTest(unittest.TestCase):
 #
@@ -780,6 +852,10 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
 
+    def test_sample_nodes(self):
+        self.plan.graph_dict = self.graph_dict
+        self.assertEqual(self.plan.sample_nodes, {self.sample_node})
+
     def test_as_networkx_graph(self):
         self.plan.graph_dict = self.graph_dict
         nx_graph = self.plan.as_networkx_graph()
@@ -792,77 +868,6 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         })
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
-        ms_assay_dict = OrderedDict([
-            ('sample', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'liver',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'blood',
-                    'size': 5,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'heart',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'polar fraction',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'lipids',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('labelling', {}),
-            ('labelled extract', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'labelled extract type',
-                    'characteristics_value': '',
-                    'size': 2,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('mass spectrometry', {
-                'instrument': ['Agilent QTQF §'],
-                'injection_mode': ['FIA', 'LC'],
-                'acquisition_mode': ['positive mode']
-            }),
-            ('raw spectral data file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
         ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(ms_assay_plan.nodes), 48)
@@ -1157,7 +1162,7 @@ class StudyDesignTest(unittest.TestCase):
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.washout = NonTreatment(element_type=WASHOUT,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
@@ -1171,7 +1176,7 @@ class StudyDesignTest(unittest.TestCase):
         self.cell_concomitant_treatments = StudyCell('CONCOMITANT TREATMENTS',
                                                      elements=([{self.second_treatment, self.fourth_treatment}]))
         self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
-        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout))
+        self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout,))
         self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
         self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
         self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
@@ -1184,7 +1189,7 @@ class StudyDesignTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.sample_assay_plan = SampleAssayPlan()
+        self.sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
         self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_00, self.sample_assay_plan),
             (self.cell_follow_up, self.sample_assay_plan)

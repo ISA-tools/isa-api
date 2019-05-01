@@ -2102,6 +2102,8 @@ class Protocol(Commentable):
         self.id = id_
         self.__name = name
         self.__protocol_type = None
+        self.__parameters = None
+        self.__components = None
 
         if protocol_type is None:
             self.protocol_type = OntologyAnnotation()
@@ -2112,15 +2114,14 @@ class Protocol(Commentable):
         self.__uri = uri
         self.__version = version
 
-        if parameters is None:
-            self.__parameters = []
-        else:
-            self.__parameters = parameters
+        self.__parameters = []
+        self.__components = []
 
-        if components is None:
-            self.__components = []
-        else:
-            self.__components = components
+        if parameters is not None:
+            self.parameters = parameters
+
+        if components is not None:
+            self.components = components
 
     @property
     def name(self):
