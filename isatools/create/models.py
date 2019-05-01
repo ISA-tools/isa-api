@@ -896,7 +896,7 @@ class SampleAndAssayPlan(object):
 
     @property
     def sample_nodes(self):
-        return filter(node for node in self.start_nodes if node.type == SAMPLE)
+        return {node for node in self.start_nodes if node.type == SAMPLE}
 
     @property
     def end_nodes(self):
@@ -1377,12 +1377,15 @@ class StudyDesign(object):
                     for source in sources_map[arm.name]:
                         if not sample_assay_plan:
                             continue
-                        for sample_type, sampling_size in sample_assay_plan.sample_plan.items():
-                            if sample_type.value.term_source:
-                                ontology_sources.add(sample_type.value.term_source)
+                        for sample_node in sample_assay_plan.sample_nodes:
+                            sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
+                            sample_term_source = sample_type.value.term_source if \
+                                hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
+                            if sample_term_source:
+                                ontology_sources.add(sample_term_source)
                             for samp_idx in range(0, sampling_size):
                                 sample = Sample(name=self._idgen(arm.name, source.name, str(samp_idx+1),
-                                                                 sample_type.value.term_source),
+                                                                 sample_term_source),
                                                 factor_values=element.factor_values,
                                                 characteristics=[sample_type], derives_from=[source])
                                 samples.append(sample)
