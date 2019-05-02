@@ -36,8 +36,7 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
-ms_assay_dict = OrderedDict([
-    ('sample', [
+sample_list = [
         {
             'node_type': SAMPLE,
             'characteristics_category': 'organism part',
@@ -62,7 +61,9 @@ ms_assay_dict = OrderedDict([
             'technical_replicates': None,
             'is_input_to_next_protocols': True
         }
-    ]),
+]
+
+ms_assay_dict = OrderedDict([
     ('extraction', {}),
     ('extract', [
         {
@@ -315,11 +316,11 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__screen_cell_02(self):
         self.assertFalse(self.cell._non_treatment_check([self.screen], self.run_in, 0),
-                        'A RUN-IN element cannot be added to a cell with a SCREEN before the SCREEN')
+                         'A RUN-IN element cannot be added to a cell with a SCREEN before the SCREEN')
 
     def test_non_treatment_check__screen_cell_03(self):
         self.assertFalse(self.cell._non_treatment_check([self.screen], self.washout),
-                        'A WASHOUT element cannot be added to a cell with a SCREEN')
+                         'A WASHOUT element cannot be added to a cell with a SCREEN')
 
     def test_non_treatment_check__screen_cell_04(self):
         self.assertFalse(self.cell._non_treatment_check([self.screen], self.follow_up),
@@ -335,11 +336,11 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__run_in_cell_02(self):
         self.assertFalse(self.cell._non_treatment_check([self.run_in], self.run_in),
-                        'A RUN-IN element can be added to a cell with a RUN-IN')
+                         'A RUN-IN element can be added to a cell with a RUN-IN')
 
     def test_non_treatment_check__run_in_cell_03(self):
         self.assertFalse(self.cell._non_treatment_check([self.run_in], self.washout),
-                        'A WASHOUT element cannot be added to a cell with a RUN-IN')
+                         'A WASHOUT element cannot be added to a cell with a RUN-IN')
 
     def test_non_treatment_check__run_in_cell_04(self):
         self.assertFalse(self.cell._non_treatment_check([self.run_in], self.follow_up),
@@ -351,7 +352,7 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__washout_cell_01(self):
         self.assertFalse(self.cell._non_treatment_check([self.washout], self.run_in),
-                        'A RUN-IN element can be added to a cell with a WASHOUT')
+                         'A RUN-IN element can be added to a cell with a WASHOUT')
 
     def test_non_treatment_check__washout_cell_02(self):
         self.assertFalse(self.cell._non_treatment_check([self.washout], self.washout),
@@ -368,11 +369,11 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__follow_up_cell_01(self):
         self.assertFalse(self.cell._non_treatment_check([self.follow_up], self.run_in),
-                        'A RUN-IN element can be added to a cell with a FOLLOW-UP')
+                         'A RUN-IN element can be added to a cell with a FOLLOW-UP')
 
     def test_non_treatment_check__follow_up_cell_02(self):
         self.assertFalse(self.cell._non_treatment_check([self.follow_up], self.washout),
-                        'A WASHOUT element cannot be added to a cell with a WASHOUT immediately after the FOLLOW-UP')
+                         'A WASHOUT element cannot be added to a cell with a WASHOUT immediately after the FOLLOW-UP')
 
     def test_non_treatment_check__follow_up_cell_03(self):
         self.assertFalse(self.cell._non_treatment_check([self.follow_up], self.follow_up),
@@ -386,9 +387,9 @@ class StudyCellTest(unittest.TestCase):
 
     def test_non_treatment_check__treatment_cell_01(self):
         self.assertFalse(self.cell._non_treatment_check([self.first_treatment], self.run_in),
-                        'A RUN-IN element can be added to a cell with a treatment')
+                         'A RUN-IN element can be added to a cell with a treatment')
         self.assertFalse(self.cell._non_treatment_check([self.first_treatment], self.run_in, 0),
-                        'A RUN-IN element can be added to a cell with a treatment before the treatment')
+                         'A RUN-IN element can be added to a cell with a treatment before the treatment')
 
     def test_non_treatment_check__treatment_cell_02(self):
         self.assertTrue(self.cell._non_treatment_check([self.first_treatment], self.washout),
@@ -405,31 +406,32 @@ class StudyCellTest(unittest.TestCase):
     def test_non_treatment_check__multi_element_cell_00(self):
         self.assertTrue(self.cell._non_treatment_check([self.first_treatment, self.washout, self.second_treatment],
                                                        self.washout),
-                        'A WASHOUT element can be added at the end of a cell with 2 treatments intersped by a washout')
+                        'A WASHOUT element can be added at the end of a cell with 2 treatments interspersed '
+                        'by a washout')
         self.assertTrue(self.cell._non_treatment_check([
             self.first_treatment, self.washout, self.second_treatment
         ], self.washout), 'A WASHOUT element can be added at the beginning of a cell with 2 treatments '
-                          'intersped by a washout')
+                          'interspersed by a washout')
 
     def test_non_treatment_check_multi_element_cell_01(self):
         self.assertTrue(self.cell._non_treatment_check([
             {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment
         ], self.washout), 'A WASHOUT element can be added at the end of a cell with a treatment set and a treatment '
-                          'intersped by a washout')
+                          'interspersed by a washout')
         self.assertTrue(self.cell._non_treatment_check([
             {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment
         ], self.washout, 0), 'A WASHOUT element can be added at the beginning of a cell with a treatment set and a '
-                             'treatment intersped by a washout')
+                             'treatment interspersed by a washout')
 
     def test_non_treatment_check_multi_element_cell_02(self):
         self.assertTrue(self.cell._non_treatment_check([
             self.first_treatment, self.washout, {self.fourth_treatment, self.second_treatment}
         ], self.washout), 'A WASHOUT element can be added at the end of a cell with a treatment and a treatment set'
-                          'intersped by a washout')
+                          'interspersed by a washout')
         self.assertTrue(self.cell._non_treatment_check([
             self.first_treatment, self.washout, {self.fourth_treatment, self.second_treatment}
         ], self.washout, 0), 'A WASHOUT element can be added at the beginning of a cell with a treatment and a '
-                             'treatment set intersped by a washout')
+                             'treatment set interspersed by a washout')
 
     # _treatment_check() tests
     def test_treatment_check__screen_cell(self):
@@ -440,7 +442,7 @@ class StudyCellTest(unittest.TestCase):
 
     def test_treatment_check__washout_cell(self):
         self.assertTrue(self.cell._treatment_check([self.washout]),
-                         'A treatment can be inserted into a WASHOUT cell')
+                        'A treatment can be inserted into a WASHOUT cell')
 
     def test_treatment_check__follow_up_cell(self):
         self.assertFalse(self.cell._treatment_check([self.follow_up]),
@@ -451,16 +453,16 @@ class StudyCellTest(unittest.TestCase):
 
     def test_treatment_check__treatment_cell_00(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment]),
-                         'A treatment can be inserted into a cell with a treatment')
+                        'A treatment can be inserted into a cell with a treatment')
 
     def test_treatment_check__treatment_cell_01(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment, self.second_treatment]),
-                         'A treatment can be inserted into a cell with two treatment')
+                        'A treatment can be inserted into a cell with two treatment')
 
     def test_treatment_check__treatment_cell_02(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment, {self.second_treatment,
                                                                            self.third_treatment}]),
-                         'A treatment can be inserted into a cell with a treatment and a concomitant treatment')
+                        'A treatment can be inserted into a cell with a treatment and a concomitant treatment')
 
     def test_treatment_check__treatment_cell_02(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment,
@@ -468,8 +470,8 @@ class StudyCellTest(unittest.TestCase):
                                                         self.second_treatment,
                                                         self.third_treatment
                                                     }, self.washout]),
-                         'A treatment can be inserted into a cell with a treatment a concomitant treatment and two'
-                         'washouts')
+                        'A treatment can be inserted into a cell with a treatment a concomitant treatment and two '
+                        'washouts')
 
     # _concomitant_treatment_check() tests
     def test_concomitant_treatments_check_00(self):
@@ -497,8 +499,6 @@ class StudyCellTest(unittest.TestCase):
             self.third_treatment
         }), 'Concomitant treatment must have same duration (no semantic reasoning on units)')
 
-
-
     def test_insert_element_screen(self):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.screen)
@@ -507,7 +507,7 @@ class StudyCellTest(unittest.TestCase):
                           'A SCREEN cannot be added to a a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
         self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
-                               'A treatment cannot be added to a cell with a SCREEN')
+                          'A treatment cannot be added to a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
         self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a SCREEN')
@@ -641,11 +641,14 @@ class StudyCellTest(unittest.TestCase):
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
 
     def test_contains_non_treatment_by_type_empty_cell(self):
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False, 'An empty cell contains no SCREEN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False, 'An empty cell contains no RUN-IN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), False, 'An empty cell contains no WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False,
+                         'An empty cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False,
+                         'An empty cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), False,
+                         'An empty cell contains no WASHOUT')
         self.assertEqual(self.cell.contains_non_treatment_element_by_type(FOLLOW_UP), False,
-                                                                  'An empty cell contains no FOLLOW_UP')
+                         'An empty cell contains no FOLLOW_UP')
 
     def test_contains_non_treatment_by_type_screen_cell(self):
         self.cell.elements = [self.screen]
@@ -671,18 +674,25 @@ class StudyCellTest(unittest.TestCase):
 
     def test_contains_non_treatment_by_type_washout_cell(self):
         self.cell.elements = [self.washout]
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False, 'A WASHOUT cell contains no SCREEN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False, 'A WASHOUT cell contains no RUN-IN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), True, 'A WASHOUT cell contains a WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False,
+                         'A WASHOUT cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False,
+                         'A WASHOUT cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), True,
+                         'A WASHOUT cell contains a WASHOUT')
         self.assertEqual(self.cell.contains_non_treatment_element_by_type(FOLLOW_UP), False,
                          'A WASHOUT cell contains no FOLLOW_UP')
 
     def test_contains_non_treatment_by_type_follow_up_cell(self):
         self.cell.elements = [self.follow_up]
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False, 'A FOLLOW-UP cell contains no SCREEN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False, 'A FOLLOW-UP cell contains no RUN-IN')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), False, 'A FOLLOW-UP cell contains a WASHOUT')
-        self.assertEqual(self.cell.contains_non_treatment_element_by_type(FOLLOW_UP), True, 'A FOLLOW-UP cell contains no FOLLOW_UP')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(SCREEN), False,
+                         'A FOLLOW-UP cell contains no SCREEN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(RUN_IN), False,
+                         'A FOLLOW-UP cell contains no RUN-IN')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(WASHOUT), False,
+                         'A FOLLOW-UP cell contains a WASHOUT')
+        self.assertEqual(self.cell.contains_non_treatment_element_by_type(FOLLOW_UP), True,
+                         'A FOLLOW-UP cell contains no FOLLOW_UP')
 
     def test_contains_non_treatment_by_type_single_treatment_cell(self):
         self.cell.elements = [self.first_treatment]
@@ -868,7 +878,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         })
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
-        ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
+        ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(ms_assay_plan.nodes), 48)
         self.assertEqual(len(ms_assay_plan.links), 45)
