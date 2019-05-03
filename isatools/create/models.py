@@ -751,21 +751,7 @@ class ProductNode(SequenceNode):
 
 class SampleAndAssayPlan(object):
 
-    INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
-    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
-                         "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
-    MISSING_NODE_ERROR = "Start or target node have not been added to the SampleAssayGraph yet"
-    NODE_ALREADY_PRESENT = "The node {0.id} is already present in the SampleAndAssayPlan"
 
-    def __init__(self, graph_dict=None):
-        """ 
-        initializes a SampleAssayGraph object 
-        If no dictionary or None is given, 
-        an empty dictionary will be used
-        """
-        self.__graph_dict = {}
-        if graph_dict is not None:
-            self.graph_dict = graph_dict
 
     @classmethod
     def from_sample_and_assay_plan_dict(cls, samples, *assay_plan_dicts, validation_template=None, use_guids=False):
@@ -871,6 +857,25 @@ class SampleAndAssayPlan(object):
             current_nodes = []
         return res
 
+
+class AssayGraph(object):
+
+    INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
+    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
+                         "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
+    MISSING_NODE_ERROR = "Start or target node have not been added to the SampleAssayGraph yet"
+    NODE_ALREADY_PRESENT = "The node {0.id} is already present in the SampleAndAssayPlan"
+
+    def __init__(self, graph_dict=None):
+        """
+        initializes a SampleAssayGraph object
+        If no dictionary or None is given,
+        an empty dictionary will be used
+        """
+        self.__graph_dict = {}
+        if graph_dict is not None:
+            self.graph_dict = graph_dict
+
     @property
     def graph_dict(self):
         return self.__graph_dict
@@ -932,9 +937,11 @@ class SampleAndAssayPlan(object):
         return set(self.__graph_dict.keys()) - set(target_node for target_nodes in self.__graph_dict.values()
                                                    for target_node in target_nodes)
 
+    """
     @property
     def sample_nodes(self):
         return {node for node in self.start_nodes if node.type == SAMPLE}
+    """
 
     @property
     def end_nodes(self):
@@ -980,7 +987,7 @@ class SampleAndAssayPlan(object):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, SampleAndAssayPlan) and self.nodes == other.nodes and self.links == other.links
+        return isinstance(other, AssayGraph) and self.nodes == other.nodes and self.links == other.links
 
     def __ne__(self, other):
         return not self == other

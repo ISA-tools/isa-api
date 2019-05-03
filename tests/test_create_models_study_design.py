@@ -774,10 +774,10 @@ class ProductNodeTest(unittest.TestCase):
         self.assertIsInstance(self.node.id, uuid.uuid4)
 
 
-class SampleAndAssayPlanTest(unittest.TestCase):
+class AssayGraphTest(unittest.TestCase):
 
     def setUp(self):
-        self.plan = SampleAndAssayPlan()
+        self.assay_graph = AssayGraph()
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
         self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
@@ -789,7 +789,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
         self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
         self.graph_dict = {
-            self.sample_node: [self.protocol_node_rna, self.protocol_node_dna],
+            # self.sample_node: [self.protocol_node_rna, self.protocol_node_dna],
             self.protocol_node_dna: [self.dna_node],
             self.protocol_node_rna: [self.mirna_node, self.mrna_node],
             self.dna_node: [],
@@ -798,54 +798,54 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         }
 
     def test_init(self):
-        self.plan = SampleAndAssayPlan(graph_dict=self.graph_dict)
-        self.assertEqual(self.plan.graph_dict, self.graph_dict)
+        self.assay_graph = AssayGraph(graph_dict=self.graph_dict)
+        self.assertEqual(self.assay_graph.graph_dict, self.graph_dict)
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
-        self.plan.add_node(first_node)
-        self.assertEqual(len(self.plan.nodes), 1)
-        self.assertEqual(self.plan.nodes.pop(), first_node)
+        self.assay_graph.add_node(first_node)
+        self.assertEqual(len(self.assay_graph.nodes), 1)
+        self.assertEqual(self.assay_graph.nodes.pop(), first_node)
 
     def test_create_three_level_graph_success(self):
-        self.plan.add_node(self.sample_node)
-        self.plan.add_node(self.protocol_node_dna)
-        self.plan.add_node(self.protocol_node_rna)
-        self.plan.add_node(self.dna_node)
-        self.plan.add_node(self.mrna_node)
-        self.plan.add_node(self.mirna_node)
-        self.plan.add_link(self.sample_node, self.protocol_node_rna)
-        self.plan.add_link(self.sample_node, self.protocol_node_dna)
-        self.plan.add_link(self.protocol_node_dna, self.dna_node)
-        self.plan.add_link(self.protocol_node_rna, self.mrna_node)
-        self.plan.add_link(self.protocol_node_rna, self.mrna_node)
-        self.assertEqual(len(self.plan.nodes), 6)
-        self.assertIn(self.sample_node, self.plan.nodes)
-        self.assertIn(self.dna_node, self.plan.nodes)
-        self.assertIn(self.mrna_node, self.plan.nodes)
-        self.assertIn(self.mirna_node, self.plan.nodes)
-        self.assertIn((self.protocol_node_dna, self.dna_node), self.plan.links)
-        self.assertIn((self.protocol_node_rna, self.mrna_node), self.plan.links)
-        self.assertIn((self.protocol_node_rna, self.mrna_node), self.plan.links)
+        self.assay_graph.add_node(self.sample_node)
+        self.assay_graph.add_node(self.protocol_node_dna)
+        self.assay_graph.add_node(self.protocol_node_rna)
+        self.assay_graph.add_node(self.dna_node)
+        self.assay_graph.add_node(self.mrna_node)
+        self.assay_graph.add_node(self.mirna_node)
+        self.assay_graph.add_link(self.sample_node, self.protocol_node_rna)
+        self.assay_graph.add_link(self.sample_node, self.protocol_node_dna)
+        self.assay_graph.add_link(self.protocol_node_dna, self.dna_node)
+        self.assay_graph.add_link(self.protocol_node_rna, self.mrna_node)
+        self.assay_graph.add_link(self.protocol_node_rna, self.mrna_node)
+        self.assertEqual(len(self.assay_graph.nodes), 6)
+        self.assertIn(self.sample_node, self.assay_graph.nodes)
+        self.assertIn(self.dna_node, self.assay_graph.nodes)
+        self.assertIn(self.mrna_node, self.assay_graph.nodes)
+        self.assertIn(self.mirna_node, self.assay_graph.nodes)
+        self.assertIn((self.protocol_node_dna, self.dna_node), self.assay_graph.links)
+        self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
+        self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
         
     def test_add_nodes_and_links_success(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
                  (self.protocol_node_rna, self.mirna_node)]
-        self.plan.add_nodes(nodes)
-        self.plan.add_links(links)
-        self.assertEqual(len(self.plan.nodes), len(nodes))
-        self.assertEqual(set(self.plan.nodes), set(nodes))
-        self.assertEqual(len(self.plan.links), len(links))
+        self.assay_graph.add_nodes(nodes)
+        self.assay_graph.add_links(links)
+        self.assertEqual(len(self.assay_graph.nodes), len(nodes))
+        self.assertEqual(set(self.assay_graph.nodes), set(nodes))
+        self.assertEqual(len(self.assay_graph.links), len(links))
 
     def test_eq(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
                  (self.protocol_node_rna, self.mirna_node)]
-        first_plan = SampleAndAssayPlan()
+        first_plan = AssayGraph()
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = SampleAndAssayPlan()
+        second_plan = AssayGraph()
         second_plan.add_nodes(nodes[::-1])
         second_plan.add_links(links[::-1])
         self.assertEqual(first_plan, second_plan)
@@ -853,29 +853,34 @@ class SampleAndAssayPlanTest(unittest.TestCase):
     def test_ne(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node)]
-        first_plan = SampleAndAssayPlan()
+        first_plan = AssayGraph()
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = SampleAndAssayPlan()
+        second_plan = AssayGraph()
         links.append((self.protocol_node_rna, self.mirna_node))
         second_plan.add_nodes(nodes)
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
 
+    """
     def test_sample_nodes(self):
-        self.plan.graph_dict = self.graph_dict
-        self.assertEqual(self.plan.sample_nodes, {self.sample_node})
+        self.assay_graph.graph_dict = self.graph_dict
+        self.assertEqual(self.assay_graph.sample_nodes, {self.sample_node})
+    """
 
     def test_as_networkx_graph(self):
-        self.plan.graph_dict = self.graph_dict
-        nx_graph = self.plan.as_networkx_graph()
+        self.assay_graph.graph_dict = self.graph_dict
+        nx_graph = self.assay_graph.as_networkx_graph()
         self.assertIsInstance(nx_graph, nx.DiGraph)
         self.assertEqual(set(nx_graph.nodes), {
-            node.id for node in self.plan.nodes
+            node.id for node in self.assay_graph.nodes
         })
         self.assertEqual(nx_graph.edges, {
-            (u.id, v.id) for u, v in self.plan.links
+            (u.id, v.id) for u, v in self.assay_graph.links
         })
+
+
+class SampleAndAssayPlanTest(unittest.TestCase):
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
