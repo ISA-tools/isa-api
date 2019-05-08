@@ -201,6 +201,13 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
          skip_dump_tables=False, write_factor_values_in_assay_table=False):
 
+    def build_comments(some_isa_study_object, some_associated_data_frame):
+        if some_isa_study_object.comments is not None:
+            for comment in sorted(some_isa_study_object.comments, key=lambda x: x.name):
+                field = "Comment[" + comment.name + "]"
+                some_associated_data_frame[field] = comment.value
+        return some_isa_study_object, some_associated_data_frame
+
     def _build_roles_str(roles):
         log.debug('building roles from: %s', roles)
         if roles is None:
@@ -341,7 +348,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                                                           'Term Source Description'
                                                           )
                                                  )
-    for i,  ontology_source_reference in enumerate(investigation.ontology_source_references):
+    for i, ontology_source_reference in enumerate(investigation.ontology_source_references):
         log.debug('%s iteration, item=%s', i, ontology_source_reference)
         ontology_source_references_df.loc[i] = [
             ontology_source_reference.name,
@@ -414,6 +421,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         if study.comments is not None:
             for comment in sorted(study.comments, key=lambda x: x.name):
                 study_df_row.append(comment.value)
+
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
         fp.write('STUDY\n')
@@ -431,8 +439,17 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 design_descriptor.term_accession,
                 design_descriptor.term_source.name if design_descriptor.term_source else ''
             ]
+
+            build_comments(design_descriptor, study_design_descriptors_df)
+
+            # if design_descriptor.comments is not None:
+            #     for comment in sorted(design_descriptor.comments, key=lambda x: x.name):
+            #         field = "Comment[" + comment.name + "]"
+            #         study_design_descriptors_df[field]=comment.value
+
         study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
         fp.write('STUDY DESIGN DESCRIPTORS\n')
+        print(study_design_descriptors_df)
         study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                            index_label='Study Design Type')
 
@@ -466,8 +483,16 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 factor_type_term_accession,
                 factor_type_term_term_source_name
             ]
+            build_comments(factor, study_factors_df)
+
+            # if factor.comments is not None:
+            #     for comment in sorted(factor.comments, key=lambda x: x.name):
+            #         field = "Comment[" + comment.name + "]"
+            #         study_factors_df[field] = comment.value
+
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
+        print(study_factors_df)
         study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                 index_label='Study Factor Name')
 
@@ -566,14 +591,25 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 component_types_accession_numbers,
                 component_types_source_refs
             ]
+
+            build_comments(protocol, study_protocols_df)
+
+            # if protocol.comments is not None:
+            #     for comment in sorted(protocol.comments, key=lambda x: x.name):
+            #         print("comment: ", comment.name, "VALUE ", comment.value)
+            #         field = "Comment[" + comment.name + "]"
+            #         study_protocols_df[field] = comment.value
+
         study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
         fp.write('STUDY PROTOCOLS\n')
+        # print(study_protocols_df)
         study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                   index_label='Study Protocol Name')
 
         # Write STUDY CONTACTS section
         study_contacts_df = _build_contacts_section_df(prefix='Study', contacts=study.contacts)
         fp.write('STUDY CONTACTS\n')
+        # print(study_contacts_df)
         study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                  index_label='Study Person Last Name')
     if skip_dump_tables:

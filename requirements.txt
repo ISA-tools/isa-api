@@ -13,3 +13,4 @@ biopython
 progressbar2
 deepdiff
 PyYAML==3.13
+bokeh

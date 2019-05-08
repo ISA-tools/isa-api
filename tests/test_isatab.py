@@ -104,11 +104,27 @@ class TestIsaTabDump(unittest.TestCase):
 
         s = Study(filename='s_pool.txt')
 
+        # testing if Study can receive comments[]
+        s.comments.append(Comment(name="Study Start Date", value="Sun"))
+
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
+        # testing if protocols can receive comments[]
+        # s.protocols[0].comments()
+        s.protocols[0].comments.append(Comment(name="Study Start Date", value="Uranus"))
+
+        s.design_descriptors.append(OntologyAnnotation(term="factorial design"))
+        s.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
+
+
+        # testing if study factors can receive comments[]
+        f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
+        f.comments.append(Comment(name="Study Start Date", value="Moon"))
+        s.factors.append(f)
+        print("Factors: ", f)
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='material type')
@@ -177,6 +193,17 @@ class TestIsaTabDump(unittest.TestCase):
             protocol_type=OntologyAnnotation(term='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
+        s.protocols[0].comments.append(Comment(name="protocol comment", value="Jupiter"))
+
+        researcher = Person(first_name="bob",last_name="morane",email="bob.morane@gmail.com")
+        s.contacts.append(researcher)
+        s.contacts[0].comments.append(Comment(name="astrological sign", value="Saturn"))
+        s.contacts[0].comments.append(Comment(name="chinese astrological sign", value="tiger"))
+
+        other_researcher = Person(first_name="toxic",last_name="avengers",email="toxic.avengers@gmail.com")
+        s.contacts.append(other_researcher)
+        s.contacts[1].comments.append(Comment(name="astrological sign", value="balance"))
+        s.contacts[1].comments.append(Comment(name="chinese astrological sign", value="pig"))
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='material type')
