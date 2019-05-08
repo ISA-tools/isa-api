@@ -751,21 +751,59 @@ class ProductNode(SequenceNode):
 
 class SampleAndAssayPlan(object):
 
+    def __init__(self):
+        self.__sample_plan = set()
+        self.__assay_plan = set()
 
+    @property
+    def sample_plan(self):
+        return sorted(self.__sample_plan) if self.__sample_plan else []
+
+    @sample_plan.setter
+    def sample_plan(self, sample_plan):
+        if not isinstance(sample_plan, Iterable) or not all(isinstance(sample_type, ProductNode)
+                                                            for sample_type in sample_plan):
+            raise AttributeError()
+        for sample_type in sample_plan:
+            self.add_sample_type_to_plan(sample_type)
+
+    def add_sample_type_to_plan(self, sample_type):
+        if not isinstance(sample_type, ProductNode):
+            raise TypeError()
+        self.__sample_plan.add(sample_type)
+
+    @property
+    def assay_plan(self):
+        return sorted(self.__assay_plan) if self.__assay_plan else []
+
+    @assay_plan.setter
+    def assay_plan(self, assay_plan):
+        if not isinstance(assay_plan, Iterable) or not all(isinstance(assay_graph, AssayGraph)
+                                                           for assay_graph in assay_plan):
+            raise AttributeError()
+        for assay_graph in assay_plan:
+            self.add_assay_graph_to_plan(assay_graph)
+
+    def add_assay_graph_to_plan(self, assay_graph):
+        if not isinstance(assay_graph, AssayGraph):
+            raise TypeError()
+        self.__assay_plan.add(assay_graph)
 
     @classmethod
-    def from_sample_and_assay_plan_dict(cls, samples, *assay_plan_dicts, validation_template=None, use_guids=False):
+    def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
+                                        use_guids=False):
         """
         An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
         OrderedDict, which can optionally be validated against a validation_schema
-        :param sample_and_assay_plan_dict: OrderedDict
+        :param sample_type_dicts: list of dicts
+        :param assay_plan_dicts: list of OrderedDicts
         :param validation_template: dict/OrderedDict
         :return: SampleAndAssayPlan
         """
         previous_nodes = []
         current_nodes = []
         res = cls()
-
+        """
         assay_plans = []
         for assay_plan_dict in assay_plan_dicts:
             assay_plan = cls._generate_assay_plan_from_dict(res, assay_plan_dict,  use_guids=use_guids)
@@ -782,6 +820,7 @@ class SampleAndAssayPlan(object):
                     ] if 'characteristics_category' in sample_params_dict else [])
                 res.add_node(product_node)
                 current_nodes.append(product_node)
+        """
         return res
 
     @staticmethod

@@ -882,19 +882,39 @@ class AssayGraphTest(unittest.TestCase):
 
 class SampleAndAssayPlanTest(unittest.TestCase):
 
+    def setUp(self):
+        self.tissue_char = Characteristic(category='organism part', value='tissue')
+        self.blood_char = Characteristic(category='organism part', value='tissue')
+        self.tissue_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.tissue_char])
+        self.blood_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.blood_char])
+        self.assay_graph = AssayGraph()
+
+    def test_properties(self):
+        plan = SampleAndAssayPlan()
+        self.assertEqual(plan.assay_plan, [])
+        self.assertEqual(plan.sample_plan, [])
+        sample_plan = [self.tissue_node, self.blood_node]
+        assay_plan = [self.assay_graph]
+        plan.sample_plan = sample_plan
+        plan.assay_plan = assay_plan
+        self.assertEqual(plan.sample_plan, sample_plan)
+        self.assertEqual(plan.assay_plan, assay_plan)
+
     def test_from_sample_and_assay_plan_dict_no_validation(self):
-        ms_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
+        ms_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
         # print([node.name for node in ms_assay_plan.nodes])
-        self.assertEqual(len(ms_assay_plan.nodes), 48)
-        self.assertEqual(len(ms_assay_plan.links), 45)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'sample', ms_assay_plan.nodes))), 3)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_plan.nodes))), 3)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'extract', ms_assay_plan.nodes))), 6)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'labelling', ms_assay_plan.nodes))), 6)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'labelled extract', ms_assay_plan.nodes))), 6)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_plan.nodes))), 12)
+        self.assertEqual(len(ms_plan.sample_plan), len(sample_list))
+        self.assertEqual(len(ms_plan.assay_plan), 1)     # only one assay plan is provided here
+        ms_assay_graph = ms_plan.assay_plan[0]
+        self.assertEqual(len(ms_assay_graph.nodes), 15)
+        self.assertEqual(len(ms_assay_graph.links), 14)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'extract', ms_assay_graph.nodes))), 2)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'labelling', ms_assay_graph.nodes))), 2)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'labelled extract', ms_assay_graph.nodes))), 2)
+        self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
-                                         ms_assay_plan.nodes))), 12)
+                                         ms_assay_graph.nodes))), 4)
 
 
 class StudyArmTest(unittest.TestCase):
