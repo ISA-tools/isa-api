@@ -139,6 +139,9 @@ class Element(ABC):
     def duration(self):
         return 0
 
+    def update_duration(self, duration_value, duration_unit=None):
+        pass
+
 
 class NonTreatment(Element):
     """
@@ -260,6 +263,9 @@ class Treatment(Element):
     def duration(self):
         return next(factor_value for factor_value in self.factor_values
                     if factor_value.factor_name == DURATION_FACTOR)
+
+    def update_duration(self, duration_value, duration_unit=None):
+        pass  # TODO
 
 
 class StudyCell(object):
@@ -455,6 +461,8 @@ class OntologyAnnotationEncoder(json.JSONEncoder):
 
     @staticmethod
     def ontology_source(obj):
+        if isinstance(obj, str):
+            return obj
         if isinstance(obj, OntologySource):
             return {
                 "name": obj.name,
