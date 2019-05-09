@@ -765,7 +765,7 @@ class SampleAndAssayPlan(object):
 
     @property
     def sample_plan(self):
-        return sorted(self.__sample_plan) if self.__sample_plan else []
+        return sorted(self.__sample_plan, key=lambda sample_type: sample_type.id) if self.__sample_plan else []
 
     @sample_plan.setter
     def sample_plan(self, sample_plan):
@@ -782,7 +782,7 @@ class SampleAndAssayPlan(object):
 
     @property
     def assay_plan(self):
-        return sorted(self.__assay_plan) if self.__assay_plan else []
+        return sorted(self.__assay_plan, key=lambda assay_graph: assay_graph.id) if self.__assay_plan else []
 
     @assay_plan.setter
     def assay_plan(self, assay_plan):
@@ -808,32 +808,24 @@ class SampleAndAssayPlan(object):
         :param validation_template: dict/OrderedDict
         :return: SampleAndAssayPlan
         """
-        previous_nodes = []
-        current_nodes = []
         res = cls()
-        """
-        assay_plans = []
+        for i, sample_type_dict in enumerate(sample_type_dicts):
+            sample_node = ProductNode(
+                id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
+                name=SAMPLE, node_type=sample_type_dict['node_type'], size=sample_type_dict['size'],
+                characteristics=[
+                    Characteristic(category=sample_type_dict['characteristics_category'],
+                                   value=sample_type_dict['characteristics_value'])
+                ] if 'characteristics_category' in sample_type_dict else [])
+            res.add_sample_type_to_plan(sample_node)
         for assay_plan_dict in assay_plan_dicts:
-            assay_plan = cls._generate_assay_plan_from_dict(res, assay_plan_dict,  use_guids=use_guids)
-            assay_plans.append(assay_plan)
-
-        for sample_params in samples:
-            for i, sample_params_dict in enumerate(sample_params):
-                product_node = ProductNode(
-                    id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
-                    name=SAMPLE, node_type=sample_params_dict['node_type'], size=sample_params_dict['size'],
-                    characteristics=[
-                        Characteristic(category=sample_params_dict['characteristics_category'],
-                                       value=sample_params_dict['characteristics_value'])
-                    ] if 'characteristics_category' in sample_params_dict else [])
-                res.add_node(product_node)
-                current_nodes.append(product_node)
-        """
+            res.add_assay_graph_to_plan(cls._generate_assay_plan_from_dict(assay_plan_dict))
         return res
 
     @staticmethod
-    def _generate_assay_plan_from_dict(res, assay_plan_dict, validation_template=None, use_guids=False):
+    def _generate_assay_plan_from_dict(assay_plan_dict, validation_template=None, use_guids=False):
 
+        res = AssayGraph()
         previous_nodes = []
         current_nodes = []
         for node_key, node_params in assay_plan_dict.items():
@@ -913,15 +905,20 @@ class AssayGraph(object):
     MISSING_NODE_ERROR = "Start or target node have not been added to the SampleAssayGraph yet"
     NODE_ALREADY_PRESENT = "The node {0.id} is already present in the SampleAndAssayPlan"
 
-    def __init__(self, graph_dict=None):
+    def __init__(self, id_=uuid.uuid4(), graph_dict=None):
         """
         initializes a SampleAssayGraph object
         If no dictionary or None is given,
         an empty dictionary will be used
         """
+        self.__id = id_
         self.__graph_dict = {}
         if graph_dict is not None:
             self.graph_dict = graph_dict
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def graph_dict(self):

@@ -883,10 +883,11 @@ class AssayGraphTest(unittest.TestCase):
 class SampleAndAssayPlanTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='tissue')
-        self.tissue_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.tissue_char])
-        self.blood_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.blood_char])
+        self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
+        self.blood_node = ProductNode(name='blood', node_type=SAMPLE, size=3, characteristics=[self.blood_char])
         self.assay_graph = AssayGraph()
 
     def test_properties(self):
