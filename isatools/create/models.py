@@ -1043,7 +1043,8 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
-    def node(self, obj):
+    @staticmethod
+    def node(obj):
         if isinstance(obj, ProtocolNode):
             onto_encoder = OntologyAnnotationEncoder()
             return {
@@ -1079,11 +1080,19 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
             start_node, end_node = obj
             return [start_node.id, end_node.id]
 
+    def assay_graph(self, obj):
+        if isinstance(obj, AssayGraph):
+            return {
+                "@id": obj.id,
+                "nodes": [self.node(node) for node in obj.nodes],
+                "links": [self.link(link) for link in obj.links]
+            }
+
     def default(self, obj):
         if isinstance(obj, SampleAndAssayPlan):
             return {
-                "nodes": [self.node(node) for node in obj.nodes],
-                "links": [self.link(link) for link in obj.links]
+                "samplePlan": [self.node(sample_node) for sample_node in obj.sample_plan],
+                "assayPlan": [self.assay_graph(assay_graph) for assay_graph in obj.assay_plan]
             }
 
 
