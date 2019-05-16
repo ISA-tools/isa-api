@@ -237,12 +237,12 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.plan = SampleAndAssayPlan()
-        self.first_assay_graph = AssayGraph()
-        self.second_assay_graph = AssayGraph()
+        self.first_assay_graph = AssayGraph(id_="assay-graph/00")
+        self.second_assay_graph = AssayGraph(id_="assay-graph/01")
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
-        self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
-        self.blood_node = ProductNode(name='blood',
+        self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
+        self.blood_node = ProductNode(id_='product-node/0001', name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
         self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
@@ -253,11 +253,11 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                               parameter_values=[self.extraction_instrument])
         self.protocol_node_rna = ProtocolNode(id_='protocol-node/0001', name='RNA extraction', version="0.1",
                                               parameter_values=[self.extraction_instrument])
-        self.dna_node = ProductNode(id_='product-node/0001', node_type=SAMPLE, size=3,
+        self.dna_node = ProductNode(id_='product-node/0002', name='DNA', node_type=SAMPLE, size=3,
                                     characteristics=[self.dna_char])
-        self.mrna_node = ProductNode(id_='product-node/0002', node_type=SAMPLE, size=3,
+        self.mrna_node = ProductNode(id_='product-node/0003', name='mRNA', node_type=SAMPLE, size=3,
                                      characteristics=[self.mrna_char])
-        self.mirna_node = ProductNode(id_='product-node/0003', node_type=SAMPLE, size=5,
+        self.mirna_node = ProductNode(id_='product-node/0004', name='miRNA', node_type=SAMPLE, size=5,
                                       characteristics=[self.mirna_char])
         self.plan.sample_plan = [self.tissue_node, self.blood_node]
         self.first_assay_graph.add_nodes([self.protocol_node_dna, self.dna_node])
@@ -265,6 +265,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.first_assay_graph.add_links([(self.protocol_node_dna, self.dna_node)])
         self.second_assay_graph.add_links([(self.protocol_node_rna, self.mirna_node),
                                            (self.protocol_node_rna, self.mrna_node)])
+        self.plan.assay_plan = [self.first_assay_graph, self.second_assay_graph]
 
     def test_encode_dna_rna_extraction_plan(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))

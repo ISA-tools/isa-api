@@ -1066,6 +1066,7 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
             return {
                 "@id": obj.id,
                 "@type": get_full_class_name(obj),
+                "name": obj.name,
                 "productType": obj.type,
                 "size": obj.size,
                 "characteristics": [{
