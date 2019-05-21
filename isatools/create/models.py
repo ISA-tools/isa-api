@@ -896,6 +896,20 @@ class SampleAndAssayPlan(object):
             current_nodes = []
         return res
 
+    def __repr__(self):
+        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan})'.format(
+            self.__class__.__module__, self.__class__.__name__, self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
+               and self.assay_plan == other.assay_plan
+
+    def __ne__(self, other):
+        return not self == other
+
 
 class AssayGraph(object):
 
@@ -1120,17 +1134,24 @@ class SampleAndAssayPlanDecoder(object):
                                 ],
                                 protocol_type=self.loads_protocol_type(node_dict["protocolType"]))
         if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
-            return ProductNode(id_=node_dict["@id"], size=node_dict["size"], node_type=node_dict["productType"],
+            return ProductNode(id_=node_dict["@id"], name=node_dict["name"], size=node_dict["size"],
+                               node_type=node_dict["productType"],
                                characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
+
+    def loads_assay_graph(self, assay_graph_dict):
+        assay_graph = AssayGraph()
+        nodes = [self.loads_node(node_dict) for node_dict in assay_graph_dict["nodes"]]
+        assay_graph.add_nodes(nodes)
+        for [start_node_id, end_node_id] in assay_graph_dict["links"]:
+            assay_graph.add_link(next(node for node in assay_graph.nodes if node.id == start_node_id),
+                                 next(node for node in assay_graph.nodes if node.id == end_node_id))
+        return assay_graph
 
     def loads(self, json_text):
         json_dict = json.loads(json_text)
         plan = SampleAndAssayPlan()
-        nodes = [self.loads_node(node_dict) for node_dict in json_dict["nodes"]]
-        plan.add_nodes(nodes)
-        for [start_node_id, end_node_id] in json_dict["links"]:
-            plan.add_link(next(node for node in plan.nodes if node.id == start_node_id),
-                          next(node for node in plan.nodes if node.id == end_node_id))
+        plan.sample_plan = [self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]]
+        plan.assay_plan = [self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
         return plan
 
 
