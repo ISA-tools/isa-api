@@ -280,7 +280,10 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
-        # pdb.set_trace()
+        print("Expected Plan:")
+        print(self.plan)
+        print("\nActual Plan:")
+        print(actual_plan)
         self.assertEqual(self.plan, actual_plan)
 
 

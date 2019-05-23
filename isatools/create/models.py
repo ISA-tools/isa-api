@@ -114,6 +114,9 @@ class Element(ABC):
     def __repr__(self):
         return 'Element(type={0})'.format(self.type)
 
+    def __str__(self):
+        return repr(self)
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -159,7 +162,15 @@ class NonTreatment(Element):
         self.__duration = FactorValue(factor_name=DURATION_FACTOR, value=duration_value, unit=duration_unit)
 
     def __repr__(self):
-        return 'isatools.create.models.NonTreatment(type={0}, duration={1})'.format(repr(self.type), repr(self.duration))
+        return '{0}.{1}(type={2}, duration={3})'.format(
+            self.__class__.__module__, self.__class__.__name__, repr(self.type), repr(self.duration)
+        )
+
+    def __str__(self):
+        return """{0}(
+            type={1},
+            duration={2}
+        )""".format(self.__class__.__name__, repr(self.type), repr(self.duration))
 
     def __hash__(self):
         return hash(repr(self))
@@ -221,7 +232,16 @@ class Treatment(Element):
             self.factor_values = factor_values
 
     def __repr__(self):
-        return 'isatools.create.models.Treatment(type={0}, factor_values={1}'.format(
+        return '{0}.{1}(type={2}, factor_values={3})'.format(
+            self.__class__.__module__, self.__class__.__name__,
+            self.type, sorted(self.factor_values, key=lambda x: repr(x)))
+
+    def __str__(self):
+        return """"{0}
+        (type={1}, 
+        factor_values={2})
+        """.format(
+            self.__class__.__name__,
             self.type, sorted(self.factor_values, key=lambda x: repr(x)))
 
     def __hash__(self):
@@ -284,10 +304,16 @@ class StudyCell(object):
             self.elements = elements
 
     def __repr__(self):
-        return 'isatools.create.models.StudyCell(' \
+        return '{0}.{1}(' \
                'name={name}, ' \
                'elements={elements}, ' \
-               ')'.format(name=self.name, elements=repr(self.elements))
+               ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=self.elements)
+
+    def __str__(self):
+        return """{0}(
+               name={name}, 
+               elements={elements}, 
+               )""".format(self.__class__.__name__, name=self.name, elements=self.elements)
 
     def __hash__(self):
         return hash(repr(self))
@@ -646,11 +672,19 @@ class ProtocolNode(SequenceNode, Protocol):
     def __repr__(self):
         return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
                'uri={2.uri}, description={2.description}, version={2.version}, ' \
-               'parameter_values={2.parameter_values}).'.format(self.__class__.__module__,
-                                                                self.__class__.__name__, self)
+               'parameter_values={2.parameter_values})'.format(self.__class__.__module__,
+                                                               self.__class__.__name__, self)
 
     def __str__(self):
-        return repr(self)
+        return """{1}(
+        id={2.id}, 
+        name={2.name}, 
+        protocol_type={2.protocol_type}, 
+        uri={2.uri}, 
+        description={2.description}, 
+        version={2.version}, 
+        parameter_values={2.parameter_values})
+        """.format(self.__class__.__module__, self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -689,6 +723,15 @@ class ProductNode(SequenceNode):
         return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
                'characteristics={2.characteristics}, size={2.size})'.format(
                 self.__class__.__module__, self.__class__.__name__, self)
+
+    def __str__(self):
+        return """{1}(
+        id={2.id}, 
+        type={2.type}, 
+        name={2.name}, 
+        characteristics={2.characteristics}, 
+        size={2.size}
+        )""".format(self.__class__.__module__, self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -806,6 +849,7 @@ class SampleAndAssayPlan(object):
         :param sample_type_dicts: list of dicts
         :param assay_plan_dicts: list of OrderedDicts
         :param validation_template: dict/OrderedDict
+        :param use_guids: bool
         :return: SampleAndAssayPlan
         """
         res = cls()
@@ -900,6 +944,12 @@ class SampleAndAssayPlan(object):
         return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan})'.format(
             self.__class__.__module__, self.__class__.__name__, self)
 
+    def __str__(self):
+        return """{1}(
+        sample_plan={2.sample_plan}, 
+        assay_plan={2.assay_plan}
+        )""".format(self.__class__.__module__, self.__class__.__name__, self)
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -952,6 +1002,7 @@ class AssayGraph(object):
     @property
     def nodes(self):
         return set(self.__graph_dict.keys()) # should this be a list rather than a set?
+        # return sorted(self.__graph_dict.keys(), key=lambda el: el.id)
 
     def add_node(self, node):
         if not isinstance(node, SequenceNode):
@@ -1040,6 +1091,13 @@ class AssayGraph(object):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return '{0}.{1}(nodes={2.nodes}, links={3})'.format(self.__class__.__module__, self.__class__.__name__,
                                                             self, links)
+
+    def __str__(self):
+        links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
+        return """"{1}(
+        nodes={2.nodes}, 
+        links={3}
+        )""".format(self.__class__.__module__, self.__class__.__name__, self, links)
 
     def __hash__(self):
         return hash(repr(self))
@@ -1180,13 +1238,25 @@ class StudyArm(object):
             self.arm_map = arm_map
 
     def __repr__(self):
-        return 'isatools.create.models.StudyArm(' \
+        return '{0}.{1}(' \
                'name={name}, ' \
                'group_size={group_size}, ' \
                'cells={cells}, ' \
-               'sample_assay_plans={sample_assay_plans})'.format(name=self.name, group_size=self.group_size,
-                                                                 cells=self.cells,
-                                                                 sample_assay_plans=self.sample_assay_plans)
+               'sample_assay_plans={sample_assay_plans})'.format(
+                    self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
+                    cells=self.cells, sample_assay_plans=self.sample_assay_plans
+                )
+
+    def __str__(self):
+        return """"{1}(
+               name={name},
+               group_size={group_size}, 
+               cells={cells},
+               sample_assay_plans={sample_assay_plans}
+               )""".format(
+                    self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
+                    cells=self.cells, sample_assay_plans=self.sample_assay_plans
+        )
 
     def __hash__(self):
         return hash(repr(self))
@@ -1550,10 +1620,18 @@ class StudyDesign(object):
         return study
 
     def __repr__(self):
-        return 'isatools.create.models.StudyDesign(' \
+        return '{0}.{1}(' \
                'name={name}, ' \
                'study_arms={study_arms}' \
-               ')'.format(study_arms=self.study_arms, name=self.name)
+               ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
+                          name=self.name)
+
+    def __str__(self):
+        return """{1}(
+               name={name},
+               study_arms={study_arms}
+               )""".format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
+                           name=self.name)
 
     def __hash__(self):
         return hash(repr(self))
