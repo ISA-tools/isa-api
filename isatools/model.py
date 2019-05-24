@@ -3952,7 +3952,6 @@ def batch_create_assays(*args, n=1):
 
 class ISADocument:
 
-
     valid_isajson = False
 
     def __init__(self, isa_obj):

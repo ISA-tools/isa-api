@@ -110,6 +110,159 @@ ms_assay_dict = OrderedDict([
 ])
 
 
+phti_assay_dict = OrderedDict([
+            ('sample', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'liver',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('extraction', {}),
+            ('extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'supernatant',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'pellet',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('phenotyping by high throughput imaging', {
+                'instrument': ['lemnatech gigant'],
+                'acquisition_mode': ['UV light','near-IR light','far-IR light','visible light'],
+                'camera position': ['top','120 degree','240 degree','360 degree'],
+                'imaging daily schedule': ['06.00','19.00']
+            }),
+            ('raw_spectral_data_file', [
+                {
+                    'node_type': DATA_FILE,
+                    'size': 1,
+                    'technical_replicates': 2,
+                    'is_input_to_next_protocols': False
+                }
+            ])
+        ])
+
+lcdad_assay_dict = OrderedDict([
+            ('sample', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'leaf',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('extraction', {}),
+            ('extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'supernatant',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'pellet',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('lcdad_spectroscopy', {
+                'instrument': ['Shimadzu DAD 400'],
+            }),
+            ('raw_spectral_data_file', [
+                {
+                    'node_type': DATA_FILE,
+                    'size': 1,
+                    'technical_replicates': 2,
+                    'is_input_to_next_protocols': False
+                }
+            ])
+        ])
+
+nmr_assay_dict = OrderedDict([
+            ('sample', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'liver',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'blood',
+                    'size': 5,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'organism part',
+                    'characteristics_value': 'heart',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('extraction', {}),
+            ('extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'supernatant',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category': 'extract type',
+                    'characteristics_value': 'pellet',
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('nmr_spectroscopy', {
+                'instrument': ['Bruker AvanceII 1 GHz'],
+                'acquisition_mode': ['1D 13C NMR','1D 1H NMR','2D 13C-13C NMR'],
+                'pulse_sequence': ['CPMG','TOCSY','HOESY','watergate']
+            }),
+            ('raw_spectral_data_file', [
+                {
+                    'node_type': DATA_FILE,
+                    'size': 1,
+                    'technical_replicates': 2,
+                    'is_input_to_next_protocols': False
+                }
+            ])
+        ])
+
+
+
+
 # class SamplePlanTest(unittest.TestCase):
 #
 #     def setUp(self):

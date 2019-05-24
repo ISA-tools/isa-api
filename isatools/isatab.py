@@ -202,10 +202,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
          skip_dump_tables=False, write_factor_values_in_assay_table=False):
 
     def build_comments(some_isa_study_object, some_associated_data_frame):
+        log.debug('building comments from: %s', some_isa_study_object)
         if some_isa_study_object.comments is not None:
-            for comment in sorted(some_isa_study_object.comments, key=lambda x: x.name):
-                field = "Comment[" + comment.name + "]"
-                some_associated_data_frame[field] = comment.value
+            for this_comment in sorted(some_isa_study_object.comments, key=lambda x: x.name):
+                field = "Comment[" + this_comment.name + "]"
+                some_associated_data_frame[field] = this_comment.value
         return some_isa_study_object, some_associated_data_frame
 
     def _build_roles_str(roles):
