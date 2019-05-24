@@ -656,16 +656,16 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.screen)
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
                           'A treatment cannot be added to a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a SCREEN')
         self.assertEqual(self.cell.elements, [self.screen])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, {
+        self.assertRaises(ValueError, self.cell.insert_element, {
             self.first_treatment, self.fourth_treatment
         }, 'A treatment set cannot be added to a cell with a SCREEN')
         self.cell.insert_element(self.run_in)
@@ -676,16 +676,16 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.run_in)
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a RUN-IN after the RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
                           'A treatment cannot be added to a cell with a RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a RUN-IN')
         self.assertEqual(self.cell.elements, [self.run_in])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, {
+        self.assertRaises(ValueError, self.cell.insert_element, {
             self.first_treatment, self.fourth_treatment
         }, 'A treatment set cannot be added to a cell with a RUN-IN')
         self.cell.insert_element(self.screen, 0)
@@ -696,13 +696,13 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.washout)
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.run_in,
+        self.assertRaises(ValueError, self.cell.insert_element, self.run_in,
                           'A RUN-IN cannot be added to a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a WASHOUT')
         self.assertEqual(self.cell.elements, [self.washout])
         self.cell.insert_element({self.first_treatment, self.fourth_treatment})
@@ -724,18 +724,18 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(), 'The initialized elements set is empty')
         self.cell.insert_element(self.follow_up)
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.screen,
+        self.assertRaises(ValueError, self.cell.insert_element, self.screen,
                           'A SCREEN cannot be added to a a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.first_treatment,
+        self.assertRaises(ValueError, self.cell.insert_element, self.first_treatment,
                           'A treatment cannot be added to a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.follow_up,
+        self.assertRaises(ValueError, self.cell.insert_element, self.follow_up,
                           'A FOLLOW-UP cannot ba added to a cell with a FOLLOW-UP')
         self.assertEqual(self.cell.elements, [self.follow_up])
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, {self.first_treatment, self.fourth_treatment},
+        self.assertRaises(ValueError, self.cell.insert_element, {self.first_treatment, self.fourth_treatment},
                           'A treatment set cannot be added to a cell with a FOLLOW-UP')
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.run_in,
+        self.assertRaises(ValueError, self.cell.insert_element, self.run_in,
                           'A RUN-IN cannot be added to a cell with a FOLLOW-UP')
 
     def test_insert_element_treatment(self):
@@ -756,9 +756,9 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements,
                          [self.washout, self.first_treatment, self.washout, self.second_treatment, self.washout],
                          'A washout can be added to a cell with two treatments at the end')
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout,
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout, 0)
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
         self.cell.insert_element({self.first_treatment, self.second_treatment, self.fourth_treatment})
         self.assertEqual(self.cell.elements, [
@@ -788,9 +788,9 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, [
             self.washout, {self.first_treatment, self.second_treatment}, self.washout, self.second_treatment,
             self.washout], 'A washout can be added to a cell with a treatment set and a treatment, at the end')
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout,
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout,
                           'A washout cannot be added if there is one before the position where it is to be inserted')
-        self.assertRaises(ISAModelValueError, self.cell.insert_element, self.washout, 0)
+        self.assertRaises(ValueError, self.cell.insert_element, self.washout, 0)
         self.assertTrue(True, 'A washout cannot be added if there is one after the position where it is to be inserted')
 
     def test_contains_non_treatment_by_type_empty_cell(self):
@@ -1064,7 +1064,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(ms_plan.sample_plan), len(sample_list))
         self.assertEqual(len(ms_plan.assay_plan), 1)     # only one assay plan is provided here
-        ms_assay_graph = ms_plan.assay_plan[0]
+        ms_assay_graph = sorted(ms_plan.assay_plan)[0]
         self.assertEqual(len(ms_assay_graph.nodes), 15)
         self.assertEqual(len(ms_assay_graph.links), 14)
         self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)
@@ -1130,7 +1130,7 @@ class StudyArmTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.sample_assay_plan = SampleAssayPlan()
+        self.sample_assay_plan = SampleAndAssayPlan()
 
     def test__init__(self):
         self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME_00)
@@ -1141,7 +1141,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(len(cells), 1, 'One mapping has been added to the arm')
         self.assertEqual(cells[0], self.cell_screen, 'The SCREEN cell has been added to the arm')
         self.assertEqual(plans[0], None, 'There is non sample plan for this specific cell')
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
@@ -1151,12 +1151,12 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[1], self.cell_run_in, 'The RUN-IN cell has been added to the arm')
         self.assertEqual(plans[1], None, 'There is non sample plan for this specific cell')
 
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
 
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a run-in cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
@@ -1167,12 +1167,12 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[2], self.cell_single_treatment_00, 'The 1st treatment cell has been added to the arm')
         self.assertEqual(plans[2], self.sample_assay_plan, 'There is non sample plan for this specific cell')
 
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a screen cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
 
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a run-in cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
@@ -1183,7 +1183,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[3], self.cell_washout_00, 'The WASHOUT cell has been added to the arm')
         self.assertEqual(plans[3], None, 'There is non sample plan for this specific cell')
 
-        with self.assertRaises(ISAModelValueError, msg='Another cell containing a WASHOUT cannot be added to the '
+        with self.assertRaises(ValueError, msg='Another cell containing a WASHOUT cannot be added to the '
                                                        'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_01, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
@@ -1210,13 +1210,13 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[7], self.cell_follow_up, 'The FOLLOW-UP cell has been added to the arm')
         self.assertEqual(plans[7], self.sample_assay_plan, 'There is non sample plan for this specific cell')
 
-        with self.assertRaises(ISAModelValueError, msg='No more items can be added after a FOLLOW-UP') as ex_cm:
+        with self.assertRaises(ValueError, msg='No more items can be added after a FOLLOW-UP') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_add_item_to_arm__multi_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
+        with self.assertRaises(ValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
                                                        'an ARM ending with a RUN-IN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_00, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
@@ -1233,7 +1233,7 @@ class StudyArmTest(unittest.TestCase):
 
     def test_add_item_to_arm__multi_unit_cells_01(self):
         self.arm.add_item_to_arm_map(self.cell_screen, None)
-        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
+        with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
                                                        'an ARM ending with a SCREEN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_ERROR_MESSAGE)
@@ -1250,7 +1250,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(plans[2], self.sample_assay_plan, 'There is a sample plan for this specific cell')
 
     def test_add_item_to_arm__follow_up_to_empty_cell(self):
-        with self.assertRaises(ISAModelValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
+        with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
                                                        'an empty arm.') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
@@ -1261,13 +1261,13 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(self.arm.group_size, 100)
 
     def test_group_size_property_fail_00(self):
-        with self.assertRaises(ISAModelAttributeError,
+        with self.assertRaises(AttributeError,
                                msg='Only positive integers can be assinged to group_size') as ex_cm:
             self.arm.group_size = -5
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
 
     def test_arm_map_property_success_00(self):
-        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
                                 (self.cell_washout_00, None),
@@ -1275,27 +1275,27 @@ class StudyArmTest(unittest.TestCase):
                                 (self.cell_washout_01, None), (self.cell_follow_up, self.sample_assay_plan)
                                 ])
         self.arm.arm_map = ord_dict
-        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been '
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAndAssayPlan has been '
                                                      'correctly set for single-treatment cells.')
 
     def test_arm_map_property_success_01(self):
-        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAssayPlan is empty.')
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None),
                                 (self.cell_multi_elements_padded, self.sample_assay_plan),
                                 (self.cell_follow_up, self.sample_assay_plan)
                                 ])
         self.arm.arm_map = ord_dict
-        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAssayPlan has been '
+        self.assertEqual(self.arm.arm_map, ord_dict, 'The ordered mapping StudyCell -> SampleAndAssayPlan has been '
                                                      'correctly set for single-treatment cells.')
 
     def test_arm_map_property_fail_wrong_type(self):
-        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong type is '
+        with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong type is '
                                                            'provided to the assignment.') as ex_cm:
             self.arm.arm_map = ['wrong', 'object']
         self.assertEqual(ex_cm.exception.args[0], StudyArm.ARM_MAP_ASSIGNMENT_ERROR)
 
     def test_arm_map_property_fail_wrong_value_00(self):
-        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong value is '
+        with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
                                                            'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
@@ -1308,7 +1308,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_arm_map_property_fail_wrong_value_01(self):
-        with self.assertRaises(ISAModelAttributeError, msg='An error is raised if an object of the wrong value is '
+        with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
                                                            'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
@@ -1383,7 +1383,7 @@ class StudyDesignTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(ms_assay_dict)
+        self.sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
         self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_00, self.sample_assay_plan),
             (self.cell_follow_up, self.sample_assay_plan)
@@ -1418,7 +1418,7 @@ class StudyDesignTest(unittest.TestCase):
         self.assertEqual(self.study_design.name, 'Study Design')
         self.study_design.name = TEST_STUDY_DESIGN_NAME
         self.assertEqual(self.study_design.name, TEST_STUDY_DESIGN_NAME)
-        with self.assertRaises(ISAModelAttributeError, msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
+        with self.assertRaises(AttributeError, msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.name = 128
         self.assertEqual(ex_cm.exception.args[0], StudyDesign.NAME_PROPERTY_ASSIGNMENT_ERROR)
 
@@ -1437,7 +1437,7 @@ class StudyDesignTest(unittest.TestCase):
         self.study_design.add_study_arm(self.second_arm)
         self.assertIn(self.second_arm, self.study_design.study_arms, 'The Study Arm has been correctly added to the '
                                                                      'StudyDesign')
-        with self.assertRaises(ISAModelValueError,
+        with self.assertRaises(ValueError,
                                msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.add_study_arm(self.arm_same_name_as_third)
         self.assertEqual(ex_cm.exception.args[0], StudyDesign.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
@@ -1446,7 +1446,7 @@ class StudyDesignTest(unittest.TestCase):
         self.assertEqual(self.study_design.study_arms, [self.second_arm, self.first_arm, self.third_arm])
 
     def test_add_study_arm_02(self):
-        with self.assertRaises(ISAModelTypeError,
+        with self.assertRaises(TypeError,
                                msg='A Treatment cannot be added to a StudyDesign, only StudyArms') as ex_cm:
             self.study_design.add_study_arm(self.second_treatment)
         self.assertIn(StudyDesign.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
@@ -1483,7 +1483,7 @@ class StudyDesignTest(unittest.TestCase):
 
     def test_get_epoch_out_of_bounds_index(self):
         self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
-        with self.assertRaises(ISAModelIndexError, msg='An index error is reaised if the epoch is out of bounds '
+        with self.assertRaises(IndexError, msg='An index error is reaised if the epoch is out of bounds '
                                                        'for all the StudyArms.') as ex_cm:
             epoch_cells = self.study_design.get_epoch(4)
         self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
@@ -1853,7 +1853,7 @@ class TreatmentSequenceTest(unittest.TestCase):
         subject_count = 20
         self.sequence.subject_count = subject_count
         self.assertTrue(self.sequence.subject_count, subject_count)
-"""
+
 
 
 class SampleAssayPlanTest(unittest.TestCase):
@@ -1965,6 +1965,7 @@ class SampleAssayPlanTest(unittest.TestCase):
         self.assertRaises(ValueError, self.plan.add_assay_plan_record,
                           blood_sample_type, ngs_assay_type)
 
+"""
 
 class StudyDesignFactoryTest(unittest.TestCase):
 
@@ -1999,8 +2000,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
-        self.sample_assay_plan = SampleAssayPlan()
-        self.sample_assay_plan_list = [SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan(), SampleAssayPlan()]
+        self.sample_assay_plan = SampleAndAssayPlan()
+        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan()]
 
     """
     def test_property_treatments(self):
@@ -2114,7 +2115,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
 
     def test_compute_crossover_design_raises_treatment_map_error(self):
         treatments_map = [(self.first_treatment, self.second_treatment)]
-        with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
+        with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, 10)
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
 
@@ -2122,7 +2123,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, [10, 12, 19])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
@@ -2173,7 +2174,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
                                                                            group_sizes=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
@@ -2210,7 +2211,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
 
     def test_compute_single_arm_design_raises_treatment_map_error(self):
         treatments_map = [(self.first_treatment, self.second_treatment)]
-        with self.assertRaises(ISAModelTypeError, msg='The treatment map is malformed') as ex_cm:
+        with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_single_arm_design(treatments_map, group_size=12)
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
 
@@ -2218,7 +2219,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             single_arm_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
                                                                              group_size=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
@@ -2241,7 +2242,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
 
     def test_compute_concomitant_treatment_design_group_size_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
                 treatments, self.sample_assay_plan, group_size=[10, 12, 13]
             )
@@ -2296,7 +2297,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
 
     def test_compute_crossover_design_multi_element_cell_group_sizes_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             crossover_design_with_multi_element_cell = StudyDesignFactory.compute_crossover_design_multi_element_cell(
                 treatments, self.sample_assay_plan, group_sizes=(10, 15, 12, 15, 12), washout=self.washout,
                 screen_map=(self.screen, None),
@@ -2330,7 +2331,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
 
     def test_compute_single_arm_design_multi_element_cell_group_sizes_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
-        with self.assertRaises(ISAModelTypeError, msg='The group_sizes list has the wrong length') as ex_cm:
+        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             crossover_design_with_multi_element_cell = StudyDesignFactory.compute_single_arm_design_multi_element_cell(
                 treatments, self.sample_assay_plan, group_size=(10, 15, 12), washout=self.washout,
                 screen_map=(self.screen, None),
