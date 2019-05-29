@@ -85,6 +85,19 @@ DATA_FILE = 'data file'
 RUN_ORDER = 'run order'
 STUDY_CELL = 'study cell'
 
+with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
+                       'study-creator-config.yaml')) as yaml_file:
+    yaml_config = yaml.load(yaml_file)
+default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][0])
+
+DEFAULT_SOURCE_TYPE = Characteristic(
+    category=OntologyAnnotation(term='Material Type'),
+    value=OntologyAnnotation(
+        term='subject',
+        term_source=default_ontology_source_reference,
+        term_accession='0100051')
+)
+
 
 def intersperse(lst, item):
     """
@@ -1444,15 +1457,19 @@ class StudyDesign(object):
     ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
     GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the bounds of the StudyDesign.'
 
-    def __init__(self, name='Study Design', study_arms=None):
+    def __init__(self, name='Study Design', source_type=DEFAULT_SOURCE_TYPE, study_arms=None):
         """
         
         :param study_arms: Iterable
         """
         self.__study_arms = set()
         self.__name = name if isinstance(name, str) else 'Study Design'
+        self.__source_type = None
+
+        self.source_type = source_type
         if study_arms:
             self.study_arms = study_arms
+
 
     @property
     def name(self):
@@ -1463,6 +1480,16 @@ class StudyDesign(object):
         if not isinstance(name, str):
             raise AttributeError(self.NAME_PROPERTY_ASSIGNMENT_ERROR)
         self.__name = name
+
+    @property
+    def source_type(self):
+        return self.__source_type
+
+    @source_type.setter
+    def source_type(self, source_type):
+        if not isinstance(source_type, Characteristic):
+            raise AttributeError()
+        self.__source_type = source_type
 
     @property
     def study_arms(self):
@@ -1570,7 +1597,7 @@ class StudyDesign(object):
                     for source in sources_map[arm.name]:
                         if not sample_assay_plan:
                             continue
-                        for sample_node in sample_assay_plan.sample_plan:  #FIXME
+                        for sample_node in sample_assay_plan.sample_plan:
                             sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
                             sample_term_source = sample_type.value.term_source if \
                                 hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
@@ -1599,6 +1626,9 @@ class StudyDesign(object):
                                 )
                                 process_sequence.append(process)
         return factors, samples, process_sequence, ontology_sources
+
+    def _generate_assays(self):
+        ...
 
     def generate_isa_study(self):
         """

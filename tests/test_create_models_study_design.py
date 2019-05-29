@@ -1234,7 +1234,8 @@ class StudyArmTest(unittest.TestCase):
                                                      'correctly set for single-treatment cells.')
 
     def test_arm_map_property_success_01(self):
-        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan is empty.')
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan '
+                                                          'is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None),
                                 (self.cell_multi_elements_padded, self.sample_assay_plan),
                                 (self.cell_follow_up, self.sample_assay_plan)
@@ -1245,13 +1246,13 @@ class StudyArmTest(unittest.TestCase):
 
     def test_arm_map_property_fail_wrong_type(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong type is '
-                                                           'provided to the assignment.') as ex_cm:
+                                                   'provided to the assignment.') as ex_cm:
             self.arm.arm_map = ['wrong', 'object']
         self.assertEqual(ex_cm.exception.args[0], StudyArm.ARM_MAP_ASSIGNMENT_ERROR)
 
     def test_arm_map_property_fail_wrong_value_00(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
-                                                           'provided to the assignment.') as ex_cm:
+                                                   'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
                                 (self.cell_washout_00, None),
@@ -1264,7 +1265,7 @@ class StudyArmTest(unittest.TestCase):
 
     def test_arm_map_property_fail_wrong_value_01(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
-                                                           'provided to the assignment.') as ex_cm:
+                                                   'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
                                 (self.cell_single_treatment_01, self.sample_assay_plan),
@@ -1368,6 +1369,7 @@ class StudyDesignTest(unittest.TestCase):
                               'The __name has been initialized as a string')
         self.assertEqual(getattr(self.study_design, '_StudyDesign__study_arms', None), set(),
                          'An empty set has been initialized for __study_arms')
+        self.assertEqual(self.study_design.source_type, DEFAULT_SOURCE_TYPE)
 
     def test_name_property(self):
         self.assertEqual(self.study_design.name, 'Study Design')
@@ -1921,6 +1923,7 @@ class SampleAssayPlanTest(unittest.TestCase):
                           blood_sample_type, ngs_assay_type)
 
 """
+
 
 class StudyDesignFactoryTest(unittest.TestCase):
 
