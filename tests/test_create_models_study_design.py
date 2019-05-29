@@ -261,51 +261,6 @@ nmr_assay_dict = OrderedDict([
         ])
 
 
-
-
-# class SamplePlanTest(unittest.TestCase):
-#
-#     def setUp(self):
-#         self.sample_plan = SampleAssayPlan()
-#
-#     def test_init_default(self):
-#         sample_plan = self.sample_plan
-#         self.assertEqual(sample_plan.group_size, 0)
-#         self.assertEqual(sample_plan.sample_types_map, {})
-#
-#     def test_init_group_size(self):
-#         group_size = 100
-#         sample_plan = SampleAssayPlan(group_size=group_size)
-#         self.assertEqual(sample_plan.group_size, group_size)
-#
-#     def test_add_sample_type_sampling_plan_single_value(self):
-#         sampling_size = 12
-#         sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
-#         self.sample_plan.add_sample_plan_record(sample_type, sampling_size=sampling_size)
-#         self.assertEqual(self.sample_plan.sample_types_map, {
-#            sample_type: sampling_size
-#         })
-#
-#     def test_add_sample_type_sampling_plan_multiple_value(self):
-#         sampling_size = (10, 0, 8, 5)
-#         sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
-#         self.sample_plan.add_sample_plan_record(sample_type, sampling_size=sampling_size)
-#         self.assertEqual(self.sample_plan.sample_types_map, {
-#             sample_type: sampling_size
-#         })
-#
-#     def test_sample_types_property(self):
-#         liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
-#         blood_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
-#         self.sample_plan.sample_types_map = {
-#             liver_sample_type: (0, 1, 1),
-#             blood_sample_type: (3, 3, 4)
-#         }
-#         self.assertEqual(self.sample_plan.sample_types, { liver_sample_type, blood_sample_type })
-#
-#     def test_sample_types_property_empty(self):
-#         self.assertEqual(self.sample_plan.sample_types, set())
-
 class NonTreatmentTest(unittest.TestCase):
 
     DURATION_VALUE = 10.0
@@ -368,7 +323,7 @@ class TreatmentTest(unittest.TestCase):
                          "name='INTENSITY', factor_type=isatools.model.OntologyAnnotation(term='intensity', "
                          "term_source=None, term_accession='', comments=[]), comments=[]), value=5, "
                          "unit=isatools.model.OntologyAnnotation(term='kg/m^3', term_source=None, term_accession='', "
-                         "comments=[]))], group_size=0)")
+                         "comments=[]))])")
 
     def test_hash(self):
         self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
@@ -924,7 +879,7 @@ class ProductNodeTest(unittest.TestCase):
         self.node = ProductNode()
 
     def test_id_property(self):
-        self.assertIsInstance(self.node.id, uuid.uuid4)
+        self.assertIsInstance(self.node.id, type(uuid.uuid4()))
 
 
 class AssayGraphTest(unittest.TestCase):
