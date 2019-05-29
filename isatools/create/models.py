@@ -1570,7 +1570,7 @@ class StudyDesign(object):
                     for source in sources_map[arm.name]:
                         if not sample_assay_plan:
                             continue
-                        for sample_node in sample_assay_plan.sample_nodes:  #FIXME
+                        for sample_node in sample_assay_plan.sample_plan:  #FIXME
                             sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
                             sample_term_source = sample_type.value.term_source if \
                                 hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
