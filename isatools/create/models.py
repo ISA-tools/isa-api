@@ -1597,6 +1597,7 @@ class StudyDesign(object):
                     for source in sources_map[arm.name]:
                         if not sample_assay_plan:
                             continue
+                        sample_batch = []
                         for sample_node in sample_assay_plan.sample_plan:
                             sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
                             sample_term_source = sample_type.value.term_source if \
@@ -1608,7 +1609,7 @@ class StudyDesign(object):
                                                                  sample_term_source),
                                                 factor_values=element.factor_values,
                                                 characteristics=[sample_type], derives_from=[source])
-                                samples.append(sample)
+                                sample_batch.append(sample)
                                 sample_count += 1
                                 process = Process(
                                     executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
@@ -1625,10 +1626,16 @@ class StudyDesign(object):
                                     ]
                                 )
                                 process_sequence.append(process)
+                        for assay_graph in sample_assay_plan.assay_plan:
+                            self._generate_assays(assay_graph, sample_batch)
+                        samples += sample_batch
         return factors, samples, process_sequence, ontology_sources
 
-    def _generate_assays(self):
-        ...
+    def _generate_assays(self, assay_graph, samples):
+        assays = []
+        for node in assay_graph.nodes:
+            ...
+        return assays
 
     def generate_isa_study(self):
         """
@@ -1650,6 +1657,7 @@ class StudyDesign(object):
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, study.samples, study.process_sequence, study.ontology_source_references = \
             self._generate_samples(sources_map, study.protocols[0], study_config['performers'][0])
+        study.assays, study.process_sequence, study.ontology_source_references = self._generate_assays()
         return study
 
     def __repr__(self):
