@@ -280,13 +280,29 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
+        """
         print("Expected Assay Plan:")
         for graph in self.plan.assay_plan:
             print(graph)
         print("\nActual Assay Plan:")
         for graph in actual_plan.assay_plan:
             print(graph)
+        """
         self.assertEqual(self.plan.sample_plan, actual_plan.sample_plan)
+        unmatched_expected = self.plan.assay_plan - actual_plan.assay_plan
+        unmatched_actual = actual_plan.assay_plan - self.plan.assay_plan
+        print(unmatched_actual)
+        print(unmatched_expected)
+        if unmatched_expected and unmatched_actual:
+            print('here we are')
+            unmatched_expected_el = unmatched_expected.pop()
+            unmatched_actual_el = unmatched_actual.pop()
+            self.assertEqual(unmatched_expected_el.id, unmatched_actual_el.id)
+            self.assertEqual(unmatched_expected_el.nodes, unmatched_actual_el.nodes)
+            self.assertEqual(unmatched_expected_el.links, unmatched_actual_el.links)
+            self.assertEqual(repr(unmatched_expected_el), repr(unmatched_actual_el))
+            self.assertEqual(unmatched_expected_el, unmatched_actual_el)
+            print('all these test passed')
         self.assertEqual(self.plan.assay_plan, actual_plan.assay_plan)
         self.assertEqual(self.plan, actual_plan)
 

@@ -970,6 +970,10 @@ class AssayGraphTest(unittest.TestCase):
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
 
+    def test_repr(self):
+        # TODO
+        ...
+
     """
     def test_sample_nodes(self):
         self.assay_graph.graph_dict = self.graph_dict
