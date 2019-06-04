@@ -64,6 +64,8 @@ sample_list = [
 ]
 
 ms_assay_dict = OrderedDict([
+    {'measurement_type': 'metabolite profiling'},
+    {'technology_type': 'mass spectrometry'},
     ('extraction', {}),
     ('extract', [
         {
@@ -111,16 +113,8 @@ ms_assay_dict = OrderedDict([
 
 
 phti_assay_dict = OrderedDict([
-            ('sample', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'liver',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
+    {'measurement_type': 'phenotyping'},
+    {'technology_type': 'high-throughput imaging'},
             ('extraction', {}),
             ('extract', [
                 {
@@ -157,16 +151,8 @@ phti_assay_dict = OrderedDict([
         ])
 
 lcdad_assay_dict = OrderedDict([
-            ('sample', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'leaf',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
+    {'measurement_type': 'metabolite identification'},
+    {'technology_type': 'liquid chromatography diode-array detector'},
             ('extraction', {}),
             ('extract', [
                 {
@@ -200,32 +186,8 @@ lcdad_assay_dict = OrderedDict([
         ])
 
 nmr_assay_dict = OrderedDict([
-            ('sample', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'liver',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'blood',
-                    'size': 5,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'organism part',
-                    'characteristics_value': 'heart',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
+    {'measurement_type': 'metabolite profiling'},
+    {'technology_type': 'nmr spectroscopy'},
             ('extraction', {}),
             ('extract', [
                 {
