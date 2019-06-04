@@ -342,7 +342,7 @@ class StudyCellTest(unittest.TestCase):
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.washout = NonTreatment(element_type=WASHOUT,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
@@ -847,7 +847,7 @@ class ProductNodeTest(unittest.TestCase):
 class AssayGraphTest(unittest.TestCase):
 
     def setUp(self):
-        self.assay_graph = AssayGraph()
+        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
         self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
@@ -868,8 +868,29 @@ class AssayGraphTest(unittest.TestCase):
         }
 
     def test_init(self):
-        self.assay_graph = AssayGraph(graph_dict=self.graph_dict)
+        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                      graph_dict=self.graph_dict)
+        self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
+        self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
         self.assertEqual(self.assay_graph.graph_dict, self.graph_dict)
+
+    def test_properties_success(self):
+        self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
+        self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
+        self.assay_graph.measurement_type = 'some other measurement'
+        self.assay_graph.technology_type = 'some other tech'
+        self.assertEqual(self.assay_graph.measurement_type, 'some other measurement')
+        self.assertEqual(self.assay_graph.technology_type, 'some other tech')
+        self.assay_graph.measurement_type = OntologyAnnotation(term='some other measurement')
+        self.assay_graph.technology_type = OntologyAnnotation(term='some other tech')
+        self.assertEqual(self.assay_graph.measurement_type, OntologyAnnotation(term='some other measurement'))
+        self.assertEqual(self.assay_graph.technology_type, OntologyAnnotation(term='some other tech'))
+
+    def test_properties_raises(self):
+        # TODO complete this test
+        with self.assertRaises(AttributeError, msg='An integer is not a valid measurement_type') as ex_cm:
+            self.assay_graph.measurement_type = 120
+        self.assertIsNotNone(ex_cm.exception.args[0])
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -997,6 +1018,9 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(ms_plan.sample_plan), len(sample_list))
         self.assertEqual(len(ms_plan.assay_plan), 1)     # only one assay plan is provided here
         ms_assay_graph = sorted(ms_plan.assay_plan)[0]
+        self.assertIsInstance(ms_assay_graph, AssayGraph)
+        self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
+        self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
         self.assertEqual(len(ms_assay_graph.nodes), 15)
         self.assertEqual(len(ms_assay_graph.links), 14)
         self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)

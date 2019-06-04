@@ -882,7 +882,8 @@ class SampleAndAssayPlan(object):
     @staticmethod
     def _generate_assay_plan_from_dict(assay_plan_dict, validation_template=None, use_guids=False):
 
-        res = AssayGraph()
+        res = AssayGraph(measurement_type=assay_plan_dict['measurement_type'],
+                         technology_type=assay_plan_dict['technology_type'])
         previous_nodes = []
         current_nodes = []
         for node_key, node_params in assay_plan_dict.items():
@@ -979,23 +980,51 @@ class AssayGraph(object):
     INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
     INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
                          "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
+    INVALID_MEASUREMENT_TYPE_ERROR = '{0} is an invalid value for measurement_type. ' \
+                                     'Please provide an OntologyAnnotation or string.'
+    INVALID_TECHNOLOGY_TYPE_ERROR = '{0} is an invalid value for technology_type. ' \
+                                    'Please provide an OntologyAnnotation or string.'
     MISSING_NODE_ERROR = "Start or target node have not been added to the AssayGraph yet"
     NODE_ALREADY_PRESENT = "The node {0.id} is already present in the AssayGraph"
 
-    def __init__(self, id_=uuid.uuid4(), graph_dict=None):
+    def __init__(self, measurement_type, technology_type, id_=uuid.uuid4(), graph_dict=None):
         """
         initializes an AssayGraph object
         If no dictionary or None is given,
         an empty dictionary will be used
         """
         self.__id = id_
+        self.__measurement_type = None
+        self.__technology_type = None
         self.__graph_dict = {}
+        self.measurement_type = measurement_type
+        self.technology_type = technology_type
         if graph_dict is not None:
             self.graph_dict = graph_dict
 
     @property
     def id(self):
         return self.__id
+
+    @property
+    def measurement_type(self):
+        return self.__measurement_type
+
+    @measurement_type.setter
+    def measurement_type(self, measurement_type):
+        if not isinstance(measurement_type, OntologyAnnotation) and not isinstance(measurement_type, str):
+            raise AttributeError(self.INVALID_MEASUREMENT_TYPE_ERROR.format(measurement_type))
+        self.__measurement_type = measurement_type
+
+    @property
+    def technology_type(self):
+        return self.__technology_type
+
+    @technology_type.setter
+    def technology_type(self, technology_type):
+        if not isinstance(technology_type, OntologyAnnotation) and not isinstance(technology_type, str):
+            raise AttributeError(self.INVALID_TECHNOLOGY_TYPE_ERROR.format(technology_type))
+        self.__technology_type = technology_type
 
     @property
     def graph_dict(self):
@@ -1102,15 +1131,18 @@ class AssayGraph(object):
 
     def __repr__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
-        return '{0}.{1}(id={2.id}, nodes={2.nodes}, links={3})'.format(
-            self.__class__.__module__, self.__class__.__name__, self,
-            sorted(links, key=lambda link: (link[0], link[1]))
+        return '{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, ' \
+               'nodes={2.nodes}, links={3})'.format(
+                    self.__class__.__module__, self.__class__.__name__, self,
+                    sorted(links, key=lambda link: (link[0], link[1]))
         )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return """"{1}(
         id={2.id}
+        measurement_type={2.measurement_type} 
+        technology_type={2.technology_type}
         nodes={2.nodes} 
         links={3}
         )""".format(
