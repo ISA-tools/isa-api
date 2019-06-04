@@ -1102,9 +1102,10 @@ class AssayGraph(object):
 
     def __repr__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
-        return '{0}.{1}(id={2.id}, nodes={2.nodes}, links={3})'.format(self.__class__.__module__,
-                                                                       self.__class__.__name__,
-                                                                       self, links)
+        return '{0}.{1}(id={2.id}, nodes={2.nodes}, links={3})'.format(
+            self.__class__.__module__, self.__class__.__name__, self,
+            sorted(links, key=lambda link: (link[0], link[1]))
+        )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
@@ -1112,7 +1113,10 @@ class AssayGraph(object):
         id={2.id}
         nodes={2.nodes} 
         links={3}
-        )""".format(self.__class__.__module__, self.__class__.__name__, self, links)
+        )""".format(
+            self.__class__.__module__, self.__class__.__name__, self,
+            sorted(links, key=lambda link: (link[0], link[1]))
+        )
 
     def __hash__(self):
         return hash(repr(self))

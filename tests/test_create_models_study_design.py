@@ -933,8 +933,19 @@ class AssayGraphTest(unittest.TestCase):
         self.assertNotEqual(first_plan, second_plan)
 
     def test_repr(self):
-        # TODO
-        ...
+        """
+        ensures that representation is unique and the same for equal AssayGraphs
+        :return:
+        """
+        nodes = [self.protocol_node_rna, self.mrna_node, self.mirna_node]
+        links = [(self.protocol_node_rna, self.mrna_node), (self.protocol_node_rna, self.mirna_node)]
+        first_graph = AssayGraph(id_='assay-graph-01')
+        first_graph.add_nodes(nodes)
+        first_graph.add_links(links)
+        second_graph = AssayGraph(id_='assay-graph-01')
+        second_graph.add_nodes(nodes)
+        second_graph.add_links(links[::-1])
+        self.assertEqual(repr(first_graph), repr(second_graph))
 
     """
     def test_sample_nodes(self):

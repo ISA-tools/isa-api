@@ -300,6 +300,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             self.assertEqual(unmatched_expected_el.id, unmatched_actual_el.id)
             self.assertEqual(unmatched_expected_el.nodes, unmatched_actual_el.nodes)
             self.assertEqual(unmatched_expected_el.links, unmatched_actual_el.links)
+            self.assertEqual(repr(unmatched_expected_el.links), repr(unmatched_actual_el.links))
             self.assertEqual(repr(unmatched_expected_el), repr(unmatched_actual_el))
             self.assertEqual(unmatched_expected_el, unmatched_actual_el)
             print('all these test passed')
