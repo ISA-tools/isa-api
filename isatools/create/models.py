@@ -811,170 +811,6 @@ class ProductNode(SequenceNode):
         self.__size = size
 
 
-class SampleAndAssayPlan(object):
-
-    def __init__(self):
-        self.__sample_plan = set()
-        self.__assay_plan = set()
-
-    @property
-    def sample_plan(self):
-        # return sorted(self.__sample_plan, key=lambda sample_type: sample_type.id) if self.__sample_plan else []
-        return self.__sample_plan
-
-    @sample_plan.setter
-    def sample_plan(self, sample_plan):
-        if not isinstance(sample_plan, Iterable) or not all(isinstance(sample_type, ProductNode)
-                                                            for sample_type in sample_plan):
-            raise AttributeError()
-        for sample_type in sample_plan:
-            self.add_sample_type_to_plan(sample_type)
-
-    def add_sample_type_to_plan(self, sample_type):
-        if not isinstance(sample_type, ProductNode):
-            raise TypeError()
-        self.__sample_plan.add(sample_type)
-
-    @property
-    def assay_plan(self):
-        # return sorted(self.__assay_plan, key=lambda assay_graph: assay_graph.id) if self.__assay_plan else []
-        return self.__assay_plan
-
-    @assay_plan.setter
-    def assay_plan(self, assay_plan):
-        if not isinstance(assay_plan, Iterable) or not all(isinstance(assay_graph, AssayGraph)
-                                                           for assay_graph in assay_plan):
-            raise AttributeError()
-        for assay_graph in assay_plan:
-            self.add_assay_graph_to_plan(assay_graph)
-
-    def add_assay_graph_to_plan(self, assay_graph):
-        if not isinstance(assay_graph, AssayGraph):
-            raise TypeError()
-        self.__assay_plan.add(assay_graph)
-
-    @classmethod
-    def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
-                                        use_guids=False):
-        """
-        An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
-        OrderedDict, which can optionally be validated against a validation_schema
-        :param sample_type_dicts: list of dicts
-        :param assay_plan_dicts: list of OrderedDicts
-        :param validation_template: dict/OrderedDict
-        :param use_guids: bool
-        :return: SampleAndAssayPlan
-        """
-        res = cls()
-        for i, sample_type_dict in enumerate(sample_type_dicts):
-            sample_node = ProductNode(
-                id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
-                name=SAMPLE, node_type=sample_type_dict['node_type'], size=sample_type_dict['size'],
-                characteristics=[
-                    Characteristic(category=sample_type_dict['characteristics_category'],
-                                   value=sample_type_dict['characteristics_value'])
-                ] if 'characteristics_category' in sample_type_dict else [])
-            res.add_sample_type_to_plan(sample_node)
-        for assay_plan_dict in assay_plan_dicts:
-            res.add_assay_graph_to_plan(cls._generate_assay_plan_from_dict(assay_plan_dict))
-        return res
-
-    @staticmethod
-    def _generate_assay_plan_from_dict(assay_plan_dict, validation_template=None, use_guids=False):
-
-        res = AssayGraph(measurement_type=assay_plan_dict['measurement_type'],
-                         technology_type=assay_plan_dict['technology_type'])
-        previous_nodes = []
-        current_nodes = []
-        for node_key, node_params in assay_plan_dict.items():
-
-            if isinstance(node_params, list):    # the node is a ProductNode
-                for i, node_params_dict in enumerate(node_params):
-                    """
-                    if not previous_nodes:
-                        product_node = ProductNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
-                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                            characteristics=[
-                                Characteristic(category=node_params_dict['characteristics_category'],
-                                               value=node_params_dict['characteristics_value'])
-                            ] if 'characteristics_category' in node_params_dict else [])
-                        res.add_node(product_node)
-                        current_nodes.append(product_node)
-                    else:
-                    """
-                    for j, prev_node in enumerate(previous_nodes):
-                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
-                        product_node = ProductNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
-                                node_key, str(i).zfill(3), str(j).zfill(3)),
-                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                            characteristics=[
-                                Characteristic(category=node_params_dict['characteristics_category'],
-                                               value=node_params_dict['characteristics_value'])
-                            ] if 'characteristics_category' in node_params_dict else [])
-                        res.add_node(product_node)
-                        res.add_link(prev_node, product_node)
-                        current_nodes.append(product_node)
-            else:       # the node is a ProtocolNode
-                pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
-                pv_combinations = itertools.product(*[val for val in pv_all_values])
-                for i, pv_combination in enumerate(pv_combinations):
-                    print('pv_combination: {0}'.format(pv_combination))
-                    if not previous_nodes:
-                        protocol_node = ProtocolNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
-                            name=node_key, protocol_type=node_key,
-                            parameter_values=[
-                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                               value=pv)
-                                for ix, pv in enumerate(pv_combination)
-                            ]
-                        )
-                        res.add_node(protocol_node)
-                        current_nodes.append(protocol_node)
-                    else:
-                        for j, prev_node in enumerate(previous_nodes):
-                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
-                            protocol_node = ProtocolNode(
-                                id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
-                                                                                        str(j).zfill(3)),
-                                name=node_key, protocol_type=node_key,
-                                parameter_values=[
-                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                                   value=pv)
-                                    for ix, pv in enumerate(pv_combination)
-                                ]
-                            )
-                            # print(protocol_node)
-                            res.add_node(protocol_node)
-                            res.add_link(prev_node, protocol_node)
-                            current_nodes.append(protocol_node)
-            previous_nodes = current_nodes
-            current_nodes = []
-        return res
-
-    def __repr__(self):
-        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan})'.format(
-            self.__class__.__module__, self.__class__.__name__, self)
-
-    def __str__(self):
-        return """{1}(
-        sample_plan={2.sample_plan}, 
-        assay_plan={2.assay_plan}
-        )""".format(self.__class__.__module__, self.__class__.__name__, self)
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
-               and self.assay_plan == other.assay_plan
-
-    def __ne__(self, other):
-        return not self == other
-
-
 class AssayGraph(object):
 
     INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
@@ -1154,7 +990,10 @@ class AssayGraph(object):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, AssayGraph) and self.nodes == other.nodes and self.links == other.links
+        return isinstance(other, AssayGraph) and self.measurement_type == other.measurement_type \
+               and self.technology_type == other.technology_type \
+               and self.nodes == other.nodes \
+               and self.links == other.links
 
     def __ne__(self, other):
         return not self == other
@@ -1162,6 +1001,174 @@ class AssayGraph(object):
 
 def get_full_class_name(instance):
     return "{0}.{1}".format(instance.__class__.__module__, instance.__class__.__name__)
+
+
+class SampleAndAssayPlan(object):
+
+    def __init__(self):
+        self.__sample_plan = set()
+        self.__assay_plan = set()
+
+    @property
+    def sample_plan(self):
+        # return sorted(self.__sample_plan, key=lambda sample_type: sample_type.id) if self.__sample_plan else []
+        return self.__sample_plan
+
+    @sample_plan.setter
+    def sample_plan(self, sample_plan):
+        if not isinstance(sample_plan, Iterable) or not all(isinstance(sample_type, ProductNode)
+                                                            for sample_type in sample_plan):
+            raise AttributeError()
+        for sample_type in sample_plan:
+            self.add_sample_type_to_plan(sample_type)
+
+    def add_sample_type_to_plan(self, sample_type):
+        if not isinstance(sample_type, ProductNode):
+            raise TypeError()
+        self.__sample_plan.add(sample_type)
+
+    @property
+    def assay_plan(self):
+        # return sorted(self.__assay_plan, key=lambda assay_graph: assay_graph.id) if self.__assay_plan else []
+        return self.__assay_plan
+
+    @assay_plan.setter
+    def assay_plan(self, assay_plan):
+        if not isinstance(assay_plan, Iterable) or not all(isinstance(assay_graph, AssayGraph)
+                                                           for assay_graph in assay_plan):
+            raise AttributeError()
+        for assay_graph in assay_plan:
+            self.add_assay_graph_to_plan(assay_graph)
+
+    def add_assay_graph_to_plan(self, assay_graph):
+        if not isinstance(assay_graph, AssayGraph):
+            raise TypeError()
+        self.__assay_plan.add(assay_graph)
+
+    @classmethod
+    def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
+                                        use_guids=False):
+        """
+        An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
+        OrderedDict, which can optionally be validated against a validation_schema
+        :param sample_type_dicts: list of dicts
+        :param assay_plan_dicts: list of OrderedDicts
+        :param validation_template: dict/OrderedDict
+        :param use_guids: bool
+        :return: SampleAndAssayPlan
+        """
+        res = cls()
+        for i, sample_type_dict in enumerate(sample_type_dicts):
+            sample_node = ProductNode(
+                id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
+                name=SAMPLE, node_type=sample_type_dict['node_type'], size=sample_type_dict['size'],
+                characteristics=[
+                    Characteristic(category=sample_type_dict['characteristics_category'],
+                                   value=sample_type_dict['characteristics_value'])
+                ] if 'characteristics_category' in sample_type_dict else [])
+            res.add_sample_type_to_plan(sample_node)
+        for assay_plan_dict in assay_plan_dicts:
+            res.add_assay_graph_to_plan(cls._generate_assay_plan_from_dict(assay_plan_dict))
+        return res
+
+    @staticmethod
+    def _generate_assay_plan_from_dict(assay_plan_dict, validation_template=None, use_guids=False):
+
+        res = AssayGraph(measurement_type=assay_plan_dict['measurement_type'],
+                         technology_type=assay_plan_dict['technology_type'])
+
+        previous_nodes = []
+        current_nodes = []
+        for node_key, node_params in assay_plan_dict.items():
+
+            if node_key in ('measurement_type', 'technology_type'):
+                continue
+
+            if isinstance(node_params, list):    # the node is a ProductNode
+                for i, node_params_dict in enumerate(node_params):
+                    """
+                    if not previous_nodes:
+                        product_node = ProductNode(
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            characteristics=[
+                                Characteristic(category=node_params_dict['characteristics_category'],
+                                               value=node_params_dict['characteristics_value'])
+                            ] if 'characteristics_category' in node_params_dict else [])
+                        res.add_node(product_node)
+                        current_nodes.append(product_node)
+                    else:
+                    """
+                    for j, prev_node in enumerate(previous_nodes):
+                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                        product_node = ProductNode(
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
+                                node_key, str(i).zfill(3), str(j).zfill(3)),
+                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            characteristics=[
+                                Characteristic(category=node_params_dict['characteristics_category'],
+                                               value=node_params_dict['characteristics_value'])
+                            ] if 'characteristics_category' in node_params_dict else [])
+                        res.add_node(product_node)
+                        res.add_link(prev_node, product_node)
+                        current_nodes.append(product_node)
+            else:       # the node is a ProtocolNode
+                pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
+                pv_combinations = itertools.product(*[val for val in pv_all_values])
+                for i, pv_combination in enumerate(pv_combinations):
+                    print('pv_combination: {0}'.format(pv_combination))
+                    if not previous_nodes:
+                        protocol_node = ProtocolNode(
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            name=node_key, protocol_type=node_key,
+                            parameter_values=[
+                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                               value=pv)
+                                for ix, pv in enumerate(pv_combination)
+                            ]
+                        )
+                        res.add_node(protocol_node)
+                        current_nodes.append(protocol_node)
+                    else:
+                        for j, prev_node in enumerate(previous_nodes):
+                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                            protocol_node = ProtocolNode(
+                                id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
+                                                                                        str(j).zfill(3)),
+                                name=node_key, protocol_type=node_key,
+                                parameter_values=[
+                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                                   value=pv)
+                                    for ix, pv in enumerate(pv_combination)
+                                ]
+                            )
+                            # print(protocol_node)
+                            res.add_node(protocol_node)
+                            res.add_link(prev_node, protocol_node)
+                            current_nodes.append(protocol_node)
+            previous_nodes = current_nodes
+            current_nodes = []
+        return res
+
+    def __repr__(self):
+        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan})'.format(
+            self.__class__.__module__, self.__class__.__name__, self)
+
+    def __str__(self):
+        return """{1}(
+        sample_plan={2.sample_plan}, 
+        assay_plan={2.assay_plan}
+        )""".format(self.__class__.__module__, self.__class__.__name__, self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
+               and self.assay_plan == other.assay_plan
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class SampleAndAssayPlanEncoder(json.JSONEncoder):

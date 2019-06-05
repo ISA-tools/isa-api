@@ -241,7 +241,8 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.second_assay_graph = AssayGraph(id_="assay-graph/01")
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
-        self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
+        self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2,
+                                       characteristics=[self.tissue_char])
         self.blood_node = ProductNode(id_='product-node/0001', name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')

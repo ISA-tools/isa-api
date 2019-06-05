@@ -64,8 +64,8 @@ sample_list = [
 ]
 
 ms_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite profiling'},
-    {'technology_type': 'mass spectrometry'},
+    ('measurement_type', 'metabolite profiling'),
+    ('technology_type', 'mass spectrometry'),
     ('extraction', {}),
     ('extract', [
         {
@@ -113,8 +113,8 @@ ms_assay_dict = OrderedDict([
 
 
 phti_assay_dict = OrderedDict([
-    {'measurement_type': 'phenotyping'},
-    {'technology_type': 'high-throughput imaging'},
+    ('measurement_type', 'phenotyping'),
+    ('technology_type', 'high-throughput imaging'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -151,8 +151,8 @@ phti_assay_dict = OrderedDict([
         ])
 
 lcdad_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite identification'},
-    {'technology_type': 'liquid chromatography diode-array detector'},
+    ('measurement_type', 'metabolite identification'),
+    ('technology_type', 'liquid chromatography diode-array detector'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -186,8 +186,8 @@ lcdad_assay_dict = OrderedDict([
         ])
 
 nmr_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite profiling'},
-    {'technology_type': 'nmr spectroscopy'},
+    ('measurement_type', 'metabolite profiling'),
+    ('technology_type', 'nmr spectroscopy'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -847,6 +847,7 @@ class ProductNodeTest(unittest.TestCase):
 class AssayGraphTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
@@ -933,21 +934,27 @@ class AssayGraphTest(unittest.TestCase):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
                  (self.protocol_node_rna, self.mirna_node)]
-        first_plan = AssayGraph()
+        first_plan = AssayGraph(id_='assay-graph/00',
+                                measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = AssayGraph()
+        second_plan = AssayGraph(id_='assay-graph/00',
+                                 measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         second_plan.add_nodes(nodes[::-1])
         second_plan.add_links(links[::-1])
+        self.assertEqual(first_plan.nodes, second_plan.nodes)
+        self.assertEqual(first_plan.links, second_plan.links)
         self.assertEqual(first_plan, second_plan)
 
     def test_ne(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node)]
-        first_plan = AssayGraph()
+        first_plan = AssayGraph(id_='assay-graph/00',
+                                measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = AssayGraph()
+        second_plan = AssayGraph(id_='assay-graph/00',
+                                 measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         links.append((self.protocol_node_rna, self.mirna_node))
         second_plan.add_nodes(nodes)
         second_plan.add_links(links)
@@ -960,10 +967,12 @@ class AssayGraphTest(unittest.TestCase):
         """
         nodes = [self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.protocol_node_rna, self.mrna_node), (self.protocol_node_rna, self.mirna_node)]
-        first_graph = AssayGraph(id_='assay-graph-01')
+        first_graph = AssayGraph(id_='assay-graph-01', measurement_type='genomic extraction',
+                                 technology_type='nucleic acid extraction')
         first_graph.add_nodes(nodes)
         first_graph.add_links(links)
-        second_graph = AssayGraph(id_='assay-graph-01')
+        second_graph = AssayGraph(id_='assay-graph-01', measurement_type='genomic extraction',
+                                  technology_type='nucleic acid extraction')
         second_graph.add_nodes(nodes)
         second_graph.add_links(links[::-1])
         self.assertEqual(repr(first_graph), repr(second_graph))
@@ -995,29 +1004,27 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
         self.blood_node = ProductNode(name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
-        self.assay_graph = AssayGraph()
+        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction')
 
     def test_properties(self):
-        """
         plan = SampleAndAssayPlan()
-        self.assertEqual(plan.assay_plan, [])
-        self.assertEqual(plan.sample_plan, [])
-        sample_plan = [self.tissue_node, self.blood_node]
-        assay_plan = [self.assay_graph]
+        self.assertEqual(plan.assay_plan, set())
+        self.assertEqual(plan.sample_plan, set())
+        sample_plan = {self.tissue_node, self.blood_node}
+        assay_plan = {self.assay_graph}
         plan.sample_plan = sample_plan
         plan.assay_plan = assay_plan
         self.assertEqual(plan.sample_plan, sample_plan)
         self.assertEqual(plan.assay_plan, assay_plan)
-        """
-        pass
+
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
-        assay_list = [ms_assay_dict, ms_assay_dict]
-        ms_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, *assay_list)
+        assay_list = [ms_assay_dict, nmr_assay_dict]
+        smp_ass_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, *assay_list)
         # print([node.name for node in ms_assay_plan.nodes])
-        self.assertEqual(len(ms_plan.sample_plan), len(sample_list))
-        self.assertEqual(len(ms_plan.assay_plan), 1)     # only one assay plan is provided here
-        ms_assay_graph = sorted(ms_plan.assay_plan)[0]
+        self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
+        self.assertEqual(len(smp_ass_plan.assay_plan), 2)
+        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type)[0]
         self.assertIsInstance(ms_assay_graph, AssayGraph)
         self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
@@ -1960,7 +1967,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
         self.sample_assay_plan = SampleAndAssayPlan()
-        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan()]
+        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(),
+                                       SampleAndAssayPlan()]
 
     """
     def test_property_treatments(self):
