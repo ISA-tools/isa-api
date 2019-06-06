@@ -1936,6 +1936,7 @@ class SampleAssayPlanTest(unittest.TestCase):
 class StudyDesignFactoryTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.factory = StudyDesignFactory()
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
@@ -2095,7 +2096,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
     def test_compute_parallel_design_three_treatments(self):
-        treatments_map =  [(self.first_treatment, self.sample_assay_plan),
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
         parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
@@ -2197,6 +2198,15 @@ class StudyDesignFactoryTest(unittest.TestCase):
             treatments, self.sample_assay_plan, group_size=30, follow_up_map=(self.follow_up, self.sample_assay_plan)
         )
         self.assertEqual(len(concomitant_treatment_design.study_arms), 1)
+        self.assertEqual(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0],
+                         StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
+                                                                self.second_treatment,
+                                                                self.first_treatment},)))
+        """
+        self.assertEqual(repr(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0].elements),
+                         repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
+                                     key=lambda el: hash(el))))
+        """
         self.assertEqual(concomitant_treatment_design.study_arms[0],
                             StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
                                 [StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,

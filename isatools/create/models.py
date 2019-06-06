@@ -318,13 +318,16 @@ class StudyCell(object):
         return '{0}.{1}(' \
                'name={name}, ' \
                'elements={elements}, ' \
-               ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=self.elements)
+               ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=[
+                sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
+        ])
 
     def __str__(self):
         return """{0}(
                name={name}, 
-               elements={elements}, 
-               )""".format(self.__class__.__name__, name=self.name, elements=self.elements)
+               elements={elements_count} items, 
+               )""".format(self.__class__.__name__, name=self.name,
+                           elements_count=len(self.elements))
 
     def __hash__(self):
         return hash(repr(self))
@@ -712,6 +715,11 @@ class ProtocolNode(SequenceNode, Protocol):
 
 class ProductNode(SequenceNode):
 
+    """
+    A ProductNode caputres information about the inputs or outputs of a process.
+    It can contain info about a source, a sample (or its derivatives), or a data file
+    """
+
     ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
     NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values: {0}'
     NAME_ERROR = 'ProductNode name must be a string, {0} supplied of type {1}'
@@ -812,6 +820,12 @@ class ProductNode(SequenceNode):
 
 
 class AssayGraph(object):
+    """
+    The AssayGraph captures the structure and information of an assay workflow
+    (e.g sample derivatives extraction, labelling, and the instrument analysis itself)
+    This information is stored in a graph (a directed tree, more correctly) of ProductNodes and
+    ProcessNodes. Each ProcessNode has ProductNodes as outputs and potentially as inputs.
+    """
 
     INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
     INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
@@ -1005,9 +1019,26 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlan(object):
 
-    def __init__(self):
+    """
+    A SampleAndAssayPlan contains metadata about both the sample and assay plan to be applied to a specific
+    StudyCell.
+    - sample_plan is a set of ProductNodes of type SAMPLE. Each of them describes a type of sample provided
+    as input to the each assay in the assay_plan
+    - assay_plan is as set of AssayGraphs to support multiple assays to be run on the same batch of samples
+    """
+
+    def __init__(self, sample_plan=None, assay_plan=None):
+        """
+        SampleAndAssayPlan constructor method
+        :param sample_plan: (set/list/Iterable) - a set of ProductNode objects of type SAMPLE
+        :param assay_plan: (set/list/Iterable) - a set of AssayGraph objects
+        """
         self.__sample_plan = set()
         self.__assay_plan = set()
+        if sample_plan:
+            self.sample_plan = sample_plan
+        if assay_plan:
+            self.assay_plan = assay_plan
 
     @property
     def sample_plan(self):
@@ -1489,6 +1520,7 @@ class StudyArmDecoder(object):
 class StudyDesign(object):
 
     """
+    Top-level class for the isatools.create module, and the study design planning.
     A class representing a study design, which is composed of a collection of
     study arms.
     StudyArms of different lengths (i.e. different number of cells) are allowed.
