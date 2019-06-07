@@ -1019,6 +1019,9 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlan(object):
 
+    MISSING_SAMPLE_IN_PLAN = 'ProductNode is missing from the sample_plan'
+    MISSING_ASSAY_IN_PLAN = 'AsssayGraph is missing from the assay_plan'
+
     """
     A SampleAndAssayPlan contains metadata about both the sample and assay plan to be applied to a specific
     StudyCell.
@@ -1035,6 +1038,7 @@ class SampleAndAssayPlan(object):
         """
         self.__sample_plan = set()
         self.__assay_plan = set()
+        self.__sample_to_assay_map = {}
         if sample_plan:
             self.sample_plan = sample_plan
         if assay_plan:
@@ -1076,6 +1080,26 @@ class SampleAndAssayPlan(object):
             raise TypeError()
         self.__assay_plan.add(assay_graph)
 
+    @property
+    def sample_to_assay_map(self):
+        return self.__sample_to_assay_map
+
+    @sample_to_assay_map.setter
+    def sample_to_assay_map(self, sample_to_assay_map):
+        for sample_node, assay_graphs in sample_to_assay_map.items():
+            for assay_graph in assay_graphs:
+                self.add_element_to_map(sample_node, assay_graph)
+
+    def add_element_to_map(self, sample_node, assay_graph):
+        if sample_node not in self.sample_plan:
+            raise ValueError(self.MISSING_SAMPLE_IN_PLAN)
+        if assay_graph not in self.assay_plan:
+            raise ValueError(self.MISSING_ASSAY_IN_PLAN)
+        if sample_node in self.__sample_to_assay_map:
+            self.__sample_to_assay_map[sample_node].append(assay_graph)
+        else:
+            self.__sample_to_assay_map[sample_node] = [assay_graph]
+
     @classmethod
     def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
                                         use_guids=False):
@@ -1100,6 +1124,9 @@ class SampleAndAssayPlan(object):
             res.add_sample_type_to_plan(sample_node)
         for assay_plan_dict in assay_plan_dicts:
             res.add_assay_graph_to_plan(cls._generate_assay_plan_from_dict(assay_plan_dict))
+        for sample_node in res.sample_plan:
+            for assay_graph in res.assay_plan:
+                res.add_element_to_map(sample_node, assay_graph)
         return res
 
     @staticmethod

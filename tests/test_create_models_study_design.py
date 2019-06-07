@@ -1004,19 +1004,50 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
         self.blood_node = ProductNode(name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
-        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction')
+        self.genomic_assay_graph = AssayGraph(measurement_type='genomic extraction',
+                                              technology_type='nucleic acid extraction')
+        self.metabolomic_assay_graph = AssayGraph(measurement_type='metabolomic analysis',
+                                                  technology_type='mass spectrometry')
 
     def test_properties(self):
         plan = SampleAndAssayPlan()
         self.assertEqual(plan.assay_plan, set())
         self.assertEqual(plan.sample_plan, set())
         sample_plan = {self.tissue_node, self.blood_node}
-        assay_plan = {self.assay_graph}
+        assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
         plan.sample_plan = sample_plan
         plan.assay_plan = assay_plan
         self.assertEqual(plan.sample_plan, sample_plan)
         self.assertEqual(plan.assay_plan, assay_plan)
+        self.assertEqual(plan.sample_to_assay_map, {})
+        sample_to_assay_map = {
+            self.tissue_node: [self.genomic_assay_graph, self.metabolomic_assay_graph],
+            self.blood_node: [self.metabolomic_assay_graph]
+        }
+        plan.sample_to_assay_map = sample_to_assay_map
+        self.assertEqual(plan.sample_to_assay_map, sample_to_assay_map)
 
+    def test_add_element_to_map_success(self):
+        plan = SampleAndAssayPlan()
+        sample_plan = {self.tissue_node, self.blood_node}
+        assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
+        plan.sample_plan = sample_plan
+        plan.assay_plan = assay_plan
+        plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(plan.sample_to_assay_map, {
+            self.blood_node: [self.genomic_assay_graph]
+        })
+
+    def test_add_element_to_map_raises(self):
+        plan = SampleAndAssayPlan()
+        with self.assertRaises(ValueError, msg='The sample has not been added to the plan yet') as ex_cm:
+            plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_SAMPLE_IN_PLAN)
+        sample_plan = {self.tissue_node, self.blood_node}
+        plan.sample_plan = sample_plan
+        with self.assertRaises(ValueError, msg='The assay has not been added to the plan yet') as ex_cm:
+            plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_ASSAY_IN_PLAN)
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         assay_list = [ms_assay_dict, nmr_assay_dict]
@@ -1037,6 +1068,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
                                          ms_assay_graph.nodes))), 4)
+        # self.assertEqual(smp_ass_plan.sample_to_assay_map)
 
 
 class StudyArmTest(unittest.TestCase):
