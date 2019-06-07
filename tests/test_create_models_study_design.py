@@ -1068,7 +1068,10 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
                                          ms_assay_graph.nodes))), 4)
-        # self.assertEqual(smp_ass_plan.sample_to_assay_map)
+        self.assertEqual(len(smp_ass_plan.sample_to_assay_map.keys()), len(sample_list))
+        for item in smp_ass_plan.sample_to_assay_map.values():
+            self.assertIsInstance(item, list)
+            self.assertEqual(len(item), len(assay_list))
 
 
 class StudyArmTest(unittest.TestCase):
