@@ -1209,8 +1209,13 @@ class SampleAndAssayPlan(object):
         return res
 
     def __repr__(self):
-        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan})'.format(
-            self.__class__.__module__, self.__class__.__name__, self)
+        s2a_map = {}
+        for [st, ags] in self.sample_to_assay_map:
+            s2a_map[st] = [ag.id for ag in ags]
+        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
+               'sample_to_assay_map={3})'.format(
+                    self.__class__.__module__, self.__class__.__name__, self, s2a_map
+                )
 
     def __str__(self):
         return """{1}(
