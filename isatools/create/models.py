@@ -1210,7 +1210,7 @@ class SampleAndAssayPlan(object):
 
     def __repr__(self):
         s2a_map = {}
-        for [st, ags] in self.sample_to_assay_map:
+        for [st, ags] in self.sample_to_assay_map.items():
             s2a_map[st] = [ag.id for ag in ags]
         return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
@@ -1228,7 +1228,7 @@ class SampleAndAssayPlan(object):
 
     def __eq__(self, other):
         return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
-               and self.assay_plan == other.assay_plan
+               and self.assay_plan == other.assay_plan and self.sample_to_assay_map == other.sample_to_assay_map
 
     def __ne__(self, other):
         return not self == other
