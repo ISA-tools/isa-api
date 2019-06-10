@@ -11,7 +11,7 @@ import uuid
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
-FACTORS_0_VALUE_ALT = 'alchohol'
+FACTORS_0_VALUE_ALT = 'alcohol'
 FACTORS_0_VALUE_THIRD = 'water'
 FACTORS_1_VALUE = 5
 FACTORS_1_UNIT = OntologyAnnotation(term='kg/m^3')
