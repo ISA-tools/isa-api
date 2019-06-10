@@ -142,10 +142,10 @@ class BaseTestCase(unittest.TestCase):
         self.cell_follow_up = StudyCell('FOLLOW-UP CELL', elements=(self.follow_up,))
         self.cell_washout_00 = StudyCell('WASHOUT CELL', elements=(self.washout,))
         self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=[self.washout])
-        self.sample_assay_plan_for_screening = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR SCREENING')
-        self.sample_assay_plan_for_treatments = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
-        self.sample_assay_plan_for_washout = SampleAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
-        self.sample_assay_plan_for_follow_up = SampleAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
+        self.sample_assay_plan_for_screening = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR SCREENING')
+        self.sample_assay_plan_for_treatments = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
+        self.sample_assay_plan_for_washout = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
+        self.sample_assay_plan_for_follow_up = SampleAndAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
         self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             [self.cell_screen, None], [self.cell_run_in, None],
             [self.cell_single_treatment_00, self.sample_assay_plan_for_treatments],
@@ -241,7 +241,8 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.second_assay_graph = AssayGraph(id_="assay-graph/01")
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
-        self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
+        self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2,
+                                       characteristics=[self.tissue_char])
         self.blood_node = ProductNode(id_='product-node/0001', name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
@@ -300,6 +301,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             self.assertEqual(unmatched_expected_el.id, unmatched_actual_el.id)
             self.assertEqual(unmatched_expected_el.nodes, unmatched_actual_el.nodes)
             self.assertEqual(unmatched_expected_el.links, unmatched_actual_el.links)
+            self.assertEqual(repr(unmatched_expected_el.links), repr(unmatched_actual_el.links))
             self.assertEqual(repr(unmatched_expected_el), repr(unmatched_actual_el))
             self.assertEqual(unmatched_expected_el, unmatched_actual_el)
             print('all these test passed')

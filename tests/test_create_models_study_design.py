@@ -64,8 +64,8 @@ sample_list = [
 ]
 
 ms_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite profiling'},
-    {'technology_type': 'mass spectrometry'},
+    ('measurement_type', 'metabolite profiling'),
+    ('technology_type', 'mass spectrometry'),
     ('extraction', {}),
     ('extract', [
         {
@@ -113,8 +113,8 @@ ms_assay_dict = OrderedDict([
 
 
 phti_assay_dict = OrderedDict([
-    {'measurement_type': 'phenotyping'},
-    {'technology_type': 'high-throughput imaging'},
+    ('measurement_type', 'phenotyping'),
+    ('technology_type', 'high-throughput imaging'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -151,8 +151,8 @@ phti_assay_dict = OrderedDict([
         ])
 
 lcdad_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite identification'},
-    {'technology_type': 'liquid chromatography diode-array detector'},
+    ('measurement_type', 'metabolite identification'),
+    ('technology_type', 'liquid chromatography diode-array detector'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -186,8 +186,8 @@ lcdad_assay_dict = OrderedDict([
         ])
 
 nmr_assay_dict = OrderedDict([
-    {'measurement_type': 'metabolite profiling'},
-    {'technology_type': 'nmr spectroscopy'},
+    ('measurement_type', 'metabolite profiling'),
+    ('technology_type', 'nmr spectroscopy'),
             ('extraction', {}),
             ('extract', [
                 {
@@ -342,7 +342,7 @@ class StudyCellTest(unittest.TestCase):
         self.screen = NonTreatment(element_type=SCREEN,
                                    duration_value=SCREEN_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.run_in = NonTreatment(element_type=RUN_IN,
-                                    duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
+                                   duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.washout = NonTreatment(element_type=WASHOUT,
                                     duration_value=WASHOUT_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
@@ -847,7 +847,8 @@ class ProductNodeTest(unittest.TestCase):
 class AssayGraphTest(unittest.TestCase):
 
     def setUp(self):
-        self.assay_graph = AssayGraph()
+        self.maxDiff = None
+        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.dna_char = Characteristic(category='nucleic acid', value='DNA')
         self.mirna_char = Characteristic(category='nucleic acid', value='miRNA')
@@ -868,8 +869,29 @@ class AssayGraphTest(unittest.TestCase):
         }
 
     def test_init(self):
-        self.assay_graph = AssayGraph(graph_dict=self.graph_dict)
+        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                      graph_dict=self.graph_dict)
+        self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
+        self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
         self.assertEqual(self.assay_graph.graph_dict, self.graph_dict)
+
+    def test_properties_success(self):
+        self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
+        self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
+        self.assay_graph.measurement_type = 'some other measurement'
+        self.assay_graph.technology_type = 'some other tech'
+        self.assertEqual(self.assay_graph.measurement_type, 'some other measurement')
+        self.assertEqual(self.assay_graph.technology_type, 'some other tech')
+        self.assay_graph.measurement_type = OntologyAnnotation(term='some other measurement')
+        self.assay_graph.technology_type = OntologyAnnotation(term='some other tech')
+        self.assertEqual(self.assay_graph.measurement_type, OntologyAnnotation(term='some other measurement'))
+        self.assertEqual(self.assay_graph.technology_type, OntologyAnnotation(term='some other tech'))
+
+    def test_properties_raises(self):
+        # TODO complete this test
+        with self.assertRaises(AttributeError, msg='An integer is not a valid measurement_type') as ex_cm:
+            self.assay_graph.measurement_type = 120
+        self.assertIsNotNone(ex_cm.exception.args[0])
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -912,29 +934,48 @@ class AssayGraphTest(unittest.TestCase):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
                  (self.protocol_node_rna, self.mirna_node)]
-        first_plan = AssayGraph()
+        first_plan = AssayGraph(id_='assay-graph/00',
+                                measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = AssayGraph()
+        second_plan = AssayGraph(id_='assay-graph/00',
+                                 measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         second_plan.add_nodes(nodes[::-1])
         second_plan.add_links(links[::-1])
+        self.assertEqual(first_plan.nodes, second_plan.nodes)
+        self.assertEqual(first_plan.links, second_plan.links)
         self.assertEqual(first_plan, second_plan)
 
     def test_ne(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node)]
-        first_plan = AssayGraph()
+        first_plan = AssayGraph(id_='assay-graph/00',
+                                measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         first_plan.add_nodes(nodes)
         first_plan.add_links(links)
-        second_plan = AssayGraph()
+        second_plan = AssayGraph(id_='assay-graph/00',
+                                 measurement_type='genomic extraction', technology_type='nucleic acid extraction')
         links.append((self.protocol_node_rna, self.mirna_node))
         second_plan.add_nodes(nodes)
         second_plan.add_links(links)
         self.assertNotEqual(first_plan, second_plan)
 
     def test_repr(self):
-        # TODO
-        ...
+        """
+        ensures that representation is unique and the same for equal AssayGraphs
+        :return:
+        """
+        nodes = [self.protocol_node_rna, self.mrna_node, self.mirna_node]
+        links = [(self.protocol_node_rna, self.mrna_node), (self.protocol_node_rna, self.mirna_node)]
+        first_graph = AssayGraph(id_='assay-graph-01', measurement_type='genomic extraction',
+                                 technology_type='nucleic acid extraction')
+        first_graph.add_nodes(nodes)
+        first_graph.add_links(links)
+        second_graph = AssayGraph(id_='assay-graph-01', measurement_type='genomic extraction',
+                                  technology_type='nucleic acid extraction')
+        second_graph.add_nodes(nodes)
+        second_graph.add_links(links[::-1])
+        self.assertEqual(repr(first_graph), repr(second_graph))
 
     """
     def test_sample_nodes(self):
@@ -963,29 +1004,84 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
         self.blood_node = ProductNode(name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
-        self.assay_graph = AssayGraph()
+        self.genomic_assay_graph = AssayGraph(measurement_type='genomic extraction',
+                                              technology_type='nucleic acid extraction')
+        self.metabolomic_assay_graph = AssayGraph(measurement_type='metabolomic analysis',
+                                                  technology_type='mass spectrometry')
 
     def test_properties(self):
-        """
         plan = SampleAndAssayPlan()
-        self.assertEqual(plan.assay_plan, [])
-        self.assertEqual(plan.sample_plan, [])
-        sample_plan = [self.tissue_node, self.blood_node]
-        assay_plan = [self.assay_graph]
+        self.assertEqual(plan.assay_plan, set())
+        self.assertEqual(plan.sample_plan, set())
+        sample_plan = {self.tissue_node, self.blood_node}
+        assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
         plan.sample_plan = sample_plan
         plan.assay_plan = assay_plan
         self.assertEqual(plan.sample_plan, sample_plan)
         self.assertEqual(plan.assay_plan, assay_plan)
-        """
-        pass
+        self.assertEqual(plan.sample_to_assay_map, {})
+        sample_to_assay_map = {
+            self.tissue_node: [self.genomic_assay_graph, self.metabolomic_assay_graph],
+            self.blood_node: [self.metabolomic_assay_graph]
+        }
+        plan.sample_to_assay_map = sample_to_assay_map
+        self.assertEqual(plan.sample_to_assay_map, sample_to_assay_map)
+
+    def test_eq_ne_repr(self):
+        first_plan = SampleAndAssayPlan()
+
+        sample_plan = {self.tissue_node, self.blood_node}
+        assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
+        first_plan.sample_plan = sample_plan
+        first_plan.assay_plan = assay_plan
+        second_plan = SampleAndAssayPlan()
+        second_plan.sample_plan = sample_plan
+        second_plan.assay_plan = assay_plan
+        self.assertEqual(first_plan, second_plan)
+        self.assertEqual(repr(first_plan), repr(second_plan))
+        first_plan.sample_to_assay_map = {
+            self.tissue_node: [self.genomic_assay_graph],
+            self.blood_node: [self.metabolomic_assay_graph]
+        }
+        second_plan.sample_to_assay_map = {
+            self.tissue_node: [self.genomic_assay_graph, self.metabolomic_assay_graph],
+            self.blood_node: [self.metabolomic_assay_graph]
+        }
+        self.assertNotEqual(first_plan, second_plan)
+        self.assertNotEqual(repr(first_plan), repr(second_plan))
+
+    def test_add_element_to_map_success(self):
+        plan = SampleAndAssayPlan()
+        sample_plan = {self.tissue_node, self.blood_node}
+        assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
+        plan.sample_plan = sample_plan
+        plan.assay_plan = assay_plan
+        plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(plan.sample_to_assay_map, {
+            self.blood_node: [self.genomic_assay_graph]
+        })
+
+    def test_add_element_to_map_raises(self):
+        plan = SampleAndAssayPlan()
+        with self.assertRaises(ValueError, msg='The sample has not been added to the plan yet') as ex_cm:
+            plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_SAMPLE_IN_PLAN)
+        sample_plan = {self.tissue_node, self.blood_node}
+        plan.sample_plan = sample_plan
+        with self.assertRaises(ValueError, msg='The assay has not been added to the plan yet') as ex_cm:
+            plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
+        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_ASSAY_IN_PLAN)
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
-        assay_list = [ms_assay_dict, ms_assay_dict]
-        ms_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, *assay_list)
+        assay_list = [ms_assay_dict, nmr_assay_dict]
+        smp_ass_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, *assay_list)
         # print([node.name for node in ms_assay_plan.nodes])
-        self.assertEqual(len(ms_plan.sample_plan), len(sample_list))
-        self.assertEqual(len(ms_plan.assay_plan), 1)     # only one assay plan is provided here
-        ms_assay_graph = sorted(ms_plan.assay_plan)[0]
+        self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
+        self.assertEqual(len(smp_ass_plan.assay_plan), 2)
+        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type)[0]
+        self.assertIsInstance(ms_assay_graph, AssayGraph)
+        self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
+        self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
         self.assertEqual(len(ms_assay_graph.nodes), 15)
         self.assertEqual(len(ms_assay_graph.links), 14)
         self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)
@@ -995,6 +1091,10 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
                                          ms_assay_graph.nodes))), 4)
+        self.assertEqual(len(smp_ass_plan.sample_to_assay_map.keys()), len(sample_list))
+        for item in smp_ass_plan.sample_to_assay_map.values():
+            self.assertIsInstance(item, list)
+            self.assertEqual(len(item), len(assay_list))
 
 
 class StudyArmTest(unittest.TestCase):
@@ -1894,6 +1994,7 @@ class SampleAssayPlanTest(unittest.TestCase):
 class StudyDesignFactoryTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.factory = StudyDesignFactory()
         self.first_treatment = Treatment(factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
@@ -1925,7 +2026,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
         self.sample_assay_plan = SampleAndAssayPlan()
-        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan()]
+        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(),
+                                       SampleAndAssayPlan()]
 
     """
     def test_property_treatments(self):
@@ -2052,7 +2154,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
 
     def test_compute_parallel_design_three_treatments(self):
-        treatments_map =  [(self.first_treatment, self.sample_assay_plan),
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
         parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
@@ -2154,6 +2256,15 @@ class StudyDesignFactoryTest(unittest.TestCase):
             treatments, self.sample_assay_plan, group_size=30, follow_up_map=(self.follow_up, self.sample_assay_plan)
         )
         self.assertEqual(len(concomitant_treatment_design.study_arms), 1)
+        self.assertEqual(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0],
+                         StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
+                                                                self.second_treatment,
+                                                                self.first_treatment},)))
+        """
+        self.assertEqual(repr(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0].elements),
+                         repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
+                                     key=lambda el: hash(el))))
+        """
         self.assertEqual(concomitant_treatment_design.study_arms[0],
                             StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
                                 [StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
