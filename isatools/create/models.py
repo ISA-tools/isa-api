@@ -636,6 +636,11 @@ class SequenceNode(ABC):
 
 class ProtocolNode(SequenceNode, Protocol):
 
+    """
+    These class is a subclass of isatools.model.Protocol
+    It represents a node in the AssayGraph which is a to create a Protocol
+    """
+
     PARAMETER_VALUES_ERROR = 'The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue ' \
                              'objects. {0} was supplied.'
     PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
@@ -1019,6 +1024,7 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlan(object):
 
+    NAME_ERROR = 'The attribute \'name\' must be a string. {0} provided'
     MISSING_SAMPLE_IN_PLAN = 'ProductNode is missing from the sample_plan'
     MISSING_ASSAY_IN_PLAN = 'AsssayGraph is missing from the assay_plan'
 
@@ -1030,19 +1036,32 @@ class SampleAndAssayPlan(object):
     - assay_plan is as set of AssayGraphs to support multiple assays to be run on the same batch of samples
     """
 
-    def __init__(self, sample_plan=None, assay_plan=None):
+    def __init__(self, name=None, sample_plan=None, assay_plan=None):
         """
         SampleAndAssayPlan constructor method
         :param sample_plan: (set/list/Iterable) - a set of ProductNode objects of type SAMPLE
         :param assay_plan: (set/list/Iterable) - a set of AssayGraph objects
         """
+        self.__name = None
         self.__sample_plan = set()
         self.__assay_plan = set()
         self.__sample_to_assay_map = {}
+        if name:
+            self.name = name
         if sample_plan:
             self.sample_plan = sample_plan
         if assay_plan:
             self.assay_plan = assay_plan
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError(self.NAME_ERROR.format(name))
+        self.__name = name
 
     @property
     def sample_plan(self):
@@ -1212,13 +1231,14 @@ class SampleAndAssayPlan(object):
         s2a_map = {}
         for [st, ags] in self.sample_to_assay_map.items():
             s2a_map[st] = [ag.id for ag in ags]
-        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
+        return '{0}.{1}(name={2.name}, sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
                     self.__class__.__module__, self.__class__.__name__, self, s2a_map
                 )
 
     def __str__(self):
         return """{1}(
+        name={2.name},
         sample_plan={2.sample_plan}, 
         assay_plan={2.assay_plan}
         )""".format(self.__class__.__module__, self.__class__.__name__, self)
@@ -1227,8 +1247,11 @@ class SampleAndAssayPlan(object):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
-               and self.assay_plan == other.assay_plan and self.sample_to_assay_map == other.sample_to_assay_map
+        return isinstance(other, SampleAndAssayPlan) \
+               and self.sample_plan == other.sample_plan \
+               and self.name == other.name \
+               and self.assay_plan == other.assay_plan \
+               and self.sample_to_assay_map == other.sample_to_assay_map
 
     def __ne__(self, other):
         return not self == other
@@ -1285,6 +1308,7 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, SampleAndAssayPlan):
             return {
+                "name": obj.name,
                 "samplePlan": [self.node(sample_node) for sample_node in sorted(obj.sample_plan, key=lambda el: el.id)],
                 "assayPlan": [self.assay_graph(assay_graph) for assay_graph in sorted(obj.assay_plan,
                                                                                       key=lambda el: el.id)]

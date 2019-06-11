@@ -133,11 +133,11 @@ class BaseTestCase(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_multi_elements_bio_diet = StudyCell('MULTI-ELEMENT CELL BIO-DIET',
-                                                     elements=[{
+                                                      elements=[{
                                                            self.second_treatment,
                                                            self.fourth_treatment,
                                                            self.first_treatment
-                                                       }, self.washout, self.fifth_treatment, self.washout,
+                                                        }, self.washout, self.fifth_treatment, self.washout,
                                                            self.seventh_treatment])
         self.cell_follow_up = StudyCell('FOLLOW-UP CELL', elements=(self.follow_up,))
         self.cell_washout_00 = StudyCell('WASHOUT CELL', elements=(self.washout,))
@@ -237,8 +237,10 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.plan = SampleAndAssayPlan()
-        self.first_assay_graph = AssayGraph(id_="assay-graph/00")
-        self.second_assay_graph = AssayGraph(id_="assay-graph/01")
+        self.first_assay_graph = AssayGraph(id_="assay-graph/00", measurement_type='genomic extraction',
+                                            technology_type='nucleic acid extraction')
+        self.second_assay_graph = AssayGraph(id_="assay-graph/01",  measurement_type='genomic extraction',
+                                             technology_type='nucleic acid extraction')
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
         self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2,
