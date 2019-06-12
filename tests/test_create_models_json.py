@@ -269,6 +269,10 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.second_assay_graph.add_links([(self.protocol_node_rna, self.mirna_node),
                                            (self.protocol_node_rna, self.mrna_node)])
         self.plan.assay_plan = [self.first_assay_graph, self.second_assay_graph]
+        self.plan.sample_to_assay_map = {
+            self.tissue_node: [self.first_assay_graph, self.second_assay_graph],
+            self.blood_node: [self.first_assay_graph, self.second_assay_graph]
+        }
 
     def test_encode_dna_rna_extraction_plan(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))

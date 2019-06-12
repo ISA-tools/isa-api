@@ -1313,7 +1313,11 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 "name": obj.name,
                 "samplePlan": [self.node(sample_node) for sample_node in sorted(obj.sample_plan, key=lambda el: el.id)],
                 "assayPlan": [self.assay_graph(assay_graph) for assay_graph in sorted(obj.assay_plan,
-                                                                                      key=lambda el: el.id)]
+                                                                                      key=lambda el: el.id)],
+                "sampleToAssayMap": {
+                    sample_node.id: [assay_graph.id for assay_graph in assay_graphs]
+                    for sample_node, assay_graphs in obj.sample_to_assay_map.items()
+                }
             }
 
 
@@ -1363,6 +1367,11 @@ class SampleAndAssayPlanDecoder(object):
             sample_plan=[self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]],
             assay_plan=[self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
         )
+        plan.sample_to_assay_map = {
+            next(sample_node for sample_node in plan.sample_plan if sample_node.id == sample_node_id):
+                [assay_graph for assay_graph in plan.assay_plan if assay_graph.id in assay_ids]
+            for sample_node_id, assay_ids in json_dict["sampleToAssayMap"].items()
+        }
         return plan
 
     def loads(self, json_text):
