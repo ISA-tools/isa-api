@@ -236,7 +236,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        self.plan = SampleAndAssayPlan()
+        self.plan = SampleAndAssayPlan(name='TEST SAMPLE AND ASSAY PLAN')
         self.first_assay_graph = AssayGraph(id_="assay-graph/00", measurement_type='genomic extraction',
                                             technology_type='nucleic acid extraction')
         self.second_assay_graph = AssayGraph(id_="assay-graph/01",  measurement_type='genomic extraction',

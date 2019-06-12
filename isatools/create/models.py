@@ -1301,6 +1301,8 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
         if isinstance(obj, AssayGraph):
             return {
                 "@id": obj.id,
+                "measurementType": obj.measurement_type,
+                "technologyType": obj.technology_type,
                 "nodes": [self.node(node) for node in obj.nodes],
                 "links": [self.link(link) for link in obj.links]
             }
@@ -1317,14 +1319,17 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
 class SampleAndAssayPlanDecoder(object):
 
-    def loads_parameter_value(self, pv_dict):
+    @staticmethod
+    def loads_parameter_value(pv_dict):
         return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
                               unit=pv_dict.get('unit', None))
 
-    def loads_protocol_type(self, pt_dict):
+    @staticmethod
+    def loads_protocol_type(pt_dict):
         return OntologyAnnotation(**pt_dict)
 
-    def loads_characteristic(self, characteristic_dict):
+    @staticmethod
+    def loads_characteristic(characteristic_dict):
         return Characteristic(category=characteristic_dict['category'],
                               value=characteristic_dict['value'],
                               unit=characteristic_dict['unit'] if 'unit' in characteristic_dict else None)
@@ -1343,7 +1348,8 @@ class SampleAndAssayPlanDecoder(object):
                                characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
 
     def loads_assay_graph(self, assay_graph_dict):
-        assay_graph = AssayGraph(id_=assay_graph_dict["@id"])
+        assay_graph = AssayGraph(id_=assay_graph_dict["@id"], measurement_type=assay_graph_dict["measurementType"],
+                                 technology_type=assay_graph_dict["technologyType"])
         nodes = [self.loads_node(node_dict) for node_dict in assay_graph_dict["nodes"]]
         assay_graph.add_nodes(nodes)
         for [start_node_id, end_node_id] in assay_graph_dict["links"]:
@@ -1351,12 +1357,17 @@ class SampleAndAssayPlanDecoder(object):
                                  next(node for node in assay_graph.nodes if node.id == end_node_id))
         return assay_graph
 
+    def loads_sample_and_assay_plan(self, json_dict):
+        plan = SampleAndAssayPlan(
+            name=json_dict["name"],
+            sample_plan=[self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]],
+            assay_plan=[self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
+        )
+        return plan
+
     def loads(self, json_text):
         json_dict = json.loads(json_text)
-        plan = SampleAndAssayPlan()
-        plan.sample_plan = [self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]]
-        plan.assay_plan = [self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
-        return plan
+        return self.loads_sample_and_assay_plan(json_dict)
 
 
 class StudyArm(object):
@@ -1554,7 +1565,7 @@ class StudyArmDecoder(object):
     def loads_arm(self, json_dict):
         arm = StudyArm(name=json_dict['name'], group_size=json_dict['groupSize'])
         sample_assay_plan_set = {
-            self.sample_assay_plan_decoder.loads(json_sample_assay_plan)
+            self.sample_assay_plan_decoder.loads_sample_and_assay_plan(json_sample_assay_plan)
             for json_sample_assay_plan in json_dict['sampleAssayPlans']
         }
         for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):
