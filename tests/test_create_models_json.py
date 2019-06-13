@@ -133,11 +133,11 @@ class BaseTestCase(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_multi_elements_bio_diet = StudyCell('MULTI-ELEMENT CELL BIO-DIET',
-                                                     elements=[{
+                                                      elements=[{
                                                            self.second_treatment,
                                                            self.fourth_treatment,
                                                            self.first_treatment
-                                                       }, self.washout, self.fifth_treatment, self.washout,
+                                                        }, self.washout, self.fifth_treatment, self.washout,
                                                            self.seventh_treatment])
         self.cell_follow_up = StudyCell('FOLLOW-UP CELL', elements=(self.follow_up,))
         self.cell_washout_00 = StudyCell('WASHOUT CELL', elements=(self.washout,))
@@ -236,9 +236,11 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        self.plan = SampleAndAssayPlan()
-        self.first_assay_graph = AssayGraph(id_="assay-graph/00")
-        self.second_assay_graph = AssayGraph(id_="assay-graph/01")
+        self.plan = SampleAndAssayPlan(name='TEST SAMPLE AND ASSAY PLAN')
+        self.first_assay_graph = AssayGraph(id_="assay-graph/00", measurement_type='genomic extraction',
+                                            technology_type='nucleic acid extraction')
+        self.second_assay_graph = AssayGraph(id_="assay-graph/01",  measurement_type='genomic extraction',
+                                             technology_type='nucleic acid extraction')
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
         self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2,
@@ -267,6 +269,10 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.second_assay_graph.add_links([(self.protocol_node_rna, self.mirna_node),
                                            (self.protocol_node_rna, self.mrna_node)])
         self.plan.assay_plan = [self.first_assay_graph, self.second_assay_graph]
+        self.plan.sample_to_assay_map = {
+            self.tissue_node: [self.first_assay_graph, self.second_assay_graph],
+            self.blood_node: [self.first_assay_graph, self.second_assay_graph]
+        }
 
     def test_encode_dna_rna_extraction_plan(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))

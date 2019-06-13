@@ -636,6 +636,11 @@ class SequenceNode(ABC):
 
 class ProtocolNode(SequenceNode, Protocol):
 
+    """
+    These class is a subclass of isatools.model.Protocol
+    It represents a node in the AssayGraph which is a to create a Protocol
+    """
+
     PARAMETER_VALUES_ERROR = 'The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue ' \
                              'objects. {0} was supplied.'
     PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
@@ -1019,6 +1024,7 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlan(object):
 
+    NAME_ERROR = 'The attribute \'name\' must be a string. {0} provided'
     MISSING_SAMPLE_IN_PLAN = 'ProductNode is missing from the sample_plan'
     MISSING_ASSAY_IN_PLAN = 'AsssayGraph is missing from the assay_plan'
 
@@ -1030,19 +1036,32 @@ class SampleAndAssayPlan(object):
     - assay_plan is as set of AssayGraphs to support multiple assays to be run on the same batch of samples
     """
 
-    def __init__(self, sample_plan=None, assay_plan=None):
+    def __init__(self, name=None, sample_plan=None, assay_plan=None):
         """
         SampleAndAssayPlan constructor method
         :param sample_plan: (set/list/Iterable) - a set of ProductNode objects of type SAMPLE
         :param assay_plan: (set/list/Iterable) - a set of AssayGraph objects
         """
+        self.__name = None
         self.__sample_plan = set()
         self.__assay_plan = set()
         self.__sample_to_assay_map = {}
+        if name:
+            self.name = name
         if sample_plan:
             self.sample_plan = sample_plan
         if assay_plan:
             self.assay_plan = assay_plan
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError(self.NAME_ERROR.format(name))
+        self.__name = name
 
     @property
     def sample_plan(self):
@@ -1212,13 +1231,14 @@ class SampleAndAssayPlan(object):
         s2a_map = {}
         for [st, ags] in self.sample_to_assay_map.items():
             s2a_map[st] = [ag.id for ag in ags]
-        return '{0}.{1}(sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
+        return '{0}.{1}(name={2.name}, sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
                     self.__class__.__module__, self.__class__.__name__, self, s2a_map
                 )
 
     def __str__(self):
         return """{1}(
+        name={2.name},
         sample_plan={2.sample_plan}, 
         assay_plan={2.assay_plan}
         )""".format(self.__class__.__module__, self.__class__.__name__, self)
@@ -1227,8 +1247,11 @@ class SampleAndAssayPlan(object):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, SampleAndAssayPlan) and self.sample_plan == other.sample_plan \
-               and self.assay_plan == other.assay_plan and self.sample_to_assay_map == other.sample_to_assay_map
+        return isinstance(other, SampleAndAssayPlan) \
+               and self.sample_plan == other.sample_plan \
+               and self.name == other.name \
+               and self.assay_plan == other.assay_plan \
+               and self.sample_to_assay_map == other.sample_to_assay_map
 
     def __ne__(self, other):
         return not self == other
@@ -1278,6 +1301,8 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
         if isinstance(obj, AssayGraph):
             return {
                 "@id": obj.id,
+                "measurementType": obj.measurement_type,
+                "technologyType": obj.technology_type,
                 "nodes": [self.node(node) for node in obj.nodes],
                 "links": [self.link(link) for link in obj.links]
             }
@@ -1285,22 +1310,30 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, SampleAndAssayPlan):
             return {
+                "name": obj.name,
                 "samplePlan": [self.node(sample_node) for sample_node in sorted(obj.sample_plan, key=lambda el: el.id)],
                 "assayPlan": [self.assay_graph(assay_graph) for assay_graph in sorted(obj.assay_plan,
-                                                                                      key=lambda el: el.id)]
+                                                                                      key=lambda el: el.id)],
+                "sampleToAssayMap": {
+                    sample_node.id: [assay_graph.id for assay_graph in assay_graphs]
+                    for sample_node, assay_graphs in obj.sample_to_assay_map.items()
+                }
             }
 
 
 class SampleAndAssayPlanDecoder(object):
 
-    def loads_parameter_value(self, pv_dict):
+    @staticmethod
+    def loads_parameter_value(pv_dict):
         return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
                               unit=pv_dict.get('unit', None))
 
-    def loads_protocol_type(self, pt_dict):
+    @staticmethod
+    def loads_protocol_type(pt_dict):
         return OntologyAnnotation(**pt_dict)
 
-    def loads_characteristic(self, characteristic_dict):
+    @staticmethod
+    def loads_characteristic(characteristic_dict):
         return Characteristic(category=characteristic_dict['category'],
                               value=characteristic_dict['value'],
                               unit=characteristic_dict['unit'] if 'unit' in characteristic_dict else None)
@@ -1319,7 +1352,8 @@ class SampleAndAssayPlanDecoder(object):
                                characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
 
     def loads_assay_graph(self, assay_graph_dict):
-        assay_graph = AssayGraph(id_=assay_graph_dict["@id"])
+        assay_graph = AssayGraph(id_=assay_graph_dict["@id"], measurement_type=assay_graph_dict["measurementType"],
+                                 technology_type=assay_graph_dict["technologyType"])
         nodes = [self.loads_node(node_dict) for node_dict in assay_graph_dict["nodes"]]
         assay_graph.add_nodes(nodes)
         for [start_node_id, end_node_id] in assay_graph_dict["links"]:
@@ -1327,12 +1361,22 @@ class SampleAndAssayPlanDecoder(object):
                                  next(node for node in assay_graph.nodes if node.id == end_node_id))
         return assay_graph
 
+    def loads_sample_and_assay_plan(self, json_dict):
+        plan = SampleAndAssayPlan(
+            name=json_dict["name"],
+            sample_plan=[self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]],
+            assay_plan=[self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
+        )
+        plan.sample_to_assay_map = {
+            next(sample_node for sample_node in plan.sample_plan if sample_node.id == sample_node_id):
+                [assay_graph for assay_graph in plan.assay_plan if assay_graph.id in assay_ids]
+            for sample_node_id, assay_ids in json_dict["sampleToAssayMap"].items()
+        }
+        return plan
+
     def loads(self, json_text):
         json_dict = json.loads(json_text)
-        plan = SampleAndAssayPlan()
-        plan.sample_plan = [self.loads_node(sample_dict) for sample_dict in json_dict["samplePlan"]]
-        plan.assay_plan = [self.loads_assay_graph(graph_dict) for graph_dict in json_dict["assayPlan"]]
-        return plan
+        return self.loads_sample_and_assay_plan(json_dict)
 
 
 class StudyArm(object):
@@ -1530,7 +1574,7 @@ class StudyArmDecoder(object):
     def loads_arm(self, json_dict):
         arm = StudyArm(name=json_dict['name'], group_size=json_dict['groupSize'])
         sample_assay_plan_set = {
-            self.sample_assay_plan_decoder.loads(json_sample_assay_plan)
+            self.sample_assay_plan_decoder.loads_sample_and_assay_plan(json_sample_assay_plan)
             for json_sample_assay_plan in json_dict['sampleAssayPlans']
         }
         for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):

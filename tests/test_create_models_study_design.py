@@ -1028,15 +1028,18 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(plan.sample_to_assay_map, sample_to_assay_map)
 
     def test_eq_ne_repr(self):
-        first_plan = SampleAndAssayPlan()
+        first_plan = SampleAndAssayPlan(name='first plan')
 
         sample_plan = {self.tissue_node, self.blood_node}
         assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
         first_plan.sample_plan = sample_plan
         first_plan.assay_plan = assay_plan
-        second_plan = SampleAndAssayPlan()
+        second_plan = SampleAndAssayPlan(name='second plan')
         second_plan.sample_plan = sample_plan
         second_plan.assay_plan = assay_plan
+        self.assertNotEqual(first_plan, second_plan)
+        self.assertNotEqual(repr(first_plan), repr(second_plan))
+        second_plan.name = 'first plan'
         self.assertEqual(first_plan, second_plan)
         self.assertEqual(repr(first_plan), repr(second_plan))
         first_plan.sample_to_assay_map = {
