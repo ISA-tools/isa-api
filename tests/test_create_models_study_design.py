@@ -841,7 +841,7 @@ class ProductNodeTest(unittest.TestCase):
         self.node = ProductNode()
 
     def test_id_property(self):
-        self.assertIsInstance(self.node.id, type(uuid.uuid4()))
+        self.assertIsInstance(uuid.UUID(hex=self.node.id), type(uuid.uuid4()))
 
 
 class AssayGraphTest(unittest.TestCase):
