@@ -1639,7 +1639,8 @@ class ISAJSONEncoder(JSONEncoder):
         def get_characteristic(o):
             return clean_nulls(
                 {
-                    "category": {"@id": id_gen(o.category)} if o.category else None,
+                    # "category": {"@id": id_gen(o.category)} if o.category else None,
+                    "category": get_value(o.category) if o.category else None,
                     "value": get_value(o.value),
                     "unit": {"@id": id_gen(o.unit)} if o.unit else None
                 }

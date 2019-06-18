@@ -857,6 +857,79 @@ class AssayGraph(object):
         if graph_dict is not None:
             self.graph_dict = graph_dict
 
+    @classmethod
+    def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False):
+        """
+        Alternative constructor that generates an AssayGraph object from a well structured dictionary
+        :param assay_plan_dict: dict
+        :param validation_template: dict, not used yet # TODO
+        :param use_guids: boolean
+        :return: AssayGraph
+        """
+
+        res = cls(measurement_type=assay_plan_dict['measurement_type'],
+                  technology_type=assay_plan_dict['technology_type'])
+
+        previous_nodes = []
+        current_nodes = []
+        for node_key, node_params in assay_plan_dict.items():
+
+            if node_key in ('measurement_type', 'technology_type'):
+                continue
+
+            if isinstance(node_params, list):    # the node is a ProductNode
+                for i, node_params_dict in enumerate(node_params):
+                    for j, prev_node in enumerate(previous_nodes):
+                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                        product_node = ProductNode(
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
+                                node_key, str(i).zfill(3), str(j).zfill(3)),
+                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            characteristics=[
+                                Characteristic(category=node_params_dict['characteristics_category'],
+                                               value=node_params_dict['characteristics_value'])
+                            ] if 'characteristics_category' in node_params_dict else [])
+                        res.add_node(product_node)
+                        res.add_link(prev_node, product_node)
+                        current_nodes.append(product_node)
+            else:       # the node is a ProtocolNode
+                pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
+                pv_combinations = itertools.product(*[val for val in pv_all_values])
+                for i, pv_combination in enumerate(pv_combinations):
+                    print('pv_combination: {0}'.format(pv_combination))
+                    if not previous_nodes:
+                        protocol_node = ProtocolNode(
+                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            name=node_key, protocol_type=node_key,
+                            parameter_values=[
+                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                               value=pv)
+                                for ix, pv in enumerate(pv_combination)
+                            ]
+                        )
+                        res.add_node(protocol_node)
+                        current_nodes.append(protocol_node)
+                    else:
+                        for j, prev_node in enumerate(previous_nodes):
+                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                            protocol_node = ProtocolNode(
+                                id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
+                                                                                        str(j).zfill(3)),
+                                name=node_key, protocol_type=node_key,
+                                parameter_values=[
+                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                                   value=pv)
+                                    for ix, pv in enumerate(pv_combination)
+                                ]
+                            )
+                            # print(protocol_node)
+                            res.add_node(protocol_node)
+                            res.add_link(prev_node, protocol_node)
+                            current_nodes.append(protocol_node)
+            previous_nodes = current_nodes
+            current_nodes = []
+        return res
+
     @property
     def id(self):
         return self.__id
@@ -1115,9 +1188,9 @@ class SampleAndAssayPlan(object):
         if assay_graph not in self.assay_plan:
             raise ValueError(self.MISSING_ASSAY_IN_PLAN)
         if sample_node in self.__sample_to_assay_map:
-            self.__sample_to_assay_map[sample_node].append(assay_graph)
+            self.__sample_to_assay_map[sample_node].add(assay_graph)
         else:
-            self.__sample_to_assay_map[sample_node] = [assay_graph]
+            self.__sample_to_assay_map[sample_node] = {assay_graph}
 
     @classmethod
     def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
@@ -1142,95 +1215,16 @@ class SampleAndAssayPlan(object):
                 ] if 'characteristics_category' in sample_type_dict else [])
             res.add_sample_type_to_plan(sample_node)
         for assay_plan_dict in assay_plan_dicts:
-            res.add_assay_graph_to_plan(cls._generate_assay_plan_from_dict(assay_plan_dict))
+            res.add_assay_graph_to_plan(AssayGraph.generate_assay_plan_from_dict(assay_plan_dict))
         for sample_node in res.sample_plan:
             for assay_graph in res.assay_plan:
                 res.add_element_to_map(sample_node, assay_graph)
         return res
 
-    @staticmethod
-    def _generate_assay_plan_from_dict(assay_plan_dict, validation_template=None, use_guids=False):
-
-        res = AssayGraph(measurement_type=assay_plan_dict['measurement_type'],
-                         technology_type=assay_plan_dict['technology_type'])
-
-        previous_nodes = []
-        current_nodes = []
-        for node_key, node_params in assay_plan_dict.items():
-
-            if node_key in ('measurement_type', 'technology_type'):
-                continue
-
-            if isinstance(node_params, list):    # the node is a ProductNode
-                for i, node_params_dict in enumerate(node_params):
-                    """
-                    if not previous_nodes:
-                        product_node = ProductNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
-                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                            characteristics=[
-                                Characteristic(category=node_params_dict['characteristics_category'],
-                                               value=node_params_dict['characteristics_value'])
-                            ] if 'characteristics_category' in node_params_dict else [])
-                        res.add_node(product_node)
-                        current_nodes.append(product_node)
-                    else:
-                    """
-                    for j, prev_node in enumerate(previous_nodes):
-                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
-                        product_node = ProductNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
-                                node_key, str(i).zfill(3), str(j).zfill(3)),
-                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
-                            characteristics=[
-                                Characteristic(category=node_params_dict['characteristics_category'],
-                                               value=node_params_dict['characteristics_value'])
-                            ] if 'characteristics_category' in node_params_dict else [])
-                        res.add_node(product_node)
-                        res.add_link(prev_node, product_node)
-                        current_nodes.append(product_node)
-            else:       # the node is a ProtocolNode
-                pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
-                pv_combinations = itertools.product(*[val for val in pv_all_values])
-                for i, pv_combination in enumerate(pv_combinations):
-                    print('pv_combination: {0}'.format(pv_combination))
-                    if not previous_nodes:
-                        protocol_node = ProtocolNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
-                            name=node_key, protocol_type=node_key,
-                            parameter_values=[
-                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                               value=pv)
-                                for ix, pv in enumerate(pv_combination)
-                            ]
-                        )
-                        res.add_node(protocol_node)
-                        current_nodes.append(protocol_node)
-                    else:
-                        for j, prev_node in enumerate(previous_nodes):
-                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
-                            protocol_node = ProtocolNode(
-                                id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
-                                                                                        str(j).zfill(3)),
-                                name=node_key, protocol_type=node_key,
-                                parameter_values=[
-                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                                   value=pv)
-                                    for ix, pv in enumerate(pv_combination)
-                                ]
-                            )
-                            # print(protocol_node)
-                            res.add_node(protocol_node)
-                            res.add_link(prev_node, protocol_node)
-                            current_nodes.append(protocol_node)
-            previous_nodes = current_nodes
-            current_nodes = []
-        return res
-
     def __repr__(self):
         s2a_map = {}
         for [st, ags] in self.sample_to_assay_map.items():
-            s2a_map[st] = [ag.id for ag in ags]
+            s2a_map[st] = sorted({ag.id for ag in ags})
         return '{0}.{1}(name={2.name}, sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
                     self.__class__.__module__, self.__class__.__name__, self, s2a_map
@@ -1267,7 +1261,9 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 "@id": obj.id,
                 "@type": get_full_class_name(obj),
                 "name": obj.name,
-                "protocolType": onto_encoder.ontology_annotation(obj.protocol_type),
+                "protocolType": obj.protocol_type
+                if isinstance(obj.protocol_type, str)
+                else onto_encoder.ontology_annotation(obj.protocol_type),
                 "description": obj.description,
                 "uri": obj.uri,
                 "version": obj.version,
@@ -1299,10 +1295,15 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
     def assay_graph(self, obj):
         if isinstance(obj, AssayGraph):
+            onto_encoder = OntologyAnnotationEncoder()
             return {
                 "@id": obj.id,
-                "measurementType": obj.measurement_type,
-                "technologyType": obj.technology_type,
+                "measurementType": obj.measurement_type
+                if isinstance(obj.measurement_type, str)
+                else onto_encoder.ontology_annotation(obj.measurement_type),
+                "technologyType": obj.technology_type
+                if isinstance(obj.technology_type, str)
+                else onto_encoder.ontology_annotation(obj.technology_type),
                 "nodes": [self.node(node) for node in obj.nodes],
                 "links": [self.link(link) for link in obj.links]
             }

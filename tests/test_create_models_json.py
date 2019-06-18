@@ -312,6 +312,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             self.assertEqual(unmatched_expected_el, unmatched_actual_el)
             print('all these test passed')
         self.assertEqual(self.plan.assay_plan, actual_plan.assay_plan)
+        self.assertEqual(self.plan.sample_to_assay_map, actual_plan.sample_to_assay_map)
         self.assertEqual(self.plan, actual_plan)
 
 

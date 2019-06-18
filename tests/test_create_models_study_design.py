@@ -1021,8 +1021,8 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(plan.assay_plan, assay_plan)
         self.assertEqual(plan.sample_to_assay_map, {})
         sample_to_assay_map = {
-            self.tissue_node: [self.genomic_assay_graph, self.metabolomic_assay_graph],
-            self.blood_node: [self.metabolomic_assay_graph]
+            self.tissue_node: {self.genomic_assay_graph, self.metabolomic_assay_graph},
+            self.blood_node: {self.metabolomic_assay_graph}
         }
         plan.sample_to_assay_map = sample_to_assay_map
         self.assertEqual(plan.sample_to_assay_map, sample_to_assay_map)
@@ -1061,7 +1061,17 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         plan.assay_plan = assay_plan
         plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
         self.assertEqual(plan.sample_to_assay_map, {
-            self.blood_node: [self.genomic_assay_graph]
+            self.blood_node: {self.genomic_assay_graph}
+        })
+        plan.add_element_to_map(self.tissue_node, self.genomic_assay_graph)
+        self.assertEqual(plan.sample_to_assay_map, {
+            self.blood_node: {self.genomic_assay_graph},
+            self.tissue_node: {self.genomic_assay_graph}
+        })
+        plan.add_element_to_map(self.tissue_node, self.metabolomic_assay_graph)
+        self.assertEqual(plan.sample_to_assay_map, {
+            self.blood_node: {self.genomic_assay_graph},
+            self.tissue_node: {self.metabolomic_assay_graph, self.genomic_assay_graph}
         })
 
     def test_add_element_to_map_raises(self):
@@ -1096,7 +1106,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
                                          ms_assay_graph.nodes))), 4)
         self.assertEqual(len(smp_ass_plan.sample_to_assay_map.keys()), len(sample_list))
         for item in smp_ass_plan.sample_to_assay_map.values():
-            self.assertIsInstance(item, list)
+            self.assertIsInstance(item, set)
             self.assertEqual(len(item), len(assay_list))
 
 
