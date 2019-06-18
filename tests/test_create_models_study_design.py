@@ -1532,8 +1532,8 @@ class StudyDesignTest(unittest.TestCase):
 
     def test_get_epoch_out_of_bounds_index(self):
         self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
-        with self.assertRaises(IndexError, msg='An index error is reaised if the epoch is out of bounds '
-                                                       'for all the StudyArms.') as ex_cm:
+        with self.assertRaises(IndexError, msg='An index error is raised if the epoch is out of bounds '
+                                               'for all the StudyArms.') as ex_cm:
             epoch_cells = self.study_design.get_epoch(4)
         self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
 

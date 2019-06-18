@@ -1818,7 +1818,6 @@ class StudyDesign(object):
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, study.samples, study.process_sequence, study.ontology_source_references = \
             self._generate_samples(sources_map, study.protocols[0], study_config['performers'][0])
-        study.assays, study.process_sequence, study.ontology_source_references = self._generate_assays()
         return study
 
     def __repr__(self):
