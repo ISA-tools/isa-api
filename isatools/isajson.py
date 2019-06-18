@@ -275,7 +275,7 @@ def load(fp):
                             term_source=term_source_dict[characteristic_json["value"]["termSource"]],
                             term_accession=characteristic_json["value"]["termAccession"])
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + ke + " \n object: " + characteristic_json)
+                        raise IOError("Can't create value as annotation: " + str(ke.message) + " \n object: " + characteristic_json)
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -305,7 +305,7 @@ def load(fp):
                             term_source=term_source_dict[characteristic_json["value"]["termSource"]],
                             term_accession=characteristic_json["value"]["termAccession"])
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + ke  + "\n object: " + characteristic_json)
+                        raise IOError("Can't create value as annotation: " + str(ke.message) + "\n object: " + characteristic_json)
                 elif isinstance(value, int) or isinstance(value, float):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -328,7 +328,7 @@ def load(fp):
                                     term_accession=factor_value_json["value"]["termAccession"],
                                     term_source=term_source_dict[factor_value_json["value"]["termSource"]])
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + ke + "\n object: " + factor_value_json)
+                        raise IOError("Can't create value as annotation: " + str(ke) + "\n object: " + factor_value_json)
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[factor_value_json["unit"]["@id"]]
