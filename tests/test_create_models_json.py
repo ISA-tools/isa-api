@@ -147,11 +147,11 @@ class BaseTestCase(unittest.TestCase):
         self.sample_assay_plan_for_washout = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
         self.sample_assay_plan_for_follow_up = SampleAndAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
         self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            [self.cell_screen, None], [self.cell_run_in, None],
-            [self.cell_single_treatment_00, self.sample_assay_plan_for_treatments],
-            [self.cell_washout_00, self.sample_assay_plan_for_washout],
-            [self.cell_single_treatment_01, self.sample_assay_plan_for_treatments],
-            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+            (self.cell_washout_00, self.sample_assay_plan_for_washout),
+            (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
+            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
         self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
             [self.cell_screen, None], [self.cell_run_in, None],
@@ -280,6 +280,9 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             expected_json_plan = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_plan), ordered(expected_json_plan))
+
+    def test_encode_sample_from_dictionary(self):   # TODO
+        pass
 
     def test_decode_dna_rna_extraction_plan(self):
         decoder = SampleAndAssayPlanDecoder()

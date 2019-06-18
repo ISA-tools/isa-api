@@ -80,6 +80,9 @@ SOURCE = 'source'
 SAMPLE = 'sample'
 DATA_FILE = 'data file'
 
+# constant for naming AssayGraphs
+ASSAY_GRAPH = 'ASSAY_GRAPH'
+
 
 # constants specific to the sampling plan in the study generation from the study design
 RUN_ORDER = 'run order'
@@ -646,7 +649,7 @@ class ProtocolNode(SequenceNode, Protocol):
     PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
     COMPONENTS_CANNOT_BE_SET_ERROR = 'The \'components\' property cannot be set.'
 
-    def __init__(self, id_=uuid.uuid4(), name='', protocol_type=None, uri='',
+    def __init__(self, id_=str(uuid.uuid4()), name='', protocol_type=None, uri='',
                  description='', version='', parameter_values=None):
         Protocol.__init__(self, id_=id_, name=name, protocol_type=protocol_type,
                           uri=uri, description=description, version=version)
@@ -731,7 +734,7 @@ class ProductNode(SequenceNode):
     SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
     CHARACTERISTIC_TYPE_ERROR = 'A characteristic must be either a string or a Characteristic, {0} supplied'
 
-    def __init__(self, id_=uuid.uuid4(), node_type=SOURCE, name='', characteristics=[], size=0):
+    def __init__(self, id_=str(uuid.uuid4()), node_type=SOURCE, name='', characteristics=[], size=0):
         super().__init__()
         self.__id = id_
         self.__type = None
@@ -842,7 +845,7 @@ class AssayGraph(object):
     MISSING_NODE_ERROR = "Start or target node have not been added to the AssayGraph yet"
     NODE_ALREADY_PRESENT = "The node {0.id} is already present in the AssayGraph"
 
-    def __init__(self, measurement_type, technology_type, id_=uuid.uuid4(), graph_dict=None):
+    def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), graph_dict=None):
         """
         initializes an AssayGraph object
         If no dictionary or None is given,
@@ -858,7 +861,7 @@ class AssayGraph(object):
             self.graph_dict = graph_dict
 
     @classmethod
-    def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False):
+    def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False, **kwargs):
         """
         Alternative constructor that generates an AssayGraph object from a well structured dictionary
         :param assay_plan_dict: dict
@@ -867,8 +870,11 @@ class AssayGraph(object):
         :return: AssayGraph
         """
 
-        res = cls(measurement_type=assay_plan_dict['measurement_type'],
-                  technology_type=assay_plan_dict['technology_type'])
+        res = cls(
+            id_=kwargs.get('id_', None),
+            measurement_type=assay_plan_dict['measurement_type'],
+            technology_type=assay_plan_dict['technology_type']
+        )
 
         previous_nodes = []
         current_nodes = []
@@ -882,7 +888,7 @@ class AssayGraph(object):
                     for j, prev_node in enumerate(previous_nodes):
                         print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         product_node = ProductNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(
+                            id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                 node_key, str(i).zfill(3), str(j).zfill(3)),
                             name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
                             characteristics=[
@@ -899,7 +905,7 @@ class AssayGraph(object):
                     print('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
-                            id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
                             name=node_key, protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
@@ -913,7 +919,7 @@ class AssayGraph(object):
                         for j, prev_node in enumerate(previous_nodes):
                             print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
-                                id_=uuid.uuid4() if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
+                                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
                                                                                         str(j).zfill(3)),
                                 name=node_key, protocol_type=node_key,
                                 parameter_values=[
@@ -1207,15 +1213,18 @@ class SampleAndAssayPlan(object):
         res = cls()
         for i, sample_type_dict in enumerate(sample_type_dicts):
             sample_node = ProductNode(
-                id_=uuid.uuid4() if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
+                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),
                 name=SAMPLE, node_type=sample_type_dict['node_type'], size=sample_type_dict['size'],
                 characteristics=[
                     Characteristic(category=sample_type_dict['characteristics_category'],
                                    value=sample_type_dict['characteristics_value'])
                 ] if 'characteristics_category' in sample_type_dict else [])
             res.add_sample_type_to_plan(sample_node)
-        for assay_plan_dict in assay_plan_dicts:
-            res.add_assay_graph_to_plan(AssayGraph.generate_assay_plan_from_dict(assay_plan_dict))
+        for i, assay_plan_dict in enumerate(assay_plan_dicts):
+            res.add_assay_graph_to_plan(AssayGraph.generate_assay_plan_from_dict(
+                assay_plan_dict,
+                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH, str(i).zfill(3)),
+            ))
         for sample_node in res.sample_plan:
             for assay_graph in res.assay_plan:
                 res.add_element_to_map(sample_node, assay_graph)
@@ -1749,8 +1758,8 @@ class StudyDesign(object):
                     for source in sources_map[arm.name]:
                         if not sample_assay_plan:
                             continue
-                        sample_batch = []
                         for sample_node in sample_assay_plan.sample_plan:
+                            sample_batch = []
                             sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
                             sample_term_source = sample_type.value.term_source if \
                                 hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
@@ -1778,9 +1787,9 @@ class StudyDesign(object):
                                     ]
                                 )
                                 process_sequence.append(process)
-                        for assay_graph in sample_assay_plan.assay_plan:
-                            self._generate_assays(assay_graph, sample_batch)
-                        samples += sample_batch
+                            for assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                                self._generate_assays(assay_graph, sample_batch)
+                            samples += sample_batch
         return factors, samples, process_sequence, ontology_sources
 
     def _generate_assays(self, assay_graph, samples):

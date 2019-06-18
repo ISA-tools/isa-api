@@ -841,7 +841,7 @@ class ProductNodeTest(unittest.TestCase):
         self.node = ProductNode()
 
     def test_id_property(self):
-        self.assertIsInstance(self.node.id, type(uuid.uuid4()))
+        self.assertIsInstance(uuid.UUID(hex=self.node.id), type(uuid.uuid4()))
 
 
 class AssayGraphTest(unittest.TestCase):
@@ -874,6 +874,13 @@ class AssayGraphTest(unittest.TestCase):
         self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
         self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
         self.assertEqual(self.assay_graph.graph_dict, self.graph_dict)
+
+    def test_generate_assay_plan_from_dict(self):
+        self.assay_graph = AssayGraph.generate_assay_plan_from_dict(
+            assay_plan_dict=lcdad_assay_dict, id_='assay-plan/00'
+        )
+        self.assertIsInstance(self.assay_graph, AssayGraph)
+        self.assertEqual(self.assay_graph.id, 'assay-plan/00')
 
     def test_properties_success(self):
         self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
@@ -1004,10 +1011,16 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.tissue_node = ProductNode(name='tissue', node_type=SAMPLE, size=2, characteristics=[self.tissue_char])
         self.blood_node = ProductNode(name='blood',
                                       node_type=SAMPLE, size=3, characteristics=[self.blood_char])
-        self.genomic_assay_graph = AssayGraph(measurement_type='genomic extraction',
-                                              technology_type='nucleic acid extraction')
-        self.metabolomic_assay_graph = AssayGraph(measurement_type='metabolomic analysis',
-                                                  technology_type='mass spectrometry')
+        self.genomic_assay_graph = AssayGraph(
+            id_='assay-graph/00',
+            measurement_type='genomic extraction',
+            technology_type='nucleic acid extraction'
+        )
+        self.metabolomic_assay_graph = AssayGraph(
+            id_='assay-graph/01',
+            measurement_type='metabolomic analysis',
+            technology_type='mass spectrometry'
+        )
 
     def test_properties(self):
         plan = SampleAndAssayPlan()
