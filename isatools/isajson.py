@@ -1704,7 +1704,9 @@ class ISAJSONEncoder(JSONEncoder):
 
         def id_gen(o):
             if o is not None:
-                o_id = str(id(o))
+                o_id = getattr(o, 'id', None)
+                if not o_id:
+                    o_id = str(id(o))
                 if isinstance(o, Source):
                     return '#source/' + o_id
                 elif isinstance(o, Sample):
