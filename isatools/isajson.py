@@ -274,8 +274,8 @@ def load(fp):
                             term=term,
                             term_source=term_source_dict[characteristic_json["value"]["termSource"]],
                             term_accession=characteristic_json["value"]["termAccession"])
-                    except KeyError:
-                        raise IOError("Can't create value as annotation")
+                    except KeyError as ke:
+                        raise IOError("Can't create value as annotation: " + ke + " \n object: " + characteristic_json)
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -304,8 +304,8 @@ def load(fp):
                             term=characteristic_json["value"]["annotationValue"],
                             term_source=term_source_dict[characteristic_json["value"]["termSource"]],
                             term_accession=characteristic_json["value"]["termAccession"])
-                    except KeyError:
-                        raise IOError("Can't create value as annotation")
+                    except KeyError as ke:
+                        raise IOError("Can't create value as annotation: " + ke  + "\n object: " + characteristic_json)
                 elif isinstance(value, int) or isinstance(value, float):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -327,8 +327,8 @@ def load(fp):
                                     term=factor_value_json["value"]["annotationValue"],
                                     term_accession=factor_value_json["value"]["termAccession"],
                                     term_source=term_source_dict[factor_value_json["value"]["termSource"]])
-                    except KeyError:
-                        raise IOError("Can't create value as annotation")
+                    except KeyError as ke:
+                        raise IOError("Can't create value as annotation: " + ke + "\n object: " + factor_value_json)
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[factor_value_json["unit"]["@id"]]
@@ -1639,8 +1639,8 @@ class ISAJSONEncoder(JSONEncoder):
         def get_characteristic(o):
             return clean_nulls(
                 {
-                    # "category": {"@id": id_gen(o.category)} if o.category else None,
-                    "category": get_value(o.category) if o.category else None,
+                    "category": {"@id": id_gen(o.category)} if o.category else None,
+                    # "category": get_value(o.category) if o.category else None,
                     "value": get_value(o.value),
                     "unit": {"@id": id_gen(o.unit)} if o.unit else None
                 }
