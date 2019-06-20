@@ -845,7 +845,7 @@ class AssayGraph(object):
     MISSING_NODE_ERROR = "Start or target node have not been added to the AssayGraph yet"
     NODE_ALREADY_PRESENT = "The node {0.id} is already present in the AssayGraph"
 
-    def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), graph_dict=None):
+    def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), nodes=None, links=None):
         """
         initializes an AssayGraph object
         If no dictionary or None is given,
@@ -857,8 +857,10 @@ class AssayGraph(object):
         self.__graph_dict = {}
         self.measurement_type = measurement_type
         self.technology_type = technology_type
-        if graph_dict is not None:
-            self.graph_dict = graph_dict
+        if nodes:
+            self.add_nodes(nodes)
+        if links:
+            self.add_links(links)
 
     @classmethod
     def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False, **kwargs):
@@ -960,6 +962,7 @@ class AssayGraph(object):
             raise AttributeError(self.INVALID_TECHNOLOGY_TYPE_ERROR.format(technology_type))
         self.__technology_type = technology_type
 
+    """
     @property
     def graph_dict(self):
         return self.__graph_dict
@@ -974,6 +977,7 @@ class AssayGraph(object):
                     self.add_link(start_node, target_node)
         except (TypeError, ValueError) as e:
             raise AttributeError(e)
+    """
 
     @property
     def nodes(self):
@@ -1021,6 +1025,21 @@ class AssayGraph(object):
     def start_nodes(self):
         return set(self.__graph_dict.keys()) - set(target_node for target_nodes in self.__graph_dict.values()
                                                    for target_node in target_nodes)
+
+    def next_nodes(self, node):
+        if not isinstance(node, SequenceNode):
+            raise TypeError(self.INVALID_NODE_ERROR)
+        if node not in self.__graph_dict:
+            raise ValueError(self.MISSING_NODE_ERROR)
+        return set(self.__graph_dict[node])
+
+    def previous_nodes(self, node):
+        if not isinstance(node, SequenceNode):
+            raise TypeError(self.INVALID_NODE_ERROR)
+        if node not in self.__graph_dict:
+            raise ValueError(self.MISSING_NODE_ERROR)
+        return {n for n in self.__graph_dict if node in self.__graph_dict[n]}
+
 
     """
     @property
@@ -1794,7 +1813,9 @@ class StudyDesign(object):
 
     def _generate_assays(self, assay_graph, samples):
         assays = []
-        for node in assay_graph.nodes:
+        if not isinstance(assay_graph, AssayGraph):
+            raise TypeError()
+        for node in assay_graph.start_nodes:
             ...
         return assays
 

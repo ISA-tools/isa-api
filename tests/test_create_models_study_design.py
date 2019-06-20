@@ -859,21 +859,21 @@ class AssayGraphTest(unittest.TestCase):
         self.dna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.dna_char])
         self.mrna_node = ProductNode(node_type=SAMPLE, size=3, characteristics=[self.mrna_char])
         self.mirna_node = ProductNode(node_type=SAMPLE, size=5, characteristics=[self.mirna_char])
-        self.graph_dict = {
-            # self.sample_node: [self.protocol_node_rna, self.protocol_node_dna],
-            self.protocol_node_dna: [self.dna_node],
-            self.protocol_node_rna: [self.mirna_node, self.mrna_node],
-            self.dna_node: [],
-            self.mrna_node: [],
-            self.mirna_node: []
-        }
+        self.nodes = [self.protocol_node_dna, self.protocol_node_rna, self.dna_node, self.mrna_node, self.mirna_node]
+        self.links = [
+            (self.protocol_node_dna, self.dna_node),
+            (self.protocol_node_rna, self.mrna_node),
+            (self.protocol_node_rna, self.mirna_node)
+        ]
 
     def test_init(self):
-        self.assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
-                                      graph_dict=self.graph_dict)
-        self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
-        self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
-        self.assertEqual(self.assay_graph.graph_dict, self.graph_dict)
+        assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                 nodes=self.nodes, links=self.links)
+        self.assertEqual(assay_graph.measurement_type, 'genomic extraction')
+        self.assertEqual(assay_graph.technology_type, 'nucleic acid extraction')
+        self.assertEqual(assay_graph.nodes, set(self.nodes))
+        for link in self.links:
+            self.assertIn(link, assay_graph.links)
 
     def test_generate_assay_plan_from_dict(self):
         self.assay_graph = AssayGraph.generate_assay_plan_from_dict(
@@ -937,6 +937,43 @@ class AssayGraphTest(unittest.TestCase):
         self.assertEqual(set(self.assay_graph.nodes), set(nodes))
         self.assertEqual(len(self.assay_graph.links), len(links))
 
+    def test_start_nodes_property(self):
+        assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                 nodes=self.nodes, links=self.links)
+        self.assertEqual(assay_graph.start_nodes, {self.protocol_node_dna, self.protocol_node_rna})
+
+    def test_next_nodes(self):
+        assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                 nodes=self.nodes, links=self.links)
+        self.assertEqual(assay_graph.next_nodes(self.protocol_node_rna), {
+            self.mirna_node, self.mrna_node
+        })
+        self.assertEqual(assay_graph.next_nodes(self.protocol_node_dna), {self.dna_node})
+        self.assertEqual(assay_graph.next_nodes(self.mrna_node), set())
+        self.assertRaises(TypeError, assay_graph.next_nodes, 'this is not a node')
+        self.assertRaises(ValueError, assay_graph.next_nodes, ProductNode(node_type=SAMPLE, size=10))
+
+    def test_previous_nodes(self):
+        assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
+                                 nodes=self.nodes, links=self.links)
+        self.assertEqual(assay_graph.previous_nodes(self.mrna_node), {self.protocol_node_rna})
+        self.assertEqual(assay_graph.previous_nodes(self.dna_node), {self.protocol_node_dna})
+        self.assertEqual(assay_graph.previous_nodes(self.protocol_node_dna), set())
+        self.assertRaises(TypeError, assay_graph.previous_nodes, 'this is not a node')
+        self.assertRaises(ValueError, assay_graph.previous_nodes, ProductNode(node_type=SAMPLE, size=10))
+
+    def test_as_networkx_graph(self):
+        self.assay_graph.add_nodes(self.nodes)
+        self.assay_graph.add_links(self.links)
+        nx_graph = self.assay_graph.as_networkx_graph()
+        self.assertIsInstance(nx_graph, nx.DiGraph)
+        self.assertEqual(set(nx_graph.nodes), {
+            node.id for node in self.assay_graph.nodes
+        })
+        self.assertEqual(nx_graph.edges, {
+            (u.id, v.id) for u, v in self.assay_graph.links
+        })
+
     def test_eq(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
@@ -989,17 +1026,6 @@ class AssayGraphTest(unittest.TestCase):
         self.assay_graph.graph_dict = self.graph_dict
         self.assertEqual(self.assay_graph.sample_nodes, {self.sample_node})
     """
-
-    def test_as_networkx_graph(self):
-        self.assay_graph.graph_dict = self.graph_dict
-        nx_graph = self.assay_graph.as_networkx_graph()
-        self.assertIsInstance(nx_graph, nx.DiGraph)
-        self.assertEqual(set(nx_graph.nodes), {
-            node.id for node in self.assay_graph.nodes
-        })
-        self.assertEqual(nx_graph.edges, {
-            (u.id, v.id) for u, v in self.assay_graph.links
-        })
 
 
 class SampleAndAssayPlanTest(unittest.TestCase):
@@ -1314,7 +1340,8 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
 
     def test_arm_map_property_success_00(self):
-        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan is empty.')
+        self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan '
+                                                          'is empty.')
         ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
                                 (self.cell_single_treatment_00, self.sample_assay_plan),
                                 (self.cell_washout_00, None),
