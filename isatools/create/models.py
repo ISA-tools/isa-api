@@ -1811,12 +1811,17 @@ class StudyDesign(object):
                             samples += sample_batch
         return factors, samples, process_sequence, ontology_sources
 
+    @staticmethod
+    def _generate_isa_element_from_node(node):
+        return None
+
     def _generate_assays(self, assay_graph, samples):
         assays = []
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
         for node in assay_graph.start_nodes:
-            ...
+            self._generate_isa_element_from_node(node)
+            next_nodes = assay_graph.next_nodes(node)
         return assays
 
     def generate_isa_study(self):
