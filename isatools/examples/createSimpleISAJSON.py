@@ -3,6 +3,7 @@
 from isatools.model import (
     Assay,
     Characteristic,
+    Comment,
     DataFile,
     Investigation,
     Material,
@@ -15,6 +16,7 @@ from isatools.model import (
     Sample,
     Source,
     Study,
+    StudyFactor,
     batch_create_materials,
     plink,
 )
@@ -29,7 +31,7 @@ def create_descriptor():
     # instance variables.
 
     investigation = Investigation()
-    investigation.identifier = "i1"
+    investigation.identifier = "1"
     investigation.title = "My Simple ISA Investigation"
     investigation.description = \
         "We could alternatively use the class constructor's parameters to " \
@@ -45,7 +47,7 @@ def create_descriptor():
     # by adding it to the 'investigation' object's list of studies.
 
     study = Study(filename="s_study.txt")
-    study.identifier = "s1"
+    study.identifier = "1"
     study.title = "My ISA Study"
     study.description = \
         "Like with the Investigation, we could use the class constructor " \
@@ -54,6 +56,10 @@ def create_descriptor():
     study.submission_date = "2016-11-03"
     study.public_release_date = "2016-11-03"
     investigation.studies.append(study)
+
+    # This is to show that ISA Comments can be used to annotate ISA objects, here ISA Study
+    study.comments.append(Comment(name="Study Start Date", value="Sun"))
+
 
     # Some instance variables are typed with different objects and lists of
     # objects. For example, a Study can have a list of design descriptors.
@@ -71,6 +77,7 @@ def create_descriptor():
     obi = OntologySource(name='OBI',
                          description="Ontology for Biomedical Investigations")
     investigation.ontology_source_references.append(obi)
+
     intervention_design = OntologyAnnotation(term_source=obi)
     intervention_design.term = "intervention design"
     intervention_design.term_accession = \
@@ -112,7 +119,10 @@ def create_descriptor():
     # 'sample_material-1' and 'sample_material-2'.
 
     prototype_sample = Sample(name='sample_material', derives_from=[source])
+
     ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+    investigation.ontology_source_references.append(ncbitaxon)
+
     characteristic_organism = Characteristic(
         category=OntologyAnnotation(term="Organism"),
         value=OntologyAnnotation(
@@ -120,10 +130,29 @@ def create_descriptor():
             term_source=ncbitaxon,
             term_accession="http://purl.bioontology.org/ontology/NCBITAXON/"
                            "9606"))
-    prototype_sample.characteristics.append(characteristic_organism)
+
+    # Adding the description to the ISA Source Material:
+    source.characteristics.append(characteristic_organism)
+    study.sources.append(source)
+
+    #declaring a new ontology and adding it to the list of resources used
+    uberon = OntologySource(name='UBERON', description='Uber Anatomy Ontology')
+    investigation.ontology_source_references.append(uberon)
+
+    #preparing an ISA Characteristic object (~Material Property ) to annotate sample materials
+    characteristic_organ = Characteristic(
+        category=OntologyAnnotation(term="OrganismPart"),
+        value=OntologyAnnotation(
+            term="liver",
+            term_source=uberon,
+            term_accession="http://purl.bioontology.org/ontology/UBERON/"
+                           "123245"))
+
+    prototype_sample.characteristics.append(characteristic_organ)
 
     study.samples = batch_create_materials(prototype_sample, n=3)
     # creates a batch of 3 samples
+
 
     # Now we create a single Protocol object that represents our sample
     # collection protocol, and attach it to the study object. Protocols must be
@@ -138,6 +167,29 @@ def create_descriptor():
     study.protocols.append(sample_collection_protocol)
     sample_collection_process = Process(
         executes_protocol=sample_collection_protocol)
+
+    # adding a dummy Comment[] to ISA.protocol object
+    study.protocols[0].comments.append(Comment(name="Study Start Date", value="Uranus"))
+    study.protocols[0].comments.append(Comment(name="Study End Date", value="2017-08-11"))
+    # checking that the ISA Protocool object has been modified
+    # print(study.protocols[0])
+
+
+    # Creation of an ISA Study Factor object
+    f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment['modality']"))
+    # testing serialization to ISA-TAB of Comments attached to ISA objects.
+    f.comments.append(Comment(name="Study Start Date", value="Saturn"))
+    f.comments.append(Comment(name="Study End Date", value="2039-12-12"))
+    print(f.comments[0].name, "|", f.comments[0].value)
+
+    # checking that the ISA Factor object has been modified
+    study.factors.append(f)
+
+
+
+
+
+
 
     # Next, we link our materials to the Process. In this particular case, we
     # are describing a sample collection process that takes one source
@@ -156,6 +208,12 @@ def create_descriptor():
     # sample collection events.
 
     study.process_sequence.append(sample_collection_process)
+
+
+
+
+    #IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
+    study.characteristic_categories.append(characteristic_organism.category)
 
     # Next, we build n Assay object and attach two protocols,
     # extraction and sequencing.
@@ -230,7 +288,6 @@ def create_descriptor():
             term="nucleotide sequencing")
 
     # attach the assay to the study
-
     study.assays.append(assay)
 
     import json

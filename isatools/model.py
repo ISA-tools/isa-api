@@ -16,6 +16,7 @@ from __future__ import absolute_import
 import abc
 import logging
 import warnings
+import uuid
 
 import networkx as nx
 
@@ -671,7 +672,7 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, term='', term_source=None, term_accession='',
-                 comments=None, id_=''):
+                 comments=None, id_=str(uuid.uuid4())) :
         super().__init__(comments)
 
         self.__term = term

@@ -257,6 +257,19 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     or not to write Factor Values in the assay table files
     :return: None
     """
+
+    def build_comments(some_isa_study_object, some_associated_data_frame):
+        """Build comments if multiple comments
+        :param some_isa_study_object: Any of the Commentable ISA objects
+        :param some_associated_data_frame: the data frames associated to the object (if implemented that ways)
+        :return: the 2 input parameters augmented with the relevant information
+        """
+        if some_isa_study_object.comments is not None:
+            for this_comment in sorted(some_isa_study_object.comments, key=lambda x: x.name):
+                field = "Comment[" + this_comment.name + "]"
+                some_associated_data_frame[field] = this_comment.value
+        return some_isa_study_object, some_associated_data_frame
+
     def _build_roles_str(roles):
         """Build roles strings if multiple roles
 
@@ -285,6 +298,56 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         log.debug('roles_source_refs: %s', roles)
         return roles_names, roles_accession_numbers, roles_source_refs
 
+    def _build_ontology_reference_section(ontologies=list()):
+        """Build ontology reference section DataFrame
+
+        :param prefix: Section prefix - ''
+        :param ontologies: List of Ontology objects describing the section's
+        Ontology Resource
+        :return: DataFrame corresponding to the ONTOLOGY REFERENCE section
+        """
+        log.debug('building ontology resource reference from: %s', ontologies)
+        ontology_source_references_df_cols = ['Term Source Name',
+                                              'Term Source File',
+                                              'Term Source Version',
+                                              'Term Source Description']
+
+        if len(ontologies) > 0:
+            max_comment = ontologies[0].comments
+            # max_comment = OntologySource()
+            for ontology in ontologies:
+                if len(ontology.comments) > len(max_comment):
+                    max_comment = ontology.comments
+
+            for comment in max_comment:
+                if 'Comment[' + comment.name + ']' not in ontology_source_references_df_cols:
+                    ontology_source_references_df_cols.append('Comment[' + comment.name + ']')
+
+        ontology_source_references_df = pd.DataFrame(columns=tuple(ontology_source_references_df_cols))
+
+        for i, ontology in enumerate(ontologies):
+            log.debug('%s iteration, item=%s', i, ontology)
+            ontology_source_references_df_row = [
+                ontology.name,
+                ontology.file,
+                ontology.version,
+                ontology.description
+            ]
+
+            for j, _ in enumerate(max_comment):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    if 'Comment[' + ontology.comments[j].name + ']' in ontology_source_references_df_cols:
+                        ontology_source_references_df_row.append(ontology.comments[j].value)
+                    else:
+                        ontology_source_references_df_row.append('')
+                except IndexError:
+                    ontology_source_references_df_row.append('')
+            log.debug('row=%s', ontology_source_references_df_row)
+            ontology_source_references_df.loc[i] = ontology_source_references_df_row
+
+        return ontology_source_references_df.set_index('Term Source Name').T
+
     def _build_contacts_section_df(prefix='Investigation', contacts=list()):
         """Build contacts section DataFrame
 
@@ -307,13 +370,16 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                             prefix + ' Person Roles Term Source REF']
         if len(contacts) > 0:
             max_comment = Person()
+            print("Max Person:", max_comment)
             for contact in contacts:
                 if len(contact.comments) > len(max_comment.comments):
                     max_comment = contact
             for comment in max_comment.comments:
                 if 'Comment[' + comment.name + ']' not in contacts_df_cols:
                     contacts_df_cols.append('Comment[' + comment.name + ']')
+
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
+
         for i, contact in enumerate(contacts):
             log.debug('%s iteration, item=%s', i, contact)
             roles_names, roles_accession_numbers, roles_source_refs = \
@@ -418,32 +484,42 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     # Process Investigation object first to write the investigation file
     investigation = isa_obj
 
+
+
     # Write ONTOLOGY SOURCE REFERENCE section
-    ontology_source_references_df = pd.DataFrame(
-        columns=('Term Source Name',
-                 'Term Source File',
-                 'Term Source Version',
-                 'Term Source Description'
-                 )
-    )
-    for i, ontology_source_reference in enumerate(
-            investigation.ontology_source_references):
-        log.debug('%s iteration, item=%s', i, ontology_source_reference)
-        ontology_source_references_df.loc[i] = [
-            ontology_source_reference.name,
-            ontology_source_reference.file,
-            ontology_source_reference.version,
-            ontology_source_reference.description
-        ]
-        log.debug('ontology_source_reference=%s',
-                  ontology_source_references_df.loc[i])
-    ontology_source_references_df = \
-        ontology_source_references_df.set_index('Term Source Name').T
+
+    # ontology_source_references_df = pd.DataFrame(
+    #     columns=('Term Source Name',
+    #              'Term Source File',
+    #              'Term Source Version',
+    #              'Term Source Description'
+    #              )
+    # )
+    # for i, ontology_source_reference in enumerate(
+    #         investigation.ontology_source_references):
+    #     log.debug('%s iteration, item=%s', i, ontology_source_reference)
+    #     ontology_source_references_df.loc[i] = [
+    #         ontology_source_reference.name,
+    #         ontology_source_reference.file,
+    #         ontology_source_reference.version,
+    #         ontology_source_reference.description
+    #     ]
+    #     build_comments(ontology_source_reference, ontology_source_references_df.loc[i])
+    #
+    #     log.debug('ontology_source_reference=%s',
+    #               ontology_source_references_df.loc[i])
+    #
+    # ontology_source_references_df = \
+    #     ontology_source_references_df.set_index('Term Source Name').T
+
+    print("List of Resources: ", investigation.ontology_source_references)
+    ontology_source_references_df =_build_ontology_reference_section(ontologies=investigation.ontology_source_references)
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
     #  Need to set index_label as top left cell
     ontology_source_references_df.to_csv(
         path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
         index_label='Term Source Name')
+
 
     #  Write INVESTIGATION section
     inv_df_cols = ['Investigation Identifier',
@@ -506,6 +582,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             study.public_release_date,
             study.filename
         ]
+
         if study.comments is not None:
             for comment in sorted(study.comments, key=lambda x: x.name):
                 study_df_row.append(comment.value)
@@ -527,6 +604,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 design_descriptor.term_source.name
                 if design_descriptor.term_source else ''
             ]
+
+            build_comments(design_descriptor, study_design_descriptors_df.loc[i])
+
         study_design_descriptors_df = \
             study_design_descriptors_df.set_index('Study Design Type').T
         fp.write('STUDY DESIGN DESCRIPTORS\n')
@@ -567,6 +647,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 factor_type_term_accession,
                 factor_type_term_term_source_name
             ]
+            # a call to insert Comments in the Study Factor Section of the Investigation File
+            build_comments(factor, study_factors_df.loc[i])
+            print("STUDY FACTOR Loc de i: ",study_factors_df.loc[i])
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
         study_factors_df.to_csv(
@@ -599,6 +682,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 if assay.technology_type.term_source else '',
                 assay.technology_platform
             ]
+            # a call to insert Comments in the Study Assay Type of the Investigation File
+            build_comments(assay, study_assays_df)
         study_assays_df = study_assays_df.set_index('Study Assay File Name').T
         fp.write('STUDY ASSAYS\n')
         study_assays_df.to_csv(
@@ -686,6 +771,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 component_types_accession_numbers,
                 component_types_source_refs
             ]
+
+            build_comments(protocol, study_protocols_df)
+
         study_protocols_df = study_protocols_df.set_index(
             'Study Protocol Name').T
         fp.write('STUDY PROTOCOLS\n')
