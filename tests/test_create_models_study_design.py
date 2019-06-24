@@ -843,6 +843,13 @@ class ProductNodeTest(unittest.TestCase):
     def test_id_property(self):
         self.assertIsInstance(uuid.UUID(hex=self.node.id), type(uuid.uuid4()))
 
+    def test_extract_node(self):
+        node = ProductNode(node_type=EXTRACT)
+        self.assertEqual(node.type, EXTRACT)
+
+    def test_labeled_extract_node(self):
+        node = ProductNode(node_type=LABELED_EXTRACT)
+        self.assertEqual(node.type, LABELED_EXTRACT)
 
 class AssayGraphTest(unittest.TestCase):
 

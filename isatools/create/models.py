@@ -78,6 +78,8 @@ DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
 # Allowed types of product nodes in ISA create mode
 SOURCE = 'source'
 SAMPLE = 'sample'
+EXTRACT = 'extract'
+LABELED_EXTRACT = 'labeled extract'
 DATA_FILE = 'data file'
 
 # constant for naming AssayGraphs
@@ -728,7 +730,7 @@ class ProductNode(SequenceNode):
     It can contain info about a source, a sample (or its derivatives), or a data file
     """
 
-    ALLOWED_TYPES = [SOURCE, SAMPLE, DATA_FILE]
+    ALLOWED_TYPES = {SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE}
     NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values: {0}'
     NAME_ERROR = 'ProductNode name must be a string, {0} supplied of type {1}'
     SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
@@ -1039,7 +1041,6 @@ class AssayGraph(object):
         if node not in self.__graph_dict:
             raise ValueError(self.MISSING_NODE_ERROR)
         return {n for n in self.__graph_dict if node in self.__graph_dict[n]}
-
 
     """
     @property
@@ -1813,6 +1814,7 @@ class StudyDesign(object):
 
     @staticmethod
     def _generate_isa_element_from_node(node):
+
         return None
 
     def _generate_assays(self, assay_graph, samples):
@@ -1868,6 +1870,21 @@ class StudyDesign(object):
 
     def __ne__(self, other):
         return not self == other
+
+
+def isa_objects_factory(node):
+    if isinstance(node, ProtocolNode):
+        return Process(
+                name=node.name,
+                executes_protocol=node,
+                performer=...,
+                parameter_values=node.parameter_values,
+                inputs=...,
+                outputs=...,
+            )
+    if isinstance(node, ProductNode):
+        cls = {}
+        return cls[node.type]()
 
 
 class StudyDesignEncoder(json.JSONEncoder):
