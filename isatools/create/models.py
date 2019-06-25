@@ -875,7 +875,7 @@ class AssayGraph(object):
         """
 
         res = cls(
-            id_=kwargs.get('id_', None),
+            id_=kwargs.get('id_', str(uuid.uuid4())),
             measurement_type=assay_plan_dict['measurement_type'],
             technology_type=assay_plan_dict['technology_type']
         )

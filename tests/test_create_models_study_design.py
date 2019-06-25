@@ -851,6 +851,7 @@ class ProductNodeTest(unittest.TestCase):
         node = ProductNode(node_type=LABELED_EXTRACT)
         self.assertEqual(node.type, LABELED_EXTRACT)
 
+
 class AssayGraphTest(unittest.TestCase):
 
     def setUp(self):
@@ -882,12 +883,18 @@ class AssayGraphTest(unittest.TestCase):
         for link in self.links:
             self.assertIn(link, assay_graph.links)
 
-    def test_generate_assay_plan_from_dict(self):
+    def test_generate_assay_plan_from_dict_00(self):
         self.assay_graph = AssayGraph.generate_assay_plan_from_dict(
             assay_plan_dict=lcdad_assay_dict, id_='assay-plan/00'
         )
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertEqual(self.assay_graph.id, 'assay-plan/00')
+
+    def test_generate_assay_plan_from_dict_00(self):
+        nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        self.assertIsInstance(self.assay_graph, AssayGraph)
+        self.assertIsNotNone(nmr_assay_graph.id)
+        self.assertIsInstance(nmr_assay_graph.id, str)
 
     def test_properties_success(self):
         self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
