@@ -1883,7 +1883,12 @@ def isa_objects_factory(node):
                 outputs=...,
             )
     if isinstance(node, ProductNode):
-        cls = {}
+        cls = {
+            SAMPLE: Sample,
+            EXTRACT: Extract,
+            LABELED_EXTRACT: LabeledExtract,
+            DATA_FILE: DataFile
+        }
         return cls[node.type]()
 
 
