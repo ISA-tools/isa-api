@@ -370,7 +370,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                             prefix + ' Person Roles Term Source REF']
         if len(contacts) > 0:
             max_comment = Person()
-            print("Max Person:", max_comment)
             for contact in contacts:
                 if len(contact.comments) > len(max_comment.comments):
                     max_comment = contact
@@ -407,8 +406,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
 
-    def _build_publications_section_df(
-            prefix='Investigation', publications=list()):
+    def _build_publications_section_df(prefix='Investigation', publications=list()):
         """Build contacts section DataFrame
 
         :param prefix: Section prefix - Investigation or Study
@@ -425,13 +423,18 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             prefix + ' Publication Status',
             prefix + ' Publication Status Term Accession Number',
             prefix + ' Publication Status Term Source REF']
+
         if len(publications) > 0:
-            try:
-                for comment in publications[0].comments:
-                    publications_df_cols.append(
-                        'Comment[' + comment.name + ']')
-            except TypeError:
-                pass
+            max_comment = publications[0].comments
+            # max_comment = OntologySource()
+            for publication in publications:
+                if len(publication.comments) > len(max_comment):
+                    max_comment = publication.comments
+
+            for comment in max_comment:
+                if 'Comment[' + comment.name + ']' not in publications_df_cols:
+                    publications_df_cols.append('Comment[' + comment.name + ']')
+
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
             log.debug('%s iteration, item=%s', i, publication)
@@ -456,14 +459,307 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 status_term_accession,
                 status_term_source_name,
             ]
-            try:
-                for comment in publication.comments:
-                    publications_df_row.append(comment.value)
-            except TypeError:
-                pass
+
+            for j, _ in enumerate(max_comment):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    if 'Comment[' + publication.comments[j].name + ']' in publications_df_cols:
+                        publications_df_row.append(publication.comments[j].value)
+                    else:
+                        publications_df_row.append('')
+                except IndexError:
+                    publications_df_row.append('')
             log.debug('row=%s', publications_df_row)
             publications_df.loc[i] = publications_df_row
+
         return publications_df.set_index(prefix + ' PubMed ID').T
+
+    def _build_protocols_section_df(protocols=list()):
+        """Build Protocol section DataFrame
+
+                :param prefix: Section prefix - Investigation or Study
+                :param protocols: List of Publications objects describing the
+                section's protocols
+                :return: DataFrame corresponding to the PROTOCOLS section
+                """
+        log.debug('building contacts from: %s', protocols)
+        study_protocols_df_cols = [
+                'Study Protocol Name',
+                'Study Protocol Type',
+                'Study Protocol Type Term Accession Number',
+                'Study Protocol Type Term Source REF',
+                'Study Protocol Description',
+                'Study Protocol URI',
+                'Study Protocol Version',
+                'Study Protocol Parameters Name',
+                'Study Protocol Parameters Name Term Accession Number',
+                'Study Protocol Parameters Name Term Source REF',
+                'Study Protocol Components Name',
+                'Study Protocol Components Type',
+                'Study Protocol Components Type Term Accession Number',
+                'Study Protocol Components Type Term Source REF',
+        ]
+        if len(protocols) > 0:
+            max_comment = protocols[0].comments
+            for protocol in protocols:
+                if len(protocol.comments) > len(max_comment):
+                    max_comment = protocol.comments
+
+            for comment in max_comment:
+                if 'Comment[' + comment.name + ']' not in study_protocols_df_cols:
+                    study_protocols_df_cols.append('Comment[' + comment.name + ']')
+
+        study_protocols_df = pd.DataFrame(columns=tuple(study_protocols_df_cols))
+
+        protocol_type_term = ''
+        protocol_type_term_accession = ''
+        protocol_type_term_source_name = ''
+
+        for i, protocol in enumerate(protocols):
+            parameters_names = ''
+            parameters_accession_numbers = ''
+            parameters_source_refs = ''
+            for parameter in protocol.parameters:
+                parameters_names += parameter.parameter_name.term + ';'
+                parameters_accession_numbers \
+                += (parameter.parameter_name.term_accession
+                    if parameter.parameter_name.term_accession is not None
+                    else '') + ';'
+                parameters_source_refs \
+                += (parameter.parameter_name.term_source.name
+                    if parameter.parameter_name.term_source else '') + ';'
+            if len(protocol.parameters) > 0:
+                parameters_names = parameters_names[:-1]
+                parameters_accession_numbers = \
+                parameters_accession_numbers[:-1]
+                parameters_source_refs = parameters_source_refs[:-1]
+
+            component_names = ''
+            component_types = ''
+            component_types_accession_numbers = ''
+            component_types_source_refs = ''
+            for component in protocol.components:
+                component_names += component.name + ';'
+                component_types += component.component_type.term + ';'
+                component_types_accession_numbers += \
+                    component.component_type.term_accession + ';'
+                component_types_source_refs += \
+                    component.component_type.term_source.name \
+                        if component.component_type.term_source else '' + ';'
+            if len(protocol.components) > 0:
+                component_names = component_names[:-1]
+                component_types = component_types[:-1]
+                component_types_accession_numbers = \
+                component_types_accession_numbers[:-1]
+                component_types_source_refs = component_types_source_refs[:-1]
+
+            if protocol.protocol_type is not None:
+                protocol_type_term = protocol.protocol_type.term
+                protocol_type_term_accession = protocol.protocol_type.term_accession
+            if protocol.protocol_type.term_source:
+                protocol_type_term_source_name = protocol.protocol_type.term_source.name
+
+            study_protocols_df_row = [
+                protocol.name,
+                protocol_type_term,
+                protocol_type_term_accession,
+                protocol_type_term_source_name,
+                protocol.description,
+                protocol.uri,
+                protocol.version,
+                parameters_names,
+                parameters_accession_numbers,
+                parameters_source_refs,
+                component_names,
+                component_types,
+                component_types_accession_numbers,
+                component_types_source_refs
+            ]
+
+            for j, _ in enumerate(max_comment):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    if 'Comment[' + protocol.comments[j].name + ']' in study_protocols_df_cols:
+                        study_protocols_df_row.append(protocol.comments[j].value)
+                    else:
+                        study_protocols_df_row.append('')
+                except IndexError:
+                    study_protocols_df_row.append('')
+
+            log.debug('row=%s', study_protocols_df_row)
+            study_protocols_df.loc[i] = study_protocols_df_row
+
+        return study_protocols_df.set_index('Study Protocol Name').T
+
+    def _build_assays_section_df(assays=list()):
+        """Build Factors section DataFrame
+
+                :param assays: List of Study Assay objects describing the
+                section's assays
+                :return: DataFrame corresponding to the STUDY ASSAY section
+                """
+        log.debug('building contacts from: %s', assays)
+        study_assays_df_cols = [
+                'Study Assay File Name',
+                'Study Assay Measurement Type',
+                'Study Assay Measurement Type Term Accession Number',
+                'Study Assay Measurement Type Term Source REF',
+                'Study Assay Technology Type',
+                'Study Assay Technology Type Term Accession Number',
+                'Study Assay Technology Type Term Source REF',
+                'Study Assay Technology Platform'
+            ]
+        if len(assays) > 0:
+            max_comment = assays[0].comments
+            for assay in assays:
+                if len(assay.comments) > len(max_comment):
+                    max_comment = assay.comments
+
+            for comment in max_comment:
+                if 'Comment[' + comment.name + ']' not in study_assays_df_cols:
+                    study_assays_df_cols.append('Comment[' + comment.name + ']')
+
+        study_assays_df = pd.DataFrame(columns=tuple(study_assays_df_cols))
+
+        for i, assay in enumerate(assays):
+            study_assays_df_row = [
+                assay.filename,
+                assay.measurement_type.term,
+                assay.measurement_type.term_accession,
+                assay.measurement_type.term_source.name
+                if assay.measurement_type.term_source else '',
+                assay.technology_type.term,
+                assay.technology_type.term_accession,
+                assay.technology_type.term_source.name
+                if assay.technology_type.term_source else '',
+                assay.technology_platform
+            ]
+            for j, _ in enumerate(max_comment):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    if 'Comment[' + assay.comments[j].name + ']' in study_assays_df_cols:
+                       study_assays_df_row.append(assay.comments[j].value)
+                    else:
+                       study_assays_df_row.append('')
+                except IndexError:
+                    study_assays_df_row.append('')
+
+            log.debug('row=%s', study_assays_df_row)
+            study_assays_df.loc[i] = study_assays_df_row
+
+        return study_assays_df.set_index('Study Assay File Name').T
+
+    def _build_factors_section_df(factors=list()):
+        """Build Factors section DataFrame
+
+                :param factors: List of Study Factor objects describing the
+                section's factor
+                :return: DataFrame corresponding to the STUDY FACTORS section
+                """
+        log.debug('building contacts from: %s', factors)
+        study_factors_df_cols = ['Study Factor Name',
+                     'Study Factor Type',
+                     'Study Factor Type Term Accession Number',
+                     'Study Factor Type Term Source REF']
+        if len(factors) > 0:
+            max_comment = factors[0].comments
+            for factor in factors:
+                if len(factor.comments) > len(max_comment):
+                    max_comment = factor.comments
+
+            for comment in max_comment:
+                if 'Comment[' + comment.name + ']' not in study_factors_df_cols:
+                    study_factors_df_cols.append('Comment[' + comment.name + ']')
+
+        study_factors_df = pd.DataFrame(columns=tuple(study_factors_df_cols))
+
+        for i, factor in enumerate(factors):
+
+            if factor.factor_type is not None:
+                factor_type_term = factor.factor_type.term
+                factor_type_term_accession = factor.factor_type.term_accession
+                if factor.factor_type.term_source is not None:
+                    factor_type_term_term_source_name = \
+                        factor.factor_type.term_source.name
+                else:
+                    factor_type_term_term_source_name = ''
+            else:
+                factor_type_term = ''
+                factor_type_term_accession = ''
+                factor_type_term_term_source_name = ''
+
+            study_factors_df_row = [
+                    factor.name,
+                    factor_type_term,
+                    factor_type_term_accession,
+                    factor_type_term_term_source_name
+                ]
+            for j, _ in enumerate(max_comment):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    if 'Comment[' + factor.comments[j].name + ']' in study_factors_df_cols:
+                        study_factors_df_row.append(factor.comments[j].value)
+                    else:
+                        study_factors_df_row.append('')
+                except IndexError:
+                    study_factors_df_row.append('')
+
+            log.debug('row=%s', study_factors_df_row)
+            study_factors_df.loc[i] = study_factors_df_row
+
+        return study_factors_df.set_index('Study Factor Name').T
+
+    def _build_design_descriptors_section(design_descriptors=list()):
+
+        study_design_descriptors_df_cols = ['Study Design Type',
+                     'Study Design Type Term Accession Number',
+                     'Study Design Type Term Source REF']
+        seen_comments = {}
+
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for design_descriptor in design_descriptors:
+            for comment in design_descriptor.comments:
+                if comment.name  in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
+                    
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            study_design_descriptors_df_cols.append('Comment[' + comment_name + ']')
+
+        # step3: build a data frame based on the headers available from step 2
+        this_study_design_descriptors_df = pd.DataFrame(columns=tuple(study_design_descriptors_df_cols))
+
+        # step4: for each object, create a record
+        for i, design_descriptor in enumerate(design_descriptors):
+            study_design_descriptors_df_row = [
+                design_descriptor.term,
+                design_descriptor.term_accession,
+                design_descriptor.term_source.name
+                if design_descriptor.term_source else ''
+            ]
+
+            # here, given an object, we create a list comments fields  associated to it
+            common_names = []
+            for comment in design_descriptor.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in design_descriptor.comments:
+                        if element.name == key:
+                            study_design_descriptors_df_row.append(element.value)
+
+                else:
+                    study_design_descriptors_df_row.append("")
+
+            log.debug('row=%s', study_design_descriptors_df_row)
+            this_study_design_descriptors_df.loc[i] = study_design_descriptors_df_row
+
+        return this_study_design_descriptors_df.set_index('Study Design Type').T
 
     if not _RX_I_FILE_NAME.match(i_file_name):
         log.debug('investigation filename=', i_file_name)
@@ -484,42 +780,13 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     # Process Investigation object first to write the investigation file
     investigation = isa_obj
 
-
-
     # Write ONTOLOGY SOURCE REFERENCE section
-
-    # ontology_source_references_df = pd.DataFrame(
-    #     columns=('Term Source Name',
-    #              'Term Source File',
-    #              'Term Source Version',
-    #              'Term Source Description'
-    #              )
-    # )
-    # for i, ontology_source_reference in enumerate(
-    #         investigation.ontology_source_references):
-    #     log.debug('%s iteration, item=%s', i, ontology_source_reference)
-    #     ontology_source_references_df.loc[i] = [
-    #         ontology_source_reference.name,
-    #         ontology_source_reference.file,
-    #         ontology_source_reference.version,
-    #         ontology_source_reference.description
-    #     ]
-    #     build_comments(ontology_source_reference, ontology_source_references_df.loc[i])
-    #
-    #     log.debug('ontology_source_reference=%s',
-    #               ontology_source_references_df.loc[i])
-    #
-    # ontology_source_references_df = \
-    #     ontology_source_references_df.set_index('Term Source Name').T
-
-    print("List of Resources: ", investigation.ontology_source_references)
     ontology_source_references_df =_build_ontology_reference_section(ontologies=investigation.ontology_source_references)
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
     #  Need to set index_label as top left cell
     ontology_source_references_df.to_csv(
         path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
         index_label='Term Source Name')
-
 
     #  Write INVESTIGATION section
     inv_df_cols = ['Investigation Identifier',
@@ -547,7 +814,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         index_label='Investigation Identifier')
 
     # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = _build_publications_section_df(
+    investigation_publications_df = _build_publications_section_df(prefix='Investigation',
         publications=investigation.publications)
     fp.write('INVESTIGATION PUBLICATIONS\n')
     investigation_publications_df.to_csv(
@@ -593,22 +860,23 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                         index_label='Study Identifier')
 
         # Write STUDY DESIGN DESCRIPTORS section
-        study_design_descriptors_df = pd.DataFrame(
-            columns=('Study Design Type',
-                     'Study Design Type Term Accession Number',
-                     'Study Design Type Term Source REF'))
-        for i, design_descriptor in enumerate(study.design_descriptors):
-            study_design_descriptors_df.loc[i] = [
-                design_descriptor.term,
-                design_descriptor.term_accession,
-                design_descriptor.term_source.name
-                if design_descriptor.term_source else ''
-            ]
-
-            build_comments(design_descriptor, study_design_descriptors_df.loc[i])
-
-        study_design_descriptors_df = \
-            study_design_descriptors_df.set_index('Study Design Type').T
+        # study_design_descriptors_df = pd.DataFrame(
+        #     columns=('Study Design Type',
+        #              'Study Design Type Term Accession Number',
+        #              'Study Design Type Term Source REF'))
+        # for i, design_descriptor in enumerate(study.design_descriptors):
+        #     study_design_descriptors_df.loc[i] = [
+        #         design_descriptor.term,
+        #         design_descriptor.term_accession,
+        #         design_descriptor.term_source.name
+        #         if design_descriptor.term_source else ''
+        #     ]
+        #
+        #     build_comments(design_descriptor, study_design_descriptors_df.loc[i])
+        #
+        # study_design_descriptors_df = \
+        #     study_design_descriptors_df.set_index('Study Design Type').
+        study_design_descriptors_df = _build_design_descriptors_section(design_descriptors=study.design_descriptors)
         fp.write('STUDY DESIGN DESCRIPTORS\n')
         study_design_descriptors_df.to_csv(
             path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -623,159 +891,50 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             index_label='Study PubMed ID')
 
         # Write STUDY FACTORS section
-        study_factors_df = pd.DataFrame(
-            columns=('Study Factor Name',
-                     'Study Factor Type',
-                     'Study Factor Type Term Accession Number',
-                     'Study Factor Type Term Source REF'))
-        for i, factor in enumerate(study.factors):
-            if factor.factor_type is not None:
-                factor_type_term = factor.factor_type.term
-                factor_type_term_accession = factor.factor_type.term_accession
-                if factor.factor_type.term_source is not None:
-                    factor_type_term_term_source_name = \
-                        factor.factor_type.term_source.name
-                else:
-                    factor_type_term_term_source_name = ''
-            else:
-                factor_type_term = ''
-                factor_type_term_accession = ''
-                factor_type_term_term_source_name = ''
-            study_factors_df.loc[i] = [
-                factor.name,
-                factor_type_term,
-                factor_type_term_accession,
-                factor_type_term_term_source_name
-            ]
-            # a call to insert Comments in the Study Factor Section of the Investigation File
-            build_comments(factor, study_factors_df.loc[i])
-            print("STUDY FACTOR Loc de i: ",study_factors_df.loc[i])
-        study_factors_df = study_factors_df.set_index('Study Factor Name').T
+        study_factors_df = _build_factors_section_df(factors=study.factors)
         fp.write('STUDY FACTORS\n')
         study_factors_df.to_csv(
             path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
             index_label='Study Factor Name')
 
         # Write STUDY ASSAYS section
-        study_assays_df = pd.DataFrame(
-            columns=(
-                'Study Assay File Name',
-                'Study Assay Measurement Type',
-                'Study Assay Measurement Type Term Accession Number',
-                'Study Assay Measurement Type Term Source REF',
-                'Study Assay Technology Type',
-                'Study Assay Technology Type Term Accession Number',
-                'Study Assay Technology Type Term Source REF',
-                'Study Assay Technology Platform',
-            )
-        )
-        for i, assay in enumerate(study.assays):
-            study_assays_df.loc[i] = [
-                assay.filename,
-                assay.measurement_type.term,
-                assay.measurement_type.term_accession,
-                assay.measurement_type.term_source.name
-                if assay.measurement_type.term_source else '',
-                assay.technology_type.term,
-                assay.technology_type.term_accession,
-                assay.technology_type.term_source.name
-                if assay.technology_type.term_source else '',
-                assay.technology_platform
-            ]
-            # a call to insert Comments in the Study Assay Type of the Investigation File
-            build_comments(assay, study_assays_df)
-        study_assays_df = study_assays_df.set_index('Study Assay File Name').T
+        # study_assays_df = pd.DataFrame(
+        #     columns=(
+        #         'Study Assay File Name',
+        #         'Study Assay Measurement Type',
+        #         'Study Assay Measurement Type Term Accession Number',
+        #         'Study Assay Measurement Type Term Source REF',
+        #         'Study Assay Technology Type',
+        #         'Study Assay Technology Type Term Accession Number',
+        #         'Study Assay Technology Type Term Source REF',
+        #         'Study Assay Technology Platform',
+        #     )
+        # )
+        # for i, assay in enumerate(study.assays):
+        #     study_assays_df.loc[i] = [
+        #         assay.filename,
+        #         assay.measurement_type.term,
+        #         assay.measurement_type.term_accession,
+        #         assay.measurement_type.term_source.name
+        #         if assay.measurement_type.term_source else '',
+        #         assay.technology_type.term,
+        #         assay.technology_type.term_accession,
+        #         assay.technology_type.term_source.name
+        #         if assay.technology_type.term_source else '',
+        #         assay.technology_platform
+        #     ]
+        #     # a call to insert Comments in the Study Assay Type of the Investigation File
+        #     build_comments(assay, study_assays_df)
+        # study_assays_df = study_assays_df.set_index('Study Assay File Name').T
+
+        study_assays_df= _build_assays_section_df(assays=study.assays)
         fp.write('STUDY ASSAYS\n')
         study_assays_df.to_csv(
             path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
             index_label='Study Assay File Name')
 
         # Write STUDY PROTOCOLS section
-        study_protocols_df = pd.DataFrame(
-            columns=(
-                'Study Protocol Name',
-                'Study Protocol Type',
-                'Study Protocol Type Term Accession Number',
-                'Study Protocol Type Term Source REF',
-                'Study Protocol Description',
-                'Study Protocol URI',
-                'Study Protocol Version',
-                'Study Protocol Parameters Name',
-                'Study Protocol Parameters Name Term Accession Number',
-                'Study Protocol Parameters Name Term Source REF',
-                'Study Protocol Components Name',
-                'Study Protocol Components Type',
-                'Study Protocol Components Type Term Accession Number',
-                'Study Protocol Components Type Term Source REF',
-            )
-        )
-        for i, protocol in enumerate(study.protocols):
-            parameters_names = ''
-            parameters_accession_numbers = ''
-            parameters_source_refs = ''
-            for parameter in protocol.parameters:
-                parameters_names += parameter.parameter_name.term + ';'
-                parameters_accession_numbers \
-                    += (parameter.parameter_name.term_accession
-                        if parameter.parameter_name.term_accession is not None
-                        else '') + ';'
-                parameters_source_refs \
-                    += (parameter.parameter_name.term_source.name
-                        if parameter.parameter_name.term_source else '') + ';'
-            if len(protocol.parameters) > 0:
-                parameters_names = parameters_names[:-1]
-                parameters_accession_numbers = \
-                    parameters_accession_numbers[:-1]
-                parameters_source_refs = parameters_source_refs[:-1]
-            component_names = ''
-            component_types = ''
-            component_types_accession_numbers = ''
-            component_types_source_refs = ''
-            for component in protocol.components:
-                component_names += component.name + ';'
-                component_types += component.component_type.term + ';'
-                component_types_accession_numbers += \
-                    component.component_type.term_accession + ';'
-                component_types_source_refs += \
-                    component.component_type.term_source.name \
-                    if component.component_type.term_source else '' + ';'
-            if len(protocol.components) > 0:
-                component_names = component_names[:-1]
-                component_types = component_types[:-1]
-                component_types_accession_numbers = \
-                    component_types_accession_numbers[:-1]
-                component_types_source_refs = component_types_source_refs[:-1]
-            protocol_type_term = ''
-            protocol_type_term_accession = ''
-            protocol_type_term_source_name = ''
-            if protocol.protocol_type:
-                protocol_type_term = protocol.protocol_type.term
-                protocol_type_term_accession = \
-                    protocol.protocol_type.term_accession
-                if protocol.protocol_type.term_source:
-                    protocol_type_term_source_name = \
-                        protocol.protocol_type.term_source.name
-            study_protocols_df.loc[i] = [
-                protocol.name,
-                protocol_type_term,
-                protocol_type_term_accession,
-                protocol_type_term_source_name,
-                protocol.description,
-                protocol.uri,
-                protocol.version,
-                parameters_names,
-                parameters_accession_numbers,
-                parameters_source_refs,
-                component_names,
-                component_types,
-                component_types_accession_numbers,
-                component_types_source_refs
-            ]
-
-            build_comments(protocol, study_protocols_df)
-
-        study_protocols_df = study_protocols_df.set_index(
-            'Study Protocol Name').T
+        study_protocols_df = _build_protocols_section_df(protocols=study.protocols)
         fp.write('STUDY PROTOCOLS\n')
         study_protocols_df.to_csv(
             path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -788,6 +947,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         study_contacts_df.to_csv(
             path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
             index_label='Study Person Last Name')
+
     if skip_dump_tables:
         pass
     else:
@@ -1999,11 +2159,11 @@ def check_study_factor_names(i_df):
     :param i_df: An investigation DataFrame
     :return: None
     """
-    for study_protocols_df in i_df['s_factors']:
-        for i, protocol_name in enumerate(study_protocols_df[
+    for study_factors_df in i_df['s_factors']:
+        for i, factor_name in enumerate(study_factors_df[
                 'Study Factor Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:
+            if factor_name is '' or 'Unnamed: ' in factor_name:
                 validator_warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor pos={}".format(i),
