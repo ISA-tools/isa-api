@@ -1886,13 +1886,32 @@ def isa_objects_factory(node):
                 outputs=...,
             )
     if isinstance(node, ProductNode):
+        if node.type == SAMPLE:
+            return Sample(
+                name='{0}'.format(node.name),
+                characteristics=node.characteristics
+            )
+        if node.type == EXTRACT:
+            return Extract(
+                name='{0}'.format(node.name),
+                characteristics=node.characteristics
+            )
+        if node.type == LABELED_EXTRACT:
+            return LabeledExtract(
+                name='{0}'.format(node.name),
+                characteristics=node.characteristics
+            )
+        if node.type == DATA_FILE:
+            return RawDataFile(filename='{0}'.format(node.name))
+        """
         cls = {
             SAMPLE: Sample,
             EXTRACT: Extract,
             LABELED_EXTRACT: LabeledExtract,
             DATA_FILE: DataFile
         }
-        return cls[node.type]()
+        return cls[node.type](characteristics=node.characteristics, name=node.name)
+        """
 
 
 class StudyDesignEncoder(json.JSONEncoder):
