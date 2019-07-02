@@ -1627,6 +1627,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @protocols.setter
     def protocols(self, val):
+        """
         if val is not None and hasattr(val, '__iter__'):
             if val == [] or all(isinstance(x, Protocol) for x in val):
                 self.__protocols = list(val)
@@ -1634,6 +1635,17 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             raise ISAModelAttributeError(
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
+        """
+        if not isinstance(val, Iterable) or not all(isinstance(el, Protocol) for el in val):
+            raise AttributeError('The object supplied is not an iterable of Protocol objects')
+        for protocol in val:
+            self.add_protocol(protocol)
+
+    def add_protocol(self, protocol):
+        if not isinstance(protocol, Protocol):
+            raise TypeError('The object supplied is not an instance of Protocol')
+        if protocol not in self.protocols:
+            self.__protocols.append(protocol)
 
     @staticmethod
     def __get_default_protocol(protocol_type):
