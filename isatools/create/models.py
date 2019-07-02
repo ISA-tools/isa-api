@@ -1771,6 +1771,7 @@ class StudyDesign(object):
         samples = []
         sample_count = 0
         process_sequence = []
+        protocols = set()
         for arm in self.study_arms:
             for cell, sample_assay_plan in arm.arm_map.items():
                 for element in cell.get_all_elements():
@@ -1808,9 +1809,10 @@ class StudyDesign(object):
                                 )
                                 process_sequence.append(process)
                             for assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
-                                self._generate_assays(assay_graph, sample_batch)
+                                protocols.update(node for node in assay_graph.nodes if isinstance(node, Protocol))
+                                self._generate_assay(assay_graph, sample_batch, sample_node)
                             samples += sample_batch
-        return factors, samples, process_sequence, ontology_sources
+        return factors, protocols, samples, process_sequence, ontology_sources
 
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph):
@@ -1821,13 +1823,20 @@ class StudyDesign(object):
         return [item]
 
     @staticmethod
-    def _generate_assays(assay_graph, samples):
-        assays = []
+    def _generate_assay(assay_graph, samples, sample_node):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
+        assay = Assay(
+            measurement_type=assay_graph.measurement_type,
+            technology_type=assay_graph.technology_type,
+            filename='a_{0}_{1}_assay.txt'.format(
+                sample_node.characteristics[0].get('term', None) if sample_node.characteristics else None,
+                assay_graph.measurement_type
+            )
+        )
         for node in assay_graph.start_nodes:
             StudyDesign._generate_isa_elements_from_node(node, assay_graph)
-        return assays
+        return assay
 
     def generate_isa_study(self):
         """
@@ -1847,8 +1856,10 @@ class StudyDesign(object):
         ]
         sources_map = self._generate_sources(study.ontology_source_references)
         study.sources = [source for sources in sources_map.values() for source in sources]
-        study.factors, study.samples, study.process_sequence, study.ontology_source_references = \
+        study.factors, protocols, study.samples, study.process_sequence, study.ontology_source_references = \
             self._generate_samples(sources_map, study.protocols[0], study_config['performers'][0])
+        for protocol in protocols:
+            study.add_protocol(protocol)
         return study
 
     def __repr__(self):
