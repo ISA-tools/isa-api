@@ -1815,12 +1815,20 @@ class StudyDesign(object):
         return factors, protocols, samples, process_sequence, ontology_sources
 
     @staticmethod
-    def _generate_isa_elements_from_node(node, assay_graph):
+    def _generate_isa_elements_from_node(node, assay_graph, processes = [], other_materials = [], data_files = []):
         item = isa_objects_factory(node)
+        if isinstance(item, Process):
+            processes.append(item)
+        elif isinstance(item, Material):
+            processes.append(item)
+        elif isinstance(item, DataFile):
+            data_files.append(item)
         next_nodes = assay_graph.next_nodes(node)
         for node in next_nodes:
-            StudyDesign._generate_isa_elements_from_node(node, assay_graph)
-        return [item]
+            processes, other_materials, data_files = StudyDesign._generate_isa_elements_from_node(
+                node, assay_graph, processes, other_materials, data_files
+            )
+        return processes, other_materials, data_files
 
     @staticmethod
     def _generate_assay(assay_graph, samples, sample_node):
@@ -1835,7 +1843,10 @@ class StudyDesign(object):
             )
         )
         for node in assay_graph.start_nodes:
-            StudyDesign._generate_isa_elements_from_node(node, assay_graph)
+            processes, other_materials, data_files = StudyDesign._generate_isa_elements_from_node(node, assay_graph)
+            assay.other_material.extend(other_materials)
+            assay.process_sequence.extend(processes)
+            assay.data_files.extend(data_files)
         return assay
 
     def generate_isa_study(self):
