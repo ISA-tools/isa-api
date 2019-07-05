@@ -103,6 +103,8 @@ DEFAULT_SOURCE_TYPE = Characteristic(
         term_accession='0100051')
 )
 
+ZFILL_WIDTH = 3
+
 
 def intersperse(lst, item):
     """
@@ -924,7 +926,7 @@ class AssayGraph(object):
                             print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
-                                                                                        str(j).zfill(3)),
+                                                                                             str(j).zfill(3)),
                                 name=node_key, protocol_type=node_key,
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
@@ -1815,20 +1817,24 @@ class StudyDesign(object):
         return factors, protocols, samples, process_sequence, ontology_sources
 
     @staticmethod
-    def _generate_isa_elements_from_node(node, assay_graph, processes = [], other_materials = [], data_files = []):
-        item = isa_objects_factory(node)
+    def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
+                                         previous_items=[], ix=0):
+        item = isa_objects_factory(node, ix)
         if isinstance(item, Process):
+            item.inputs = previous_items
             processes.append(item)
         elif isinstance(item, Material):
             processes.append(item)
         elif isinstance(item, DataFile):
             data_files.append(item)
         next_nodes = assay_graph.next_nodes(node)
-        for node in next_nodes:
-            processes, other_materials, data_files = StudyDesign._generate_isa_elements_from_node(
-                node, assay_graph, processes, other_materials, data_files
+        for next_node in next_nodes:
+            processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
+                next_node, assay_graph, processes, other_materials, data_files, [item]
             )
-        return processes, other_materials, data_files
+            if isinstance(node, ProtocolNode):
+                item.outputs.append(next_item)
+        return processes, other_materials, data_files, item
 
     @staticmethod
     def _generate_assay(assay_graph, samples, sample_node):
@@ -1843,10 +1849,14 @@ class StudyDesign(object):
             )
         )
         for node in assay_graph.start_nodes:
-            processes, other_materials, data_files = StudyDesign._generate_isa_elements_from_node(node, assay_graph)
-            assay.other_material.extend(other_materials)
-            assay.process_sequence.extend(processes)
-            assay.data_files.extend(data_files)
+            size = node.size if isinstance(node, ProductNode) else 1
+            for ix in range(size):
+                processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
+                    node, assay_graph, ix=ix
+                )
+                assay.other_material.extend(other_materials)
+                assay.process_sequence.extend(processes)
+                assay.data_files.extend(data_files)
         return assay
 
     def generate_isa_study(self):
@@ -1897,10 +1907,16 @@ class StudyDesign(object):
         return not self == other
 
 
-def isa_objects_factory(node):
+def isa_objects_factory(node, sequence_no=0):
+    """
+    This method generates an ISA element from an ISA node
+    :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
+    :param sequence_no: int - a sequential number to discriminate among items built in a batch
+    :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
+    """""
     if isinstance(node, ProtocolNode):
         return Process(
-                name=node.name,
+                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 executes_protocol=node,
                 performer=...,
                 parameter_values=node.parameter_values,
@@ -1910,21 +1926,21 @@ def isa_objects_factory(node):
     if isinstance(node, ProductNode):
         if node.type == SAMPLE:
             return Sample(
-                name='{0}'.format(node.name),
+                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         if node.type == EXTRACT:
             return Extract(
-                name='{0}'.format(node.name),
+                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         if node.type == LABELED_EXTRACT:
             return LabeledExtract(
-                name='{0}'.format(node.name),
+                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         if node.type == DATA_FILE:
-            return RawDataFile(filename='{0}'.format(node.name))
+            return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
         """
         cls = {
             SAMPLE: Sample,
