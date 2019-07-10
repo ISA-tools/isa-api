@@ -1,4 +1,5 @@
 import unittest
+from functools import reduce
 from collections import OrderedDict
 
 from isatools.model import *
@@ -73,7 +74,6 @@ ms_assay_dict = OrderedDict([
             'characteristics_category': 'extract type',
             'characteristics_value': 'polar fraction',
             'size': 1,
-            'technical_replicates': None,
             'is_input_to_next_protocols': True
         },
         {
@@ -81,7 +81,6 @@ ms_assay_dict = OrderedDict([
             'characteristics_category': 'extract type',
             'characteristics_value': 'lipids',
             'size': 1,
-            'technical_replicates': None,
             'is_input_to_next_protocols': True
         }
     ]),
@@ -92,7 +91,6 @@ ms_assay_dict = OrderedDict([
             'characteristics_category': 'labelled extract type',
             'characteristics_value': '',
             'size': 2,
-            'technical_replicates': None,
             'is_input_to_next_protocols': True
         }
     ]),
@@ -104,13 +102,11 @@ ms_assay_dict = OrderedDict([
     ('raw spectral data file', [
         {
             'node_type': DATA_FILE,
-            'size': 1,
-            'technical_replicates': 2,
+            'size': 2,
             'is_input_to_next_protocols': False
         }
     ])
 ])
-
 
 phti_assay_dict = OrderedDict([
     ('measurement_type', 'phenotyping'),
@@ -195,7 +191,6 @@ nmr_assay_dict = OrderedDict([
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'supernatant',
                     'size': 1,
-                    'technical_replicates': None,
                     'is_input_to_next_protocols': True
                 },
                 {
@@ -203,20 +198,20 @@ nmr_assay_dict = OrderedDict([
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'pellet',
                     'size': 1,
-                    'technical_replicates': None,
                     'is_input_to_next_protocols': True
                 }
             ]),
             ('nmr_spectroscopy', {
                 'instrument': ['Bruker AvanceII 1 GHz'],
-                'acquisition_mode': ['1D 13C NMR','1D 1H NMR','2D 13C-13C NMR'],
-                'pulse_sequence': ['CPMG','TOCSY','HOESY','watergate']
+                'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
+                'pulse_sequence': ['CPMG', 'watergate']
+                # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
+                # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
             }),
             ('raw_spectral_data_file', [
                 {
                     'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
+                    'size': 2,
                     'is_input_to_next_protocols': False
                 }
             ])
@@ -1472,28 +1467,32 @@ class StudyDesignTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
+        self.ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
+        self.nmr_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, nmr_assay_dict)
         self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_00, self.sample_assay_plan),
-            (self.cell_follow_up, self.sample_assay_plan)
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         self.second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=25, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_multi_elements, self.sample_assay_plan),
-            (self.cell_follow_up, self.sample_assay_plan)
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_multi_elements, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         self.third_arm = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_multi_elements_padded, self.sample_assay_plan),
-            (self.cell_follow_up, self.sample_assay_plan)
+            (self.cell_multi_elements_padded, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         self.third_arm_no_run_in = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None),
-            (self.cell_multi_elements_padded, self.sample_assay_plan),
-            (self.cell_follow_up, self.sample_assay_plan)
+            (self.cell_multi_elements_padded, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         self.arm_same_name_as_third = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None), (self.cell_single_treatment_01, self.sample_assay_plan),
-            (self.cell_follow_up, self.sample_assay_plan)
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_01, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         self.study_design = StudyDesign()
 
@@ -1591,6 +1590,26 @@ class StudyDesignTest(unittest.TestCase):
         self.assertEqual(len(study.sources), self.first_arm.group_size + self.second_arm.group_size +
                          self.third_arm.group_size)
         print('Sources: {0}'.format(study.sources))
+
+    def test_generate_isa_study_single_arm_single_cell_elements(self):
+        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
+                               'study-creator-config.yaml')) as yaml_file:
+            config = yaml.load(yaml_file)
+        study_config = config['study']
+        single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.nmr_sample_assay_plan),
+            (self.cell_follow_up, self.nmr_sample_assay_plan)
+        ]))
+        study_design = StudyDesign(study_arms=(single_arm,))
+        study = study_design.generate_isa_study()
+        self.assertIsInstance(study, Study)
+        self.assertEqual(study.filename, study_config['filename'])
+        self.assertEqual(len(study.sources), single_arm.group_size)
+        expected_num_of_samples = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
+                                         self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
+        print('Expected number of samples is: {0}'.format(expected_num_of_samples))
+        self.assertEqual(len(study.samples), expected_num_of_samples)
 
 
 class TreatmentFactoryTest(unittest.TestCase):
