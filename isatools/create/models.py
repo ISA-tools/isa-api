@@ -1834,17 +1834,20 @@ class StudyDesign(object):
             )
             if isinstance(node, ProtocolNode):
                 item.outputs.append(next_item)
+                plink(processes[-1], item)  # TODO this needs to be tested
         return processes, other_materials, data_files, item
 
     @staticmethod
     def _generate_assay(assay_graph, samples, sample_node):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
+        sample_char_value = getattr(sample_node.characteristics[0], 'value', None) if sample_node.characteristics \
+            else None
         assay = Assay(
             measurement_type=assay_graph.measurement_type,
             technology_type=assay_graph.technology_type,
             filename='a_{0}_{1}_assay.txt'.format(
-                sample_node.characteristics[0].get('term', None) if sample_node.characteristics else None,
+                sample_char_value.term if isinstance(sample_char_value, OntologyAnnotation) else sample_char_value,
                 assay_graph.measurement_type
             )
         )
@@ -1913,15 +1916,15 @@ def isa_objects_factory(node, sequence_no=0):
     :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
     :param sequence_no: int - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
-    """""
+    """
     if isinstance(node, ProtocolNode):
         return Process(
                 name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 executes_protocol=node,
                 performer=...,
                 parameter_values=node.parameter_values,
-                inputs=...,
-                outputs=...,
+                inputs=[],
+                outputs=[],
             )
     if isinstance(node, ProductNode):
         if node.type == SAMPLE:
