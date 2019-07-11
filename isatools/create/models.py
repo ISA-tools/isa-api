@@ -650,17 +650,33 @@ class ProtocolNode(SequenceNode, Protocol):
 
     PARAMETER_VALUES_ERROR = 'The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue ' \
                              'objects. {0} was supplied.'
+    REPLICATES_ERROR = 'Replicates must be a positive integer. {0} was supplied.'
     PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
     COMPONENTS_CANNOT_BE_SET_ERROR = 'The \'components\' property cannot be set.'
 
     def __init__(self, id_=str(uuid.uuid4()), name='', protocol_type=None, uri='',
-                 description='', version='', parameter_values=None):
+                 description='', version='', parameter_values=None, replicates=None):
+        """
+
+        :param id_:
+        :param name:
+        :param protocol_type:
+        :param uri:
+        :param description:
+        :param version:
+        :param parameter_values: the values to be supplied to the Protocol Parameters
+        :param replicates: int - the number of replicates (biological or technical) for this Protocol step. Must be a
+                                 positive integer (>= 1)
+        """
         Protocol.__init__(self, id_=id_, name=name, protocol_type=protocol_type,
                           uri=uri, description=description, version=version)
         SequenceNode.__init__(self)
         self.__parameter_values = []
+        self.__replicates = 1
         if parameter_values is not None:
             self.parameter_values = parameter_values
+        if replicates:
+            self.replicates = replicates
 
     @property
     def parameter_values(self):
@@ -678,6 +694,16 @@ class ProtocolNode(SequenceNode, Protocol):
             protocol_parameter = ProtocolParameter(parameter_name=protocol_parameter)
         parameter_value = ParameterValue(category=protocol_parameter, value=value, unit=unit)
         self.__parameter_values.append(parameter_value)
+
+    @property
+    def replicates(self):
+        return self.__replicates or 1
+
+    @replicates.setter
+    def replicates(self, replicates):
+        if not isinstance(replicates, int) or replicates < 1:
+            raise AttributeError(self.REPLICATES_ERROR.format(replicates))
+        self.__replicates = replicates
 
     @property
     def parameters(self):
@@ -905,6 +931,9 @@ class AssayGraph(object):
                         res.add_link(prev_node, product_node)
                         current_nodes.append(product_node)
             else:       # the node is a ProtocolNode
+                replicates = node_params.get('#replicates', 1)
+                node_params = {key: val for key, val in node_params.items() if key != '#replicates'}
+                print(node_params)
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for i, pv_combination in enumerate(pv_combinations):
@@ -917,7 +946,8 @@ class AssayGraph(object):
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
                                 for ix, pv in enumerate(pv_combination)
-                            ]
+                            ],
+                            replicates=replicates
                         )
                         res.add_node(protocol_node)
                         current_nodes.append(protocol_node)
@@ -932,7 +962,8 @@ class AssayGraph(object):
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)
                                     for ix, pv in enumerate(pv_combination)
-                                ]
+                                ],
+                                replicates=replicates
                             )
                             # print(protocol_node)
                             res.add_node(protocol_node)

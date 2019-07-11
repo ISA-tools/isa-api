@@ -70,24 +70,26 @@ ms_assay_dict = OrderedDict([
     ('extraction', {}),
     ('extract', [
         {
-            'node_type': SAMPLE,
+            'node_type': EXTRACT,
             'characteristics_category': 'extract type',
             'characteristics_value': 'polar fraction',
             'size': 1,
             'is_input_to_next_protocols': True
         },
         {
-            'node_type': SAMPLE,
+            'node_type': EXTRACT,
             'characteristics_category': 'extract type',
             'characteristics_value': 'lipids',
             'size': 1,
             'is_input_to_next_protocols': True
         }
     ]),
-    ('labelling', {}),
+    ('labelling', {
+        '#replicates': 2
+    }),
     ('labelled extract', [
         {
-            'node_type': SAMPLE,
+            'node_type': LABELED_EXTRACT,
             'characteristics_category': 'labelled extract type',
             'characteristics_value': '',
             'size': 2,
@@ -95,6 +97,7 @@ ms_assay_dict = OrderedDict([
         }
     ]),
     ('mass spectrometry', {
+        '#replicates': 2,
         'instrument': ['Agilent QTQF §'],
         'injection_mode': ['FIA', 'LC'],
         'acquisition_mode': ['positive mode']
@@ -114,7 +117,7 @@ phti_assay_dict = OrderedDict([
             ('extraction', {}),
             ('extract', [
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'supernatant',
                     'size': 1,
@@ -122,7 +125,7 @@ phti_assay_dict = OrderedDict([
                     'is_input_to_next_protocols': True
                 },
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'pellet',
                     'size': 1,
@@ -152,7 +155,7 @@ lcdad_assay_dict = OrderedDict([
             ('extraction', {}),
             ('extract', [
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'supernatant',
                     'size': 1,
@@ -160,7 +163,7 @@ lcdad_assay_dict = OrderedDict([
                     'is_input_to_next_protocols': True
                 },
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'pellet',
                     'size': 1,
@@ -187,14 +190,14 @@ nmr_assay_dict = OrderedDict([
             ('extraction', {}),
             ('extract', [
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'supernatant',
                     'size': 1,
                     'is_input_to_next_protocols': True
                 },
                 {
-                    'node_type': SAMPLE,
+                    'node_type': EXTRACT,
                     'characteristics_category': 'extract type',
                     'characteristics_value': 'pellet',
                     'size': 1,
@@ -202,6 +205,7 @@ nmr_assay_dict = OrderedDict([
                 }
             ]),
             ('nmr_spectroscopy', {
+                '#replicates': 2,
                 'instrument': ['Bruker AvanceII 1 GHz'],
                 'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
                 'pulse_sequence': ['CPMG', 'watergate']
@@ -802,7 +806,7 @@ class StudyCellTest(unittest.TestCase):
 class ProtocolNodeTest(unittest.TestCase):
 
     def test_constructor(self):
-        node = ProtocolNode(name='sampling', protocol_type='sampling')
+        node = ProtocolNode(name='sampling', protocol_type='sampling', replicates=2)
         self.assertIsInstance(node, ProtocolNode)
 
     def test_add_parameter_value(self):
@@ -821,6 +825,7 @@ class ProtocolNodeTest(unittest.TestCase):
         self.assertEqual(node.parameter_values, [])
         self.assertEqual(node.parameters, [])
         self.assertEqual(node.components, None)
+        self.assertEqual(node.replicates, 1)
         test_parameter_values = [
             ParameterValue(category=ProtocolParameter(parameter_name='test param'), value='tot'),
             ParameterValue(category=ProtocolParameter(parameter_name='another test param'), value='quot', unit='z')
@@ -828,6 +833,8 @@ class ProtocolNodeTest(unittest.TestCase):
         node.parameter_values = test_parameter_values
         self.assertEqual(node.parameter_values, test_parameter_values)
         self.assertEqual(node.parameters, [test_pv.category for test_pv in test_parameter_values])
+        node.replicates = 3
+        self.assertEqual(node.replicates, 3)
 
 
 class ProductNodeTest(unittest.TestCase):
@@ -890,6 +897,10 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
+        nmr_nodes = list(filter(lambda n: n.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        self.assertEqual(len(nmr_nodes), 8)
+        for node in nmr_nodes:
+            self.assertEqual(node.replicates, 2)
 
     def test_properties_success(self):
         self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')

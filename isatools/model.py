@@ -2430,7 +2430,8 @@ class ParameterValue(Commentable):
     comments={num_comments} Comment objects
 )""".format(category=self.category.parameter_name.term if self.category else '',
             value=self.value.term if isinstance(
-            self.value, OntologyAnnotation) else repr(self.value),
+                self.value, OntologyAnnotation
+            ) else repr(self.value),
             unit=self.unit.term if self.unit else '',
             num_comments=len(self.comments))
 
