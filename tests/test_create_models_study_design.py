@@ -1617,11 +1617,15 @@ class StudyDesignTest(unittest.TestCase):
         self.assertIsInstance(study, Study)
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), single_arm.group_size)
-        expected_num_of_samples = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                         self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
+
+        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
+                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
+        expected_num_of_samples = expected_num_of_samples_per_plan * len([
+            a_plan for a_plan in single_arm.arm_map.values() if a_plan is not None
+        ])
         print('Expected number of samples is: {0}'.format(expected_num_of_samples))
         self.assertEqual(len(study.samples), expected_num_of_samples)
-
+        
 
 class TreatmentFactoryTest(unittest.TestCase):
 
