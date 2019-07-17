@@ -1602,6 +1602,19 @@ class StudyDesignTest(unittest.TestCase):
                          self.third_arm.group_size)
         print('Sources: {0}'.format(study.sources))
 
+    def test__generate_isa_elements_from_node(self):
+        assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        node = next(iter(assay_graph.start_nodes))
+        processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
+            node, assay_graph
+        )
+        # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
+        print(processes)
+        self.assertEqual(len(processes), 1+8*2)
+        self.assertEqual(len(other_materials), 2)
+        self.assertEqual(len(data_files), 8*2)      # 16 raw data files
+        self.assertIsInstance(next_item, DataFile)
+
     def test_generate_isa_study_single_arm_single_cell_elements(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
@@ -1625,7 +1638,27 @@ class StudyDesignTest(unittest.TestCase):
         ])
         print('Expected number of samples is: {0}'.format(expected_num_of_samples))
         self.assertEqual(len(study.samples), expected_num_of_samples)
-        
+        self.assertEqual(len(study.assays), 2)
+        treatment_assay = next(iter(study.assays))
+        self.assertIsInstance(treatment_assay, Assay)
+        self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
+        self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
+        self.assertEqual(len(treatment_assay.process_sequence), (32+2)*3*expected_num_of_samples_per_plan)
+
+    def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
+        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
+                               'study-creator-config.yaml')) as yaml_file:
+            config = yaml.load(yaml_file)
+        # study_config = config['study']
+        single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.nmr_sample_assay_plan),
+            (self.cell_follow_up, self.nmr_sample_assay_plan)
+        ]))
+        study_design = StudyDesign(study_arms=(single_arm,))
+        study = study_design.generate_isa_study(split_assays_by_sample_type=True)
+        self.assertEqual(len(study.assays), 6)
+
 
 class TreatmentFactoryTest(unittest.TestCase):
 

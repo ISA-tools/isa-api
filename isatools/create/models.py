@@ -1792,11 +1792,13 @@ class StudyDesign(object):
             src_map[s_arm.name] = list(srcs)
         return src_map
 
-    def _generate_samples(self, sources_map, sampling_protocol, performer):
+    def _generate_samples(self, sources_map, sampling_protocol, performer, split_assays_by_sample_type):
         """
         Private method to be used in 'generate_isa_study'.
         :param sources_map: dict - the output of '_generate_sources'
         :param sampling_protocol: isatools.model.Protocol
+        :param performer
+        :param split_assays_by_sample_type: bool
         :return: 
         """
         factors = set()
@@ -1804,16 +1806,18 @@ class StudyDesign(object):
         samples = []
         sample_count = 0
         process_sequence = []
+        assays = []
         protocols = set()
         for arm in self.study_arms:
             for cell, sample_assay_plan in arm.arm_map.items():
+                if not sample_assay_plan:
+                    continue
+                factor_values = []      # TODO
+                sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
-                    for source in sources_map[arm.name]:
-                        if not sample_assay_plan:
-                            continue
-                        for sample_node in sample_assay_plan.sample_plan:
-                            sample_batch = []
+                    for sample_node in sample_assay_plan.sample_plan:
+                        for source in sources_map[arm.name]:
                             sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
                             sample_term_source = sample_type.value.term_source if \
                                 hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
@@ -1822,9 +1826,10 @@ class StudyDesign(object):
                             for samp_idx in range(0, sampling_size):
                                 sample = Sample(name=self._idgen(arm.name, source.name, str(samp_idx+1),
                                                                  sample_term_source),
-                                                factor_values=element.factor_values,
+                                                factor_values=factor_values,
                                                 characteristics=[sample_type], derives_from=[source])
-                                sample_batch.append(sample)
+                                sample_batches[sample_node].append(sample)
+                                # sample_batch.append(sample)
                                 sample_count += 1
                                 process = Process(
                                     executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
@@ -1841,10 +1846,21 @@ class StudyDesign(object):
                                     ]
                                 )
                                 process_sequence.append(process)
-                            for assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
-                                protocols.update(node for node in assay_graph.nodes if isinstance(node, Protocol))
-                                self._generate_assay(assay_graph, sample_batch, sample_node)
-                            samples += sample_batch
+                for sample_node in sample_assay_plan.sample_plan:
+                    samples.extend(sample_batches[sample_node])
+                for assay_graph in sample_assay_plan.assay_plan:
+                    protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
+                    if split_assays_by_sample_type is True:
+                        for sample_node in sample_assay_plan.sample_plan:
+                            if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                                assays.append(
+                                    self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
+                                )
+                    else:
+                        sample_batch = []   # TODO use functools.reduce to build up the sample_batch
+                        assays.append(
+                            self._generate_assay(assay_graph, )
+                        )
         return factors, protocols, samples, process_sequence, ontology_sources
 
     @staticmethod
@@ -1869,10 +1885,11 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item
 
     @staticmethod
-    def _generate_assay(assay_graph, samples, sample_node):
+    def _generate_assay(assay_graph, samples, sample_node=None):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
-        sample_char_value = getattr(sample_node.characteristics[0], 'value', None) if sample_node.characteristics \
+        sample_char_value = getattr(sample_node.characteristics[0], 'value', None) \
+            if isinstance(sample_node, ProductNode) and sample_node.characteristics \
             else None
         assay = Assay(
             measurement_type=assay_graph.measurement_type,
@@ -1909,6 +1926,7 @@ class StudyDesign(object):
         study.protocols = [
             Protocol(**protocol_config) for protocol_config in study_config['protocols']
         ]
+        print('Sampling protocol is {0}'.format(study.protocols[0]))
         sources_map = self._generate_sources(study.ontology_source_references)
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, protocols, study.samples, study.process_sequence, study.ontology_source_references = \

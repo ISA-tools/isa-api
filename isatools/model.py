@@ -2241,6 +2241,9 @@ class Protocol(Commentable):
                          x.parameter_name.term == parameter_name)
         except StopIteration:
             pass
+        except AttributeError as e:
+            print('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
+            # raise AttributeError(e)
         return param
 
     @property
