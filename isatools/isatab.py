@@ -51,6 +51,7 @@ from isatools.model import (
     StudyFactor,
     plink,
 )
+
 from isatools.utils import utf8_text_file_open
 
 
@@ -312,16 +313,18 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                                               'Term Source Version',
                                               'Term Source Description']
 
-        if len(ontologies) > 0:
-            max_comment = ontologies[0].comments
-            # max_comment = OntologySource()
-            for ontology in ontologies:
-                if len(ontology.comments) > len(max_comment):
-                    max_comment = ontology.comments
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for ontology in ontologies:
+            for comment in ontology.comments:
+                if comment.name in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
 
-            for comment in max_comment:
-                if 'Comment[' + comment.name + ']' not in ontology_source_references_df_cols:
-                    ontology_source_references_df_cols.append('Comment[' + comment.name + ']')
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+           ontology_source_references_df_cols.append('Comment[' + comment_name + ']')
 
         ontology_source_references_df = pd.DataFrame(columns=tuple(ontology_source_references_df_cols))
 
@@ -334,15 +337,30 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 ontology.description
             ]
 
-            for j, _ in enumerate(max_comment):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    if 'Comment[' + ontology.comments[j].name + ']' in ontology_source_references_df_cols:
-                        ontology_source_references_df_row.append(ontology.comments[j].value)
-                    else:
-                        ontology_source_references_df_row.append('')
-                except IndexError:
-                    ontology_source_references_df_row.append('')
+            # for j, _ in enumerate(max_comment):
+            #     log.debug('%s iteration, item=%s', j, _)
+            #     try:
+            #         if 'Comment[' + ontology.comments[j].name + ']' in ontology_source_references_df_cols:
+            #             ontology_source_references_df_row.append(ontology.comments[j].value)
+            #         else:
+            #             ontology_source_references_df_row.append('')
+            #     except IndexError:
+            #         ontology_source_references_df_row.append('')
+            common_names = []
+            for comment in ontology.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in ontology.comments:
+                        if element.name == key:
+                            ontology_source_references_df_row.append(element.value)
+
+                else:
+                    ontology_source_references_df_row.append("")
+
             log.debug('row=%s', ontology_source_references_df_row)
             ontology_source_references_df.loc[i] = ontology_source_references_df_row
 
@@ -368,14 +386,19 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                             prefix + ' Person Roles',
                             prefix + ' Person Roles Term Accession Number',
                             prefix + ' Person Roles Term Source REF']
-        if len(contacts) > 0:
-            max_comment = Person()
-            for contact in contacts:
-                if len(contact.comments) > len(max_comment.comments):
-                    max_comment = contact
-            for comment in max_comment.comments:
-                if 'Comment[' + comment.name + ']' not in contacts_df_cols:
-                    contacts_df_cols.append('Comment[' + comment.name + ']')
+
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for contact in contacts:
+            for comment in contact.comments:
+                if comment.name in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
+
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            contacts_df_cols.append('Comment[' + comment_name + ']')
 
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
 
@@ -396,12 +419,27 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 roles_accession_numbers,
                 roles_source_refs
             ]
-            for j, _ in enumerate(max_comment.comments):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    contacts_df_row.append(contact.comments[j].value)
-                except IndexError:
-                    contacts_df_row.append('')
+            # for j, _ in enumerate(max_comment.comments):
+            #     log.debug('%s iteration, item=%s', j, _)
+            #     try:
+            #         contacts_df_row.append(contact.comments[j].value)
+            #     except IndexError:
+            #         contacts_df_row.append('')
+            common_names = []
+            for comment in contact.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in contact.comments:
+                        if element.name == key:
+                            contacts_df_row.append(element.value)
+
+                else:
+                    contacts_df_row.append("")
+
             log.debug('row=%s', contacts_df_row)
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
@@ -424,18 +462,21 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             prefix + ' Publication Status Term Accession Number',
             prefix + ' Publication Status Term Source REF']
 
-        if len(publications) > 0:
-            max_comment = publications[0].comments
-            # max_comment = OntologySource()
-            for publication in publications:
-                if len(publication.comments) > len(max_comment):
-                    max_comment = publication.comments
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for publication in publications:
+            for comment in publication.comments:
+                if comment.name in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
 
-            for comment in max_comment:
-                if 'Comment[' + comment.name + ']' not in publications_df_cols:
-                    publications_df_cols.append('Comment[' + comment.name + ']')
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            publications_df_cols.append('Comment[' + comment_name + ']')
 
-        publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
+        this_publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
+
         for i, publication in enumerate(publications):
             log.debug('%s iteration, item=%s', i, publication)
             if publication.status is not None:
@@ -460,19 +501,36 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 status_term_source_name,
             ]
 
-            for j, _ in enumerate(max_comment):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    if 'Comment[' + publication.comments[j].name + ']' in publications_df_cols:
-                        publications_df_row.append(publication.comments[j].value)
-                    else:
-                        publications_df_row.append('')
-                except IndexError:
-                    publications_df_row.append('')
-            log.debug('row=%s', publications_df_row)
-            publications_df.loc[i] = publications_df_row
+            # for j, _ in enumerate(max_comment):
+            #     log.debug('%s iteration, item=%s', j, _)
+            #     try:
+            #         if 'Comment[' + publication.comments[j].name + ']' in publications_df_cols:
+            #             publications_df_row.append(publication.comments[j].value)
+            #         else:
+            #             publications_df_row.append('')
+            #     except IndexError:
+            #         publications_df_row.append('')
+            # here, given an object, we create a list comments fields  associated to it
 
-        return publications_df.set_index(prefix + ' PubMed ID').T
+            common_names = []
+            for comment in publication.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in publication.comments:
+                        if element.name == key:
+                            publications_df_row.append(element.value)
+
+                else:
+                    publications_df_row.append("")
+
+            log.debug('row=%s', publications_df_row)
+            this_publications_df.loc[i] = publications_df_row
+
+        return this_publications_df.set_index(prefix + ' PubMed ID').T
 
     def _build_protocols_section_df(protocols=list()):
         """Build Protocol section DataFrame
@@ -499,17 +557,21 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 'Study Protocol Components Type Term Accession Number',
                 'Study Protocol Components Type Term Source REF',
         ]
-        if len(protocols) > 0:
-            max_comment = protocols[0].comments
-            for protocol in protocols:
-                if len(protocol.comments) > len(max_comment):
-                    max_comment = protocol.comments
 
-            for comment in max_comment:
-                if 'Comment[' + comment.name + ']' not in study_protocols_df_cols:
-                    study_protocols_df_cols.append('Comment[' + comment.name + ']')
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for protocol in protocols:
+            for comment in protocol.comments:
+                if comment.name in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
 
-        study_protocols_df = pd.DataFrame(columns=tuple(study_protocols_df_cols))
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            study_protocols_df_cols.append('Comment[' + comment_name + ']')
+
+        this_study_protocols_df = pd.DataFrame(columns=tuple(study_protocols_df_cols))
 
         protocol_type_term = ''
         protocol_type_term_accession = ''
@@ -576,20 +638,26 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 component_types_source_refs
             ]
 
-            for j, _ in enumerate(max_comment):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    if 'Comment[' + protocol.comments[j].name + ']' in study_protocols_df_cols:
-                        study_protocols_df_row.append(protocol.comments[j].value)
-                    else:
-                        study_protocols_df_row.append('')
-                except IndexError:
-                    study_protocols_df_row.append('')
+            # here, given an object, we create a list comments fields  associated to it
+            common_names = []
+            for comment in protocol.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in protocol.comments:
+                        if element.name == key:
+                            study_protocols_df_row.append(element.value)
+
+                else:
+                    study_protocols_df_row.append("")
 
             log.debug('row=%s', study_protocols_df_row)
-            study_protocols_df.loc[i] = study_protocols_df_row
+            this_study_protocols_df.loc[i] = study_protocols_df_row
 
-        return study_protocols_df.set_index('Study Protocol Name').T
+        return this_study_protocols_df.set_index('Study Protocol Name').T
 
     def _build_assays_section_df(assays=list()):
         """Build Factors section DataFrame
@@ -609,17 +677,21 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 'Study Assay Technology Type Term Source REF',
                 'Study Assay Technology Platform'
             ]
-        if len(assays) > 0:
-            max_comment = assays[0].comments
-            for assay in assays:
-                if len(assay.comments) > len(max_comment):
-                    max_comment = assay.comments
 
-            for comment in max_comment:
-                if 'Comment[' + comment.name + ']' not in study_assays_df_cols:
-                    study_assays_df_cols.append('Comment[' + comment.name + ']')
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for assay in assays:
+            for comment in assay.comments:
+                if comment.name in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
 
-        study_assays_df = pd.DataFrame(columns=tuple(study_assays_df_cols))
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            study_assays_df_cols.append('Comment[' + comment_name + ']')
+
+        this_study_assays_df = pd.DataFrame(columns=tuple(study_assays_df_cols))
 
         for i, assay in enumerate(assays):
             study_assays_df_row = [
@@ -634,20 +706,27 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 if assay.technology_type.term_source else '',
                 assay.technology_platform
             ]
-            for j, _ in enumerate(max_comment):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    if 'Comment[' + assay.comments[j].name + ']' in study_assays_df_cols:
-                       study_assays_df_row.append(assay.comments[j].value)
-                    else:
-                       study_assays_df_row.append('')
-                except IndexError:
-                    study_assays_df_row.append('')
+
+            # here, given an object, we create a list comments fields  associated to it
+            common_names = []
+            for comment in assay.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in assay.comments:
+                        if element.name == key:
+                            study_assays_df_row.append(element.value)
+
+                else:
+                    study_assays_df_row.append("")
 
             log.debug('row=%s', study_assays_df_row)
-            study_assays_df.loc[i] = study_assays_df_row
+            this_study_assays_df.loc[i] = study_assays_df_row
 
-        return study_assays_df.set_index('Study Assay File Name').T
+        return this_study_assays_df.set_index('Study Assay File Name').T
 
     def _build_factors_section_df(factors=list()):
         """Build Factors section DataFrame
@@ -661,18 +740,23 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                      'Study Factor Type',
                      'Study Factor Type Term Accession Number',
                      'Study Factor Type Term Source REF']
-        if len(factors) > 0:
-            max_comment = factors[0].comments
-            for factor in factors:
-                if len(factor.comments) > len(max_comment):
-                    max_comment = factor.comments
 
-            for comment in max_comment:
-                if 'Comment[' + comment.name + ']' not in study_factors_df_cols:
-                    study_factors_df_cols.append('Comment[' + comment.name + ']')
+        seen_comments = {}
+        # step1: going over each object and pulling associated comments to build a full list of those
+        for factor in factors:
+            for comment in factor.comments:
+                if comment.name  in seen_comments.keys():
+                    seen_comments[comment.name].append(comment.value)
+                else:
+                    seen_comments[comment.name] = [comment.value]
 
-        study_factors_df = pd.DataFrame(columns=tuple(study_factors_df_cols))
+        # step2: based on the list of unique Comments, create the relevant ISA headers
+        for comment_name in seen_comments.keys():
+            study_factors_df_cols.append('Comment[' + comment_name + ']')
 
+        this_study_factors_df = pd.DataFrame(columns=tuple(study_factors_df_cols))
+
+        # step4: for each object, create a record
         for i, factor in enumerate(factors):
 
             if factor.factor_type is not None:
@@ -688,26 +772,35 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 factor_type_term_accession = ''
                 factor_type_term_term_source_name = ''
 
+
             study_factors_df_row = [
-                    factor.name,
-                    factor_type_term,
-                    factor_type_term_accession,
-                    factor_type_term_term_source_name
-                ]
-            for j, _ in enumerate(max_comment):
-                log.debug('%s iteration, item=%s', j, _)
-                try:
-                    if 'Comment[' + factor.comments[j].name + ']' in study_factors_df_cols:
-                        study_factors_df_row.append(factor.comments[j].value)
-                    else:
-                        study_factors_df_row.append('')
-                except IndexError:
-                    study_factors_df_row.append('')
+                factor.name,
+                factor_type_term,
+                factor_type_term_accession,
+                factor_type_term_term_source_name
+                if factor.factor_type.term_source else ''
+            ]
+
+            # here, given an object, we create a list comments fields  associated to it
+            common_names = []
+            for comment in factor.comments:
+                common_names.append(comment.name)
+
+            # now check which comments are associated to it out of the full possible range of Comments
+            # if a match is found, get the value and add it to the record
+            for key in seen_comments.keys():
+                if key in common_names:
+                    for element in factor.comments:
+                        if element.name == key:
+                            study_factors_df_row.append(element.value)
+
+                else:
+                    study_factors_df_row.append("")
 
             log.debug('row=%s', study_factors_df_row)
-            study_factors_df.loc[i] = study_factors_df_row
+            this_study_factors_df.loc[i] = study_factors_df_row
 
-        return study_factors_df.set_index('Study Factor Name').T
+        return this_study_factors_df.set_index('Study Factor Name').T
 
     def _build_design_descriptors_section(design_descriptors=list()):
 
