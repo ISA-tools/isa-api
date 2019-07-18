@@ -3284,6 +3284,14 @@ class Process(Commentable):
         else:
             self.__next_process = val
 
+    def __repr__(self):
+        return '{0}.{1}(name="{2.name}", executes_protocol={2.executes_protocol}, ' \
+               'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}' \
+               ')'.format(self.__class__.__module__, self.__class__.__name__, self)
+
+    def __str__(self):
+        return """{0}(name={1.name})""".format(self.__class__.__name__, self)
+
     # def __repr__(self):
     #     return 'Process(name="{0.name}", ' \
     #            'executes_protocol={0.executes_protocol}, ' \

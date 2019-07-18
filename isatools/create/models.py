@@ -1857,11 +1857,14 @@ class StudyDesign(object):
                                     self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
                                 )
                     else:
-                        sample_batch = []   # TODO use functools.reduce to build up the sample_batch
+                        sample_batch = []
+                        for sample_node in sample_assay_plan.sample_plan:
+                            if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                                sample_batch.extend(sample_batches[sample_node])
                         assays.append(
-                            self._generate_assay(assay_graph, )
+                            self._generate_assay(assay_graph, sample_batch)
                         )
-        return factors, protocols, samples, process_sequence, ontology_sources
+        return factors, protocols, samples, assays, process_sequence, ontology_sources
 
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
@@ -1871,17 +1874,21 @@ class StudyDesign(object):
             item.inputs = previous_items
             processes.append(item)
         elif isinstance(item, Material):
-            processes.append(item)
+            other_materials.append(item)
         elif isinstance(item, DataFile):
             data_files.append(item)
         next_nodes = assay_graph.next_nodes(node)
         for next_node in next_nodes:
-            processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
-                next_node, assay_graph, processes, other_materials, data_files, [item]
-            )
-            if isinstance(node, ProtocolNode):
-                item.outputs.append(next_item)
-                plink(processes[-1], item)  # TODO this needs to be tested
+            size = next_node.size if isinstance(next_node, ProductNode) \
+                else next_node.replicates if isinstance(next_node, ProtocolNode) \
+                else 1
+            for i in range(size):
+                processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
+                    next_node, assay_graph, processes, other_materials, data_files, [item]
+                )
+                if isinstance(node, ProtocolNode):
+                    item.outputs.append(next_item)
+                    plink(processes[-1], item)  # TODO this doe not work
         return processes, other_materials, data_files, item
 
     @staticmethod
@@ -1900,17 +1907,21 @@ class StudyDesign(object):
             )
         )
         for node in assay_graph.start_nodes:
-            size = node.size if isinstance(node, ProductNode) else 1
-            for ix in range(size):
-                processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
-                    node, assay_graph, ix=ix
-                )
-                assay.other_material.extend(other_materials)
-                assay.process_sequence.extend(processes)
-                assay.data_files.extend(data_files)
+            size = node.size if isinstance(node, ProductNode) \
+                else node.replicates if isinstance(node, ProtocolNode) \
+                else 1
+            # print('Size: {0}'.format(size))
+            for i, sample in enumerate(samples):
+                for j in range(size):
+                    processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
+                        node, assay_graph, ix=i*len(samples)+j
+                    )
+                    assay.other_material.extend(other_materials)
+                    assay.process_sequence.extend(processes)
+                    assay.data_files.extend(data_files)
         return assay
 
-    def generate_isa_study(self):
+    def generate_isa_study(self, split_assays_by_sample_type=False):
         """
         this is the core method to return the fully populated ISA Study object from the StudyDesign
         :return: isatools.model.Study
@@ -1929,8 +1940,11 @@ class StudyDesign(object):
         print('Sampling protocol is {0}'.format(study.protocols[0]))
         sources_map = self._generate_sources(study.ontology_source_references)
         study.sources = [source for sources in sources_map.values() for source in sources]
-        study.factors, protocols, study.samples, study.process_sequence, study.ontology_source_references = \
-            self._generate_samples(sources_map, study.protocols[0], study_config['performers'][0])
+        study.factors, protocols, study.samples, study.assays, study.process_sequence, \
+            study.ontology_source_references = \
+            self._generate_samples(
+                sources_map, study.protocols[0], study_config['performers'][0], split_assays_by_sample_type
+            )
         for protocol in protocols:
             study.add_protocol(protocol)
         return study

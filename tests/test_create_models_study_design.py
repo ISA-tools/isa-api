@@ -215,7 +215,7 @@ nmr_assay_dict = OrderedDict([
             ('raw_spectral_data_file', [
                 {
                     'node_type': DATA_FILE,
-                    'size': 2,
+                    'size': 1,
                     'is_input_to_next_protocols': False
                 }
             ])
@@ -309,9 +309,11 @@ class TreatmentTest(unittest.TestCase):
 
     def test_factor_values_property(self):
         self.assertIsInstance(self.treatment.factor_values, set)
-        self.assertEqual(self.treatment.factor_values, {FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
+        self.assertEqual(self.treatment.factor_values, {
+            FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)})
+            FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        })
 
 
 class StudyCellTest(unittest.TestCase):
@@ -1609,11 +1611,21 @@ class StudyDesignTest(unittest.TestCase):
             node, assay_graph
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
-        print(processes)
+        print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
+        extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
+        self.assertEqual(len(extraction_processes), 1)
+        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr_spectroscopy']
+        self.assertEqual(len(nmr_processes), 8*2)
         self.assertEqual(len(processes), 1+8*2)
         self.assertEqual(len(other_materials), 2)
         self.assertEqual(len(data_files), 8*2)      # 16 raw data files
-        self.assertIsInstance(next_item, DataFile)
+        for nmr_process in nmr_processes:
+            self.assertIsInstance(nmr_process, Process)
+            self.assertEqual(nmr_process.prev_process, extraction_processes)
+            self.assertEqual(nmr_process.next_process, None)
+        self.assertEqual(extraction_processes[0].previous_process, None)
+        self.assertEqual(extraction_processes[0].next_process, nmr_processes[-1])
+        # self.assertIsInstance(next_item, DataFile)
 
     def test_generate_isa_study_single_arm_single_cell_elements(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
