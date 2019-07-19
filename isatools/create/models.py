@@ -1075,6 +1075,37 @@ class AssayGraph(object):
             raise ValueError(self.MISSING_NODE_ERROR)
         return {n for n in self.__graph_dict if node in self.__graph_dict[n]}
 
+    def previous_protocol_nodes(self, protocol_node):
+        """
+        This method should return a set containing all the previous protocol nodes of a single protocol node.
+        Ideally, there should be only one parent protocol node for any given protocol_node, but we can anticipate that
+        in future scenarios there will be more than one
+        :param protocol_node:
+        :return:
+        """
+        if not isinstance(protocol_node, ProtocolNode):
+            raise TypeError(self.INVALID_NODE_ERROR)
+        # previous_protocol_nodes = set()
+        current_nodes = {protocol_node}
+        previous_nodes = set()
+        while current_nodes:
+            print('current nodes are: {0}'.format(current_nodes))
+            for node in current_nodes:
+                previous_nodes.update(self.previous_nodes(node))
+                print('Previous nodes after current node {0} are {1}'.format(node, previous_nodes))
+            previous_protocol_nodes = list(filter(lambda n: isinstance(n, ProtocolNode), previous_nodes))
+            print('Previous nodes now are: {0}'.format(previous_nodes))
+            print('Previous protocol nodes now are: {0}'.format(previous_protocol_nodes))
+            if previous_protocol_nodes:
+                print('Returning...')
+                return set(previous_protocol_nodes)
+            else:
+                current_nodes = previous_nodes
+                previous_nodes = set()
+                print('Current nodes are now {0}'.format(current_nodes))
+                print('Previous nodes are now {0}'.format(previous_nodes))
+        print('Exiting without return...')
+
     """
     @property
     def sample_nodes(self):
@@ -1888,7 +1919,11 @@ class StudyDesign(object):
                 )
                 if isinstance(node, ProtocolNode):
                     item.outputs.append(next_item)
-                    plink(processes[-1], item)  # TODO this doe not work
+
+                    previous_process = next([
+                        process for process in processes[::-1] if process.executes_protocol == 'TODO'
+                    ])
+                    plink(previous_process, item)  # TODO this doe not work
         return processes, other_materials, data_files, item
 
     @staticmethod

@@ -984,6 +984,14 @@ class AssayGraphTest(unittest.TestCase):
         self.assertRaises(TypeError, assay_graph.previous_nodes, 'this is not a node')
         self.assertRaises(ValueError, assay_graph.previous_nodes, ProductNode(node_type=SAMPLE, size=10))
 
+    def test_previous_protocol_nodes(self):
+        nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
+        nmr_nodes = list(filter(lambda node: node.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        self.assertEqual(len(nmr_nodes), 8)
+        for nmr_node in nmr_nodes:
+            self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
+
     def test_as_networkx_graph(self):
         self.assay_graph.add_nodes(self.nodes)
         self.assay_graph.add_links(self.links)
