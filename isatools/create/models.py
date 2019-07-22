@@ -1089,22 +1089,22 @@ class AssayGraph(object):
         current_nodes = {protocol_node}
         previous_nodes = set()
         while current_nodes:
-            print('current nodes are: {0}'.format(current_nodes))
+            # print('current nodes are: {0}'.format(current_nodes))
             for node in current_nodes:
                 previous_nodes.update(self.previous_nodes(node))
-                print('Previous nodes after current node {0} are {1}'.format(node, previous_nodes))
+                # print('Previous nodes after current node {0} are {1}'.format(node, previous_nodes))
             previous_protocol_nodes = list(filter(lambda n: isinstance(n, ProtocolNode), previous_nodes))
-            print('Previous nodes now are: {0}'.format(previous_nodes))
-            print('Previous protocol nodes now are: {0}'.format(previous_protocol_nodes))
+            # print('Previous nodes now are: {0}'.format(previous_nodes))
+            # print('Previous protocol nodes now are: {0}'.format(previous_protocol_nodes))
             if previous_protocol_nodes:
-                print('Returning...')
+                # print('Returning...')
                 return set(previous_protocol_nodes)
             else:
                 current_nodes = previous_nodes
                 previous_nodes = set()
-                print('Current nodes are now {0}'.format(current_nodes))
-                print('Previous nodes are now {0}'.format(previous_nodes))
-        print('Exiting without return...')
+                # print('Current nodes are now {0}'.format(current_nodes))
+                # print('Previous nodes are now {0}'.format(previous_nodes))
+        # print('Exiting without return...')
 
     """
     @property
@@ -1919,11 +1919,17 @@ class StudyDesign(object):
                 )
                 if isinstance(node, ProtocolNode):
                     item.outputs.append(next_item)
-
-                    previous_process = next([
-                        process for process in processes[::-1] if process.executes_protocol == 'TODO'
-                    ])
-                    plink(previous_process, item)  # TODO this doe not work
+                    # the hypothesis here is that there is only one previous protocol node. Hence popping it
+                    previous_protocol_nodes = assay_graph.previous_protocol_nodes(node)
+                    previous_protocol_node = previous_protocol_nodes.pop() \
+                        if previous_protocol_nodes and len(previous_protocol_nodes) == 1 \
+                        else None
+                    if previous_protocol_node:
+                        previous_process = next(
+                            process for process in processes[::-1]
+                            if process.executes_protocol == previous_protocol_node
+                        )
+                        plink(previous_process, item)  # TODO this doe not work
         return processes, other_materials, data_files, item
 
     @staticmethod
@@ -1954,6 +1960,8 @@ class StudyDesign(object):
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
+                    print('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
+                                                                                        len(data_files)))
         return assay
 
     def generate_isa_study(self, split_assays_by_sample_type=False):

@@ -1245,7 +1245,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(cells[0], self.cell_screen, 'The SCREEN cell has been added to the arm')
         self.assertEqual(plans[0], None, 'There is non sample plan for this specific cell')
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_run_in, None)
@@ -1255,12 +1255,12 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(plans[1], None, 'There is non sample plan for this specific cell')
 
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
 
@@ -1271,12 +1271,12 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(plans[2], self.sample_assay_plan, 'There is non sample plan for this specific cell')
 
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
 
@@ -1287,7 +1287,7 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(plans[3], None, 'There is non sample plan for this specific cell')
 
         with self.assertRaises(ValueError, msg='Another cell containing a WASHOUT cannot be added to the '
-                                                       'StudyArm') as ex_cm:
+                                               'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_01, None)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
 
@@ -1320,7 +1320,7 @@ class StudyArmTest(unittest.TestCase):
     def test_add_item_to_arm__multi_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         with self.assertRaises(ValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
-                                                       'an ARM ending with a RUN-IN') as ex_cm:
+                                               'an ARM ending with a RUN-IN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_00, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
@@ -1629,9 +1629,11 @@ class StudyDesignTest(unittest.TestCase):
         self.assertEqual(len(data_files), 8*2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)
-            self.assertEqual(nmr_process.prev_process, extraction_processes)
+            print('expected previous process: {0}'.format(extraction_processes[0]))
+            print('actual previous process: {0}'.format(nmr_process.prev_process))
+            self.assertEqual(nmr_process.prev_process, extraction_processes[0])
             self.assertEqual(nmr_process.next_process, None)
-        self.assertEqual(extraction_processes[0].previous_process, None)
+        self.assertEqual(extraction_processes[0].prev_process, None)
         self.assertEqual(extraction_processes[0].next_process, nmr_processes[-1])
         # self.assertIsInstance(next_item, DataFile)
 
@@ -1663,6 +1665,13 @@ class StudyDesignTest(unittest.TestCase):
         self.assertIsInstance(treatment_assay, Assay)
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
+        # pdb.set_trace()
+        extraction_processes = [process for process in treatment_assay.process_sequence
+                                if process.executes_protocol.name == 'extraction']
+        nmr_processes = [process for process in treatment_assay.process_sequence
+                         if process.executes_protocol.name == 'nmr_spectroscopy']
+        self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
+        self.assertEqual(len(nmr_processes), 8*2*expected_num_of_samples_per_plan)
         self.assertEqual(len(treatment_assay.process_sequence), (32+2)*3*expected_num_of_samples_per_plan)
 
     def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
