@@ -23,6 +23,7 @@ import inspect
 import pdb
 
 log = logging.getLogger('isatools')
+log.setLevel(logging.DEBUG)
 
 __author__ = 'massi'
 
@@ -1900,6 +1901,7 @@ class StudyDesign(object):
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
                                          previous_items=[], ix=0):
+        log.debug('# processes: {0}'.format(len(processes)))
         item = isa_objects_factory(node, ix)
         if isinstance(item, Process):
             item.inputs = previous_items
@@ -1955,7 +1957,8 @@ class StudyDesign(object):
             for i, sample in enumerate(samples):
                 for j in range(size):
                     processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, ix=i*len(samples)+j
+                        node, assay_graph, ix=i*len(samples)+j, processes=[], other_materials=[], data_files=[],
+                        previous_items=[]
                     )
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)

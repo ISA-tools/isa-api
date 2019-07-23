@@ -1672,7 +1672,14 @@ class StudyDesignTest(unittest.TestCase):
                          if process.executes_protocol.name == 'nmr_spectroscopy']
         self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
         self.assertEqual(len(nmr_processes), 8*2*expected_num_of_samples_per_plan)
-        self.assertEqual(len(treatment_assay.process_sequence), (32+2)*3*expected_num_of_samples_per_plan)
+        self.assertEqual(len(treatment_assay.process_sequence), (8*2+1)*expected_num_of_samples_per_plan)
+        for ix, process in enumerate(nmr_processes):
+            self.assertIsInstance(process, Process)
+            # 1 extraction protocol feeds into 16 nmr processes
+            self.assertEqual(process.prev_process, extraction_processes[ix//(8*2)])
+            # 1 extract ends up into 8 different nmr protocol runs (i.e. processes)
+            self.assertEqual(process.inputs, [treatment_assay.other_material[ix//8]])
+            self.assertEqual(process.outputs, [treatment_assay.data_files[ix]])
 
     def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
@@ -1687,6 +1694,19 @@ class StudyDesignTest(unittest.TestCase):
         study_design = StudyDesign(study_arms=(single_arm,))
         study = study_design.generate_isa_study(split_assays_by_sample_type=True)
         self.assertEqual(len(study.assays), 6)
+        treatment_assay_st0, treatment_assay_st1, treatment_assay_st2 = study.assays[0:3]
+        self.assertIsInstance(treatment_assay_st0, Assay)
+        self.assertEqual(treatment_assay_st0.measurement_type, nmr_assay_dict['measurement_type'])
+        self.assertEqual(treatment_assay_st0.technology_type, nmr_assay_dict['technology_type'])
+        extraction_processes = [process for process in treatment_assay_st0.process_sequence
+                                if process.executes_protocol.name == 'extraction']
+        nmr_processes = [process for process in treatment_assay_st0.process_sequence
+                         if process.executes_protocol.name == 'nmr_spectroscopy']
+        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
+                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
+        self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan/3)
+        self.assertEqual(len(nmr_processes), 8 * 2 * expected_num_of_samples_per_plan/3)
+        self.assertEqual(len(treatment_assay_st0.process_sequence), (8 * 2 + 1) * expected_num_of_samples_per_plan/3)
 
 
 class TreatmentFactoryTest(unittest.TestCase):
