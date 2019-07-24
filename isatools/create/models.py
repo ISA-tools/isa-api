@@ -858,6 +858,79 @@ class ProductNode(SequenceNode):
         self.__size = size
 
 
+class QualityControlSamplePlan(object):
+    """
+    This class captures information about a Quality Control Check. It comes attached to an Assay Graph object
+    """
+
+    PRE_BATCH_ATTRIBUTE_ERROR = 'Pre-batch must be an instance of ProductNode'
+    POST_BATCH_ATTRIBUTE_ERROR = 'Post-batch must be an instance of ProductNode'
+    INTERSPERSED_SAMPLE_TYPE_NODE_ERROR = 'Interspersed sample type must be an instance of ProductNode'
+    INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR = 'Sample type interval must be a positive integer'
+    INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR = 'Sample type interval must be a positive integer'
+
+    def __init__(self):
+        self.__pre_batch = None
+        self.__post_batch = None
+        self.__interspersed_sample_types = []
+
+    def __repr__(self):
+        pass
+
+    def __str__(self):
+        pass
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        pass
+
+    def __ne__(self, other):
+        return not self == other
+
+    @property
+    def pre_batch(self):
+        return self.__pre_batch
+
+    @pre_batch.setter
+    def pre_batch(self, pre_batch):
+        if not isinstance(pre_batch, ProductNode):
+            raise AttributeError(self.PRE_BATCH_ATTRIBUTE_ERROR)
+        self.__pre_batch = pre_batch
+
+    @property
+    def post_batch(self):
+        return self.__post_batch
+
+    @post_batch.setter
+    def post_batch(self, post_batch):
+        if not isinstance(post_batch, ProductNode):
+            raise AttributeError(self.POST_BATCH_ATTRIBUTE_ERROR)
+        self.__post_batch = post_batch
+
+    @property
+    def interspersed_sample_types(self):
+        return self.__interspersed_sample_types
+
+    @interspersed_sample_types.setter
+    def interspersed_sample_types(self, interspersed_sample_types):
+        try:
+            for sample_type, interspersing_interval in interspersed_sample_types:
+                self.add_interspersed_sample_type(sample_type, interspersing_interval)
+        except (TypeError, ValueError) as e:
+            raise AttributeError(e)
+
+    def add_interspersed_sample_type(self, sample_type, interspersing_interval=10):
+        if not isinstance(sample_type, ProductNode):
+            raise TypeError(self.INTERSPERSED_SAMPLE_TYPE_NODE_ERROR)
+        if not isinstance(interspersing_interval, int):
+            raise TypeError(self.INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR)
+        if interspersing_interval < 1:
+            raise ValueError(self.INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR)
+        self.__interspersed_sample_types.append((sample_type, interspersing_interval))
+
+
 class AssayGraph(object):
     """
     The AssayGraph captures the structure and information of an assay workflow
