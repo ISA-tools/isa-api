@@ -858,7 +858,7 @@ class ProductNode(SequenceNode):
         self.__size = size
 
 
-class QualityControlSamplePlan(object):
+class QualityControl(object):
     """
     This class captures information about a Quality Control Check. It comes attached to an Assay Graph object
     """
@@ -869,45 +869,65 @@ class QualityControlSamplePlan(object):
     INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR = 'Sample type interval must be a positive integer'
     INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR = 'Sample type interval must be a positive integer'
 
-    def __init__(self):
-        self.__pre_batch = None
-        self.__post_batch = None
+    def __init__(self, pre_run_sample_type=None, post_run_sample_type=None, interspersed_sample_type=None):
+        self.__pre_run_sample_type = None
+        self.__post_run_sample_type = None
         self.__interspersed_sample_types = []
+        if pre_run_sample_type:
+            self.pre_run_sample_type = pre_run_sample_type
+        if post_run_sample_type:
+            self.post_run_sample_type = post_run_sample_type
+        if interspersed_sample_type:
+            self.interspersed_sample_types = interspersed_sample_type
 
     def __repr__(self):
-        pass
+        return '{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, ' \
+               'interspersed_sample_types={2.interspersed_sample_types})'.format(
+                self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
-        pass
+        return """{0}(
+        pre_run_sample_type={1}
+        post_run_sample_type={2} 
+        interspersed_sample_types={3}
+        )""".format(
+            self.__class__.__name__,
+            self.pre_run_sample_type.id if self.pre_run_sample_type else None,
+            self.post_run_sample_type.id if self.post_run_sample_type else None,
+            [(elem.id, n) for elem, n in self.interspersed_sample_types]
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        pass
+        return isinstance(other, QualityControl) and \
+               self.pre_run_sample_type == other.pre_run_sample_type and \
+               self.post_run_sample_type == other.post_run_sample_type and \
+               self.interspersed_sample_types == other.interspersed_sample_types
 
     def __ne__(self, other):
         return not self == other
 
     @property
-    def pre_batch(self):
-        return self.__pre_batch
+    def pre_run_sample_type(self):
+        return self.__pre_run_sample_type
 
-    @pre_batch.setter
-    def pre_batch(self, pre_batch):
-        if not isinstance(pre_batch, ProductNode):
+    @pre_run_sample_type.setter
+    def pre_run_sample_type(self, pre_run_sample_type):
+        if not isinstance(pre_run_sample_type, ProductNode):
             raise AttributeError(self.PRE_BATCH_ATTRIBUTE_ERROR)
-        self.__pre_batch = pre_batch
+        self.__pre_run_sample_type = pre_run_sample_type
 
     @property
-    def post_batch(self):
-        return self.__post_batch
+    def post_run_sample_type(self):
+        return self.__post_run_sample_type
 
-    @post_batch.setter
-    def post_batch(self, post_batch):
-        if not isinstance(post_batch, ProductNode):
+    @post_run_sample_type.setter
+    def post_run_sample_type(self, post_run_sample_type):
+        if not isinstance(post_run_sample_type, ProductNode):
             raise AttributeError(self.POST_BATCH_ATTRIBUTE_ERROR)
-        self.__post_batch = post_batch
+        self.__post_run_sample_type = post_run_sample_type
 
     @property
     def interspersed_sample_types(self):
@@ -948,8 +968,10 @@ class AssayGraph(object):
                                     'Please provide an OntologyAnnotation or string.'
     MISSING_NODE_ERROR = "Start or target node have not been added to the AssayGraph yet"
     NODE_ALREADY_PRESENT = "The node {0.id} is already present in the AssayGraph"
+    QUALITY_CONTROL_ERROR = "The 'quality_control' must be a valid QualityControl object. {0} was supplied instead."
 
-    def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), nodes=None, links=None):
+    def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), nodes=None, links=None,
+                 quality_control=None):
         """
         initializes an AssayGraph object
         If no dictionary or None is given,
@@ -959,12 +981,15 @@ class AssayGraph(object):
         self.__measurement_type = None
         self.__technology_type = None
         self.__graph_dict = {}
+        self.__quality_control = None
         self.measurement_type = measurement_type
         self.technology_type = technology_type
         if nodes:
             self.add_nodes(nodes)
         if links:
             self.add_links(links)
+        if quality_control:
+            pass
 
     @classmethod
     def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False, **kwargs):
@@ -1189,6 +1214,16 @@ class AssayGraph(object):
     @property
     def end_nodes(self):
         return set(node for node in self.__graph_dict.keys() if not self.__graph_dict[node])
+
+    @property
+    def quality_control(self):
+        return self.__quality_control
+
+    @quality_control.setter
+    def quality_control(self, quality_control):
+        if not isinstance(quality_control, QualityControl):
+            raise AttributeError(self.QUALITY_CONTROL_ERROR.format(type(quality_control)))
+        self.__quality_control = quality_control
 
     def find_paths(self, start_node, end_node, path=[]):
         if start_node not in self.nodes or end_node not in self.nodes:
