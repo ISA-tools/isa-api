@@ -913,19 +913,20 @@ class QualityControlTest(unittest.TestCase):
 
     def test_str(self):
         qc = QualityControl()
-        self.assertEqual(str(qc), """QualityControl(
+        self.assertEqual(str(qc).replace(" ", ""), """QualityControl(
         pre_run_sample_type=None
         post_run_sample_type=None
         interspersed_sample_types=[]
-        )""")
+        )""".replace(" ", ""))
         qc = QualityControl(interspersed_sample_type=self.interspersed_sample_types,
                             pre_run_sample_type=self.pre_run_sample_type,
                             post_run_sample_type=self.post_run_sample_type)
-        self.assertEqual(str(qc), """QualityControl(
+        self.assertEqual(str(qc).replace(" ", ""), """QualityControl(
         pre_run_sample_type={0}
         post_run_sample_type={1}
-        interspersed_sample_types=[({2},{3})]
-        )""".format(self.pre_run_sample_type.id, self.post_run_sample_type.id, self.dummy_sample_type.id, 20))
+        interspersed_sample_types=[('{2}',{3})]
+        )""".format(self.pre_run_sample_type.id, self.post_run_sample_type.id, self.dummy_sample_type.id, 20)
+                         .replace(" ", ""))
 
 
 class AssayGraphTest(unittest.TestCase):

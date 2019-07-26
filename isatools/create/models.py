@@ -94,14 +94,18 @@ STUDY_CELL = 'study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yaml')) as yaml_file:
     yaml_config = yaml.load(yaml_file)
-default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][0])
+default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
 
 DEFAULT_SOURCE_TYPE = Characteristic(
-    category=OntologyAnnotation(term='Material Type'),
-    value=OntologyAnnotation(
-        term='subject',
+    category=OntologyAnnotation(
+        term='Study Subject',
         term_source=default_ontology_source_reference,
-        term_accession='0100051')
+        term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
+    ),
+    value=OntologyAnnotation(
+        term='Human',
+        term_source=default_ontology_source_reference,
+        term_accession='http://purl.obolibrary.org/obo/NCIT_C14225')
 )
 
 ZFILL_WIDTH = 3
@@ -1597,34 +1601,49 @@ class StudyArm(object):
 
     ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
 
-    def __init__(self, name, arm_map=None, group_size=0):
+    DEFAULT_SOURCE_TYPE = DEFAULT_SOURCE_TYPE
+
+    def __init__(self, name, arm_map=None, source_type=None, group_size=0):
+        """
+        The default constructor.
+        :param name: string
+        :param arm_map: OrderedDict - a StudyCell -> SampleAndAssayPlan ordered mapping
+        :param source_type: Characteristic/str - determines the "type" of the subjects/sources
+        :param group_size: int - a positive integer who specifies the number of subject in the Arm
+        """
         self.__name = ''
+        self.__source_type = None
         self.__group_size = None
         self.__arm_map = OrderedDict()
         self.name = name
         self.group_size = group_size
         if arm_map is not None:
             self.arm_map = arm_map
+        if source_type:
+            self.source_tye = source_type
 
     def __repr__(self):
         return '{0}.{1}(' \
                'name={name}, ' \
+               'source_type={source_type}, ' \
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
-                    self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
+                    self.__class__.__module__, self.__class__.__name__, name=self.name,
+                    source_type=self.source_type, group_size=self.group_size,
                     cells=self.cells, sample_assay_plans=self.sample_assay_plans
                 )
 
     def __str__(self):
         return """"{1}(
                name={name},
+               source_type={source_type},
                group_size={group_size}, 
                cells={cells},
                sample_assay_plans={sample_assay_plans}
                )""".format(
                     self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
-                    cells=self.cells, sample_assay_plans=self.sample_assay_plans
+                    source_type=self.source_type, cells=self.cells, sample_assay_plans=self.sample_assay_plans
         )
 
     def __hash__(self):
@@ -1646,6 +1665,19 @@ class StudyArm(object):
         if not isinstance(name, str):
             raise AttributeError('StudyArm name must be a string')
         self.__name = name
+
+    @property
+    def source_type(self):
+        if self.__source_type:
+            return self.__source_type
+        else:
+            return self.DEFAULT_SOURCE_TYPE
+
+    @source_type.setter
+    def source_type(self, source_type):
+        if not isinstance(source_type, (str, Characteristic)):
+            raise AttributeError('The source_type property must be either a string or a valid characteristic')
+        self.__source_type = source_type
 
     @property
     def group_size(self):
@@ -1823,7 +1855,6 @@ class StudyDesign(object):
         self.source_type = source_type
         if study_arms:
             self.study_arms = study_arms
-
 
     @property
     def name(self):
@@ -2010,7 +2041,7 @@ class StudyDesign(object):
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
                                          previous_items=[], ix=0):
         log.debug('# processes: {0}'.format(len(processes)))
-        item = isa_objects_factory(node, ix)
+        item = isa_objects_factory(node, sequence_no=ix)
         if isinstance(item, Process):
             item.inputs = previous_items
             processes.append(item)
