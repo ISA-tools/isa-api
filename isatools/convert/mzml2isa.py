@@ -23,6 +23,6 @@ def convert(mzml_folder, out_folder, study_id, validate_output=False):
         raise FileNotFoundError("Could not find input mzml folder")
     mzml_convert(mzml_folder, out_folder, study_id)
     if validate_output and os.path.exists(out_folder):
-        with open(os.path.join(out_folder, study_id, 'i_Investigation.txt'),
+        with open(os.path.join(out_folder, 'i_Investigation.txt'),
                   'r', encoding='utf-8') as i_fp:
             return isatab.validate(i_fp)

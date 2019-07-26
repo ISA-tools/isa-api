@@ -14,7 +14,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 
-from mzml2isa.mzml import mzMLmeta
+from mzml2isa.mzml import MzMLFile
 
 from isatools import isatab
 from isatools.create import create_from_galaxy_parameters
@@ -930,7 +930,10 @@ def create_and_merge_mzml(
         if not mzml.lower().endswith('.mzml'):
             continue
         mzml_pth = os.path.join(data_dir, mzml)
-        mz = mzMLmeta(mzml_pth)
+        # mz = mzMLmeta(mzml_pth)
+        mz= mzml.MzMLFile(mzml_pth)
+        # mz = mzml_meta(mzml_pth)
+
         mzml_name, _ = os.path.splitext(mzml_pth)
         mzml_meta[os.path.basename(mzml_name)] = mz.meta
 
