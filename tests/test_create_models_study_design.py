@@ -950,6 +950,16 @@ class AssayGraphTest(unittest.TestCase):
             (self.protocol_node_rna, self.mrna_node),
             (self.protocol_node_rna, self.mirna_node)
         ]
+        self.pre_run_sample_type = ProductNode(id_='pre/00', node_type=SAMPLE, name='water')
+        self.post_run_sample_type = ProductNode(id_='post/00', node_type=SAMPLE, name='ethanol')
+        self.dummy_sample_type = ProductNode(id_='dummy/01', node_type=SAMPLE, name='dummy')
+        self.more_dummy_sample_type = ProductNode(id_='dummy/02', node_type=SAMPLE, name='more dummy')
+        self.interspersed_sample_types = [(self.dummy_sample_type, 20)]
+        self.qc = QualityControl(
+            interspersed_sample_type=self.interspersed_sample_types,
+            pre_run_sample_type=self.pre_run_sample_type,
+            post_run_sample_type=self.post_run_sample_type
+        )
 
     def test_init(self):
         assay_graph = AssayGraph(measurement_type='genomic extraction', technology_type='nucleic acid extraction',
@@ -988,12 +998,18 @@ class AssayGraphTest(unittest.TestCase):
         self.assay_graph.technology_type = OntologyAnnotation(term='some other tech')
         self.assertEqual(self.assay_graph.measurement_type, OntologyAnnotation(term='some other measurement'))
         self.assertEqual(self.assay_graph.technology_type, OntologyAnnotation(term='some other tech'))
+        self.assertEqual(self.assay_graph.quality_control, None)
+        self.assay_graph.quality_control = self.qc
+        self.assertEqual(self.assay_graph.quality_control, self.qc)
 
     def test_properties_raises(self):
         # TODO complete this test
         with self.assertRaises(AttributeError, msg='An integer is not a valid measurement_type') as ex_cm:
             self.assay_graph.measurement_type = 120
         self.assertIsNotNone(ex_cm.exception.args[0])
+        with self.assertRaises(AttributeError, msg='A string is not a valid quality_control') as ex_cm:
+            self.assay_graph.quality_control = 'bao'
+        self.assertEqual(ex_cm.exception.args[0], AssayGraph.QUALITY_CONTROL_ERROR.format(type('bao')))
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -1587,6 +1603,7 @@ class StudyDesignTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+        self.qc = QualityControl()
         self.ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
         self.nmr_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, nmr_assay_dict)
         self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
@@ -1614,6 +1631,17 @@ class StudyDesignTest(unittest.TestCase):
             (self.cell_single_treatment_01, self.ms_sample_assay_plan),
             (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
+        # Sample QC (for mass spectroscopy and other)
+        self.pre_run_sample_type = ProductNode(id_='pre/00', node_type=SAMPLE, name='water')
+        self.post_run_sample_type = ProductNode(id_='post/00', node_type=SAMPLE, name='ethanol')
+        self.dummy_sample_type = ProductNode(id_='dummy/01', node_type=SAMPLE, name='dummy')
+        self.more_dummy_sample_type = ProductNode(id_='dummy/02', node_type=SAMPLE, name='more dummy')
+        self.interspersed_sample_types = [(self.dummy_sample_type, 20)]
+        self.qc = QualityControl(
+            interspersed_sample_type=self.interspersed_sample_types,
+            pre_run_sample_type=self.pre_run_sample_type,
+            post_run_sample_type=self.post_run_sample_type
+        )
         self.study_design = StudyDesign()
 
     def test_init(self):

@@ -1264,7 +1264,7 @@ class AssayGraph(object):
     def __repr__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return '{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, ' \
-               'nodes={2.nodes}, links={3})'.format(
+               'nodes={2.nodes}, links={3}, quality_control={2.quality_control})'.format(
                     self.__class__.__module__, self.__class__.__name__, self,
                     sorted(links, key=lambda link: (link[0], link[1]))
         )
@@ -1289,7 +1289,7 @@ class AssayGraph(object):
         return isinstance(other, AssayGraph) and self.measurement_type == other.measurement_type \
                and self.technology_type == other.technology_type \
                and self.nodes == other.nodes \
-               and self.links == other.links
+               and self.links == other.links and self.quality_control == other.quality_control
 
     def __ne__(self, other):
         return not self == other
