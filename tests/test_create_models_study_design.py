@@ -1431,6 +1431,32 @@ class StudyArmTest(unittest.TestCase):
             self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
 
+    def test_source_type_property(self):
+        self.assertIsInstance(self.arm.source_type, Characteristic)
+        self.assertEqual(self.arm.source_type, DEFAULT_SOURCE_TYPE)
+        self.arm.source_type = 'mouse'
+        self.assertEqual(self.arm.source_type, 'mouse')
+        source_type = Characteristic(
+            category=OntologyAnnotation(
+                term='Study Subject',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
+            ),
+            value=OntologyAnnotation(
+                term='Rat',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C14266'
+            )
+        )
+        self.arm.source_type = source_type
+        self.assertEqual(self.arm.source_type, source_type)
+
+    def test_source_type_property_fail(self):
+        with self.assertRaises(AttributeError, msg='source_type can be only string or Characteristic') as ex_cm:
+            self.arm.source_type = 128
+        self.assertEqual(ex_cm.exception.args[0], 'The source_type property must be either a string or a '
+                                                  'Characteristic. 128 was supplied.')
+
     def test_group_size_property(self):
         self.assertEqual(self.arm.group_size, 10)
         self.arm.group_size = 100
@@ -1438,7 +1464,7 @@ class StudyArmTest(unittest.TestCase):
 
     def test_group_size_property_fail_00(self):
         with self.assertRaises(AttributeError,
-                               msg='Only positive integers can be assinged to group_size') as ex_cm:
+                               msg='Only positive integers can be assigned to group_size') as ex_cm:
             self.arm.group_size = -5
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
 
@@ -1728,6 +1754,9 @@ class StudyDesignTest(unittest.TestCase):
         self.assertIsInstance(study, Study)
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), single_arm.group_size)
+        for source in study.sources:
+            self.assertEqual(len(source.characteristics), 1)
+            self.assertEqual(source.characteristics[0], DEFAULT_SOURCE_TYPE)
 
         expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
                                                   self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size

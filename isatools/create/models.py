@@ -105,7 +105,8 @@ DEFAULT_SOURCE_TYPE = Characteristic(
     value=OntologyAnnotation(
         term='Human',
         term_source=default_ontology_source_reference,
-        term_accession='http://purl.obolibrary.org/obo/NCIT_C14225')
+        term_accession='http://purl.obolibrary.org/obo/NCIT_C14225'
+    )
 )
 
 ZFILL_WIDTH = 3
@@ -1600,6 +1601,7 @@ class StudyArm(object):
     FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be put into an empty StudyArm.'
 
     ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
+    SOURCE_TYPE_ERROR = 'The source_type property must be either a string or a Characteristic. {0} was supplied.'
 
     DEFAULT_SOURCE_TYPE = DEFAULT_SOURCE_TYPE
 
@@ -1676,7 +1678,7 @@ class StudyArm(object):
     @source_type.setter
     def source_type(self, source_type):
         if not isinstance(source_type, (str, Characteristic)):
-            raise AttributeError('The source_type property must be either a string or a valid characteristic')
+            raise AttributeError(self.SOURCE_TYPE_ERROR.format(source_type))
         self.__source_type = source_type
 
     @property
@@ -1943,18 +1945,16 @@ class StudyDesign(object):
         Private method to be used in 'generate_isa_study'.
         :return: 
         """
-        source_prototype = Source(
-            characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(
-                        term='specimen',
-                        term_source=ontology_source_references[0],
-                        term_accession='0100051'))
-            ]
-        )
         src_map = dict()
         for s_arm in self.study_arms:
+            source_prototype = Source(
+                characteristics=[
+                   s_arm.source_type if isinstance(s_arm.source_type, Characteristic) else Characteristic(
+                       category=OntologyAnnotation(term=s_arm.source_type),
+                       value=OntologyAnnotation(term=s_arm.source_type)
+                   )
+                ]
+            )
             srcs = set()
             for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
                 src = copy.copy(source_prototype)
