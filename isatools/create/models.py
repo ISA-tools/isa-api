@@ -111,6 +111,8 @@ DEFAULT_SOURCE_TYPE = Characteristic(
 
 ZFILL_WIDTH = 3
 
+SOURCE_QC_SOURCE_NAME = 'source_QC'
+
 
 def intersperse(lst, item):
     """
@@ -1645,7 +1647,9 @@ class StudyArm(object):
                sample_assay_plans={sample_assay_plans}
                )""".format(
                     self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
-                    source_type=self.source_type, cells=self.cells, sample_assay_plans=self.sample_assay_plans
+                    source_type=self.source_type,
+                    cells=[cell.name for cell in self.cells],
+                    sample_assay_plans=[plan.name for plan in sorted(self.sample_assay_plans)]
         )
 
     def __hash__(self):
@@ -2024,6 +2028,8 @@ class StudyDesign(object):
                     if split_assays_by_sample_type is True:
                         for sample_node in sample_assay_plan.sample_plan:
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                                if assay_graph.quality_control:
+                                    qc_samples = self._generate_quality_control_samples(assay_graph.quality_control)
                                 assays.append(
                                     self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
                                 )
@@ -2106,6 +2112,27 @@ class StudyDesign(object):
                                                                                         len(data_files)))
         return assay
 
+    @staticmethod
+    def _generate_quality_control_samples(quality_control, sources=[], samples=[], processes=[]):
+        if not isinstance(quality_control, QualityControl):
+            raise TypeError()
+        qc_pre = quality_control.pre_run_sample_type
+        assert isinstance(qc_pre, ProductNode)
+        for i in range(qc_pre.size):
+            dummy_source = Source(
+                name=SOURCE_QC_SOURCE_NAME
+            )
+            sources.insert(-1, dummy_source)
+            sample = Sample(
+                name=...,
+                factor_values=[],
+                characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
+                                 else qc_pre.characteristics[-1]],
+                derives_from=[dummy_source]
+            )
+            samples.insert(0, sample)
+        return sources, samples, processes
+
     def generate_isa_study(self, split_assays_by_sample_type=False):
         """
         this is the core method to return the fully populated ISA Study object from the StudyDesign
@@ -2145,7 +2172,8 @@ class StudyDesign(object):
         return """{1}(
                name={name},
                study_arms={study_arms}
-               )""".format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
+               )""".format(self.__class__.__module__, self.__class__.__name__,
+                           study_arms=[arm.name for arm in sorted(self.study_arms)],
                            name=self.name)
 
     def __hash__(self):
