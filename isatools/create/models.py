@@ -40,7 +40,7 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      SURGICAL='surgical intervention',
                      BIOLOGICAL='biological intervention',
                      RADIOLOGICAL='radiological intervention',
-                     DIET='dietary intervention')
+                     DIETARY='dietary intervention')
 
 FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
@@ -2131,6 +2131,37 @@ class StudyDesign(object):
                 derives_from=[dummy_source]
             )
             samples.insert(0, sample)
+        qc_post = quality_control.post_run_sample_type
+        assert isinstance(qc_post, ProductNode)
+        for i in range(qc_post.size):
+            dummy_source = Source(
+                name=SOURCE_QC_SOURCE_NAME
+            )
+            sources.insert(dummy_source)
+            sample = Sample(
+                name=...,
+                factor_values=[],
+                characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
+                                 else qc_post.characteristics[-1]],
+                derives_from=[dummy_source]
+            )
+            samples.append(sample)
+        for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
+            i =0
+            while i < len(samples):
+                if i % interspersing_interval == 1:
+                    dummy_source = Source(
+                        name=SOURCE_QC_SOURCE_NAME
+                    )
+                    sources.insert(dummy_source)
+                    sample = Sample(
+                        name=...,
+                        factor_values=[],
+                        characteristics=sample_node.characteristics,
+                        derives_from=[dummy_source]
+                    )
+                    samples.append(sample)
+                i += 1
         return sources, samples, processes
 
     def generate_isa_study(self, split_assays_by_sample_type=False):
