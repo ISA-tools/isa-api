@@ -112,6 +112,7 @@ DEFAULT_SOURCE_TYPE = Characteristic(
 ZFILL_WIDTH = 3
 
 SOURCE_QC_SOURCE_NAME = 'source_QC'
+QC_SAMPLE_NAME = 'sample_QC'
 
 
 def intersperse(lst, item):
@@ -2029,7 +2030,12 @@ class StudyDesign(object):
                         for sample_node in sample_assay_plan.sample_plan:
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
                                 if assay_graph.quality_control:
-                                    qc_samples = self._generate_quality_control_samples(assay_graph.quality_control)
+                                    qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, \
+                                    qc_processes = self._generate_quality_control_samples(
+                                        assay_graph.quality_control, cell,
+                                        sampling_protocol=sampling_protocol,
+                                        sample_size=len(sample_batches[sample_node])
+                                    )
                                 assays.append(
                                     self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
                                 )
@@ -2080,7 +2086,18 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item
 
     @staticmethod
-    def _generate_assay(assay_graph, samples, sample_node=None):
+    def _generate_assay(assay_graph, samples, pre_run_samples=None, post_run_samples=None, interspersed_samples=None,
+                        sample_node=None):
+        assay_samples = [s for s in samples] # this variable will contain all samples
+        if interspersed_samples:
+            for (qc_sample_node, interspersing_interval), qc_samples in interspersed_samples.items():
+                for ix, qc_sample in enumerate(qc_samples):
+                    index_to_insert = assay_samples.index(samples[(ix+1)*interspersing_interval])   #FIXME +1 or no ??
+                    assay_samples.insert(index_to_insert, qc_sample)
+        if pre_run_samples:
+            assay_samples = pre_run_samples + assay_samples
+        if post_run_samples:
+            assay_samples = assay_samples + post_run_samples
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
         sample_char_value = getattr(sample_node.characteristics[0], 'value', None) \
@@ -2099,7 +2116,7 @@ class StudyDesign(object):
                 else node.replicates if isinstance(node, ProtocolNode) \
                 else 1
             # print('Size: {0}'.format(size))
-            for i, sample in enumerate(samples):
+            for i, sample in enumerate(assay_samples):
                 for j in range(size):
                     processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
                         node, assay_graph, ix=i*len(samples)+j, processes=[], other_materials=[], data_files=[],
@@ -2113,7 +2130,13 @@ class StudyDesign(object):
         return assay
 
     @staticmethod
-    def _generate_quality_control_samples(quality_control, sources=[], samples=[], processes=[]):
+    def _generate_quality_control_samples(quality_control, study_cell, sample_size=0,
+                                          sampling_protocol=Protocol(), performer=None):
+        qc_sources = []
+        qc_samples_pre_run = []
+        qc_samples_post_run = []
+        qc_samples_interspersed = {}
+        qc_processes = []
         if not isinstance(quality_control, QualityControl):
             raise TypeError()
         qc_pre = quality_control.pre_run_sample_type
@@ -2122,47 +2145,78 @@ class StudyDesign(object):
             dummy_source = Source(
                 name=SOURCE_QC_SOURCE_NAME
             )
-            sources.insert(-1, dummy_source)
+            qc_sources.append(dummy_source)
             sample = Sample(
-                name=...,
+                name='{0}'.format(QC_SAMPLE_NAME),
                 factor_values=[],
                 characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
                                  else qc_pre.characteristics[-1]],
                 derives_from=[dummy_source]
             )
-            samples.insert(0, sample)
+            qc_samples_pre_run.append(sample)
+            process = Process(
+                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                performer=performer,
+                date_=datetime.date.isoformat(datetime.date.today()),
+                parameter_values=[
+                    ParameterValue(
+                        category=sampling_protocol.get_param(RUN_ORDER),
+                        value=-1
+                    ), ParameterValue(
+                        category=sampling_protocol.get_param(STUDY_CELL),
+                        value=str(study_cell.name)
+                    )
+                ]
+            )
+            qc_processes.append(process)
+        for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
+            qc_samples_interspersed[(sample_node, interspersing_interval)] = []
+            i = 0
+            while i < sample_size:
+                if i % interspersing_interval == 1:
+                    dummy_source = Source(
+                        name=SOURCE_QC_SOURCE_NAME
+                    )
+                    qc_sources.insert(dummy_source)
+                    sample = Sample(
+                        name='{0}'.format(QC_SAMPLE_NAME),
+                        factor_values=[],
+                        characteristics=sample_node.characteristics,
+                        derives_from=[dummy_source],
+                    )
+                    qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
             dummy_source = Source(
                 name=SOURCE_QC_SOURCE_NAME
             )
-            sources.insert(dummy_source)
+            qc_sources.insert(dummy_source)
             sample = Sample(
-                name=...,
+                name='{0}'.format(QC_SAMPLE_NAME),
                 factor_values=[],
                 characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
                                  else qc_post.characteristics[-1]],
                 derives_from=[dummy_source]
             )
-            samples.append(sample)
-        for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
-            i =0
-            while i < len(samples):
-                if i % interspersing_interval == 1:
-                    dummy_source = Source(
-                        name=SOURCE_QC_SOURCE_NAME
+            qc_samples_post_run.append(sample)
+            process = Process(
+                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                performer=performer,
+                date_=datetime.date.isoformat(datetime.date.today()),
+                parameter_values=[
+                    ParameterValue(
+                        category=sampling_protocol.get_param(RUN_ORDER),
+                        value=-1
+                    ), ParameterValue(
+                        category=sampling_protocol.get_param(STUDY_CELL),
+                        value=str(study_cell.name)
                     )
-                    sources.insert(dummy_source)
-                    sample = Sample(
-                        name=...,
-                        factor_values=[],
-                        characteristics=sample_node.characteristics,
-                        derives_from=[dummy_source]
-                    )
-                    samples.append(sample)
-                i += 1
-        return sources, samples, processes
+                ]
+            )
+            qc_processes.append(process)
+            i += 1
+        return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
     def generate_isa_study(self, split_assays_by_sample_type=False):
         """
