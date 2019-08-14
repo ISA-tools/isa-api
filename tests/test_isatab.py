@@ -82,8 +82,8 @@ class TestIsaTabDump(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-    # def tearDown(self):
-    #     shutil.rmtree(self._tmp_dir)
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
 
     def test_isatab_bad_i_file_name(self):
         with self.assertRaises(NameError):
