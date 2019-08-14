@@ -111,8 +111,13 @@ DEFAULT_SOURCE_TYPE = Characteristic(
 
 ZFILL_WIDTH = 3
 
+# CONSTANTS/PARAMS FOR QUALITY CONTROL
 SOURCE_QC_SOURCE_NAME = 'source_QC'
 QC_SAMPLE_NAME = 'sample_QC'
+
+QC_SAMPLE_TYPE_PRE_RUN = 'QC sample type pre-run'
+QC_SAMPLE_TYPE_POST_RUN = 'QC sample type post-run'
+QC_SAMPLE_TYPE_INTERSPERSED = 'QC sample type interspersed'
 
 
 def intersperse(lst, item):
@@ -864,6 +869,35 @@ class ProductNode(SequenceNode):
         if not isinstance(size, int) or size < 0:
             raise AttributeError(self.SIZE_ERROR)
         self.__size = size
+
+
+class QualityControlSource(Source):
+    pass
+
+
+class QualityControlSample(Sample):
+
+    ALLOWED_QC_SAMPLE_TYPES = [QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, QC_SAMPLE_TYPE_POST_RUN]
+    QC_SAMPLE_TYPE_ERROR = 'qc_sample_type must be one of {0}'.format(ALLOWED_QC_SAMPLE_TYPES)
+
+    def __init__(self, **kwargs):
+        print('KWARGS are: {0}'.format(kwargs))
+        qc_sample_type = kwargs['qc_sample_type']
+        del kwargs['qc_sample_type']
+        super(QualityControlSample, self).__init__(**kwargs)
+        self.__qc_sample_type = None
+        if qc_sample_type:
+            self.qc_sample_type = qc_sample_type
+
+    @property
+    def qc_sample_type(self):
+        return self.__qc_sample_type
+
+    @qc_sample_type.setter
+    def qc_sample_type(self, qc_sample_type):
+        if qc_sample_type not in self.ALLOWED_QC_SAMPLE_TYPES:
+            raise AttributeError(self.QC_SAMPLE_TYPE_ERROR)
+        self.__qc_sample_type = qc_sample_type
 
 
 class QualityControl(object):
@@ -2024,6 +2058,9 @@ class StudyDesign(object):
                                 process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
+                qc_sources_tot = []
+                qc_samples_tot = []
+                qc_processes_tot = []
                 for assay_graph in sample_assay_plan.assay_plan:
                     protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
                     if split_assays_by_sample_type is True:
@@ -2031,14 +2068,27 @@ class StudyDesign(object):
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
                                 if assay_graph.quality_control:
                                     qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, \
-                                    qc_processes = self._generate_quality_control_samples(
-                                        assay_graph.quality_control, cell,
-                                        sampling_protocol=sampling_protocol,
-                                        sample_size=len(sample_batches[sample_node])
+                                        qc_processes = self._generate_quality_control_samples(
+                                            assay_graph.quality_control, cell,
+                                            sampling_protocol=sampling_protocol,
+                                            sample_size=len(sample_batches[sample_node])
+                                        )
+                                    augmented_samples = self._augment_sample_batch_with_qc_samples(
+                                        samples, pre_run_samples=qc_samples_pre_run,
+                                        post_run_samples=qc_samples_post_run,
+                                        interspersed_samples=qc_samples_interspersed
                                     )
-                                assays.append(
-                                    self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
-                                )
+                                    assays.append(self._generate_assay(assay_graph, augmented_samples, sample_node))
+                                    qc_sources_tot.extend(qc_sources)
+                                    qc_samples_tot.extend(qc_samples_pre_run)
+                                    qc_samples_tot.extend(qc_samples_post_run)
+                                    for qc_samples_int in qc_samples_interspersed.values():
+                                        qc_samples_tot.extend(qc_samples_int)
+                                    qc_processes_tot.extend(qc_processes)
+                                else:
+                                    assays.append(
+                                        self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
+                                    )
                     else:
                         sample_batch = []
                         for sample_node in sample_assay_plan.sample_plan:
@@ -2086,18 +2136,23 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item
 
     @staticmethod
-    def _generate_assay(assay_graph, samples, pre_run_samples=None, post_run_samples=None, interspersed_samples=None,
-                        sample_node=None):
-        assay_samples = [s for s in samples] # this variable will contain all samples
+    def _augment_sample_batch_with_qc_samples(samples, pre_run_samples=None, post_run_samples=None,
+                                              interspersed_samples=None):
+        assay_samples = [s for s in samples]  # this variable will contain all samples
         if interspersed_samples:
             for (qc_sample_node, interspersing_interval), qc_samples in interspersed_samples.items():
                 for ix, qc_sample in enumerate(qc_samples):
-                    index_to_insert = assay_samples.index(samples[(ix+1)*interspersing_interval])   #FIXME +1 or no ??
+                    index_to_insert = assay_samples.index(
+                        samples[(ix + 1) * interspersing_interval])  # FIXME +1 or no ??
                     assay_samples.insert(index_to_insert, qc_sample)
         if pre_run_samples:
             assay_samples = pre_run_samples + assay_samples
         if post_run_samples:
             assay_samples = assay_samples + post_run_samples
+        return assay_samples
+
+    @staticmethod
+    def _generate_assay(assay_graph, assay_samples, sample_node=None):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
         sample_char_value = getattr(sample_node.characteristics[0], 'value', None) \
@@ -2119,7 +2174,7 @@ class StudyDesign(object):
             for i, sample in enumerate(assay_samples):
                 for j in range(size):
                     processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, ix=i*len(samples)+j, processes=[], other_materials=[], data_files=[],
+                        node, assay_graph, ix=i*len(assay_samples)+j, processes=[], other_materials=[], data_files=[],
                         previous_items=[]
                     )
                     assay.other_material.extend(other_materials)
@@ -2132,6 +2187,15 @@ class StudyDesign(object):
     @staticmethod
     def _generate_quality_control_samples(quality_control, study_cell, sample_size=0,
                                           sampling_protocol=Protocol(), performer=None):
+        """
+        This method generates all the QC samples for a specific quality_control plan
+        :param quality_control: A QualityControl object
+        :param study_cell: The StudyCell to which the SampleAssayPlan belong
+        :param sample_size:
+        :param sampling_protocol:
+        :param performer:
+        :return:
+        """
         qc_sources = []
         qc_samples_pre_run = []
         qc_samples_post_run = []

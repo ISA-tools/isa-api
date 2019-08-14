@@ -856,6 +856,32 @@ class ProductNodeTest(unittest.TestCase):
         self.assertEqual(node.type, LABELED_EXTRACT)
 
 
+class QualityControlSourceTest(unittest.TestCase):
+
+    pass
+
+
+class QualityControlSampleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.sample_characteristic = Characteristic(category='sample', value='water')
+
+    def test_init(self):
+        qc_sample = QualityControlSample(characteristics=self.sample_characteristic, name='qc_sample_test',
+                                         qc_sample_type=QC_SAMPLE_TYPE_PRE_RUN)
+        self.assertIsInstance(qc_sample, Sample)
+        self.assertIsInstance(qc_sample, QualityControlSample)
+        self.assertEqual(qc_sample.characteristics, self.sample_characteristic)
+        self.assertEqual(qc_sample.qc_sample_type, QC_SAMPLE_TYPE_PRE_RUN)
+
+    def test_properties(self):
+        qc_sample = QualityControlSample(characteristics=self.sample_characteristic, name='qc_sample_test',
+                                         qc_sample_type=QC_SAMPLE_TYPE_INTERSPERSED)
+        self.assertEqual(qc_sample.qc_sample_type, QC_SAMPLE_TYPE_INTERSPERSED)
+        with self.assertRaises(AttributeError, msg='qc_sample_type must be one from allowed values') as ex_cm:
+            qc_sample.qc_sample_type = 'some incorrect QC sample type'
+
+
 class QualityControlTest(unittest.TestCase):
 
     def setUp(self):
