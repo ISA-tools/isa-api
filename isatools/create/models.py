@@ -2058,14 +2058,15 @@ class StudyDesign(object):
                                 process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
-                qc_sources_tot = []
-                qc_samples_tot = []
-                qc_processes_tot = []
+                # qc_sources_tot = []
+                # qc_samples_tot = []
+                # qc_processes_tot = []
                 for assay_graph in sample_assay_plan.assay_plan:
                     protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
                     if split_assays_by_sample_type is True:
                         for sample_node in sample_assay_plan.sample_plan:
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                                """
                                 if assay_graph.quality_control:
                                     qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, \
                                         qc_processes = self._generate_quality_control_samples(
@@ -2086,16 +2087,17 @@ class StudyDesign(object):
                                         qc_samples_tot.extend(qc_samples_int)
                                     qc_processes_tot.extend(qc_processes)
                                 else:
-                                    assays.append(
-                                        self._generate_assay(assay_graph, sample_batches[sample_node], sample_node)
-                                    )
+                                """
+                                assays.append(
+                                    self._generate_assay(assay_graph, sample_batches[sample_node], cell.name)
+                                )
                     else:
                         sample_batch = []
                         for sample_node in sample_assay_plan.sample_plan:
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
                                 sample_batch.extend(sample_batches[sample_node])
                         assays.append(
-                            self._generate_assay(assay_graph, sample_batch)
+                            self._generate_assay(assay_graph, sample_batch, cell.name)
                         )
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
@@ -2136,33 +2138,21 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item
 
     @staticmethod
-    def _augment_sample_batch_with_qc_samples(samples, pre_run_samples=None, post_run_samples=None,
-                                              interspersed_samples=None):
-        assay_samples = [s for s in samples]  # this variable will contain all samples
-        if interspersed_samples:
-            for (qc_sample_node, interspersing_interval), qc_samples in interspersed_samples.items():
-                for ix, qc_sample in enumerate(qc_samples):
-                    index_to_insert = assay_samples.index(
-                        samples[(ix + 1) * interspersing_interval])  # FIXME +1 or no ??
-                    assay_samples.insert(index_to_insert, qc_sample)
-        if pre_run_samples:
-            assay_samples = pre_run_samples + assay_samples
-        if post_run_samples:
-            assay_samples = assay_samples + post_run_samples
-        return assay_samples
-
-    @staticmethod
-    def _generate_assay(assay_graph, assay_samples, sample_node=None):
+    def _generate_assay(assay_graph, assay_samples, cell_name=''):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
+        """
         sample_char_value = getattr(sample_node.characteristics[0], 'value', None) \
             if isinstance(sample_node, ProductNode) and sample_node.characteristics \
             else None
+        """
         assay = Assay(
             measurement_type=assay_graph.measurement_type,
             technology_type=assay_graph.technology_type,
-            filename='a_{0}_{1}_assay.txt'.format(
-                sample_char_value.term if isinstance(sample_char_value, OntologyAnnotation) else sample_char_value,
+            filename='a_{0}_{1}_{2}.txt'.format(
+                cell_name,
+                assay_graph.id,
+                # sample_char_value.term if isinstance(sample_char_value, OntologyAnnotation) else sample_char_value,
                 assay_graph.measurement_type
             )
         )
@@ -2183,6 +2173,130 @@ class StudyDesign(object):
                     print('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
                                                                                         len(data_files)))
         return assay
+
+    def generate_isa_study(self, split_assays_by_sample_type=False):
+        """
+        this is the core method to return the fully populated ISA Study object from the StudyDesign
+        :return: isatools.model.Study
+        """
+        with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
+                               'study-creator-config.yaml')) as yaml_file:
+            config = yaml.load(yaml_file)
+        study_config = config['study']
+        study = Study(filename=study_config['filename'])
+        study.ontology_source_references = [
+            OntologySource(**study_config['ontology_source_references'][0])
+        ]
+        study.protocols = [
+            Protocol(**protocol_config) for protocol_config in study_config['protocols']
+        ]
+        print('Sampling protocol is {0}'.format(study.protocols[0]))
+        sources_map = self._generate_sources(study.ontology_source_references)
+        study.sources = [source for sources in sources_map.values() for source in sources]
+        study.factors, protocols, study.samples, study.assays, study.process_sequence, \
+            study.ontology_source_references = \
+            self._generate_samples(
+                sources_map, study.protocols[0], study_config['performers'][0], split_assays_by_sample_type
+            )
+        for protocol in protocols:
+            study.add_protocol(protocol)
+        return study
+
+    def __repr__(self):
+        return '{0}.{1}(' \
+               'name={name}, ' \
+               'study_arms={study_arms}' \
+               ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
+                          name=self.name)
+
+    def __str__(self):
+        return """{1}(
+               name={name},
+               study_arms={study_arms}
+               )""".format(self.__class__.__module__, self.__class__.__name__,
+                           study_arms=[arm.name for arm in sorted(self.study_arms)],
+                           name=self.name)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, StudyDesign) and self.name == other.name and self.study_arms == other.study_arms
+
+    def __ne__(self, other):
+        return not self == other
+
+
+class QualityControlService(object):
+
+    def __init__(self):
+        pass
+
+    def __call__(self, study, study_design):
+        assert isinstance(study, Study)
+        assert isinstance(study_design, StudyDesign)
+        for arm in study_design.study_arms:
+            for cell, study_assay_plan in arm.arm_map.items():
+                for assay_graph in study_assay_plan.assay_plan:
+                    assert isinstance(assay_graph, AssayGraph)
+                    if assay_graph.quality_control:
+                        # CHECK the assumption here is that an assay file can univocally be identified
+                        # by StudyCell name, corresponding AssayGraph id and measurement type
+                        # Such an assuption is correct as far a the Assay filename convention is not modified
+                        assay_filename = 'a_{0}_{1}_{2}.txt'.format(cell.name, assay_graph.id,
+                                                                    assay_graph.measurement_type)
+                        assay_to_expand = next(assay for assay in study.assays if assay.filename == assay_filename)
+                        samples_in_assay_to_expand = {
+                            sample for process in assay_to_expand.process_sequence
+                            for sample in process.inputs if type(sample) == Sample
+                        }
+                        log.debug('Number of input samples for assay {0} are {1}'.format(
+                            assay_filename, len(samples_in_assay_to_expand)
+                        ))
+                        qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
+                            = self._generate_quality_control_samples(
+                                assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                                # FIXME? the assumption here is that the first protocol is the sampling protocol
+                                sampling_protocol=study.protocols[0]
+                        )
+                        study.sources += qc_sources
+                        study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
+                        for qc_samples in qc_samples_interspersed.values():
+                            study.samples.extend(qc_samples)
+                        study.process_sequence.extend(qc_processes)
+                        self._augment_assay_with_qc_samples(
+                            study.assays, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run
+                        )
+                        # FIXME maybe better to override the whole assay after augmenting the samples
+
+    @staticmethod
+    def _augment_assay_with_qc_samples(assay, pre_run_samples=None, post_run_samples=None,
+                                              interspersed_samples=None):
+        pass
+
+    @staticmethod
+    def _augment_sample_batch_with_qc_samples(samples, pre_run_samples=None, post_run_samples=None,
+                                              interspersed_samples=None):
+        """
+
+        :param samples:
+        :param pre_run_samples:
+        :param post_run_samples:
+        :param interspersed_samples:
+        :return:
+        """
+        assay_samples = [s for s in samples]  # this variable will contain all samples
+        if interspersed_samples:
+            for (qc_sample_node, interspersing_interval), qc_samples in interspersed_samples.items():
+                for ix, qc_sample in enumerate(qc_samples):
+                    index_to_insert = assay_samples.index(
+                        samples[(ix + 1) * interspersing_interval])  # FIXME +1 or no ??
+                    assay_samples.insert(index_to_insert, qc_sample)
+        if pre_run_samples:
+            assay_samples = pre_run_samples + assay_samples
+        if post_run_samples:
+            assay_samples = assay_samples + post_run_samples
+        return assay_samples
 
     @staticmethod
     def _generate_quality_control_samples(quality_control, study_cell, sample_size=0,
@@ -2281,58 +2395,6 @@ class StudyDesign(object):
             qc_processes.append(process)
             i += 1
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
-
-    def generate_isa_study(self, split_assays_by_sample_type=False):
-        """
-        this is the core method to return the fully populated ISA Study object from the StudyDesign
-        :return: isatools.model.Study
-        """
-        with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file)
-        study_config = config['study']
-        study = Study(filename=study_config['filename'])
-        study.ontology_source_references = [
-            OntologySource(**study_config['ontology_source_references'][0])
-        ]
-        study.protocols = [
-            Protocol(**protocol_config) for protocol_config in study_config['protocols']
-        ]
-        print('Sampling protocol is {0}'.format(study.protocols[0]))
-        sources_map = self._generate_sources(study.ontology_source_references)
-        study.sources = [source for sources in sources_map.values() for source in sources]
-        study.factors, protocols, study.samples, study.assays, study.process_sequence, \
-            study.ontology_source_references = \
-            self._generate_samples(
-                sources_map, study.protocols[0], study_config['performers'][0], split_assays_by_sample_type
-            )
-        for protocol in protocols:
-            study.add_protocol(protocol)
-        return study
-
-    def __repr__(self):
-        return '{0}.{1}(' \
-               'name={name}, ' \
-               'study_arms={study_arms}' \
-               ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
-                          name=self.name)
-
-    def __str__(self):
-        return """{1}(
-               name={name},
-               study_arms={study_arms}
-               )""".format(self.__class__.__module__, self.__class__.__name__,
-                           study_arms=[arm.name for arm in sorted(self.study_arms)],
-                           name=self.name)
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return isinstance(other, StudyDesign) and self.name == other.name and self.study_arms == other.study_arms
-
-    def __ne__(self, other):
-        return not self == other
 
 
 def isa_objects_factory(node, sequence_no=0):
