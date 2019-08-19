@@ -92,7 +92,7 @@ ms_assay_dict = OrderedDict([
             'node_type': LABELED_EXTRACT,
             'characteristics_category': 'labelled extract type',
             'characteristics_value': '',
-            'size': 2,
+            'size': 1,
             'is_input_to_next_protocols': True
         }
     ]),
@@ -1575,7 +1575,7 @@ class StudyArmTest(unittest.TestCase):
         })
 
 
-class StudyDesignTest(unittest.TestCase):
+class BaseStudyDesignTest(unittest.TestCase):
 
     def setUp(self):
 
@@ -1617,9 +1617,9 @@ class StudyDesignTest(unittest.TestCase):
                                                      elements=([{self.second_treatment, self.fourth_treatment}]))
         self.cell_washout_00 = StudyCell(WASHOUT, elements=(self.washout,))
         self.cell_washout_01 = StudyCell('ANOTHER WASHOUT', elements=(self.washout,))
-        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT', elements=[self.first_treatment])
-        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT', elements=[self.second_treatment])
-        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT', elements=[self.third_treatment])
+        self.cell_single_treatment_00 = StudyCell('SINGLE TREATMENT FIRST', elements=[self.first_treatment])
+        self.cell_single_treatment_01 = StudyCell('SINGLE TREATMENT SECOND', elements=[self.second_treatment])
+        self.cell_single_treatment_02 = StudyCell('SINGLE TREATMENT THIRD', elements=[self.third_treatment])
         self.cell_multi_elements = StudyCell('MULTI ELEMENTS',
                                              elements=[{self.first_treatment, self.second_treatment,
                                                         self.fourth_treatment}, self.washout, self.second_treatment])
@@ -1629,6 +1629,7 @@ class StudyDesignTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
+        self.cell_follow_up_01 = StudyCell('ANOTHER FOLLOW_UP', elements=(self.follow_up,))
         self.qc = QualityControl()
         self.ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
         self.nmr_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, nmr_assay_dict)
@@ -1669,6 +1670,12 @@ class StudyDesignTest(unittest.TestCase):
             post_run_sample_type=self.post_run_sample_type
         )
         self.study_design = StudyDesign()
+
+
+class StudyDesignTest(BaseStudyDesignTest):
+
+    def setUp(self):
+        return super(StudyDesignTest, self).setUp()
 
     def test_init(self):
         self.assertIsInstance(getattr(self.study_design, '_StudyDesign__name', None), str,
@@ -1867,6 +1874,59 @@ class StudyDesignTest(unittest.TestCase):
         self.assertEqual(len(extraction_processes), expected_num_of_samples_first)
         self.assertEqual(len(nmr_processes), 8 * 2 * expected_num_of_samples_first)
         self.assertEqual(len(treatment_assay_st0.process_sequence), (8 * 2 + 1) * expected_num_of_samples_first)
+
+    def test_generate_isa_study_two_arms_single_cell_elements(self):
+        first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.ms_sample_assay_plan),
+            (self.cell_follow_up, self.nmr_sample_assay_plan)
+        ]))
+        second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_01, self.nmr_sample_assay_plan),
+            (self.cell_follow_up_01, self.nmr_sample_assay_plan)
+        ]))
+        study_design = StudyDesign(study_arms=(first_arm, second_arm))
+        study = study_design.generate_isa_study()
+        self.assertEqual(len(study.assays), 4)
+        expected_num_of_samples_nmr_plan_first_arm = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.nmr_sample_assay_plan.sample_plan, 0) * first_arm.group_size
+        expected_num_of_samples_ms_plan_first_arm = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
+        expected_num_of_samples_nmr_plan_second_arm = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.nmr_sample_assay_plan.sample_plan, 0) * second_arm.group_size
+        expected_num_of_samples_tot = 2 * expected_num_of_samples_nmr_plan_second_arm + \
+            expected_num_of_samples_ms_plan_first_arm + expected_num_of_samples_nmr_plan_first_arm
+        self.assertEqual(len(study.samples), expected_num_of_samples_tot)
+        ms_assay = next(assay for assay in study.assays if assay.technology_type == ms_assay_dict['technology_type'])
+        self.assertIsNotNone(ms_assay)
+        self.assertIsInstance(ms_assay, Assay)
+        ms_processes = [process for process in ms_assay.process_sequence
+                        if process.executes_protocol.name == 'mass spectrometry']
+        self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
+
+
+class QualityServiceTest(BaseStudyDesignTest):
+
+    def setUp(self):
+        return super(QualityServiceTest, self).setUp()
+
+    def test_expansion_of_single_mass_spectrometry_assay(self):
+        first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.ms_sample_assay_plan),
+            (self.cell_follow_up, None)
+        ]))
+        second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_01, self.nmr_sample_assay_plan),
+            (self.cell_follow_up_01, self.nmr_sample_assay_plan)
+        ]))
+        study_design = StudyDesign(study_arms=(first_arm, second_arm))
+        pass
 
 
 class TreatmentFactoryTest(unittest.TestCase):

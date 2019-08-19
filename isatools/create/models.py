@@ -9,6 +9,7 @@ import json
 import random
 from collections import Iterable
 from collections import OrderedDict
+from copy import deepcopy
 from numbers import Number
 import copy
 from isatools.model import *
@@ -2232,9 +2233,21 @@ class QualityControlService(object):
     def __init__(self):
         pass
 
-    def __call__(self, study, study_design):
-        assert isinstance(study, Study)
-        assert isinstance(study_design, StudyDesign)
+    @classmethod
+    def augment_study(cls, study, study_design, in_place=False):
+        """
+        Augment a study with QualityControl samples and modifies the assay
+        :param study: Study
+        :param study_design: StudyDesign
+        :param in_place: boolean
+        :return:
+        """
+        assert isinstance(in_place, bool)
+        if not isinstance(study, Study):
+            raise TypeError('study must be a valid Study object')
+        if not isinstance(study_design, StudyDesign):
+            raise TypeError('study must be a valid StudyDesign object')
+        qc_study = deepcopy(study) if not in_place else study
         for arm in study_design.study_arms:
             for cell, study_assay_plan in arm.arm_map.items():
                 for assay_graph in study_assay_plan.assay_plan:
@@ -2242,10 +2255,11 @@ class QualityControlService(object):
                     if assay_graph.quality_control:
                         # CHECK the assumption here is that an assay file can univocally be identified
                         # by StudyCell name, corresponding AssayGraph id and measurement type
-                        # Such an assuption is correct as far a the Assay filename convention is not modified
+                        # Such an assumption is correct as far a the Assay filename convention is not modified
                         assay_filename = 'a_{0}_{1}_{2}.txt'.format(cell.name, assay_graph.id,
                                                                     assay_graph.measurement_type)
-                        assay_to_expand = next(assay for assay in study.assays if assay.filename == assay_filename)
+                        assay_to_expand = next(assay for assay in qc_study.assays if assay.filename == assay_filename)
+                        index = qc_study.assays.index(assay_to_expand)
                         samples_in_assay_to_expand = {
                             sample for process in assay_to_expand.process_sequence
                             for sample in process.inputs if type(sample) == Sample
@@ -2254,25 +2268,24 @@ class QualityControlService(object):
                             assay_filename, len(samples_in_assay_to_expand)
                         ))
                         qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
-                            = self._generate_quality_control_samples(
+                            = cls._generate_quality_control_samples(
                                 assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
                                 # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                sampling_protocol=study.protocols[0]
+                                sampling_protocol=qc_study.protocols[0]
                         )
-                        study.sources += qc_sources
-                        study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
+                        qc_study.sources += qc_sources
+                        qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
                         for qc_samples in qc_samples_interspersed.values():
-                            study.samples.extend(qc_samples)
-                        study.process_sequence.extend(qc_processes)
-                        self._augment_assay_with_qc_samples(
-                            study.assays, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run
+                            qc_study.samples.extend(qc_samples)
+                        qc_study.process_sequence.extend(qc_processes)
+                        augmented_samples = cls._augment_sample_batch_with_qc_samples(
+                            samples_in_assay_to_expand, pre_run_samples=qc_samples_post_run,
+                            post_run_samples=qc_samples_post_run,
+                            interspersed_samples=qc_samples_interspersed
                         )
-                        # FIXME maybe better to override the whole assay after augmenting the samples
-
-    @staticmethod
-    def _augment_assay_with_qc_samples(assay, pre_run_samples=None, post_run_samples=None,
-                                              interspersed_samples=None):
-        pass
+                        qc_study.assays[index] = StudyDesign._generate_assay(assay_graph, augmented_samples,
+                                                                             cell_name=cell.name)
+        return qc_study
 
     @staticmethod
     def _augment_sample_batch_with_qc_samples(samples, pre_run_samples=None, post_run_samples=None,
