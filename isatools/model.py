@@ -1953,15 +1953,13 @@ class Assay(Commentable, StudyAssayMixin, object):
                                  characteristic_categories=
                                  characteristic_categories, units=units)
 
-        if measurement_type is None:
-            self.__measurement_type = OntologyAnnotation()
-        else:
-            self.__measurement_type = measurement_type
+        self.__measurement_type = OntologyAnnotation()
+        if measurement_type:
+            self.measurement_type = measurement_type
 
-        if technology_type is None:
-            self.__technology_type = OntologyAnnotation()
-        else:
-            self.__technology_type = technology_type
+        self.__technology_type = OntologyAnnotation()
+        if technology_type:
+            self.technology_type = technology_type
 
         self.__technology_platform = technology_platform
 
@@ -1978,7 +1976,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @measurement_type.setter
     def measurement_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'Assay.measurement_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
@@ -1993,7 +1991,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @technology_type.setter
     def technology_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'Assay.technology_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
@@ -2057,10 +2055,11 @@ class Assay(Commentable, StudyAssayMixin, object):
     comments={num_comments} Comment objects
     units={num_units} Unit objects
 )""".format(assay=self,
-            measurement_type=self.measurement_type.term if
-            self.measurement_type else '',
-            technology_type=self.technology_type.term if
-            self.technology_type else '', num_datafiles=len(self.data_files),
+            measurement_type=self.measurement_type.term if isinstance(self.measurement_type, OntologyAnnotation)
+            else self.measurement_type if isinstance(self.measurement_type, str) else '',
+            technology_type=self.technology_type.term if isinstance(self.technology_type, OntologyAnnotation)
+            else self.technology_type if isinstance(self.technology_type, str) else '',
+            num_datafiles=len(self.data_files),
             num_samples=len(self.samples),
             num_processes=len(self.process_sequence),
             num_other_material=len(self.other_material),
