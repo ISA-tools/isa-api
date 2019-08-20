@@ -24,7 +24,7 @@ import inspect
 import pdb
 
 log = logging.getLogger('isatools')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 __author__ = 'massi'
 
@@ -2247,44 +2247,46 @@ class QualityControlService(object):
             raise TypeError('study must be a valid Study object')
         if not isinstance(study_design, StudyDesign):
             raise TypeError('study must be a valid StudyDesign object')
-        qc_study = deepcopy(study) if not in_place else study
+        qc_study = deepcopy(study) if in_place is False else study
         for arm in study_design.study_arms:
             for cell, study_assay_plan in arm.arm_map.items():
-                for assay_graph in study_assay_plan.assay_plan:
-                    assert isinstance(assay_graph, AssayGraph)
-                    if assay_graph.quality_control:
-                        # CHECK the assumption here is that an assay file can univocally be identified
-                        # by StudyCell name, corresponding AssayGraph id and measurement type
-                        # Such an assumption is correct as far a the Assay filename convention is not modified
-                        assay_filename = 'a_{0}_{1}_{2}.txt'.format(cell.name, assay_graph.id,
-                                                                    assay_graph.measurement_type)
-                        assay_to_expand = next(assay for assay in qc_study.assays if assay.filename == assay_filename)
-                        index = qc_study.assays.index(assay_to_expand)
-                        samples_in_assay_to_expand = {
-                            sample for process in assay_to_expand.process_sequence
-                            for sample in process.inputs if type(sample) == Sample
-                        }
-                        log.debug('Number of input samples for assay {0} are {1}'.format(
-                            assay_filename, len(samples_in_assay_to_expand)
-                        ))
-                        qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
-                            = cls._generate_quality_control_samples(
-                                assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
-                                # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                sampling_protocol=qc_study.protocols[0]
-                        )
-                        qc_study.sources += qc_sources
-                        qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
-                        for qc_samples in qc_samples_interspersed.values():
-                            qc_study.samples.extend(qc_samples)
-                        qc_study.process_sequence.extend(qc_processes)
-                        augmented_samples = cls._augment_sample_batch_with_qc_samples(
-                            samples_in_assay_to_expand, pre_run_samples=qc_samples_post_run,
-                            post_run_samples=qc_samples_post_run,
-                            interspersed_samples=qc_samples_interspersed
-                        )
-                        qc_study.assays[index] = StudyDesign._generate_assay(assay_graph, augmented_samples,
-                                                                             cell_name=cell.name)
+                if study_assay_plan:
+                    for assay_graph in study_assay_plan.assay_plan:
+                        assert isinstance(assay_graph, AssayGraph)
+                        if assay_graph.quality_control:
+                            # CHECK the assumption here is that an assay file can univocally be identified
+                            # by StudyCell name, corresponding AssayGraph id and measurement type
+                            # Such an assumption is correct as far a the Assay filename convention is not modified
+                            assay_filename = 'a_{0}_{1}_{2}.txt'.format(cell.name, assay_graph.id,
+                                                                        assay_graph.measurement_type)
+                            assay_to_expand = next(assay for assay in qc_study.assays
+                                                   if assay.filename == assay_filename)
+                            index = qc_study.assays.index(assay_to_expand)
+                            samples_in_assay_to_expand = {
+                                sample for process in assay_to_expand.process_sequence
+                                for sample in process.inputs if type(sample) == Sample
+                            }
+                            log.debug('Number of input samples for assay {0} are {1}'.format(
+                                assay_filename, len(samples_in_assay_to_expand)
+                            ))
+                            qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
+                                = cls._generate_quality_control_samples(
+                                    assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                                    # FIXME? the assumption here is that the first protocol is the sampling protocol
+                                    sampling_protocol=qc_study.protocols[0]
+                            )
+                            qc_study.sources += qc_sources
+                            qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
+                            for qc_samples in qc_samples_interspersed.values():
+                                qc_study.samples.extend(qc_samples)
+                            qc_study.process_sequence.extend(qc_processes)
+                            augmented_samples = cls._augment_sample_batch_with_qc_samples(
+                                samples_in_assay_to_expand, pre_run_samples=qc_samples_post_run,
+                                post_run_samples=qc_samples_post_run,
+                                interspersed_samples=qc_samples_interspersed
+                            )
+                            qc_study.assays[index] = StudyDesign._generate_assay(assay_graph, augmented_samples,
+                                                                                 cell_name=cell.name)
         return qc_study
 
     @staticmethod
@@ -2333,11 +2335,11 @@ class QualityControlService(object):
         qc_pre = quality_control.pre_run_sample_type
         assert isinstance(qc_pre, ProductNode)
         for i in range(qc_pre.size):
-            dummy_source = Source(
+            dummy_source = QualityControlSource(
                 name=SOURCE_QC_SOURCE_NAME
             )
             qc_sources.append(dummy_source)
-            sample = Sample(
+            sample = QualityControlSample(
                 name='{0}'.format(QC_SAMPLE_NAME),
                 factor_values=[],
                 characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
@@ -2365,11 +2367,11 @@ class QualityControlService(object):
             i = 0
             while i < sample_size:
                 if i % interspersing_interval == 1:
-                    dummy_source = Source(
+                    dummy_source = QualityControlSource(
                         name=SOURCE_QC_SOURCE_NAME
                     )
                     qc_sources.insert(dummy_source)
-                    sample = Sample(
+                    sample = QualityControlSample(
                         name='{0}'.format(QC_SAMPLE_NAME),
                         factor_values=[],
                         characteristics=sample_node.characteristics,
@@ -2379,11 +2381,11 @@ class QualityControlService(object):
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
-            dummy_source = Source(
+            dummy_source = QualityControlSource(
                 name=SOURCE_QC_SOURCE_NAME
             )
             qc_sources.insert(dummy_source)
-            sample = Sample(
+            sample = QualityControlSample(
                 name='{0}'.format(QC_SAMPLE_NAME),
                 factor_values=[],
                 characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)

@@ -1902,6 +1902,7 @@ class StudyDesignTest(BaseStudyDesignTest):
             expected_num_of_samples_ms_plan_first_arm + expected_num_of_samples_nmr_plan_first_arm
         self.assertEqual(len(study.samples), expected_num_of_samples_tot)
         ms_assay = next(assay for assay in study.assays if assay.technology_type == ms_assay_dict['technology_type'])
+        # print('MS Assay is: {0}'.format(ms_assay))
         self.assertIsNotNone(ms_assay)
         self.assertIsInstance(ms_assay, Assay)
         ms_processes = [process for process in ms_assay.process_sequence
@@ -1909,16 +1910,21 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
 
 
-class QualityServiceTest(BaseStudyDesignTest):
+class QualityControlServiceTest(BaseStudyDesignTest):
 
     def setUp(self):
-        return super(QualityServiceTest, self).setUp()
+        return super(QualityControlServiceTest, self).setUp()
 
     def test_expansion_of_single_mass_spectrometry_assay(self):
-        first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
+        ms_assay_graph = next(ag for ag in self.ms_sample_assay_plan.assay_plan
+                              if ag.technology_type == ms_assay_dict['technology_type'])
+        self.assertIsInstance(ms_assay_graph, AssayGraph)
+        # ms_assay_graph.quality_control = self.qc
+        print(self.ms_sample_assay_plan.assay_plan)
+        first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
             (self.cell_single_treatment_00, self.ms_sample_assay_plan),
-            (self.cell_follow_up, None)
+            (self.cell_follow_up, self.nmr_sample_assay_plan)
         ]))
         second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
@@ -1926,7 +1932,28 @@ class QualityServiceTest(BaseStudyDesignTest):
             (self.cell_follow_up_01, self.nmr_sample_assay_plan)
         ]))
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
-        pass
+        study_no_qc = study_design.generate_isa_study()
+        for assay in study_no_qc.assays:
+            print('Assay is: {0}'.format(assay))
+        ms_assay_no_qc = next(assay for assay in study_no_qc.assays
+                              if assay.technology_type == ms_assay_dict['technology_type'])
+        expected_num_of_samples_ms_plan_first_arm = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
+        ms_processes = [process for process in ms_assay_no_qc.process_sequence
+                        if process.executes_protocol.name == 'mass spectrometry']
+        self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
+        # print('MS Assay no QC: {0}'.format(ms_assay_no_qc))
+        study_with_qc = QualityControlService.augment_study(study_no_qc, study_design)
+        self.assertIsInstance(study_with_qc, Study)
+        self.assertIsNot(study_no_qc, study_with_qc)
+        ms_assay_no_qc = next(assay for assay in study_no_qc.assays
+                              if assay.technology_type == ms_assay_dict['technology_type'])
+        ms_assay_with_qc = next(assay for assay in study_with_qc.assays
+                                if assay.technology_type == ms_assay_dict['technology_type'])
+        self.assertIsInstance(ms_assay_no_qc, Assay)
+        self.assertIsInstance(ms_assay_with_qc, Assay)
+        # self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
 
 
 class TreatmentFactoryTest(unittest.TestCase):
