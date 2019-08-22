@@ -883,9 +883,9 @@ class QualityControlSample(Sample):
 
     def __init__(self, **kwargs):
         print('KWARGS are: {0}'.format(kwargs))
-        qc_sample_type = kwargs['qc_sample_type']
-        del kwargs['qc_sample_type']
-        super(QualityControlSample, self).__init__(**kwargs)
+        qc_sample_type = kwargs.get('qc_sample_type', None)
+        _kwargs = {key: val for key, val in kwargs.items() if key is not 'qc_sample_type'}
+        super(QualityControlSample, self).__init__(**_kwargs)
         self.__qc_sample_type = None
         if qc_sample_type:
             self.qc_sample_type = qc_sample_type
@@ -1035,7 +1035,9 @@ class AssayGraph(object):
             pass
 
     @classmethod
-    def generate_assay_plan_from_dict(cls, assay_plan_dict, validation_template=None, use_guids=False, **kwargs):
+    def generate_assay_plan_from_dict(cls, assay_plan_dict,
+                                      validation_template=None, quality_control=None,
+                                      use_guids=False, **kwargs):
         """
         Alternative constructor that generates an AssayGraph object from a well structured dictionary
         :param assay_plan_dict: dict
@@ -1113,6 +1115,8 @@ class AssayGraph(object):
                             current_nodes.append(protocol_node)
             previous_nodes = current_nodes
             current_nodes = []
+        if quality_control:
+            res.quality_control = quality_control
         return res
 
     @property
@@ -1436,7 +1440,7 @@ class SampleAndAssayPlan(object):
 
     @classmethod
     def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
-                                        use_guids=False):
+                                        use_guids=False, quality_controls=[]):
         """
         An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
         OrderedDict, which can optionally be validated against a validation_schema
@@ -1444,6 +1448,8 @@ class SampleAndAssayPlan(object):
         :param assay_plan_dicts: list of OrderedDicts
         :param validation_template: dict/OrderedDict
         :param use_guids: bool
+        :param quality_controls: list of QualityControl objects. Ideally should be as long as the number
+                                of assay_plan_dicts provided
         :return: SampleAndAssayPlan
         """
         res = cls()
@@ -1460,6 +1466,7 @@ class SampleAndAssayPlan(object):
             res.add_assay_graph_to_plan(AssayGraph.generate_assay_plan_from_dict(
                 assay_plan_dict,
                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH, str(i).zfill(3)),
+                quality_control=quality_controls[i] if len(quality_controls) > i else None
             ))
         for sample_node in res.sample_plan:
             for assay_graph in res.assay_plan:
@@ -1470,9 +1477,10 @@ class SampleAndAssayPlan(object):
         s2a_map = {}
         for [st, ags] in self.sample_to_assay_map.items():
             s2a_map[st] = sorted({ag.id for ag in ags})
-        return '{0}.{1}(name={2.name}, sample_plan={2.sample_plan}, assay_plan={2.assay_plan}, ' \
+        sample_plan = sorted(self.sample_plan, key=lambda s_t: s_t.id)
+        return '{0}.{1}(name={2.name}, sample_plan={4}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
-                    self.__class__.__module__, self.__class__.__name__, self, s2a_map
+                    self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
                 )
 
     def __str__(self):
@@ -2065,7 +2073,7 @@ class StudyDesign(object):
                 for assay_graph in sample_assay_plan.assay_plan:
                     protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
                     if split_assays_by_sample_type is True:
-                        for sample_node in sample_assay_plan.sample_plan:
+                        for sample_node in sorted(sample_assay_plan.sample_plan, key=lambda st: st.id):
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
                                 """
                                 if assay_graph.quality_control:
@@ -2157,12 +2165,15 @@ class StudyDesign(object):
                 assay_graph.measurement_type
             )
         )
+        log.info('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
+                                                                             assay.technology_type))
         for node in assay_graph.start_nodes:
             size = node.size if isinstance(node, ProductNode) \
                 else node.replicates if isinstance(node, ProtocolNode) \
                 else 1
-            # print('Size: {0}'.format(size))
+            log.info('Size: {0}'.format(size))
             for i, sample in enumerate(assay_samples):
+                log.info('Iteration: {0} - Sample: {1}'.format(i, sample.name))
                 for j in range(size):
                     processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
                         node, assay_graph, ix=i*len(assay_samples)+j, processes=[], other_materials=[], data_files=[],
@@ -2171,7 +2182,7 @@ class StudyDesign(object):
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
-                    print('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
+                    log.info('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
                                                                                         len(data_files)))
         return assay
 
@@ -2370,7 +2381,7 @@ class QualityControlService(object):
                     dummy_source = QualityControlSource(
                         name=SOURCE_QC_SOURCE_NAME
                     )
-                    qc_sources.insert(dummy_source)
+                    qc_sources.append(dummy_source)
                     sample = QualityControlSample(
                         name='{0}'.format(QC_SAMPLE_NAME),
                         factor_values=[],
@@ -2384,7 +2395,7 @@ class QualityControlService(object):
             dummy_source = QualityControlSource(
                 name=SOURCE_QC_SOURCE_NAME
             )
-            qc_sources.insert(dummy_source)
+            qc_sources.append(dummy_source)
             sample = QualityControlSample(
                 name='{0}'.format(QC_SAMPLE_NAME),
                 factor_values=[],

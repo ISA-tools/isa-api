@@ -1659,8 +1659,19 @@ class BaseStudyDesignTest(unittest.TestCase):
             (self.cell_follow_up, self.ms_sample_assay_plan)
         ]))
         # Sample QC (for mass spectroscopy and other)
-        self.pre_run_sample_type = ProductNode(id_='pre/00', node_type=SAMPLE, name='water')
-        self.post_run_sample_type = ProductNode(id_='post/00', node_type=SAMPLE, name='ethanol')
+        self.pre_run_sample_type = ProductNode(
+            id_='pre/00', node_type=SAMPLE, name='water', size=5, characteristics=(
+                Characteristic(category='dilution', value=10, unit='mg/L'),
+            )
+        )
+        self.post_run_sample_type = ProductNode(
+            id_='post/00', node_type=SAMPLE, name='ethanol', size=5, characteristics=(
+                Characteristic(category='dilution', value=1000, unit='mg/L'),
+                Characteristic(category='dilution', value=100, unit='mg/L'),
+                Characteristic(category='dilution', value=10, unit='mg/L'),
+                Characteristic(category='dilution', value=1, unit='mg/L'),
+                Characteristic(category='dilution', value=0.1, unit='mg/L')
+            ))
         self.dummy_sample_type = ProductNode(id_='dummy/01', node_type=SAMPLE, name='dummy')
         self.more_dummy_sample_type = ProductNode(id_='dummy/02', node_type=SAMPLE, name='more dummy')
         self.interspersed_sample_types = [(self.dummy_sample_type, 20)]
@@ -1916,14 +1927,20 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         return super(QualityControlServiceTest, self).setUp()
 
     def test_expansion_of_single_mass_spectrometry_assay(self):
+        """
         ms_assay_graph = next(ag for ag in self.ms_sample_assay_plan.assay_plan
                               if ag.technology_type == ms_assay_dict['technology_type'])
         self.assertIsInstance(ms_assay_graph, AssayGraph)
-        # ms_assay_graph.quality_control = self.qc
-        print(self.ms_sample_assay_plan.assay_plan)
+        ms_assay_graph.quality_control = self.qc
+        print('MS assay graph start nodes are: {0}'.format(ms_assay_graph.start_nodes))
+        """
+        ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+            sample_list, ms_assay_dict, quality_controls=[self.qc]
+        )
+        # print(self.ms_sample_assay_plan.assay_plan)
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.ms_sample_assay_plan),
+            (self.cell_single_treatment_00, ms_sample_assay_plan),
             (self.cell_follow_up, self.nmr_sample_assay_plan)
         ]))
         second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=10, arm_map=OrderedDict([
@@ -1939,7 +1956,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
                               if assay.technology_type == ms_assay_dict['technology_type'])
         expected_num_of_samples_ms_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
-            self.ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
+            ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
         ms_processes = [process for process in ms_assay_no_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
@@ -1953,7 +1970,16 @@ class QualityControlServiceTest(BaseStudyDesignTest):
                                 if assay.technology_type == ms_assay_dict['technology_type'])
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
-        # self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
+        self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
+        """
+        ms_processes = [process for process in ms_assay_with_qc.process_sequence
+                        if process.executes_protocol.name == 'mass spectrometry']
+        qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
+            expected_num_of_samples_ms_plan_first_arm // self.interspersed_sample_types[0][1]
+        print('expected qc_samples_size: {0}'.format(qc_samples_size))
+        self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 *
+                         (expected_num_of_samples_ms_plan_first_arm + qc_samples_size))
+        """
 
 
 class TreatmentFactoryTest(unittest.TestCase):
