@@ -1840,6 +1840,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(len(study.assays), 2)
         treatment_assay = next(iter(study.assays))
         self.assertIsInstance(treatment_assay, Assay)
+        self.assertEqual(len(treatment_assay.samples), expected_num_of_samples_per_plan)
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
@@ -1916,6 +1917,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         # print('MS Assay is: {0}'.format(ms_assay))
         self.assertIsNotNone(ms_assay)
         self.assertIsInstance(ms_assay, Assay)
+        self.assertEqual(len(ms_assay.samples), expected_num_of_samples_ms_plan_first_arm)
         ms_processes = [process for process in ms_assay.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)

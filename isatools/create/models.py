@@ -2171,6 +2171,7 @@ class StudyDesign(object):
         )
         log.info('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
                                                                              assay.technology_type))
+        assay.samples = assay_samples
         for node in assay_graph.start_nodes:
             size = node.size if isinstance(node, ProductNode) \
                 else node.replicates if isinstance(node, ProtocolNode) \
@@ -2272,8 +2273,11 @@ class QualityControlService(object):
                             # CHECK the assumption here is that an assay file can univocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
                             # Such an assumption is correct as far a the Assay filename convention is not modified
-                            assay_filename = 'a_{0}_{1}_{2}.txt'.format(cell.name, assay_graph.id,
-                                                                        assay_graph.measurement_type)
+                            assay_filename = 'a_{0}_{1}_{2}.txt'.format(
+                                cell.name, assay_graph.id,
+                                assay_graph.measurement_type.term if isinstance(
+                                    assay_graph.measurement_type, OntologyAnnotation) else assay_graph.measurement_type
+                            )
                             assay_to_expand = next(assay for assay in qc_study.assays
                                                    if assay.filename == assay_filename)
                             index = qc_study.assays.index(assay_to_expand)
