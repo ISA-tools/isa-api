@@ -1606,8 +1606,12 @@ class SampleAndAssayPlanDecoder(object):
                                characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
 
     def loads_assay_graph(self, assay_graph_dict):
-        assay_graph = AssayGraph(id_=assay_graph_dict["@id"], measurement_type=assay_graph_dict["measurementType"],
-                                 technology_type=assay_graph_dict["technologyType"])
+        measurement_type = assay_graph_dict["measurementType"] if isinstance(assay_graph_dict["measurementType"], str) \
+            else OntologyAnnotation(**assay_graph_dict["measurementType"])
+        technology_type = assay_graph_dict["technologyType"] if isinstance(assay_graph_dict["technologyType"], str) \
+            else OntologyAnnotation(**assay_graph_dict["technologyType"])
+        assay_graph = AssayGraph(id_=assay_graph_dict["@id"], measurement_type=measurement_type,
+                                 technology_type=technology_type)
         nodes = [self.loads_node(node_dict) for node_dict in assay_graph_dict["nodes"]]
         assay_graph.add_nodes(nodes)
         for [start_node_id, end_node_id] in assay_graph_dict["links"]:

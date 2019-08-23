@@ -89,7 +89,7 @@ class BaseTestCase(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
-        self.fifth_treatment = Treatment(element_type=INTERVENTIONS['DIET'], factor_values=(
+        self.fifth_treatment = Treatment(element_type=INTERVENTIONS['DIETARY'], factor_values=(
             FactorValue(factor_name=BASE_FACTORS[0], value=DIETARY_FACTOR_0_VALUE),
             FactorValue(factor_name=BASE_FACTORS[1], value=DIETARY_FACTOR_1_VALUE, unit=DIETARY_FACTOR_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=DIETARY_FACTOR_2_VALUE, unit=DIETARY_FACTOR_2_UNIT)
@@ -241,6 +241,9 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                             technology_type='nucleic acid extraction')
         self.second_assay_graph = AssayGraph(id_="assay-graph/01",  measurement_type='genomic extraction',
                                              technology_type='nucleic acid extraction')
+        self.third_assay_graph = AssayGraph(id_='assay-graph/02',
+                                            measurement_type=OntologyAnnotation(term='genomic extraction'),
+                                            technology_type=OntologyAnnotation(term='nucleic acid extraction'))
         self.tissue_char = Characteristic(category='organism part', value='tissue')
         self.blood_char = Characteristic(category='organism part', value='blood')
         self.tissue_node = ProductNode(id_='product-node/0000', name='tissue', node_type=SAMPLE, size=2,
@@ -256,11 +259,11 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                               parameter_values=[self.extraction_instrument])
         self.protocol_node_rna = ProtocolNode(id_='protocol-node/0001', name='RNA extraction', version="0.1",
                                               parameter_values=[self.extraction_instrument])
-        self.dna_node = ProductNode(id_='product-node/0002', name='DNA', node_type=SAMPLE, size=3,
+        self.dna_node = ProductNode(id_='product-node/0002', name='DNA', node_type=EXTRACT, size=3,
                                     characteristics=[self.dna_char])
-        self.mrna_node = ProductNode(id_='product-node/0003', name='mRNA', node_type=SAMPLE, size=3,
+        self.mrna_node = ProductNode(id_='product-node/0003', name='mRNA', node_type=EXTRACT, size=3,
                                      characteristics=[self.mrna_char])
-        self.mirna_node = ProductNode(id_='product-node/0004', name='miRNA', node_type=SAMPLE, size=5,
+        self.mirna_node = ProductNode(id_='product-node/0004', name='miRNA', node_type=EXTRACT, size=5,
                                       characteristics=[self.mirna_char])
         self.plan.sample_plan = [self.tissue_node, self.blood_node]
         self.first_assay_graph.add_nodes([self.protocol_node_dna, self.dna_node])
@@ -317,6 +320,16 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.assertEqual(self.plan.assay_plan, actual_plan.assay_plan)
         self.assertEqual(self.plan.sample_to_assay_map, actual_plan.sample_to_assay_map)
         self.assertEqual(self.plan, actual_plan)
+
+    def test_encode_and_decode_assay_graph_with_ontology_annotation(self):
+        encoder = SampleAndAssayPlanEncoder()
+        decoder = SampleAndAssayPlanDecoder()
+        ag_dict = encoder.assay_graph(self.third_assay_graph)
+        assay_graph_reconstructed = decoder.loads_assay_graph(ag_dict)
+        self.assertIsInstance(assay_graph_reconstructed, AssayGraph)
+        self.assertEqual(assay_graph_reconstructed.technology_type, self.third_assay_graph.technology_type)
+        self.assertEqual(assay_graph_reconstructed.measurement_type, self.third_assay_graph.measurement_type)
+        self.assertEqual(assay_graph_reconstructed.id, self.third_assay_graph.id)
 
 
 class StudyArmEncoderTest(BaseTestCase):
