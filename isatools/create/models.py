@@ -730,7 +730,7 @@ class ProtocolNode(SequenceNode, Protocol):
 
     @property
     def components(self):
-        return None
+        return []   # FIXME check if empty list works None triggers an error
 
     @components.setter
     def components(self, components):
