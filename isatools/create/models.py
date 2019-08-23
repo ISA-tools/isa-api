@@ -2212,7 +2212,7 @@ class StudyDesign(object):
         study.factors, protocols, study.samples, study.assays, study.process_sequence, \
             study.ontology_source_references = \
             self._generate_samples(
-                sources_map, study.protocols[0], study_config['performers'][0], split_assays_by_sample_type
+                sources_map, study.protocols[0], study_config['performers'][0]['name'], split_assays_by_sample_type
             )
         for protocol in protocols:
             study.add_protocol(protocol)
