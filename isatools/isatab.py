@@ -852,7 +852,7 @@ def write_study_table_files(inv_obj, output_dir):
                 columns[i] = "Sample Name"
 
         log.info("Rendered {} paths".format(len(DF.index)))
-
+        log.info("Dataframe DF is {0}".format(DF))
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
             log.info("Dropping duplicates...")
