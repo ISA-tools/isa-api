@@ -1121,7 +1121,8 @@ def get_value_columns(label, x):
 
 
 def get_characteristic_columns(label, c):
-    columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
+    columns = ["{0}.Characteristics[{1}]".format(
+        label, c.category.term if isinstance(c.category, OntologyAnnotation) else c.category)]
     columns.extend(get_value_columns(columns[0], c))
     return columns
 
