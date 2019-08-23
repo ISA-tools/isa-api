@@ -1092,6 +1092,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         columns[i] = col[:col.rindex(".")]
 
             log.info("Rendered {} paths".format(len(DF.index)))
+            log.info("Data Frame DF is: {0}".format(DF))
             if len(DF.index) > 1:
                 if len(DF.index) > len(DF.drop_duplicates().index):
                     log.debug("Dropping duplicates...")
