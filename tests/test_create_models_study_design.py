@@ -1859,6 +1859,7 @@ class StudyDesignTest(BaseStudyDesignTest):
             self.assertEqual(process.inputs, [treatment_assay.other_material[ix//8]])
             self.assertEqual(process.outputs, [treatment_assay.data_files[ix]])
 
+
     def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:

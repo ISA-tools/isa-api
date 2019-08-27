@@ -2147,7 +2147,10 @@ class StudyDesign(object):
                             process for process in processes[::-1]
                             if process.executes_protocol == previous_protocol_node
                         )
-                        plink(previous_process, item)  # TODO this doe not work
+                        assert isinstance(previous_process, Process)
+                        assert isinstance(item, Process)
+                        log.info('linking process {0} to process {1}'.format(previous_process.name, item.name))
+                        plink(previous_process, item)  # TODO this does not work
         return processes, other_materials, data_files, item
 
     @staticmethod
