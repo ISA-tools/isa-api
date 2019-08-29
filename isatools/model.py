@@ -33,9 +33,9 @@ def _build_assay_graph(process_sequence=None):
     if process_sequence is None:
         return g
     for process in process_sequence:
-        log.info('Current process is: {0}'.format(process.name))
-        log.info('Next process for current process is: {0}'.format(process.next_process.name if process.next_process else None))
-        log.info('Previous process for current process is: {0}'.format(process.prev_process.name if process.prev_process else None))
+        log.info('Current process is: {0}'.format(process))
+        log.info('Next process for current process is: {0}'.format(process.next_process))
+        log.info('Previous process for current process is: {0}'.format(process.prev_process))
         log.info('Inputs for current process are: {0}'.format(process.inputs))
         log.info('Outputs for current process are: {0}'.format(process.outputs))
         if process.next_process is not None or len(process.outputs) > 0:
