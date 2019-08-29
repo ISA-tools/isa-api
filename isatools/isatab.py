@@ -1049,7 +1049,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     elif isinstance(node, DataFile):
                         pass  # handled in process
 
-            if isinstance(pbar, ProgressBar):  pbar.finish()
+            if isinstance(pbar, ProgressBar):
+                pbar.finish()
 
             DF = pd.DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)

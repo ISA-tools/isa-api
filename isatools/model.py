@@ -33,8 +33,12 @@ def _build_assay_graph(process_sequence=None):
     if process_sequence is None:
         return g
     for process in process_sequence:
-        if process.next_process is not None or len(
-                process.outputs) > 0:
+        log.info('Current process is: {0}'.format(process.name))
+        log.info('Next process for current process is: {0}'.format(process.next_process.name))
+        log.info('Previous process for current process is: {0}'.format(process.prev_process.name))
+        log.info('Inputs for current process are: {0}'.format(process.inputs))
+        log.info('Outputs for current process are: {0}'.format(process.outputs))
+        if process.next_process is not None or len(process.outputs) > 0:
             if len([n for n in process.outputs if
                     not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if

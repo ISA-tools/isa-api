@@ -2101,11 +2101,12 @@ class StudyDesign(object):
                                     qc_processes_tot.extend(qc_processes)
                                 else:
                                 """
+                                """
                                 samp_prs = self._get_sampling_processes_for_sample_batch(
                                     process_sequence, sample_batches[sample_node]
-                                )
+                                )"""
                                 assays.append(
-                                    self._generate_assay(assay_graph, sample_batches[sample_node], cell.name, samp_prs)
+                                    self._generate_assay(assay_graph, sample_batches[sample_node], cell.name)
                                 )
                     else:
                         sample_batch = []
@@ -2117,11 +2118,13 @@ class StudyDesign(object):
                         )
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
+    """
     @staticmethod
     def _get_sampling_processes_for_sample_batch(process_sequence, sample_batch):
         return {
             process for process in process_sequence if any(sample in process.outputs for sample in sample_batch)
         }
+    """
 
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
@@ -2163,7 +2166,7 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item
 
     @staticmethod
-    def _generate_assay(assay_graph, assay_samples, cell_name='', sampling_processes=[]):
+    def _generate_assay(assay_graph, assay_samples, cell_name=''):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
         """
@@ -2183,9 +2186,9 @@ class StudyDesign(object):
         )
         log.info('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
                                                                              assay.technology_type))
-        assay.samples = assay_samples
-        assay.sources = {source for sample in assay_samples for source in sample.derives_from}
-        assay.process_sequence = sampling_processes
+        # assay.samples = assay_samples
+        # assay.sources = {source for sample in assay_samples for source in sample.derives_from}
+        # assay.process_sequence = sampling_processes
         for node in assay_graph.start_nodes:
             size = node.size if isinstance(node, ProductNode) \
                 else node.replicates if isinstance(node, ProtocolNode) \
@@ -2358,6 +2361,7 @@ class QualityControlService(object):
         :param performer:
         :return:
         """
+        log.info("Quality control sample size = {0}".format(sample_size))
         qc_sources = []
         qc_samples_pre_run = []
         qc_samples_post_run = []
