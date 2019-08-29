@@ -33,11 +33,13 @@ def _build_assay_graph(process_sequence=None):
     if process_sequence is None:
         return g
     for process in process_sequence:
-        log.info('Current process is: {0}'.format(process))
-        log.info('Next process for current process is: {0}'.format(process.next_process))
-        log.info('Previous process for current process is: {0}'.format(process.prev_process))
-        log.info('Inputs for current process are: {0}'.format(process.inputs))
-        log.info('Outputs for current process are: {0}'.format(process.outputs))
+        """
+        log.debug('Current process is: {0}'.format(process))
+        log.debug('Next process for current process is: {0}'.format(process.next_process))
+        log.debug('Previous process for current process is: {0}'.format(process.prev_process))
+        log.debug('Inputs for current process are: {0}'.format(process.inputs))
+        log.debug('Outputs for current process are: {0}'.format(process.outputs))
+        """
         if process.next_process is not None or len(process.outputs) > 0:
             if len([n for n in process.outputs if
                     not isinstance(n, DataFile)]) > 0:
@@ -1512,6 +1514,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def graph(self):
         """:obj:`networkx.DiGraph` A graph representation of the study's 
         process sequence"""
+        log.info('Building graph for object: {0}'.format(self))
         if len(self.process_sequence) > 0:
             return _build_assay_graph(self.process_sequence)
         else:

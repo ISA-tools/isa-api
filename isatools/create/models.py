@@ -2129,7 +2129,7 @@ class StudyDesign(object):
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
                                          previous_items=[], ix=0):
-        log.debug('# processes: {0}'.format(len(processes)))
+        log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
         item = isa_objects_factory(node, sequence_no=ix)
         if isinstance(item, Process):
             item.inputs = previous_items
@@ -2193,12 +2193,14 @@ class StudyDesign(object):
             size = node.size if isinstance(node, ProductNode) \
                 else node.replicates if isinstance(node, ProtocolNode) \
                 else 1
-            log.info('Size: {0}'.format(size))
+            log.debug('Size: {0}'.format(size))
             for i, sample in enumerate(assay_samples):
-                log.info('Iteration: {0} - Sample: {1}'.format(i, sample.name))
+                log.debug('Iteration: {0} - Sample: {1}'.format(i, sample.name))
                 for j in range(size):
+                    ix = i * len(assay_samples) + j
+                    log.debug('i = {0}, j = {1}, ix={2}'.format(i, j, ix))
                     processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, ix=i*len(assay_samples)+j, processes=[], other_materials=[], data_files=[],
+                        node, assay_graph, ix=ix, processes=[], other_materials=[], data_files=[],
                         previous_items=[]
                     )
                     assay.other_material.extend(other_materials)
@@ -2456,6 +2458,7 @@ def isa_objects_factory(node, sequence_no=0):
     :param sequence_no: int - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
     """
+    log.debug('sequence_no: {0}'.format(sequence_no))
     if isinstance(node, ProtocolNode):
         return Process(
                 name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
