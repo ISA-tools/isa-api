@@ -1857,6 +1857,8 @@ class StudyDesignTest(BaseStudyDesignTest):
                          * expected_num_of_samples_per_plan)
         self.assertEqual(len(treatment_assay.process_sequence), (8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
                                                                  + 1)*expected_num_of_samples_per_plan)
+        for ix, process in enumerate(extraction_processes):
+            self.assertEqual(process.inputs, [study.samples[ix]])
         for ix, process in enumerate(nmr_processes):
             self.assertIsInstance(process, Process)
             # 1 extraction protocol feeds into 16 nmr processes

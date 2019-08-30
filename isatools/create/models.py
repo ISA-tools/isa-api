@@ -2206,7 +2206,7 @@ class StudyDesign(object):
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
                         node, assay_graph, ix=ix, jx=0, counter=0, processes=[], other_materials=[], data_files=[],
-                        previous_items=[]
+                        previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
