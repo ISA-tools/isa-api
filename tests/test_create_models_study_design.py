@@ -9,6 +9,10 @@ from isatools.create.models import *
 
 import networkx as nx
 import uuid
+import logging
+
+log = logging.getLogger('isatools')
+log.setLevel(logging.DEBUG)
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -1849,8 +1853,10 @@ class StudyDesignTest(BaseStudyDesignTest):
         nmr_processes = [process for process in treatment_assay.process_sequence
                          if process.executes_protocol.name == 'nmr_spectroscopy']
         self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8*2*expected_num_of_samples_per_plan)
-        self.assertEqual(len(treatment_assay.process_sequence), (8*2+1)*expected_num_of_samples_per_plan)
+        self.assertEqual(len(nmr_processes), 8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
+                         * expected_num_of_samples_per_plan)
+        self.assertEqual(len(treatment_assay.process_sequence), (8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
+                                                                 + 1)*expected_num_of_samples_per_plan)
         for ix, process in enumerate(nmr_processes):
             self.assertIsInstance(process, Process)
             # 1 extraction protocol feeds into 16 nmr processes
@@ -1858,7 +1864,12 @@ class StudyDesignTest(BaseStudyDesignTest):
             # 1 extract ends up into 8 different nmr protocol runs (i.e. processes)
             self.assertEqual(process.inputs, [treatment_assay.other_material[ix//8]])
             self.assertEqual(process.outputs, [treatment_assay.data_files[ix]])
-
+        log.debug('Process sequence: {0}'.format([
+            (process.name, getattr(process.prev_process, 'name', None),
+             getattr(process.next_process, 'name', None)) for process in treatment_assay.process_sequence
+        ]))
+        log.debug('NMR assay graph: {0}'.format([(getattr(el, 'name', None), type(el))
+                                                 for el in treatment_assay.graph.nodes()]))
 
     def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',

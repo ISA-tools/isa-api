@@ -24,7 +24,7 @@ import inspect
 import pdb
 
 log = logging.getLogger('isatools')
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 __author__ = 'massi'
 
@@ -2128,9 +2128,9 @@ class StudyDesign(object):
 
     @staticmethod
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
-                                         previous_items=[], ix=0):
+                                         previous_items=[], ix=0, jx=0, counter=0):
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
-        item = isa_objects_factory(node, sequence_no=ix)
+        item = isa_objects_factory(node, sequence_no='{0}-{1}'.format(ix, counter))
         if isinstance(item, Process):
             item.inputs = previous_items
             processes.append(item)
@@ -2139,13 +2139,18 @@ class StudyDesign(object):
         elif isinstance(item, DataFile):
             data_files.append(item)
         next_nodes = assay_graph.next_nodes(node)
-        for next_node in next_nodes:
+        for ii, next_node in enumerate(next_nodes):
             size = next_node.size if isinstance(next_node, ProductNode) \
                 else next_node.replicates if isinstance(next_node, ProtocolNode) \
                 else 1
-            for i in range(size):
-                processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
-                    next_node, assay_graph, processes, other_materials, data_files, [item]
+            for jj in range(size):
+                jx = ii * size + jj
+                log.debug('ii = {0} - jj = {1} - jx = {2}'.format(ii, jj, jx))
+                counter += 1
+                processes, other_materials, data_files, next_item, counter = \
+                    StudyDesign._generate_isa_elements_from_node(
+                        next_node, assay_graph, processes, other_materials, data_files, [item], ix=ix, jx=jx,
+                        counter=counter
                 )
                 if isinstance(node, ProtocolNode):
                     item.outputs.append(next_item)
@@ -2161,9 +2166,9 @@ class StudyDesign(object):
                         )
                         assert isinstance(previous_process, Process)
                         assert isinstance(item, Process)
-                        log.info('linking process {0} to process {1}'.format(previous_process.name, item.name))
+                        log.debug('linking process {0} to process {1}'.format(previous_process.name, item.name))
                         plink(previous_process, item)  # TODO this does not work
-        return processes, other_materials, data_files, item
+        return processes, other_materials, data_files, item, counter
 
     @staticmethod
     def _generate_assay(assay_graph, assay_samples, cell_name=''):
@@ -2189,18 +2194,18 @@ class StudyDesign(object):
         # assay.samples = assay_samples
         # assay.sources = {source for sample in assay_samples for source in sample.derives_from}
         # assay.process_sequence = sampling_processes
-        for node in assay_graph.start_nodes:
+        for i, node in enumerate(assay_graph.start_nodes):
             size = node.size if isinstance(node, ProductNode) \
                 else node.replicates if isinstance(node, ProtocolNode) \
                 else 1
             log.debug('Size: {0}'.format(size))
-            for i, sample in enumerate(assay_samples):
+            for j, sample in enumerate(assay_samples):
                 log.debug('Iteration: {0} - Sample: {1}'.format(i, sample.name))
-                for j in range(size):
-                    ix = i * len(assay_samples) + j
-                    log.debug('i = {0}, j = {1}, ix={2}'.format(i, j, ix))
-                    processes, other_materials, data_files, _ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, ix=ix, processes=[], other_materials=[], data_files=[],
+                for k in range(size):
+                    ix = i * len(assay_samples) * size + j * size + k
+                    log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
+                    processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
+                        node, assay_graph, ix=ix, jx=0, counter=0, processes=[], other_materials=[], data_files=[],
                         previous_items=[]
                     )
                     assay.other_material.extend(other_materials)
@@ -2451,11 +2456,11 @@ class QualityControlService(object):
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 
-def isa_objects_factory(node, sequence_no=0):
+def isa_objects_factory(node, sequence_no):
     """
     This method generates an ISA element from an ISA node
     :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
-    :param sequence_no: int - a sequential number to discriminate among items built in a batch
+    :param sequence_no: str - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
     """
     log.debug('sequence_no: {0}'.format(sequence_no))
