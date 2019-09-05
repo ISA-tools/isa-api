@@ -1783,7 +1783,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('study_config: {0}'.format(study_config))
         self.study_design.study_arms = [self.first_arm, self.second_arm, self.third_arm]
         study = self.study_design.generate_isa_study()
-        self.assertIsInstance(study, Study)
+        self.assertIsInstance(study, Study
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), self.first_arm.group_size + self.second_arm.group_size +
                          self.third_arm.group_size)
@@ -1793,7 +1793,7 @@ class StudyDesignTest(BaseStudyDesignTest):
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
-        processes, other_materials, data_files, next_item = StudyDesign._generate_isa_elements_from_node(
+        processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
             node, assay_graph
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
@@ -1935,6 +1935,58 @@ class StudyDesignTest(BaseStudyDesignTest):
         ms_processes = [process for process in ms_assay.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
+
+    def test_generate_isa_study_two_arms_single_cell_elements_check_source_characteristics(self):
+        control_source_type = Characteristic(
+            category=OntologyAnnotation(
+                term='Study Subject',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
+            ),
+            value=OntologyAnnotation(
+                term='Rat',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C14266'
+            )
+        )
+        treatment_source_type = Characteristic(
+            category=OntologyAnnotation(
+                term='Study Subject',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
+            ),
+            value=OntologyAnnotation(
+                term='Rat',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C14266'
+            )
+        )
+        treatment_arm = StudyArm(
+            name='TREATMENT GROUP', source_type=treatment_source_type, group_size=20, arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.ms_sample_assay_plan),
+                (self.cell_follow_up, self.nmr_sample_assay_plan)
+            ]))
+        control_arm = StudyArm(
+            name='CONTROL GROUP', source_type=control_source_type, group_size=10, arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_01, self.nmr_sample_assay_plan),
+                (self.cell_follow_up_01, self.nmr_sample_assay_plan)
+            ]))
+        self.assertIs(control_arm.source_type, control_source_type)
+        self.assertIs(treatment_arm.source_type, treatment_source_type)
+        study_design = StudyDesign(study_arms=(treatment_arm, control_arm))
+        self.assertIs(study_design.study_arms[0].source_type, control_source_type)
+        self.assertIs(study_design.study_arms[1].source_type, treatment_source_type)
+        study = study_design.generate_isa_study()
+        self.assertEqual(len(study.sources), treatment_arm.group_size + control_arm.group_size)
+        for i, source in enumerate(study.sources):
+            if i < control_arm.group_size:
+                self.assertEqual(source.characteristics, [control_source_type])
+            else:
+                self.assertEqual(source.characteristics, [treatment_source_type])
+        # self.assertIn(control_source_type.category, study.characteristic_categories)
+        # self.assertIn(treatment_source_type.category, study.characteristic_categories)
 
 
 class QualityControlServiceTest(BaseStudyDesignTest):

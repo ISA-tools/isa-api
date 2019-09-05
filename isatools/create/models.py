@@ -1672,7 +1672,7 @@ class StudyArm(object):
         if arm_map is not None:
             self.arm_map = arm_map
         if source_type:
-            self.source_tye = source_type
+            self.source_type = source_type
 
     def __repr__(self):
         return '{0}.{1}(' \
@@ -1927,7 +1927,7 @@ class StudyDesign(object):
     @source_type.setter
     def source_type(self, source_type):
         if not isinstance(source_type, Characteristic):
-            raise AttributeError()
+            raise AttributeError('')
         self.__source_type = source_type
 
     @property
