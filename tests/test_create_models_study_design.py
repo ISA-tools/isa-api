@@ -2028,7 +2028,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         ms_processes = [process for process in ms_assay_no_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
-        # print('MS Assay no QC: {0}'.format(ms_assay_no_qc))
+        print('MS Assay no QC: {0}'.format(ms_assay_no_qc))
         study_with_qc = QualityControlService.augment_study(study_no_qc, study_design)
         self.assertIsInstance(study_with_qc, Study)
         self.assertIsNot(study_no_qc, study_with_qc)
@@ -2039,7 +2039,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
         self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
-        """
+        
         ms_processes = [process for process in ms_assay_with_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
@@ -2047,7 +2047,6 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         print('expected qc_samples_size: {0}'.format(qc_samples_size))
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 *
                          (expected_num_of_samples_ms_plan_first_arm + qc_samples_size))
-        """
 
 
 class TreatmentFactoryTest(unittest.TestCase):

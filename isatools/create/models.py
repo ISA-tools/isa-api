@@ -2343,12 +2343,14 @@ class QualityControlService(object):
         :param interspersed_samples:
         :return:
         """
-        assay_samples = [s for s in samples]  # this variable will contain all samples
+        sorted_samples = sorted(samples, key=lambda s: s.name)
+        assay_samples = [s for s in sorted_samples]  # this variable will contain all samples
+        # pdb.set_trace()
         if interspersed_samples:
             for (qc_sample_node, interspersing_interval), qc_samples in interspersed_samples.items():
                 for ix, qc_sample in enumerate(qc_samples):
                     index_to_insert = assay_samples.index(
-                        samples[(ix + 1) * interspersing_interval])  # FIXME +1 or no ??
+                        sorted_samples[(ix + 1) * interspersing_interval])  # FIXME +1 or no ??
                     assay_samples.insert(index_to_insert, qc_sample)
         if pre_run_samples:
             assay_samples = pre_run_samples + assay_samples
@@ -2406,7 +2408,10 @@ class QualityControlService(object):
                 ]
             )
             qc_processes.append(process)
+        log.info("Completed pre-batch samples")
         for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
+            log.info("sample node is {0}".format(sample_node))
+            log.info("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
             qc_samples_interspersed[(sample_node, interspersing_interval)] = []
             i = 0
             while i < sample_size:
@@ -2422,6 +2427,8 @@ class QualityControlService(object):
                         derives_from=[dummy_source],
                     )
                     qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
+                i += 1
+        log.info("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
@@ -2453,6 +2460,7 @@ class QualityControlService(object):
             )
             qc_processes.append(process)
             i += 1
+        log.info("Completed post-batch samples")
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 
