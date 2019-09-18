@@ -2042,6 +2042,10 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         
         ms_processes = [process for process in ms_assay_with_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
+        log.info('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
+                 .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
+                         self.interspersed_sample_types[0][1]))
+        log.info('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
             expected_num_of_samples_ms_plan_first_arm // self.interspersed_sample_types[0][1]
         print('expected qc_samples_size: {0}'.format(qc_samples_size))

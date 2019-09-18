@@ -2413,21 +2413,18 @@ class QualityControlService(object):
             log.info("sample node is {0}".format(sample_node))
             log.info("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
             qc_samples_interspersed[(sample_node, interspersing_interval)] = []
-            i = 0
-            while i < sample_size:
-                if i % interspersing_interval == 1:
-                    dummy_source = QualityControlSource(
-                        name=SOURCE_QC_SOURCE_NAME
-                    )
-                    qc_sources.append(dummy_source)
-                    sample = QualityControlSample(
-                        name='{0}'.format(QC_SAMPLE_NAME),
-                        factor_values=[],
-                        characteristics=sample_node.characteristics,
-                        derives_from=[dummy_source],
-                    )
-                    qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
-                i += 1
+            for i in range(interspersing_interval, sample_size, interspersing_interval):
+                dummy_source = QualityControlSource(
+                    name=SOURCE_QC_SOURCE_NAME
+                )
+                qc_sources.append(dummy_source)
+                sample = QualityControlSample(
+                    name='{0}'.format(QC_SAMPLE_NAME),
+                    factor_values=[],
+                    characteristics=sample_node.characteristics,
+                    derives_from=[dummy_source],
+                )
+                qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
         log.info("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
