@@ -2046,8 +2046,11 @@ class QualityControlServiceTest(BaseStudyDesignTest):
                  .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
                          self.interspersed_sample_types[0][1]))
         log.info('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
+        expected_num_of_interspersed_samples = \
+            (expected_num_of_samples_ms_plan_first_arm - 1) // self.interspersed_sample_types[0][1]
+        log.info('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
-            expected_num_of_samples_ms_plan_first_arm // self.interspersed_sample_types[0][1]
+            expected_num_of_interspersed_samples
         print('expected qc_samples_size: {0}'.format(qc_samples_size))
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 *
                          (expected_num_of_samples_ms_plan_first_arm + qc_samples_size))
