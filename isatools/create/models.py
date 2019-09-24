@@ -1833,12 +1833,23 @@ class StudyArm(object):
 
 class StudyArmEncoder(json.JSONEncoder):
 
+    @staticmethod
+    def characteristics(o):
+        onto_encoder = OntologyAnnotationEncoder()
+        if isinstance(o, Characteristic):
+            res = dict(
+                category=onto_encoder.ontology_annotation(o.category),
+                value=onto_encoder.ontology_annotation(o.value) if isinstance(o.value, OntologyAnnotation) else o.value,
+                unit=onto_encoder.ontology_annotation(o.unit)
+            )
+            return res
+
     def default(self, o):
         if isinstance(o, StudyArm):
             study_cell_encoder = StudyCellEncoder()
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
             res = dict(cells=[], sampleAssayPlans=[], mappings=[],
-                       name=o.name, groupSize=o.group_size)
+                       name=o.name, groupSize=o.group_size, source_type=self.characteristics(o.source_type))
             i = 0
             sample_assay_plan_set = set()
             for cell, sample_assay_plan in o.arm_map.items():
