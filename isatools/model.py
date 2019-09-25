@@ -2713,10 +2713,14 @@ class Characteristic(Commentable):
     unit={unit}
     comments={num_comments} Comment objects
 )""".format(characteristic=self,
-           category=self.category.term if self.category else '',
+           category=self.category.term if isinstance(
+               self.category, OntologyAnnotation
+           ) else self.category if self.category is not None else '',
            value=self.value.term if isinstance(
                self.value, OntologyAnnotation) else self.value if self.value is not None else '',
-           unit=self.unit.term if self.unit else '',
+           unit=self.unit.term if isinstance(
+               self.unit, OntologyAnnotation
+           ) else self.unit if self.unit is not None else '',
            num_comments=len(self.comments))
 
     def __hash__(self):

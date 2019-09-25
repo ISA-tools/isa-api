@@ -178,6 +178,52 @@ class BaseTestCase(unittest.TestCase):
             [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
         ]))
 
+class CharacteristicEncoderTest(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_with_ontology_annotations(self):
+        ncit = OntologySource(name='NCIT')
+        characteristic = Characteristic(
+            category=OntologyAnnotation(
+                term='length',
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C25334',
+                term_source=ncit
+            ),
+            value=200,
+            unit=OntologyAnnotation(
+                term='meter',
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C41139',
+                term_source=ncit
+            )
+        )
+        # log.info('Characteristic is {0}'.format(characteristic))
+        actual_json_characteristic = json.loads(json.dumps(characteristic, cls=CharacteristicEncoder))
+        expected_json_characteristic = {
+            'category': {
+                'term': characteristic.category.term,
+                'termAccession': characteristic.category.term_accession,
+                'termSource': {'name': ncit.name}
+            },
+            'value': characteristic.value,
+            'unit': {
+                'term': characteristic.unit.term,
+                'termAccession': characteristic.unit.term_accession,
+                'termSource': {'name': ncit.name}
+            }
+        }
+        self.assertEqual(ordered(actual_json_characteristic), ordered(expected_json_characteristic))
+
+    def test_with_strings(self):
+        characteristic = Characteristic(category='organism', value='homo sapiens sapiens')
+        # log.info('Characteristic is {0}'.format(characteristic))
+        actual_json_characteristic = json.loads(json.dumps(characteristic, cls=CharacteristicEncoder))
+        expected_json_characteristic = {
+            'category': characteristic.category,
+            'value': characteristic.value
+        }
+        self.assertEqual(ordered(actual_json_characteristic), ordered(expected_json_characteristic))
 
 class StudyCellEncoderTest(BaseTestCase):
 

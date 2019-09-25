@@ -526,12 +526,16 @@ class OntologyAnnotationEncoder(json.JSONEncoder):
         if isinstance(obj, str):
             return obj
         if isinstance(obj, OntologySource):
-            return {
-                "name": obj.name,
-                "file": obj.file,
-                "version": obj.version,
-                "description": obj.description
+            res = {
+                "name": obj.name
             }
+            if obj.file:
+                res["file"] = obj.file
+            if obj.version:
+                res["version"] = obj.version
+            if obj.description:
+                res["description"] = obj.description
+            return res
 
     def ontology_annotation(self, obj):
         if isinstance(obj, OntologyAnnotation):
@@ -543,6 +547,30 @@ class OntologyAnnotationEncoder(json.JSONEncoder):
             if obj.term_source:
                 res["termSource"] = self.ontology_source(obj.term_source)
             return res
+
+    def default(self, obj):
+        return self.ontology_annotation(obj)
+
+
+class CharacteristicEncoder(json.JSONEncoder):
+
+    @staticmethod
+    def characteristic(obj):
+        onto_encoder = OntologyAnnotationEncoder()
+        if isinstance(obj, Characteristic):
+            res = dict(
+                category=onto_encoder.ontology_annotation(obj.category)
+                if isinstance(obj.category, OntologyAnnotation) else obj.category,
+                value=onto_encoder.ontology_annotation(obj.value)
+                if isinstance(obj.value, OntologyAnnotation) else obj.value,
+            )
+            if obj.unit:
+                res['unit'] = onto_encoder.ontology_annotation(obj.unit) \
+                    if isinstance(obj.unit, OntologyAnnotation) else obj.unit
+            return res
+
+    def default(self, obj):
+        return self.characteristic(obj)
 
 
 class StudyCellEncoder(json.JSONEncoder):
@@ -1833,23 +1861,15 @@ class StudyArm(object):
 
 class StudyArmEncoder(json.JSONEncoder):
 
-    @staticmethod
-    def characteristics(o):
-        onto_encoder = OntologyAnnotationEncoder()
-        if isinstance(o, Characteristic):
-            res = dict(
-                category=onto_encoder.ontology_annotation(o.category),
-                value=onto_encoder.ontology_annotation(o.value) if isinstance(o.value, OntologyAnnotation) else o.value,
-                unit=onto_encoder.ontology_annotation(o.unit)
-            )
-            return res
-
     def default(self, o):
         if isinstance(o, StudyArm):
+            characteristic_encoder = CharacteristicEncoder()
             study_cell_encoder = StudyCellEncoder()
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
-            res = dict(cells=[], sampleAssayPlans=[], mappings=[],
-                       name=o.name, groupSize=o.group_size, source_type=self.characteristics(o.source_type))
+            res = dict(
+                name=o.name, groupSize=o.group_size, sourceType=characteristic_encoder.characteristic(o.source_type),
+                cells=[], sampleAssayPlans=[], mappings=[]
+            )
             i = 0
             sample_assay_plan_set = set()
             for cell, sample_assay_plan in o.arm_map.items():
