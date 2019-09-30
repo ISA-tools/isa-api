@@ -15,8 +15,8 @@ class TestMzml2IsaTab(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-    # def tearDown(self):
-    #     shutil.rmtree(self._tmp_dir)
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
 
     def test_mzml2isa_convert_investigation(self):
         study_id = 'MTBLS267'
@@ -45,6 +45,7 @@ class TestMzml2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 's_{}.txt'.format(study_id))) as out_fp:
             with open(os.path.join(self._tab_data_dir, study_id + '-partial', 's_{}.txt'.format(study_id))) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+    
 
     def test_mzml2isa_convert_assay_table(self):
         study_id = 'MTBLS267'

@@ -1,3 +1,4 @@
+
 numpy
 jsonschema
 pandas
@@ -13,10 +14,12 @@ chardet
 jinja2
 deepdiff
 beautifulsoup4
-mzml2isa
+#mzml2isa
+-e git+http://github.com/ISA-tools/mzml2isa@de743e20f495bcb4a9d58cbac04e994b6c9744e5#egg=mzml2isa
 biopython
 progressbar2
 tox
 nose
 certifi
 flake8
+
