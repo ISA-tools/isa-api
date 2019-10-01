@@ -304,8 +304,7 @@ def make_variable_names(assay_df):
 
     # Make variable names from data values
     for col in ['mass_to_charge', 'retention_time', 'chemical_shift']:
-        # if assay_df.keys().contains(col):
-        if col in assay_df.keys():    
+        if col in assay_df.keys():
             for i, v in enumerate(assay_df[col].values):
                 if type(v) == str or not numpy.isnan(v):
                     x = var_names[i]

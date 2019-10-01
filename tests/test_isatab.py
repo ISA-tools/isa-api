@@ -18,7 +18,7 @@ from isatools.isatab import IsaTabDataFrame
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
-        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+        raise FileNotFoundError("Could not find test data directory in {0}. Ensure you have cloned the ISAdatasets "
                                 "repository using "
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
@@ -725,6 +725,18 @@ class TestIsaTabLoad(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
+
+    def test_isatab_load_issue323(self):
+        with open(os.path.join(self._tab_data_dir, 'issue323', 'i_05.txt')) as fp:
+            ISA = isatab.load(fp)
+            print(ISA.studies[0].protocols[0].description)
+            self.assertEqual(len(ISA.studies[0].protocols[0].description), 70)
+
+        protocol = Protocol(description="some description containing a # character that should not be picked up", name="", protocol_type=OntologyAnnotation(term=""))
+        print("test protocol description", protocol.description)
+
+        self.assertEqual(len(protocol.description),70)
+
 
     def test_isatab_load_issue200(self):
         with open(os.path.join(self._tab_data_dir, 'issue200', 'i_Investigation.txt')) as fp:

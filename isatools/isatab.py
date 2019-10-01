@@ -1791,8 +1791,7 @@ def read_investigation_file(fp):
         :return: A DataFrame corresponding to the file section
         """
         df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python',
-                         encoding='utf-8', comment='#').dropna(
-            axis=1, how='all')
+                         encoding='utf-8').dropna(axis=1, how='all')
         df = df.T
         df.replace(np.nan, '', regex=True, inplace=True)
         #  Strip out the nan entries
