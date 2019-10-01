@@ -6,6 +6,7 @@ python:
 before_install:
 - bash -x get_test_data.sh
 install:
+- travis_wait 40 mvn install
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 - pip install tox-travis
 script:
