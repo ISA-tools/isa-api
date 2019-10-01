@@ -388,7 +388,9 @@ class StudyArmEncoderTest(BaseTestCase):
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
-        print(actual_json_arm)
+        print('expected source type is {}'.format(expected_json_arm['sourceType']))
+        print('actual source type is {}'.format(actual_json_arm['sourceType']))
+        self.assertEqual(ordered(actual_json_arm["sourceType"]), ordered(expected_json_arm["sourceType"]))
         self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
 
     def test_encode_arm_with_multi_element_cell(self):

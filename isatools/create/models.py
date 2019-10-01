@@ -1750,7 +1750,7 @@ class StudyArm(object):
 
     @property
     def source_type(self):
-        if self.__source_type:
+        if self.__source_type is not None:
             return self.__source_type
         else:
             return self.DEFAULT_SOURCE_TYPE
@@ -1866,6 +1866,7 @@ class StudyArmEncoder(json.JSONEncoder):
             characteristic_encoder = CharacteristicEncoder()
             study_cell_encoder = StudyCellEncoder()
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
+            log.info('StudyArm source_type is: {0}'.format(o.source_type))
             res = dict(
                 name=o.name, groupSize=o.group_size, sourceType=characteristic_encoder.characteristic(o.source_type),
                 cells=[], sampleAssayPlans=[], mappings=[]
