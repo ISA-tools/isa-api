@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-JSOn to MAGE-TAB"""
 import logging
 
-
-from isatools import isajson
-from isatools import magetab
+from isatools import isajson, magetab
 
 
 log = logging.getLogger('isatools')

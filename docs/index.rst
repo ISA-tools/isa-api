@@ -16,7 +16,6 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`Tutorial: describing a simple experiment with objects <creationtutorial>`
 #. :doc:`Creating ISA objects based on study-design </studydesigncreation>`
 #. :doc:`Converting between ISA formats </conversions>`
-#. :doc:`Importing and exporting SRA formatted datasets </sraconversion>`
 #. :doc:`Downloading files stored in Github </github>`
 #. :doc:`Validating ISA-Tab and ISA JSON </validation>`
 #. :doc:`Importing data in ISA formats </importdata>`
@@ -42,7 +41,6 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Example: validateISAjson.py <example-validateISAjson>
    Converting between ISA formats <conversions>
    Contributing your work <contributing>
-   Importing and exporting SRA formatted datasets <sraconversion>
    Downloading files stored in Github <github>
    Validating ISA-Tab and ISA JSON <validation>
    Importing data in ISA formats <importdata>

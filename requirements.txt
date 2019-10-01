@@ -8,7 +8,9 @@ iso8601
 chardet
 jinja2
 beautifulsoup4
-mzml2isa
+#mzml2isa
+-e git+http://github.com/ISA-tools/mzml2isa@5866b3e8e185ddbb3b784e4d6a2ef6fbbcfcb256#egg=mzml2isa
+#-e git+http://github.com/ISA-tools/isa-api@6e7fc5b588a78722f4d8030fe820c8bf577b34b0#egg=isatools
 biopython
 progressbar2
 deepdiff

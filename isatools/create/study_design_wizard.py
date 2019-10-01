@@ -1,14 +1,15 @@
-from itertools import product
-from itertools import permutations
-from isatools.model import *
-from isatools import isatab
-from isatools.isatab import dump
-from isatools.isatab import write_study_table_files
-# from random import sample
-import uuid
 import datetime
 import json
 import random
+import uuid
+from itertools import permutations, product
+
+from isatools import isatab
+from isatools.isatab import dump, write_study_table_files
+from isatools.model import *
+
+
+# from random import sample
 
 __author__ = 'proccaserra@gmail.com'
 
@@ -658,16 +659,19 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
 #
 #         samples_and_events = {}
 #         for s_type in sample_types:
-#             specific_sampling_events = input("for sample type " + "'" + str(s_type) + "'," +
-#                                              " how many times each of the samples have been collected (integer): ")
-#             # specific_sampling_events = remove_duplicate_from_list(specific_sampling_events)
+#             specific_sampling_events = input("for sample type " + "'"
+# + str(s_type) + "'," +
+# " how many times each of the samples have been collected (integer): ")
+# specific_sampling_events = remove_duplicate_from_list(
+# specific_sampling_events)
 #             samples_and_events[str(s_type)] = specific_sampling_events
 #
 #         return samples_and_events
 
 # def collection_sample_type():
 #     try:
-#         sample_types = input("list the type of sample collected from each study group member as csv list: ")
+#         sample_types = input("list the type of sample collected from each
+# study group member as csv list: ")
 #         # for example: blood,urine,sweat,muscle
 #         sample_types = remove_duplicate_from_list(sample_types)
 #         return sample_types
@@ -675,7 +679,8 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
 #         print("error in collection_sample_type() method")
 
 # def collected_sample_types(some_sample_type):
-#     # TODO implement pulling the list of allowed values from ISA configuration or another configuration files
+# TODO implement pulling the list of allowed values from ISA configuration or
+# another configuration files
 #
 #     if some_sample_type == "1":
 #         sample_types = input("select from the following list (liver,kidney,muscle,brain,lung,flower):  ")

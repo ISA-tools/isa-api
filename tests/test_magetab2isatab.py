@@ -24,8 +24,8 @@ class TestMageTab2IsaTab(unittest.TestCase):
         self._magetab_data_dir = utils.MAGETAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-    def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+    # def tearDown(self):
+    #     shutil.rmtree(self._tmp_dir)
 
     def test_magetab2isatab_convert_e_mexp_31(self):
         magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), self._tmp_dir)
