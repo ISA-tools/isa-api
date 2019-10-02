@@ -154,29 +154,48 @@ class BaseTestCase(unittest.TestCase):
             (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
         self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
-            [self.cell_screen, None], [self.cell_run_in, None],
-            [self.cell_single_treatment_00, self.sample_assay_plan_for_treatments],
-            [self.cell_washout_00, self.sample_assay_plan_for_washout],
-            [self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments],
-            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+            (self.cell_washout_00, self.sample_assay_plan_for_washout),
+            (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
+            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
         self.single_treatment_cell_arm_02 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=24, arm_map=OrderedDict([
-            [self.cell_screen, None], [self.cell_run_in, None],
-            [self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments],
-            [self.cell_washout_00, self.sample_assay_plan_for_washout],
-            [self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments],
-            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
+            (self.cell_washout_00, self.sample_assay_plan_for_washout),
+            (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
+            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
         self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
-            [self.cell_screen, self.sample_assay_plan_for_screening],
-            [self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments],
-            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+            (self.cell_screen, self.sample_assay_plan_for_screening),
+            (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
+            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
         self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
-            [self.cell_screen, self.sample_assay_plan_for_screening],
-            [self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments],
-            [self.cell_follow_up, self.sample_assay_plan_for_follow_up]
+            (self.cell_screen, self.sample_assay_plan_for_screening),
+            (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
+            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
+        self.mouse_source_type = Characteristic(
+            category=OntologyAnnotation(
+                term="Study Subject", term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",
+                term_source=default_ontology_source_reference
+            ),
+            value=OntologyAnnotation(
+                term="Mouse", term_accession="http://purl.obolibrary.org/obo/NCIT_C14238",
+                term_source=default_ontology_source_reference
+            )
+        )
+        self.multi_treatment_cell_arm_mouse = StudyArm(
+            source_type=self.mouse_source_type,
+            name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+
 
 class CharacteristicEncoderTest(unittest.TestCase):
 
@@ -224,6 +243,7 @@ class CharacteristicEncoderTest(unittest.TestCase):
             'value': characteristic.value
         }
         self.assertEqual(ordered(actual_json_characteristic), ordered(expected_json_characteristic))
+
 
 class StudyCellEncoderTest(BaseTestCase):
 
@@ -421,6 +441,17 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertEqual(self.multi_treatment_cell_arm, actual_arm)
+
+    def test_decode_arm_with_multi_element_cells_mouse(self):
+        decoder = StudyArmDecoder()
+        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+                               'study-arm-with-multi-element-cell-mouse.json')) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_arm = decoder.loads(json_text)
+        self.assertIsInstance(actual_arm, StudyArm)
+        log.info('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
+        log.info('Actual Arm source type: {}'.format(actual_arm.source_type))
+        self.assertEqual(self.multi_treatment_cell_arm_mouse, actual_arm)
 
 
 class StudyDesignEncoderTest(BaseTestCase):

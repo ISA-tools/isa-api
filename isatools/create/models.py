@@ -1615,10 +1615,28 @@ class SampleAndAssayPlanDecoder(object):
         return OntologyAnnotation(**pt_dict)
 
     @staticmethod
-    def loads_characteristic(characteristic_dict):
-        return Characteristic(category=characteristic_dict['category'],
-                              value=characteristic_dict['value'],
-                              unit=characteristic_dict['unit'] if 'unit' in characteristic_dict else None)
+    def loads_ontology_annotation(ontology_annotation_dict):
+        term_source = None
+        if isinstance(ontology_annotation_dict.get("termSource", None), dict):
+            term_source = OntologySource(**ontology_annotation_dict["termSource"])
+        return OntologyAnnotation(
+            term=ontology_annotation_dict["term"], term_accession=ontology_annotation_dict["term_accession"],
+            term_source=term_source
+        )
+
+    def loads_characteristic(self, characteristic_dict):
+        return Characteristic(
+            category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
+                characteristic_dict["category"], dict
+            ) else characteristic_dict['category'],
+            value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
+                characteristic_dict["value"], dict
+            ) else characteristic_dict['value'],
+            unit=self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
+                characteristic_dict["unit"], dict
+            ) else characteristic_dict["unit"] if isinstance(
+                characteristic_dict["unit"], str
+            ) else None)
 
     def loads_node(self, node_dict):
         if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
@@ -1732,7 +1750,10 @@ class StudyArm(object):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, StudyArm) and self.name == other.name and self.group_size == other.group_size and \
+        return isinstance(other, StudyArm) and \
+               self.name == other.name and \
+               self.source_type == other.source_type and \
+               self.group_size == other.group_size and \
                self.arm_map == other.arm_map
 
     def __ne__(self, other):
