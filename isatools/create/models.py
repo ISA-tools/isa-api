@@ -573,6 +573,37 @@ class CharacteristicEncoder(json.JSONEncoder):
         return self.characteristic(obj)
 
 
+class CharacteristicDecoder(object):
+
+    @staticmethod
+    def loads_ontology_annotation(ontology_annotation_dict):
+        term_source = None
+        if isinstance(ontology_annotation_dict.get("termSource", None), dict):
+            term_source = OntologySource(**ontology_annotation_dict["termSource"])
+        return OntologyAnnotation(
+            term=ontology_annotation_dict["term"], term_accession=ontology_annotation_dict["termAccession"],
+            term_source=term_source
+        )
+
+    def loads_characteristic(self, characteristic_dict):
+        return Characteristic(
+            category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
+                characteristic_dict["category"], dict
+            ) else characteristic_dict['category'],
+            value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
+                characteristic_dict["value"], dict
+            ) else characteristic_dict['value'],
+            unit=self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
+                characteristic_dict["unit"], dict
+            ) else characteristic_dict["unit"] if isinstance(
+                characteristic_dict["unit"], str
+            ) else None
+        )
+
+    def loads(self, json_text):
+        return self.loads_characteristic(json.loads(json_text))
+
+
 class StudyCellEncoder(json.JSONEncoder):
 
     @staticmethod
