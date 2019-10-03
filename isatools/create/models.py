@@ -53,7 +53,7 @@ DURATION_FACTOR_ = dict(name='DURATION', type=OntologyAnnotation(term="time"),
 
 DURATION_FACTOR = StudyFactor(name=DURATION_FACTOR_['name'], factor_type=DURATION_FACTOR_.get('type', None))
 
-BASE_FACTORS_ = [
+BASE_FACTORS_ = (
     dict(
         name='AGENT', type=OntologyAnnotation(term="perturbation agent"),
         display_singular='AGENT VALUE',
@@ -65,15 +65,15 @@ BASE_FACTORS_ = [
         display_plural='INTENSITY VALUES', values=set()
     ),
     DURATION_FACTOR_
-]
+)
 
-BASE_FACTORS = [
+BASE_FACTORS = (
     StudyFactor(name=BASE_FACTORS_[0]['name'],
                 factor_type=BASE_FACTORS_[0].get('type', None)),
     StudyFactor(name=BASE_FACTORS_[1]['name'],
                 factor_type=BASE_FACTORS_[1].get('type', None)),
     DURATION_FACTOR,
-]
+)
 
 DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
 
@@ -586,19 +586,21 @@ class CharacteristicDecoder(object):
         )
 
     def loads_characteristic(self, characteristic_dict):
-        return Characteristic(
+        characteristic = Characteristic(
             category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
                 characteristic_dict["category"], dict
             ) else characteristic_dict['category'],
             value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
                 characteristic_dict["value"], dict
-            ) else characteristic_dict['value'],
-            unit=self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
+            ) else characteristic_dict['value']
+        )
+        if 'unit' in characteristic_dict:
+            characteristic.unit = self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
                 characteristic_dict["unit"], dict
             ) else characteristic_dict["unit"] if isinstance(
                 characteristic_dict["unit"], str
             ) else None
-        )
+        return characteristic
 
     def loads(self, json_text):
         return self.loads_characteristic(json.loads(json_text))
@@ -1645,6 +1647,7 @@ class SampleAndAssayPlanDecoder(object):
     def loads_protocol_type(pt_dict):
         return OntologyAnnotation(**pt_dict)
 
+    """
     @staticmethod
     def loads_ontology_annotation(ontology_annotation_dict):
         term_source = None
@@ -1668,8 +1671,10 @@ class SampleAndAssayPlanDecoder(object):
             ) else characteristic_dict["unit"] if isinstance(
                 characteristic_dict["unit"], str
             ) else None)
+    """
 
     def loads_node(self, node_dict):
+        char_decoder = CharacteristicDecoder()
         if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
             return ProtocolNode(id_=node_dict["@id"], name=node_dict["name"], description=node_dict["description"],
                                 uri=node_dict["uri"], version=node_dict["version"],
@@ -1680,7 +1685,9 @@ class SampleAndAssayPlanDecoder(object):
         if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
             return ProductNode(id_=node_dict["@id"], name=node_dict["name"], size=node_dict["size"],
                                node_type=node_dict["productType"],
-                               characteristics=[self.loads_characteristic(chr) for chr in node_dict["characteristics"]])
+                               characteristics=[
+                                   char_decoder.loads_characteristic(chr) for chr in node_dict["characteristics"]
+                               ])
 
     def loads_assay_graph(self, assay_graph_dict):
         measurement_type = assay_graph_dict["measurementType"] if isinstance(assay_graph_dict["measurementType"], str) \
@@ -1941,11 +1948,16 @@ class StudyArmEncoder(json.JSONEncoder):
 class StudyArmDecoder(object):
 
     def __init__(self):
+        self.characteristic_decoder = CharacteristicDecoder()
         self.cell_decoder = StudyCellDecoder()
         self.sample_assay_plan_decoder = SampleAndAssayPlanDecoder()
 
     def loads_arm(self, json_dict):
-        arm = StudyArm(name=json_dict['name'], group_size=json_dict['groupSize'])
+        arm = StudyArm(
+            name=json_dict['name'],
+            source_type=self.characteristic_decoder.loads_characteristic(json_dict['sourceType']),
+            group_size=json_dict['groupSize']
+        )
         sample_assay_plan_set = {
             self.sample_assay_plan_decoder.loads_sample_and_assay_plan(json_sample_assay_plan)
             for json_sample_assay_plan in json_dict['sampleAssayPlans']

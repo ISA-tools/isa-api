@@ -248,7 +248,10 @@ class CharacteristicEncoderTest(unittest.TestCase):
 class CharacteristicDecoderTest(unittest.TestCase):
 
     def setUp(self):
-        self.characteristic_complete = Characteristic(
+        pass
+
+    def test_characteristic_complete(self):
+        characteristic_complete = Characteristic(
             category=OntologyAnnotation(
                 term='Length', term_accession='http://purl.obolibrary.org/obo/NCIT_C25334',
                 term_source=default_ontology_source_reference
@@ -259,16 +262,32 @@ class CharacteristicDecoderTest(unittest.TestCase):
                 term_source=default_ontology_source_reference
             )
         )
-        self.characteristic_plain = Characteristic(category='Time', value=126.4, unit='sec.')
-
-    def test_characteristic_complete(self):
         decoder = CharacteristicDecoder()
         with open(
                 os.path.join(os.path.dirname(__file__), 'data', 'json', 'create', 'characteristic-complete.json')
         ) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_characteristic = decoder.loads(json_text)
-        self.assertEqual(self.characteristic_complete, actual_characteristic)
+        self.assertEqual(characteristic_complete, actual_characteristic)
+
+    def test_characteristic_no_unit(self):
+        characteristic_no_unit = Characteristic(
+            category=OntologyAnnotation(
+                term='Study Subject', term_accession='http://purl.obolibrary.org/obo/NCIT_C41189',
+                term_source=default_ontology_source_reference
+            ),
+            value=OntologyAnnotation(
+                term='Human', term_accession='http://purl.obolibrary.org/obo/NCIT_C14225',
+                term_source=default_ontology_source_reference
+            )
+        )
+        decoder = CharacteristicDecoder()
+        with open(
+                os.path.join(os.path.dirname(__file__), 'data', 'json', 'create', 'characteristic-no-unit.json')
+        ) as expected_json_fp:
+            json_text = json.dumps(json.load(expected_json_fp))
+            actual_characteristic = decoder.loads(json_text)
+        self.assertEqual(characteristic_no_unit, actual_characteristic)
 
     def test_characteristics_string(self):
         characteristic_string_dict = {
@@ -276,11 +295,11 @@ class CharacteristicDecoderTest(unittest.TestCase):
             'value': 126.4,
             'unit': 'sec.'
         }
+        characteristic_plain = Characteristic(category='Time', value=126.4, unit='sec.')
         decoder = CharacteristicDecoder()
         json_text = json.dumps(characteristic_string_dict)
         actual_characteristic = decoder.loads(json_text)
-        self.assertEqual(actual_characteristic, self.characteristic_plain)
-
+        self.assertEqual(actual_characteristic, characteristic_plain)
 
 
 class StudyCellEncoderTest(BaseTestCase):
