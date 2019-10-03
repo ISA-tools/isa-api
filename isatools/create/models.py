@@ -1864,7 +1864,7 @@ class StudyArm(object):
 
     def add_item_to_arm_map(self, cell, sample_assay_plan=None):
         """
-        inserts a mapping StudyCell -> SampleAssayPlan to the StudyArm arm_map
+        inserts a mapping StudyCell -> SampleAndAssayPlan to the StudyArm arm_map
         There are a few insertion rules for cells
         - To insert a cell containing a SCREEN the arm_map *must* be empty
         - To insert a cell containing a RUN-IN alone the arm_map *must* contain a SCREEN-only cell and no other cells
@@ -1874,13 +1874,13 @@ class StudyArm(object):
         - To insert a cell containing a FOLLOW-UP the arm_map *must not* contain already a FOLLOW-UP cell
             Moreover, this cell cannot be inserted immediately after a SCREEN or a RUN-IN cell
         :param cell: (StudyCell)
-        :param sample_assay_plan: (SampleAssayPlan/None) 
+        :param sample_assay_plan: (SampleAndAssayPlan/None)
         :return: 
         """
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
         if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAndAssayPlan):
-            raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
+            raise TypeError('{0} is not a SampleAndAssayPlan object'.format(sample_assay_plan))
         if self.is_completed():
             raise ValueError(self.COMPLETE_ARM_ERROR_MESSAGE)
         if cell.contains_non_treatment_element_by_type(SCREEN):
@@ -1928,7 +1928,7 @@ class StudyArmEncoder(json.JSONEncoder):
             log.info('StudyArm source_type is: {0}'.format(o.source_type))
             res = dict(
                 name=o.name, groupSize=o.group_size, sourceType=characteristic_encoder.characteristic(o.source_type),
-                cells=[], sampleAssayPlans=[], mappings=[]
+                cells=[], sampleAndAssayPlans=[], mappings=[]
             )
             i = 0
             sample_assay_plan_set = set()
@@ -1937,7 +1937,7 @@ class StudyArmEncoder(json.JSONEncoder):
                 res['cells'].append(study_cell_encoder.default(cell))
                 if sample_assay_plan is not None and sample_assay_plan not in sample_assay_plan_set:
                     print('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
-                    res['sampleAssayPlans'].append(sample_assay_plan_encoder.default(sample_assay_plan))
+                    res['sampleAndAssayPlans'].append(sample_assay_plan_encoder.default(sample_assay_plan))
                     sample_assay_plan_set.add(sample_assay_plan)
                 res['mappings'].append([cell.name, sample_assay_plan.name if sample_assay_plan is not None else None])
                 i += 1
@@ -1960,7 +1960,7 @@ class StudyArmDecoder(object):
         )
         sample_assay_plan_set = {
             self.sample_assay_plan_decoder.loads_sample_and_assay_plan(json_sample_assay_plan)
-            for json_sample_assay_plan in json_dict['sampleAssayPlans']
+            for json_sample_assay_plan in json_dict['sampleAndAssayPlans']
         }
         for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):
             print('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
@@ -2460,7 +2460,7 @@ class QualityControlService(object):
         """
         This method generates all the QC samples for a specific quality_control plan
         :param quality_control: A QualityControl object
-        :param study_cell: The StudyCell to which the SampleAssayPlan belong
+        :param study_cell: The StudyCell to which the SampleAndAssayPlan belong
         :param sample_size:
         :param sampling_protocol:
         :param performer:
@@ -2752,21 +2752,21 @@ class StudyDesignFactory(object):
                                  washout_map=None, follow_up_map=None):
         """
         Computes the crossover trial design on the basis of a number of
-        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        treatments, each of them mapped to a SampleAndAssayPlan object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
         
-        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAndAssayPlan/None).
         :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
                                       If an integer is provided all the output arms will have the same group_size
                                       If a tuple/list of integers is provided its length must euqual T! where
                                       T is the number of Treatments in the treatment map
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN
-        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the crossover design. It contains T! study_arms, where T is the number of Treatments
                                provided in the treatment_map
@@ -2805,7 +2805,7 @@ class StudyDesignFactory(object):
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
             for el in arm_map:
                 print('Cell: {0}'.format(el[0]))
-                print('SampleAssayPlan: {0}'.format(el[1]))
+                print('SampleAndAssayPlan: {0}'.format(el[1]))
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
@@ -2815,21 +2815,21 @@ class StudyDesignFactory(object):
                                 washout_map=None, follow_up_map=None):
         """
         Computes the parallel trial design on the basis of a number of
-        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        treatments, each of them mapped to a SampleAndAssayPlan object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
-        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAndAssayPlan/None).
         :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
                                       If an integer is provided all the output arms will have the same group_size
                                       If a tuple/list of integers is provided its length must equal T where
                                       T is the number of Treatments in the treatment map
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN
-        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the parallel design. It contains T study_arms, where T is the number of Treatments
                                provided in the treatment_map
@@ -2868,18 +2868,18 @@ class StudyDesignFactory(object):
                                   washout_map=None, follow_up_map=None):
         """
         Computes the single arm trial design on the basis of a number of
-        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        treatments, each of them mapped to a SampleAndAssayPlan object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
-        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAssayPlan/None).
+        :param treatments_map - a list containing tuples with pairs (Treatment, SampleAndAssayPlan/None).
         :param group_size - int The size of the group of the study arm.
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN
-        :param washout_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
         """
@@ -2922,14 +2922,14 @@ class StudyDesignFactory(object):
         Computes a study design with only one treatment cell. All treatments provided as input are considered
         concomitant within that cell
         :param treatments - a list containing Treatment(s).
-        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+        :param sample_assay_plan - SampleAndAssayPlan. This sample+assay plan will be applied to the multi-element
                                    cell built from the treatments provided a the first parameter
         :param group_size - int The size of the group of the study arm.
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN 
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. It contains 1 study arm
         """
@@ -2964,11 +2964,11 @@ class StudyDesignFactory(object):
                                                     screen_map=None, run_in_map=None, follow_up_map=None):
         """
         Computes the crossover trial design on the basis of a number of
-        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        treatments, each of them mapped to a SampleAndAssayPlan object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
         :param treatments - a list containing Treatment(s).
-        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+        :param sample_assay_plan - SampleAndAssayPlan. This sample+assay plan will be applied to the multi-element
                                    cell built from the treatments provided a the first parameter
         :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
                                       If an integer is provided all the output arms will have the same group_size
@@ -2976,11 +2976,11 @@ class StudyDesignFactory(object):
                                       T is the number of Treatments in the treatment map
         :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
                          A WASHOUT cell will be added between each pair of Treatment cell
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the crossover design. It contains T! study_arms, where T is the number of Treatments
                                provided in the treatment_map
@@ -3014,7 +3014,7 @@ class StudyDesignFactory(object):
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
             for el in arm_map:
                 print('Cell: {0}'.format(el[0]))
-                print('SampleAssayPlan: {0}'.format(el[1]))
+                print('SampleAndAssayPlan: {0}'.format(el[1]))
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
@@ -3024,20 +3024,20 @@ class StudyDesignFactory(object):
                                                      screen_map=None, run_in_map=None, follow_up_map=None):
         """
         Computes the single arm trial design on the basis of a number of
-        treatments, each of them mapped to a SampleAssayPlan object. Optionally NonTreatments can be provided
+        treatments, each of them mapped to a SampleAndAssayPlan object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
 
         :param treatments - a list containing Treatments.
-        :param sample_assay_plan - SampleAssayPlan. This sample+assay plan will be applied to the multi-element
+        :param sample_assay_plan - SampleAndAssayPlan. This sample+assay plan will be applied to the multi-element
                                    cell built from the treatments provided a the first parameter
         :param group_size - int The size of the group of the study arm.
         :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
                          A WASHOUT cell will be added between each pair of Treatment cell
-        :param screen_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type SCREEN
-        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type RUN-IN 
-        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAssayPlan/None). The NonTreatment
+        :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlan/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
         """
