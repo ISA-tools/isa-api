@@ -70,7 +70,7 @@ def get(mtbls_study_id, target_dir=None):
                     filter(lambda x: x.startswith('i_') and
                            x.endswith('.txt'), files))
             except StopIteration:
-                log.fatal(
+                raise Exception(
                     'Could not find an investigation file for this study')
 
             if investigation_filename is not None:
@@ -115,7 +115,7 @@ def get(mtbls_study_id, target_dir=None):
                                         a_file=a_filename), out_file.write)
 
         except ftplib.error_perm as ftperr:
-            log.fatal(
+            raise Exception(
                 "Could not retrieve MetaboLights study '{study}': {error}"
                 .format(study=mtbls_study_id, error=ftperr))
         finally:
@@ -123,7 +123,7 @@ def get(mtbls_study_id, target_dir=None):
             return target_dir
     else:
         ftp.close()
-        raise ConnectionError(
+        raise Exception(
             'There was a problem connecting to MetaboLights: {response}'
             .format(response=response))
 
