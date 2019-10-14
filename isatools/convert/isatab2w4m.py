@@ -1,22 +1,29 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*
+"""
+Convert ISA-Tab to W4M tables
+
+original from
+https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
+"""
+
+# !/usr/bin/env python3
 # vi: fdm=marker
 
 import argparse
 import collections
+import csv
 import glob
 import logging
 import os.path
 import re
 import sys
-import csv
-import numpy
 from string import Template
 
+import numpy
 
 from isatools import isatab as ISATAB
 from isatools.utils import utf8_text_file_open
 
-# original from https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
 __author__ = 'pkrog (Pierrick Roger)'
 
 
@@ -92,27 +99,27 @@ def read_args():
     parser.add_argument('-s',
                         help='Output file for sample metadata. ' + s1 +
                              ' Default is "' + dft_sample_file.replace(
-                            '%', '%%') + '".', dest="sample_output",
+                                '%', '%%') + '".', dest="sample_output",
                         required=False, default=dft_sample_file)
     parser.add_argument('-v',
                         help='Output file for variable metadata. ' + s1 +
                              ' Default is "' + dft_variable_file.replace(
-                            '%', '%%') + '".', dest='variable_output',
+                                '%', '%%') + '".', dest='variable_output',
                         required=False, default=dft_variable_file)
     parser.add_argument('-m',
                         help='Output file for sample x variable matrix. ' +
                              s1 + ' Default is "' + dft_matrix_file.replace(
-                            '%', '%%') + '".', dest='matrix_output',
+                                '%', '%%') + '".', dest='matrix_output',
                         required=False, default=dft_matrix_file)
     parser.add_argument('-S',
                         help='Filter out NA values in the specified sample '
-                             'metadata columns. The value is a comma separated '
-                             'list of column names.',
+                             'metadata columns. The value is a comma separated'
+                             ' list of column names.',
                         dest='samp_na_filtering', required=False)
     parser.add_argument('-V',
                         help='Filter out NA values in the specified variable '
-                             'metadata columns. The value is a comma separated '
-                             'list of column names.',
+                             'metadata columns. The value is a comma separated'
+                             ' list of column names.',
                         dest='var_na_filtering', required=False)
     args = parser.parse_args()
     args = vars(args)
@@ -151,7 +158,7 @@ def select_study(investigation_file, study_filename=None):
         if study is None:
             error(
                 'Study "{0}" not found in investigation file "{1}".'
-                    .format(study_filename, investigation_file))
+                .format(study_filename, investigation_file))
 
     # Take first one
     if study is None and len(investigation.studies) > 0:
@@ -198,7 +205,7 @@ def get_data_file(assay):
 
     # Look for data files in assay
     for df in assay.data_files:
-        m = re.match('^m_.*\.(tsv|txt)$', df.filename)
+        m = re.match(r'^m_.*\.(tsv|txt)$', df.filename)
         if m is not None:
             if data_filename is not None:
                 error('Found two data files ("{0}" and "{1}") in assay "{2}".'
@@ -212,19 +219,22 @@ def get_data_file(assay):
 
     return data_filename
 
+
 # Load data frame {{{1
 ################################################################
 
 def load_df(path):
     df = ISATAB.read_tfile(path)
-    df.replace(to_replace = '', value = numpy.nan, inplace = True)
+    df.replace(to_replace='', value=numpy.nan, inplace=True)
     return df
+
 
 # Get assay data frame {{{1
 ################################################################
 
 def get_assay_df(input_dir, assay):
     return load_df(os.path.join(input_dir, assay.filename))
+
 
 # Get measures data frame {{{1
 ################################################################
@@ -233,16 +243,18 @@ def get_measures_df(input_dir, assay):
     data_filename = get_data_file(assay)
     return load_df(os.path.join(input_dir, data_filename))
 
+
 # Get study data frame {{{1
 ################################################################
 
 def get_study_df(input_dir, study):
     return load_df(os.path.join(input_dir, study.filename))
 
+
 # Make names {{{1
 ################################################################
 
-def make_names(u, uniq = False):
+def make_names(u, uniq=False):
     v = u[:]
     j = 0
     for i in range(len(v)):
@@ -287,12 +299,12 @@ def make_names(u, uniq = False):
 ################################################################
 
 def make_variable_names(assay_df):
-    
+
     var_names = [''] * assay_df.shape[0]
 
     # Make variable names from data values
     for col in ['mass_to_charge', 'retention_time', 'chemical_shift']:
-        if assay_df.keys().contains(col):
+        if col in assay_df.keys():
             for i, v in enumerate(assay_df[col].values):
                 if type(v) == str or not numpy.isnan(v):
                     x = var_names[i]
@@ -304,7 +316,7 @@ def make_variable_names(assay_df):
 
     # Normalize names
     var_names = ['X' + s for s in var_names]
-    var_names = make_names(var_names, uniq = True)
+    var_names = make_names(var_names, uniq=True)
 
     return var_names
 
@@ -344,15 +356,16 @@ def load_investigation(investigation_file):
 ################################################################
 
 def get_sample_names(assay_df, measures_df):
-    
+
     sample_names = None
     measures_cols = measures_df.axes[1]
-    
+
     # Loop on all assay data frame columns
     for col in assay_df.axes[1]:
         n = assay_df.get(col).tolist()
-        
-        # Do you find all values of this column inside the column names of the measure data frame?
+
+        # Do you find all values of this column inside the column names of the
+        # measure data frame?
         if len(n) == len(set(n)) and all([x in measures_cols for x in n]):
             sample_names = n
             break
@@ -415,8 +428,8 @@ def make_matrix(measures_df, sample_names, variable_names, normalize=True):
     if sample_variable_matrix is None or len(
             sample_variable_matrix.axes[1]) != len(sample_names):
         raise Exception(
-            'Some or all sample names were not found among the column names of '
-            'the data array.')
+            'Some or all sample names were not found among the column names of'
+            ' the data array.')
 
     # Add variable names as columns
     sample_variable_matrix.insert(0, 'variable.name', variable_names)
@@ -471,25 +484,30 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
                                              normalize=True)
         w4m_assays.append(dict(samp=sample_metadata, var=variable_metadata,
                                mat=sample_variable_matrix,
-                               filename=assay.filename, study=study.identifier))
+                               filename=assay.filename,
+                               study=study.identifier))
 
     return w4m_assays
+
 
 # Write data frame {{{1
 ################################################################
 
 def write_data_frame(df, output_dir, template_filename, study, assay):
-    
-    # NA values are removed by `read_tfile()` and replaced by ''. Put them back here.
-    df_with_na = df.replace(to_replace = '', value = numpy.nan)
-    
+
+    # NA values are removed by `read_tfile()` and replaced by ''.
+    # Put them back here.
+    df_with_na = df.replace(to_replace='', value=numpy.nan)
+
     # Set filename
     filename = FilenameTemplate(template_filename).substitute(s=study, a=assay)
     if output_dir is not None:
         filename = os.path.join(output_dir, filename)
 
     # Write data frame
-    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA', index = False, quoting = csv.QUOTE_NONNUMERIC)
+    df_with_na.to_csv(
+        path_or_buf=filename, sep='\t', na_rep='NA', index=False,
+        quoting=csv.QUOTE_NONNUMERIC)
 
 
 # Write assays into files {{{1
@@ -514,28 +532,32 @@ def write_assays(assays, output_dir, samp_file, var_file, mat_file):
 # Filter NA values {{{1
 ################################################################
 
-def filter_na_values(assays, samp_na_filtering = None, var_na_filtering = None):
-    
+def filter_na_values(assays, samp_na_filtering=None, var_na_filtering=None):
     # Loop on all assays
     for assay in assays:
-        
+
         if samp_na_filtering is not None:
             cols = make_names(samp_na_filtering)
             samp = assay['samp'].dropna(axis=0, how='all', subset=cols)
-            removed_sample_names = numpy.setdiff1d(assay['samp']['sample.name'], samp['sample.name'])
+            removed_sample_names = numpy.setdiff1d(
+                assay['samp']['sample.name'], samp['sample.name'])
             assay['samp'] = samp
-            assay['mat'].drop(labels = removed_sample_names.tolist(), axis = 1, inplace = True)
-            
+            assay['mat'].drop(
+                labels=removed_sample_names.tolist(), axis=1, inplace=True)
+
         if var_na_filtering is not None:
             cols = make_names(var_na_filtering)
             var_names = assay['var']['variable.name'].tolist()
-            assay['var'].dropna(axis=0, how='all', subset=cols, inplace = True)
+            assay['var'].dropna(axis=0, how='all', subset=cols, inplace=True)
             kept_var_names = assay['var']['variable.name'].tolist()
             removed_variable_names_index = []
             for i, v in enumerate(var_names):
                 if v not in kept_var_names:
                     removed_variable_names_index.append(i)
-            assay['mat'].drop(labels = [assay['mat'].axes[0][i] for i in removed_variable_names_index], axis = 0, inplace = True)
+            assay['mat'].drop(labels=[
+                assay['mat'].axes[0][i] for i in removed_variable_names_index],
+                axis=0, inplace=True)
+
 
 # Convert {{{1
 ################################################################
@@ -543,40 +565,40 @@ def filter_na_values(assays, samp_na_filtering = None, var_na_filtering = None):
 def convert(input_dir, output_dir, sample_output, variable_output,
             matrix_output, study_filename=None, assay_filename=None,
             all_assays=None, samp_na_filtering=None, var_na_filtering=None):
-    
     # Convert assays to W4M format
-    assays = convert2w4m(input_dir      = input_dir,
-                         study_filename = study_filename,
-                         assay_filename = assay_filename,
-                         all_assays     = all_assays)
+    assays = convert2w4m(input_dir=input_dir,
+                         study_filename=study_filename,
+                         assay_filename=assay_filename,
+                         all_assays=all_assays)
 
     # Filter NA values
     filter_na_values(assays, samp_na_filtering, var_na_filtering)
 
     # Write assays into files
-    write_assays(assays, output_dir = output_dir, samp_file = sample_output,
-                 var_file = variable_output, mat_file = matrix_output)
+    write_assays(assays, output_dir=output_dir, samp_file=sample_output,
+                 var_file=variable_output, mat_file=matrix_output)
+
 
 # Main {{{1
 ################################################################
 
 def main():
-    
     # Parse command line arguments
     args_dict = read_args()
 
     # Convert
-    convert(input_dir           = args_dict['input_dir'],
-            output_dir          = args_dict['output_dir'],
-            variable_output     = args_dict['variable_output'],
-            matrix_output       = args_dict['matrix_output'],
-            sample_output       = args_dict['sample_output'],
-            study_filename      = args_dict['study_filename'],
-            assay_filename      = args_dict['assay_filename'],
-            all_assays          = args_dict['all_assays'],
-            samp_na_filtering   = args_dict['samp_na_filtering'],
-            var_na_filtering    = args_dict['var_na_filtering']
+    convert(input_dir=args_dict['input_dir'],
+            output_dir=args_dict['output_dir'],
+            variable_output=args_dict['variable_output'],
+            matrix_output=args_dict['matrix_output'],
+            sample_output=args_dict['sample_output'],
+            study_filename=args_dict['study_filename'],
+            assay_filename=args_dict['assay_filename'],
+            all_assays=args_dict['all_assays'],
+            samp_na_filtering=args_dict['samp_na_filtering'],
+            var_na_filtering=args_dict['var_na_filtering']
             )
+
 
 if __name__ == '__main__':
     main()

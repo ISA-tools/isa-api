@@ -1,29 +1,50 @@
+# -*- coding: utf-8 -*-
+"""Main entry point for running from the command-line.
+
+This module provides the main entry point for running ISA-API functions from
+the command-line. Commands must be run with a Python 3 interpreter.
+
+Todo:
+    * Implement hooks to all features of the ISA-API.
+"""
 import argparse
-import sys
-import os
 import json
+import os
+import sys
 
 
 def main(argv=None):
     """Run **isatools** from the command line
 
-    Arguments
+    Args:
         argv (list, optional): the list of arguments to run isatools
-            with (if None, then sys.argv is used) [default: None]
-    """
-    p = argparse.ArgumentParser(prog=__name__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                description='''Create, convert, and manipulate ISA-formatted metadata''',
-                                usage='isatools -c COMMAND [options]',
-                                )
+        functions.
 
-    p.add_argument('-c', dest='cmd', help='isatools API command to run', required=True,
-                   choices=['isatab2json', 'json2isatab', 'sampletab2isatab', 'sampletab2json'])
-    p.add_argument('-i', dest='in_path', help='in  (files or directory will be read from here)', required=True)
-    p.add_argument('-o', dest='out_path', help='out (file will be written out here or written to directory if ISA-Tab '
-                                               'archive out)', required=True)
-    p.add_argument('--version', action='version', version='isatools {}'.format("0.7"))
-    p.add_argument('-v', dest='verbose', help="show more output", action='store_true', default=False)
+    Returns:
+        None: Does not explicitly return anything apart from having the
+        desired effect of the function that was called (usually output to
+        file).
+    """
+    p = argparse.ArgumentParser(
+        prog=__name__, formatter_class=argparse.RawDescriptionHelpFormatter,
+        description='''Create, convert, and manipulate ISA-formatted
+        metadata''', usage='isatools -c COMMAND [options]',)
+
+    p.add_argument('-c', dest='cmd', help='isatools API command to run',
+                   required=True,
+                   choices=['isatab2json', 'json2isatab', 'sampletab2isatab',
+                            'sampletab2json'])
+    p.add_argument('-i', dest='in_path',
+                   help='in  (files or directory will be read from here)',
+                   required=True)
+    p.add_argument('-o', dest='out_path',
+                   help='out (file will be written out here or written to '
+                        'directory if ISA-Tab archive out)', required=True)
+    p.add_argument(
+        '--version', action='version', version='isatools {}'.format(
+            "0.10"))
+    p.add_argument('-v', dest='verbose', help="show more output",
+                   action='store_true', default=False)
 
     args = p.parse_args(argv or sys.argv[1:])
 
@@ -52,6 +73,7 @@ def main(argv=None):
         with open(args.in_path) as in_fp:
             with open(args.out_path, 'w') as out_fp:
                 sampletab2json.convert(in_fp, out_fp)
+
 
 if __name__ == '__main__':
     main()

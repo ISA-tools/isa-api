@@ -88,7 +88,7 @@ class InvestigationTest(unittest.TestCase):
     title=
     submission_date=
     public_release_date=
-    ontology_source_references=0 OntologySource objects
+    ontology_source_references=0 OntologySources
     publications=0 Publication objects
     contacts=0 Person objects
     studies=0 Study objects
@@ -101,7 +101,7 @@ class InvestigationTest(unittest.TestCase):
     title=T
     submission_date=2017-01-01 00:00:00
     public_release_date=2017-01-01 00:00:00
-    ontology_source_references=0 OntologySource objects
+    ontology_source_references=0 OntologySources
     publications=0 Publication objects
     contacts=0 Person objects
     studies=0 Study objects
@@ -395,7 +395,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study_default))
@@ -417,7 +417,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study))
@@ -583,7 +583,7 @@ class AssayTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.assay_default))
@@ -597,7 +597,7 @@ class AssayTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.assay))

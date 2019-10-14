@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert MAGE-TAB to ISA-JSON"""
 from __future__ import absolute_import
 import json
 import os
