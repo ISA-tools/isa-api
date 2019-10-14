@@ -17,7 +17,7 @@ import pandas as pd
 from mzml2isa.mzml import MzMLFile
 
 from isatools import isatab
-from isatools.create import create_from_galaxy_parameters
+# from isatools.create import create_from_galaxy_parameters
 from isatools.model import (
     DerivedSpectralDataFile,
     ISAModelAttributeError,
@@ -907,9 +907,10 @@ def utf8_text_file_open(path):
     return fp
 
 
+"""
 def create_and_merge_mzml(
         galaxy_prameters_file, mapping_file, data_dir, output_dir):
-    """Runs the create mode and merges mzML input  files for the CUDDEL
+    ""Runs the create mode and merges mzML input  files for the CUDDEL
     merger
 
     :param galaxy_prameters_file: Galaxy inputs JSON
@@ -917,7 +918,7 @@ def create_and_merge_mzml(
     :param data_dir: Input data directory containing the mzMLs
     :param output_dir: output for the merged outputs
     :return: None
-    """
+    ""
     tmp = tempfile.mkdtemp()
     create_from_galaxy_parameters(
         galaxy_parameters_file=galaxy_prameters_file, target_dir=tmp)
@@ -1023,3 +1024,4 @@ def create_and_merge_mzml(
                 pass
 
     isatab.dump(ISA, output_dir)
+"""
