@@ -631,13 +631,13 @@ class StudyCellEncoder(json.JSONEncoder):
     def element(self, obj):
         if isinstance(obj, Treatment):
             return {
-                "__treatment": True,
+                "isTreatment": True,
                 "type": obj.type,
                 "factorValues": [self.factor_value(fv) for fv in obj.factor_values]
             }
         if isinstance(obj, NonTreatment):
             return {
-                "__treatment": False,
+                "isTreatment": False,
                 "type": obj.type,
                 "factorValues": [self.factor_value(fv) for fv in obj.factor_values]
             }
@@ -670,7 +670,7 @@ class StudyCellDecoder(object):
         print(element_dict)
         if "concomitantTreatments" in element_dict:
             return {self.loads_element(el_dict) for el_dict in element_dict["concomitantTreatments"]}
-        if element_dict["__treatment"] is True:
+        if element_dict["isTreatment"] is True:
             factor_values = [self.loads_factor_value(factor_value_dict)
                              for factor_value_dict in element_dict["factorValues"]]
             return Treatment(element_type=element_dict["type"], factor_values=factor_values)
