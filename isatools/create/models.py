@@ -642,9 +642,7 @@ class StudyCellEncoder(json.JSONEncoder):
                 "factorValues": [self.factor_value(fv) for fv in obj.factor_values]
             }
         if isinstance(obj, set):
-            return {
-                "concomitantTreatments": [self.element(el) for el in obj]
-            }
+            return [self.element(el) for el in obj]
 
     def default(self, obj):
         if isinstance(obj, StudyCell):
@@ -666,20 +664,25 @@ class StudyCellDecoder(object):
         study_factor = StudyFactor(name=factor_value_dict["factor"]["name"], factor_type=study_factor_type)
         return FactorValue(factor_name=study_factor, value=factor_value_dict["value"], unit=unit)
 
-    def loads_element(self, element_dict):
-        print(element_dict)
-        if "concomitantTreatments" in element_dict:
-            return {self.loads_element(el_dict) for el_dict in element_dict["concomitantTreatments"]}
-        if element_dict["isTreatment"] is True:
-            factor_values = [self.loads_factor_value(factor_value_dict)
-                             for factor_value_dict in element_dict["factorValues"]]
-            return Treatment(element_type=element_dict["type"], factor_values=factor_values)
-        else:
-            duration_unit = OntologyAnnotation(**element_dict["factorValues"][0]["unit"]) if \
-                type(element_dict["factorValues"][0]["unit"]) == dict else element_dict["factorValues"][0]["unit"]
-            return NonTreatment(element_type=element_dict["type"],
-                                duration_value=element_dict["factorValues"][0]["value"],
-                                duration_unit=duration_unit)
+    def loads_element(self, element_struct):
+        print(element_struct)
+        if isinstance(element_struct, list):
+            # if element_stuct is a list it means that all the element in the list are concomitant
+            return {self.loads_element(el_dict) for el_dict in element_struct}
+        try:
+            if element_struct["isTreatment"] is True:
+                factor_values = [self.loads_factor_value(factor_value_dict)
+                                 for factor_value_dict in element_struct["factorValues"]]
+                return Treatment(element_type=element_struct["type"], factor_values=factor_values)
+            else:
+                duration_unit = OntologyAnnotation(**element_struct["factorValues"][0]["unit"]) if \
+                    type(element_struct["factorValues"][0]["unit"]) == dict else element_struct["factorValues"][0]["unit"]
+                return NonTreatment(element_type=element_struct["type"],
+                                    duration_value=element_struct["factorValues"][0]["value"],
+                                    duration_unit=duration_unit)
+        except KeyError as ke:
+            log.critical('Element has no \'isTreatment\' property: {}'.format(element_struct))
+            raise ke
 
     def loads_cells(self, json_dict):
         cell = StudyCell(name=json_dict["name"])
