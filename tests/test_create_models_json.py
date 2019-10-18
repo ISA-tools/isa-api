@@ -9,12 +9,29 @@ from isatools.tests import utils
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
+
+    def handle_inner_lists(el):
+        print('el = {}'.format(el))
+        if isinstance(el, list):
+            print('El is list, returning el[0]:{}'.format(el[0]))
+            return handle_inner_lists(el[0])
+        else:
+            print('El is not list, returning el: '.format(el))
+            return el
+
     if isinstance(o, dict):
         return sorted((k, ordered(v)) for k, v in o.items())
-    if isinstance(o, list):
-        return sorted(ordered(x) for x in o if x is not None)
-    else:
-        return o
+    try:
+        if isinstance(o, list):
+            return sorted((ordered(x) for x in o if x is not None), key=handle_inner_lists)
+    except TypeError as e:
+        print('Object who raised error is {}'.format(o))
+        print('Object which raised error is of type {}'.format(type(o)))
+        for x in o:
+            print('x = {}; type(x) = {}'.format(x, type(x)))
+        raise e
+    return o
+
 
 NAME = 'name'
 
@@ -63,6 +80,35 @@ BIOLOGICAL_FACTOR_1_VALUE = 12e-3
 BIOLOGICAL_FACTOR_1_UNIT = OntologyAnnotation(term='mg')
 BIOLOGICAL_FACTOR_2_VALUE = 7
 BIOLOGICAL_FACTOR_2_UNIT = OntologyAnnotation(term='day')
+
+
+class OrderedTest(unittest.TestCase):
+
+    def test_lists_of_lists(self):
+        test_list = [
+            {
+                'id': 3
+            }, {
+                'id': 1
+            }, {
+                'id': 0
+            }, [
+                {
+                    'id': 2
+                }, {
+                    'id': 7
+                }, {
+                    'id': 5
+                }
+            ], {
+                'id': 6
+            }
+        ]
+        filtered_test_list = [el for el in test_list if not isinstance(el, list)]
+        ordered_filtered_list = ordered(filtered_test_list)
+        self.assertIsInstance(ordered_filtered_list, list)
+        ordered_list = ordered(test_list)
+        self.assertIsInstance(ordered_list, list)
 
 
 class BaseTestCase(unittest.TestCase):
