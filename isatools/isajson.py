@@ -1567,7 +1567,8 @@ class ISAJSONEncoder(JSONEncoder):
                         "@id": id_gen(o),
                         "annotationValue": o.term,
                         "termAccession": o.term_accession,
-                        "termSource": o.term_source.name if o.term_source else None
+                        "termSource": o.term_source.name if o.term_source else None,
+                        "comments": get_comments(o.comments)
                     }
                 )
             else:
