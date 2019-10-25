@@ -13,10 +13,10 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
     def handle_inner_lists(el):
         print('el = {}'.format(el))
         if isinstance(el, list):
-            print('El is list, returning el[0]:{}'.format(el[0]))
+            # print('El is list, returning el[0]:{}'.format(el[0]))
             return handle_inner_lists(el[0])
         else:
-            print('El is not list, returning el: '.format(el))
+            # print('El is not list, returning el: '.format(el))
             return el
 
     if isinstance(o, dict):

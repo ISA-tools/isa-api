@@ -24,7 +24,7 @@ import inspect
 import pdb
 
 log = logging.getLogger('isatools')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 __author__ = 'massi'
 
@@ -675,13 +675,21 @@ class StudyCellDecoder(object):
                                  for factor_value_dict in element_struct["factorValues"]]
                 return Treatment(element_type=element_struct["type"], factor_values=factor_values)
             else:
-                duration_unit = OntologyAnnotation(**element_struct["factorValues"][0]["unit"]) if \
-                    type(element_struct["factorValues"][0]["unit"]) == dict else element_struct["factorValues"][0]["unit"]
+                duration_unit = OntologyAnnotation(**element_struct["factorValues"][0]["unit"]) \
+                    if type(element_struct["factorValues"][0]["unit"]) == dict \
+                    else element_struct["factorValues"][0]["unit"]
                 return NonTreatment(element_type=element_struct["type"],
                                     duration_value=element_struct["factorValues"][0]["value"],
                                     duration_unit=duration_unit)
         except KeyError as ke:
-            log.critical('Element has no \'isTreatment\' property: {}'.format(element_struct))
+            # missing 'isTreatment' property
+            if len(element_struct["factorValues"]) == 1:
+                pass     # non-treatment
+            elif len(element_struct["factorValues"]) == 3:
+                pass    # treatment
+            else:
+                pass    # raise error
+            log.info('Element has no \'isTreatment\' property: {}'.format(element_struct))
             raise ke
 
     def loads_cells(self, json_dict):
@@ -1576,7 +1584,7 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
             onto_encoder = OntologyAnnotationEncoder()
             return {
                 "@id": obj.id,
-                "@type": get_full_class_name(obj),
+                # "@type": get_full_class_name(obj),
                 "name": obj.name,
                 "protocolType": obj.protocol_type
                 if isinstance(obj.protocol_type, str)
@@ -1594,7 +1602,7 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
         if isinstance(obj, ProductNode):
             return {
                 "@id": obj.id,
-                "@type": get_full_class_name(obj),
+                # "@type": get_full_class_name(obj),
                 "name": obj.name,
                 "productType": obj.type,
                 "size": obj.size,
@@ -1650,42 +1658,17 @@ class SampleAndAssayPlanDecoder(object):
     def loads_protocol_type(pt_dict):
         return OntologyAnnotation(**pt_dict)
 
-    """
-    @staticmethod
-    def loads_ontology_annotation(ontology_annotation_dict):
-        term_source = None
-        if isinstance(ontology_annotation_dict.get("termSource", None), dict):
-            term_source = OntologySource(**ontology_annotation_dict["termSource"])
-        return OntologyAnnotation(
-            term=ontology_annotation_dict["term"], term_accession=ontology_annotation_dict["term_accession"],
-            term_source=term_source
-        )
-
-    def loads_characteristic(self, characteristic_dict):
-        return Characteristic(
-            category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
-                characteristic_dict["category"], dict
-            ) else characteristic_dict['category'],
-            value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
-                characteristic_dict["value"], dict
-            ) else characteristic_dict['value'],
-            unit=self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
-                characteristic_dict["unit"], dict
-            ) else characteristic_dict["unit"] if isinstance(
-                characteristic_dict["unit"], str
-            ) else None)
-    """
-
     def loads_node(self, node_dict):
         char_decoder = CharacteristicDecoder()
-        if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
+        # if node_dict["@type"] == "{0}.{1}".format(ProtocolNode.__module__, ProtocolNode.__name__):
+        if "protocolType" in node_dict:
             return ProtocolNode(id_=node_dict["@id"], name=node_dict["name"], description=node_dict["description"],
                                 uri=node_dict["uri"], version=node_dict["version"],
                                 parameter_values=[
                                     self.loads_parameter_value(param) for param in node_dict["parameterValues"]
                                 ],
                                 protocol_type=self.loads_protocol_type(node_dict["protocolType"]))
-        if node_dict["@type"] == "{0}.{1}".format(ProductNode.__module__, ProductNode.__name__):
+        elif "productType" in node_dict:
             return ProductNode(id_=node_dict["@id"], name=node_dict["name"], size=node_dict["size"],
                                node_type=node_dict["productType"],
                                characteristics=[
@@ -1936,15 +1919,15 @@ class StudyArmEncoder(json.JSONEncoder):
             i = 0
             sample_assay_plan_set = set()
             for cell, sample_assay_plan in o.arm_map.items():
-                print('Now appending cell {0}'.format(cell.name))
+                # print('Now appending cell {0}'.format(cell.name))
                 res['cells'].append(study_cell_encoder.default(cell))
                 if sample_assay_plan is not None and sample_assay_plan not in sample_assay_plan_set:
-                    print('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
+                    # print('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
                     res['sampleAndAssayPlans'].append(sample_assay_plan_encoder.default(sample_assay_plan))
                     sample_assay_plan_set.add(sample_assay_plan)
                 res['mappings'].append([cell.name, sample_assay_plan.name if sample_assay_plan is not None else None])
                 i += 1
-            print('Mappings: {0}'.format(res['mappings']))
+            # print('Mappings: {0}'.format(res['mappings']))
             return res
 
 
