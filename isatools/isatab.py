@@ -1405,8 +1405,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                            node.parameter_values))
                     oname_label = None
                     if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term \
-                                == "nucleic acid sequencing":
+                        if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
                             oname_label = "Assay Name"
                         elif node.executes_protocol.protocol_type.term \
                                 == "data collection":
@@ -4787,8 +4786,9 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
                     row['Study Design Type'],
                     row['Study Design Type Term Accession Number'],
                     row['Study Design Type Term Source REF'])
-                design_descriptor.comments = get_comments_row(
+                these_comments = get_comments_row(
                     df_dict['s_design_descriptors'][i].columns, row)
+                design_descriptor.comments = these_comments
                 study.design_descriptors.append(design_descriptor)
 
             for _, row in df_dict['s_factors'][i].iterrows():
