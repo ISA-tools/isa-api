@@ -7,6 +7,7 @@ import os
 import re
 from os.path import basename
 
+import datetime
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
@@ -77,7 +78,14 @@ def assert_tab_content_equal(fp_x, fp_y):
                 x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
             return True
         except AssertionError as e:
+            lbl = datetime.datetime.now()
+            x.to_csv('~/Downloads/test-isa-for-release/expected-{}.csv'.format(lbl))
+            y.to_csv('~/Downloads/test-isa-for-release/actual-{}.csv'.format(lbl))
             log.error(e)
+            log.error('x columns are: {}'.format(x.columns))
+            log.error('y columns are: {}'.format(y.columns))
+            log.error('x data are: {}'.format(x.to_numpy()))
+            log.error('y data are: {}'.format(y.to_numpy()))
             return False
 
     if basename(fp_x.name).startswith('i_'):

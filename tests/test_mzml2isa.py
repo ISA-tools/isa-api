@@ -34,7 +34,8 @@ class TestMzml2IsaTab(unittest.TestCase):
                     stripped_actual_file.write(row)
             stripped_actual_file.seek(0)
             with open(os.path.join(self._tab_data_dir, study_id + '-partial', 'i_Investigation.txt')) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(stripped_actual_file, reference_fp))
+                is_eq = assert_tab_content_equal(stripped_actual_file, reference_fp)
+                self.assertTrue(is_eq)
 
     def test_mzml2isa_convert_study_table(self):
         study_id = 'MTBLS267'
