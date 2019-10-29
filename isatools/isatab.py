@@ -1573,8 +1573,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 DF = DF.sort_values(by=DF.columns[0], ascending=True)
             except ValueError as e:
                 log.critical('Error thrown: column labels are: {}'.format(DF.columns))
-                import pdb
-                pdb.set_trace()
                 raise e
             # arbitrary sort on column 0
 
