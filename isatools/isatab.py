@@ -1569,7 +1569,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             DF = pd.DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)
             DF = DF[columns]  # reorder columns
-            DF = DF.sort_values(by=DF.columns[0], ascending=True)
+            try:
+                DF = DF.sort_values(by=DF.columns[0], ascending=True)
+            except ValueError as e:
+                log.critical('Error thrown: column labels are: {}'.format(DF.columns))
+                import pdb
+                pdb.set_trace()
+                raise e
             # arbitrary sort on column 0
 
             for dup_item in set([x for x in columns if columns.count(x) > 1]):
