@@ -538,6 +538,8 @@ class OntologyAnnotationEncoder(json.JSONEncoder):
             return res
 
     def ontology_annotation(self, obj):
+        if isinstance(obj, str):
+            return obj
         if isinstance(obj, OntologyAnnotation):
             res = {
                 "term": obj.term
@@ -613,7 +615,7 @@ class StudyCellEncoder(json.JSONEncoder):
         if isinstance(obj, StudyFactor):
             onto_encoder = OntologyAnnotationEncoder()
             return {
-                "name": obj.name,
+                "name": onto_encoder.ontology_annotation(obj.name),
                 "type": onto_encoder.ontology_annotation(obj.factor_type)
             }
 
@@ -622,7 +624,7 @@ class StudyCellEncoder(json.JSONEncoder):
             onto_encoder = OntologyAnnotationEncoder()
             res = {
                 "factor": self.study_factor(obj.factor_name),
-                "value": obj.value
+                "value": obj.value if isinstance(obj.value, Number) else onto_encoder.ontology_annotation(obj.value)
             }
             if obj.unit:
                 res["unit"] = onto_encoder.ontology_annotation(obj.unit)
@@ -1580,8 +1582,8 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
 
     @staticmethod
     def node(obj):
+        onto_encoder = OntologyAnnotationEncoder()
         if isinstance(obj, ProtocolNode):
-            onto_encoder = OntologyAnnotationEncoder()
             return {
                 "@id": obj.id,
                 # "@type": get_full_class_name(obj),
@@ -1593,9 +1595,10 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 "uri": obj.uri,
                 "version": obj.version,
                 "parameterValues": [{
-                    "name": parameter_value.category.parameter_name,
-                    "value": parameter_value.value,
-                    "unit": parameter_value.unit
+                    "name": onto_encoder.ontology_annotation(parameter_value.category.parameter_name),
+                    "value": parameter_value.value if isinstance(parameter_value.value, Number)
+                    else onto_encoder.ontology_annotation(parameter_value.value),
+                    "unit": onto_encoder.ontology_annotation(parameter_value.unit)
                 } for parameter_value in obj.parameter_values],
                 # "components": []
             }
@@ -1607,8 +1610,9 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
                 "productType": obj.type,
                 "size": obj.size,
                 "characteristics": [{
-                    "category": char.category,
-                    "value": char.value
+                    "category": onto_encoder.ontology_annotation(char.category),
+                    "value": char.value if isinstance(char.value, Number)
+                    else onto_encoder.ontology_annotation(char.value)
                 } for char in obj.characteristics if isinstance(char, Characteristic)]
             }
 

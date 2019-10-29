@@ -81,6 +81,43 @@ BIOLOGICAL_FACTOR_1_UNIT = OntologyAnnotation(term='mg')
 BIOLOGICAL_FACTOR_2_VALUE = 7
 BIOLOGICAL_FACTOR_2_UNIT = OntologyAnnotation(term='day')
 
+nmr_assay_dict = OrderedDict([
+    ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
+    ('technology_type', OntologyAnnotation(term='nmr spectroscopy')),
+            ('extraction', {}),
+            ('extract', [
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category':  OntologyAnnotation(term='extract type'),
+                    'characteristics_value': OntologyAnnotation(term='supernatant'),
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                },
+                {
+                    'node_type': SAMPLE,
+                    'characteristics_category':  OntologyAnnotation(term='extract type'),
+                    'characteristics_value': OntologyAnnotation(term='pellet'),
+                    'size': 1,
+                    'technical_replicates': None,
+                    'is_input_to_next_protocols': True
+                }
+            ]),
+            ('nmr_spectroscopy', {
+                OntologyAnnotation(term='instrument'): [OntologyAnnotation(term='Bruker AvanceII 1 GHz')],
+                OntologyAnnotation(term='acquisition_mode'): [OntologyAnnotation(term='1D 13C NMR')],
+                OntologyAnnotation(term='pulse_sequence'): [OntologyAnnotation(term='CPMG')]
+            }),
+            ('raw_spectral_data_file', [
+                {
+                    'node_type': DATA_FILE,
+                    'size': 1,
+                    'technical_replicates': 2,
+                    'is_input_to_next_protocols': False
+                }
+            ])
+        ])
+
 
 class OrderedTest(unittest.TestCase):
 
@@ -109,6 +146,15 @@ class OrderedTest(unittest.TestCase):
         self.assertIsInstance(ordered_filtered_list, list)
         ordered_list = ordered(test_list)
         self.assertIsInstance(ordered_list, list)
+
+
+class OntologyAnnotationTest(unittest.TestCase):
+
+    def test_simple_ontology_annotation(self):
+        annotation = OntologyAnnotation(term="aspirin")
+        annotation_json = json.dumps(annotation, cls=OntologyAnnotationEncoder, sort_keys=True, indent=4)
+        print(annotation_json)
+        self.assertEqual(json.loads(annotation_json), {"term": "aspirin"})
 
 
 class BaseTestCase(unittest.TestCase):
@@ -360,6 +406,22 @@ class StudyCellEncoderTest(BaseTestCase):
             expected_json_cell = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_cell), ordered(expected_json_cell))
 
+    def test_encode_single_treatment_cell_with_ontology_annotations(self):
+        f1 = StudyFactor(name='painkiller', factor_type=OntologyAnnotation(term="chemical compound"))
+        f2 = StudyFactor(name='dose', factor_type=OntologyAnnotation(term="quantity"))
+        f3 = StudyFactor(name='time post exposure', factor_type=OntologyAnnotation(term="time"))
+        f1v1 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="aspirin"))
+        f2v1 = FactorValue(factor_name=f2, value=OntologyAnnotation(term='low dose'))
+        f3v1 = FactorValue(factor_name=f3, value='1', unit=OntologyAnnotation(term='hr'))
+        te1 = Treatment()
+        te1.type = 'chemical intervention'
+        te1.factor_values = [f1v1, f2v1, f3v1]
+        cell = StudyCell(name='test_cell', elements=(te1, ))
+        json_cell = json.loads(json.dumps(cell, cls=StudyCellEncoder))
+        print(json.dumps(cell, cls=StudyCellEncoder, indent=4, sort_keys=True))
+        for factor_value_dict in json_cell['elements'][0]['factorValues']:
+            self.assertIsNotNone(factor_value_dict['value'])
+
     def test_encode_multi_treatment_cell(self):
         self.maxDiff = None
         json_cell = json.loads(json.dumps(self.cell_multi_elements_padded, cls=StudyCellEncoder))
@@ -499,6 +561,27 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.assertEqual(assay_graph_reconstructed.technology_type, self.third_assay_graph.technology_type)
         self.assertEqual(assay_graph_reconstructed.measurement_type, self.third_assay_graph.measurement_type)
         self.assertEqual(assay_graph_reconstructed.id, self.third_assay_graph.id)
+
+    def test_encode_sample_and_assay_plan_with_ontology_annotations(self):
+        input_material = ProductNode(
+            id_="MAT1", name="liver", node_type=SAMPLE, size=1,
+            characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='organism part'), value=OntologyAnnotation(term='liver')
+                )
+            ]
+        )
+        nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        sap1 = SampleAndAssayPlan(sample_plan=[input_material], assay_plan=[nmr_assay_graph])
+        sample2assay_plan = {input_material: [nmr_assay_graph]}
+        sap1.sample_to_assay_map = sample2assay_plan
+        actual_json_plan = json.loads(json.dumps(sap1, cls=SampleAndAssayPlanEncoder))
+        print(json.dumps(sap1, cls=SampleAndAssayPlanEncoder, indent=4, sort_keys=True))
+        assay_node_json = next(node for node in actual_json_plan["assayPlan"][0]["nodes"]
+                               if node["@id"] == "nmr_spectroscopy_000_000")
+        for param_val_json in assay_node_json["parameterValues"]:
+            self.assertIsNotNone(param_val_json["name"])
+            self.assertIsNotNone(param_val_json["value"])
 
 
 class StudyArmEncoderTest(BaseTestCase):
@@ -655,5 +738,7 @@ class StudyDesignDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)
         self.assertEqual(self.multi_element_cell_two_arm_study_design, actual_study_design)
+
+
 
 
