@@ -956,7 +956,7 @@ class QualityControlSample(Sample):
     QC_SAMPLE_TYPE_ERROR = 'qc_sample_type must be one of {0}'.format(ALLOWED_QC_SAMPLE_TYPES)
 
     def __init__(self, **kwargs):
-        print('KWARGS are: {0}'.format(kwargs))
+        log.debug('KWARGS are: {0}'.format(kwargs))
         qc_sample_type = kwargs.get('qc_sample_type', None)
         _kwargs = {key: val for key, val in kwargs.items() if key is not 'qc_sample_type'}
         super(QualityControlSample, self).__init__(**_kwargs)
@@ -2058,25 +2058,40 @@ class StudyDesign(object):
         return epoch_cells
 
     @staticmethod
-    def _idgen(gid='', subn='', samn='', samt=''):
+    def _idgen_sources(group_id, subject_number):
         """
         Identifiers generator
-        :param gid: 
-        :param subn: 
-        :param samn: 
-        :param samt: 
+        :param gid: group ID
+        :param subn: subject ID
+        :return: str
+        """
+        idarr = []
+        if group_id != '':
+            idarr.append('GRP-{}'.format(group_id))  # study group
+        if subject_number != '':
+            idarr.append('SBJ-{}'.format(subject_number))
+        return '.'.join(idarr).replace(' ', '_')
+
+    @staticmethod
+    def _idgen_samples(source_name, cell_name, sample_number, sample_type):
+        """
+        Identifiers generator
+        :param source_name: subject ID
+        :param sample_number: sample Number
+        :param sample_type: sample Term
         :return: 
         """
         idarr = []
-        if gid != '':
-            idarr.append('Group-{}'.format(gid))  # study group
-        if subn != '':
-            idarr.append('Subject-{}'.format(subn))
-        if samt != '':
-            idarr.append(samt)
-        if samn != '':
-            idarr.append('{}'.format(samn))
-        return '.'.join(idarr)
+        if source_name != '':
+            idarr.append('{}'.format(source_name))
+        if cell_name != '':
+            idarr.append('CEL-{}'.format(cell_name))
+        idarr.append('SMP-')
+        if sample_type != '':
+            idarr.append(sample_type)
+        if sample_number != '':
+            idarr.append('{}'.format(sample_number))
+        return '.'.join(idarr).replace(' ', '_')
 
     def _generate_sources(self, ontology_source_references):
         """
@@ -2096,7 +2111,7 @@ class StudyDesign(object):
             srcs = set()
             for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
                 src = copy.copy(source_prototype)
-                src.name = self._idgen(s_arm.name, subj_n)
+                src.name = self._idgen_sources(s_arm.name, subj_n)
                 srcs.add(src)
             src_map[s_arm.name] = list(srcs)
         return src_map
@@ -2132,11 +2147,13 @@ class StudyDesign(object):
                                 hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
                             if sample_term_source:
                                 ontology_sources.add(sample_term_source)
+                            sample_term = sample_type.value.term if \
+                                isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
                             for samp_idx in range(0, sampling_size):
-                                sample = Sample(name=self._idgen(arm.name, source.name, str(samp_idx+1),
-                                                                 sample_term_source),
-                                                factor_values=factor_values,
-                                                characteristics=[sample_type], derives_from=[source])
+                                sample = Sample(
+                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx+1), sample_term),
+                                    factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
+                                )
                                 sample_batches[sample_node].append(sample)
                                 # sample_batch.append(sample)
                                 sample_count += 1
@@ -2275,7 +2292,7 @@ class StudyDesign(object):
                 assay_graph.measurement_type
             )
         )
-        log.info('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
+        log.debug('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
                                                                              assay.technology_type))
         # assay.samples = assay_samples
         # assay.sources = {source for sample in assay_samples for source in sample.derives_from}
@@ -2297,7 +2314,7 @@ class StudyDesign(object):
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
-                    log.info('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
+                    log.debug('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
                                                                                            len(data_files)))
         return assay
 
@@ -2456,7 +2473,7 @@ class QualityControlService(object):
         :param performer:
         :return:
         """
-        log.info("Quality control sample size = {0}".format(sample_size))
+        log.debug("Quality control sample size = {0}".format(sample_size))
         qc_sources = []
         qc_samples_pre_run = []
         qc_samples_post_run = []
@@ -2466,13 +2483,14 @@ class QualityControlService(object):
             raise TypeError()
         qc_pre = quality_control.pre_run_sample_type
         assert isinstance(qc_pre, ProductNode)
+        cell_name = study_cell.name
         for i in range(qc_pre.size):
             dummy_source = QualityControlSource(
-                name=SOURCE_QC_SOURCE_NAME
+                name='SRC-QC-PRE-{}_{}_{}'.format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
             )
             qc_sources.append(dummy_source)
             sample = QualityControlSample(
-                name='{0}'.format(QC_SAMPLE_NAME),
+                name='SMP-QC-PRE-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
                 characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
                                  else qc_pre.characteristics[-1]],
@@ -2501,11 +2519,11 @@ class QualityControlService(object):
             qc_samples_interspersed[(sample_node, interspersing_interval)] = []
             for i in range(interspersing_interval, sample_size, interspersing_interval):
                 dummy_source = QualityControlSource(
-                    name=SOURCE_QC_SOURCE_NAME
+                    name='SRC-QC-INT-{}_{}_{}'.format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
                 )
                 qc_sources.append(dummy_source)
                 sample = QualityControlSample(
-                    name='{0}'.format(QC_SAMPLE_NAME),
+                    name='SMP-QC-INT-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                     factor_values=[],
                     characteristics=sample_node.characteristics,
                     derives_from=[dummy_source],
@@ -2516,11 +2534,11 @@ class QualityControlService(object):
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
             dummy_source = QualityControlSource(
-                name=SOURCE_QC_SOURCE_NAME
+                name='SRC-QC-POST_{}_{}_{}'.format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
             )
             qc_sources.append(dummy_source)
             sample = QualityControlSample(
-                name='{0}'.format(QC_SAMPLE_NAME),
+                name='SMP-QC-POST-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
                 characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
                                  else qc_post.characteristics[-1]],

@@ -11,8 +11,10 @@ import networkx as nx
 import uuid
 import logging
 
+from collections import Counter
+
 log = logging.getLogger('isatools')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -2019,7 +2021,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
         study_no_qc = study_design.generate_isa_study()
         for assay in study_no_qc.assays:
-            print('Assay is: {0}'.format(assay))
+            log.debug('Assay is: {0}'.format(assay))
         ms_assay_no_qc = next(assay for assay in study_no_qc.assays
                               if assay.technology_type == ms_assay_dict['technology_type'])
         expected_num_of_samples_ms_plan_first_arm = reduce(
@@ -2028,10 +2030,15 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         ms_processes = [process for process in ms_assay_no_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
-        print('MS Assay no QC: {0}'.format(ms_assay_no_qc))
+        log.debug('MS Assay no QC: {0}'.format(ms_assay_no_qc))
         study_with_qc = QualityControlService.augment_study(study_no_qc, study_design)
         self.assertIsInstance(study_with_qc, Study)
         self.assertIsNot(study_no_qc, study_with_qc)
+        sample_names = [sample.name for sample in study_with_qc.samples]
+        log.info('Sample name occurrences: {}'.format(
+            json.dumps(Counter(sample_names), sort_keys=True, indent=2)
+        ))
+        self.assertEqual(len(sample_names), len(set(sample_names))) # all sample names are unique
         ms_assay_no_qc = next(assay for assay in study_no_qc.assays
                               if assay.technology_type == ms_assay_dict['technology_type'])
         ms_assay_with_qc = next(assay for assay in study_with_qc.assays
@@ -2051,7 +2058,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         log.info('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
             expected_num_of_interspersed_samples
-        print('expected qc_samples_size: {0}'.format(qc_samples_size))
+        log.debug('expected qc_samples_size: {0}'.format(qc_samples_size))
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 *
                          (expected_num_of_samples_ms_plan_first_arm + qc_samples_size))
 
