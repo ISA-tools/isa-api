@@ -141,7 +141,7 @@ phti_assay_dict = OrderedDict([
             ]),
             ('phenotyping by high throughput imaging', {
                 'instrument': ['lemnatech gigant'],
-                'acquisition_mode': ['UV light','near-IR light','far-IR light','visible light'],
+                'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
                 'camera position': ['top','120 degree','240 degree','360 degree'],
                 'imaging daily schedule': ['06.00','19.00']
             }),

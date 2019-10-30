@@ -2282,15 +2282,15 @@ class StudyDesign(object):
             if isinstance(sample_node, ProductNode) and sample_node.characteristics \
             else None
         """
-        measurement_type = assay_graph.measurement_type
+        measurement_type, technology_type = assay_graph.measurement_type, assay_graph.technology_type
         assay = Assay(
             measurement_type=measurement_type,
-            technology_type=assay_graph.technology_type,
-            filename='a_{0}_{1}_{2}.txt'.format(
+            technology_type=technology_type,
+            filename='a_{0}_{1}_{2}_{3}.txt'.format(
                 cell_name,
                 assay_graph.id,
-                # sample_char_value.term if isinstance(sample_char_value, OntologyAnnotation) else sample_char_value,
-                measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type
+                measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
+                technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type
             )
         )
         log.debug('assay measurement type: {0} - technology type: {1}'.format(measurement_type,
@@ -2401,10 +2401,14 @@ class QualityControlService(object):
                             # CHECK the assumption here is that an assay file can univocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
                             # Such an assumption is correct as far a the Assay filename convention is not modified
-                            assay_filename = 'a_{0}_{1}_{2}.txt'.format(
+                            measurement_type, technology_type = assay_graph.measurement_type, \
+                                                                assay_graph.technology_type
+                            assay_filename = filename='a_{0}_{1}_{2}_{3}.txt'.format(
                                 cell.name, assay_graph.id,
-                                assay_graph.measurement_type.term if isinstance(
-                                    assay_graph.measurement_type, OntologyAnnotation) else assay_graph.measurement_type
+                                measurement_type.term if isinstance(measurement_type, OntologyAnnotation)
+                                else measurement_type,
+                                technology_type.term if isinstance(technology_type, OntologyAnnotation)
+                                else technology_type
                             )
                             assay_to_expand = next(assay for assay in qc_study.assays
                                                    if assay.filename == assay_filename)

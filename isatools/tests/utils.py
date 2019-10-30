@@ -81,7 +81,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             lbl = datetime.datetime.now()
             x.to_csv('~/Downloads/test-isa-for-release/expected-{}.csv'.format(lbl))
             y.to_csv('~/Downloads/test-isa-for-release/actual-{}.csv'.format(lbl))
-            log.error(e)
+            log.error('Error thrown comparing two dataframes: {}'.format(e))
             log.error('x columns are: {}'.format(x.columns))
             log.error('y columns are: {}'.format(y.columns))
             log.error('x data are: {}'.format(x.to_numpy()))
