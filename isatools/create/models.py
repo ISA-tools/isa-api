@@ -2282,18 +2282,19 @@ class StudyDesign(object):
             if isinstance(sample_node, ProductNode) and sample_node.characteristics \
             else None
         """
+        measurement_type = assay_graph.measurement_type
         assay = Assay(
-            measurement_type=assay_graph.measurement_type,
+            measurement_type=measurement_type,
             technology_type=assay_graph.technology_type,
             filename='a_{0}_{1}_{2}.txt'.format(
                 cell_name,
                 assay_graph.id,
                 # sample_char_value.term if isinstance(sample_char_value, OntologyAnnotation) else sample_char_value,
-                assay_graph.measurement_type
+                measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type
             )
         )
-        log.debug('assay measurement type: {0} - technology type: {1}'.format(assay.measurement_type,
-                                                                             assay.technology_type))
+        log.debug('assay measurement type: {0} - technology type: {1}'.format(measurement_type,
+                                                                              assay.technology_type))
         # assay.samples = assay_samples
         # assay.sources = {source for sample in assay_samples for source in sample.derives_from}
         # assay.process_sequence = sampling_processes
