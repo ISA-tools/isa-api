@@ -1598,6 +1598,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 log.critical('Error thrown: column labels are: {}'.format(DF.columns))
                 log.critical('Error thrown: data is: {}'.format(DF))
                 log.critical('Duplicate columns found: {}'.format(get_duplicate_columns(DF)))
+                DF.to_csv(os.path.join("~", "Downloads", "assay-with-duplicate-columns.csv"))
                 raise e
             # arbitrary sort on column 0
 
