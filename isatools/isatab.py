@@ -83,7 +83,7 @@ def get_duplicate_columns(df):
     :param df: Dataframe object
     :return: List of columns whose contents are duplicates.
     """
-    duplicate_column_names = set()
+    duplicate_columns = set()
     # Iterate over all the columns in dataframe
     for x in range(df.shape[1]):
         # Select column at xth index.
@@ -94,8 +94,8 @@ def get_duplicate_columns(df):
             other_col = df.iloc[:, y]
             # Check if two columns at x 7 y index are equal
             if col.equals(other_col):
-                duplicate_column_names.add(df.columns.values[y])
-    return list(duplicate_column_names)
+                duplicate_columns.add((y, df.columns.values[y]))
+    return list(duplicate_columns)
 
 
 STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
