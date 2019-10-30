@@ -691,7 +691,7 @@ class StudyCellDecoder(object):
                 pass    # treatment
             else:
                 pass    # raise error
-            log.info('Element has no \'isTreatment\' property: {}'.format(element_struct))
+            log.debug('Element has no \'isTreatment\' property: {}'.format(element_struct))
             raise ke
 
     def loads_cells(self, json_dict):
@@ -1915,7 +1915,7 @@ class StudyArmEncoder(json.JSONEncoder):
             characteristic_encoder = CharacteristicEncoder()
             study_cell_encoder = StudyCellEncoder()
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
-            log.info('StudyArm source_type is: {0}'.format(o.source_type))
+            log.debug('StudyArm source_type is: {0}'.format(o.source_type))
             res = dict(
                 name=o.name, groupSize=o.group_size, sourceType=characteristic_encoder.characteristic(o.source_type),
                 cells=[], sampleAndAssayPlans=[], mappings=[]
@@ -2512,10 +2512,10 @@ class QualityControlService(object):
                 ]
             )
             qc_processes.append(process)
-        log.info("Completed pre-batch samples")
+        log.debug("Completed pre-batch samples")
         for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
-            log.info("sample node is {0}".format(sample_node))
-            log.info("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
+            log.debug("sample node is {0}".format(sample_node))
+            log.debug("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
             qc_samples_interspersed[(sample_node, interspersing_interval)] = []
             for i in range(interspersing_interval, sample_size, interspersing_interval):
                 dummy_source = QualityControlSource(
@@ -2529,7 +2529,7 @@ class QualityControlService(object):
                     derives_from=[dummy_source],
                 )
                 qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
-        log.info("Completed interspersed samples")
+        log.debug("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
@@ -2561,7 +2561,7 @@ class QualityControlService(object):
             )
             qc_processes.append(process)
             i += 1
-        log.info("Completed post-batch samples")
+        log.debug("Completed post-batch samples")
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 

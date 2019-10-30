@@ -75,6 +75,29 @@ def xml_config_contents(filename):
         return f.read()
 
 
+def get_duplicate_columns(df):
+    """
+    Get a list of duplicate columns in a Pandas DataFrame.
+    Inspired from: https://thispointer.com/how-to-find-drop-duplicate-columns-in-a-dataframe-python-pandas/
+    It will iterate over all the columns in dataframe and find the columns whose contents are duplicate.
+    :param df: Dataframe object
+    :return: List of columns whose contents are duplicates.
+    """
+    duplicate_column_names = set()
+    # Iterate over all the columns in dataframe
+    for x in range(df.shape[1]):
+        # Select column at xth index.
+        col = df.iloc[:, x]
+        # Iterate over all the columns in DataFrame from (x+1)th index till end
+        for y in range(x + 1, df.shape[1]):
+            # Select column at yth index.
+            other_col = df.iloc[:, y]
+            # Check if two columns at x 7 y index are equal
+            if col.equals(other_col):
+                duplicate_column_names.add(df.columns.values[y])
+    return list(duplicate_column_names)
+
+
 STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
 NUMBER_OF_STUDY_GROUPS = 'Comment[Number of Study Groups]'
 
@@ -1574,6 +1597,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             except ValueError as e:
                 log.critical('Error thrown: column labels are: {}'.format(DF.columns))
                 log.critical('Error thrown: data is: {}'.format(DF))
+                log.critical('Duplicate columns found: {}'.format(get_duplicate_columns(DF)))
                 raise e
             # arbitrary sort on column 0
 
