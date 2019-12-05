@@ -3185,7 +3185,9 @@ class Process(Commentable):
         super().__init__(comments)
 
         self.id = id_
-        self.__name = name
+        self.__name = None
+        if name:
+            self.name = name
 
         if executes_protocol is None:
             self.__executes_protocol = Protocol()
@@ -3348,7 +3350,7 @@ class Process(Commentable):
             self.__next_process = val
 
     def __repr__(self):
-        return '{0}.{1}(name="{2.name}", executes_protocol={2.executes_protocol}, ' \
+        return '{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, ' \
                'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, self)
 
@@ -3366,6 +3368,7 @@ class Process(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Process) \
+            and self.id == other.id \
             and self.name == other.name \
             and self.executes_protocol == other.executes_protocol \
             and self.date == other.date \
