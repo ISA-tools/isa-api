@@ -135,23 +135,29 @@ class TestJson2IsaTab(unittest.TestCase):
             with open(os.path.join(self._tab_data_dir, 'BII-I-1_written_by_isatab', 'a_metabolome.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
-    def test_json2isatab_convert_bii_i_1_assay_table_microarray(self):  # FIXME: ArrayExpress comments come out twice (on Assay AND Derived Data File output from assay), missing Data Transformation Name and Factor Values
+    def test_json2isatab_convert_bii_i_1_assay_table_microarray(self):
+        # FIXME: ArrayExpress comments come out twice (on Assay AND Derived Data File output from assay),
+        #  missing Data Transformation Name and Factor Values
         with open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'a_microarray.txt')) as out_fp:
             with open(os.path.join(self._tab_data_dir, 'BII-I-1_written_by_isatab', 'a_microarray.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
-    def test_json2isatab_convert_bii_i_1_assay_table_proteome(self):  # FIXME: Same duplication problem as above
+    def test_json2isatab_convert_bii_i_1_assay_table_proteome(self):
+        # FIXME: Same duplication problem as above
         with open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'a_proteome.txt')) as out_fp:
             with open(os.path.join(self._tab_data_dir, 'BII-I-1_written_by_isatab', 'a_proteome.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
-    def test_json2isatab_convert_bii_i_1_assay_table_transcriptome(self):  # FIXME: Has inserted Protocol REFs but Array Design REF, Scan Name, Factor Values
+    def test_json2isatab_convert_bii_i_1_assay_table_transcriptome(self):
+        # FIXME: Has inserted Protocol REFs but Array Design REF, Scan Name, Factor Values
         with open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'a_transcriptome.txt')) as out_fp:
             with open(os.path.join(self._tab_data_dir, 'BII-I-1_written_by_isatab', 'a_transcriptome.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+
+

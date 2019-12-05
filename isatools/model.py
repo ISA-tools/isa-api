@@ -29,7 +29,6 @@ log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
 
 
-
 def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
@@ -38,13 +37,13 @@ def _build_assay_graph(process_sequence=None):
         return g
     for process in process_sequence:
         log.debug('Current process is: {0}'.format(process.name))
-        log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'name', None)))
-        log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'name', None)))
+        log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'id', None)))
+        log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'id', None)))
         log.debug('Inputs for current process are: {0}'.format(
-            [getattr(input_, 'name', None) for input_ in process.inputs]
+            [getattr(input_, 'id', None) for input_ in process.inputs]
         ))
         log.debug('Outputs for current process are: {0}'.format(
-            [getattr(output, 'name', None) for output in process.outputs]
+            [getattr(output, 'id', None) for output in process.outputs]
         ))
         if process.next_process is not None or len(process.outputs) > 0:
             if len([n for n in process.outputs if
@@ -52,21 +51,21 @@ def _build_assay_graph(process_sequence=None):
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
                     g.add_edge(process, output)
-                    log.debug('linking process {0} to output {1}'.format(process.name, getattr(output, 'name', None)))
+                    log.debug('linking process {0} to output {1}'.format(process.name, getattr(output, 'id', None)))
             else:
                 g.add_edge(process, process.next_process)
                 log.debug('linking process {1} to prev_process {0}'.format(
-                    getattr(process.next_process, 'name', None), process.name))
+                    getattr(process.next_process, 'id', None), process.name))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
                     g.add_edge(input_, process)
-                    log.debug('linking input {1} to process {0}'.format(process.name, getattr(input_, 'name', None)))
+                    log.debug('linking input {1} to process {0}'.format(process.name, getattr(input_, 'id', None)))
             else:
                 g.add_edge(process.prev_process, process)
                 log.debug('linking prev_process {0} to process {1}'.format(
-                    getattr(process.prev_process, 'name', None), process.name))
+                    getattr(process.prev_process, 'id', None), process.name))
     return g
 
 

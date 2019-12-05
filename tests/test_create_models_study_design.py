@@ -1200,7 +1200,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         )
 
     def test_properties(self):
-        plan = SampleAndAssayPlan()
+        plan = SampleAndAssayPlan('a plan')
         self.assertEqual(plan.assay_plan, set())
         self.assertEqual(plan.sample_plan, set())
         sample_plan = {self.tissue_node, self.blood_node}
@@ -1244,7 +1244,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertNotEqual(repr(first_plan), repr(second_plan))
 
     def test_add_element_to_map_success(self):
-        plan = SampleAndAssayPlan()
+        plan = SampleAndAssayPlan('test plan')
         sample_plan = {self.tissue_node, self.blood_node}
         assay_plan = {self.genomic_assay_graph, self.metabolomic_assay_graph}
         plan.sample_plan = sample_plan
@@ -1265,7 +1265,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         })
 
     def test_add_element_to_map_raises(self):
-        plan = SampleAndAssayPlan()
+        plan = SampleAndAssayPlan('test plan')
         with self.assertRaises(ValueError, msg='The sample has not been added to the plan yet') as ex_cm:
             plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
         self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_SAMPLE_IN_PLAN)
@@ -1354,7 +1354,7 @@ class StudyArmTest(unittest.TestCase):
                                                         self.fourth_treatment
                                                     }, self.washout, self.third_treatment, self.washout])
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
-        self.sample_assay_plan = SampleAndAssayPlan()
+        self.sample_assay_plan = SampleAndAssayPlan('test plan')
 
     def test__init__(self):
         self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME_00)
@@ -2257,9 +2257,10 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.follow_up = NonTreatment(element_type=FOLLOW_UP,
                                       duration_value=FOLLOW_UP_DURATION_VALUE, duration_unit=DURATION_UNIT)
         self.treatments = [self.first_treatment, self.second_treatment, self.third_treatment, self.fourth_treatment]
-        self.sample_assay_plan = SampleAndAssayPlan()
-        self.sample_assay_plan_list = [SampleAndAssayPlan(), SampleAndAssayPlan(), SampleAndAssayPlan(),
-                                       SampleAndAssayPlan()]
+        self.sample_assay_plan = SampleAndAssayPlan('test plan')
+        self.sample_assay_plan_list = [SampleAndAssayPlan('test plan'), SampleAndAssayPlan('test plan'),
+                                       SampleAndAssayPlan('test plan'),
+                                       SampleAndAssayPlan('test plan')]
 
     """
     def test_property_treatments(self):

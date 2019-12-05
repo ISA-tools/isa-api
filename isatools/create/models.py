@@ -1429,9 +1429,10 @@ class SampleAndAssayPlan(object):
     - assay_plan is as set of AssayGraphs to support multiple assays to be run on the same batch of samples
     """
 
-    def __init__(self, name=None, sample_plan=None, assay_plan=None):
+    def __init__(self, name, sample_plan=None, assay_plan=None):
         """
         SampleAndAssayPlan constructor method
+        :param name: string - a unique name (within the Arm that identifies the current SampleAndAssayPlan)
         :param sample_plan: (set/list/Iterable) - a set of ProductNode objects of type SAMPLE
         :param assay_plan: (set/list/Iterable) - a set of AssayGraph objects
         """
@@ -1439,8 +1440,7 @@ class SampleAndAssayPlan(object):
         self.__sample_plan = set()
         self.__assay_plan = set()
         self.__sample_to_assay_map = {}
-        if name:
-            self.name = name
+        self.name = name
         if sample_plan:
             self.sample_plan = sample_plan
         if assay_plan:
@@ -1513,11 +1513,12 @@ class SampleAndAssayPlan(object):
             self.__sample_to_assay_map[sample_node] = {assay_graph}
 
     @classmethod
-    def from_sample_and_assay_plan_dict(cls, sample_type_dicts, *assay_plan_dicts, validation_template=None,
+    def from_sample_and_assay_plan_dict(cls, name, sample_type_dicts, *assay_plan_dicts, validation_template=None,
                                         use_guids=False, quality_controls=[]):
         """
         An alternative constructor that builds the SampleAndAssayPlan graph object from a schema provided as an
         OrderedDict, which can optionally be validated against a validation_schema
+        :param name: string, the name of the SampleAndAssayPlan to be created
         :param sample_type_dicts: list of dicts
         :param assay_plan_dicts: list of OrderedDicts
         :param validation_template: dict/OrderedDict
@@ -1526,7 +1527,7 @@ class SampleAndAssayPlan(object):
                                 of assay_plan_dicts provided
         :return: SampleAndAssayPlan
         """
-        res = cls()
+        res = cls(name)
         for i, sample_type_dict in enumerate(sample_type_dicts):
             sample_node = ProductNode(
                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(SAMPLE, str(i).zfill(3)),

@@ -572,7 +572,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             ]
         )
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
-        sap1 = SampleAndAssayPlan(sample_plan=[input_material], assay_plan=[nmr_assay_graph])
+        sap1 = SampleAndAssayPlan(name='A TEST SA PLAN', sample_plan=[input_material], assay_plan=[nmr_assay_graph])
         sample2assay_plan = {input_material: [nmr_assay_graph]}
         sap1.sample_to_assay_map = sample2assay_plan
         actual_json_plan = json.loads(json.dumps(sap1, cls=SampleAndAssayPlanEncoder))
