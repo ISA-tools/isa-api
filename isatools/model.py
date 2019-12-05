@@ -36,7 +36,7 @@ def _build_assay_graph(process_sequence=None):
     if process_sequence is None:
         return g
     for process in process_sequence:
-        log.debug('Current process is: {0}'.format(process.name))
+        log.debug('Current process is: {0}'.format(process.id))
         log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'id', None)))
         log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'id', None)))
         log.debug('Inputs for current process are: {0}'.format(
