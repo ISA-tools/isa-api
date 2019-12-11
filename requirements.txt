@@ -1,18 +1,18 @@
-numpy
-jsonschema
+numpy==1.17.3
+jsonschema==3.1.1
 pandas==0.25.3
-networkx
-lxml
-requests
-iso8601
-chardet
-jinja2
-beautifulsoup4
-mzml2isa
+networkx==2.4
+lxml==4.4.1
+requests==2.22.0
+iso8601==0.1.12
+chardet==3.0.4
+jinja2==2.10.3
+beautifulsoup4==4.8.1
+mzml2isa==1.0.2
 #-e git+http://github.com/ISA-tools/mzml2isa@5866b3e8e185ddbb3b784e4d6a2ef6fbbcfcb256#egg=mzml2isa
 #-e git+http://github.com/ISA-tools/isa-api@6e7fc5b588a78722f4d8030fe820c8bf577b34b0#egg=isatools
-biopython
-progressbar2
-deepdiff
+biopython==1.74
+progressbar2==3.47.0
+deepdiff==4.0.8
 PyYAML==3.13
-bokeh
+bokeh==1.4.0
