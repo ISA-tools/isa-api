@@ -1277,7 +1277,9 @@ class SampleAndAssayPlanTest(unittest.TestCase):
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         assay_list = [ms_assay_dict, nmr_assay_dict]
-        smp_ass_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, *assay_list)
+        smp_ass_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+            'test sample and assay plan', sample_list, *assay_list
+        )
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
         self.assertEqual(len(smp_ass_plan.assay_plan), 2)
@@ -1637,8 +1639,12 @@ class BaseStudyDesignTest(unittest.TestCase):
         self.cell_follow_up = StudyCell(FOLLOW_UP, elements=(self.follow_up,))
         self.cell_follow_up_01 = StudyCell('ANOTHER FOLLOW_UP', elements=(self.follow_up,))
         self.qc = QualityControl()
-        self.ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, ms_assay_dict)
-        self.nmr_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(sample_list, nmr_assay_dict)
+        self.ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+            'mass spectrometry sample and assay plan', sample_list, ms_assay_dict
+        )
+        self.nmr_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+            'NMR sample and assay plan', sample_list, nmr_assay_dict
+        )
         self.first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
             (self.cell_single_treatment_00, self.ms_sample_assay_plan),
@@ -2005,7 +2011,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         print('MS assay graph start nodes are: {0}'.format(ms_assay_graph.start_nodes))
         """
         ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
-            sample_list, ms_assay_dict, quality_controls=[self.qc]
+            'mass spectrometry sample and assay plan', sample_list, ms_assay_dict, quality_controls=[self.qc]
         )
         # print(self.ms_sample_assay_plan.assay_plan)
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
