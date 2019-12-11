@@ -17,6 +17,7 @@ import abc
 import logging
 import warnings
 import uuid
+from numbers import Number
 
 from collections.abc import Iterable
 import networkx as nx
@@ -2416,9 +2417,14 @@ class ParameterValue(Commentable):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
 
-        self.__category = category
-        self.__value = value
-        self.__unit = unit
+        self.__category = None
+        self.__value = None
+        self.__unit = None
+        self.category = category
+        if not isinstance(value, Number) and unit:
+            raise ValueError("ParameterValue value mus be quantitative (i.e. numeric) if a unit is supplied")
+        self.value = value
+        self.unit = unit
 
     @property
     def category(self):
