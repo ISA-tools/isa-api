@@ -12,6 +12,7 @@ import logging
 import os
 import shutil
 import tempfile
+import traceback
 
 from isatools.convert import magetab2isatab, magetab2json
 
@@ -139,6 +140,7 @@ def get_isatab(arrayexpress_id, target_dir=None):
             arrayexpress_id)), output_path=target_dir)
     except Exception as e:
         log.fatal("Something went wrong: {}".format(e))
+        log.fatal(traceback.format_exc())
     finally:
         shutil.rmtree(tmp_dir)
         return target_dir
