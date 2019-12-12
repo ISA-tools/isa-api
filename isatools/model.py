@@ -1674,8 +1674,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         """
         if not isinstance(val, Iterable) or not all(isinstance(el, Protocol) for el in val):
             raise AttributeError('The object supplied is not an iterable of Protocol objects')
-        for protocol in val:
-            self.add_protocol(protocol)
+        self.__protocols = [protocol for protocol in val]
 
     def add_protocol(self, protocol):
         if not isinstance(protocol, Protocol):

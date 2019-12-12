@@ -836,7 +836,7 @@ class ProtocolNodeTest(unittest.TestCase):
         self.assertEqual(node.replicates, 1)
         test_parameter_values = [
             ParameterValue(category=ProtocolParameter(parameter_name='test param'), value='tot'),
-            ParameterValue(category=ProtocolParameter(parameter_name='another test param'), value='quot', unit='z')
+            ParameterValue(category=ProtocolParameter(parameter_name='another test param'), value=12, unit='z')
         ]
         node.parameter_values = test_parameter_values
         self.assertEqual(node.parameter_values, test_parameter_values)

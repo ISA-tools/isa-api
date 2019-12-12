@@ -882,12 +882,21 @@ class IsaTabFixer(object):
                     except KeyError:
                         pass
             print('Unused protocols: {}'.format(unused_protocol_names))
+            print('Location of unused protocols: {}'.format(
+                list(map(lambda pr: True if pr.name in unused_protocol_names else False, study.protocols))
+            ))
             # remove these protocols from study.protocols
+            """
             clean_protocols_list = []
             for protocol in study.protocols:
                 if protocol.name not in unused_protocol_names:
                     clean_protocols_list.append(protocol)
             study.protocols = clean_protocols_list
+            """
+            clean_protocols = [pr for pr in study.protocols if pr.name not in unused_protocol_names]
+            print('Clean protocol list: {}'.format([pr.name for pr in clean_protocols]))
+            study.protocols = clean_protocols
+            print('Clean study.protocols: {}'.format([pr.name for pr in study.protocols]))
         isatab.dump(
             investigation, output_path=os.path.dirname(self.path),
             i_file_name='{filename}.fix'.format(
