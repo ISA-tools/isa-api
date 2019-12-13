@@ -13,7 +13,7 @@ The ISA API is published on the Python Package Index (PyPI) as the `isatools` pa
 
 This command will install the latest version posted on PyPI. If you need to install a specific version of the isatools module, use the following:
 
-``$ pip install 'isatools==10.4' ``
+``$ pip install isatools==10.4 ``
 
 To upgrade from an earlier installation of the isatools package, do:
 
