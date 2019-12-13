@@ -4,7 +4,7 @@ Installation
 
 **Requires:
 - Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7;
-- additionally Java 1.6+, for `INSDC <http://www.insdc.org/>`_ `SRA (Sequence Read Archive) <https://www.ebi.ac.uk/ena/submit/data-formats>`_ and `Biocrates®<https://www.biocrates.com/products/research-products>`_ importers**
+- additionally Java 1.6+, for `INSDC <http://www.insdc.org/>`_ 's `Sequence Read Archive (SRA) <https://www.ebi.ac.uk/ena/submit/data-formats>`_ and `Biocrates®<https://www.biocrates.com/products/research-products>`_ importers**
 
 Installation from the Python Package Index
 ------------------------------------------
