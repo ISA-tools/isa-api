@@ -2,7 +2,7 @@
 Installation
 ############
 
-**Requires: Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7; additionally Java 1.6+ for INSDC SRA (Sequence Read Archive) and Biocrates &trade; importers**
+**Requires: Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7; additionally Java 1.6+ for INSDC SRA (Sequence Read Archive) and Biocrates .&trade; importers**
 
 Installation from the Python Package Index
 ------------------------------------------
