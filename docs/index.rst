@@ -15,7 +15,7 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`Creating ISA objects </creation>`
 #. :doc:`Writing ISA objects as ISA-Tab or ISA-JSON</writingtofile>`
 #. :doc:`Tutorial: Describing a simple experiment with objects </creationtutorial>`
-#. :doc:`Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotation>`
+#. :doc:`Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotations>`
 #. :doc:`Tutorial: Creating ISA objects based on Study Design <studydesigncreation>`
 #. :doc:`Tutorial: Creating ISA content with a Sample and Assay plan </sampleassayplan>`
 #. :doc:`Creating ISA objects based on study-design </studydesigncreation>`
@@ -39,7 +39,7 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Creating ISA objects <creation>
    Writing ISA objects to file <writingtofile>
    Tutorial: Describing a simple experiment with ISA objects <creationtutorial>
-   Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotation>
+   Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotations>
    Tutorial: Creating ISA objects based on study-design <studydesigncreation>
    Tutorial: Creating ISA content with a Sample and Assay plan </sampleassayplan>
    Converting between ISA formats <conversions>
