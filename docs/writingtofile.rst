@@ -3,10 +3,10 @@ Tutorial: writing ISA objects to file in TAB or JSON format
 ###########################################################
 
 The ISA-API provides 2 serialization mechanisms for ISA objects, one for each of the format, TAB or JSON.
-For each, following  current practice in Python, 2 modes are available which are invoked using either `dump()` or `dumps()` methods.
+For each, following  current practice in Python, 2 modes are available which are invoked using either ``dump()`` or ``dumps()`` methods.
 For former taking an ISA '
-`Investigation` object and a `path to a directory` as input,
-while the latter `dumps()` takes only an ISA `Investigation` objects and returns a `string` object (hence, the `s` in the method's name)
+``Investigation`` object and a ``path to a directory`` as input,
+while the latter ``dumps()`` takes only an ISA ``Investigation`` objects and returns a ``string`` object (hence, the `s` in the method's name)
 
 Serialization to ISA-Tab
 ------------------------
