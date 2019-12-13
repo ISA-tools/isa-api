@@ -20,7 +20,7 @@ To write out the ISA-Tab to files, to a specific location, you can use the  ``is
     <isatools.model.Investigation object>
 
 
-Alternatively you could use the `isatad.dumps()` function to view the ISA-Tab
+Alternatively you could use the ``isatad.dumps()`` function to view the ISA-Tab
 
 
 .. code-block:: python
@@ -37,8 +37,8 @@ The function listed above is designed to return all three files as a single stri
 Serialization to ISA-JSON
 -------------------------
 
-To write out the ISA JSON, you can use the ``ISAJSONEncoder`` class with the Python ``json`` package. This means that `json.dump()` or `json.dumps()` methods may be used to serialize.
-the difference between the 2 methods is as mentioned before, that fact that `json.dump()` uses a file handle as input, while `json.dumps()` returns a string object.
+To write out the ISA JSON, you can use the ``ISAJSONEncoder`` class with the Python ``json`` package. This means that ``json.dump()`` or ``json.dumps()`` methods may be used to serialize.
+the difference between the 2 methods is as mentioned before, that fact that ``json.dump()`` uses a file handle as input, while ``json.dumps()`` returns a string object.
 
 .. code-block:: python
 
@@ -51,7 +51,7 @@ the difference between the 2 methods is as mentioned before, that fact that `jso
 
 
 Another way to write directly to file from the ISA Object, one needs to invoke the json.dump function as documented below, bearing in mind that this **requires** that the ISA object is first converted to a suitable representation
-This means first invoking the `json.dumps()` function and then the `json.loads()` function on the output of the `json.dumps()` function, before calling the json.dump()' function on the datastructure and a filehandle.
+This means first invoking the ``json.dumps()`` function and then the ``json.loads()`` function on the output of the ``json.dumps()`` function, before calling the ``json.dump()`` (watch out, no `s`) function on the datastructure and a filehandle.
 
 .. code-block:: python
 
