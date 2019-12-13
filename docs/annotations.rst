@@ -89,7 +89,8 @@ So **DO** :
 .. code-block:: python
 
     >>> oa_weight = OntologyAnnotation(term="weight")
-    >>> oa_unit1 = OntologyAnnotation(term="kilogram", term_source=uo)
+    >>> oa_unit1 = OntologyAnnotation(term="kilogram",
+                                      term_source=uo)
     >>> c=Characteristic(category=oa_weight,
                          value=74,
                          unit=oa_unit1)
@@ -112,10 +113,12 @@ But **DON'T DO**:
 
     >>> c_numericalvalue_nogo = Characteristic(category=OntologyAnnotation(term="weight"),
                                                value="74",
-                                               unit=OntologyAnnotation(term="kilogram", term_source=uo))
+                                               unit=OntologyAnnotation(term="kilogram",
+                                                                       term_source=uo))
     >>> c_numericalvalue_nogoeither = Characteristic(category=OntologyAnnotation(term="weight"),
                                                      value=OntologyAnnotation(term="74"),
-                                                     unit=OntologyAnnotation(term="kilogram", term_source=uo))
+                                                     unit=OntologyAnnotation(term="kilogram",
+                                                                             term_source=uo))
 
 If you are getting error when assigning values for those annotation types, do remember to check all these steps!
 
@@ -142,10 +145,14 @@ Here we show how to report an ISA ``ParameterValue`` numerical value:
     >>> proc.outputs.append(sample)
     >>> s.process_sequence.append(proc)
 
-    >>> u = OntologyAnnotation(term="meter", term_accession="http://example.com/meter", term_source=uo)
+    >>> u = OntologyAnnotation(term="meter",
+                               term_accession="http://example.com/meter",
+                               term_source=uo)
 
     # Now supplying an ISA ```ParameterValue``` quantitative value
-    >>>proc.parameter_values.append(ParameterValue(category=parameter, value=12, unit=u))
+    >>> proc.parameter_values.append(ParameterValue(category=parameter,
+                                                   value=12,
+                                                   unit=u))
 
 
 
@@ -184,3 +191,7 @@ In the ``ISA model``, most ISA objects can be annotated using an ISA `Comment`. 
 To add a ``Comment`` to an ISA object, simple do the following:
 
 .. code-block:: python
+    >>> cmt = Comment(name="creation_date", value="YYYY-MM-DD")
+    >>> source.comments.append(cmt)
+
+hint:: for ISA ``Comment``, the attributes ``name`` and ``value`` only take ``string`` as input.
