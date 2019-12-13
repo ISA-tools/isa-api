@@ -65,6 +65,10 @@ We can set some instance variables with data as follows:
  expected by the association list. However, be aware that in Python, the append() function will add to a list any item passed as argument.
 So it is **critical** to check against the ISA model that types of Objects required in order to avoid serialization errors.
 
+
+Writing to file as ISA-Tab
+--------------------------
+
 If you then write these out to ISA-Tab, we can inspect the output written into an ``i_investigation.txt`` file. We
 do this using the ``isatab`` module to ``dump()`` the ``Investigation`` object we created, as follows:
 
@@ -88,3 +92,5 @@ please inspect the module's docstrings.
 Obviously, this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look
 in the ``isatools.model`` package to inspect all the docstring documentation that is included with each of the ISA
 model classes.
+
+A more detailed discussion about `serializing` (i.e. writing to file) ISA objects in Tab or JSON formats is available in this section

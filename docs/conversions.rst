@@ -19,9 +19,9 @@ and ``a_...txt`` files):
 
    # we now write to file:
    try:
-    with open(output_file_path, 'w') as out_fp:
-        json.dump(isa_json, out_fp, indent=4)
-    except IOError as e:
+        with open(output_file_path, 'w') as out_fp:
+            json.dump(isa_json, out_fp, indent=4)
+   except IOError as e:
         print("something went wrong:", e)
 
 .. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skip the validation step, set the ``validate_first`` parameter to ``False`` by doing something like ``converter.convert('./my/path/', validate_first=False)``.
@@ -54,10 +54,17 @@ To convert from a ISA JSON file ``isa.json`` directory to write out ISA-Tab file
 .. code-block:: python
 
    from isatools.convert import json2isatab
-   with open('isa.json')) as file_pointer:
+   with open('isa.json') as file_pointer:
        json2isatab.convert(file_pointer, './outdir/')
 
 To turn off pre-conversion validation, use `validate_first=False`. By default it is set to `validate_first=True`.
+
+.. code-block:: python
+
+   from isatools.convert import json2isatab
+   with open('isa.json') as file_pointer:
+       json2isatab.convert(file_pointer, './outdir/', validate_first=False)
+
 
 The ISA API can also convert to and from other formats for import/export to relevant databases and services. For more
 on those conversions, please read the sections on `Importing data in ISA formats </importdata>` and
