@@ -2,7 +2,9 @@
 Installation
 ############
 
-**Requires: Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7; additionally Java 1.6+ for INSDC SRA (Sequence Read Archive) and Biocrates® importers**
+**Requires:
+- Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7;
+- additionally Java 1.6+, for `INSDC <http://www.insdc.org/>`_ `SRA (Sequence Read Archive) <https://www.ebi.ac.uk/ena/submit/data-formats>`_ and `Biocrates®<https://www.biocrates.com/products/research-products>`_ importers**
 
 Installation from the Python Package Index
 ------------------------------------------
@@ -13,7 +15,7 @@ The ISA API is published on the Python Package Index (PyPI) as the `isatools` pa
 
 This command will install the latest version posted on PyPI. If you need to install a specific version of the isatools module, use the following:
 
-``$ pip install isatools==10.4 ``
+``$ pip install isatools==10.4``
 
 To upgrade from an earlier installation of the isatools package, do:
 
