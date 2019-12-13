@@ -12,8 +12,8 @@ flexible way to build and use ISA content, as well as provide utility functions 
 
 #. :doc:`Installation </installation>`
 #. :doc:`ISA model </isamodel>`
-#. :doc:`Creating objects </creation>`
-#. :doc:`Writing objects as ISA-Tab or ISA-JSON</writingtofile>`
+#. :doc:`Creating ISA objects </creation>`
+#. :doc:`Writing ISA objects as ISA-Tab or ISA-JSON</writingtofile>`
 #. :doc:`Tutorial: describing a simple experiment with objects </creationtutorial>`
 #. :doc:`Creating ISA objects based on study-design </studydesigncreation>`
 #. :doc:`Converting between ISA formats </conversions>`
@@ -34,8 +34,8 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
 
    Installation <installation>
    ISA model <isamodel>
-   Creating objects <creation>
-   Writing to file <writingtofile>
+   Creating ISA objects <creation>
+   Writing ISA objects to file <writingtofile>
    Tutorial: describing a simple experiment with objects <creationtutorial>
    Example: createSimpleISAtab.py <example-createSimpleISAtab>
    Example: createSimpleISAJSON.py <example-createSimpleISAJSON>
