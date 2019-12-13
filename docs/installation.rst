@@ -2,7 +2,7 @@
 Installation
 ############
 
-**Requires: Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7; additionally Java 1.6+ for INSDC SRA (Sequence Read Archive) and Biocrates <sup>TM</sup> importers**
+**Requires: Python 3.4+, tested on 3.4, 3.5, 3.6 and 3.7; additionally Java 1.6+ for INSDC SRA (Sequence Read Archive) and Biocrates &trade; importers**
 
 Installation from the Python Package Index
 ------------------------------------------
@@ -10,6 +10,14 @@ Installation from the Python Package Index
 The ISA API is published on the Python Package Index (PyPI) as the `isatools` package ((see `<https://pypi.python.org/pypi/isatools/>`_), and you can use ``pip`` to install it.
 
 ``$ pip install isatools``
+
+This command will install the latest version posted on PyPI. If you need to install a specific version of the isatools module, use the following:
+
+``$ pip install 'isatools==10.4' ``
+
+To upgrade from an earlier installation of the isatools package, do:
+
+``$ pip install --upgrade isatools``
 
 Now you're ready to get started!
 
@@ -52,6 +60,7 @@ or open up your favourite IDE to explore the codebase. We use JetBrains' `https:
 Now you're ready to get started!
 
 For full instructions on installing and using ``virtualenv`` see `their documentation <https://virtualenv.readthedocs.org>`_.
+Alternative to ``virtualenv``, ``pyenv`` is also great to manage virtual environments. For full instructions on installing and using ``pyenv`` see `their documentation <https://github.com/pyenv/pyenv>`_.
 
 Running tests
 -------------
