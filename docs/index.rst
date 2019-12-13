@@ -14,14 +14,16 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`ISA model </isamodel>`
 #. :doc:`Creating ISA objects </creation>`
 #. :doc:`Writing ISA objects as ISA-Tab or ISA-JSON</writingtofile>`
-#. :doc:`Tutorial: describing a simple experiment with objects </creationtutorial>`
+#. :doc:`Tutorial: Describing a simple experiment with objects </creationtutorial>`
+#. :doc:`Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotation>`
+#. :doc:`Tutorial: Creating ISA objects based on Study Design <studydesigncreation>`
+#. :doc:`Tutorial: Creating ISA content with a Sample and Assay plan </sampleassayplan>`
 #. :doc:`Creating ISA objects based on study-design </studydesigncreation>`
 #. :doc:`Converting between ISA formats </conversions>`
 #. :doc:`Downloading files stored in Github </github>`
 #. :doc:`Validating ISA-Tab and ISA JSON </validation>`
 #. :doc:`Importing data in ISA formats </importdata>`
 #. :doc:`Exporting data in ISA formats </exportdata>`
-#. :doc:`Creating ISA content with a Sample and Assay plan </sampleassayplan>`
 #. :doc:`Known Issues </knownissues>`
 
 License
@@ -36,16 +38,18 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    ISA model <isamodel>
    Creating ISA objects <creation>
    Writing ISA objects to file <writingtofile>
-   Tutorial: describing a simple experiment with objects <creationtutorial>
-   Example: createSimpleISAtab.py <example-createSimpleISAtab>
-   Example: createSimpleISAJSON.py <example-createSimpleISAJSON>
-   Example: validateISAtab.py <example-validateISAtab>
-   Example: validateISAjson.py <example-validateISAjson>
+   Tutorial: Describing a simple experiment with ISA objects <creationtutorial>
+   Tutorial: Quantitative and Qualitative Annotations on ISA objects <annotation>
+   Tutorial: Creating ISA objects based on study-design <studydesigncreation>
+   Tutorial: Creating ISA content with a Sample and Assay plan </sampleassayplan>
    Converting between ISA formats <conversions>
    Contributing your work <contributing>
    Downloading files stored in Github <github>
    Validating ISA-Tab and ISA JSON <validation>
    Importing data in ISA formats <importdata>
    Exporting data from ISA formats <exportdata>
-   Creating ISA content with a Sample and Assay plan </sampleassayplan>
+   Example: createSimpleISAtab.py <example-createSimpleISAtab>
+   Example: createSimpleISAJSON.py <example-createSimpleISAJSON>
+   Example: validateISAtab.py <example-validateISAtab>
+   Example: validateISAjson.py <example-validateISAjson>
    Known Issues <knownissues>
