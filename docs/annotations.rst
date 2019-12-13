@@ -191,6 +191,7 @@ In the ``ISA model``, most ISA objects can be annotated using an ISA `Comment`. 
 To add a ``Comment`` to an ISA object, simple do the following:
 
 .. code-block:: python
+
     >>> cmt = Comment(name="creation_date", value="YYYY-MM-DD")
     >>> source.comments.append(cmt)
 
