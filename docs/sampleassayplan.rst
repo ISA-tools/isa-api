@@ -41,12 +41,10 @@ Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-no
 
 which should return the following:
 
+
 .. code-block:: json
 
-NonTreatment(
-            type='screen',
-            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION', factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, term_accession='', comments=[]), comments=[]), value=0.0, unit=None)
-        )
+    >>> NonTreatment(type='screen', duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION',factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, term_accession='', comments=[]), comments=[]), value=0.0, unit=None))
 
 
 .. hint:: IMPORTANT: ISA ``Element`` **must** be assigned a type, which can one of {"screen","washout","follow-up","treatment"}.
@@ -371,5 +369,4 @@ Let's now serialize the ISA study design to JSON
 
        >>> f=json.dumps(study_design_final, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
-
-isatab.dump(investigation1, './')
+       >>> isatab.dump(investigation1, './')
