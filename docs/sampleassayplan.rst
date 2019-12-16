@@ -51,12 +51,13 @@ This component of the API allows users to define 3 plans:
 
 
 .. figure:: ./diagrams/ISA-Study-Design-Entities.jpg
-    :scale: 50%
+    :height: 500px
+    :width: 500px
     :align: left
     :alt:  Figure 1 provides an overview of the ISA Study Design Elements.
 
 
-st
+
 
 1. Creation of the first ISA Study Design Element, of type ``Non-Treatment``
 ----------------------------------------------------------------------------
