@@ -51,8 +51,8 @@ This component of the API allows users to define 3 plans:
 
 
 .. figure:: ./diagrams/ISA-Study-Design-Entities.jpg
-    :height: 500px
-    :width: 500px
+    :height: 750px
+    :width: 750px
     :align: left
     :alt:  Figure 1 provides an overview of the ISA Study Design Elements.
 
