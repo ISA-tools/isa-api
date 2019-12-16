@@ -2,12 +2,14 @@
 Creating ISA content with a Sample and Assay plan
 #################################################
 
-The ISA API provides a set of classes that you can use to plan a study, in terms of sample collection and assay run patterns. Objects of these classes can then be used to dump ISA-Tab or ISA-JSON templates corresponding to your study design. They are found in the ``isatools.create.models`` module.
+The ISA API provides a set of classes that you can use to plan a study, in terms of sample collection and assay run patterns.
+Objects of these classes can then be used to dump ISA-Tab or ISA-JSON templates corresponding to your study design.
+They are found in the ``isatools.create.models`` module.
 
 Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-notebooks>`_ GitHub repository for Jupyter Notebook examples of using the planning objects.
 
 
-
+We'll start as usual, by building an ``Investigation`` object, an ``Study`` object, and in this example. We'll also create ``Source`` and ``Sample`` materials associated with that ``Study`` object.
 
 .. code-block:: python
 
@@ -15,8 +17,10 @@ Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-no
     >>> import json
     >>> from isatools.isajson import ISAJSONEncoder
     >>> from isatools.create.models import *
+
     >>> investigation = Investigation()
     >>> investigation1 = Investigation() # to be used with the study create function
+
     >>> study = Study(filename="s_study_xover.txt")
     >>> study.identifier = identifier.value
     >>> study.title = title.value
@@ -28,7 +32,19 @@ Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-no
     >>> study.protocols = [Protocol(name="sample collection")]
     >>> study.process_sequence = [Process(executes_protocol=study.protocols[-1], inputs=[study.sources[-1]], outputs=[study.samples[-1]])]
     >>> investigation.studies = [study]
-    >>> investigation
+
+
+In the following sections, we will start exploring how to use the new ``isatools.create.models`` objects. These objects are to a large extend aligned with `CDISC <http://cdisc.org/>`_  and its `Study Design Model<https://www.cdisc.org/standards/data-exchange/sdm-xml>`_ in order to ensure easy integration and possibly interoperation with this clinical model.
+The key addition to the ISA model means that it is now possible to explicitly design and support ``longitudinal studies``, whereby study subjects are followed over a period of time, are assayed repeatedly and may also be treated with various interventions, one after the other.
+Treatments can also be defined as concomittant intervention, which is often the case in clinical context when deploying multidrug therapies.
+Therefore, in keeping with CDISC like representation, the ISA create model relies on objects such as ``Study Arm``, ``Study Cell``, ``Study Element`` which can be either of type ``Treatment`` or not.
+This component of the API allows users to define 3 plans:
+
+- a ``Treatment plan``, which defines the nature of the various interventions or treatment that will be applied to the study subject.
+- a ``sample collection plan``, which defines the nature of the specimens collected from study subjects over the course of the study, during specific sessions (known as ``VISITS`` in CDISC speak.
+- a data collection plan also known as the ``assay plan``, which will define the type of assays used for phenotyping subjects and samples.
+
+Figure X provides an overview of the ISA Study Design Elements. <TODO: insert figure>
 
 
 1. Creation of the first ISA Study Design Element, of type ``Non-Treatment``
@@ -41,13 +57,12 @@ Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-no
 
 which should return the following:
 
-
 .. code-block:: json
 
     >>> NonTreatment(type='screen', duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION',factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, term_accession='', comments=[]), comments=[]), value=0.0, unit=None))
 
 
-.. hint:: IMPORTANT: ISA ``Element`` **must** be assigned a type, which can one of {"screen","washout","follow-up","treatment"}.
+.. hint:: IMPORTANT: ISA ``Element`` **must** be assigned a type, which can one of {"screen", "run-in", "washout", "treatment", "follow-up"}.
 
 
 2. Creation of another ISA Study Design Element, of type ``Treatment``
@@ -70,7 +85,8 @@ which should return the following:
 
 
 2.1 defining the first treatment as a vector of ISA factor values:
-Under "ISA Study Design Create mode", a ``Study Design Element`` of type ``Treatment`` needs to be defined by a
+
+Under ``ISA Study Design Create mode``, a ``Study Design Element`` of type ``Treatment`` needs to be defined by a
 vector of ``Factors`` and their respective associated ``Factor Values``. This is done as follows:
 
 .. code-block:: python
@@ -168,8 +184,8 @@ which should return the following:
 -----------------------------------------------------------------------------------
 
 
-In this example, a single ``Element`` is hosted by a ``Cell``, which must be named. In more complex designs (e.g. study designs with assymetric arms),
-a ``Cell`` may contain more than one ``Element``, hence the list attribute.
+In this example, a single ``Element`` is hosted by a ``Cell``, which must be named. In more complex designs (e.g. study designs with asymmetric arms),
+a ``Cell`` may contain more than one ``Element``, hence the ``elements`` list attribute.
 
 .. code-block:: python
 
@@ -180,22 +196,33 @@ a ``Cell`` may contain more than one ``Element``, hence the list attribute.
     >>> st_cl5= StudyCell(name="st_cl5", elements=[nte3])
 
 
-7. Creation of an ISA Study Arm and setting the number of subjects associated to that unique sequence of ISA Cells.
+7. Creation of an ISA ``Study Arm`` and setting the number of subjects associated to that unique sequence of ISA Cells.
 -------------------------------------------------------------------------------------------------------------------
+
+Creating a ``Study Arm`` requires 3 basic inputs to begin with. One need to set the following 3 attributes:
+  i. study arm name: a ``string`` to provide a user friendly, easy to remember handle.
+ ii. study arm source_type: an ISA ``Characteristic`` object, when the ``category`` attribute is an ``OntologyAnnotation`` object.
+iii. study arm group_size: an ``integer`` to provide the number of the subjects fitting the source_type and assigned to the study arm.
 
 .. code-block:: python
 
+    >>> arm1 = StudyArm(name='Arm 1', group_size=2)
+
+    >>> # building the OntologyAnnotation objects for the Characteristic object needed to define source_type attribute
     >>> genotype_cat = OntologyAnnotation(term="genotype")
     >>> genotype_value1 = OntologyAnnotation(term="control - normal")
-    >>> genotype_value2 = OntologyAnnotation(term="mutant")
-
-    >>> arm1 = StudyArm(name='Arm 1',
-                group_size=2)
 
     >>> arm1.source_type=Characteristic(category=genotype_cat,
                                            value=genotype_value1)
 
     >>> print(arm1)
+
+which should return the following:
+
+
+.. code-block:: python
+
+
     >>>  "StudyArm(
                name=Arm 1,
                source_type=Characteristic(
@@ -328,6 +355,7 @@ Of course, the ``Sample Assay Plan`` for this new ``Cell`` could be different. I
    >>> arm1.add_item_to_arm_map(st_cl4, sap1)
    >>> arm1.add_item_to_arm_map(st_cl5, sap1)
 
+
 11. Creation of additional ISA Study Arms and setting the number of subjects associated to that unique sequence of ISA Cells.
 -----------------------------------------------------------------------------------------------------------------------------
 
@@ -356,10 +384,13 @@ Of course, the ``Sample Assay Plan`` for this new ``Cell`` could be different. I
    >>> # Adding a study arm to the study design object.
    >>> study_design_final.add_study_arm(arm1)
    >>> study_design_final.add_study_arm(arm2)
-   >>> study_finale = study_design_final.generate_isa_study()
-   >>> investigation1.studies.append(study_finale)
 
-Let's now serialize the ISA study design to JSON
+
+13. Let's now serialize the ISA study design to JSON:
+-----------------------------------------------------
+
+This is a very neat new feature of the ISA-API. It allows to save a ``Study Design`` as a JSON document, which can later be edited to create a new study.
+To serialize the ``Study Design`` to JSON, do the following:
 
 .. code-block:: python
 
@@ -369,4 +400,34 @@ Let's now serialize the ISA study design to JSON
 
        >>> f=json.dumps(study_design_final, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
-       >>> isatab.dump(investigation1, './')
+.. hint:: The ISA ``Study Design`` JSON is distinct from the ISA ``Investigation`` JSON document. The ISA ``Study Design`` JSON  is a 'frozen dry' version of an ISA document, boiled down to all the critical study design components
+which can be used to regenerate an ISA document from its fundemental properties. It is therefore a very effective to document experiments in a °°prospective manner**.
+
+
+14. Building the ISA objects thanks to the study design information: invoking ``generate_isa_study()`` function:
+---------------------------------------------------------------------------------------------------------------
+
+The step shows how to generate an ISA document from an ISA ``Study Design`` object.
+
+.. code-block:: python
+
+   >>> study_finale = study_design_final.generate_isa_study()
+   >>> investigation1.studies.append(study_finale)
+   >>> isatab.dump(investigation1, './')
+
+
+.. hint:: One can of course use a persisted  ISA ``Study Design`` document as input, reading it into memory and then invoking the ``generate_isa_study()`` function.
+
+
+.. code-block:: python
+
+   >>> study_design_from_file = json.loads(f)
+   >>> study_finale_from_file = study_design_from_file.generate_isa_study()
+   >>> investigation1.studies.append(study_finale_from_file)
+   >>> isatab.dump(investigation1, './')
+
+
+
+If you have any question about the ISA-API, get in touch with us via our `mailing list <isatools@googlegroups.com>`_ .
+
+Report feature requests, enhancement requests or bugs via our `issue tracker <https://github.com/ISA-tools/isa-api/issues>`_ .
