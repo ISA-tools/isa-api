@@ -50,7 +50,7 @@ This component of the API allows users to define 3 plans:
 - a data collection plan also known as the ``assay plan``, which will define the type of assays used for phenotyping subjects and samples.
 
 
-.. figure:: diagrams/ISA-Study-Design-Entities.cmap
+.. figure:: diagrams/ISA-Study-Design-Entities.jpg
     :width: 200px
     :align: center
     :height: 100px
@@ -58,6 +58,8 @@ This component of the API allows users to define 3 plans:
     :figclass: align-left
 
     Figure 1 provides an overview of the ISA Study Design Elements.
+
+
 
 1. Creation of the first ISA Study Design Element, of type ``Non-Treatment``
 ----------------------------------------------------------------------------
