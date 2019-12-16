@@ -51,13 +51,16 @@ This component of the API allows users to define 3 plans:
 
 
 .. figure:: ./diagrams/ISA-Study-Design-Entities.jpg
-    :width: 200px
-    :align: center
-    :height: 100px
+    :width: 500px
+    :align: left
+    :height: 500px
     :alt: alternate text
     :figclass: align-left
 
-    Figure 1 provides an overview of the ISA Study Design Elements.
+Figure 1 provides an overview of the ISA Study Design Elements.
+
+
+
 
 
 
@@ -414,8 +417,8 @@ To serialize the ``Study Design`` to JSON, do the following:
 
        >>> f=json.dumps(study_design_final, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
-.. note:: The ISA ``Study Design`` JSON is distinct from the ISA ``Investigation`` JSON document. The ISA ``Study Design`` JSON  is a 'frozen dry' version of an ISA document, boiled down to all the critical study design components
-which can be used to regenerate an ISA document from its fundemental properties. It is therefore a very effective to document experiments in a °°prospective manner**.
+.. note:: The ISA ``Study Design`` JSON is **distinct** from the ISA ``Investigation`` JSON document. The ISA ``Study Design`` JSON  is a 'dry frozen' version of an experiment / an ISA document, boiled down to all the critical study design components
+which can be used to regenerate an ISA document from its fundamental properties. It is therefore a very effective way to document experiments in a **prospective manner**.
 
 
 14. Building the ISA objects thanks to the study design information: invoking ``generate_isa_study()`` function:
@@ -430,7 +433,7 @@ The step shows how to generate an ISA document from an ISA ``Study Design`` obje
    >>> isatab.dump(investigation1, './')
 
 
-.. note:: One can of course use a persisted  ISA ``Study Design`` document as input, reading it into memory and then invoking the ``generate_isa_study()`` function.
+.. note:: One can, of course, use a persisted  ISA ``Study Design`` document as input, reading it into memory and then invoking the ``generate_isa_study()`` function.
 
 
 .. code-block:: python
