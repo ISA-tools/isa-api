@@ -14,6 +14,12 @@ The three main objects that you need to create ISA content are:
 
 .. Important:: As a pre-requisite to using ISA model classes, please make sure you have read and understood the :doc:`ISA Abstract Model </isamodel>` that the ISA formats are based on.
 
+
+If you have any question about the ISA-API, get in touch with us via our `mailing list <isatools@googlegroups.com>`_ .
+
+Report feature requests, enhancement requests or bugs via our `issue tracker <https://github.com/ISA-tools/isa-api/issues>`_ .
+
+
 Getting started
 ---------------
 

@@ -9,6 +9,11 @@ They are found in the ``isatools.create.models`` module.
 Take a look at the `isatools-notebooks <https://github.com/ISA-tools/isatools-notebooks>`_ GitHub repository for Jupyter Notebook examples of using the planning objects.
 
 
+If you have any question about the ISA-API, get in touch with us via our `mailing list <isatools@googlegroups.com>`_ .
+
+Report feature requests, enhancement requests or bugs via our `issue tracker <https://github.com/ISA-tools/isa-api/issues>`_ .
+
+
 We'll start as usual, by building an ``Investigation`` object, an ``Study`` object, and in this example. We'll also create ``Source`` and ``Sample`` materials associated with that ``Study`` object.
 
 .. code-block:: python
@@ -41,11 +46,18 @@ Therefore, in keeping with CDISC like representation, the ISA create model relie
 This component of the API allows users to define 3 plans:
 
 - a ``Treatment plan``, which defines the nature of the various interventions or treatment that will be applied to the study subject.
-- a ``sample collection plan``, which defines the nature of the specimens collected from study subjects over the course of the study, during specific sessions (known as ``VISITS`` in CDISC speak.
+- a ``sample collection plan``, which defines the nature of the specimens collected from study subjects over the course of the study, during specific sessions (known as ``VISITS`` in CDISC speak).
 - a data collection plan also known as the ``assay plan``, which will define the type of assays used for phenotyping subjects and samples.
 
-Figure X provides an overview of the ISA Study Design Elements. <TODO: insert figure>
 
+.. figure:: diagrams/ISA-Study-Design-Entities.cmap
+    :width: 200px
+    :align: center
+    :height: 100px
+    :alt: alternate text
+    :figclass: align-left
+
+    Figure 1 provides an overview of the ISA Study Design Elements.
 
 1. Creation of the first ISA Study Design Element, of type ``Non-Treatment``
 ----------------------------------------------------------------------------
@@ -62,7 +74,7 @@ which should return the following:
     >>> NonTreatment(type='screen', duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION',factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, term_accession='', comments=[]), comments=[]), value=0.0, unit=None))
 
 
-.. hint:: IMPORTANT: ISA ``Element`` **must** be assigned a type, which can one of {"screen", "run-in", "washout", "treatment", "follow-up"}.
+.. note:: IMPORTANT: ISA ``Element`` **must** be assigned a type, which can one of {"screen", "run-in", "washout", "treatment", "follow-up"}.
 
 
 2. Creation of another ISA Study Design Element, of type ``Treatment``
