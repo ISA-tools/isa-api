@@ -50,7 +50,7 @@ This component of the API allows users to define 3 plans:
 - a data collection plan also known as the ``assay plan``, which will define the type of assays used for phenotyping subjects and samples.
 
 
-.. figure:: diagrams/ISA-Study-Design-Entities.jpg
+.. figure:: ./diagrams/ISA-Study-Design-Entities.jpg
     :width: 200px
     :align: center
     :height: 100px
@@ -414,7 +414,7 @@ To serialize the ``Study Design`` to JSON, do the following:
 
        >>> f=json.dumps(study_design_final, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
-.. hint:: The ISA ``Study Design`` JSON is distinct from the ISA ``Investigation`` JSON document. The ISA ``Study Design`` JSON  is a 'frozen dry' version of an ISA document, boiled down to all the critical study design components
+.. note:: The ISA ``Study Design`` JSON is distinct from the ISA ``Investigation`` JSON document. The ISA ``Study Design`` JSON  is a 'frozen dry' version of an ISA document, boiled down to all the critical study design components
 which can be used to regenerate an ISA document from its fundemental properties. It is therefore a very effective to document experiments in a °°prospective manner**.
 
 
@@ -430,7 +430,7 @@ The step shows how to generate an ISA document from an ISA ``Study Design`` obje
    >>> isatab.dump(investigation1, './')
 
 
-.. hint:: One can of course use a persisted  ISA ``Study Design`` document as input, reading it into memory and then invoking the ``generate_isa_study()`` function.
+.. note:: One can of course use a persisted  ISA ``Study Design`` document as input, reading it into memory and then invoking the ``generate_isa_study()`` function.
 
 
 .. code-block:: python

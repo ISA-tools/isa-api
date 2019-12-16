@@ -58,7 +58,7 @@ Next, we start qualifying our ``Source``:
 
 
 
-.. hint:: IMPORTANT: ISA ``Characteristic`` attribute ``category`` **must** be an ``OntologyAnnotation`` object (while the ``value`` attribute is less constrained, taking either ``string`` or ``OntologyAnnotation`` objects), so **DON'T do** :
+.. note:: IMPORTANT: ISA ``Characteristic`` attribute ``category`` **must** be an ``OntologyAnnotation`` object (while the ``value`` attribute is less constrained, taking either ``string`` or ``OntologyAnnotation`` objects), so **DON'T do** :
 
 .. code-block:: python
 
@@ -123,7 +123,7 @@ But **DON'T DO**:
 If you are getting error when assigning values for those annotation types, do remember to check all these steps!
 
 
-.. hint:: IMPORTANT: ISA ``Unit`` **must** be described with ``OntologyAnnotation`` objects.
+.. note:: IMPORTANT: ISA ``Unit`` **must** be described with ``OntologyAnnotation`` objects.
 
 
 
