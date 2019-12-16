@@ -54,7 +54,7 @@ This component of the API allows users to define 3 plans:
     :width: 500px
     :align: left
     :height: 500px
-    :figclass: align-left
+    :alt: alternate text
 
     Figure 1 provides an overview of the ISA Study Design Elements.
 
