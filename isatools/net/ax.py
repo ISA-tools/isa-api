@@ -132,7 +132,7 @@ def get_isatab(arrayexpress_id, target_dir=None):
     """
     tmp_dir = tempfile.mkdtemp()
     try:
-        get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
+        tmp_dir = get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
         if target_dir is None:
             target_dir = tempfile.mkdtemp()
             log.info("Using directory '{}'".format(target_dir))
