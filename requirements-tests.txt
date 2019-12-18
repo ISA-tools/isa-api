@@ -14,7 +14,7 @@ jinja2==2.10.3
 deepdiff==4.0.8
 beautifulsoup4==4.8.1
 mzml2isa==1.0.2
-PyYAML==3.13
+PyYAML==5.2
 #-e git+http://github.com/ISA-tools/mzml2isa@de743e20f495bcb4a9d58cbac04e994b6c9744e5#egg=mzml2isa
 biopython==1.74
 progressbar2==3.47.0
