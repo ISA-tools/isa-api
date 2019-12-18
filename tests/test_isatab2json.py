@@ -15,7 +15,6 @@ def setUpModule():
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
 
-
 class TestIsaTab2Json(unittest.TestCase):
 
     def setUp(self):

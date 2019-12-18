@@ -17,13 +17,17 @@ import abc
 import logging
 import warnings
 import uuid
+from numbers import Number
 
+from collections.abc import Iterable
 import networkx as nx
+
 
 from isatools.errors import ISAModelAttributeError
 
 
 log = logging.getLogger('isatools')
+log.setLevel(logging.DEBUG)
 
 
 def _build_assay_graph(process_sequence=None):
@@ -33,22 +37,36 @@ def _build_assay_graph(process_sequence=None):
     if process_sequence is None:
         return g
     for process in process_sequence:
-        if process.next_process is not None or len(
-                process.outputs) > 0:
+        # log.debug('Current process is: {0}'.format(process.id))
+        # log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'id', None)))
+        # log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'id', None)))
+        # log.debug('Inputs for current process are: {0}'.format(
+        #    [getattr(input_, 'id', None) for input_ in process.inputs]
+        # ))
+        # log.debug('Outputs for current process are: {0}'.format(
+        #     [getattr(output, 'id', None) for output in process.outputs]
+        # ))
+        if process.next_process is not None or len(process.outputs) > 0:
             if len([n for n in process.outputs if
                     not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
                     g.add_edge(process, output)
+                    log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
             else:
                 g.add_edge(process, process.next_process)
+                log.debug('linking process {1} to prev_process {0}'.format(
+                    getattr(process.next_process, 'id', None), process.id))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
                     g.add_edge(input_, process)
+                    log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
             else:
                 g.add_edge(process.prev_process, process)
+                log.debug('linking prev_process {0} to process {1}'.format(
+                    getattr(process.prev_process, 'id', None), process.id))
     return g
 
 
@@ -1523,6 +1541,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def graph(self):
         """:obj:`networkx.DiGraph` A graph representation of the study's
         process sequence"""
+        log.info('Building graph for object: {0}'.format(self))
         if len(self.process_sequence) > 0:
             return _build_assay_graph(self.process_sequence)
         else:
@@ -1644,6 +1663,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @protocols.setter
     def protocols(self, val):
+        """
         if val is not None and hasattr(val, '__iter__'):
             if val == [] or all(isinstance(x, Protocol) for x in val):
                 self.__protocols = list(val)
@@ -1651,6 +1671,16 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             raise ISAModelAttributeError(
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
+        """
+        if not isinstance(val, Iterable) or not all(isinstance(el, Protocol) for el in val):
+            raise AttributeError('The object supplied is not an iterable of Protocol objects')
+        self.__protocols = [protocol for protocol in val]
+
+    def add_protocol(self, protocol):
+        if not isinstance(protocol, Protocol):
+            raise TypeError('The object supplied is not an instance of Protocol')
+        if protocol not in self.protocols:
+            self.__protocols.append(protocol)
 
     @staticmethod
     def __get_default_protocol(protocol_type):
@@ -1965,15 +1995,13 @@ class Assay(Commentable, StudyAssayMixin, object):
             process_sequence=process_sequence,
             characteristic_categories=characteristic_categories, units=units)
 
-        if measurement_type is None:
-            self.__measurement_type = OntologyAnnotation()
-        else:
-            self.__measurement_type = measurement_type
+        self.__measurement_type = OntologyAnnotation()
+        if measurement_type:
+            self.measurement_type = measurement_type
 
-        if technology_type is None:
-            self.__technology_type = OntologyAnnotation()
-        else:
-            self.__technology_type = technology_type
+        self.__technology_type = OntologyAnnotation()
+        if technology_type:
+            self.technology_type = technology_type
 
         self.__technology_platform = technology_platform
 
@@ -1990,7 +2018,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @measurement_type.setter
     def measurement_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'Assay.measurement_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
@@ -2005,7 +2033,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @technology_type.setter
     def technology_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'Assay.technology_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
@@ -2069,10 +2097,11 @@ class Assay(Commentable, StudyAssayMixin, object):
     comments={num_comments} Comment objects
     units={num_units} Unit objects
 )""".format(assay=self,
-            measurement_type=self.measurement_type.term if
-            self.measurement_type else '',
-            technology_type=self.technology_type.term if
-            self.technology_type else '', num_datafiles=len(self.data_files),
+            measurement_type=self.measurement_type.term if isinstance(self.measurement_type, OntologyAnnotation)
+            else self.measurement_type if isinstance(self.measurement_type, str) else '',
+            technology_type=self.technology_type.term if isinstance(self.technology_type, OntologyAnnotation)
+            else self.technology_type if isinstance(self.technology_type, str) else '',
+            num_datafiles=len(self.data_files),
             num_samples=len(self.samples),
             num_processes=len(self.process_sequence),
             num_other_material=len(self.other_material),
@@ -2126,25 +2155,27 @@ class Protocol(Commentable):
 
         self.id = id_
         self.__name = name
+        self.__protocol_type = None
+        self.__parameters = None
+        self.__components = None
 
         if protocol_type is None:
-            self.__protocol_type = OntologyAnnotation()
+            self.protocol_type = OntologyAnnotation()
         else:
-            self.__protocol_type = protocol_type
+            self.protocol_type = protocol_type
 
         self.__description = description
         self.__uri = uri
         self.__version = version
 
-        if parameters is None:
-            self.__parameters = []
-        else:
-            self.__parameters = parameters
+        self.__parameters = []
+        self.__components = []
 
-        if components is None:
-            self.__components = []
-        else:
-            self.__components = components
+        if parameters is not None:
+            self.parameters = parameters
+
+        if components is not None:
+            self.components = components
 
     @property
     def name(self):
@@ -2168,10 +2199,12 @@ class Protocol(Commentable):
 
     @protocol_type.setter
     def protocol_type(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Protocol.protocol_type must be a OntologyAnnotation or '
+                'Protocol.protocol_type must be a OntologyAnnotation, a string or '
                 'None; got {0}:{1}'.format(val, type(val)))
+        if isinstance(val, str):
+            self.__protocol_type = OntologyAnnotation(term=val)
         else:
             self.__protocol_type = val
 
@@ -2225,23 +2258,24 @@ class Protocol(Commentable):
 
     @parameters.setter
     def parameters(self, val):
-        if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, ProtocolParameter) for x in val):
-                self.__parameters = list(val)
-        else:
-            raise ISAModelAttributeError(
-                'Protocol.parameters must be iterable containing '
-                'ProtocolParameters')
+        if val is None or not isinstance(val, Iterable):
+            raise ISAModelAttributeError('Protocol.parameters must be an iterable '
+                                         'containing ProtocolParameters')
+        for el in val:
+            self.add_param(el)
+
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
             pass
         else:
             if isinstance(parameter_name, str):
-                self.parameters.append(ProtocolParameter(
+                self.__parameters.append(ProtocolParameter(
                     parameter_name=OntologyAnnotation(term=parameter_name)))
+            elif isinstance(parameter_name, ProtocolParameter):
+                self.__parameters.append(parameter_name)
             else:
-                raise ISAModelAttributeError('Parameter name must be a string')
+                raise ISAModelAttributeError('Parameter name must be either a string or a ProtocolParameter')
 
     def get_param(self, parameter_name):
         param = None
@@ -2250,6 +2284,9 @@ class Protocol(Commentable):
                          x.parameter_name.term == parameter_name)
         except StopIteration:
             pass
+        except AttributeError as e:
+            print('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
+            # raise AttributeError(e)
         return param
 
     @property
@@ -2290,8 +2327,8 @@ class Protocol(Commentable):
 )""".format(protocol=self, protocol_type=self.protocol_type.term
             if self.protocol_type else '',
             num_parameters=len(self.parameters),
-            num_components=len(self.components),
-            num_comments=len(self.comments))
+            num_components=len(self.components) if self.components else 0,
+            num_comments=len(self.comments) if self.comments else 0)
 
     def __hash__(self):
         return hash(repr(self))
@@ -2320,13 +2357,9 @@ class ProtocolParameter(Commentable):
 
     def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
-
         self.id = id_
-
-        if parameter_name is None:
-            self.__parameter_name = OntologyAnnotation()
-        else:
-            self.__parameter_name = parameter_name
+        self.__parameter_name = None
+        self.parameter_name = parameter_name
 
     @property
     def parameter_name(self):
@@ -2336,11 +2369,10 @@ class ProtocolParameter(Commentable):
 
     @parameter_name.setter
     def parameter_name(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'ProtocolParameter.parameter_name must be a '
-                'OntologyAnnotation or None; got {0}:{1}'.format(
-                    val, type(val)))
+                'ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation '
+                'or None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__parameter_name = val
 
@@ -2384,9 +2416,14 @@ class ParameterValue(Commentable):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
 
-        self.__category = category
-        self.__value = value
-        self.__unit = unit
+        self.__category = None
+        self.__value = None
+        self.__unit = None
+        self.category = category
+        if not isinstance(value, Number) and unit:
+            raise ValueError("ParameterValue value mus be quantitative (i.e. numeric) if a unit is supplied")
+        self.value = value
+        self.unit = unit
 
     @property
     def category(self):
@@ -2449,7 +2486,8 @@ class ParameterValue(Commentable):
 )""".format(category=self.category.parameter_name.term
             if self.category else '',
             value=self.value.term if isinstance(
-                self.value, OntologyAnnotation) else repr(self.value),
+                self.value, OntologyAnnotation
+            ) else repr(self.value),
             unit=self.unit.term if self.unit else '',
             num_comments=len(self.comments))
 
@@ -2647,19 +2685,15 @@ class Characteristic(Commentable):
         """
 
     def __init__(self, category=None, value=None, unit=None, comments=None):
+
         super().__init__(comments)
+        self.__category = None
+        self.__value = None
+        self.__unit = None
 
-        if category is None:
-            self.__category = OntologyAnnotation()
-        else:
-            self.__category = category
-
-        if value is None:
-            self.__value = OntologyAnnotation()
-        else:
-            self.__value = value
-
-        self.__unit = unit
+        self.category = category
+        self.value = value
+        self.unit = unit
 
     @property
     def category(self):
@@ -2669,9 +2703,9 @@ class Characteristic(Commentable):
 
     @category.setter
     def category(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Characteristic.category must be a OntologyAnnotation,'
+                'Characteristic.category must be either a string ot an OntologyAnnotation,'
                 ' or None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__category = val
@@ -2700,9 +2734,9 @@ class Characteristic(Commentable):
 
     @unit.setter
     def unit(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise ISAModelAttributeError(
-                'Characteristic.unit must be a OntologyAnnotation, or None; '
+                'Characteristic.unit must be either a string ot an OntologyAnnotation, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
             self.__unit = val
@@ -2721,11 +2755,15 @@ class Characteristic(Commentable):
     unit={unit}
     comments={num_comments} Comment objects
 )""".format(characteristic=self,
-            category=self.category.term if self.category else '',
-            value=self.value.term if isinstance(
-               self.value, OntologyAnnotation) else self.value,
-            unit=self.unit.term if self.unit else '',
-            num_comments=len(self.comments))
+           category=self.category.term if isinstance(
+               self.category, OntologyAnnotation
+           ) else self.category if self.category is not None else '',
+           value=self.value.term if isinstance(
+               self.value, OntologyAnnotation) else self.value if self.value is not None else '',
+           unit=self.unit.term if isinstance(
+               self.unit, OntologyAnnotation
+           ) else self.unit if self.unit is not None else '',
+           num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3034,15 +3072,18 @@ class FactorValue(Commentable):
     Attributes:
         factor_name: Reference to an instance of a relevant StudyFactor.
         value: The value of the factor at hand.
-        unit: If numeric, the unit qualifier for the value.
+        unit: str/OntologyAnnotation. If numeric, the unit qualifier for the value. (?? what does this mean ??)
         comments: Comments associated with instances of this class.
     """
 
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.__factor_name = factor_name
-        self.__value = value
-        self.__unit = unit
+        self.__factor_name = None
+        self.__value = None
+        self.__unit = None
+        self.factor_name = factor_name
+        self.value = value
+        self.unit = unit
 
     @property
     def factor_name(self):
@@ -3083,9 +3124,10 @@ class FactorValue(Commentable):
 
     @unit.setter
     def unit(self, val):
-        if val is not None and not isinstance(val, OntologyAnnotation):
+        # FIXME can this be a string as well?
+        if val is not None and not isinstance(val, (OntologyAnnotation, str)):
             raise ISAModelAttributeError(
-                'FactorValue.unit must be a OntologyAnnotation, or None; '
+                'FactorValue.unit must be an OntologyAnnotation, o string, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
             self.__unit = val
@@ -3148,7 +3190,9 @@ class Process(Commentable):
         super().__init__(comments)
 
         self.id = id_
-        self.__name = name
+        self.__name = None
+        if name:
+            self.name = name
 
         if executes_protocol is None:
             self.__executes_protocol = Protocol()
@@ -3310,6 +3354,14 @@ class Process(Commentable):
         else:
             self.__next_process = val
 
+    def __repr__(self):
+        return '{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, ' \
+               'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}' \
+               ')'.format(self.__class__.__module__, self.__class__.__name__, self)
+
+    def __str__(self):
+        return """{0}(name={1.name})""".format(self.__class__.__name__, self)
+
     # def __repr__(self):
     #     return 'Process(name="{0.name}", ' \
     #            'executes_protocol={0.executes_protocol}, ' \
@@ -3321,6 +3373,7 @@ class Process(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Process) \
+            and self.id == other.id \
             and self.name == other.name \
             and self.executes_protocol == other.executes_protocol \
             and self.date == other.date \

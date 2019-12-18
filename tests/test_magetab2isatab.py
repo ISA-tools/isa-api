@@ -1,11 +1,13 @@
 import unittest
 import os
 import shutil
+from unittest.mock import patch
 from isatools.convert import magetab2isatab
 from isatools.tests import utils
 import tempfile
 from isatools.net import ax as AX
 from isatools import isatab
+from ddt import ddt, data
 
 
 def setUpModule():
@@ -16,6 +18,7 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
 
 
+@ddt
 class TestMageTab2IsaTab(unittest.TestCase):
 
     def setUp(self):
@@ -45,74 +48,30 @@ class TestMageTab2IsaTab(unittest.TestCase):
             isatab.validate(i_fp)
 
     """Tests on datasets suggest from prs"""
-
-    def test_get_experiment_as_isatab_mtab_584(self):
-        AX.get_isatab('E-MTAB-584', self._tmp_dir)
+    @patch('isatools.net.ax.get')
+    @data('E-MTAB-20', 'E-MTAB-584', 'E-MTAB-621', 'E-MTAB-1073', 'E-MTAB-1443', 'E-MTAB-1653', 'E-MTAB-1677',
+          'E-MTAB-1963', 'E-MTAB-2143', 'E-MTAB-3336', 'E-MTAB-3624', 'E-MTAB-4649', 'E-MTAB-5171')
+    def test_get_experiment_as_isatab_mtab(self, value, mock_ax_get):
+        src = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', value)
+        )
+        dest = tempfile.mkdtemp()
+        target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
+        mock_ax_get.return_value = target
+        AX.get_isatab(value, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1073(self):
-        AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_4649(self):
-        AX.get_isatab('E-MTAB-4649', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_1936(self):  # splits three assays
-        AX.get_isatab('E-MTAB-1963', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_621(self):
-        AX.get_isatab('E-MTAB-621', self._tmp_dir)  # gets E-MTAB-621 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_3624(self):
-        AX.get_isatab('E-MTAB-3624', self._tmp_dir)  # gets E-MTAB-3624 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_20(self):
-        AX.get_isatab('E-MTAB-20', self._tmp_dir)  # gets E-MTAB-20 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_1443(self):
-        AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_3336(self):
-        AX.get_isatab('E-MTAB-3336', self._tmp_dir)  # gets E-MTAB-3336 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_1677(self):
-        AX.get_isatab('E-MTAB-1677', self._tmp_dir)  # gets E-MTAB-1677 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_1653(self):
-        AX.get_isatab('E-MTAB-1653', self._tmp_dir)  # gets E-MTAB-1653 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_2143(self):
-        AX.get_isatab('E-MTAB-2143', self._tmp_dir)  # gets E-MTAB-2143 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_5171(self):
-        AX.get_isatab('E-MTAB-5171', self._tmp_dir)  # gets E-MTAB-5171 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_3954 (self):  # Tests assay splitting
-        AX.get_isatab('E-MTAB-3954', self._tmp_dir)
+    @patch('isatools.net.ax.get')
+    def test_get_experiment_as_isatab_mtab_3954(self, mock_ax_get):  # Tests assay splitting
+        value = 'E-MTAB-3954'
+        src = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', value)
+        )
+        dest = tempfile.mkdtemp()
+        target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
+        mock_ax_get.return_value = target
+        AX.get_isatab(value, self._tmp_dir)
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MTAB-3954_study.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MTAB-3954_assay-ChIP-Seq.txt')))

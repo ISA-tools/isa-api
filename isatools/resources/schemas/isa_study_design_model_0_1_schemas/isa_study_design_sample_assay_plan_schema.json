@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA study design sample assay plan schema",
+    "name": "ISA study design sample assay plan schema",
+    "description": "JSON-schema declaring a sample assay plan and its value in the ISA study design model",
+    "type": "object",
+    "properties": {
+    
+        "@id": { "type": "string", "format": "uri" },
+        
+        "name" : { "type":"string"},
+        
+        "sample_plan": {
+            "type": "array",
+            "items": {
+                 "$ref": "isa_study_design_sample_plan_schema.json#"
+            }
+        },
+        
+        "sample_qc_plan" : {
+            "type": "array",
+            "items": {
+                 "$ref": "isa_study_design_qc_plan_schema.json#"
+            }
+        },
+        
+        "assay_plan": {
+            "type": "array",
+             "items": {
+                 "$ref": "isa_study_design_assay_plan_schema.json#"
+            }
+        },          
+   
+        "assay_types": { 
+            "type":"array",
+             "items": {
+                 "$ref": "isa_study_design_assay_type_schema.json#"
+            }
+        },
+
+        "sample_types":{
+                       "type": "array",
+                       "items": {
+                            "type" :"string"
+                    }
+        }
+        
+      }
+}

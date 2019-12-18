@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA study design sample plan schema",
+    "name": "ISA study design sample plan schema",
+    "description": "JSON-schema representing an ISA study design sample plan in the ISA create model",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "sample_type":{
+                    "type":"string",
+                    "min" :"1"
+        },
+        "sampling_size": {
+                    "type": "integer"
+        } 
+    },
+    "additionalProperties": false
+}

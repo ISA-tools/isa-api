@@ -20,6 +20,7 @@ from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
 from isatools.isatab import IsaTabDataFrame
 
+
 class TestMtblsIO(unittest.TestCase):
 
     def setUp(self):
@@ -76,34 +77,58 @@ class TestMtblsIO(unittest.TestCase):
     #     self.assertEqual(len(results), 8)
     #     self.assertEqual(len(results[0]['data_files']), 1)
 
-    def test_get_datafiles_multiple_factors(self):
+    @patch('isatools.net.mtbls.get')
+    def test_get_datafiles_multiple_factors(self, mock_mtbls_get):
+        value = 'MTBLS1'
+        src = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'mtbls', value)
+        )
+        targets = []
+        for i in range(3):
+            dest = tempfile.mkdtemp()
+            targets.append(shutil.copytree(src, os.path.abspath(os.path.join(dest, value))))
+        it = iter(targets)
+        mock_mtbls_get.return_value = next(it)
         factor_selection = {"Gender": "Male",
                             "Metabolic syndrome": "Control Group"}
-        results = MTBLS.get_data_files('MTBLS1', factor_selection)
+        results = MTBLS.get_data_files(value, factor_selection)
         self.assertEqual(len(results), 56)
         self.assertEqual(len(results[0]['data_files']), 1)
-        self.assertLess(
-            len(
-                MTBLS.get_data_files('MTBLS1', {
-                    "Gender": "Male",
-                    "Metabolic syndrome": "Control Group"
-                })
-            ),
-            len(
-                MTBLS.get_data_files('MTBLS1', {
-                    "Gender": "Male"
-                })
-            )
-        )
+        mock_mtbls_get.return_value = next(it)
+        results_0 = MTBLS.get_data_files(value, {
+            "Gender": "Male",
+            "Metabolic syndrome": "Control Group"
+        })
+        mock_mtbls_get.return_value = next(it)
+        results_1 = MTBLS.get_data_files(value, {
+            "Gender": "Male"
+        })
+        self.assertLess(len(results_0), len(results_1))
 
-    def test_get_factors_summary(self):  # Test for issue #221
-        factors_summary = MTBLS.get_factors_summary('MTBLS26')
+    @patch('isatools.net.mtbls.get')
+    def test_get_factors_summary(self, mock_mtbls_get):  # Test for issue #221
+        value = 'MTBLS26'
+        src = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'mtbls', value)
+        )
+        dest = tempfile.mkdtemp()
+        target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
+        mock_mtbls_get.return_value = target
+        factors_summary = MTBLS.get_factors_summary(value)
         self.assertIsInstance(factors_summary, list)
         self.assertEqual(len(factors_summary), 18)
 
-    def test_get_data_for_sample(self):
+    @patch('isatools.net.mtbls.get')
+    def test_get_data_for_sample(self, mock_mtbls_get):
+        value = 'MTBLS108'
+        src = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'mtbls', value)
+        )
+        dest = tempfile.mkdtemp()
+        target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
+        mock_mtbls_get.return_value = target
         hits = MTBLS.get_data_for_sample(
-            'MTBLS108', sample_name='Lut_C_223h')
+            value, sample_name='Lut_C_223h')
         self.assertEqual(len(hits), 2)
         self.assertIn(
             'm_study_p_c_metabolite_profiling_mass_spectrometry_v2_maf.tsv',

@@ -311,6 +311,7 @@ def load(fp):
                         unit = units_dict[characteristic_json["unit"]["@id"]]
                     except KeyError:
                         unit = None
+                        # unit = characteristic_json.get('unit', None)
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
@@ -334,6 +335,7 @@ def load(fp):
                         unit = units_dict[factor_value_json["unit"]["@id"]]
                     except KeyError:
                         unit = None
+                        # unit = factor_value_json.get("unit", None)
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in factor value")
                 factor_value.value = value
@@ -1567,7 +1569,8 @@ class ISAJSONEncoder(JSONEncoder):
                         "@id": id_gen(o),
                         "annotationValue": o.term,
                         "termAccession": o.term_accession,
-                        "termSource": o.term_source.name if o.term_source else None
+                        "termSource": o.term_source.name if o.term_source else None,
+                        "comments": get_comments(o.comments)
                     }
                 )
             else:

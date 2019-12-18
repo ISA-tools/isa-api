@@ -12,7 +12,8 @@ import logging
 import os
 import shutil
 import tempfile
-
+import traceback
+from pathlib import Path
 from isatools.convert import magetab2isatab, magetab2json
 
 
@@ -131,14 +132,21 @@ def get_isatab(arrayexpress_id, target_dir=None):
     """
     tmp_dir = tempfile.mkdtemp()
     try:
-        get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
+        tmp_dir = get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
         if target_dir is None:
             target_dir = tempfile.mkdtemp()
             log.info("Using directory '{}'".format(target_dir))
+        fp = Path(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id)))
+        if fp.is_file():
+            with fp.open('rb') as f:
+                log.info("File {} content: {}".format(fp.absolute(), f.read()))
+        else:
+            log.critical("File {} does not exist!!".format(fp.absolute()))
         magetab2isatab.convert(os.path.join(tmp_dir, "{}.idf.txt".format(
             arrayexpress_id)), output_path=target_dir)
     except Exception as e:
         log.fatal("Something went wrong: {}".format(e))
+        log.fatal(traceback.format_exc())
     finally:
         shutil.rmtree(tmp_dir)
         return target_dir

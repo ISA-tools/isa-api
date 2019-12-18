@@ -1405,8 +1405,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                            node.parameter_values))
                     oname_label = None
                     if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term \
-                                == "nucleic acid sequencing":
+                        if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
                             oname_label = "Assay Name"
                         elif node.executes_protocol.protocol_type.term \
                                 == "data collection":
@@ -1570,7 +1569,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             DF = pd.DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)
             DF = DF[columns]  # reorder columns
-            DF = DF.sort_values(by=DF.columns[0], ascending=True)
+            try:
+                DF = DF.sort_values(by=DF.columns[0], ascending=True)
+            except ValueError as e:
+                log.critical('Error thrown: column labels are: {}'.format(DF.columns))
+                log.critical('Error thrown: data is: {}'.format(DF))
+                raise e
             # arbitrary sort on column 0
 
             for dup_item in set([x for x in columns if columns.count(x) > 1]):
@@ -1609,13 +1613,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 elif "." in col:
                     columns[i] = col[:col.rindex(".")]
 
-            log.info("Rendered {} paths".format(len(DF.index)))
+            log.debug("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
                 if len(DF.index) > len(DF.drop_duplicates().index):
                     log.debug("Dropping duplicates...")
                     DF = DF.drop_duplicates()
 
-            log.info("Writing {} rows".format(len(DF.index)))
+            log.debug("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
             DF = DF.replace('', np.nan)
@@ -1952,20 +1956,20 @@ def load_investigation(fp):
 
     # Read in investigation file into DataFrames first
     df_dict = read_investigation_file(fp)
-    log.info("Loading ONTOLOGY SOURCE REFERENCE section")
+    log.debug("Loading ONTOLOGY SOURCE REFERENCE section")
     labels_expected = {'Term Source Name', 'Term Source File',
                        'Term Source Version', 'Term Source Description'}
     check_labels('ONTOLOGY SOURCE REFERENCE',
                  labels_expected, df_dict['ontology_sources'])
 
-    log.info("Loading INVESTIGATION section")
+    log.debug("Loading INVESTIGATION section")
     labels_expected = {'Investigation Identifier', 'Investigation Title',
                        'Investigation Description',
                        'Investigation Submission Date',
                        'Investigation Public Release Date'}
     check_labels('INVESTIGATION', labels_expected, df_dict['investigation'])
 
-    log.info("Loading INVESTIGATION PUBLICATIONS section")
+    log.debug("Loading INVESTIGATION PUBLICATIONS section")
     labels_expected = {
         'Investigation PubMed ID',
         'Investigation Publication DOI',
@@ -1977,7 +1981,7 @@ def load_investigation(fp):
     check_labels('INVESTIGATION PUBLICATIONS', labels_expected,
                  df_dict['i_publications'])
 
-    log.info("Loading INVESTIGATION CONTACTS section")
+    log.debug("Loading INVESTIGATION CONTACTS section")
     labels_expected = {'Investigation Person Last Name',
                        'Investigation Person First Name',
                        'Investigation Person Mid Initials',
@@ -1993,7 +1997,7 @@ def load_investigation(fp):
     check_labels('INVESTIGATION CONTACTS', labels_expected,
                  df_dict['i_contacts'])
     for i in range(0, len(df_dict['studies'])):
-        log.info("Loading STUDY section")
+        log.debug("Loading STUDY section")
         labels_expected = {'Study Identifier', 'Study Title',
                            'Study Description',
                            'Study Submission Date',
@@ -2001,14 +2005,14 @@ def load_investigation(fp):
                            'Study File Name'}
         check_labels('STUDY', labels_expected, df_dict['studies'][i])
 
-        log.info("Loading STUDY DESIGN DESCRIPTORS section")
+        log.debug("Loading STUDY DESIGN DESCRIPTORS section")
         labels_expected = {'Study Design Type',
                            'Study Design Type Term Accession Number',
                            'Study Design Type Term Source REF'}
         check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
                      df_dict['s_design_descriptors'][i])
 
-        log.info("Loading STUDY PUBLICATIONS section")
+        log.debug("Loading STUDY PUBLICATIONS section")
         labels_expected = {'Study PubMed ID', 'Study Publication DOI',
                            'Study Publication Author List',
                            'Study Publication Title',
@@ -2018,13 +2022,13 @@ def load_investigation(fp):
         check_labels('STUDY PUBLICATIONS', labels_expected,
                      df_dict['s_publications'][i])
 
-        log.info("Loading STUDY FACTORS section")
+        log.debug("Loading STUDY FACTORS section")
         labels_expected = {'Study Factor Name', 'Study Factor Type',
                            'Study Factor Type Term Accession Number',
                            'Study Factor Type Term Source REF'}
         check_labels('STUDY FACTORS', labels_expected, df_dict['s_factors'][i])
 
-        log.info("Loading STUDY ASSAYS section")
+        log.debug("Loading STUDY ASSAYS section")
         labels_expected = {
             'Study Assay Measurement Type',
             'Study Assay Measurement Type Term Accession Number',
@@ -2036,7 +2040,7 @@ def load_investigation(fp):
             'Study Assay File Name'}
         check_labels('STUDY ASSAYS', labels_expected, df_dict['s_assays'][i])
 
-        log.info("Loading STUDY PROTOCOLS section")
+        log.debug("Loading STUDY PROTOCOLS section")
         labels_expected = {
             'Study Protocol Name', 'Study Protocol Type',
             'Study Protocol Type Term Accession Number',
@@ -2053,7 +2057,7 @@ def load_investigation(fp):
         check_labels('STUDY PROTOCOLS', labels_expected,
                      df_dict['s_protocols'][i])
 
-        log.info("Loading STUDY CONTACTS section")
+        log.debug("Loading STUDY CONTACTS section")
         labels_expected = {
             'Study Person Last Name', 'Study Person First Name',
             'Study Person Mid Initials', 'Study Person Email',
@@ -2713,8 +2717,8 @@ def load_table_checks(fp):
                         "(E) Unexpected column heading following {} column. "
                         "Found {} at offset {}".format(prop_name, col, x + 1))
         else:
-            log.info("Need to implement a rule for... " + prop_name)
-            log.info(object_columns)
+            log.debug("Need to implement a rule for... " + prop_name)
+            log.debug(object_columns)
     return df
 
 
@@ -3230,7 +3234,7 @@ def load_config(config_dir):
             config_dir))
     else:
         for k in configs.keys():
-            log.info("Loaded table configuration '{}' for measurement and "
+            log.debug("Loaded table configuration '{}' for measurement and "
                      "technology {}".format(
                          str(configs[k].get_isatab_configuration()
                              [0].table_name),
@@ -3592,7 +3596,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                         dir_context, study_filename)) as s_fp:
                     df = load_table(s_fp)
                     config = configs[('[sample]', '')]
-                    log.info("Checking study file {} against default study "
+                    log.debug("Checking study file {} against default study "
                              "table configuration...".format(study_filename))
                     check_assay_table_with_config(
                         df, config, study_filename, protocol_names_and_types)
@@ -3614,7 +3618,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                         lowered_mt = measurement_type.lower()
                         lowered_tt = technology_type.lower()
                         config = configs[(lowered_mt, lowered_tt)]
-                        log.info("Checking assay file {} against default "
+                        log.debug("Checking assay file {} against default "
                                  "table configuration ({}, {})...".format(
                                      assay_filename, measurement_type,
                                      technology_type))
@@ -4120,7 +4124,7 @@ def get_num_study_groups(study_sample_table, study_filename):
         num_study_groups = len(
             study_sample_table[factor_columns].drop_duplicates())
     else:
-        log.info("No study factors found in {}".format(study_filename))
+        log.debug("No study factors found in {}".format(study_filename))
     return num_study_groups
 
 
@@ -4134,7 +4138,7 @@ def check_study_groups(table, filename, study_group_size_in_comment):
     not
     """
     num_study_groups = get_num_study_groups(table, filename)
-    log.info('Found {} study groups in {}'.format(
+    log.debug('Found {} study groups in {}'.format(
         num_study_groups, filename))
     validator_info.append({
         'message': 'Found {} study groups in {}'.format(
@@ -4181,7 +4185,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
             logging.ERROR, logging.CRITICAL):
         log.setLevel(log_level)
-    log.info("ISA tab Validator from ISA tools API v0.6")
+    log.debug("ISA tab Validator from ISA tools API v0.6")
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     log.addHandler(handler)
@@ -4787,8 +4791,9 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
                     row['Study Design Type'],
                     row['Study Design Type Term Accession Number'],
                     row['Study Design Type Term Source REF'])
-                design_descriptor.comments = get_comments_row(
+                these_comments = get_comments_row(
                     df_dict['s_design_descriptors'][i].columns, row)
+                design_descriptor.comments = these_comments
                 study.design_descriptors.append(design_descriptor)
 
             for _, row in df_dict['s_factors'][i].iterrows():
