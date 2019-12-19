@@ -16,7 +16,7 @@ script:
 #- python -m unittest tests.test_ax tests.test_magetab2isatab
 #- python -m unittest discover tests
 #- travis_wait 30 tox -r
-- nosetests --with-coverage --cover-package=isatools
+- coverage run -m unittest discover
 - coverage report -m
 branches:
   only:
