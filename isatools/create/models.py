@@ -1657,8 +1657,19 @@ class SampleAndAssayPlanDecoder(object):
 
     @staticmethod
     def loads_parameter_value(pv_dict):
-        return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
-                              unit=pv_dict.get('unit', None))
+        char_decoder = CharacteristicDecoder()
+        pv = ParameterValue(
+            category=ProtocolParameter(
+                parameter_name=char_decoder.loads_ontology_annotation(pv_dict["name"])
+                if isinstance(pv_dict["name"], dict) else pv_dict["name"]
+            ),
+            value=char_decoder.loads_ontology_annotation(pv_dict["value"]) if isinstance(
+                pv_dict["value"], dict) else pv_dict['value']
+        )
+        if 'unit' in pv_dict:
+            pv.unit = char_decoder.loads_ontology_annotation(pv_dict["unit"]) if isinstance(
+                pv_dict["unit"], dict) else pv_dict['unit']
+        return pv
 
     @staticmethod
     def loads_protocol_type(pt_dict):

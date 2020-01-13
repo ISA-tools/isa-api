@@ -518,6 +518,19 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
     def test_encode_sample_from_dictionary(self):   # TODO
         pass
 
+    def test_decode_parameter_value_from_dictionary(self):
+        pv_dict = {
+            'name': {'term': 'instrument'},
+            'unit': None,
+            'value': {'term': 'Beckon Dickison XYZ'}
+        }
+        decoder = SampleAndAssayPlanDecoder()
+        pv = decoder.loads_parameter_value(pv_dict)
+        self.assertIsInstance(pv.category.parameter_name, OntologyAnnotation)
+        self.assertEquals(pv.category.parameter_name.term, 'instrument')
+        self.assertIsInstance(pv.value, OntologyAnnotation)
+        self.assertEquals(pv.value.term, 'Beckon Dickison XYZ')
+
     def test_decode_dna_rna_extraction_plan(self):
         decoder = SampleAndAssayPlanDecoder()
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
