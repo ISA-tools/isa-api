@@ -94,7 +94,7 @@ STUDY_CELL = 'study cell'
 
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yaml')) as yaml_file:
-    yaml_config = yaml.load(yaml_file)
+    yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
 
 DEFAULT_SOURCE_TYPE = Characteristic(
@@ -108,6 +108,12 @@ DEFAULT_SOURCE_TYPE = Characteristic(
         term_source=default_ontology_source_reference,
         term_accession='http://purl.obolibrary.org/obo/NCIT_C14225'
     )
+)
+
+DEFAULT_UNIT_OF_TIME = OntologyAnnotation(
+    term='second',
+    term_source=default_ontology_source_reference,
+    term_accession='http://purl.obolibrary.org/obo/NCIT_C42535'
 )
 
 ZFILL_WIDTH = 3
@@ -180,18 +186,22 @@ class Element(ABC):
 
 
 class NonTreatment(Element):
+    MISSING_UNIT_ERROR_MESSAGE = 'duration_unit must be supplied, either as a String or as an OntologyAnnotation'
     """
         A NonTreatment is defined only by 1 factor values specifying its duration
         and a type. Allowed types are SCREEN, RUN-IN, WASHOUT and FOLLOW-UP.
         A NonTreatment is an extension of the basic Element
     """
-    def __init__(self, element_type=ELEMENT_TYPES['SCREEN'], duration_value=0.0, duration_unit=None):
+    def __init__(self, element_type=ELEMENT_TYPES['SCREEN'], duration_value=0.0,
+                 duration_unit=None):
         super(NonTreatment, self).__init__()
         if element_type not in ELEMENT_TYPES.values():
             raise ValueError('element treatment type provided: ')
         self.__type = element_type
         if not isinstance(duration_value, Number):
             raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        if not duration_unit:
+            raise ValueError(self.MISSING_UNIT_ERROR_MESSAGE)
         self.__duration = FactorValue(factor_name=DURATION_FACTOR, value=duration_value, unit=duration_unit)
 
     def __repr__(self):

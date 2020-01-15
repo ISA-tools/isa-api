@@ -243,6 +243,13 @@ class NonTreatmentTest(unittest.TestCase):
                                                                   value=self.DURATION_VALUE,
                                                                   unit=self.DURATION_UNIT))
 
+    def test_init_missing_unit(self):
+        try:
+            non_treatment = NonTreatment(duration_value=self.DURATION_VALUE)
+            self.fail('Missing duration_unit must throw a ValueError')
+        except ValueError as ve:
+            self.assertEqual(str(ve), NonTreatment.MISSING_UNIT_ERROR_MESSAGE)
+
     def test_repr(self):
         print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
@@ -1827,7 +1834,7 @@ class StudyDesignTest(BaseStudyDesignTest):
     def test_generate_isa_study_single_arm_single_cell_elements(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file)
+            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
@@ -1885,7 +1892,7 @@ class StudyDesignTest(BaseStudyDesignTest):
     def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file)
+            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         # study_config = config['study']
         single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
