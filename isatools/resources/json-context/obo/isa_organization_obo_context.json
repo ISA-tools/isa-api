@@ -9,12 +9,20 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "obo:IAO_0000590"
+        "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000590"
     },
     "description": {
-      "@id": "obo:IAO_0000300"
+       "@id": "obo:IAO_0000235",
+       "@type": "obo:IAO_0000300"
     },
-    "postalAddress": "obo:IAO_0000422",
-    "roles": "obo:BFO_0000023"
-  }
+    "postalAddress": {
+        "@id":"obo:IAO_0000422",
+        "@type":"obo:IAO_0000235"
+    },
+     "roles": {
+        "@id": "obo:RO_0000087",
+        "@type" : "obo:BFO_0000023"
+        }
+    }
 }

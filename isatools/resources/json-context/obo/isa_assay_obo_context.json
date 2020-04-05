@@ -9,23 +9,27 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "obo:IAO_0000590"
+       "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
     },
-    "description": "obo:IAO_0000300",
+    "description": {
+        "@id":"obo:IAO_0000235",
+        "@type":"obo:IAO_0000300"
+    },
     "filename" :  {
          "@id" : "obo:IAO_0000590",
-         "@type": "obo:EFO_0004095"
+         "@type": ["obo:IAO:0000590","obo:STATO_0000002","obo:EFO_0004095"]
     },
     "measurementType" :  {
-        "@id" : "bao:BAO_0000409",
+        "@id" : "obo:IAO_0000235",
         "@type" : "obo:OBI_0000751"
     },  
     "technologyType" :  {
-        "@id" : "obo:IAO_0000219",
+        "@id" : "obo:IAO_0000235",
         "@type" : ["obo:EFO_0005521"]
     }, 
     "technologyPlatform" :  {
-        "@id" : "obo:IAO_0000219",
+        "@id" : "obo:IAO_0000235",
         "@type" : "obo:OBI_0000968"
     },     
     "materials" : {
@@ -37,7 +41,7 @@
         "@type" : ["obo:OBI_0000423","obo:OBI_0000924"]
      },   
     "characteristicCategories" :{
-         "@id" : "obo:IAO_0000219",
+         "@id" : "obo:IAO_0000235",
          "@type" : ["obo:BFO_0000019", ""]
     },
     "dataFiles" : {
@@ -45,11 +49,11 @@
         "@type" : ["obo:MS_1000577", ""]
     },
     "processSequences" : {
-         "@id" : "?",
+         "@id" : "obo:RO_0002012",
          "@type" : ["obo:OBI_0000011", "obo:OBI_0600013" , "obo:OBI_0200000"]
     },
     "unitCategories": {
-          "@id": "obo:IAO_0000219" ,
+          "@id": "obo:IAO_0000235" ,
           "@type" : "obo:UO_0000000"
     },
     "comments": {

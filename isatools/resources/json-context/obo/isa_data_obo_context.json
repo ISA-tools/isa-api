@@ -13,10 +13,11 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "obo:IAO_0000590"
+      "@id": "obo:IAO_0000590",
+      "@type":""
     },
     "comments": {
-      "@id" : "obo:",
+      "@id" : "obo:MISSING",
       "@type" : "obo:IAO_0000300"
     }
   }

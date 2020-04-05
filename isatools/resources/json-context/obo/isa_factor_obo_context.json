@@ -8,7 +8,8 @@
       "@id": "obo:IAO_0000577"
     },
     "factorName": {
-      "@id": "obo:IAO_0000590"
+      "@id":"obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
     },
     "factorType" : {
         "@id": "obo:OBI_0000750",

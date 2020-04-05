@@ -3,30 +3,33 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Ontology Source Reference ": "obo:",
+    "Ontology Source Reference": "obo:IAO_8000000",
     "type" :{
         "@id" : "",
-        "@type" : [""]
+        "@type" : ["obo:IAO_8000000"]
     },
     "title" : {
-        "@id": "obo:OBI_0001622"
+        "@id": "obo:IAO_0000235",
+        "@type":"obo:IAO_0000305"
     },
     "description" : {
-         "@id": "obo:IAO_0000300"
+         "@id": "obo:IAO_0000235",
+         "@type":"obo:IAO_0000300"
     } ,
     "name": {
-      "@id": "obo:IAO_0000590"
+      "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000590"
     },
     "file" :  {
-         "@id" : "obo:IAO_0000590",
+         "@id" : "obo:IAO_0000235",
          "@type": "obo:EFO_0004095"
     },  
     "version" : {
-         "@id": "obo:IAO_0000129",
-         "@type": "obo:IAO:0000300"
+         "@id": "obo:IAO_0000235",
+         "@type": "obo:IAO_0000129"
          },
     "comments": {
-      "@id" : "obo:",
+      "@id" : "obo:MISSING",
       "@type" : "obo:IAO_0000300"
     }
   }

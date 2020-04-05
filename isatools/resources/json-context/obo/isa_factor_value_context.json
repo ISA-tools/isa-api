@@ -5,14 +5,15 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "FactorValue": "obo:STATO_0000265",
     "category": {
-      "@id": "obo:IAO_0000590"
+        "@id":"obo:IAO_0000235",
+        "@type": "obo:IAO_0000590"
     },
      "value": {
-      "@id": "obo:IAO_0000590",
-      "@type" : ["obo:IAO_0000300", "obo:","obo:"]
+      "@id": "obo:IAO_0000235",
+      "@type" : ["obo:IAO_0000300", "obo:IAO_0000590","obo:"]
     },
      "unit": {
-          "@id": "obo:UO_0000000" ,
+          "@id": "obo:IAO_0000235" ,
           "@type" : "obo:UO_0000000"
     }
     

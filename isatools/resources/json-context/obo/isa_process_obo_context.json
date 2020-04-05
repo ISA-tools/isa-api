@@ -10,10 +10,12 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "obo:IAO_0000590"
+      "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000590"
     },
     "description": {
-      "@id": "obo:IAO_0000300"
+      "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000300"
     },
     "startDate" : {"@id":"obo:RO_0002537",
       "@type": "xsd:date"
@@ -36,19 +38,19 @@
       },
     "input" : {
       "@id":"obo:RO_0002233",
-      "@type" : ["OBI_0001879","BFO_0000040","IAO_0000100"]
+      "@type" : ["obo:OBI_0001879","obo:BFO_0000040","obo:IAO_0000100"]
     },
     "output" :  {
       "@id":"obo:RO_0002234",
-      "@type" : ["OBI_0001879","BFO_0000040","IAO_0000100"]
+      "@type" : ["obo:OBI_0001879","obo:BFO_0000040","obo:IAO_0000100"]
     },
     "performer" :
     {
-      "@id" : "obo:TODO",
+      "@id" : "obo:NCIT_C48206",
       "@type":["obo:OBI_0000245","obo:NCBITaxon_9606"]
     },
     "comments" : {
-      "@id" : "obo:TODO",
+      "@id" : "obo:MISSING",
       "@type" : "obo:IAO_0000300"
     }
   }
