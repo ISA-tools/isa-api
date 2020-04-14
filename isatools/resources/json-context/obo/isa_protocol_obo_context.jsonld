@@ -5,7 +5,7 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Protocol": "obo:OBI_0000272",
     "filename" : {
-         "@id": "obo:IAO:0000590",
+         "@id": "obo:IAO_0000590",
          "@type": ""
     },
     "identifier" : {

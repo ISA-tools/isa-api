@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "MaterialAttribute": "sdo:OBI_0001933",
+    "characteristicType": {
+      "@id": "sdo:IAO_0000590",
+      "@type" : ["sdo:BFO_0000019","sdo:OBI_0000968","sdo:UBERON_0000465","sdo:MONDO_0000001","sdo:CL_0000010","sdo:GAZ_00000448"]
+    }   
+  }
+}

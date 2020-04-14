@@ -1,0 +1,51 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "sdo:OBI_0000070",
+    "identifier": "sdo:IAO_0000577",
+    "name": "sdo:IAO_0000590",
+    "description": "sdo:IAO_0000300",
+    "filename" :  {
+         "@id" : "sdo:IAO_0000590",
+         "@type": "sdo:EFO_0004095"
+    },
+    "measurementType" :  {
+        "@id" : "bao:BAO_0000409",
+        "@type" : "sdo:OBI_0000751"
+    },  
+    "technologyType" :  {
+        "@id" : "sdo:EFO_0005521",
+        "@type" : ["", ""]
+    }, 
+    "technologyPlatform" :  {
+        "@id" : "?",
+        "@type" : "sdo:OBI_0000968"
+    },     
+    "materials" : {
+          "@id" : "sdo:OBI_0000047",
+        "@type" : ["sdo:BFO_0000040", "sdo:OBI_0100051"]
+     },
+     "othermaterials" : {
+        "@id" : "sdo:OBI_0000047",
+        "@type" : ["sdo:OBI_0000423","sdo:OBI_0000924"]
+     },   
+    "characteristicCategories" :{
+         "@id" : "?",
+         "@type" : ["sdo:BFO_0000019", ""]
+    },
+    "dataFiles" : {
+        "@id" : "sdo:EFO_0004095",
+        "@type" : ["sdo:MS_1000577", ""]
+    },
+    "processSequences" : {
+         "@id" : "?",
+         "@type" : ["sdo:OBI_0000011", "sdo:OBI_0600013" , "sdo:OBI_0200000"]
+    },
+    "unitCategories": {
+          "@id": "?" ,
+          "@type" : "sdo:UO_0000000"
+    }
+  }
+}

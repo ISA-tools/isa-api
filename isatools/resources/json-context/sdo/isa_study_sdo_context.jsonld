@@ -1,0 +1,70 @@
+{
+  "@context":{
+     "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "sdo:OBI_0000066",
+    "filename" : {
+         "@id": "sdo:IAO_0000235",
+         "@type" : ["sdo:IAO:0000590","sdo:STATO_0000002","sdo:EFO_0004095"]
+    },
+    "identifier" : {
+      "@id": "sdo:IAO_0000577",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "sdo:IAO_0000235",
+        "@type": "sdo:OBI_0001622"
+    },
+    "description" : {   
+         "@id": "sdo:IAO_0000235",
+         "@type":"sdo:IAO_0000300"
+    } ,
+    "submissionDate" : {
+      "@id":"sdo:RO_0002537",
+      "@type": "xsd:date"
+    } ,
+    "publicReleaseDate" : {
+      "@id":"sdo:RO_0002537",
+      "@type": "xsd:date"
+    } ,
+    "publications" : {
+                "@id":"sdo:IAO_0000235",
+                "@type":"sdo:IAO_0000013"
+    },
+    "people" : {
+                "@id":"sdo:NCIT_C48206",
+      "@type":"sdo:AGRO_00000380"
+    },
+    "studyDesignDescriptors": {
+        "@id":"sdo:STATO_0000001",
+        "@type":"sdo:OBI_0500000"
+    },
+    "protocols" : {
+        "@id":"sdo:BFO_0000055",
+      "@type":"sdo:OBI_0000272"
+    },
+    "materials": {  
+        "@id":"sdo:RO_0000057",
+        "@type" : "sdo:BFO_0000040"
+    },
+    "processSequence": {
+        "@id":"sdo:RO_0002012",
+        "@type" : "sdo:OBI_0000011"
+    },
+    "assays" : {
+        "@id":"sdo:RO_0002012",
+        "@type" : "sdo:OBI_0000070"
+    },
+    "factors": {
+        "@id":"sdo:STATO_0000001",
+      "@type":"sdo:OBI_0000750"
+    },
+    "characteristicCategories": {
+        "@id":"sdo:RO_0000086",
+      "@type":"sdo:OBI_0000245"
+    },
+    "unitCategories": {},
+    "comments" : {}
+    }
+}
