@@ -1,0 +1,3 @@
+GC/FID (Flame Ionisation Detector)		
+Parameter Value[Detector]	Parameter Value[Temperature]	Unit
+Thermo Electron Flame Ionization Detector	250	UO:degree Celsius

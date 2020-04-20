@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Functions for importing from BioCrates"""
+import pandas as pd
 import glob
 import logging
 import os
 import subprocess
 import sys
 import uuid
+
+import fileinput
+
 from collections import defaultdict
 from io import BytesIO
 from shutil import rmtree
@@ -21,20 +25,33 @@ __author__ = ['philippe.rocca-serra@oerc.ox.ac.uk',
               'massi@oerc.ox.ac.uk',
               'alfie']
 
-DESTINATION_DIR = 'output'
+
 DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
         os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
+
+print(DEFAULT_SAXON_EXECUTABLE)
+
 BIOCRATES_DIR = os.path.join(os.path.dirname(__file__), 'resources',
                              'biocrates')
-INPUT_FILE = os.path.join(BIOCRATES_DIR, 'biocrates-shorter-testfile.xml')
+
 BIOCRATES_META_XSL_FILE = os.path.join(
     BIOCRATES_DIR, 'ISA-Team-Biocrates2ISATAB-refactor.xsl')
+
 BIOCRATES_DATA_XSL_FILE = os.path.join(
     BIOCRATES_DIR, 'ISA-Team-Biocrates2MAF.xsl')
 
+DESTINATION_DIR = 'output/isatab/'
+
+SAMPLE_METADATA_INPUT_DIR = 'resources/biocrates/input-test/'
 
 logger = logging.getLogger('isatools')
+
+def replaceAll(file,searchExp,replaceExp):
+    for line in fileinput.input(file, inplace=1):
+        if searchExp in line:
+            line = line.replace(searchExp,replaceExp)
+        sys.stdout.write(line)
 
 
 def zipdir(path, zip_file):
@@ -128,8 +145,7 @@ def merge_biocrates_files(input_dir):
     return fh
 
 
-def biocrates_to_isatab_convert(biocrates_filename,
-                                saxon_jar_path=DEFAULT_SAXON_EXECUTABLE):
+def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON_EXECUTABLE):
     """
     Given a directory containing one or more biocrates xml filename, the method
     convert it to ISA-tab using an XSL 2.0 transformation.
@@ -172,6 +188,8 @@ def biocrates_to_isatab_convert(biocrates_filename,
         rmtree(destination_dir)
 
     try:
+        INPUT_FILE = os.path.join(BIOCRATES_DIR, biocrates_filename)
+
         res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE,
                                BIOCRATES_META_XSL_FILE,
                                'biocrates_filename=' + biocrates_filename,
@@ -183,10 +201,12 @@ def biocrates_to_isatab_convert(biocrates_filename,
         logger.error("isatools.convert.biocrates2isatab: "
                      "CalledProcessError caught ", err.returncode)
 
+        print(err)
+
     with ZipFile(buffer, 'w') as zip_file:
         # use relative dir_name to avoid absolute path on file names
         zipdir(dir_name, zip_file)
-        print(zip_file.namelist())
+        print("!", zip_file.namelist())
 
     # clean up the target directory after the ZIP file has been closed
     # rmtree(destination_dir)
@@ -209,7 +229,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
             for p in pi.find_all('measure'):
                 myrdfname = p.find_parent('injection').get(
                     'rawdatafilename').split('.')[0]
-                for attr, value in p.attrs.iteritems():
+                for attr, value in p.attrs.items():
                     if attr != 'metabolite':
                         mydict[p.get('metabolite') + '-' + myrdfname + '-'
                                + attr + '-' + polarity.lower() + '-' + usedop
@@ -245,12 +265,12 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
                    uniqueAttrs, uniqueMetaboliteIdentifiers, mydict):
     pos_injection = plate.find_all('injection', {'polarity': polarity})
     if len(pos_injection) > 0:
-        filename = usedop + '-' + platebarcode + '-' + polarity.lower() \
-            + '-maf.txt'
-        print(filename)
+        filename = 'm_MTBLSXXX_' + usedop + '_' + platebarcode + '_' + polarity.lower() \
+            + '_maf.txt'
+        print("filename: ", filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:
             # writing out the header
-            file_handler.write('Sample ID')
+            file_handler.write('metabolite_identification')
             for ua in uniqueAttrs:
                 for myattr in uniqueAttrs[ua]:
                     file_handler.write('\t' + ua + '[' + myattr + ']')
@@ -269,10 +289,101 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
                         else:
                             file_handler.write('\t')
         file_handler.close()
+        complete_MAF(os.path.join(output_dir, filename))
 
 
-def parseSample(file):
-    folder_name = 'output'
+def complete_MAF(maf_stub):
+
+    data = pd.read_csv(maf_stub, sep='\t')
+
+    data.insert(1, "database_identifier", "")
+    data.insert(2, "chemical_formula", "")
+    data.insert(3, "smiles", "")
+    data.insert(4, "inchi", "")
+    data.insert(5, "mass_to_charge", "")
+    data.insert(6, "modifications", "")
+    data.insert(7, "charge", "")
+    data.insert(8, "retention_time", "")
+    data.insert(9, "taxid", "")
+    data.insert(10, "species", "")
+    data.insert(11, "database", "")
+    data.insert(12, "database_version", "")
+    data.insert(13, "reliability", "")
+    data.insert(14, "uri", "")
+    data.insert(15, "search_engine", "")
+    data.insert(16, "search_engine_score", "")
+
+    data.to_csv(maf_stub, sep='\t', encoding='utf-8', index=False)
+
+
+def add_sample_metadata(sample_info_file, input_study_file):
+
+    S_STUDY_LOC = os.path.join(DESTINATION_DIR, input_study_file)
+    print("study file location:", S_STUDY_LOC)
+
+    data = pd.read_csv(S_STUDY_LOC, sep='\t')
+    print("study file:", data)
+
+    SAMPLE_METADATA_LOC = os.path.join(SAMPLE_METADATA_INPUT_DIR, sample_info_file)
+    print("sample metadata file location:", SAMPLE_METADATA_LOC)
+
+    sample_desc = pd.read_csv(SAMPLE_METADATA_LOC)
+    print("sample metadata: ", sample_desc)
+
+    # data.join(sample_desc, on='Characteristics[barcode identifier]')
+
+    # result = data.join(sample_desc, on='Characteristics[barcode identifier]')
+
+    result = pd.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
+    cols = result.columns.tolist()
+    print(cols)
+
+    result = result[['Source Name', 'Material Type', 'Characteristics[barcode identifier]', 'internal_ID', 'resolute_ID',
+                     'Characteristics[Organism]', 'Term Source REF', 'Term Accession Number',
+                     'cellLine', 'cellosaurusID', 'Characteristics[chemical compound]',
+                     'Protocol REF_x', 'Date', 'Sample Name', 'Characteristics[Organism part]', 'Term Source REF.1',
+                     'Term Accession Number.1',
+                     'Factor value [cellNumber]', 'Factor value [replicate]', 'Factor value [extractionVolume, µl]'
+                     ]]
+
+    result['cellosaurusID'] = result['cellosaurusID'].str.replace('cellosaurus:CVCL_',' https://web.expasy.org/cellosaurus/CVCL_')
+
+    result = result.rename(columns={'internal_ID': 'Characteristics[internal_ID]',
+                                    'resolute_ID': 'Characteristics[resolute_ID]',
+                                    'Characteristics[chemical compound]': 'Characteristics[qc element]',
+                                    'cellLine': 'Characteristics[cell line]',
+                                    'cellosaurusID': 'Term Accession Number',
+                                    'Protocol REF_x': 'Protocol REF',
+                                    'Characteristics[Organism part]':'Characteristics[material type]',
+                                    'Material Type': 'Characteristics[specimen type]',
+                                    'Factor value [cellNumber]': 'Factor Value[cell seeding density]',
+                                    'Factor value [replicate]': 'Factor Value[replicate number]',
+                                    'Factor value [extractionVolume, µl]': 'Factor Value[extraction volume]'
+                                    })
+
+    study_factor_names="Study Factor Name\"" + "\t" + "\"cell seeding density\"" + "\t" + "\"replicate number\"" + "\t" + "\"extraction volume"
+
+    replaceAll(DESTINATION_DIR+"i_inv_biocrates.txt", "Study Factor Name", study_factor_names)
+
+    result.insert(9, "Term Source REF.2", "cellosaurus")
+
+    result.insert(21, "Unit", "µl")
+
+    result = result.rename(columns={'Term Source REF.1': 'Term Source REF',
+                                    'Term Source REF.2': 'Term Source REF',
+                                    'Term Accession Number.1': 'Term Accession Number'
+                                    })
+
+
+    # print("results:", result)
+    result.to_csv(S_STUDY_LOC , sep='\t', encoding='utf-8', index=False)
+
+
+
+
+def parseSample(biocrates_filename):
+
+    folder_name = 'output/isatab/'
     output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                               folder_name)
 
@@ -280,15 +391,18 @@ def parseSample(file):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    file = sys.argv[1]
+    # file = sys.argv[1]
+    # file=biocrates_filename
+    INPUT_FILE = os.path.join(BIOCRATES_DIR, biocrates_filename)
     # open and read up the file
-    handler = open(file).read()
-    soup = BeautifulSoup(handler)
+    handler = open(INPUT_FILE).read()
+    soup = BeautifulSoup(handler, features="lxml")
 
     # get all the plates
     plates = soup.find_all('plate')
     for plate in plates:
         usedop = plate.get('usedop')
+        # print(usedop)
         platebarcode = plate.get('platebarcode')
         # extracting the the distinct column labels, metabolites,
         # and rawdatafilename collect the data into a dictionary
@@ -297,15 +411,18 @@ def parseSample(file):
         # and start creating the sample tab files
         writeOutToFile(plate, 'POSITIVE', usedop, platebarcode, output_dir,
                        posAttrs, posMetabolites, mydict)
+
         writeOutToFile(plate, 'NEGATIVE', usedop, platebarcode, output_dir,
                        negAttrs, negMetabolites, mydict)
 
 
-# if __name__ == "__main__":
-#     parseSample(sys.argv[1])
+if __name__ == "__main__":
+    biocrates_to_isatab_convert('biocrates-merged-output.xml', saxon_jar_path=DEFAULT_SAXON_EXECUTABLE)
+    parseSample(biocrates_filename='biocrates-merged-output.xml')
+    add_sample_metadata('EX0003_sample_metadata.csv', 's_study_biocrates.txt')
+
+# parseSample(sys.argv[1])
 # uncomment to run test
-# merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/
-# Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")
-# biocrates_to_isatab_convert('biocrates-merged-output.xml',
-# saxon_jar_path="/Applications/IntelliJ IDEA 13.app/plugins/xslt-debugger/
-# lib/rt/saxon9he.jar")
+# merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")
+
+# Conc_R100028_export_incl_information_20200309.xml
