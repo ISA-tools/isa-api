@@ -104,7 +104,7 @@ ms_assay_dict = OrderedDict([
     ]),
     ('mass spectrometry', {
         '#replicates': 2,
-        'instrument': ['Agilent QTQF §'],
+        'instrument': ['Agilent QTQF 6510'],
         'injection_mode': ['FIA', 'LC'],
         'acquisition_mode': ['positive mode']
     }),
