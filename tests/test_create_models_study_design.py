@@ -43,6 +43,7 @@ FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
 
+# TODO move all these test objects to a separate file
 sample_list = [
         {
             'node_type': SAMPLE,
@@ -109,6 +110,90 @@ ms_assay_dict = OrderedDict([
         'acquisition_mode': ['positive mode']
     }),
     ('raw spectral data file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 2,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
+
+annotated_ms_assay_dict = OrderedDict([
+    ('measurement_type', OntologyAnnotation(term='metabolite profiling',
+                                            term_accession='http://purl.obolibrary.org/obo/OBI_0000366')),
+    ('technology_type', OntologyAnnotation(term='mass spectrometry',
+                                           term_accession='http://purl.obolibrary.org/obo/OBI_0000470')),
+    (OntologyAnnotation(
+        term='extraction',
+        term_accession='http://purl.obolibrary.org/obo/OBI_0302884'
+    ), {}),
+    (OntologyAnnotation(
+        term='extract',
+        term_accession='http://purl.obolibrary.org/obo/OBI_0000423'
+    ), [
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': OntologyAnnotation(term='extract type'),
+            'characteristics_value': OntologyAnnotation(term='polar fraction'),
+            'size': 1,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': OntologyAnnotation(term='extract type'),
+            'characteristics_value': OntologyAnnotation(term='lipids'),
+            'size': 1,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    (OntologyAnnotation(
+        term='labelling',
+        term_accession='http://purl.obolibrary.org/obo/CHMO_0001675'
+    ), {
+        '#replicates': 2
+    }),
+    (OntologyAnnotation(
+        term='labelled extract',
+        term_accession='http://purl.obolibrary.org/obo/OBI_0000924'
+    ), [
+        {
+            'node_type': LABELED_EXTRACT,
+            'characteristics_category': OntologyAnnotation(term='labelled extract type'),
+            'characteristics_value': OntologyAnnotation(term=''),
+            'size': 1,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    (OntologyAnnotation(
+        term='mass spectrometry',
+        term_accession='http://purl.obolibrary.org/obo/OBI_0200085'
+    ), {
+        '#replicates': 2,
+        'instrument': [OntologyAnnotation(
+            term='Agilent QTQF 6510',
+            term_accession='http://purl.obolibrary.org/obo/MS_1000676'
+        )],
+        'injection_mode': [
+            OntologyAnnotation(
+                term='FIA',
+                term_accession='http://purl.obolibrary.org/obo/MS_1000058'
+            ),
+            OntologyAnnotation(
+                term='LC',
+                term_accession=''
+            )
+        ],
+        'acquisition_mode': [
+            OntologyAnnotation(
+                term='positive mode',
+                term_accession='http://purl.obolibrary.org/obo/MS_1002807'
+            )
+        ]
+    }),
+    (OntologyAnnotation(
+        term='raw spectral data file',
+        term_accession='http://purl.obolibrary.org/obo/MS_1003083'
+    ), [
         {
             'node_type': DATA_FILE,
             'size': 2,
