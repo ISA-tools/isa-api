@@ -42,3 +42,8 @@ class TestMappings(unittest.TestCase):
         self.assertEqual(actual_annotated_json_mp_ms, {
             key: value for key, value in self.mp_ms_jsons[1].items() if key not in ['@context']
         })
+
+    def test_generate_isa_study_design_from_datascriptor_model(self):
+        # TODO load Datascriptor model and test it here
+        self.assertFalse(True)
+
