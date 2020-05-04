@@ -1,9 +1,12 @@
 from isatools.model import OntologyAnnotation, OntologySource, FactorValue
-from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm
+from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
 from isatools.create.models import SCREEN, RUN_IN, FOLLOW_UP, WASHOUT, BASE_FACTORS, INTERVENTIONS
 from collections import OrderedDict
 
 AGENT = 'agent'
+
+EVENT_TYPE_SAMPLING = 'sampling'
+EVENT_TYPE_ASSAY = 'assay'
 
 def _map_ontology_annotations(annotation):
     """
@@ -56,17 +59,17 @@ def _reverse_map_ontology_annotation(onto_annotation):
         return onto_annotation
 
 
-def assay_template_convert_json_to_ordered_dict(assay_template_json):
+def assay_template_to_ordered_dict(assay_template):
     """
     deserializes a JSON plain dictionary into an OrderedDictionary to be consumed by
         isatools.create.models.AssayGraph.generate_assay_plan_from_dict() to generate a full AssayGraph
-    :param assay_template_json: dict
+    :param assay_template: dict
     :return: OrderedDict.
     """
     res = OrderedDict()
-    res['measurement_type'] = _map_ontology_annotations(assay_template_json['measurement_type'])
-    res['technology_type'] = _map_ontology_annotations(assay_template_json['technology_type'])
-    for name, nodes in assay_template_json['workflow']:
+    res['measurement_type'] = _map_ontology_annotations(assay_template['measurement_type'])
+    res['technology_type'] = _map_ontology_annotations(assay_template['technology_type'])
+    for name, nodes in assay_template['workflow']:
         prepared_nodes = None
         if isinstance(nodes, list):
             prepared_nodes = [
@@ -86,19 +89,19 @@ def assay_template_convert_json_to_ordered_dict(assay_template_json):
     return res
 
 
-def assay_template_convert_ordered_dict_to_json(assay_template_odict):
+def assay_ordered_dict_to_template(assay_ord_dict):
     """
     Serializes an OrderedDict compatible with isatools.create.models.AssayGraph.generate_assay_plan_from_dict() into a
         JSON representation that can be consumed by external applications (e.g. Datascriptor and other client
         applications)
-    :param assay_template_odict: OrderedDictionary
+    :param assay_ord_dict: OrderedDictionary
     :return: dict, can be directly serialized to JSON
     """
     res = dict()
-    res['measurement_type'] = _reverse_map_ontology_annotation(assay_template_odict['measurement_type'])
-    res['technology_type'] = _reverse_map_ontology_annotation(assay_template_odict['technology_type'])
+    res['measurement_type'] = _reverse_map_ontology_annotation(assay_ord_dict['measurement_type'])
+    res['technology_type'] = _reverse_map_ontology_annotation(assay_ord_dict['technology_type'])
     res['workflow'] = []
-    for name, nodes in assay_template_odict.items():
+    for name, nodes in assay_ord_dict.items():
         if name in {'measurement_type', 'technology_type'}:
             continue
         if isinstance(nodes, dict):
@@ -137,59 +140,69 @@ def _generate_element(datascriptor_element_dict):
         )
         intensity = FactorValue(
             factor_name=BASE_FACTORS[1],
-            value=_map_ontology_annotations(datascriptor_element_dict['intensity']),
+            value=_map_ontology_annotations(datascriptor_element_dict.get('intensity', None)),
             unit=_map_ontology_annotations(datascriptor_element_dict.get('intensityUnit', None))
         )
         duration = FactorValue(
             factor_name=BASE_FACTORS[2],
-            value=datascriptor_element_dict['duration'],
-            unit=_map_ontology_annotations(datascriptor_element_dict['durationUnit'])
+            value=datascriptor_element_dict.get('duration', 0),
+            unit=_map_ontology_annotations(datascriptor_element_dict.get('durationUnit', 's'))
         )
-        treatment_type = datascriptor_element_dict.get('name', '')
+        treatment_type = datascriptor_element_dict.get('type', '')
         element = Treatment(
-            element_type= treatment_type if treatment_type in INTERVENTIONS.values() else None,
+            element_type=treatment_type if treatment_type in INTERVENTIONS.values() else None,
             factor_values=[agent, intensity, duration]
         )
     else:
         element = NonTreatment(
-            element_type=datascriptor_element_dict.get('name', SCREEN),
+            element_type=datascriptor_element_dict.get('type', SCREEN),
             duration_value=datascriptor_element_dict['duration'],
             duration_unit=_map_ontology_annotations(datascriptor_element_dict['durationUnit'])
         )
     return element
 
 
-def generate_isa_study_design_from_datascriptor_model(datascriptor_design_dict):
+def generate_isa_study_design_from_datascriptor_config(datascriptor_design_config):
     """
     Generates the StudyDesign object out of the Datascriptor representation of it.
-    :param datascriptor_design_dict: dict - a dictionary describing a study design as produced by Datascriptor ()
+    :param datascriptor_design_config: dict - a dictionary describing a study design as produced by Datascriptor ()
     :return: isatools.models.create.StudyDesign
     """
-    isa_study_design = StudyDesign(name=datascriptor_design_dict['type'])
-    elements = [
-        _generate_element(element_dict) for element_dict in datascriptor_design_dict['elements']
-    ]
     # create each StudyCell and each SampleAndAssayPlan while iterating over the studyArms
     arms = []
-    for arm_dict in datascriptor_design_dict['arms']:
+    for arm_dict in datascriptor_design_config['arms']:
+        arm_map = OrderedDict()
         for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
             element_ids = epoch_dict.get('elements', [])
             elements = [
                 _generate_element(element_dict) for element_dict in
-                filter(lambda el: el['id'] in element_ids, datascriptor_design_dict['elements'])
+                filter(lambda el: el['id'] in element_ids, datascriptor_design_config['elements'])
             ]
             cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
-            for event_id in epoch_dict.get('events', []):
-                # TODO generate ProductNodes (sample nodes) and OrderedDicts from Assay templates
-                # TODO then generate full SampleAssayPlan for the current epoch
-                pass
+            sample_type_dicts = [
+                st_dict for st_dict in filter(
+                    lambda ev: ev['id'] in epoch_dict.get('events', []) and ev['action'] == EVENT_TYPE_SAMPLING,
+                    datascriptor_design_config['events']
+                )
+            ]
+            assay_ord_dicts = [
+                assay_template_to_ordered_dict(at_dict['template']) for at_dict in filter(
+                    lambda ev: ev['id'] in epoch_dict.get('events', []) and ev['action'] == EVENT_TYPE_ASSAY,
+                    datascriptor_design_config['events']
+                )
+            ]
+            sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
+            sa_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+                sa_plan_name, sample_type_dicts, *assay_ord_dicts
+            )
+            arm_map[cell] = sa_plan
         arm = StudyArm(
             name=arm_dict['name'],
             source_type=_map_ontology_annotations(arm_dict['subjectType']),
-            group_size=arm_dict.get('size', 0)
+            group_size=arm_dict.get('size', 0),
+            arm_map=arm_map
         )
         arms.append(arm)
-    isa_study_design.study_arms = arms
-    return isa_study_design
+    return StudyDesign(name=datascriptor_design_config['type'], study_arms=arms)
 

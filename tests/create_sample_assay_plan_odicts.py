@@ -158,6 +158,7 @@ annotated_ms_assay_dict = OrderedDict([
         }
     ])
 ])
+
 phti_assay_dict = OrderedDict([
     ('measurement_type', 'phenotyping'),
     ('technology_type', 'high-throughput imaging'),
@@ -195,6 +196,7 @@ phti_assay_dict = OrderedDict([
                 }
             ])
         ])
+
 lcdad_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite identification'),
     ('technology_type', 'liquid chromatography diode-array detector'),
@@ -229,39 +231,40 @@ lcdad_assay_dict = OrderedDict([
                 }
             ])
         ])
+
 nmr_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite profiling'),
     ('technology_type', 'nmr spectroscopy'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('nmr_spectroscopy', {
-                '#replicates': 2,
-                'instrument': ['Bruker AvanceII 1 GHz'],
-                'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
-                'pulse_sequence': ['CPMG', 'watergate']
-                # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
-                # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
+    ('extraction', {}),
+    ('extract', [
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'supernatant',
+            'size': 1,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'pellet',
+            'size': 1,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('nmr spectroscopy', {
+        '#replicates': 2,
+        'instrument': ['Bruker AvanceII 1 GHz'],
+        'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
+        'pulse_sequence': ['CPMG', 'watergate']
+        # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
+        # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
+    }),
+    ('raw spectral data file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 1,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
