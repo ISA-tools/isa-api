@@ -5,7 +5,7 @@ import unittest
 import os
 import json
 
-from isatools.create.models import StudyDesign
+from isatools.create.models import StudyDesign, StudyArm, StudyCell, SampleAndAssayPlan
 from tests.create_sample_assay_plan_odicts import ms_assay_dict, annotated_ms_assay_dict
 
 
@@ -63,5 +63,9 @@ class TestMappings(unittest.TestCase):
         design = generate_isa_study_design_from_datascriptor_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         self.assertEqual(len(design.study_arms), len(ds_design_config['arms']))
-
+        for arm in design.study_arms:
+            self.assertIsInstance(arm, StudyArm)
+            for cell, samp_ass_plan in arm.arm_map.items():
+                self.assertIsInstance(cell, StudyCell)
+                self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
 

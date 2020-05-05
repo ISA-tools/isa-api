@@ -1191,7 +1191,6 @@ class AssayGraph(object):
                                 ],
                                 replicates=replicates
                             )
-                            # print(protocol_node)
                             res.add_node(protocol_node)
                             res.add_link(prev_node, protocol_node)
                             current_nodes.append(protocol_node)
