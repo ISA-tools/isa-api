@@ -1,5 +1,6 @@
 from isatools.model import OntologyAnnotation, OntologySource, FactorValue
-from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
+from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan, \
+    SAMPLE, ORGANISM_PART
 from isatools.create.models import SCREEN, RUN_IN, FOLLOW_UP, WASHOUT, BASE_FACTORS, INTERVENTIONS
 from collections import OrderedDict
 
@@ -162,6 +163,18 @@ def _generate_element(datascriptor_element_dict):
     return element
 
 
+def _generate_sample_dict_from_config(sample_type_config):
+    return dict(
+        node_type=SAMPLE,
+        characteristics_category=_map_ontology_annotations(
+            sample_type_config.get('outputCategory', ORGANISM_PART)
+        ),
+        characteristics_value=_map_ontology_annotations(sample_type_config['output']),
+        size=sample_type_config.get('outputSize', 1),
+        is_input_to_next_protocols=sample_type_config.get('isAssayInput', True)
+    )
+
+
 def generate_isa_study_design_from_datascriptor_config(datascriptor_design_config):
     """
     Generates the StudyDesign object out of the Datascriptor representation of it.
@@ -181,7 +194,7 @@ def generate_isa_study_design_from_datascriptor_config(datascriptor_design_confi
             cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
             sample_type_dicts = [
-                st_dict for st_dict in filter(
+                _generate_sample_dict_from_config(st_config) for st_config in filter(
                     lambda ev: ev['id'] in epoch_dict.get('events', []) and ev['action'] == EVENT_TYPE_SAMPLING,
                     datascriptor_design_config['events']
                 )

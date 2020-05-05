@@ -1,12 +1,12 @@
 from collections import OrderedDict
 
-from isatools.create.models import SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE
+from isatools.create.models import SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE, ORGANISM_PART
 from isatools.model import OntologyAnnotation
 
 sample_list = [
         {
             'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
+            'characteristics_category': ORGANISM_PART,
             'characteristics_value': 'liver',
             'size': 1,
             'technical_replicates': None,
@@ -14,7 +14,7 @@ sample_list = [
         },
         {
             'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
+            'characteristics_category': ORGANISM_PART,
             'characteristics_value': 'blood',
             'size': 5,
             'technical_replicates': None,
@@ -22,7 +22,7 @@ sample_list = [
         },
         {
             'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
+            'characteristics_category': ORGANISM_PART,
             'characteristics_value': 'heart',
             'size': 1,
             'technical_replicates': None,

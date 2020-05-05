@@ -57,9 +57,11 @@ class TestMappings(unittest.TestCase):
         with open(ds_design_config_file_path) as json_fp:
             ds_design_config = json.load(json_fp)
         # the first assay template is Metabolite Profiling - Mass Spec
-        ds_design_config['events'][-1]['template'] = self.met_prof_jsons[0]
+        ds_design_config['events'][-2]['template'] = self.met_prof_jsons[0]
         # the second assay template is Metabolite Profiling - NMR
         ds_design_config['events'][-1]['template'] = self.met_prof_jsons[2]
         design = generate_isa_study_design_from_datascriptor_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
+        self.assertEqual(len(design.study_arms), len(ds_design_config['arms']))
+
 

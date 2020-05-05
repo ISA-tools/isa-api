@@ -829,7 +829,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
-        nmr_nodes = list(filter(lambda n: n.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda n: n.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for node in nmr_nodes:
             self.assertEqual(node.replicates, 2)
@@ -923,7 +923,7 @@ class AssayGraphTest(unittest.TestCase):
     def test_previous_protocol_nodes(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
-        nmr_nodes = list(filter(lambda node: node.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda node: node.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for nmr_node in nmr_nodes:
             self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
@@ -1623,7 +1623,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
         extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
         self.assertEqual(len(extraction_processes), 1)
-        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr_spectroscopy']
+        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
         self.assertEqual(len(nmr_processes), 8*2)
         self.assertEqual(len(processes), 1+8*2)
         self.assertEqual(len(other_materials), 2)
@@ -1674,11 +1674,11 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in treatment_assay.process_sequence
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
+                         if process.executes_protocol.name == 'nmr spectroscopy']
         self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8 * nmr_assay_dict['nmr_spectroscopy']['#replicates']
+        self.assertEqual(len(nmr_processes), 8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
                          * expected_num_of_samples_per_plan)
-        self.assertEqual(len(treatment_assay.process_sequence), (8 * nmr_assay_dict['nmr_spectroscopy']['#replicates']
+        self.assertEqual(len(treatment_assay.process_sequence), (8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
                                                                  + 1)*expected_num_of_samples_per_plan)
         for ix, process in enumerate(extraction_processes):
             self.assertEqual(process.inputs, [study.samples[ix]])
@@ -1716,7 +1716,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in treatment_assay_st0.process_sequence
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay_st0.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
+                         if process.executes_protocol.name == 'nmr spectroscopy']
         expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
                                                   self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
         expected_num_of_samples_first = sample_list[0]['size'] * single_arm.group_size

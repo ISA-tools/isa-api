@@ -7,6 +7,7 @@ import datetime
 import itertools
 import json
 import random
+import re
 from collections import Iterable
 from collections import OrderedDict
 from copy import deepcopy
@@ -83,6 +84,9 @@ SAMPLE = 'sample'
 EXTRACT = 'extract'
 LABELED_EXTRACT = 'labeled extract'
 DATA_FILE = 'data file'
+
+# sample organism part category
+ORGANISM_PART = 'organism part'
 
 # constant for naming AssayGraphs
 ASSAY_GRAPH = 'ASSAY_GRAPH'
@@ -1139,7 +1143,8 @@ class AssayGraph(object):
                         print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         product_node = ProductNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
-                                node_key, str(i).zfill(3), str(j).zfill(3)),
+                                re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
+                            ),
                             name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
                             characteristics=[
                                 Characteristic(category=node_params_dict['characteristics_category'],
@@ -1158,7 +1163,9 @@ class AssayGraph(object):
                     print('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
-                            id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(node_key, str(i).zfill(3)),
+                            id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
+                                re.sub(r'\s+', '_', node_key), str(i).zfill(3)
+                            ),
                             name=node_key, protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
@@ -1173,8 +1180,9 @@ class AssayGraph(object):
                         for j, prev_node in enumerate(previous_nodes):
                             print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
-                                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(node_key, str(i).zfill(3),
-                                                                                             str(j).zfill(3)),
+                                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
+                                    re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
+                                ),
                                 name=node_key, protocol_type=node_key,
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
