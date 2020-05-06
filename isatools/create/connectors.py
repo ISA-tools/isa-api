@@ -9,7 +9,8 @@ AGENT = 'agent'
 EVENT_TYPE_SAMPLING = 'sampling'
 EVENT_TYPE_ASSAY = 'assay'
 
-def _map_ontology_annotations(annotation):
+
+def _map_ontology_annotations(annotation, expand_strings=False):
     """
     converts an input annotation into an OntologyAnnotation. If the input is a string it is kept as it is and not
     cast as an OntologyAnnotation
@@ -30,18 +31,21 @@ def _map_ontology_annotations(annotation):
                 res.term_source = OntologySource(**source)
         return res
     else:
-        return annotation
+        return OntologyAnnotation(term=annotation) if expand_strings else annotation
 
 
-def _reverse_map_ontology_annotation(onto_annotation):
+def _reverse_map_ontology_annotation(onto_annotation, compress_strings=False):
     """
     converts an OntologyAnnotation into its serializable form (i.e. a dict with string keys)
     no comments or ids are serialized by this special serializer
-    if the input is a string the string itself is retuned
+    if the input is a string the string itself is returned.
     :param onto_annotation: str or OntologyAnnotation
-    :return: dict - to be serialized as JSON
+    :param compress_strings Bool - if true compress to strings onto_annotation objects missing a term_accession
+    :return: dict or string - to be serialized as JSON
     """
     if isinstance(onto_annotation, OntologyAnnotation):
+        if not onto_annotation.term_accession and compress_strings:
+            return onto_annotation.term
         res = dict(term=onto_annotation.term, iri=onto_annotation.term_accession or None)
         if onto_annotation.term_source:
             if isinstance(onto_annotation.term_source, str):
@@ -73,16 +77,20 @@ def assay_template_to_ordered_dict(assay_template):
     for name, nodes in assay_template['workflow']:
         prepared_nodes = None
         if isinstance(nodes, list):
+            # "nodes" represent a list of ProductNodes
             prepared_nodes = [
                 {key: _map_ontology_annotations(value) for key, value in el.items()} for el in nodes
             ]
         if isinstance(nodes, dict):
+            # "nodes" represent a ProtocolNode
             prepared_nodes = {}
-            for param_name, param_values in nodes.items():
+            for candidate_param_name, param_values in nodes.items():
                 # if it is a special key (e.g."#replicates") leave it alone
-                if param_name[0] == '#' and not isinstance(param_values, list):
-                    prepared_nodes[param_name] = param_values
+                if candidate_param_name[0] == '#' and not isinstance(param_values, list):
+                    prepared_nodes[candidate_param_name] = param_values
                 else:
+                    # this is really a parameter name
+                    param_name = _map_ontology_annotations(candidate_param_name, expand_strings=True)
                     prepared_nodes[param_name] = [
                         _map_ontology_annotations(param_value) for param_value in param_values
                     ]
@@ -106,15 +114,17 @@ def assay_ordered_dict_to_template(assay_ord_dict):
         if name in {'measurement_type', 'technology_type'}:
             continue
         if isinstance(nodes, dict):
+            # "nodes" represent a ProtocolNode
             serialized_nodes = {}
             for node_prop, prop_values in nodes.items():
                 if isinstance(prop_values, list):
-                    serialized_nodes[node_prop] = [
+                    serialized_nodes[_reverse_map_ontology_annotation(node_prop, compress_strings=True)] = [
                         _reverse_map_ontology_annotation(prop_value) for prop_value in prop_values
                     ]
                 else:
                     serialized_nodes[node_prop] = prop_values
         elif isinstance(nodes, list):
+            # "nodes" represent a list of ProductNodes
             serialized_nodes = [
                 {key: _reverse_map_ontology_annotation(val) for key, val in node.items()} for node in nodes
             ]

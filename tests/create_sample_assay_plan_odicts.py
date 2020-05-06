@@ -63,9 +63,9 @@ ms_assay_dict = OrderedDict([
     ]),
     ('mass spectrometry', {
         '#replicates': 2,
-        'instrument': ['Agilent QTQF 6510'],
-        'injection_mode': ['FIA', 'LC'],
-        'acquisition_mode': ['positive mode']
+        OntologyAnnotation(term='instrument'): ['Agilent QTQF 6510'],
+        OntologyAnnotation(term='injection_mode'): ['FIA', 'LC'],
+        OntologyAnnotation(term='acquisition_mode'): ['positive mode']
     }),
     ('raw spectral data file', [
         {
@@ -126,11 +126,11 @@ annotated_ms_assay_dict = OrderedDict([
         term_accession='http://purl.obolibrary.org/obo/OBI_0200085'
     ), {
         '#replicates': 2,
-        'instrument': [OntologyAnnotation(
+        OntologyAnnotation(term='instrument'): [OntologyAnnotation(
             term='Agilent QTQF 6510',
             term_accession='http://purl.obolibrary.org/obo/MS_1000676'
         )],
-        'injection_mode': [
+        OntologyAnnotation(term='injection_mode'): [
             OntologyAnnotation(
                 term='FIA',
                 term_accession='http://purl.obolibrary.org/obo/MS_1000058'
@@ -140,7 +140,7 @@ annotated_ms_assay_dict = OrderedDict([
                 term_accession=''
             )
         ],
-        'acquisition_mode': [
+        OntologyAnnotation(term='acquisition_mode'): [
             OntologyAnnotation(
                 term='positive mode',
                 term_accession='http://purl.obolibrary.org/obo/MS_1002807'
