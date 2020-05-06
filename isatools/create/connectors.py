@@ -72,8 +72,8 @@ def assay_template_to_ordered_dict(assay_template):
     :return: OrderedDict.
     """
     res = OrderedDict()
-    res['measurement_type'] = _map_ontology_annotations(assay_template['measurement_type'])
-    res['technology_type'] = _map_ontology_annotations(assay_template['technology_type'])
+    res['measurement_type'] = _map_ontology_annotations(assay_template['measurement_type'], expand_strings=True)
+    res['technology_type'] = _map_ontology_annotations(assay_template['technology_type'], expand_strings=True)
     for name, nodes in assay_template['workflow']:
         prepared_nodes = None
         if isinstance(nodes, list):
@@ -107,8 +107,10 @@ def assay_ordered_dict_to_template(assay_ord_dict):
     :return: dict, can be directly serialized to JSON
     """
     res = dict()
-    res['measurement_type'] = _reverse_map_ontology_annotation(assay_ord_dict['measurement_type'])
-    res['technology_type'] = _reverse_map_ontology_annotation(assay_ord_dict['technology_type'])
+    res['measurement_type'] = _reverse_map_ontology_annotation(assay_ord_dict['measurement_type'],
+                                                               compress_strings=True)
+    res['technology_type'] = _reverse_map_ontology_annotation(assay_ord_dict['technology_type'],
+                                                              compress_strings=True)
     res['workflow'] = []
     for name, nodes in assay_ord_dict.items():
         if name in {'measurement_type', 'technology_type'}:

@@ -5,7 +5,8 @@ import unittest
 import os
 import json
 
-from isatools.create.models import StudyDesign, StudyArm, StudyCell, SampleAndAssayPlan
+from isatools.create.models import StudyDesign, StudyArm, StudyCell, SampleAndAssayPlan, Study, Investigation
+from isatools.isajson import ISAJSONEncoder
 from tests.create_sample_assay_plan_odicts import ms_assay_dict, annotated_ms_assay_dict
 
 
@@ -68,4 +69,14 @@ class TestMappings(unittest.TestCase):
             for cell, samp_ass_plan in arm.arm_map.items():
                 self.assertIsInstance(cell, StudyCell)
                 self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
-
+        study = design.generate_isa_study()
+        self.assertIsInstance(study, Study)
+        investigation = Investigation(studies=[study])
+        inv_json = json.dumps(
+            investigation,
+            cls=ISAJSONEncoder,
+            sort_keys=True,
+            indent=4,
+            separators=(',', ': ')
+        )
+        self.assertIsInstance(inv_json, str)

@@ -30,8 +30,8 @@ sample_list = [
         }
 ]
 ms_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'mass spectrometry'),
+    ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
+    ('technology_type', OntologyAnnotation(term='mass spectrometry')),
     ('extraction', {}),
     ('extract', [
         {
