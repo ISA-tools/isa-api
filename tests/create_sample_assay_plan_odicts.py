@@ -6,7 +6,7 @@ from isatools.model import OntologyAnnotation
 sample_list = [
         {
             'node_type': SAMPLE,
-            'characteristics_category': ORGANISM_PART,
+            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
             'characteristics_value': 'liver',
             'size': 1,
             'technical_replicates': None,
@@ -14,7 +14,7 @@ sample_list = [
         },
         {
             'node_type': SAMPLE,
-            'characteristics_category': ORGANISM_PART,
+            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
             'characteristics_value': 'blood',
             'size': 5,
             'technical_replicates': None,
@@ -22,7 +22,7 @@ sample_list = [
         },
         {
             'node_type': SAMPLE,
-            'characteristics_category': ORGANISM_PART,
+            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
             'characteristics_value': 'heart',
             'size': 1,
             'technical_replicates': None,
@@ -36,14 +36,14 @@ ms_assay_dict = OrderedDict([
     ('extract', [
         {
             'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
+            'characteristics_category': OntologyAnnotation(term='extract type'),
             'characteristics_value': 'polar fraction',
             'size': 1,
             'is_input_to_next_protocols': True
         },
         {
             'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
+            'characteristics_category': OntologyAnnotation(term='extract type'),
             'characteristics_value': 'lipids',
             'size': 1,
             'is_input_to_next_protocols': True
@@ -55,7 +55,7 @@ ms_assay_dict = OrderedDict([
     ('labelled extract', [
         {
             'node_type': LABELED_EXTRACT,
-            'characteristics_category': 'labelled extract type',
+            'characteristics_category': OntologyAnnotation(term='labelled extract type'),
             'characteristics_value': '',
             'size': 1,
             'is_input_to_next_protocols': True
@@ -90,14 +90,20 @@ annotated_ms_assay_dict = OrderedDict([
     ), [
         {
             'node_type': EXTRACT,
-            'characteristics_category': OntologyAnnotation(term='extract type'),
+            'characteristics_category': OntologyAnnotation(
+                term='extract type',
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C82948'
+            ),
             'characteristics_value': OntologyAnnotation(term='polar fraction'),
             'size': 1,
             'is_input_to_next_protocols': True
         },
         {
             'node_type': EXTRACT,
-            'characteristics_category': OntologyAnnotation(term='extract type'),
+            'characteristics_category': OntologyAnnotation(
+                term='extract type',
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C82948'
+            ),
             'characteristics_value': OntologyAnnotation(term='lipids'),
             'size': 1,
             'is_input_to_next_protocols': True
@@ -115,7 +121,10 @@ annotated_ms_assay_dict = OrderedDict([
     ), [
         {
             'node_type': LABELED_EXTRACT,
-            'characteristics_category': OntologyAnnotation(term='labelled extract type'),
+            'characteristics_category': OntologyAnnotation(
+                term='labelled extract type',
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C43386'
+            ),
             'characteristics_value': OntologyAnnotation(term=''),
             'size': 1,
             'is_input_to_next_protocols': True
@@ -233,20 +242,20 @@ lcdad_assay_dict = OrderedDict([
         ])
 
 nmr_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'nmr spectroscopy'),
+    ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
+    ('technology_type', OntologyAnnotation(term='nmr spectroscopy')),
     ('extraction', {}),
     ('extract', [
         {
             'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
+            'characteristics_category': OntologyAnnotation(term='extract type'),
             'characteristics_value': 'supernatant',
             'size': 1,
             'is_input_to_next_protocols': True
         },
         {
             'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
+            'characteristics_category': OntologyAnnotation(term='extract type'),
             'characteristics_value': 'pellet',
             'size': 1,
             'is_input_to_next_protocols': True
@@ -254,9 +263,9 @@ nmr_assay_dict = OrderedDict([
     ]),
     ('nmr spectroscopy', {
         '#replicates': 2,
-        'instrument': ['Bruker AvanceII 1 GHz'],
-        'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
-        'pulse_sequence': ['CPMG', 'watergate']
+        OntologyAnnotation(term='instrument'): ['Bruker AvanceII 1 GHz'],
+        OntologyAnnotation(term='acquisition_mode'): ['1D 13C NMR', '2D 13C-13C NMR'],
+        OntologyAnnotation(term='pulse_sequence'): ['CPMG', 'watergate']
         # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
         # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
     }),

@@ -1098,7 +1098,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
         self.assertEqual(len(smp_ass_plan.assay_plan), 2)
-        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type)[0]
+        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type.term)[0]
         self.assertIsInstance(ms_assay_graph, AssayGraph)
         self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])

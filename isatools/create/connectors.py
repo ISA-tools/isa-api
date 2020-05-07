@@ -79,7 +79,11 @@ def assay_template_to_ordered_dict(assay_template):
         if isinstance(nodes, list):
             # "nodes" represent a list of ProductNodes
             prepared_nodes = [
-                {key: _map_ontology_annotations(value) for key, value in el.items()} for el in nodes
+                {
+                    key: _map_ontology_annotations(
+                        value, expand_strings=True if key in ['characteristics_category'] else False
+                    ) for key, value in el.items()
+                } for el in nodes
             ]
         if isinstance(nodes, dict):
             # "nodes" represent a ProtocolNode
@@ -128,7 +132,11 @@ def assay_ordered_dict_to_template(assay_ord_dict):
         elif isinstance(nodes, list):
             # "nodes" represent a list of ProductNodes
             serialized_nodes = [
-                {key: _reverse_map_ontology_annotation(val) for key, val in node.items()} for node in nodes
+                {
+                    key: _reverse_map_ontology_annotation(
+                        val, compress_strings=True if key in ['characteristics_category'] else False
+                    ) for key, val in node.items()
+                } for node in nodes
             ]
         else:
             serialized_nodes = {}
