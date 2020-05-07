@@ -187,7 +187,8 @@ def _generate_sample_dict_from_config(sample_type_config):
     return dict(
         node_type=SAMPLE,
         characteristics_category=_map_ontology_annotations(
-            sample_type_config.get('outputCategory', ORGANISM_PART)
+            sample_type_config.get('outputCategory', ORGANISM_PART),
+            expand_strings=True
         ),
         characteristics_value=_map_ontology_annotations(sample_type_config['output']),
         size=sample_type_config.get('outputSize', 1),
