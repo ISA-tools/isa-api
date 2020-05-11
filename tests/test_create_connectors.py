@@ -1,5 +1,5 @@
 from isatools.create.connectors import assay_template_to_ordered_dict, assay_ordered_dict_to_template, \
-    generate_isa_study_design_from_datascriptor_config
+    generate_study_design_from_config
 
 import unittest
 import os
@@ -61,7 +61,7 @@ class TestMappings(unittest.TestCase):
         ds_design_config['events'][-2]['template'] = self.met_prof_jsons[0]
         # the second assay template is Metabolite Profiling - NMR
         ds_design_config['events'][-1]['template'] = self.met_prof_jsons[2]
-        design = generate_isa_study_design_from_datascriptor_config(ds_design_config)
+        design = generate_study_design_from_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         self.assertEqual(len(design.study_arms), len(ds_design_config['arms']))
         for arm in design.study_arms:
