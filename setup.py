@@ -47,7 +47,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         ],
     install_requires=[
-        'numpy~=1.18.3',
+        'numpy~=1.18.4',
         'jsonschema~=3.2.0',
         'pandas~=1.0.3',
         'networkx~=2.4',
@@ -61,7 +61,7 @@ setup(
         'biopython~=1.76',
         'progressbar2~=3.51.3',
         'deepdiff~=4.3.2',
-        'PyYAML~=3.13'
+        'PyYAML~=5.3.1'
     ],
     test_suite='tests'
 )

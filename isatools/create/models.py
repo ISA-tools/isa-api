@@ -98,7 +98,7 @@ STUDY_CELL = 'study cell'
 
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yaml')) as yaml_file:
-    yaml_config = yaml.load(yaml_file)
+    yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
 
 DEFAULT_SOURCE_TYPE = Characteristic(
@@ -2334,7 +2334,7 @@ class StudyDesign(object):
         """
         with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                                'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file)
+            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         study = Study(filename=study_config['filename'])
         study.ontology_source_references = [

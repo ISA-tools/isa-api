@@ -1,11 +1,11 @@
 wheel~=0.34.2
 setuptools~=46.3.0
-numpy~=1.18.3
+numpy~=1.18.4
 jsonschema~=3.2.0
 pandas~=1.0.3
 networkx~=2.4
 lxml~=4.5.0
-requests~=2.23
+requests~=2.23.0
 iso8601~=0.1.12
 chardet~=3.0.4
 jinja2~=2.11.2
@@ -16,7 +16,7 @@ mzml2isa==1.0.2
 biopython~=1.76
 progressbar2~=3.51.3
 deepdiff~=4.3.2
-PyYAML~=3.13
+PyYAML~=5.3.1
 bokeh~=1.4.0
 # test dependencies
 # tox==3.14.0
