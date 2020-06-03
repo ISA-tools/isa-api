@@ -1140,7 +1140,7 @@ class AssayGraph(object):
             if isinstance(node_params, list):    # the node is a ProductNode
                 for i, node_params_dict in enumerate(node_params):
                     for j, prev_node in enumerate(previous_nodes):
-                        print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                        # print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         product_node = ProductNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                 re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
@@ -1156,11 +1156,11 @@ class AssayGraph(object):
             else:       # the node is a ProtocolNode
                 replicates = node_params.get('#replicates', 1)
                 node_params = {key: val for key, val in node_params.items() if key != '#replicates'}
-                print(node_params)
+                # print(node_params)
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for i, pv_combination in enumerate(pv_combinations):
-                    print('pv_combination: {0}'.format(pv_combination))
+                    # print('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
@@ -1178,7 +1178,7 @@ class AssayGraph(object):
                         current_nodes.append(protocol_node)
                     else:
                         for j, prev_node in enumerate(previous_nodes):
-                            print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                            # print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
@@ -1961,7 +1961,7 @@ class StudyArmDecoder(object):
             for json_sample_assay_plan in json_dict['sampleAndAssayPlans']
         }
         for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):
-            print('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
+            # print('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
             json_cell = json_dict['cells'][i]
             if json_cell['name'] != cell_name:
                 raise ValueError()   # FIXME which is the right error type here?
@@ -2343,7 +2343,7 @@ class StudyDesign(object):
         study.protocols = [
             Protocol(**protocol_config) for protocol_config in study_config['protocols']
         ]
-        print('Sampling protocol is {0}'.format(study.protocols[0]))
+        # print('Sampling protocol is {0}'.format(study.protocols[0]))
         sources_map = self._generate_sources(study.ontology_source_references)
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, protocols, study.samples, study.assays, study.process_sequence, \
@@ -2632,7 +2632,7 @@ class StudyDesignEncoder(json.JSONEncoder):
             study_arms_dict = {
                 arm.name: arm_encoder.default(arm) for arm in obj.study_arms
             }
-            print(study_arms_dict)
+            # print(study_arms_dict)
             for arm in study_arms_dict.values():
                 arm.pop('name')
             return {
@@ -2824,9 +2824,6 @@ class StudyDesignFactory(object):
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                           elements=[follow_up_map[0]]), follow_up_map[1]])
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
-            for el in arm_map:
-                print('Cell: {0}'.format(el[0]))
-                print('SampleAndAssayPlans: {0}'.format(el[1]))
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
@@ -3033,9 +3030,6 @@ class StudyDesignFactory(object):
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                           elements=[follow_up_map[0]]), follow_up_map[1]])
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
-            for el in arm_map:
-                print('Cell: {0}'.format(el[0]))
-                print('SampleAndAssayPlans: {0}'.format(el[1]))
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
