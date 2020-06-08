@@ -6,6 +6,7 @@ from io import StringIO
 
 from isatools.create.models import *
 from isatools.tests import utils
+from tests.create_sample_assay_plan_odicts import nmr_assay_dict
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
@@ -80,43 +81,6 @@ BIOLOGICAL_FACTOR_1_VALUE = 12e-3
 BIOLOGICAL_FACTOR_1_UNIT = OntologyAnnotation(term='mg')
 BIOLOGICAL_FACTOR_2_VALUE = 7
 BIOLOGICAL_FACTOR_2_UNIT = OntologyAnnotation(term='day')
-
-nmr_assay_dict = OrderedDict([
-    ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
-    ('technology_type', OntologyAnnotation(term='nmr spectroscopy')),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category':  OntologyAnnotation(term='extract type'),
-                    'characteristics_value': OntologyAnnotation(term='supernatant'),
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category':  OntologyAnnotation(term='extract type'),
-                    'characteristics_value': OntologyAnnotation(term='pellet'),
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('nmr_spectroscopy', {
-                OntologyAnnotation(term='instrument'): [OntologyAnnotation(term='Bruker AvanceII 1 GHz')],
-                OntologyAnnotation(term='acquisition_mode'): [OntologyAnnotation(term='1D 13C NMR')],
-                OntologyAnnotation(term='pulse_sequence'): [OntologyAnnotation(term='CPMG')]
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
 
 
 class OrderedTest(unittest.TestCase):
