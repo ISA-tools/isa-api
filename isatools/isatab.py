@@ -1403,7 +1403,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         protrefcount += 1
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
-                    # oname_label = None
+                    oname_label = None
                     if node.executes_protocol.protocol_type:
                         if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
                             oname_label = "Assay Name"
@@ -1422,11 +1422,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         elif node.executes_protocol.protocol_type.term \
                                 == "normalization":
                             oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term \
+                        if node.executes_protocol.protocol_type.term \
                                 == "unknown protocol":
                             oname_label = "Unknown Protocol Name"
-                        else:
-                            oname_label = 'Protocol Name'
                         if oname_label is not None:
                             columns.append(oname_label)
                         elif node.executes_protocol.protocol_type.term \
