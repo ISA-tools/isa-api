@@ -1403,6 +1403,15 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         protrefcount += 1
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
+
+                    if node.date is not None:
+                        columns.append(olabel + ".Date")
+                    if node.performer is not None:
+                        columns.append(olabel + ".Performer")
+                    columns += flatten(
+                        map(lambda x: get_comment_column(olabel, x),
+                            node.comments))
+
                     # oname_label = None
                     if node.executes_protocol.protocol_type:
                         if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
@@ -1437,13 +1446,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
-                    if node.date is not None:
-                        columns.append(olabel + ".Date")
-                    if node.performer is not None:
-                        columns.append(olabel + ".Performer")
-                    columns += flatten(
-                        map(lambda x: get_comment_column(olabel, x),
-                            node.comments))
+
+
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
                         columns.append(output.label)
