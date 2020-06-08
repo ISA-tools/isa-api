@@ -621,8 +621,8 @@ def create_datafile_hashes(fileroot, filenames):
     :return: dict containing filenames and md5s
 
     Usage:
-    >>> filenames = [f for f in listdir('/path/') if f.endswith('.fastq.gz')]
-    >>> create_datafile_hashes(fileroot='/path/s', filenames=filesnames)
+   / >>> filenames = [f for f in listdir('/path/') if f.endswith('.fastq.gz')]
+  /  >>> create_datafile_hashes(fileroot='/path/s', filenames=filesnames)
     {
         'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e',
         'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e'

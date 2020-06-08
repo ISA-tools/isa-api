@@ -2,6 +2,7 @@ import os
 import csv
 from collections import OrderedDict
 import pandas as pd
+import modin.pandas as pd_modin
 import json
 import rdflib
 

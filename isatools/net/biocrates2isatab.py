@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
 """Functions for importing from BioCrates"""
+from time import time
+import os
+
+# os.environ["MODIN_ENGINE"] = "ray"
+# os.environ["MODIN_CPUS"] = "4"
 import pandas as pd
+
+# import ray
+# ray.init(num_cpus=1)
+# import modin.pandas as pd
 import glob
 import logging
-import os
+
+
 import subprocess
 import sys
 import uuid
@@ -46,6 +56,7 @@ DESTINATION_DIR = 'output/isatab/'
 SAMPLE_METADATA_INPUT_DIR = 'resources/biocrates/input-test/'
 
 logger = logging.getLogger('isatools')
+
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -294,6 +305,7 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
 
 def complete_MAF(maf_stub):
 
+    # data = pd_modin.read_csv(maf_stub, sep='\t')
     data = pd.read_csv(maf_stub, sep='\t')
 
     data.insert(1, "database_identifier", "")
@@ -321,12 +333,14 @@ def add_sample_metadata(sample_info_file, input_study_file):
     S_STUDY_LOC = os.path.join(DESTINATION_DIR, input_study_file)
     print("study file location:", S_STUDY_LOC)
 
+    # data = pd_modin.read_csv(S_STUDY_LOC, sep='\t')
     data = pd.read_csv(S_STUDY_LOC, sep='\t')
     print("study file:", data)
 
     SAMPLE_METADATA_LOC = os.path.join(SAMPLE_METADATA_INPUT_DIR, sample_info_file)
     print("sample metadata file location:", SAMPLE_METADATA_LOC)
 
+    # sample_desc = pd_modin.read_csv(SAMPLE_METADATA_LOC)
     sample_desc = pd.read_csv(SAMPLE_METADATA_LOC)
     print("sample metadata: ", sample_desc)
 
@@ -334,6 +348,7 @@ def add_sample_metadata(sample_info_file, input_study_file):
 
     # result = data.join(sample_desc, on='Characteristics[barcode identifier]')
 
+    # result = pd_modin.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     result = pd.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     cols = result.columns.tolist()
     print(cols)
@@ -417,10 +432,12 @@ def parseSample(biocrates_filename):
 
 
 if __name__ == "__main__":
+    start = time()
     biocrates_to_isatab_convert('biocrates-merged-output.xml', saxon_jar_path=DEFAULT_SAXON_EXECUTABLE)
     parseSample(biocrates_filename='biocrates-merged-output.xml')
     add_sample_metadata('EX0003_sample_metadata.csv', 's_study_biocrates.txt')
-
+    end = time()
+    print('The conversion took {:.2f} s.'.format(end - start))
 # parseSample(sys.argv[1])
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")

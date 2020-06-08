@@ -8,15 +8,14 @@ isatools.model package.
 from __future__ import absolute_import
 import copy
 import csv
-import logging
 import os
 import re
 import tempfile
 from io import StringIO
 from itertools import zip_longest
-
 import numpy as np
 import pandas as pd
+import modin.pandas as pd_modin
 
 from isatools import isatab
 from isatools.model import (
@@ -32,9 +31,13 @@ from isatools.model import (
     Study,
     StudyFactor,
 )
+import logging
 
-
-log = logging.getLogger('isatools')
+try:
+    log = logging.getLogger('isatools')
+    print("LOG:", log)
+except IOError as ioe:
+    print("error:", ioe)
 
 
 def _get_sdrf_filenames(ISA):

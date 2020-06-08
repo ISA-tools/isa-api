@@ -240,7 +240,7 @@ _LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File',
                       'Free Induction Decay Data File',
                       'Derived Array Data Matrix File', 'Image File',
                       'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', "NMR Assay Name",
                        'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -1414,6 +1414,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 == "mass spectrometry":
                             oname_label = "MS Assay Name"
                         elif node.executes_protocol.protocol_type.term \
+                                == "NMR spectroscopy":
+                            oname_label = "NMR Assay Name"
+                        elif node.executes_protocol.protocol_type.term \
                                 == "data transformation":
                             oname_label = "Data Transformation Name"
                         elif node.executes_protocol.protocol_type.term \
@@ -1494,6 +1497,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             elif node.executes_protocol.protocol_type.term == \
                                     "mass spectrometry":
                                 oname_label = "MS Assay Name"
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "NMR spectroscopy":
+                                oname_label = "NMR Assay Name"
                             elif node.executes_protocol.protocol_type.term == \
                                     "data transformation":
                                 oname_label = "Data Transformation Name"
@@ -2567,7 +2573,7 @@ def load_table_checks(fp):
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name',
+                           'Raw Data File', 'Material Type', 'MS Assay Name','NMR Assay Name'
                            'Raw Spectral Data File', 'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',
@@ -5154,7 +5160,7 @@ class IsaTabDataFrame(pd.DataFrame):
                        'Labeled Extract Name']
     OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
     NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
-    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
+    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'NMR Assay Name', 'Hybridization Assay Name',
                     'Scan Name', 'Data Transformation Name',
                     'Normalization Name', 'Array Design REF']
     QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF',
@@ -5294,8 +5300,11 @@ def preprocess(DF):
                 'Assay Name', 'MS Assay Name'):
             inferred_protocol_type = 'library sequencing'
         elif leftcol == 'Extract Name' and rightcol in (
-                'Assay Name', 'MS Assay Name'):
-            inferred_protocol_type = 'library preparation'
+             'MS Assay Name'):
+            inferred_protocol_type = 'mass spectrometry'
+        elif leftcol == 'Extract Name' and rightcol in (
+             'NMR Assay Name'):
+            inferred_protocol_type = 'NMR spectroscopy'
         elif leftcol == 'Scan Name' and rightcol == 'Raw Data File':
             inferred_protocol_type = 'data acquisition'
         elif leftcol == 'Assay Name' and rightcol == 'Normalization Name':
@@ -5303,7 +5312,7 @@ def preprocess(DF):
         elif leftcol == 'Normalization Name' and \
                         rightcol == 'Data Transformation Name':
             inferred_protocol_type = 'data transformation'
-        elif leftcol == 'Raw Data File' and \
+        elif leftcol == 'Raw Spectral Data File' and \
                         rightcol == 'Metabolite Identification File':
             inferred_protocol_type = 'metabolite identification'
         elif leftcol == 'Raw Data File' and \

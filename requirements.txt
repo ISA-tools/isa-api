@@ -1,6 +1,6 @@
 numpy==1.17.3
 jsonschema==3.1.1
-pandas==0.25.3
+pandas==1.0.3
 networkx==2.4
 lxml==4.4.1
 requests==2.22.0
