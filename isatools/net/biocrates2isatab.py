@@ -3,13 +3,16 @@
 from time import time
 import os
 
+# -- TESTING FOR distribution and light-weight parallel DataFrame implementation
 # os.environ["MODIN_ENGINE"] = "ray"
 # os.environ["MODIN_CPUS"] = "4"
-import pandas as pd
-
 # import ray
 # ray.init(num_cpus=1)
 # import modin.pandas as pd
+# -- END OF ---------------
+
+import pandas as pd
+
 import glob
 import logging
 

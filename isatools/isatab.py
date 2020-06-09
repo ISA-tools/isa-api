@@ -1412,7 +1412,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
 
-                    # oname_label = None
+                    oname_label = None
                     if node.executes_protocol.protocol_type:
                         if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
                             oname_label = "Assay Name"
@@ -1446,7 +1446,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
-
 
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
@@ -1493,6 +1492,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             node.executes_protocol.name)
                         df_dict[olabel][-1] = node.executes_protocol.name
                         oname_label = None
+
+                        if node.date is not None:
+                            df_dict[olabel + ".Date"][-1] = node.date
+                        if node.performer is not None:
+                            df_dict[olabel + ".Performer"][-1] = node.performer
+
                         if node.executes_protocol.protocol_type:
                             if node.executes_protocol.protocol_type.term == \
                                     "nucleic acid sequencing":
@@ -1526,10 +1531,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                     node.name
                                 df_dict["Array Design REF"][-1] = \
                                     node.array_design_ref
-                        if node.date is not None:
-                            df_dict[olabel + ".Date"][-1] = node.date
-                        if node.performer is not None:
-                            df_dict[olabel + ".Performer"][-1] = node.performer
+
                         for pv in node.parameter_values:
                             pvlabel = "{0}.Parameter Value[{1}]".format(
                                 olabel, pv.category.parameter_name.term)
@@ -2590,7 +2592,7 @@ def load_table_checks(fp):
                            'Derived Spectral Data File', 'Normalization Name',
                            'Derived Array Data File', 'Image File',
                            'Metabolite Assignment File',
-                           'Free Induction Decay File',
+                           'Free Induction Decay Data File',
                            'Acquisition Parameter Data File']) \
                 and not _RX_CHARACTERISTICS.match(column) \
                 and not _RX_PARAMETER_VALUE.match(column) \
@@ -4528,8 +4530,7 @@ def batch_validate(tab_dir_list):
     return batch_report
 
 
-def dumps(isa_obj, skip_dump_tables=False,
-          write_fvs_in_assay_table=False):
+def dumps(isa_obj, skip_dump_tables=False,  write_fvs_in_assay_table=False):
     """Serializes ISA objects to ISA-Tab to standard output
 
     :param isa_obj: An ISA Investigation object
@@ -5144,7 +5145,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _consutrctor(self):
+    def _constructor(self):
         return IsaTabSeries
 
 

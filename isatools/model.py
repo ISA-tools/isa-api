@@ -1696,7 +1696,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                               'analyzer',
                               'chromatography instrument',
                               'chromatography column']
-        elif protocol_type == 'nmr spectroscopy':
+        elif protocol_type == 'NMR spectroscopy':
             parameter_list = ['instrument',
                               'NMR probe',
                               'number of acquisition',
