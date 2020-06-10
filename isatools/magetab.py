@@ -15,7 +15,7 @@ from io import StringIO
 from itertools import zip_longest
 import numpy as np
 import pandas as pd
-import modin.pandas as pd_modin
+# import modin.pandas as pd_modin
 
 from isatools import isatab
 from isatools.model import (
