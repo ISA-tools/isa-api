@@ -2613,6 +2613,17 @@ def isa_objects_factory(node, sequence_no):
             )
         if node.type == DATA_FILE:
             return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+        # TODO: ADD MORE DATA FILE SUPPORT
+        # \**
+        # if node.type == DATA_FILE and "_nmr_" in technology_type.term :
+        #     return FreeInductionDecayDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+        # elif node.type == DATA_FILE and "_ms_" in technology_type.term :
+        #     return RawSpectralDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+        # elif node.type == DATA_FILE and "_microarray_" in technology_type.term   :
+        #     return ArrayDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+        # else :
+        #     return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+        # \**
         """
         cls = {
             SAMPLE: Sample,

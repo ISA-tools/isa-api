@@ -1543,7 +1543,7 @@ sample1\textraction\te2\tscanning\td2"""
             self.assertEqual(len(ISA.studies[0].assays[1].data_files), 1)
 
     def test_isatab_load_issue210_on_MTBLS1(self):
-        with open(os.path.join(self._tab_data_dir, 'MTBLS1', 'i_Investigation.txt'), encoding='utf-8') as fp:
+        with open(os.path.join(self._tab_data_dir, 'MTBLS1', 'i_investigation.txt'), encoding='utf-8') as fp:
             ISA = isatab.load(fp)
             print("ISA loaded?", ISA.studies[0].assays[0].data_files)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 134)
