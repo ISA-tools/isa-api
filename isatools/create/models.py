@@ -2631,14 +2631,18 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
                 print('isa_objects_factory: Assay conf. found: {}; {};'.format(
                     measurement_type, technology_type)
                 )
+                m_type_term = measurement_type.term if isinstance(measurement_type, OntologyAnnotation) \
+                    else measurement_type
+                t_type_term = technology_type.term if isinstance(technology_type, OntologyAnnotation) \
+                    else technology_type
                 curr_assay_opt = next(
-                    opt for opt in assays_opts if opt['measurement type'] == measurement_type and
-                    opt['technology type'] == technology_type
+                    opt for opt in assays_opts if opt['measurement type'] == m_type_term and
+                    opt['technology type'] == t_type_term
                 )
                 print('isa_objects_factory: Assay conf. found: {}; {}; {};'.format(
                     measurement_type, technology_type, curr_assay_opt)
                 )
-                isa_class = globals()[curr_assay_opt['raw data file']]
+                isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
                 return isa_class(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
             except StopIteration as e:
                 return RawDataFile(
