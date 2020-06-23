@@ -15,6 +15,7 @@ from numbers import Number
 import copy
 from isatools.model import *
 from isatools.errors import *
+from isatools.utils import urlify
 from abc import ABC
 from math import factorial
 import os
@@ -2304,12 +2305,12 @@ class StudyDesign(object):
         assay = Assay(
             measurement_type=measurement_type,
             technology_type=technology_type,
-            filename='a_{0}_{1}_{2}_{3}.txt'.format(
+            filename=urlify('a_{0}_{1}_{2}_{3}.txt'.format(
                 cell_name,
                 assay_graph.id,
                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
                 technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type
-            )
+            ))
         )
         log.debug('assay measurement type: {0} - technology type: {1}'.format(measurement_type,
                                                                               assay.technology_type))
@@ -2346,7 +2347,7 @@ class StudyDesign(object):
                                'study-creator-config.yaml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
-        study = Study(filename=study_config['filename'])
+        study = Study(filename=urlify(study_config['filename']))
         study.ontology_source_references = [
             OntologySource(**study_config['ontology_source_references'][0])
         ]
@@ -2421,13 +2422,13 @@ class QualityControlService(object):
                             # Such an assumption is correct as far a the Assay filename convention is not modified
                             measurement_type, technology_type = assay_graph.measurement_type, \
                                                                 assay_graph.technology_type
-                            assay_filename = filename='a_{0}_{1}_{2}_{3}.txt'.format(
+                            assay_filename = urlify('a_{0}_{1}_{2}_{3}.txt'.format(
                                 cell.name, assay_graph.id,
                                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation)
                                 else measurement_type,
                                 technology_type.term if isinstance(technology_type, OntologyAnnotation)
                                 else technology_type
-                            )
+                            ))
                             assay_to_expand = next(assay for assay in qc_study.assays
                                                    if assay.filename == assay_filename)
                             index = qc_study.assays.index(assay_to_expand)
