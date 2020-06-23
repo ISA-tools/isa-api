@@ -2628,6 +2628,9 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
         # derived data file would require a completely separate approach
         if node.type == DATA_FILE:
             try:
+                print('isa_objects_factory: Assay conf. found: {}; {};'.format(
+                    measurement_type, technology_type)
+                )
                 curr_assay_opt = next(
                     opt for opt in assays_opts if opt['measurement type'] == measurement_type and
                     opt['technology type'] == technology_type
