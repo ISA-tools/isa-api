@@ -101,6 +101,12 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', '
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
 
+with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
+                       'assay-options.yml')) as yaml_file:
+    assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+print(assays_opts)
+
 DEFAULT_SOURCE_TYPE = Characteristic(
     category=OntologyAnnotation(
         term='Study Subject',
@@ -2241,7 +2247,11 @@ class StudyDesign(object):
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
                                          previous_items=[], ix=0, jx=0, counter=0):
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
-        item = isa_objects_factory(node, sequence_no='{0}-{1}'.format(ix, counter))
+        item = isa_objects_factory(
+            node, sequence_no='{0}-{1}'.format(ix, counter),
+            measurement_type=assay_graph.measurement_type,
+            technology_type=assay_graph.technology_type
+        )
         if isinstance(item, Process):
             item.inputs = previous_items
             processes.append(item)
@@ -2578,9 +2588,11 @@ class QualityControlService(object):
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 
-def isa_objects_factory(node, sequence_no):
+def isa_objects_factory(node, sequence_no, measurement_type=None, technology_type=None):
     """
     This method generates an ISA element from an ISA node
+    :param technology_type:
+    :param measurement_type:
     :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
     :param sequence_no: str - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
@@ -2611,17 +2623,20 @@ def isa_objects_factory(node, sequence_no):
                 name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
+        # under the hypothesis that we deal only with raw data files
+        # derived data file would require a completely separate approach
         if node.type == DATA_FILE:
-            return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        """
-        cls = {
-            SAMPLE: Sample,
-            EXTRACT: Extract,
-            LABELED_EXTRACT: LabeledExtract,
-            DATA_FILE: DataFile
-        }
-        return cls[node.type](characteristics=node.characteristics, name=node.name)
-        """
+            try:
+                curr_assay_opt = next(
+                    opt for opt in assays_opts if opt['measurement type'] == measurement_type and
+                    opt['technology type'] == technology_type
+                )
+                isa_class = globals()[curr_assay_opt['raw data file']]
+                return isa_class(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+            except StopIteration as e:
+                return RawDataFile(
+                    filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH))
+                )
 
 
 class StudyDesignEncoder(json.JSONEncoder):
