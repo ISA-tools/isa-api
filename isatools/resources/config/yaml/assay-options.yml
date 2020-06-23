@@ -147,7 +147,6 @@
     key in json_configuration: microarray_raw_data_file
     raw data file: Raw Data File
     derived data file: Derived Array Data File
-    derived data file: 
 -
     measurement type: protein-DNA binding site identification
     technology type: DNA microarray
