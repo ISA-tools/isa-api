@@ -1,0 +1,89 @@
+Source Name	Characteristics[barcode identifier]	Characteristics[material role]	Characteristics[chemical compound]	Characteristics[Organism]	Term Source REF	Term Accession Number	Characteristics[Organism part]	Term Source REF	Term Accession Number	Protocol REF	Date	Sample Name	Material Type	
+102920_S9	1024506648	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102920_S9	specimen
+102044	1024502879	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102044	specimen
+102910_J8	1024506546	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102910_J8	specimen
+102028	1024502710	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102028	specimen
+102031	1024502743	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102031	specimen
+BLANK	10000001	negative control	no sample to pipette	not applicable			not applicable			sample collection		BLANK	negative control
+102933_N4	1024506773	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102933_N4	specimen
+102932_N3	1024506769	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102932_N3	specimen
+102024	1024502675	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102024	specimen
+102916_S5	1024506600	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102916_S5	specimen
+102049	1024502928	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102049	specimen
+102040	1024502831	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102040	specimen
+102032	1024502758	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102032	specimen
+102909_J7	1024506531	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102909_J7	specimen
+102903_J1	1024506478	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102903_J1	specimen
+102938_N9	1024506822	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102938_N9	specimen
+102035	1024502781	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102035	specimen
+102926_M6	1024506701	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102926_M6	specimen
+102055	1024502985	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102055	specimen
+102912_S1	1024506565	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102912_S1	specimen
+102906_J4	1024506508	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102906_J4	specimen
+102029	1024502724	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102029	specimen
+102026	1024502694	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102026	specimen
+102033	1024502762	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102033	specimen
+102930_N1	1024506740	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102930_N1	specimen
+102041	1024502845	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102041	specimen
+102048	1024502913	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102048	specimen
+102936_N7	1024506803	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102936_N7	specimen
+102937_N8	1024506818	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102937_N8	specimen
+p180_QC3	1020164640	positive control	EDTA plasma	not applicable			not applicable			sample collection	2017-04-25	p180_QC3	positive control
+102036	1024502796	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102036	specimen
+102057	1024503001	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102057	specimen
+p180_QC1	1020164621	positive control	EDTA plasma	not applicable			not applicable			sample collection	2017-04-12	p180_QC1	positive control
+102928_M8	1024506721	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102928_M8	specimen
+102050	1024502932	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102050	specimen
+102051	1024502947	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102051	specimen
+102904_J2	1024506482	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102904_J2	specimen
+PBS	11000002	negative control	water based zero samples	not applicable			not applicable			sample collection	2008-10-24	PBS	negative control
+102918_S7	1024506629	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102918_S7	specimen
+102911_J9	1024506551	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102911_J9	specimen
+102939_TD000232_1	1024506856	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	serum	UBERON	http://purl.obolibrary.org/obo/UBERON_0001977	sample collection		102939_TD000232_1	specimen
+102042	1024502850	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102042	specimen
+102054	1024502971	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102054	specimen
+102027	1024502705	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102027	specimen
+102053	1024502966	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102053	specimen
+102935_N6	1024506792	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102935_N6	specimen
+102052	1024502951	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102052	specimen
+102056	1024502990	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102056	specimen
+102058	1024503016	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102058	specimen
+102917_S6	1024506614	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102917_S6	specimen
+102941_TD000232_3	1024506875	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	serum	UBERON	http://purl.obolibrary.org/obo/UBERON_0001977	sample collection		102941_TD000232_3	specimen
+102915_S4	1024506599	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102915_S4	specimen
+102934_N5	1024506788	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102934_N5	specimen
+p180-UHPLC Cal4	437331	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal4	positive control
+102931_N2	1024506754	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102931_N2	specimen
+102045	1024502883	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102045	specimen
+102043	1024502864	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102043	specimen
+p180-UHPLC Cal2	437314	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal2	positive control
+102025	1024502680	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102025	specimen
+102921_M1	1024506652	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102921_M1	specimen
+p180-UHPLC Cal5	437345	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal5	positive control
+102914_S3	1024506584	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102914_S3	specimen
+102922_M2	1024506667	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102922_M2	specimen
+p180_QC2	1020164635	positive control	EDTA plasma	not applicable			not applicable			sample collection	2017-04-25	p180_QC2	positive control
+102924_M4	1024506686	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102924_M4	specimen
+102919_S8	1024506633	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102919_S8	specimen
+102929_M9	1024506735	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102929_M9	specimen
+102925_M5	1024506691	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102925_M5	specimen
+102046	1024502898	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102046	specimen
+102038	1024502811	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102038	specimen
+102907_J5	1024506512	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102907_J5	specimen
+102927_M7	1024506716	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102927_M7	specimen
+102034	1024502777	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102034	specimen
+102030	1024502739	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102030	specimen
+102905_J3	1024506497	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102905_J3	specimen
+102039	1024502826	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102039	specimen
+102037	1024502807	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102037	specimen
+102047	1024502909	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102047	specimen
+102908_J6	1024506527	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102908_J6	specimen
+102923_M3	1024506671	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102923_M3	specimen
+102059	1024503021	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102059	specimen
+102942_TD000232_4	1024506880	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	serum	UBERON	http://purl.obolibrary.org/obo/UBERON_0001977	sample collection		102942_TD000232_4	specimen
+p180-UHPLC Cal6	437359	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal6	positive control
+p180-UHPLC Cal7	437362	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal7	positive control
+102940_TD000232_2	1024506861	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	serum	UBERON	http://purl.obolibrary.org/obo/UBERON_0001977	sample collection		102940_TD000232_2	specimen
+102913_S2	1024506570	specimen	not applicable	Homo sapiens	NCBITax	http://purl.obolibrary.org/obo/NCBITaxon_9606	extract	OBI	http://purl.obolibrary.org/obo/OBI_0000423	sample collection		102913_S2	specimen
+p180-UHPLC Cal1	437301	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal1	positive control
+p180-UHPLC Cal3	437328	positive control	calibrators	not applicable			not applicable			sample collection	2012-10-16	p180-UHPLC Cal3	positive control

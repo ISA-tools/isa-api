@@ -40,7 +40,7 @@ DOI:
     xmlns:isa="http://www.isa-tools.org/"
     exclude-result-prefixes="isa" xpath-default-namespace="http://www.biocrates.com/metstat/result/xml_1.0"> 
  
-    <xsl:import href="../sra/isa-functions.xsl"/> 
+    <xsl:import href="../sra/isa-functions-biocrates.xsl"/>
    
     <xsl:output method="text" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
@@ -91,9 +91,11 @@ DOI:
     </xsl:template>      
     
 <xsl:template match="data">
+    <!-- a test to assess that the output directory by passing the value as param via the command line invocation of the saxon is OK -->
+    <!--<xsl:text>The value of MYPATHVAR is: </xsl:text>-->
+    <!--<xsl:value-of select="concat('toto: ',$MYPATHVAR)"/>-->
+    <!-- END OF COMMENT-->
 
-    <xsl:text>The value of MYPATHVAR is: </xsl:text>
-    <xsl:value-of select="concat('toto: ',$MYPATHVAR)"/>
     <xsl:text>&#9;</xsl:text>
     <xsl:variable name="investigationfile" select="concat($MYPATHVAR,data,'i_inv_biocrates.txt')[normalize-space()]"></xsl:variable>
     <!--<xsl:variable name="investigationfile" select="concat('output/isatab/',data,'i_inv_biocrates.txt')[normalize-space()]"></xsl:variable>-->
@@ -106,7 +108,7 @@ DOI:
         <xsl:call-template name="generate-investigation-section"/>
         
         <!-- TODO: Put the "STUDY" section in its own template name for code readabiltity -->
-<xsl:text>&#10;"STUDY"&#10;</xsl:text>
+<xsl:text>&#10;STUDY&#10;</xsl:text>
         <xsl:value-of select="isa:single-name-value('Study Identifier', concat('MTLBSXXX_',/data/project[1]/@identifier))"/>
         <xsl:value-of select="isa:single-name-value('Study Title', /data/project[1]/@ProjectName)"/>
         <xsl:value-of select="isa:single-name-value('Study Submission Date', '')"/>
@@ -114,232 +116,232 @@ DOI:
         <xsl:value-of select="isa:single-name-value('Study Description', '')"/>
         <xsl:value-of select="isa:single-name-value('Study File Name', 's_study_biocrates.txt')"/>
     
-<xsl:text>"STUDY DESIGN DESCRIPTORS"
-"Study Design Type"
-"Study Design Type Term Accession Number"
-"Study Design Type Term Source REF"
-"STUDY PUBLICATIONS"
-"Study PubMed ID"
-"Study Publication DOI"
-"Study Publication Author List"
-"Study Publication Title"
-"Study Publication Status"
-"Study Publication Status Term Accession Number"
-"Study Publication Status Term Source REF"
-"STUDY FACTORS"
-"Study Factor Name"
-"Study Factor Type"
-"Study Factor Type Term Accession Number"
-"Study Factor Type Term Source REF"
-"STUDY ASSAYS"
-"Study Assay Measurement Type"</xsl:text>
+<xsl:text>STUDY DESIGN DESCRIPTORS
+Study Design Type
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+STUDY PUBLICATIONS
+Study PubMed ID
+Study Publication DOI
+Study Publication Author List
+Study Publication Title
+Study Publication Status
+Study Publication Status Term Accession Number
+Study Publication Status Term Source REF
+STUDY FACTORS
+Study Factor Name
+Study Factor Type
+Study Factor Type Term Accession Number
+Study Factor Type Term Source REF
+STUDY ASSAYS
+Study Assay Measurement Type</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:value-of select="if (count($positiveModeCount) > 0) then concat(isa:quotes('metabolite profiling'), '&#9;') else ''"/>
     <xsl:value-of select="if (count($negativeModeCount) > 0) then concat(isa:quotes('metabolite profiling'), '&#9;') else ''"/>     
 <xsl:text>
-"Study Assay Measurement Type Term Source REF"</xsl:text>
+Study Assay Measurement Type Term Source REF</xsl:text>
 <xsl:text>&#9;</xsl:text>
     <xsl:value-of select="if (count($positiveModeCount) > 0) then concat(isa:quotes('OBI'), '&#9;') else ''"/>
     <xsl:value-of select="if (count($negativeModeCount) > 0) then concat(isa:quotes('OBI'), '&#9;') else ''"/>         
 <xsl:text>
-"Study Assay Measurement Type Term Accession Number"</xsl:text>
+Study Assay Measurement Type Term Accession Number</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:value-of select="if (count($positiveModeCount) > 0) then concat(isa:quotes('http://purl.obolibrary.org/obo/OBI_0000366'), '&#9;') else ''"/>
     <xsl:value-of select="if (count($negativeModeCount) > 0) then concat(isa:quotes('http://purl.obolibrary.org/obo/OBI_0000366'), '&#9;') else ''"/>             
 <xsl:text>
-"Study Assay Technology Type"</xsl:text>
+Study Assay Technology Type</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">     
-        <xsl:text>"mass spectrometry"</xsl:text>
+        <xsl:text>mass spectrometry</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"mass spectrometry"</xsl:text>
+        <xsl:text>mass spectrometry</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if> 
 <xsl:text>
-"Study Assay Technology Type Term Source REF"</xsl:text>
+Study Assay Technology Type Term Source REF</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">      
-        <xsl:text>"OBI"</xsl:text>
+        <xsl:text>OBI</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"OBI"</xsl:text>
+        <xsl:text>OBI</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>    
 <xsl:text>
-"Study Assay Technology Type Term Accession Number"</xsl:text>
+Study Assay Technology Type Term Accession Number</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">       
-        <xsl:text>"http://purl.obolibrary.org/obo/OBI_0000470"</xsl:text>
+        <xsl:text>http://purl.obolibrary.org/obo/OBI_0000470</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"http://purl.obolibrary.org/obo/OBI_0000470"</xsl:text>
+        <xsl:text>http://purl.obolibrary.org/obo/OBI_0000470</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>      
 <xsl:text>
-"Study Assay Technology Platform"</xsl:text>
+Study Assay Technology Platform</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">        
-        <xsl:text>"Biocrates"</xsl:text>
+        <xsl:text>Biocrates</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"Biocrates"</xsl:text>
+        <xsl:text>Biocrates</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>      
 <xsl:text>
-"Study Assay File Name"</xsl:text>
+Study Assay File Name</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <!-- TODO: Tidy up (same as above) -->    
     <xsl:if test="count($positiveModeCount) > 0">       
-        <xsl:text>"a_biocrates_assay_positive_mode.txt"</xsl:text>
+        <xsl:text>a_biocrates_assay_positive_mode.txt</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"a_biocrates_assay_negative_mode.txt"</xsl:text>
+        <xsl:text>a_biocrates_assay_negative_mode.txt</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if> 
 <xsl:text>
 </xsl:text>
-<xsl:text>"STUDY PROTOCOLS"
-"Study Protocol Name"</xsl:text>
+<xsl:text>STUDY PROTOCOLS
+Study Protocol Name</xsl:text>
     <xsl:text>&#9;</xsl:text>
-    <xsl:text>"sample collection"&#9;</xsl:text>
-    <xsl:text>"extraction/derivatization"&#9;</xsl:text>
+    <xsl:text>sample collection&#9;</xsl:text>
+    <xsl:text>extraction/derivatization&#9;</xsl:text>
 
     <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
 
 
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">
-            <xsl:text>"</xsl:text>
+            <xsl:text></xsl:text>
             <xsl:value-of select="."/>
         <!--<xsl:text>&#9;</xsl:text>-->
-            <xsl:text>-MS acquisition in positive mode"</xsl:text>
+            <xsl:text>-MS acquisition in positive mode</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($negativeModeCount) > 0">
-            <xsl:text>"-MS acquisition in negative mode"</xsl:text>
+            <xsl:text>-MS acquisition in negative mode</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
      </xsl:for-each>
-    <xsl:text>"biocrates analysis"&#9;</xsl:text>
-"Study Protocol Type"<xsl:text>&#9;</xsl:text>
-    <xsl:text>"specimen collection"&#9;</xsl:text>
-    <xsl:text>"material separation"&#9;</xsl:text>
+    <xsl:text>biocrates analysis&#9;</xsl:text>
+Study Protocol Type<xsl:text>&#9;</xsl:text>
+    <xsl:text>specimen collection&#9;</xsl:text>
+    <xsl:text>material separation&#9;</xsl:text>
         <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
             <!--<xsl:text>"sample preparation for assay"&#9;</xsl:text>        -->
 
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">       
-        <xsl:text>"data collection"</xsl:text>
+        <xsl:text>data collection</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>   
     <!-- TODO: Tidy up (same as above) -->    
     <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"data collection"</xsl:text>
+        <xsl:text>data collection</xsl:text>
         <xsl:text>&#9;</xsl:text>
     </xsl:if>
          </xsl:for-each>
-    <xsl:text>"data transformation"&#9;</xsl:text>
+    <xsl:text>data transformation&#9;</xsl:text>
 <xsl:text>    
-"Study Protocol Type Term Accession Number"</xsl:text>
+Study Protocol Type Term Accession Number</xsl:text>
     <xsl:text>&#9;</xsl:text>
-    <xsl:text>"http://purl.obolibrary.org/obo/OBI_0000659"&#9;</xsl:text>
-    <xsl:text>"http://purl.obolibrary.org/obo/OBI_0302884"&#9;</xsl:text>
+    <xsl:text>http://purl.obolibrary.org/obo/OBI_0000659&#9;</xsl:text>
+    <xsl:text>http://purl.obolibrary.org/obo/OBI_0302884&#9;</xsl:text>
     <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">       
-            <xsl:text>"http://purl.obolibrary.org/obo/OBI_0600013"</xsl:text>
+            <xsl:text>http://purl.obolibrary.org/obo/OBI_0600013</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($negativeModeCount) > 0">
-            <xsl:text>"http://purl.obolibrary.org/obo/OBI_0600013"</xsl:text>
+            <xsl:text>http://purl.obolibrary.org/obo/OBI_0600013</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
     </xsl:for-each>
-        <xsl:text>"http://purl.obolibrary.org/obo/OBI_0200000"&#9;</xsl:text>
+        <xsl:text>http://purl.obolibrary.org/obo/OBI_0200000&#9;</xsl:text>
 <xsl:text>        
-"Study Protocol Type Term Source REF"</xsl:text>
+Study Protocol Type Term Source REF</xsl:text>
     <xsl:text>&#9;</xsl:text>
-    <xsl:text>"OBI"&#9;</xsl:text>
-    <xsl:text>"OBI"&#9;</xsl:text>
+    <xsl:text>OBI&#9;</xsl:text>
+    <xsl:text>OBI&#9;</xsl:text>
     <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
 
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">       
-            <xsl:text>"OBI"</xsl:text>
+            <xsl:text>OBI</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($negativeModeCount) > 0">
-            <xsl:text>"OBI"</xsl:text>
+            <xsl:text>OBI</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
          </xsl:for-each>
-        <xsl:text>"OBI"&#9;</xsl:text>
+        <xsl:text>OBI&#9;</xsl:text>
 <xsl:text>
-"Study Protocol Description"
-"Study Protocol URI"
-"Study Protocol Version"</xsl:text>
+Study Protocol Description
+Study Protocol URI
+Study Protocol Version</xsl:text>
 <xsl:text>
-"Study Protocol Parameters Name"</xsl:text>
+Study Protocol Parameters Name</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">
-            <xsl:text>"kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number"</xsl:text>
+            <xsl:text>kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($negativeModeCount) > 0">
-            <xsl:text>"kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number"</xsl:text>
+            <xsl:text>kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number</xsl:text>
             <xsl:text>&#9;</xsl:text>
         </xsl:if>
         </xsl:for-each>
-        <xsl:text>"software"&#9;</xsl:text>
+        <xsl:text>software&#9;</xsl:text>
 <xsl:text>
-"Study Protocol Parameters Name Term Accession Number"
-"Study Protocol Parameters Name Term Source REF"
-"Study Protocol Components Name"
-"Study Protocol Components Type"
-"Study Protocol Components Type Term Accession Number"
-"Study Protocol Components Type Term Source REF"
-"STUDY CONTACTS"  
-"Study Person Last Name"</xsl:text> 
+Study Protocol Parameters Name Term Accession Number
+Study Protocol Parameters Name Term Source REF
+Study Protocol Components Name
+Study Protocol Components Type
+Study Protocol Components Type Term Accession Number
+Study Protocol Components Type Term Source REF
+STUDY CONTACTS
+Study Person Last Name</xsl:text>
         <xsl:apply-templates select="contact" mode="lastname"/>        
 <xsl:text>
-"Study Person First Name"</xsl:text>
+Study Person First Name</xsl:text>
         <xsl:apply-templates select="contact" mode="firstname"/>
  <xsl:text>       
-"Study Person Mid Initials"
-"Study Person Email"</xsl:text> 
+Study Person Mid Initials
+Study Person Email</xsl:text>
         <xsl:apply-templates select="contact" mode="email"/>
  <xsl:text> 
-"Study Person Phone"</xsl:text> 
+Study Person Phone</xsl:text>
         <xsl:apply-templates select="contact" mode="phone"/>
  <xsl:text> 
-"Study Person Fax"
-"Study Person Address"</xsl:text> 
+Study Person Fax
+Study Person Address</xsl:text>
     <xsl:apply-templates select="contact" mode="address"/>
  <xsl:text> 
-"Study Person Affiliation"</xsl:text> 
+Study Person Affiliation</xsl:text>
         <xsl:apply-templates select="contact" mode="affiliation"/>        
  <xsl:text> 
-"Study Person Roles"
-"Study Person Roles Term Accession Number"
-"Study Person Roles Term Source REF"
+Study Person Roles
+Study Person Roles Term Accession Number
+Study Person Roles Term Source REF
 </xsl:text>
         <!-- DEACTIVATED AS ISA PYTHON PARSER DOES NOT SUPPORT COMMENTS IN CONTACT SECTION (io objects not commentable)-->
         <!-- <xsl:call-template name="generate-header-comments"/> -->
@@ -371,11 +373,11 @@ DOI:
 
 
     <xsl:template name="generate-ontology-section">
-        <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
-        <xsl:text>"Term Source Name"&#9;"OBI"&#9;"PSI-MS"&#9;"UBERON"&#9;"NCBITax"&#10;</xsl:text> 
-        <xsl:text>"Term Source File"&#9;"http://purl.org/obo/obi.owl"&#9;"http://psi-ms.sf.net"&#9;"http://purl.org/obo/uberon.owl"&#9;"http://purl.org/obo/NCBITax.owl"&#10;</xsl:text>
-        <xsl:text>"Term Source Version"&#9;"1"&#9;"1"&#9;"1"&#9;"1"&#10;</xsl:text>
-        <xsl:text>"Term Source Description"&#9;"The Ontology for Biomedical Investigation"&#9;"PSI Mass Spectrometry"&#9;"Uber-anatomy ontology"&#9;"NCBI Taxonomy"</xsl:text>        
+        <xsl:text>ONTOLOGY SOURCE REFERENCE&#10;</xsl:text>
+        <xsl:text>Term Source Name&#9;OBI&#9;PSI-MS&#9;UBERON&#9;NCBITax&#10;</xsl:text>
+        <xsl:text>Term Source File&#9;http://purl.org/obo/obi.owl&#9;http://psi-ms.sf.net&#9;http://purl.org/obo/uberon.owl&#9;http://purl.org/obo/NCBITax.owl&#10;</xsl:text>
+        <xsl:text>Term Source Version&#9;1&#9;1&#9;1&#9;1&#10;</xsl:text>
+        <xsl:text>Term Source Description&#9;The Ontology for Biomedical Investigation&#9;PSI Mass Spectrometry&#9;Uber-anatomy ontology&#9;NCBI Taxonomy</xsl:text>
     </xsl:template>
     
     <xsl:template name="generate-investigation-section">
@@ -383,48 +385,48 @@ DOI:
             Perhaps this can be done using <xsl:value-of select="isa:single-name-value('Investigation Identifier', '')"/>
         -->
         <xsl:text>
-"INVESTIGATION"
-"Investigation Identifier"&#9;"11111111"
-"Investigation Title"
-"Investigation Description"
-"Investigation Submission Date"
-"Investigation Public Release Date"
-"INVESTIGATION PUBLICATIONS"
-"Investigation PubMed ID"
-"Investigation Publication DOI"
-"Investigation Publication Author List"
-"Investigation Publication Title"
-"Investigation Publication Status"
-"Investigation Publication Status Term Accession Number"
-"Investigation Publication Status Term Source REF"
-"INVESTIGATION CONTACTS"
-"Investigation Person Last Name"
-"Investigation Person First Name"
-"Investigation Person Mid Initials"
-"Investigation Person Email"
-"Investigation Person Phone"
-"Investigation Person Fax"
-"Investigation Person Address"
-"Investigation Person Affiliation"
-"Investigation Person Roles"
-"Investigation Person Roles Term Accession Number"
-"Investigation Person Roles Term Source REF"</xsl:text>
+INVESTIGATION
+Investigation Identifier&#9;11111111
+Investigation Title
+Investigation Description
+Investigation Submission Date
+Investigation Public Release Date
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF</xsl:text>
     </xsl:template>
 
 <!--<xsl:template  match="contact" mode="identifier">-->
-    <!--<xsl:value-of select="if (@identifier != '') then concat('&#9;',isa:quotes(substring-before(@identifier,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>-->
+    <!--<xsl:value-of select="if (@identifier != '') then concat('&#9;',isa:quotes(substring-before(@identifier,' '))) else (concat('&#9;N/A',''))"/>-->
 <!--</xsl:template>    -->
 
 <xsl:template  match="contact" mode="lastname">
-    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-before(@ContactPerson,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>
+    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-before(@ContactPerson,' '))) else (concat('&#9;N/A',''))"/>
 </xsl:template>
     
 <xsl:template  match="contact" mode="firstname">
-    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-after(@ContactPerson,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>
+    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-after(@ContactPerson,' '))) else (concat('&#9;N/A',''))"/>
 </xsl:template>
 
 <xsl:template  match="contact" mode="affiliation">
-    <xsl:value-of select="if (@CompanyName != '') then concat('&#9;',isa:quotes(@CompanyName)) else (concat('&#9;&quot;N/A','&quot;'))"/>
+    <xsl:value-of select="if (@CompanyName != '') then concat('&#9;',isa:quotes(@CompanyName)) else (concat('&#9;N/A',''))"/>
 </xsl:template>
     
 <xsl:template match="contact" mode="address" >
@@ -432,11 +434,11 @@ DOI:
 </xsl:template>
 
 <xsl:template match="contact" mode="phone" >
-    <xsl:value-of select="if (@Phone != '') then concat('&#9;',isa:quotes(@Phone)) else (concat('&#9;&quot;N/A','&quot;'))"/>
+    <xsl:value-of select="if (@Phone != '') then concat('&#9;',isa:quotes(@Phone)) else (concat('&#9;N/A',''))"/>
 </xsl:template>
     
 <xsl:template match="contact" mode="email" >
-    <xsl:value-of select="if (@Email != '') then concat('&#9;',isa:quotes(@Email)) else (concat('&#9;&quot;N/A','&quot;'))"/>
+    <xsl:value-of select="if (@Email != '') then concat('&#9;',isa:quotes(@Email)) else (concat('&#9;N/A',''))"/>
 </xsl:template> 
 
 
@@ -1054,19 +1056,19 @@ DOI:
     <xsl:result-document href="{$studyfile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
     
-    <xsl:text>"Source Name"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Characteristics[barcode identifier]"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Characteristics[material role]"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Characteristics[chemical compound]"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Characteristics[Organism]"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Characteristics[Organism part]"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Source Name</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Characteristics[barcode identifier]</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Characteristics[material role]</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Characteristics[chemical compound]</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Characteristics[Organism]</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Characteristics[Organism part]</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
         <xsl:for-each select="/data/sample/sampleInfoExport[generate-id(.)=generate-id(key('sampleinfo-features', @feature)[1])]/@feature">    
             <!-- <xsl:sort/> -->     
-            <xsl:text>"Characteristics[</xsl:text>
+            <xsl:text>Characteristics[</xsl:text>
             <xsl:choose>
                 <xsl:when test="contains(.,'(') or contains(.,')')">
                     <xsl:variable name="this" select="translate(.,'(','-')"/>
@@ -1076,14 +1078,14 @@ DOI:
                 <xsl:value-of select="."/>
                     </xsl:otherwise>   
             </xsl:choose>
-            <xsl:text>]"&#9;</xsl:text>  
+            <xsl:text>]&#9;</xsl:text>
      </xsl:for-each>              
-    <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Date"</xsl:text><xsl:text>&#9;</xsl:text> 
+    <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Date</xsl:text><xsl:text>&#9;</xsl:text>
  <!--   <xsl:text>Parameter Value[plate info]</xsl:text><xsl:text>&#9;</xsl:text> 
     <xsl:text>Parameter Value[well position]</xsl:text><xsl:text>&#9;</xsl:text>  -->
-    <xsl:text>"Sample Name"</xsl:text><xsl:text>&#9;</xsl:text>
-    <xsl:text>"Material Type"</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Sample Name</xsl:text><xsl:text>&#9;</xsl:text>
+    <xsl:text>Material Type</xsl:text><xsl:text>&#9;</xsl:text>
         
     <xsl:apply-templates select="sample" mode="sample_record"/>
         
@@ -1097,25 +1099,25 @@ DOI:
              <xsl:when test="@sampleType !='SAMPLE'">
                  <xsl:call-template name="sample_material_name"/>                
                  <xsl:text>&#9;</xsl:text>               
-                 <xsl:value-of select="if (@barcode != '') then isa:quotes(@barcode) else concat('&#9;&quot;','none reported','&quot;&#9;')"/>
+                 <xsl:value-of select="if (@barcode != '') then isa:quotes(@barcode) else concat('&#9;','none reported','&#9;')"/>
                  <xsl:text>&#9;</xsl:text>
                  <xsl:call-template name="sampleType"/>                 
                  <xsl:text>&#9;</xsl:text>
                  <xsl:value-of select="isa:quotes(@Material)"/>
                  <xsl:text>&#9;</xsl:text>
-                 <xsl:text>"not applicable"</xsl:text>
+                 <xsl:text>not applicable</xsl:text>
                  <xsl:text>&#9;&#9;&#9;</xsl:text>
-                 <xsl:text>"not applicable"</xsl:text>
+                 <xsl:text>not applicable</xsl:text>
                  <xsl:text>&#9;&#9;&#9;</xsl:text>
              </xsl:when>
              <xsl:otherwise>
                  <xsl:call-template name="sample_material_name"/>        
                  <xsl:text>&#9;</xsl:text>
-                 <xsl:value-of select="if (@barcode != '') then isa:quotes(@barcode) else concat('&#9;&quot;','none reported','&quot;&#9;')"/>
+                 <xsl:value-of select="if (@barcode != '') then isa:quotes(@barcode) else concat('&#9;','none reported','&#9;')"/>
                  <xsl:text>&#9;</xsl:text>   
-                 <xsl:text>"specimen"</xsl:text>
+                 <xsl:text>specimen</xsl:text>
                  <xsl:text>&#9;</xsl:text>
-                 <xsl:text>"not applicable"</xsl:text>
+                 <xsl:text>not applicable</xsl:text>
               
                  
                  <xsl:variable name="species_var" select="@Species"></xsl:variable>
@@ -1139,12 +1141,12 @@ DOI:
         <!--Note: muenchian transform -->
         <xsl:variable name="sampleinfoexport" select="key('feature-by-sample', @identifier)"/>
         <xsl:for-each select="$sampleinfo-features">              
-            <xsl:value-of select="concat('&quot;', $sampleinfoexport[@feature = current()]/@value, ' &quot;')"/><xsl:text>&#9;</xsl:text>
+            <xsl:value-of select="concat('', $sampleinfoexport[@feature = current()]/@value, ' ')"/><xsl:text>&#9;</xsl:text>
         </xsl:for-each>   
                   
-         <xsl:text>"sample collection"</xsl:text>
+         <xsl:text>sample collection</xsl:text>
          <xsl:text>&#9;</xsl:text>    
-         <xsl:value-of select="if (@collectionDate != '') then isa:quotes(substring-before(@collectionDate,'T')) else concat('&quot;','&quot;')"/>
+         <xsl:value-of select="if (@collectionDate != '') then isa:quotes(substring-before(@collectionDate,'T')) else concat('','')"/>
          <xsl:text>&#9;</xsl:text>
     
         <xsl:call-template name="sample_material_name"/>
@@ -1159,12 +1161,12 @@ DOI:
     <xsl:variable name="mapping" select="document('ISA-Team-Biocrates2ISA-CV-mapping.xml')"/>
 <!--    <xsl:text>&#9;</xsl:text><xsl:value-of select="$species_param"/>
     <xsl:text>&#9;</xsl:text><xsl:value-of select="$mapping/root/mapping-replacement/element[1]/@biocrateslabel"/>-->
-<!--    <xsl:value-of select="if ($mapping/root/mapping-replacement/element[@biocrateslabel=$species_param]) then concat('&#9;&quot;',$mapping/root/mapping-replacement/element/@ontoterm, '&quot;') else concat('&#9;&quot;','other-species','&quot;&#9;')"/>-->
+<!--    <xsl:value-of select="if ($mapping/root/mapping-replacement/element[@biocrateslabel=$species_param]) then concat('&#9;',$mapping/root/mapping-replacement/element/@ontoterm, '') else concat('&#9;','other-species','&#9;')"/>-->
     
     <!-- TODO: I think that this can be done by not using an xsl:for-each -->
     <xsl:for-each select="$mapping/root/mapping-replacement/element">
         <xsl:if test="@biocrateslabel=$mapping-param">
-            <xsl:value-of select="concat('&#9;&quot;',@ontoterm, '&quot;','&#9;&quot;',@ontosource, '&quot;&#9;&quot;',@url,'&quot;')"/>
+            <xsl:value-of select="concat('&#9;',@ontoterm, '','&#9;',@ontosource, '&#9;',@url,'')"/>
         </xsl:if>           
     </xsl:for-each>    
 </xsl:template>
@@ -1177,8 +1179,7 @@ DOI:
                     <xsl:choose>
                         <xsl:when test="contains(@SampleIdentifier,':') or contains(@SampleIdentifier,'+')">
                             <xsl:variable name="one" select="translate(@SampleIdentifier,':','-')"/>
-                            <xsl:value-of select="isa:quotes(translate($one,'+',' and '))"/>
-                            <!--<xsl:text>TOTO</xsl:text>-->
+                            <xsl:value-of select="isa:quotes(translate($one,'+',' and '))"/> 
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="isa:quotes(@SampleIdentifier)"/>
@@ -1199,58 +1200,58 @@ DOI:
 <xsl:template name="sampleType" match="sample">
     <xsl:choose>
         <xsl:when test="@sampleType='BLANK'">
-            <xsl:text>"negative control"</xsl:text>
+            <xsl:text>negative control</xsl:text>
         </xsl:when>
         <xsl:when test="contains(@sampleType,'QC_')">
-            <xsl:text>"positive control"</xsl:text>
+            <xsl:text>positive control</xsl:text>
         </xsl:when>
         <xsl:when test="contains(@sampleType,'ZERO_')">
-            <xsl:text>"negative control"</xsl:text>
+            <xsl:text>negative control</xsl:text>
         </xsl:when>
         <xsl:when test="contains(@sampleType,'STANDARD_')">
-            <xsl:text>"positive control"</xsl:text>
+            <xsl:text>positive control</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:text>"specimen"</xsl:text>
+            <xsl:text>specimen</xsl:text>
         </xsl:otherwise>
     </xsl:choose>    
 </xsl:template>    
  
-<xsl:template match="plate" name="assay-negativeMode" priority="1">
+<xsl:template name="assay-negativeMode" match="plate"  priority="1">
     <!--<xsl:param name="MYPATHVAR" />-->
     <!--<xsl:variable name="assaynegativefile" select="concat('output/isatab/',data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"></xsl:variable>-->
     <xsl:variable name="assaynegativefile" select="concat($MYPATHVAR,data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"></xsl:variable>
     <xsl:value-of select="$assaynegativefile[normalize-space()]" /> 
     <xsl:result-document href="{$assaynegativefile}">
     
-        <xsl:text>"Sample Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Extract Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[kit name]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[plate ID]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[plate position]"</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Sample Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Extract Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[kit name]</xsl:text><xsl:text>&#9;</xsl:text> 
+        <xsl:text>Parameter Value[plate ID]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[plate position]</xsl:text><xsl:text>&#9;</xsl:text>
       <!--  <xsl:text>Parameter Value[chromatography instrument]</xsl:text><xsl:text>&#9;</xsl:text>
         <xsl:text>Parameter Value[chromatography column]</xsl:text><xsl:text>&#9;</xsl:text> -->
-        <xsl:text>"Parameter Value[mass spectrometry instrument]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[acquisition parameter file]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[inlet type]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[polarity]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[run number]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[injection number]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Date"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"MS Assay Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Raw Spectral Data File"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[software]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Data Transformation Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Derived Spectral Data File"</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[mass spectrometry instrument]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>         
+        <xsl:text>Parameter Value[acquisition parameter file]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[inlet type]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[polarity]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[run number]</xsl:text><xsl:text>&#9;</xsl:text> 
+        <xsl:text>Parameter Value[injection number]</xsl:text><xsl:text>&#9;</xsl:text>        
+        <xsl:text>Date</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>MS Assay Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Raw Spectral Data File</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[software]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Data Transformation Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Derived Spectral Data File</xsl:text><xsl:text>&#9;</xsl:text>
 <xsl:text>
 </xsl:text>        
         <xsl:apply-templates select="//well" mode="negative"/>     
@@ -1271,34 +1272,34 @@ DOI:
     <xsl:result-document href="{$assaypositivefile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
         
-        <xsl:text>"Sample Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Extract Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[kit name]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[plate ID]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[plate position]"</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Sample Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Extract Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[kit name]</xsl:text><xsl:text>&#9;</xsl:text> 
+        <xsl:text>Parameter Value[plate ID]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[plate position]</xsl:text><xsl:text>&#9;</xsl:text>
       <!--<xsl:text>Parameter Value[chromatography instrument]</xsl:text><xsl:text>&#9;</xsl:text>
         <xsl:text>Parameter Value[chromatography column]</xsl:text><xsl:text>&#9;</xsl:text> -->
-        <xsl:text>"Parameter Value[mass spectrometry instrument]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[acquisition parameter file]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[inlet type]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[polarity]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Source REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Term Accession Number"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[run number]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[injection number]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Date"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"MS Assay Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Raw Spectral Data File"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Protocol REF"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Parameter Value[software]"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Data Transformation Name"</xsl:text><xsl:text>&#9;</xsl:text>
-        <xsl:text>"Derived Spectral Data File"</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[mass spectrometry instrument]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>        
+        <xsl:text>Parameter Value[acquisition parameter file]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[inlet type]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[polarity]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Source REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Term Accession Number</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[run number]</xsl:text><xsl:text>&#9;</xsl:text> 
+        <xsl:text>Parameter Value[injection number]</xsl:text><xsl:text>&#9;</xsl:text>        
+        <xsl:text>Date</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>MS Assay Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Raw Spectral Data File</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Protocol REF</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Parameter Value[software]</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Data Transformation Name</xsl:text><xsl:text>&#9;</xsl:text>
+        <xsl:text>Derived Spectral Data File</xsl:text><xsl:text>&#9;</xsl:text>
 <xsl:text>
 </xsl:text>  
         <xsl:apply-templates select="//well" mode="positive"/> 
@@ -1322,7 +1323,7 @@ DOI:
                         <xsl:choose>                       
                             <xsl:when test="contains(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,':') or contains(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,'+')">
                                 <xsl:variable name="one" select="translate(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,':','-')"/>
-                                <xsl:value-of select="isa:quotes(translate($one,'+',' and '))"/>
+                                <xsl:value-of select="translate($one,'+',' and ')"/> 
                                 <!-- <xsl:value-of select="translate(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,':','-')"/> -->
                                 <xsl:text>&#9;</xsl:text>
                             </xsl:when>
@@ -1331,18 +1332,18 @@ DOI:
                             <xsl:text>&#9;</xsl:text>
                         <"/xsl:when>-->
                             <xsl:otherwise>
-                                <xsl:value-of select="isa:quotes(key('samplelookupid',parent::well/@sample)/@SampleIdentifier)"/>
+                                <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@SampleIdentifier"/>
                                 <xsl:text>&#9;</xsl:text>
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="isa:quotes(key('samplelookupid',parent::well/@sample)/@sampleType)"/>
+                        <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@sampleType"/>
                         <!-- <xsl:text>none reported</xsl:text> -->
                         <xsl:text>&#9;</xsl:text> 
                     </xsl:otherwise>
                 </xsl:choose> 
-                <xsl:text>"extraction/derivatization"</xsl:text>
+                <xsl:text>extraction/derivatization</xsl:text>
                 <xsl:text>&#9;</xsl:text>
                 <xsl:choose>
                     <xsl:when test="key('samplelookupid',parent::well/@sample)/@SampleIdentifier !=''">
@@ -1383,44 +1384,44 @@ DOI:
                     </xsl:otherwise>                        
                 </xsl:choose>
                 
-                <xsl:value-of select="isa:quotes(concat(ancestor::plate/@usedOP,'-MS acquisition in ',$polarity,' mode'))"/>
-                <xsl:text>&#9;</xsl:text>
+                <xsl:value-of select="concat(ancestor::plate/@usedOP,'-MS acquisition in ',$polarity,' mode&#9;')"/>
+                
                 <xsl:choose>   
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'KIT1-')">
                         <!-- <xsl:value-of select="substring-after(/data/plateInfo/@usedOP,'KIT1-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates p150 Kit"</xsl:text>
+                        <xsl:text>Biocrates p150 Kit</xsl:text>
                         <xsl:text>&#9;</xsl:text>
                     </xsl:when>
                     <xsl:when test="starts-with(ancestor::plate/@usedOPP,'KIT2-')">
                         <!-- <xsl:value-of select="substring-after(child::plateInfo/@usedOP,'KIT2-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates p180 LCMS Part"</xsl:text>
+                        <xsl:text>Biocrates p180 LCMS Part</xsl:text>
                         <xsl:text>&#9;</xsl:text>
                     </xsl:when>
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'KIT3-')">
                         <!--<xsl:value-of select="substring-after(child::plateInfo/@usedOP,'KIT3-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates p180 FIA Part"</xsl:text>
+                        <xsl:text>Biocrates p180 FIA Part</xsl:text>
                         <xsl:text>&#9;</xsl:text>
                     </xsl:when>
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'ST17-')">
                         <!--<xsl:value-of select="substring-after(child::plateInfo/@usedOP,'ST17-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates Stero17 Kit"&#9;</xsl:text>
+                        <xsl:text>Biocrates Stero17 Kit&#9;</xsl:text>
                     </xsl:when>
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'MD01-')">
                         <!--  <xsl:value-of select="substring-after(child::plateInfo/@usedOP,'MD01-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates MetaDis Kit LCMS Part"&#9;</xsl:text>
+                        <xsl:text>Biocrates MetaDis Kit LCMS Part&#9;</xsl:text>
                     </xsl:when> 
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'MD02-')">
                         <!-- <xsl:value-of select="substring-after(child::plateInfo/@usedOP,'MD02-')">
                 </xsl:value-of> -->
-                        <xsl:text>"Biocrates MetaDis Kit FIA Part"&#9;</xsl:text>
+                        <xsl:text>Biocrates MetaDis Kit FIA Part&#9;</xsl:text>
                     </xsl:when> 
                     <xsl:otherwise>
-                        <xsl:text>"not reported"&#9;</xsl:text>
+                        <xsl:text>not reported&#9;</xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>     
                 <xsl:value-of select="concat(isa:quotes(ancestor::plate/@plateBarcode),'&#9;')"/>
@@ -1436,20 +1437,20 @@ DOI:
                 
                 <xsl:choose>    
                     <xsl:when test="contains(@acquisitionMethod, 'FIA')">
-                        <xsl:text>"flow injection analysis"&#9;</xsl:text>
-                        <xsl:text>"PSI-MS"&#9;</xsl:text>
-                        <xsl:text>"http://purl.obolibrary.org/obo/MS_1000058"&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
+                        <xsl:text>flow injection analysis&#9;</xsl:text>
+                        <xsl:text>PSI-MS&#9;</xsl:text>
+                        <xsl:text>http://purl.obolibrary.org/obo/MS_1000058&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text>"liquid chromatography separation"&#9;</xsl:text>
-                        <xsl:text>"PSI-MS"&#9;</xsl:text>
-                        <xsl:text>"http://purl.obolibrary.org/obo/MS_1002271"&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
+                        <xsl:text>liquid chromatography separation&#9;</xsl:text>
+                        <xsl:text>PSI-MS&#9;</xsl:text>
+                        <xsl:text>http://purl.obolibrary.org/obo/MS_1002271&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
                     </xsl:otherwise>                   
                 </xsl:choose>   
                 
                 <xsl:value-of select="concat(isa:quotes(concat(lower-case(@polarity), ' scan')),'&#9;')"/>
-                <xsl:text>"PSI-MS"&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000129"&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
+                <xsl:text>PSI-MS&#9;</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000129&#9;</xsl:text><!--http://purl.obolibrary.org/obo/ -->
                 
                 <xsl:value-of select="isa:quotes(ancestor::plate/@runNumber)"/>
                 <xsl:text>&#9;</xsl:text>
@@ -1460,21 +1461,20 @@ DOI:
                 <xsl:value-of select="isa:quotes(substring-before(@injectionTime,'T'))"/>
                 <xsl:text>&#9;"</xsl:text>
                 
-                <xsl:value-of select="concat(ancestor::plate/@usedOP,'_',ancestor::plate/@plateBarcode,'_',$wellposition,'_',ancestor::plate/@runNumber, '_',@injectionNumber,'_',key('samplelookupid',parent::well/@sample)/@sampleType,'_',key('samplelookupid',parent::well/@sample)/@barcode,'_')"/>
-                <!--<xsl:text>"&#9;</xsl:text>-->
-                <!--<xsl:value-of select="ancestor::plate/@usedOP"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="ancestor::plate/@plateBarcode"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="$wellposition"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="ancestor::plate/@runNumber"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="@injectionNumber"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="key('samplelookupid',parent::well/@sample)/@sampleType"/><xsl:text>_</xsl:text>-->
-                    <!--<xsl:value-of select="key('samplelookupid',parent::well/@sample)/@barcode"/><xsl:text>_</xsl:text>-->
+                <xsl:value-of select="concat(ancestor::plate/@usedOP, '_',ancestor::plate/@plateBarcode, '_',$wellposition,'_',ancestor::plate/@runNumber, '_',@injectionNumber,'_',key('samplelookupid',parent::well/@sample)/@sampleType,'_',key('samplelookupid',parent::well/@sample)/@barcode,'_')"/>
+                <!--                    <xsl:value-of select="ancestor::plate/@usedOP"/><xsl:text>_</xsl:text>                     
+                    <xsl:value-of select="ancestor::plate/@plateBarcode"/><xsl:text>_</xsl:text>
+                    <xsl:value-of select="$wellposition"/><xsl:text>_</xsl:text>
+                    <xsl:value-of select="ancestor::plate/@runNumber"/><xsl:text>_</xsl:text>
+                    <xsl:value-of select="@injectionNumber"/><xsl:text>_</xsl:text>
+                    <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@sampleType"/><xsl:text>_</xsl:text>
+                    <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@barcode"/><xsl:text>_</xsl:text>-->                   
                 <xsl:choose>
                     <xsl:when test="key('samplelookupid',parent::well/@sample)/@SampleIdentifier !=''">
                         <xsl:choose>                       
                             <xsl:when test="contains(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,':') or contains(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,'+')">
                                 <xsl:variable name="one" select="translate(key('samplelookupid',parent::well/@sample)/@SampleIdentifier,':','-')"/>
-                                <xsl:value-of select="translate($one,'+',' and ')"/>
+                                <xsl:value-of select="translate($one,'+',' and ')"/> 
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@SampleIdentifier"/>
@@ -1482,14 +1482,14 @@ DOI:
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@sampleType"/>
+                        <xsl:value-of select="key('samplelookupid',parent::well/@sample)/@sampleType"/>                           
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:text>"&#9;</xsl:text>
                 
                 <xsl:value-of select="isa:quotes(@rawDataFileName)"/>
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"biocrates analysis"</xsl:text>
+                <xsl:text>biocrates analysis</xsl:text>
                 <xsl:text>&#9;</xsl:text>
                 <xsl:value-of select="isa:quotes(/data/@swVersion)"/>
                 <xsl:text>&#9;</xsl:text>                  
@@ -1512,167 +1512,167 @@ DOI:
         <xsl:choose>
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-2'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> <!-- manufacturer -->
-                <xsl:text>"4000er/4500er eclipse"</xsl:text>
+                <xsl:text>ABSciex</xsl:text> <!-- manufacturer -->
+                <xsl:text>4000er/4500er eclipse</xsl:text>
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000870"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000870</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-LC')">
-                    <xsl:text>"liquid chromatography"</xsl:text>
+                    <xsl:text>liquid chromatography</xsl:text>
                 </xsl:if>
             </xsl:when>
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-5502'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> 			   <!-- manufacturer -->
-                <xsl:text>"4000er/4500er eclipse</xsl:text> <!-- instrument name -->
+                <xsl:text>ABSciex</xsl:text> 			   <!-- manufacturer -->
+                <xsl:text>4000er/4500er eclipse</xsl:text> <!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000870"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000870</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-LC')">
-                    <xsl:text>"liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>
 
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-5512'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"5500er eclipse"</xsl:text>		<!-- instrument name -->
+                <xsl:text>ABSciex</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>5500er eclipse</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000931"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000931</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UHPLC')"> 
-                    <xsl:text>"ultra high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>ultra high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-8004'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Waters"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"TQ-MS HPLC"</xsl:text>		<!-- instrument name -->
+                <xsl:text>Waters</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>TQ-MS HPLC</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001790"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001790</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UPLC')"> 
-                    <xsl:text>"high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>
 
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-8014'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Waters"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"Xevo TQ MS"</xsl:text>			<!-- instrument name -->
+                <xsl:text>Waters</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>Xevo TQ MS</xsl:text>			<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001790"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001790</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UPLC')"> 
-                    <xsl:text>"ultra high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>ultra high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
 
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-8114'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Waters"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"Xevo TQ-S"</xsl:text>			<!-- instrument name -->
+                <xsl:text>Waters</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>Xevo TQ-S</xsl:text>			<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001792"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001792</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UPLC')"> 
-                    <xsl:text>"ultra high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>ultra high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
 
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-9004'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Thermo"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"TSQ Vantage"</xsl:text>		<!-- instrument name -->
+                <xsl:text>Thermo</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>TSQ Vantage</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001510"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001510</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UPLC')"> 
-                    <xsl:text>"ultra high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>ultra high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
 
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-9014'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Thermo"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"TSQ Vantage"</xsl:text>		<!-- instrument name -->
+                <xsl:text>Thermo</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>TSQ Vantage	</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001510"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001510</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT2-UPLC')"> 
-                    <xsl:text>"ultra high performance liquid chromatography"</xsl:text> <!-- instrument type -->
+                    <xsl:text>ultra high performance liquid chromatography</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
             
             <xsl:when test="ancestor::plate/@usedOP='KIT3-0-5404'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> <!-- manufacturer -->
-                <xsl:text>"4000er/4500er eclipse"</xsl:text>
+                <xsl:text>ABSciex</xsl:text> <!-- manufacturer -->
+                <xsl:text>4000er/4500er eclipse</xsl:text>
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000870"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000870</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')">
-                    <xsl:text>"flow infusion acquisition"</xsl:text>
+                    <xsl:text>flow infusion acquisition</xsl:text>
                 </xsl:if>
             </xsl:when>	
 
             <xsl:when test="ancestor::plate/@usedOP='KIT3-0-5504'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> <!-- manufacturer -->
-                <xsl:text>"5500er eclipse"</xsl:text>		<!-- instrument name -->
+                <xsl:text>ABSciex</xsl:text> <!-- manufacturer -->
+                <xsl:text>5500er eclipse</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000931"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000931</xsl:text>			<!-- PSI-MS identifier -->	
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')">
-                    <xsl:text>"flow infusion acquisition"</xsl:text>
+                    <xsl:text>flow infusion acquisition</xsl:text>
                 </xsl:if>
             </xsl:when>	
 
             <xsl:when test="ancestor::plate/@usedOP='KIT3-0-5604'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"ABSciex"</xsl:text> <!-- manufacturer -->
-                <xsl:text>"6500er eclipse"</xsl:text>		<!-- instrument name -->
+                <xsl:text>ABSciex</xsl:text> <!-- manufacturer -->
+                <xsl:text>6500er eclipse</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1000931"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1000931</xsl:text>			<!-- PSI-MS identifier -->	
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')">
-                    <xsl:text>"flow infusion acquisition"</xsl:text>
+                    <xsl:text>flow infusion acquisition</xsl:text>
                 </xsl:if>
             </xsl:when>	
  
             <xsl:when test="ancestor::plate/@usedOP='KIT3-0-8004'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Waters"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"TQ-MS HPLC"</xsl:text>		<!-- instrument name -->
+                <xsl:text>Waters</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>TQ-MS HPLC</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001790"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001790</xsl:text>			<!-- PSI-MS identifier -->	
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')"> 
-                    <xsl:text>"flow infusion acquisition"</xsl:text> <!-- instrument type -->
+                    <xsl:text>flow infusion acquisition</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
  
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-8114'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Waters"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"Xevo TQ-S"</xsl:text>			<!-- instrument name -->
+                <xsl:text>Waters</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>Xevo TQ-S</xsl:text>			<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001792"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001792</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')"> 
-                    <xsl:text>"flow infusion acquisition"</xsl:text> <!-- instrument type -->
+                    <xsl:text>flow infusion acquisition</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>	
             
             <xsl:when test="ancestor::plate/@usedOP='KIT2-0-9004'">
                 <xsl:value-of select="@usedOP"/>
-                <xsl:text>"Thermo"</xsl:text> 			<!-- manufacturer -->
-                <xsl:text>"TSQ Vantage"</xsl:text>		<!-- instrument name -->
+                <xsl:text>Thermo</xsl:text> 			<!-- manufacturer -->
+                <xsl:text>TSQ Vantage</xsl:text>		<!-- instrument name -->
                 <xsl:text>&#9;</xsl:text>
-                <xsl:text>"http://purl.obolibrary.org/obo/MS_1001510"</xsl:text>			<!-- PSI-MS identifier -->
-                <xsl:text>&#9;isa:quotes(PSI-MS"</xsl:text>
+                <xsl:text>http://purl.obolibrary.org/obo/MS_1001510</xsl:text>			<!-- PSI-MS identifier -->
+                <xsl:text>&#9;PSI-MS</xsl:text>
                 <xsl:if test="contains(@acquisitionMethod,'KIT3-FIA')"> 
-                    <xsl:text>"flow infusion acquisition"</xsl:text> <!-- instrument type -->
+                    <xsl:text>flow infusion acquisition</xsl:text> <!-- instrument type -->
                 </xsl:if>
             </xsl:when>
             <xsl:otherwise>
@@ -1714,7 +1714,7 @@ DOI:
         <xsl:param name="i"/>
         <xsl:param name="limit"/>
         <xsl:if test="$i &lt; $limit">
-                 <xsl:text>not applicable&#9;</xsl:text>
+                 <xsl:text>not applicable&#9;</xsl:text>                        
             <xsl:call-template name="loop">
                 <xsl:with-param name="i" select="$i+1"/>
                 <xsl:with-param name="limit" select="$limit"/>

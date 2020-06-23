@@ -34,7 +34,7 @@ from isatools.convert import (
     sampletab2json as sampletab2json_module,
 )
 from isatools.net import (
-    biocrates2isatab as biocrates2isatab_module,
+    biocrates2isa as biocrates2isatab_module,
     mtbls as mtbls_module,
     mw2isa as mw2isa_module,
     ols as ols_module,

@@ -19,6 +19,8 @@ log = logging.getLogger('isatools')
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'data')
 
+BIOCRATES_DATA_DIR = os.path.join(DATA_DIR, 'biocrates')
+
 JSON_DATA_DIR = os.path.join(DATA_DIR, 'json')
 
 UNIT_JSON_DATA_DIR = os.path.join(JSON_DATA_DIR, 'unit')

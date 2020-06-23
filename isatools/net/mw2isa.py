@@ -1053,7 +1053,8 @@ def mw2isa_convert(**kwargs):
         'studyid': '',
         'outputdir': '',
         'dl_option': '',
-        'validate_option': ''}
+        'validate_option': ''
+    }
 
     conversion_success = True
     try:
