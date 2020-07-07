@@ -15,6 +15,7 @@ from numbers import Number
 import copy
 from isatools.model import *
 from isatools.errors import *
+from isatools.utils import urlify
 from abc import ABC
 from math import factorial
 import os
@@ -100,6 +101,12 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', '
                        'study-creator-config.yaml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
+
+with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
+                       'assay-options.yml')) as yaml_file:
+    assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+print(assays_opts)
 
 DEFAULT_SOURCE_TYPE = Characteristic(
     category=OntologyAnnotation(
@@ -1985,7 +1992,7 @@ class StudyDesign(object):
     StudyArms of different lengths (i.e. different number of cells) are allowed.
     """
 
-    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
+    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a string'
     STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
     ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
     ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
@@ -2241,7 +2248,11 @@ class StudyDesign(object):
     def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
                                          previous_items=[], ix=0, jx=0, counter=0):
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
-        item = isa_objects_factory(node, sequence_no='{0}-{1}'.format(ix, counter))
+        item = isa_objects_factory(
+            node, sequence_no='{0}-{1}'.format(ix, counter),
+            measurement_type=assay_graph.measurement_type,
+            technology_type=assay_graph.technology_type
+        )
         if isinstance(item, Process):
             item.inputs = previous_items
             processes.append(item)
@@ -2294,12 +2305,12 @@ class StudyDesign(object):
         assay = Assay(
             measurement_type=measurement_type,
             technology_type=technology_type,
-            filename='a_{0}_{1}_{2}_{3}.txt'.format(
+            filename=urlify('a_{0}_{1}_{2}_{3}.txt'.format(
                 cell_name,
                 assay_graph.id,
                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
                 technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type
-            )
+            ))
         )
         log.debug('assay measurement type: {0} - technology type: {1}'.format(measurement_type,
                                                                               assay.technology_type))
@@ -2336,7 +2347,7 @@ class StudyDesign(object):
                                'study-creator-config.yaml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
-        study = Study(filename=study_config['filename'])
+        study = Study(filename=urlify(study_config['filename']))
         study.ontology_source_references = [
             OntologySource(**study_config['ontology_source_references'][0])
         ]
@@ -2411,13 +2422,13 @@ class QualityControlService(object):
                             # Such an assumption is correct as far a the Assay filename convention is not modified
                             measurement_type, technology_type = assay_graph.measurement_type, \
                                                                 assay_graph.technology_type
-                            assay_filename = filename='a_{0}_{1}_{2}_{3}.txt'.format(
+                            assay_filename = urlify('a_{0}_{1}_{2}_{3}.txt'.format(
                                 cell.name, assay_graph.id,
                                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation)
                                 else measurement_type,
                                 technology_type.term if isinstance(technology_type, OntologyAnnotation)
                                 else technology_type
-                            )
+                            ))
                             assay_to_expand = next(assay for assay in qc_study.assays
                                                    if assay.filename == assay_filename)
                             index = qc_study.assays.index(assay_to_expand)
@@ -2578,9 +2589,11 @@ class QualityControlService(object):
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 
-def isa_objects_factory(node, sequence_no):
+def isa_objects_factory(node, sequence_no, measurement_type=None, technology_type=None):
     """
     This method generates an ISA element from an ISA node
+    :param technology_type:
+    :param measurement_type:
     :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
     :param sequence_no: str - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
@@ -2611,28 +2624,31 @@ def isa_objects_factory(node, sequence_no):
                 name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
+        # under the hypothesis that we deal only with raw data files
+        # derived data file would require a completely separate approach
         if node.type == DATA_FILE:
-            return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        # TODO: ADD MORE DATA FILE SUPPORT
-        # \**
-        # if node.type == DATA_FILE and "_nmr_" in technology_type.term :
-        #     return FreeInductionDecayDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        # elif node.type == DATA_FILE and "_ms_" in technology_type.term :
-        #     return RawSpectralDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        # elif node.type == DATA_FILE and "_microarray_" in technology_type.term   :
-        #     return ArrayDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        # else :
-        #     return RawDataFile(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
-        # \**
-        """
-        cls = {
-            SAMPLE: Sample,
-            EXTRACT: Extract,
-            LABELED_EXTRACT: LabeledExtract,
-            DATA_FILE: DataFile
-        }
-        return cls[node.type](characteristics=node.characteristics, name=node.name)
-        """
+
+            try:
+                print('isa_objects_factory: Assay conf. found: {}; {};'.format(
+                    measurement_type, technology_type)
+                )
+                m_type_term = measurement_type.term if isinstance(measurement_type, OntologyAnnotation) \
+                    else measurement_type
+                t_type_term = technology_type.term if isinstance(technology_type, OntologyAnnotation) \
+                    else technology_type
+                curr_assay_opt = next(
+                    opt for opt in assays_opts if opt['measurement type'] == m_type_term and
+                    opt['technology type'] == t_type_term
+                )
+                print('isa_objects_factory: Assay conf. found: {}; {}; {};'.format(
+                    measurement_type, technology_type, curr_assay_opt)
+                )
+                isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
+                return isa_class(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+            except StopIteration as e:
+                return RawDataFile(
+                    filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH))
+                )
 
 
 class StudyDesignEncoder(json.JSONEncoder):

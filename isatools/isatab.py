@@ -5149,7 +5149,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _consutrctor(self):
+    def _construtrctor(self):
         return IsaTabSeries
 
 
@@ -5158,7 +5158,7 @@ class IsaTabDataFrame(pd.DataFrame):
     header as Pandas does not allow duplicate labels in the header but ISA-Tab
     needs them
     """
-
+    # TODO: The values for this array should be load from data_schema.json enum
     DATA_FILE_LABELS = [
         'Raw Data File', 'Derived Spectral Data File',
         'Derived Array Data File', 'Array Data File',
@@ -5167,6 +5167,7 @@ class IsaTabDataFrame(pd.DataFrame):
         'Acquisition Parameter Data File', 'Free Induction Decay Data File',
         'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
         'Metabolite Assignment File', 'Raw Spectral Data File']
+
     MATERIAL_LABELS = ['Source Name', 'Sample Name', 'Extract Name',
                        'Labeled Extract Name']
     OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']

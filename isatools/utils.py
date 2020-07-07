@@ -5,6 +5,7 @@ import csv
 import json
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -580,6 +581,21 @@ def batch_fix_isatabs(settings):
         fixer.fix_factor(
             factor_name=settings[table_file_path]['factor'],
             protocol_ref=settings[table_file_path]['protocol_ref'])
+
+
+def urlify(s):
+    """
+    Utility function to remove all problematic characters (whitespaces, etc...)
+    :param s: string
+    :return: cleaned string
+    """
+    # Remove all non-word characters (everything except numbers and letters)
+    # s = re.sub(r"[^\w\s]", '', s)
+
+    # Replace all runs of whitespace with a single dash
+    s = re.sub(r"\s+", '-', s)
+
+    return s
 
 
 class IsaTabFixer(object):
