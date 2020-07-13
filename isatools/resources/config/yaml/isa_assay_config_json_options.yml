@@ -1,480 +1,522 @@
-1:
--  measurement_type: metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000366
--  technology_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  protocol_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  parameter-like_file: Acquisition Parameter File
--  node_name: NMR Assay Name
--  key_file_prefix: nmr_raw
--  raw_data_file: Free Induction Decay Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-2:
--  measurement_type: targeted metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/MSIO_0000100
--  technology_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  protocol_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  parameter-like_file: ''
--  node_name: NMR Assay Name
--  key_file_prefix: nmr_raw
--  raw_data_file: Free Induction Decay Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-3:
--  measurement_type: untargeted metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/MSIO_0000101
--  technology_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  protocol_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  parameter-like_file: ''
--  node_name: NMR Assay Name
--  key_file_prefix: nmr_raw
--  raw_data_file: Free Induction Decay Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-4:
--  measurement_type: isotopomer distribution analysis
--  term_uri: http://purl.obolibrary.org/obo/msio.owl#isotopomer_analysis
--  technology_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  protocol_type: NMR spectroscopy
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000623
--  parameter-like_file: ''
--  node_name: NMR Assay Name
--  key_file_prefix: nmr_raw
--  raw_data_file: Free Induction Decay Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-5:
--  measurement_type: metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000366
--  technology_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  protocol_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  parameter-like_file: ''
--  node_name: MS Assay Name
--  key_file_prefix: ms_raw
--  raw_data_file: Raw Spectral Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-6:
--  measurement_type: targeted metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/MSIO_0000100
--  technology_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  protocol_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  parameter-like_file: ''
--  node_name: MS Assay Name
--  key_file_prefix: ms_raw
--  raw_data_file: Raw Spectral Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-7:
--  measurement_type: untargeted metabolite profiling
--  term_uri: http://purl.obolibrary.org/obo/MSIO_0000101
--  technology_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  protocol_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  parameter-like_file: ''
--  node_name: MS Assay Name
--  key_file_prefix: ms_raw
--  raw_data_file: Raw Spectral Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Metabolite Assignment File
--  derived_data_file: ''
--  derived_data_file: ''
-8:
--  measurement_type: isotologue distribution analysis
--  term_uri: http://purl.obolibrary.org/obo/msio.owl#mass_isotopologue_distribution_analysis
--  technology_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  protocol_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  parameter-like_file: ''
--  node_name: MS Assay Name
--  key_file_prefix: ms_raw
--  raw_data_file: Raw Spectral Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-9:
--  measurement_type: transcription profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000424
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-10:
--  measurement_type: genotype profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000435
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000253
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-11:
--  measurement_type: epigenome profling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002020
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-12:
--  measurement_type: exome profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002118
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-13:
--  measurement_type: DNA methylation profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000634
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-14:
--  measurement_type: copy number variation profling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000537
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-15:
--  measurement_type: transcription factor binding site identification
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000291
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-16:
--  measurement_type: protein-DNA binding site identification
--  term_uri: http://www.bioassayontology.org/bao#BAO_0000591
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-17:
--  measurement_type: SNP analysis
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000435
--  technology_type: DNA microarray
--  term_uri: http://purl.obolibrary.org/obo/OBI_0400148
--  protocol_type: nucleic acid hybridization
--  term_uri: http://purl.obolibrary.org/obo/OBI_0302903
--  parameter-like_file: Array Design REF
--  node_name: Hybridization Assay Name
--  key_file_prefix: array_raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Array Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-18:
--  measurement_type: transcription profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000424
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-19:
--  measurement_type: transcription factor binding site identification
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000291
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-20:
--  measurement_type: protein-DNA binding site identification
--  term_uri: http://www.bioassayontology.org/bao#BAO_0000591
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-21:
--  measurement_type: DNA methylation profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000634
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-22:
--  measurement_type: histone modification profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002020
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-23:
--  measurement_type: genome sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002117
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-24:
--  measurement_type: metagenome sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002623
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-25:
--  measurement_type: environmental gene survey
--  term_uri: http://purl.obolibrary.org/obo/OBI_0001960
--  technology_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  protocol_type: nucleic acid sequencing
--  term_uri: http://purl.obolibrary.org/obo/OBI_0600047
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-26:
--  measurement_type: cell sorting
--  term_uri: http://purl.obolibrary.org/obo/CHMO_0001085
--  technology_type: flow cytometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000916
--  protocol_type: flow cytometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000916
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-27:
--  measurement_type: cell counting
--  term_uri: http://purl.obolibrary.org/obo/OBI_0001977
--  technology_type: flow cytometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000916
--  protocol_type: flow cytometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000916
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-28:
--  measurement_type: cell migration assay
--  term_uri: ''
--  technology_type: microscopy imaging
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002119
--  protocol_type: migration assay
--  term_uri: http://purl.obolibrary.org/obo/OBI_0002119
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-29:
--  measurement_type: phenotyping
--  term_uri: ''
--  technology_type: imaging
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000185
--  protocol_type: migration assay
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000185
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: Raw Data File
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-30:
--  measurement_type: transcription profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000424
--  technology_type: RT-pcr
--  term_uri: http://purl.obolibrary.org/obo/OBI_0001361
--  protocol_type: RT-pcr
--  term_uri: http://purl.obolibrary.org/obo/OBI_0001361
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-31:
--  measurement_type: custom assay
--  term_uri: ''
--  technology_type: custom technique
--  term_uri: ''
--  protocol_type: custom prococol
--  term_uri: ''
--  parameter-like_file: ''
--  node_name: Assay Name
--  key_file_prefix: custom_raw
--  raw_data_file: 'Raw Data File '
--  derived_data_file: Derived Data File
--  derived_data_file: ''
--  derived_data_file: ''
--  derived_data_file: ''
-32:
--  measurement_type: protein expression profiling
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000615
--  technology_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  protocol_type: mass spectrometry
--  term_uri: http://purl.obolibrary.org/obo/OBI_0000470
--  parameter-like_file: ''
--  node_name: MS Assay Name
--  key_file_prefix: ms_raw
--  raw_data_file: Raw Spectral Data File
--  derived_data_file: Derived Spectral Data File
--  derived_data_file: Peptide Assignment File
--  derived_data_file: Protein Assignment File
--  derived_data_file: Post Translational Modification Assignment File
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: nmr_raw
+   measurement_type:
+      term: metabolite profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000366
+   node_name: NMR Assay Name
+   parameter-like_file:
+      value: Acquisition Parameter File
+   protocol_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+   raw_data_file: Free Induction Decay Data File
+   technology_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: nmr_raw
+   measurement_type:
+      term: targeted metabolite profiling
+      url: http://purl.obolibrary.org/obo/MSIO_0000100
+   node_name: NMR Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+   raw_data_file: Free Induction Decay Data File
+   technology_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: nmr_raw
+   measurement_type:
+      term: untargeted metabolite profiling
+      url: http://purl.obolibrary.org/obo/MSIO_0000101
+   node_name: NMR Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+   raw_data_file: Free Induction Decay Data File
+   technology_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: nmr_raw
+   measurement_type:
+      term: isotopomer distribution analysis
+      url: http://purl.obolibrary.org/obo/msio.owl#isotopomer_analysis
+   node_name: NMR Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+   raw_data_file: Free Induction Decay Data File
+   technology_type:
+      term: NMR spectroscopy
+      url: http://purl.obolibrary.org/obo/OBI_0000623
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: ms_raw
+   measurement_type:
+      term: metabolite profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000366
+   node_name: MS Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+   raw_data_file: Raw Spectral Data File
+   technology_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: ms_raw
+   measurement_type:
+      term: targeted metabolite profiling
+      url: http://purl.obolibrary.org/obo/MSIO_0000100
+   node_name: MS Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+   raw_data_file: Raw Spectral Data File
+   technology_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Metabolite Assignment File
+   key_file_prefix: ms_raw
+   measurement_type:
+      term: untargeted metabolite profiling
+      url: http://purl.obolibrary.org/obo/MSIO_0000101
+   node_name: MS Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+   raw_data_file: Raw Spectral Data File
+   technology_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+-  derived_data_file:
+   - Derived Spectral Data File
+   key_file_prefix: ms_raw
+   measurement_type:
+      term: isotologue distribution analysis
+      url: http://purl.obolibrary.org/obo/msio.owl#mass_isotopologue_distribution_analysis
+   node_name: MS Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+   raw_data_file: Raw Spectral Data File
+   technology_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: transcription profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000424
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: genotype profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000435
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0000253
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: epigenome profling
+      url: http://purl.obolibrary.org/obo/OBI_0002020
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: exome profiling
+      url: http://purl.obolibrary.org/obo/OBI_0002118
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: DNA methylation profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000634
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: copy number variation profling
+      url: http://purl.obolibrary.org/obo/OBI_0000537
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: transcription factor binding site identification
+      url: http://purl.obolibrary.org/obo/OBI_0000291
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: protein-DNA binding site identification
+      url: http://www.bioassayontology.org/bao#BAO_0000591
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Array Data File
+   key_file_prefix: array_raw
+   measurement_type:
+      term: SNP analysis
+      url: http://purl.obolibrary.org/obo/OBI_0000435
+   node_name: Hybridization Assay Name
+   parameter-like_file:
+      value: Array Design REF
+   protocol_type:
+      term: nucleic acid hybridization
+      url: http://purl.obolibrary.org/obo/OBI_0302903
+   raw_data_file: Raw Data File
+   technology_type:
+      term: DNA microarray
+      url: http://purl.obolibrary.org/obo/OBI_0400148
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: transcription profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000424
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: transcription factor binding site identification
+      url: http://purl.obolibrary.org/obo/OBI_0000291
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: protein-DNA binding site identification
+      url: http://www.bioassayontology.org/bao#BAO_0000591
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: DNA methylation profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000634
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: histone modification profiling
+      url: http://purl.obolibrary.org/obo/OBI_0002020
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: genome sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0002117
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: metagenome sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0002623
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: environmental gene survey
+      url: http://purl.obolibrary.org/obo/OBI_0001960
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: nucleic acid sequencing
+      url: http://purl.obolibrary.org/obo/OBI_0600047
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: cell sorting
+      url: http://purl.obolibrary.org/obo/CHMO_0001085
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: flow cytometry
+      url: http://purl.obolibrary.org/obo/OBI_0000916
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: flow cytometry
+      url: http://purl.obolibrary.org/obo/OBI_0000916
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: cell counting
+      url: http://purl.obolibrary.org/obo/OBI_0001977
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: flow cytometry
+      url: http://purl.obolibrary.org/obo/OBI_0000916
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: flow cytometry
+      url: http://purl.obolibrary.org/obo/OBI_0000916
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: cell migration assay
+      url: ''
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: migration assay
+      url: http://purl.obolibrary.org/obo/OBI_0002119
+   raw_data_file: Raw Data File
+   technology_type:
+      term: microscopy imaging
+      url: http://purl.obolibrary.org/obo/OBI_0002119
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: phenotyping
+      url: ''
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: migration assay
+      url: http://purl.obolibrary.org/obo/OBI_0000185
+   raw_data_file: Raw Data File
+   technology_type:
+      term: imaging
+      url: http://purl.obolibrary.org/obo/OBI_0000185
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: raw
+   measurement_type:
+      term: transcription profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000424
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: RT-pcr
+      url: http://purl.obolibrary.org/obo/OBI_0001361
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: RT-pcr
+      url: http://purl.obolibrary.org/obo/OBI_0001361
+-  derived_data_file:
+   - Derived Data File
+   key_file_prefix: custom_raw
+   measurement_type:
+      term: custom assay
+      url: ''
+   node_name: Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: custom prococol
+      url: ''
+   raw_data_file: 'Raw Data File '
+   technology_type:
+      term: custom technique
+      url: ''
+-  derived_data_file:
+   - Derived Spectral Data File
+   - Peptide Assignment File
+   - Protein Assignment File
+   - Post Translational Modification Assignment File
+   key_file_prefix: ms_raw
+   measurement_type:
+      term: protein expression profiling
+      url: http://purl.obolibrary.org/obo/OBI_0000615
+   node_name: MS Assay Name
+   parameter-like_file:
+      value: ''
+   protocol_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470
+   raw_data_file: Raw Spectral Data File
+   technology_type:
+      term: mass spectrometry
+      url: http://purl.obolibrary.org/obo/OBI_0000470

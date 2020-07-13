@@ -29,7 +29,7 @@ from isatools.convert import (
     json2sra as json2sra_module,
     magetab2isatab as magetab2isatab_module,
     magetab2json as magetab2json_module,
-    mzml2isa as mzml2isa_module,
+    mzml2isatab as mzml2isa_module,
     sampletab2isatab as sampletab2isatab_module,
     sampletab2json as sampletab2json_module,
 )
