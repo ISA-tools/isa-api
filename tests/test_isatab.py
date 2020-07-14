@@ -342,12 +342,15 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process2.outputs = [sample2]
         s.process_sequence = [sample_collection_process, sample_collection_process2]
         i.studies = [s]
-        isatab.dump(i, self._tmp_dir)
+
+        quotes = False
+        isatab.dump(i, self._tmp_dir, with_quotes=quotes)
+
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool-sample-chain',
                                   's_TEST-Template3-Splitting.txt')) as expected_file:
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-            self.assertIsInstance(isatab.dumps(i), str)
+            self.assertIsInstance(isatab.dumps(i, with_quotes=quotes), str)
 
     def test_isatab_dump_investigation_multiple_comments(self):
         # Create an empty Investigation object and set some values to the
@@ -732,7 +735,8 @@ class TestIsaTabDump(unittest.TestCase):
         investigation.studies.append(study)
 
         try:
-            isatab.dump(investigation, self._tmp_dir)
+            quotes = False
+            isatab.dump(investigation, self._tmp_dir, with_quotes=quotes)
         except IOError as ioe:
             print("ERROR: ", ioe)
 

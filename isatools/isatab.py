@@ -245,7 +245,7 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', "NMR Assay Name",
                        'Data Transformation Name', 'Normalization Name']
 
 
-def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
+def dump(isa_obj, output_path, i_file_name='i_investigation.txt', with_quotes=False,
          skip_dump_tables=False, write_factor_values_in_assay_table=False):
     """Serializes ISA objects to ISA-Tab
 
@@ -256,6 +256,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     study sample table files and assay table files
     :param write_factor_values_in_assay_table: Boolean flag indicating whether
     or not to write Factor Values in the assay table files
+    :param with_quotes: Boolean flag to toggle on/off quoted tab delimited serialization
     :return: None
     """
 
@@ -875,11 +876,21 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     # Write ONTOLOGY SOURCE REFERENCE section
     ontology_source_references_df =_build_ontology_reference_section(ontologies=investigation.ontology_source_references)
-    fp.write('ONTOLOGY SOURCE REFERENCE\n')
-    #  Need to set index_label as top left cell
-    ontology_source_references_df.to_csv(
-        path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-        index_label='Term Source Name')
+    if with_quotes is False:
+        fp.write('ONTOLOGY SOURCE REFERENCE\n')
+        #  Need to set index_label as top left cell
+        ontology_source_references_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Term Source Name')
+    else:
+        fp.write('"ONTOLOGY SOURCE REFERENCE"\n')
+        #  Need to set index_label as top left cell
+        ontology_source_references_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Term Source Name',
+            quoting=csv.QUOTE_NONNUMERIC,
+            escapechar="\\",
+            doublequote=False)
 
     #  Write INVESTIGATION section
     inv_df_cols = ['Investigation Identifier',
@@ -901,26 +912,53 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         inv_df_rows.append(comment.value)
     investigation_df.loc[0] = inv_df_rows
     investigation_df = investigation_df.set_index('Investigation Identifier').T
-    fp.write('INVESTIGATION\n')
-    investigation_df.to_csv(
-        path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-        index_label='Investigation Identifier')
+    if with_quotes is False:
+        fp.write('INVESTIGATION\n')
+        investigation_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation Identifier')
+    else:
+        fp.write('"INVESTIGATION"\n')
+        investigation_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation Identifier',
+            quoting=csv.QUOTE_NONNUMERIC,
+            escapechar="\\",
+            doublequote=False)
 
     # Write INVESTIGATION PUBLICATIONS section
     investigation_publications_df = _build_publications_section_df(prefix='Investigation',
         publications=investigation.publications)
-    fp.write('INVESTIGATION PUBLICATIONS\n')
-    investigation_publications_df.to_csv(
-        path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-        index_label='Investigation PubMed ID')
+    if with_quotes is False:
+        fp.write('INVESTIGATION PUBLICATIONS\n')
+        investigation_publications_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation PubMed ID')
+    else:
+        fp.write('"INVESTIGATION PUBLICATIONS"\n')
+        investigation_publications_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation Person Last Name',
+            quoting=csv.QUOTE_NONNUMERIC,
+            escapechar="\\",
+            doublequote=False)
 
     # Write INVESTIGATION CONTACTS section
     investigation_contacts_df = _build_contacts_section_df(
         contacts=investigation.contacts)
-    fp.write('INVESTIGATION CONTACTS\n')
-    investigation_contacts_df.to_csv(
-        path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-        index_label='Investigation Person Last Name')
+    if with_quotes is False:
+        fp.write('INVESTIGATION CONTACTS\n')
+        investigation_contacts_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation Person Last Name')
+    else:
+        fp.write('"INVESTIGATION CONTACTS"\n')
+        investigation_contacts_df.to_csv(
+            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+            index_label='Investigation Person Last Name',
+            quoting=csv.QUOTE_NONNUMERIC,
+            escapechar="\\",
+            doublequote=False)
 
     # Write STUDY sections
     for study in investigation.studies:
@@ -948,10 +986,17 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 study_df_row.append(comment.value)
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
-        fp.write('STUDY\n')
-        study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                        index_label='Study Identifier')
-
+        if with_quotes is False:
+            fp.write('STUDY\n')
+            study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                            index_label='Study Identifier')
+        else:
+            fp.write('"STUDY"\n')
+            study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                            index_label='Study Identifier',
+                            quoting=csv.QUOTE_NONNUMERIC,
+                            escapechar="\\",
+                            doublequote=False)
         # Write STUDY DESIGN DESCRIPTORS section
         # study_design_descriptors_df = pd.DataFrame(
         #     columns=('Study Design Type',
@@ -970,25 +1015,52 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         # study_design_descriptors_df = \
         #     study_design_descriptors_df.set_index('Study Design Type').
         study_design_descriptors_df = _build_design_descriptors_section(design_descriptors=study.design_descriptors)
-        fp.write('STUDY DESIGN DESCRIPTORS\n')
-        study_design_descriptors_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study Design Type')
+        if with_quotes is False:
+            fp.write('STUDY DESIGN DESCRIPTORS\n')
+            study_design_descriptors_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Design Type')
+        else:
+            fp.write('"STUDY DESIGN DESCRIPTORS"\n')
+            study_design_descriptors_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Design Type',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
         # Write STUDY PUBLICATIONS section
         study_publications_df = _build_publications_section_df(
             prefix='Study', publications=study.publications)
-        fp.write('STUDY PUBLICATIONS\n')
-        study_publications_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study PubMed ID')
+        if with_quotes is False:
+            fp.write('STUDY PUBLICATIONS\n')
+            study_publications_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study PubMed ID')
+        else:
+            fp.write('"STUDY PUBLICATIONS"\n')
+            study_publications_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study PubMed ID',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
         # Write STUDY FACTORS section
         study_factors_df = _build_factors_section_df(factors=study.factors)
-        fp.write('STUDY FACTORS\n')
-        study_factors_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study Factor Name')
+        if with_quotes is False:
+            fp.write('STUDY FACTORS\n')
+            study_factors_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Factor Name')
+        else:
+            fp.write('"STUDY FACTORS"\n')
+            study_factors_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Factor Name',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
         # Write STUDY ASSAYS section
         # study_assays_df = pd.DataFrame(
@@ -1021,32 +1093,61 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         # study_assays_df = study_assays_df.set_index('Study Assay File Name').T
 
         study_assays_df= _build_assays_section_df(assays=study.assays)
-        fp.write('STUDY ASSAYS\n')
-        study_assays_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study Assay File Name')
+        if with_quotes is False:
+            fp.write('"STUDY ASSAYS"\n')
+            study_assays_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Assay File Name')
+        else:
+            fp.write('"STUDY ASSAYS"\n')
+            study_assays_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Assay File Name',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
         # Write STUDY PROTOCOLS section
         study_protocols_df = _build_protocols_section_df(protocols=study.protocols)
-        fp.write('STUDY PROTOCOLS\n')
-        study_protocols_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study Protocol Name')
+        if with_quotes is False:
+            fp.write('STUDY PROTOCOLS\n')
+            study_protocols_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Protocol Name')
+        else:
+            fp.write('"STUDY PROTOCOLS"\n')
+            study_protocols_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Protocol Name',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
         # Write STUDY CONTACTS section
         study_contacts_df = _build_contacts_section_df(
             prefix='Study', contacts=study.contacts)
-        fp.write('STUDY CONTACTS\n')
-        study_contacts_df.to_csv(
-            path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-            index_label='Study Person Last Name')
+
+        if with_quotes is False:
+            fp.write('STUDY CONTACTS\n')
+            study_contacts_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Person Last Name')
+        else:
+            fp.write('"STUDY CONTACTS"\n')
+            study_contacts_df.to_csv(
+                path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                index_label='Study Person Last Name',
+                quoting=csv.QUOTE_NONNUMERIC,
+                escapechar="\\",
+                doublequote=False)
 
     if skip_dump_tables:
         pass
     else:
-        write_study_table_files(investigation, output_path)
+        # quotes = True
+        write_study_table_files(investigation, output_path, with_quotes)
         write_assay_table_files(
-            investigation, output_path, write_factor_values_in_assay_table)
+            investigation, output_path, with_quotes, write_factor_values_in_assay_table)
 
     fp.close()
     return investigation
@@ -1155,7 +1256,7 @@ def _all_end_to_end_paths(G, start_nodes):
     return paths
 
 
-def write_study_table_files(inv_obj, output_dir):
+def write_study_table_files(inv_obj, output_dir, with_quotes):
     """Writes out study table files according to pattern defined by
 
     Source Name, [ Characteristics[], ... ],
@@ -1167,6 +1268,7 @@ def write_study_table_files(inv_obj, output_dir):
 
     :param inv_obj: An Investigation object containing ISA content
     :param output_dir: A path to a directory to write the ISA-Tab study files
+    :param with_quotes: boolean parameter switch to toggle double quote serialization
     :return: None
     """
     if not isinstance(inv_obj, Investigation):
@@ -1340,12 +1442,18 @@ def write_study_table_files(inv_obj, output_dir):
         DF = DF.replace('', np.nan)
         DF = DF.dropna(axis=1, how='all')
 
-        with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
-            DF.to_csv(
-                path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
+        if with_quotes is False:
+            with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
+                DF.to_csv(
+                    path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
+        else:
+            with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
+                DF.to_csv(
+                    path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8',
+                    quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", doublequote=False)
 
 
-def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
+def write_assay_table_files(inv_obj, output_dir, with_quotes, write_factor_values=False):
     """Writes out assay table files according to pattern defined by
 
     Sample Name,
@@ -1357,6 +1465,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
     :param output_dir: A path to a directory to write the ISA-Tab assay files
     :param write_factor_values: Flag to indicate whether or not to write out
     the Factor Value columns in the assay tables
+    :param with_quotes: a boolean to allow serialization with or without double quotes.
     :return: None
     """
 
@@ -1642,10 +1751,17 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             DF = DF.replace('', np.nan)
             DF = DF.dropna(axis=1, how='all')
 
-            with open(os.path.join(
-                    output_dir, assay_obj.filename), 'w') as out_fp:
-                DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
-                          encoding='utf-8')
+            if with_quotes is False:
+                with open(os.path.join(
+                        output_dir, assay_obj.filename), 'w') as out_fp:
+                    DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
+                              encoding='utf-8')
+            else:
+                with open(os.path.join(
+                        output_dir, assay_obj.filename), 'w') as out_fp:
+                    DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
+                              encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC,
+                            escapechar="\\", doublequote=False)
 
 
 def get_value_columns(label, x):
@@ -4533,7 +4649,7 @@ def batch_validate(tab_dir_list):
     return batch_report
 
 
-def dumps(isa_obj, skip_dump_tables=False,
+def dumps(isa_obj, with_quotes, skip_dump_tables=False,
           write_fvs_in_assay_table=False):
     """Serializes ISA objects to ISA-Tab to standard output
 
@@ -4541,13 +4657,17 @@ def dumps(isa_obj, skip_dump_tables=False,
     :param skip_dump_tables: Boolean flag on whether or not to write the
     :param write_factor_values_in_assay_table: Boolean flag indicating whether
         or not to write Factor Values in the assay table files
+    :param with_quotes: Boolean flag to toggle quoted serialization on or off
     :return: String output of the ISA-Tab files
     """
     tmp = None
     output = str()
+    quotes = False
+
     try:
         tmp = tempfile.mkdtemp()
         dump(isa_obj=isa_obj, output_path=tmp,
+             with_quotes=quotes,
              skip_dump_tables=skip_dump_tables,
              write_factor_values_in_assay_table=write_fvs_in_assay_table)
         with utf8_text_file_open(os.path.join(
