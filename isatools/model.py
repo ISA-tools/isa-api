@@ -1718,8 +1718,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def add_prot(self, protocol_name='', protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared ')
-            #            'in the study'.format(protocol_name))
+            log.warning('A protocol with name "{}" has already been declared '
+                        'in the study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
@@ -1741,8 +1741,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            log.warning('A factor with name "{}" has already been declared ')
-             #           'in the study'.format(name))
+            log.warning('A factor with name "{}" has already been declared '
+                        'in the study'.format(name))
         else:
             self.factors.append(StudyFactor(
                 name=name, factor_type=OntologyAnnotation(term=factor_type)))
@@ -1751,8 +1751,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         if self.get_factor(name=name) is None:
              log.warning(
                 'A factor with name "{}" hasnot been found in the study'
-             )
-              #  .format(name))
+                .format(name))
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
                 self.factors.remove(self.get_factor(name=name))
