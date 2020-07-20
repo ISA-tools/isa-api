@@ -27,7 +27,7 @@ from isatools.errors import ISAModelAttributeError
 
 
 log = logging.getLogger('isatools')
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
 
 
 def _build_assay_graph(process_sequence=None):
@@ -52,21 +52,21 @@ def _build_assay_graph(process_sequence=None):
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
                     g.add_edge(process, output)
-                    log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
+                    #log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
             else:
                 g.add_edge(process, process.next_process)
-                log.debug('linking process {1} to prev_process {0}'.format(
-                    getattr(process.next_process, 'id', None), process.id))
+                #log.debug('linking process {1} to prev_process {0}'.format(
+                #    getattr(process.next_process, 'id', None), process.id))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
                     g.add_edge(input_, process)
-                    log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
+                    #log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
             else:
                 g.add_edge(process.prev_process, process)
-                log.debug('linking prev_process {0} to process {1}'.format(
-                    getattr(process.prev_process, 'id', None), process.id))
+                #log.debug('linking prev_process {0} to process {1}'.format(
+                #    getattr(process.prev_process, 'id', None), process.id))
     return g
 
 
@@ -1541,7 +1541,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def graph(self):
         """:obj:`networkx.DiGraph` A graph representation of the study's
         process sequence"""
-        log.info('Building graph for object: {0}'.format(self))
+       # log.info('Building graph for object: {0}'.format(self))
         if len(self.process_sequence) > 0:
             return _build_assay_graph(self.process_sequence)
         else:
@@ -1718,8 +1718,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def add_prot(self, protocol_name='', protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared '
-                        'in the study'.format(protocol_name))
+            log.warning('A protocol with name "{}" has already been declared ')
+            #            'in the study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
@@ -1741,17 +1741,18 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            log.warning('A factor with name "{}" has already been declared '
-                        'in the study'.format(name))
+            log.warning('A factor with name "{}" has already been declared ')
+             #           'in the study'.format(name))
         else:
             self.factors.append(StudyFactor(
                 name=name, factor_type=OntologyAnnotation(term=factor_type)))
 
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
-            log.warning(
+             log.warning(
                 'A factor with name "{}" hasnot been found in the study'
-                .format(name))
+             )
+              #  .format(name))
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
                 self.factors.remove(self.get_factor(name=name))
@@ -2890,12 +2891,15 @@ class Sample(Commentable):
             raise ISAModelAttributeError(
                 'Sample.derives_from must be iterable containing Sources')
 
-    def __repr__(self):
-        return "isatools.model.Sample(name='{sample.name}', " \
-               "characteristics={sample.characteristics}, " \
-               "factor_values={sample.factor_values}, " \
-               "derives_from={sample.derives_from}, " \
-               "comments={sample.comments})".format(sample=self)
+    # def __repr__(self):
+    #     return "isatools.model.Sample(name='{sample.name}', " \
+    #            "characteristics={sample.characteristics}, " \
+    #            "factor_values={sample.factor_values}, " \
+    #            "derives_from={sample.derives_from}, " \
+    #            "comments={sample.comments})".format(sample=self)
+
+
+
 
     def __str__(self):
         return """Sample(

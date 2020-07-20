@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import shutil
 import tempfile
+import time
 from io import StringIO
 
 from isatools import isatab
@@ -742,6 +743,403 @@ class TestIsaTabDump(unittest.TestCase):
         #                           'i_test_investigation.txt')) as expected_file:
         #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
         #     self.assertIsInstance(isatab.dumps(investigation), str)
+
+
+    def test_isatab_dump_investigation_multiple_comments_many_assays(self):
+        # Create an empty Investigation object and set some values to the
+        # instance variables.
+
+        investigation = Investigation()
+        investigation.identifier = "1"
+        investigation.title = "My Simple ISA Investigation"
+        investigation.description = \
+            "We could alternatively use the class constructor's parameters to " \
+            "set some default values at the time of creation, however we " \
+            "want to demonstrate how to use the object's instance variables " \
+            "to set values."
+        investigation.submission_date = "2016-11-03"
+        investigation.public_release_date = "2016-11-03"
+        investigation.comments.append(Comment(name="Investigation Start Date", value="Venus"))
+        # Create an empty Study object and set some values. The Study must have a
+        # filename, otherwise when we serialize it to ISA-Tab we would not know
+        # where to write it. We must also attach the study to the investigation
+        # by adding it to the 'investigation' object's list of studies.
+
+        study = Study(filename="s_study.txt")
+        study.identifier = "1"
+        study.title = "My ISA Study"
+        study.description = \
+            "Like with the Investigation, we could use the class constructor " \
+            "to set some default values, but have chosen to demonstrate in this " \
+            "example the use of instance variables to set initial values."
+        study.submission_date = "2016-11-03"
+        study.public_release_date = "2016-11-03"
+
+        # This is to show that ISA Comments can be used to annotate ISA objects, here ISA Study
+        study.comments.append(Comment(name="Study Start Date", value="Sun"))
+
+        # Some instance variables are typed with different objects and lists of
+        # objects. For example, a Study can have a list of design descriptors.
+        # A design descriptor is an Ontology Annotation describing the kind of
+        # study at hand. Ontology Annotations should typically reference an
+        # Ontology Source. We demonstrate a mix of using the class constructors
+        # and setting values with instance variables. Note that the
+        # OntologyAnnotation object 'intervention_design' links its 'term_source'
+        # directly to the 'obi' object instance. To ensure the OntologySource
+        # is encapsulated in the descriptor, it is added to a list of
+        # 'ontology_source_references' in the Investigation object. The
+        # 'intervention_design' object is then added to the list of
+        # 'design_descriptors' held by the Study object.
+
+        obi = OntologySource(name='OBI',
+                             description="Ontology for Biomedical Investigations", file="", version="1.0")
+
+        # NOTE: The following call is not allowed by the model. This means that Comments can not be set programmatically
+        # to annotation ONTOLOGY SOURCE REFERENCE SECTION
+        # i.ontology_source_references.comments.append(Comment(name="test", value="test-value"))
+        # instead you should do the following:
+        # testing additon of comment and handling by ISA serializer
+        obi.comments.append(Comment(name="reasoning type", value="using the reasoned version"))
+        obi.comments.append(Comment(name="Ontology rating", value="sweet"))
+
+        investigation.ontology_source_references.append(obi)
+
+        intervention_design = OntologyAnnotation(term_source=obi)
+        intervention_design.term = "intervention design"
+        intervention_design.term_accession = \
+            "http://purl.obolibrary.org/obo/OBI_0000115"
+        # NOTE: to add a comment to the ISA-Tab STUDY DESIGN DESCRIPTOR Section in the ISA investigation file,
+        # add a comment to the OntologyAnnotations accumulated in the ISA design_descriptors object.
+        intervention_design.comments.append(Comment(name="Study Design Descriptor", value="Intelligent Study Design"))
+        intervention_design.comments.append(Comment(name="design rating", value="rating 2"))
+        intervention_design.comments.append(Comment(name="critics", value="terrible"))
+        study.design_descriptors.append(intervention_design)
+
+        other_design = OntologyAnnotation(term_source=obi)
+        other_design.term="italian design"
+        other_design.comments.append(Comment(name="Study Design Descriptor", value="smart design"))
+        other_design.comments.append(Comment(name="design rating", value="rating 4"))
+        other_design.comments.append(Comment(name="award", value="London award"))
+        other_design.comments.append(Comment(name="critics", value="awful"))
+        study.design_descriptors.append(other_design)
+
+        another_design = OntologyAnnotation(term_source=obi)
+        another_design.term = "scandinavian design"
+        another_design.comments.append(Comment(name="Study Design Descriptor", value="minimalist design"))
+        another_design.comments.append(Comment(name="design rating", value="rating 3"))
+        another_design.comments.append(Comment(name="award", value="London award"))
+        another_design.comments.append(Comment(name="critics", value="dreadful"))
+        study.design_descriptors.append(another_design)
+        # Other instance variables common to both Investigation and Study objects
+        # include 'contacts' and 'publications', each with lists of corresponding
+        # Person and Publication objects.
+
+        contact1 = Person(first_name="Alice", last_name="Robertson",
+                          affiliation="University of Life",
+                          roles=[OntologyAnnotation(term='submitter')])
+        # testing additon of comment and handling by ISA serializer
+        contact1.comments.append(Comment(name="Study Person comment", value="outstanding person"))
+
+        contact2 = Person(first_name="Bob", last_name="Cat",
+                          affiliation="University of Life",
+                          roles=[OntologyAnnotation(term='submitter')])
+        # testing additon of comment and handling by ISA serializer
+        contact2.comments.append(Comment(name="Study Person comment", value="cool person"))
+        contact2.comments.append(Comment(name="Study Person HR rating", value="#1"))
+        study.contacts.append(contact1)
+        study.contacts.append(contact2)
+
+        investigation.contacts.append(contact2)
+
+        publication1 = Publication(title="Experiments with Elephants", author_list="A. Robertson, B. Robertson")
+        publication1.pubmed_id = "12345678"
+        publication1.status = OntologyAnnotation(term="published")
+        publication1.comments.append(Comment(name="Study Publication Comment", value="great manuscript"))
+        publication1.comments.append(Comment(name="Study Publication addendum", value="retracted manuscript"))
+        publication2 = Publication(title="Experiments with Bananas", author_list="C. Olsen, B. Lundgren")
+        publication2.pubmed_id = "18888881"
+        publication2.status = OntologyAnnotation(term="published")
+        publication2.comments.append(Comment(name="Study Publication Comment", value="another great manuscript"))
+
+        study.publications.append(publication1)
+        study.publications.append(publication2)
+
+        # To create the study graph that corresponds to the contents of the study
+        # table file (the s_*.txt file), we need to create a process sequence.
+        # To do this we use the Process class and attach it to the Study object's
+        # 'process_sequence' list instance variable. Each process must be linked
+        # with a Protocol object that is attached to a Study object's 'protocols'
+        # list instance variable. The sample collection Process object usually has
+        # as input a Source material and as output a Sample material.
+
+        # Here we create one Source material object and attach it to our study.
+
+        source = Source(name='source_material')
+        source.comments.append(Comment(name="Source Comment", value="brilliant"))
+        study.sources.append(source)
+
+        # Then we create three Sample objects, with organism as Homo Sapiens, and
+        # attach them to the study. We use the utility function
+        # batch_create_material() to clone a prototype material object. The
+        # function automatically appends an index to the material name. In this
+        # case, three samples will be created, with the names 'sample_material-0',
+        # 'sample_material-1' and 'sample_material-2'.
+
+        prototype_sample = Sample(name='sample_material', derives_from=[source])
+
+        ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+        ncbitaxon.comments.append(Comment(name="reasoning type", value="unreasoned version"))
+        ncbitaxon.comments.append(Comment(name="Ontology rating", value="cool resource"))
+
+        investigation.ontology_source_references.append(ncbitaxon)
+
+        characteristic_organism = Characteristic(
+            category=OntologyAnnotation(term="Organism"),
+            value=OntologyAnnotation(
+                term="Homo Sapiens",
+                term_source=ncbitaxon,
+                term_accession="http://purl.bioontology.org/ontology/NCBITAXON/"
+                               "9606"))
+
+        # Adding the description to the ISA Source Material:
+        source.characteristics.append(characteristic_organism)
+        study.sources.append(source)
+
+        # declaring a new ontology and adding it to the list of resources used
+        uberon = OntologySource(name='UBERON', description='Uber Anatomy Ontology')
+        uberon.comments.append(Comment(name="reasoning type", value="unreasoned version"))
+        uberon.comments.append(Comment(name="Ontology rating", value="resource tres froide"))
+        uberon.comments.append(Comment(name="organization", value="obo"))
+        investigation.ontology_source_references.append(uberon)
+
+        # preparing an ISA Characteristic object (~Material Property ) to annotate sample materials
+        characteristic_organ = Characteristic(
+            category=OntologyAnnotation(term="OrganismPart"),
+            value=OntologyAnnotation(
+                term="liver",
+                term_source=uberon,
+                term_accession="http://purl.bioontology.org/ontology/UBERON/"
+                               "123245"))
+
+        prototype_sample.characteristics.append(characteristic_organ)
+        prototype_sample.comments.append(Comment(name="Sample ComText", value="is this real?"))
+
+        study.samples = batch_create_materials(prototype_sample, n=30)
+        # creates a batch of 3 samples
+
+        # Now we create a single Protocol object that represents our sample
+        # collection protocol, and attach it to the study object. Protocols must be
+        # declared before we describe Processes, as a processing event of some sort
+        # must execute some defined protocol. In the case of the class model,
+        # Protocols should therefore be declared before Processes in order for the
+        # Process to be linked to one.
+
+        sample_collection_protocol = Protocol(
+            name="sample collection-TEST",
+            protocol_type=OntologyAnnotation(term="sample collection-TEST"))
+
+        param1 = ProtocolParameter(parameter_name=OntologyAnnotation(term="Collection Date"))
+        sample_collection_protocol.parameters.append(param1)
+        sample_collection_protocol.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation("material description")))
+        # sample_collection_protocol.parameters.append(ProtocolParameter(parameter_name="Sample Description"))
+
+
+        study.protocols.append(sample_collection_protocol)
+
+        # data_collection_protocol = Protocol(
+        #     name="data collection",
+        #     protocol_type=OntologyAnnotation(term="data collection"))
+        # data_collection_protocol.comments.append(Comment(name="Protocol Start Date", value="beep"))
+        # data_collection_protocol.comments.append(Comment(name="Protocol End Date", value="2017-08-11"))
+        #
+        # study.protocols.append(data_collection_protocol)
+
+        sample_collection_process = Process(
+            executes_protocol=sample_collection_protocol)
+
+        # Creation of an ISA Study Factor object
+        f1 = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment['modality']"))
+        f2 = StudyFactor(name="duration", factor_type=OntologyAnnotation(term="time"))
+        # testing serialization to ISA-TAB of Comments attached to ISA objects.
+        f1.comments.append(Comment(name="Factor comment1", value="Saturn"))
+        f2.comments.append(Comment(name="Factor comment2", value="2039-12-12"))
+        f1.comments.append(Comment(name="Factor comment3", value="the 'wahoo' factor"))
+        # print(f1.comments[0].name, "|", f1.comments[0].value)
+
+        # checking that the ISA Factor object has been modified
+        study.factors.append(f1)
+        study.factors.append(f2)
+        # Next, we link our materials to the Process. In this particular case, we
+        # are describing a sample collection process that takes one source
+        # material, and produces three different samples.
+        #
+        # (source_material)->(sample collection)->
+        # [(sample_material-0), (sample_material-1), (sample_material-2)]
+
+        for src in study.sources:
+            sample_collection_process.inputs.append(src)
+        for sam in study.samples:
+            sample_collection_process.outputs.append(sam)
+
+        # Finally, attach the finished Process object to the study
+        # process_sequence. This can be done many times to describe multiple
+        # sample collection events.
+
+        study.process_sequence.append(sample_collection_process)
+
+        # IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
+        study.characteristic_categories.append(characteristic_organism.category)
+        study.characteristic_categories.append(characteristic_organ.category)
+        # Next, we build n Assay object and attach two protocols,
+        # extraction and sequencing.
+
+        assay1 = Assay(filename="a_assay.txt")
+
+        assay1.comments.append(Comment(name="Assay Descriptor", value="Intelligent Assay Design"))
+        assay1.comments.append(Comment(name="Assay QC", value="pass"))
+
+        # the extraction protocols
+        extraction_protocol1 = Protocol(
+            name='extraction-TEST',
+            protocol_type=OntologyAnnotation(term="material extraction-TEST"))
+        study.protocols.append(extraction_protocol1)
+
+        extraction_protocol2 = Protocol(
+            name='methylated material extraction-TEST',
+            protocol_type=OntologyAnnotation(term="methylated material extraction-TEST"))
+        study.protocols.append(extraction_protocol2)
+
+        # the sequencing protocols
+        sequencing_protocol = Protocol(
+            name='sequencing-TEST',
+            protocol_type=OntologyAnnotation(term="material sequencing"))
+        study.protocols.append(sequencing_protocol)
+
+        # adding a dummy Comment[] to ISA.protocol object
+        study.protocols[0].comments.append(Comment(name="Protocol Start Date", value="Uranus"))
+        study.protocols[0].comments.append(Comment(name="Protocol End Date", value="not my pb"))
+        study.protocols[0].comments.append(Comment(name="Protocol QC", value="beta"))
+        study.protocols[1].comments.append(Comment(name="Protocol Reuse Date", value="2017-08-11"))
+        study.protocols[2].comments.append(Comment(name="Protocol QC", value="alpha"))
+        study.protocols[3].comments.append(Comment(name="Protocol QC", value="none"))
+        # checking that the ISA Protocool object has been modified
+        # print(study.protocols[0])
+
+
+
+        assay2 = Assay(filename="a_assay-methyl.txt")
+
+        assay2.comments.append(Comment(name="Assay Descriptor", value="Intelligent Methyl Assay Design"))
+        assay2.comments.append(Comment(name="Assay QC", value="fail"))
+        assay2.comments.append(Comment(name="Assay Safety", value="health hazard"))
+
+        sequencing_protocol_methyl = Protocol(
+            name='methylation sequencing-TEST',
+            protocol_type=OntologyAnnotation(term="methylation sequencing"))
+        study.protocols.append(sequencing_protocol_methyl)
+
+        # To build out assay graphs, we enumerate the samples from the
+        # study-level, and for each sample we create an extraction process and
+        # a sequencing process. The extraction process takes as input a sample
+        # material, and produces an extract material. The sequencing process
+        # takes the extract material and produces a data file. This will
+        # produce three graphs, from sample material through to data, as follows:
+        #
+        # (sample_material-0)->(extraction)->(extract-0)->(sequencing)->
+        # (sequenced-data-0)
+        # (sample_material-1)->(extraction)->(extract-1)->(sequencing)->
+        # (sequenced-data-1)
+        # (sample_material-2)->(extraction)->(extract-2)->(sequencing)->
+        # (sequenced-data-2)
+        #
+        # Note that the extraction processes and sequencing processes are
+        # distinctly separate instances, where the three
+        # graphs are NOT interconnected.
+
+        for i, sample in enumerate(study.samples):
+            # create an extraction process that executes the extraction protocol
+
+            extraction_process1 = Process(executes_protocol=extraction_protocol1)
+            extraction_process2 = Process(executes_protocol=extraction_protocol2)
+            # extraction process takes as input a sample, and produces an extract
+            # material as output
+
+            extraction_process1.inputs.append(sample)
+            material1 = Material(name="extract-{}".format(i))
+            material1.type = "Extract Name"
+            extraction_process1.outputs.append(material1)
+
+            extraction_process2.inputs.append(sample)
+            material2 = Material(name="methyl-extract-{}".format(i))
+            material2.type = "Extract Name"
+            extraction_process2.outputs.append(material2)
+
+            # create a sequencing process that executes the sequencing protocol
+
+            sequencing_process1 = Process(executes_protocol=sequencing_protocol)
+            sequencing_process1.name = "assay-name-{}".format(i)
+            sequencing_process1.inputs.append(extraction_process1.outputs[0])
+
+            # Sequencing process usually has an output data file
+
+            datafile1 = DataFile(filename="sequenced-data-{}".format(i),
+                                 label="Raw Data File", generated_from=[material1])
+            sequencing_process1.outputs.append(datafile1)
+
+            # create a sequencing process that executes the sequencing protocol
+
+            sequencing_process2 = Process(executes_protocol=sequencing_protocol_methyl)
+            sequencing_process2.name = "methyl-assay-name-{}".format(i)
+            sequencing_process2.inputs.append(extraction_process2.outputs[0])
+
+            # Sequencing process usually has an output data file
+
+            datafile2 = DataFile(filename="methyl-sequenced-data-{}".format(i),
+                                 label="Raw Data File", generated_from=[material1])
+            sequencing_process2.outputs.append(datafile2)
+
+
+            # ensure Processes are linked
+            plink(extraction_process1, sequencing_process1)
+            plink(extraction_process2, sequencing_process2)
+            # make sure the extract, data file, and the processes are attached to
+            # the assay
+
+            assay1.samples.append(sample)
+            assay1.data_files.append(datafile1)
+            assay1.other_material.append(material1)
+            assay1.process_sequence.append(extraction_process1)
+            assay1.process_sequence.append(sequencing_process1)
+            assay1.measurement_type = OntologyAnnotation(term="transcription profiling")
+            assay1.technology_type = OntologyAnnotation(term="nucleotide sequencing")
+
+            assay2.samples.append(sample)
+            assay2.data_files.append(datafile2)
+            assay2.other_material.append(material2)
+            assay2.process_sequence.append(extraction_process2)
+            assay2.process_sequence.append(sequencing_process2)
+            assay2.measurement_type = OntologyAnnotation(term="methylation profiling")
+            assay2.technology_type = OntologyAnnotation(term="nucleotide sequencing")
+
+        # attach the assay to the study
+        study.assays.append(assay1)
+        study.assays.append(assay2)
+
+        investigation.studies.append(study)
+        t0 = time.time()
+        try:
+            isatab.dump(investigation, self._tmp_dir)
+        except IOError as ioe:
+            print("ERROR: ", ioe)
+        t1 = time.time()
+        assert (t1-t0 < 3)
+        print("in folder:", self._tmp_dir)
+        # with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as actual_file, \
+        #         open(os.path.join(self._tab_data_dir, 'TEST-ISA-investigation-comments',
+        #                           'i_test_investigation.txt')) as expected_file:
+        #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+        #     self.assertIsInstance(isatab.dumps(investigation), str)
+
 
 
 class TestIsaTabLoad(unittest.TestCase):
