@@ -2890,12 +2890,12 @@ class Sample(Commentable):
             raise ISAModelAttributeError(
                 'Sample.derives_from must be iterable containing Sources')
 
-    # def __repr__(self):
-    #     return "isatools.model.Sample(name='{sample.name}', " \
-    #            "characteristics={sample.characteristics}, " \
-    #            "factor_values={sample.factor_values}, " \
-    #            "derives_from={sample.derives_from}, " \
-    #            "comments={sample.comments})".format(sample=self)
+    def __repr__(self):
+        return "isatools.model.Sample(name='{sample.name}', " \
+               "characteristics={sample.characteristics}, " \
+               "factor_values={sample.factor_values}, " \
+               "derives_from={sample.derives_from}, " \
+               "comments={sample.comments})".format(sample=self)
 
 
 
@@ -3369,8 +3369,8 @@ class Process(Commentable):
     #     return 'Process(name="{0.name}", ' \
     #            'executes_protocol={0.executes_protocol}, ' \
     #            'date="{0.date}", performer="{0.performer}", ' \
-    #            'inputs={0.inputs}, outputs={0.outputs})'.format(self)
-    #
+    #          'inputs={0.inputs}, outputs={0.outputs})'.format(self)
+
     def __hash__(self):
         return hash(repr(self))
 

@@ -723,7 +723,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 else:
                     study_assays_df_row.append("")
 
-            log.debug('row=%s', study_assays_df_row)
+            #log.debug('row=%s', study_assays_df_row)
             this_study_assays_df.loc[i] = study_assays_df_row
 
         return this_study_assays_df.set_index('Study Assay File Name').T
@@ -849,7 +849,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 else:
                     study_design_descriptors_df_row.append("")
 
-            log.debug('row=%s', study_design_descriptors_df_row)
+            # log.debug('row=%s', study_design_descriptors_df_row)
             this_study_design_descriptors_df.loc[i] = study_design_descriptors_df_row
 
         return this_study_design_descriptors_df.set_index('Study Design Type').T
@@ -1149,9 +1149,9 @@ def _all_end_to_end_paths(G, start_nodes):
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-    log.info("Found {} paths!".format(len(paths)))
-    if len(paths) == 0:
-        log.debug([x.name for x in start_nodes])
+   # log.info("Found {} paths!".format(len(paths)))
+    #if len(paths) == 0:
+     #   log.debug([x.name for x in start_nodes])
     return paths
 
 
@@ -1327,7 +1327,7 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        log.info("Rendered {} paths".format(len(DF.index)))
+        # log.info("Rendered {} paths".format(len(DF.index)))
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
@@ -2388,13 +2388,13 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                             dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df['Sample Name'])
-                        if not assay_samples.issubset(study_samples):
-                            log.error("(E) Some samples in an assay file {} "
-                                      "are not declared in the study file {}: "
-                                      "{}".format(assay_filename,
-                                                  study_filename,
-                                                  list(assay_samples -
-                                                       study_samples)))
+                        # if not assay_samples.issubset(study_samples):
+                        #     log.error("(E) Some samples in an assay file {} "
+                        #               "are not declared in the study file {}: "
+                        #               "{}".format(assay_filename,
+                        #                           study_filename,
+                        #                           list(assay_samples -
+                        #                                study_samples)))
                 except FileNotFoundError:
                     pass
 
@@ -3711,10 +3711,10 @@ def check_sample_names(study_sample_table, assay_tables=[]):
                                 study_sample_table.filename),
                         "code": 1003
                     })
-                    log.warning("(W) {} is a Sample Name in {}, but it is "
-                                "not defined in the Study Sample File {}."
-                                .format(assay_sample, assay_table.filename,
-                                        study_sample_table.filename))
+                    # log.warning("(W) {} is a Sample Name in {}, but it is "
+                    #             "not defined in the Study Sample File {}."
+                    #             .format(assay_sample, assay_table.filename,
+                    #                     study_sample_table.filename))
 
 
 def check_field_values(table, cfg):
@@ -6546,8 +6546,8 @@ def get_sources_for_sample(input_path, sample_name):
     for study in ISA.studies:
         for sample in study.samples:
             if sample.name == sample_name:
-                print('found a hit: {sample_name}'.format(
-                    sample_name=sample.name))
+               #print('found a hit: {sample_name}'.format(
+               #     sample_name=sample.name))
 
                 for source in sample.derives_from:
                     hits.append(source.name)
@@ -6870,8 +6870,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     assay_samples = []
     for assay in matching_assays:
         assay_samples.extend(assay.samples)
-    if debug:
-        print('Total samples: {}'.format(len(assay_samples)))
+    # if debug:
+    #     print('Total samples: {}'.format(len(assay_samples)))
 
     # filter samples by fv
     factor_selection = {
@@ -6961,8 +6961,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
 
     final_samples = final_cv_samples
 
-    if debug:
-        print('Final number of samples: {}'.format(len(final_samples)))
+    # if debug:
+    #     print('Final number of samples: {}'.format(len(final_samples)))
     results = []
     for sample in final_samples:
         results.append({
