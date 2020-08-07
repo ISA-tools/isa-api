@@ -241,3 +241,50 @@ def generate_study_design_from_config(study_design_config):
         arms.append(arm)
     return StudyDesign(name=study_design_config['type'], study_arms=arms)
 
+# ALL FUNCTIONS BELOW THIS POINT ARE MEANT TO WORK WITH THE DATASCRIPTOR CONFIGURATION
+
+
+def generate_study_design_from_datascriptor_config(datascriptor_study_design_config):
+    """
+    [WIP] this function takes a study design configuration as produced from datascriptor
+    and outputs a StudyDesign object
+    :param datascriptor_study_design_config: dict
+    :return: isatools.create.StudyDesign
+    """
+    arms = []
+    for arm_dict in datascriptor_study_design_config['selectedArms']:
+        arm_map = OrderedDict()
+        for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
+            element_ids = epoch_dict.get('elements', [])
+            elements = [
+                _generate_element(element_dict) for element_dict in
+                filter(
+                    lambda el: el['id'] in element_ids,
+                    datascriptor_study_design_config['generatedStudyDesign']['elements']
+                )
+            ]
+            cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
+            cell = StudyCell(name=cell_name, elements=elements)
+            sample_type_dicts = [
+                # TODO implement me! (will need a custom function to generate Sample Plans)
+            ]
+            assay_ord_dicts = [
+                # TODO implement me! (will need a custom function to generate Assay Plans)
+            ]
+            sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
+            # TODO this method will probably need some rework to bind a sample type to a specific assay plan
+            sa_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+                sa_plan_name, sample_type_dicts, *assay_ord_dicts
+            )
+            arm_map[cell] = sa_plan
+        arm = StudyArm(
+            name=arm_dict['name'],
+            source_type=_map_ontology_annotations(arm_dict['subjectType']),
+            group_size=arm_dict.get('size', 0),
+            arm_map=arm_map
+        )
+        arms.append(arm)
+    return StudyDesign(
+        name=datascriptor_study_design_config['generatedStudyDesign']['type'],
+        study_arms=arms
+    )

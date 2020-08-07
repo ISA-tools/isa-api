@@ -1,5 +1,5 @@
 from isatools.create.connectors import assay_template_to_ordered_dict, assay_ordered_dict_to_template, \
-    generate_study_design_from_config
+    generate_study_design_from_config, generate_study_design_from_datascriptor_config
 
 import unittest
 import os
@@ -49,6 +49,8 @@ class TestMappings(unittest.TestCase):
             key: value for key, value in self.met_prof_jsons[1].items() if key not in ['@context']
         })
 
+    # FIXME I suspect this is superseded as I changed the underlying model (double check)
+    # At the very least it has to be renamed
     def test_generate_isa_study_design_from_datascriptor_model_simple(self):
         ds_design_config_file_path = os.path.abspath(
             os.path.join(
@@ -80,3 +82,17 @@ class TestMappings(unittest.TestCase):
             separators=(',', ': ')
         )
         self.assertIsInstance(inv_json, str)
+
+    def test_generate_study_design_from_datascriptor_config(self):
+        ds_design_config_file_path = os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__), 'data', 'json', 'create', 'datascriptor',
+                'study-design-3-repeated-treatment.json'
+            )
+        )
+        with open(ds_design_config_file_path) as json_fp:
+            ds_design_config = json.load(json_fp)
+        design = generate_study_design_from_datascriptor_config(ds_design_config)
+        self.assertIsInstance(design, StudyDesign)
+        self.assertEqual(len(design.study_arms), len(ds_design_config['arms']))
+        #  TODO add more fine-grained conditions to test

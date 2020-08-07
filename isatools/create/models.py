@@ -2335,7 +2335,7 @@ class StudyDesign(object):
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
                     log.debug('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
-                                                                                           len(data_files)))
+                                                                                            len(data_files)))
         return assay
 
     def generate_isa_study(self, split_assays_by_sample_type=False):
