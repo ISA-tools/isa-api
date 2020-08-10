@@ -94,5 +94,5 @@ class TestMappings(unittest.TestCase):
             ds_design_config = json.load(json_fp)
         design = generate_study_design_from_datascriptor_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
-        self.assertEqual(len(design.study_arms), len(ds_design_config['arms']))
+        self.assertEqual(len(design.study_arms), len(ds_design_config['selectedArms']))
         #  TODO add more fine-grained conditions to test

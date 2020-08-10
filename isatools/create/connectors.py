@@ -171,12 +171,12 @@ def _generate_element(datascriptor_element_dict):
         )
         treatment_type = datascriptor_element_dict.get('type', '')
         element = Treatment(
-            element_type=treatment_type if treatment_type in INTERVENTIONS.values() else None,
+            element_type=treatment_type if treatment_type in INTERVENTIONS.values() else INTERVENTIONS['UNSPECIFIED'],
             factor_values=[agent, intensity, duration]
         )
     else:
         element = NonTreatment(
-            element_type=datascriptor_element_dict.get('type', SCREEN),
+            element_type=datascriptor_element_dict.get('name', SCREEN),
             duration_value=datascriptor_element_dict['duration'],
             duration_unit=_map_ontology_annotations(datascriptor_element_dict['durationUnit'])
         )
@@ -244,6 +244,19 @@ def generate_study_design_from_config(study_design_config):
 # ALL FUNCTIONS BELOW THIS POINT ARE MEANT TO WORK WITH THE DATASCRIPTOR CONFIGURATION
 
 
+def _generate_sample_dict_from_datascriptor_config(datascriptor_sample_type_config, arm_name, epoch_no):
+    return dict(
+        node_type=SAMPLE,
+        characteristics_category=_map_ontology_annotations(
+            datascriptor_sample_type_config.get('characteristicCategory', ORGANISM_PART),
+            expand_strings=True
+        ),
+        characteristics_value=_map_ontology_annotations(datascriptor_sample_type_config['sampleType']),
+        size=datascriptor_sample_type_config['sampleTypeSizes'][arm_name][epoch_no],
+        is_input_to_next_protocols=datascriptor_sample_type_config.get('isAssayInput', True)
+    )
+
+
 def generate_study_design_from_datascriptor_config(datascriptor_study_design_config):
     """
     [WIP] this function takes a study design configuration as produced from datascriptor
@@ -266,10 +279,14 @@ def generate_study_design_from_datascriptor_config(datascriptor_study_design_con
             cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
             sample_type_dicts = [
-                # TODO implement me! (will need a custom function to generate Sample Plans)
+                _generate_sample_dict_from_datascriptor_config(
+                    ds_sample_config, arm_dict['name'], epoch_ix
+                ) for ds_sample_config in datascriptor_study_design_config['samplePlan']
+                if ds_sample_config["selectedCells"][arm_dict['name']][epoch_ix]
             ]
             assay_ord_dicts = [
-                # TODO implement me! (will need a custom function to generate Assay Plans)
+                ds_assay_config for ds_assay_config in datascriptor_study_design_config['assayConfigs']
+                if datascriptor_study_design_config['selectedAssayTypes'][ds_assay_config['name']]
             ]
             sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
             # TODO this method will probably need some rework to bind a sample type to a specific assay plan
@@ -280,7 +297,7 @@ def generate_study_design_from_datascriptor_config(datascriptor_study_design_con
         arm = StudyArm(
             name=arm_dict['name'],
             source_type=_map_ontology_annotations(arm_dict['subjectType']),
-            group_size=arm_dict.get('size', 0),
+            group_size=arm_dict.get('size', 10),
             arm_map=arm_map
         )
         arms.append(arm)

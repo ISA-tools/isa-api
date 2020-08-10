@@ -43,7 +43,8 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      SURGICAL='surgical intervention',
                      BIOLOGICAL='biological intervention',
                      RADIOLOGICAL='radiological intervention',
-                     DIETARY='dietary intervention')
+                     DIETARY='dietary intervention',
+                     UNSPECIFIED='unspecified intervention')
 
 FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
