@@ -764,7 +764,6 @@ class TestIsaTabLoad(unittest.TestCase):
 
         self.assertEqual(len(protocol.description),70)
 
-
     def test_isatab_load_issue200(self):
         with open(os.path.join(self._tab_data_dir, 'issue200', 'i_Investigation.txt')) as fp:
             ISA = isatab.load(fp)

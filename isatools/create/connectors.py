@@ -257,6 +257,56 @@ def _generate_sample_dict_from_datascriptor_config(datascriptor_sample_type_conf
     )
 
 
+def _generate_assay_ord_dict_from_datascriptor_config(datascriptor_assay_config, arm_name, epoch_no):
+    # TODO fill this function
+    res = OrderedDict()
+    res['name'] = datascriptor_assay_config['name']
+    res['measurement_type'] = _map_ontology_annotations(
+        datascriptor_assay_config['measurement_type'], expand_strings=True
+    )
+    res['technology_type'] = _map_ontology_annotations(
+        datascriptor_assay_config['technology_type'], expand_strings=True
+    )
+    res['selected_sample_types'] = list(map(
+        _map_ontology_annotations,
+        datascriptor_assay_config['selectedSampleTypes'][arm_name][epoch_no]
+    ))
+    for name, node in datascriptor_assay_config['workflow']:
+        prepared_nodes = None
+        assert isinstance(node, dict)
+        if '#replicates' in node:
+            # this is a ProtocolNode
+            prepared_nodes = {}
+            for candidate_param_name, param in node.items():
+                # if it is a special key (e.g."#replicates") leave it alone
+                if candidate_param_name[0] == '#' and not isinstance(param, list):
+                    prepared_nodes[candidate_param_name] = param['value']
+                else:
+                    # this is really a parameter name
+                    param_name = _map_ontology_annotations(candidate_param_name, expand_strings=True)
+                    prepared_nodes[param_name] = [
+                        _map_ontology_annotations(param_value) for param_value in param['values']
+                    ]
+        elif 'node_type' in node:
+            # this is a product node
+            if "characteristics_value" in node:
+                prepared_nodes = [
+                    dict(
+                        node_type=node['node_type'],
+                        characteristics_category=_map_ontology_annotations(node['characteristics_category']),
+                        characteristics_value=_map_ontology_annotations(value),
+                        size=node.get('size', 1),
+                        is_input_to_next_protocols=node['is_input_to_next_protocols']['value']
+                    ) for value in node["characteristics_value"]["values"]
+                ]
+            else:
+                prepared_nodes = [dict(node_type=node['node_type'],
+                                       size=node.get('size', 1),
+                                       is_input_to_next_protocols=node['is_input_to_next_protocols']['value'])]
+        res[_map_ontology_annotations(name)] = prepared_nodes
+    return res
+
+
 def generate_study_design_from_datascriptor_config(datascriptor_study_design_config):
     """
     [WIP] this function takes a study design configuration as produced from datascriptor
@@ -282,10 +332,13 @@ def generate_study_design_from_datascriptor_config(datascriptor_study_design_con
                 _generate_sample_dict_from_datascriptor_config(
                     ds_sample_config, arm_dict['name'], epoch_ix
                 ) for ds_sample_config in datascriptor_study_design_config['samplePlan']
-                if ds_sample_config["selectedCells"][arm_dict['name']][epoch_ix]
+                if ds_sample_config['selectedCells'][arm_dict['name']][epoch_ix] and
+                ds_sample_config['sampleTypeSizes'][arm_dict['name']][epoch_ix]
             ]
             assay_ord_dicts = [
-                ds_assay_config for ds_assay_config in datascriptor_study_design_config['assayConfigs']
+                _generate_assay_ord_dict_from_datascriptor_config(
+                    ds_assay_config, arm_dict['name'], epoch_ix
+                ) for ds_assay_config in datascriptor_study_design_config['assayConfigs']
                 if datascriptor_study_design_config['selectedAssayTypes'][ds_assay_config['name']]
             ]
             sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)

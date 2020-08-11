@@ -95,4 +95,19 @@ class TestMappings(unittest.TestCase):
         design = generate_study_design_from_datascriptor_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         self.assertEqual(len(design.study_arms), len(ds_design_config['selectedArms']))
-        #  TODO add more fine-grained conditions to test
+        for arm in design.study_arms:
+            self.assertIsInstance(arm, StudyArm)
+            for cell, samp_ass_plan in arm.arm_map.items():
+                self.assertIsInstance(cell, StudyCell)
+                self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
+        study = design.generate_isa_study()
+        self.assertIsInstance(study, Study)
+        investigation = Investigation(studies=[study])
+        inv_json = json.dumps(
+            investigation,
+            cls=ISAJSONEncoder,
+            sort_keys=True,
+            indent=4,
+            separators=(',', ': ')
+        )
+        self.assertIsInstance(inv_json, str)

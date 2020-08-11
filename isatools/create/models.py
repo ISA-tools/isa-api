@@ -1142,7 +1142,7 @@ class AssayGraph(object):
         current_nodes = []
         for node_key, node_params in assay_plan_dict.items():
 
-            if node_key in ('measurement_type', 'technology_type'):
+            if node_key in ('name', 'selected_sample_types', 'measurement_type', 'technology_type'):
                 continue
 
             if isinstance(node_params, list):    # the node is a ProductNode
@@ -1162,7 +1162,10 @@ class AssayGraph(object):
                         res.add_link(prev_node, product_node)
                         current_nodes.append(product_node)
             else:       # the node is a ProtocolNode
-                replicates = node_params.get('#replicates', 1)
+                try:
+                    replicates = node_params.get('#replicates', 1)
+                except AttributeError as e:
+                    raise e
                 node_params = {key: val for key, val in node_params.items() if key != '#replicates'}
                 # print(node_params)
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
@@ -1552,15 +1555,24 @@ class SampleAndAssayPlan(object):
                                    value=sample_type_dict['characteristics_value'])
                 ] if 'characteristics_category' in sample_type_dict else [])
             res.add_sample_type_to_plan(sample_node)
+        assay_map = {}
         for i, assay_plan_dict in enumerate(assay_plan_dicts):
-            res.add_assay_graph_to_plan(AssayGraph.generate_assay_plan_from_dict(
+            assay_graph = AssayGraph.generate_assay_plan_from_dict(
                 assay_plan_dict,
                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH, str(i).zfill(3)),
                 quality_control=quality_controls[i] if len(quality_controls) > i else None
-            ))
+            )
+            res.add_assay_graph_to_plan(assay_graph)
+            assay_map[assay_graph] = assay_plan_dict
         for sample_node in res.sample_plan:
             for assay_graph in res.assay_plan:
-                res.add_element_to_map(sample_node, assay_graph)
+                if 'selected_sample_types' not in assay_map[assay_graph]:
+                    res.add_element_to_map(sample_node, assay_graph)
+                elif any(map(
+                        lambda char: char.value in assay_map[assay_graph]['selected_sample_types'],
+                        sample_node.characteristics
+                )):
+                    res.add_element_to_map(sample_node, assay_graph)
         return res
 
     def __repr__(self):
