@@ -293,7 +293,8 @@ def _generate_assay_ord_dict_from_datascriptor_config(datascriptor_assay_config,
                 prepared_nodes = [
                     dict(
                         node_type=node['node_type'],
-                        characteristics_category=_map_ontology_annotations(node['characteristics_category']),
+                        characteristics_category=_map_ontology_annotations(node['characteristics_category'],
+                                                                           expand_strings=True),
                         characteristics_value=_map_ontology_annotations(value),
                         size=node.get('size', 1),
                         is_input_to_next_protocols=node['is_input_to_next_protocols']['value']
