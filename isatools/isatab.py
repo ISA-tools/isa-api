@@ -1481,7 +1481,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
-                            node.executes_protocol.name)
+                            node.executes_protocol.name
+                        )
                         df_dict[olabel][-1] = node.executes_protocol.name
                         oname_label = None
                         if node.executes_protocol.protocol_type:
