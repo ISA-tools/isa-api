@@ -183,68 +183,7 @@ def _generate_element(datascriptor_element_dict):
     return element
 
 
-def _generate_sample_dict_from_config(sample_type_config):
-    return dict(
-        node_type=SAMPLE,
-        characteristics_category=_map_ontology_annotations(
-            sample_type_config.get('outputCategory', ORGANISM_PART),
-            expand_strings=True
-        ),
-        characteristics_value=_map_ontology_annotations(sample_type_config['output']),
-        size=sample_type_config.get('outputSize', 1),
-        is_input_to_next_protocols=sample_type_config.get('isAssayInput', True)
-    )
-
-
-def generate_study_design_from_config(study_design_config):
-    """
-    Generates the StudyDesign object out of the synthetic JSON-like "config" representation of it.
-    :param study_design_config: dict - a JSON-like dictionary describing a study design as produced and consumed by
-        third party tools
-    :return: isatools.models.create.StudyDesign
-    """
-    # create each StudyCell and each SampleAndAssayPlan while iterating over the studyArms
-    arms = []
-    for arm_dict in study_design_config['arms']:
-        arm_map = OrderedDict()
-        for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
-            element_ids = epoch_dict.get('elements', [])
-            elements = [
-                _generate_element(element_dict) for element_dict in
-                filter(lambda el: el['id'] in element_ids, study_design_config['elements'])
-            ]
-            cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
-            cell = StudyCell(name=cell_name, elements=elements)
-            sample_type_dicts = [
-                _generate_sample_dict_from_config(st_config) for st_config in filter(
-                    lambda ev: ev['id'] in epoch_dict.get('events', []) and ev['action'] == EVENT_TYPE_SAMPLING,
-                    study_design_config['events']
-                )
-            ]
-            assay_ord_dicts = [
-                assay_template_to_ordered_dict(at_dict['template']) for at_dict in filter(
-                    lambda ev: ev['id'] in epoch_dict.get('events', []) and ev['action'] == EVENT_TYPE_ASSAY,
-                    study_design_config['events']
-                )
-            ]
-            sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
-            sa_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
-                sa_plan_name, sample_type_dicts, *assay_ord_dicts
-            )
-            arm_map[cell] = sa_plan
-        arm = StudyArm(
-            name=arm_dict['name'],
-            source_type=_map_ontology_annotations(arm_dict['subjectType']),
-            group_size=arm_dict.get('size', 0),
-            arm_map=arm_map
-        )
-        arms.append(arm)
-    return StudyDesign(name=study_design_config['type'], study_arms=arms)
-
-# ALL FUNCTIONS BELOW THIS POINT ARE MEANT TO WORK WITH THE DATASCRIPTOR CONFIGURATION
-
-
-def _generate_sample_dict_from_datascriptor_config(datascriptor_sample_type_config, arm_name, epoch_no):
+def _generate_sample_dict_from_config(datascriptor_sample_type_config, arm_name, epoch_no):
     return dict(
         node_type=SAMPLE,
         characteristics_category=_map_ontology_annotations(
@@ -257,8 +196,7 @@ def _generate_sample_dict_from_datascriptor_config(datascriptor_sample_type_conf
     )
 
 
-def _generate_assay_ord_dict_from_datascriptor_config(datascriptor_assay_config, arm_name, epoch_no):
-    # TODO fill this function
+def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epoch_no):
     res = OrderedDict()
     res['name'] = datascriptor_assay_config['name']
     res['measurement_type'] = _map_ontology_annotations(
@@ -308,9 +246,9 @@ def _generate_assay_ord_dict_from_datascriptor_config(datascriptor_assay_config,
     return res
 
 
-def generate_study_design_from_datascriptor_config(datascriptor_study_design_config):
+def generate_study_design_from_config(datascriptor_study_design_config):
     """
-    [WIP] this function takes a study design configuration as produced from datascriptor
+    This function takes a study design configuration as produced from datascriptor
     and outputs a StudyDesign object
     :param datascriptor_study_design_config: dict
     :return: isatools.create.StudyDesign
@@ -330,14 +268,14 @@ def generate_study_design_from_datascriptor_config(datascriptor_study_design_con
             cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
             sample_type_dicts = [
-                _generate_sample_dict_from_datascriptor_config(
+                _generate_sample_dict_from_config(
                     ds_sample_config, arm_dict['name'], epoch_ix
                 ) for ds_sample_config in datascriptor_study_design_config['samplePlan']
                 if ds_sample_config['selectedCells'][arm_dict['name']][epoch_ix] and
                 ds_sample_config['sampleTypeSizes'][arm_dict['name']][epoch_ix]
             ]
             assay_ord_dicts = [
-                _generate_assay_ord_dict_from_datascriptor_config(
+                generate_assay_ord_dict_from_config(
                     ds_assay_config, arm_dict['name'], epoch_ix
                 ) for ds_assay_config in datascriptor_study_design_config['assayConfigs']
                 if datascriptor_study_design_config['selectedAssayTypes'][ds_assay_config['name']]
