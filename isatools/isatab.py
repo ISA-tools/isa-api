@@ -1896,8 +1896,8 @@ def check_utf8(fp):
     import chardet
     with utf8_text_file_open(fp.name) as fp:
         charset = chardet.detect(fp.read())
-        if charset['encoding'] is not 'UTF-8' \
-                and charset['encoding'] is not 'ascii':
+        if charset['encoding'] != 'UTF-8' \
+                and charset['encoding'] != 'ascii':
             validator_warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(
@@ -2079,7 +2079,7 @@ def check_filenames_present(i_df):
     :return: None
     """
     for s_pos, study_df in enumerate(i_df['studies']):
-        if study_df.iloc[0]['Study File Name'] is '':
+        if study_df.iloc[0]['Study File Name'] == '':
             validator_warnings.append({
                 "message": "Missing study file name",
                 "supplemental": "STUDY.{}".format(s_pos),
@@ -2090,7 +2090,7 @@ def check_filenames_present(i_df):
         for a_pos, filename in \
                 enumerate(i_df['s_assays'][s_pos][
                     'Study Assay File Name'].tolist()):
-            if filename is '':
+            if filename == '':
                 validator_warnings.append({
                     "message": "Missing assay file name",
                     "supplemental": "STUDY.{}, STUDY ASSAY.{}".format(
@@ -2113,7 +2113,7 @@ def check_date_formats(i_df):
         :param date_str: The string to check, expecting a date
         :return: None
         """
-        if date_str is not '':
+        if date_str != '':
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -2156,7 +2156,7 @@ def check_dois(i_df):
         :param doi_str: A string, expecting a DOI
         :return: None
         """
-        if doi_str is not '':
+        if doi_str != '':
             if not _RX_DOI.match(doi_str):
                 validator_warnings.append({
                     "message": "DOI is not valid format",
@@ -2185,7 +2185,7 @@ def check_pubmed_ids_format(i_df):
         :param pubmed_id_str: String to check, expecting a PubMed ID
         :return: None
         """
-        if pubmed_id_str is not '':
+        if pubmed_id_str != '':
             if (_RX_PMID.match(pubmed_id_str) is None) \
                     and (_RX_PMCID.match(pubmed_id_str) is None):
                 validator_warnings.append({
@@ -2212,7 +2212,7 @@ def check_protocol_names(i_df):
         for i, protocol_name in enumerate(study_protocols_df[
                 'Study Protocol Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:
+            if protocol_name == '' or 'Unnamed: ' in protocol_name:
                 validator_warnings.append({
                     "message": "Protocol missing name",
                     "supplemental": "pos={}".format(i),
@@ -2236,7 +2236,7 @@ def check_protocol_parameter_names(i_df):
             if len(protocol_parameters_names.split(sep=';')) > 1:
                 for protocol_parameter_name in \
                         protocol_parameters_names.split(sep=';'):
-                    if protocol_parameter_name is '' \
+                    if protocol_parameter_name == '' \
                             or 'Unnamed: ' in protocol_parameter_name:
                         validator_warnings.append({
                             "message": "Protocol Parameter missing name",
@@ -2260,7 +2260,7 @@ def check_study_factor_names(i_df):
         for i, factor_name in enumerate(study_factors_df[
                 'Study Factor Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
-            if factor_name is '' or 'Unnamed: ' in factor_name:
+            if factor_name == '' or 'Unnamed: ' in factor_name:
                 validator_warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor pos={}".format(i),
@@ -2280,7 +2280,7 @@ def check_ontology_sources(i_df):
     term_source_refs = []
     for i, ontology_source_name in enumerate(
             i_df['ontology_sources']['Term Source Name'].tolist()):
-        if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
+        if ontology_source_name == '' or 'Unnamed: ' in ontology_source_name:
             validator_warnings.append({
                 "message": "Ontology Source missing name ref",
                 "supplemental": "pos={}".format(i),
@@ -2303,7 +2303,7 @@ def check_table_files_read(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)):
@@ -2320,7 +2320,7 @@ def check_table_files_read(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i][
                 'Study Assay File Name']
                 .tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)):
@@ -2345,7 +2345,7 @@ def check_table_files_load(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as fp:
@@ -2354,7 +2354,7 @@ def check_table_files_load(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as fp:
@@ -2373,7 +2373,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as s_fp:
@@ -2383,7 +2383,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2412,7 +2412,7 @@ def check_protocol_usage(i_df, dir_context):
             'Study Protocol Name'].tolist())
         protocols_declared.add('')
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 protocol_refs_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2443,7 +2443,7 @@ def check_protocol_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     protocol_refs_used = set()
                     with utf8_text_file_open(
@@ -2475,7 +2475,7 @@ def check_protocol_usage(i_df, dir_context):
         # now collect all protocols in all assays to compare to
         # declared protocols
         protocol_refs_used = set()
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2489,7 +2489,7 @@ def check_protocol_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2734,7 +2734,7 @@ def check_study_factor_usage(i_df, dir_context):
         study_factors_declared = set(
             i_df['s_factors'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 study_factors_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2755,7 +2755,7 @@ def check_study_factor_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     study_factors_used = set()
                     with utf8_text_file_open(os.path.join(
@@ -2779,7 +2779,7 @@ def check_study_factor_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2793,7 +2793,7 @@ def check_study_factor_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2832,7 +2832,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         protocol_parameters_declared = protocol_parameters_declared - \
             {''}  # empty string is not a valid protocol parameter
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 protocol_parameters_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2858,7 +2858,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     protocol_parameters_used = set()
                     with utf8_text_file_open(os.path.join(
@@ -2885,7 +2885,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         # now collect all protocol parameters in all assays to compare to
         # declared protocol parameters
         protocol_parameters_used = set()
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2901,7 +2901,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -3031,7 +3031,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
     ontology_sources_list = set(get_ontology_source_refs(i_df))
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(os.path.join(dir_context,
                                                       study_filename)) as s_fp:
@@ -3109,7 +3109,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                 pass
             for j, assay_filename in enumerate(
                     i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-                if assay_filename is not '':
+                if assay_filename != '':
                     try:
                         with utf8_text_file_open(
                                 os.path.join(
@@ -3591,7 +3591,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         protocol_names = i_df['s_protocols'][i]['Study Protocol Name'].tolist()
         protocol_types = i_df['s_protocols'][i]['Study Protocol Type'].tolist()
         protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-        if study_filename is not '':
+        if study_filename != '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as s_fp:
@@ -3611,7 +3611,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             technology_type = assay_df[
                 'Study Assay Technology Type'].tolist()[
                 0]
-            if assay_filename is not '':
+            if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -4236,7 +4236,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
             assay_tables = list()
-            if study_filename is not '':
+            if study_filename != '':
                 protocol_names = i_df[
                     's_protocols'][i]['Study Protocol Name'].tolist(
                 )
@@ -4317,7 +4317,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                     technology_type = assay_df[
                         'Study Assay Technology Type'].tolist()[
                         x]
-                    if assay_filename is not '':
+                    if assay_filename != '':
                         try:
                             lowered_mt = measurement_type.lower()
                             lowered_tt = technology_type.lower()
@@ -5064,7 +5064,7 @@ def get_value(object_column, column_group, object_series,
 
         term_source_value = object_series[offset_1r_col]
 
-        if term_source_value is not '':
+        if term_source_value != '':
 
             try:
                 value.term_source = ontology_source_map[term_source_value]
@@ -5073,7 +5073,7 @@ def get_value(object_column, column_group, object_series,
 
         term_accession_value = object_series[offset_2r_col]
 
-        if term_accession_value is not '':
+        if term_accession_value != '':
             value.term_accession = str(term_accession_value)
 
         return value, None
@@ -5097,7 +5097,7 @@ def get_value(object_column, column_group, object_series,
 
             unit_term_source_value = object_series[offset_2r_col]
 
-            if unit_term_source_value is not '':
+            if unit_term_source_value != '':
 
                 try:
                     unit_term_value.term_source = \
@@ -5108,7 +5108,7 @@ def get_value(object_column, column_group, object_series,
 
             term_accession_value = object_series[offset_3r_col]
 
-            if term_accession_value is not '':
+            if term_accession_value != '':
                 unit_term_value.term_accession = term_accession_value
 
         return cell_value, unit_term_value
