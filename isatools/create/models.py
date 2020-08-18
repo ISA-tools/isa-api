@@ -2611,7 +2611,7 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
     :param sequence_no: str - a sequential number to discriminate among items built in a batch
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
     """
-    log.debug('sequence_no: {0}'.format(sequence_no))
+    log.verbose('sequence_no: {0}'.format(sequence_no))
     if isinstance(node, ProtocolNode):
         return Process(
                 name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
