@@ -6547,8 +6547,7 @@ def get_sources_for_sample(input_path, sample_name):
     for study in ISA.studies:
         for sample in study.samples:
             if sample.name == sample_name:
-                print('found a hit: {sample_name}'.format(
-                    sample_name=sample.name))
+                log.debug('found a hit: {sample_name}'.format(sample_name=sample.name))
 
                 for source in sample.derives_from:
                     hits.append(source.name)
@@ -6757,15 +6756,15 @@ def get_filtered_df_on_factors_list(input_path):
             df2 = df.query(query)  # query uses pandas.eval, which evaluates
             # queries like pure Python notation
             if 'Sample_Name' in df.columns:
-                print('Group: {query} / Sample_Name: {sample_name}'.format(
+                log.debug('Group: {query} / Sample_Name: {sample_name}'.format(
                     query=query, sample_name=list(df2['Sample_Name'])))
 
             if 'Source_Name' in df.columns:
-                print('Group: {} / Sources_Name: {}'.format(
+                log.debug('Group: {} / Sources_Name: {}'.format(
                     query, list(df2['Source_Name'])))
 
             if 'Raw_Spectral_Data_File' in df.columns:
-                print('Group: {query} / Raw_Spectral_Data_File: {filename}'
+                log.debug('Group: {query} / Raw_Spectral_Data_File: {filename}'
                       .format(query=query[13:-2],
                               filename=list(df2['Raw_Spectral_Data_File'])))
     return queries
@@ -6808,14 +6807,14 @@ def filter_data(input_path, output_path, slice, filename_filter):
         #         filepath, os.path.join(output_path,
         #                                os.path.basename(filepath)))
         # except Exception as e:
-        #     print(e)
+        #     log.debug(e)
         #     exit(1)
         try:
             os.symlink(
                 filepath, os.path.join(output_path,
                                        os.path.basename(filepath)))
         except Exception as e:
-            print(e)
+            log.debug(e)
             exit(1)
     with open('cli.log', 'w') as fp:
         fp.writelines(loglines)
@@ -6833,8 +6832,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     debug = True
     if galaxy_parameters_file:
         galaxy_parameters = json.load(galaxy_parameters_file)
-        print('Galaxy parameters:')
-        print(json.dumps(galaxy_parameters, indent=4))
+        log.debug('Galaxy parameters:')
+        log.debug(json.dumps(galaxy_parameters, indent=4))
     else:
         raise IOError('Could not load Galaxy parameters file!')
     if source_dir:
@@ -6842,8 +6841,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
             raise IOError('Source path does not exist!')
     query = galaxy_parameters['query']
     if debug:
-        print('Query is:')
-        print(json.dumps(query, indent=4))  # for debugging only
+        log.debug('Query is:')
+        log.debug(json.dumps(query, indent=4))  # for debugging only
     if source_dir:
         investigation = load(source_dir)
     else:
@@ -6872,7 +6871,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     for assay in matching_assays:
         assay_samples.extend(assay.samples)
     if debug:
-        print('Total samples: {}'.format(len(assay_samples)))
+        log.debug('Total samples: {}'.format(len(assay_samples)))
 
     # filter samples by fv
     factor_selection = {
@@ -6963,7 +6962,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     final_samples = final_cv_samples
 
     if debug:
-        print('Final number of samples: {}'.format(len(final_samples)))
+        log.debug('Final number of samples: {}'.format(len(final_samples)))
     results = []
     for sample in final_samples:
         results.append({
