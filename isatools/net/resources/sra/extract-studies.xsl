@@ -37,10 +37,10 @@
     <xsl:template name="process-lib-strategies-sources">
         <xsl:param name="acc-number" required="yes"/>
         <xsl:param name="path" required="yes"/>
-        <xsl:variable name="experiment-ids" select="document(concat($path, $acc-number, '&amp;display=xml'))/ROOT/SUBMISSION/SUBMISSION_LINKS/SUBMISSION_LINK/XREF_LINK/DB[contains(.,'NA-EXPERIMENT')]/following-sibling::ID"/>
+        <xsl:variable name="experiment-ids" select="document(concat($path, $acc-number))/SUBMISSION_SET/SUBMISSION/SUBMISSION_LINKS/SUBMISSION_LINK/XREF_LINK/DB[contains(.,'NA-EXPERIMENT')]/following-sibling::ID"/>
         <studies>
             <xsl:for-each select="tokenize($experiment-ids, ',')">
-                <xsl:variable name="experiment-document-lib-desc" select="document(concat($path, ., '&amp;display=xml'))/ROOT"/>
+                <xsl:variable name="experiment-document-lib-desc" select="document(concat($path, .))/EXPERIMENT_SET"/>
                 <xsl:apply-templates select="$experiment-document-lib-desc/EXPERIMENT" mode="get-studies">
                     <xsl:with-param name="id" select="."/>
                 </xsl:apply-templates>                
@@ -63,11 +63,11 @@
                 <xsl:for-each-group select="current-group()" group-by="@library-source">
                     <xsl:sort select="current-grouping-key()"/>
                     <experiment library-strategy="{ $lib-strategy }" library-source="{ current-grouping-key() }" acc-number="{ @acc-number }">
-                        <xsl:variable name="exp" select="document(concat($path, @acc-number, '&amp;display=xml'))"/>
+                        <xsl:variable name="exp" select="document(concat($path, @acc-number))"/>
                         <xsl:for-each select="current-group()">
                             <exp>
                                 <xsl:attribute name="accession">
-                                    <xsl:value-of select="$exp/ROOT/EXPERIMENT[@accession = current()/@accession]/@accession"/>
+                                    <xsl:value-of select="$exp/EXPERIMENT_SET/EXPERIMENT[@accession = current()/@accession]/@accession"/>
                                 </xsl:attribute>
                             </exp>
                         </xsl:for-each>
@@ -80,10 +80,10 @@
     <xsl:template name="process-samples-attributes">
         <xsl:param name="acc-number" required="yes"/>
         <xsl:param name="path" required="yes"/>
-        <xsl:variable name="sample-ids" select="document(concat($path, $acc-number, '&amp;display=xml'))/ROOT/SUBMISSION/SUBMISSION_LINKS/SUBMISSION_LINK/XREF_LINK/DB[contains(.,'NA-SAMPLE')]/following-sibling::ID"/>
+        <xsl:variable name="sample-ids" select="document(concat($path, $acc-number))/SUBMISSION_SET/SUBMISSION/SUBMISSION_LINKS/SUBMISSION_LINK/XREF_LINK/DB[contains(.,'NA-SAMPLE')]/following-sibling::ID"/>
         <samples>
             <xsl:for-each select="tokenize($sample-ids, ',')">
-                <xsl:variable name="sample-doc" select="document(concat($path, ., '&amp;display=xml'))/ROOT"/>
+                <xsl:variable name="sample-doc" select="document(concat($path, .))/SAMPLE_SET"/>
                 <xsl:apply-templates select="$sample-doc/SAMPLE" mode="get-sample">
                     <xsl:with-param name="id" select="."/>
                 </xsl:apply-templates>                

@@ -33,10 +33,14 @@ DESTINATION_DIR = 'output'
 DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
         os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
+
 SRA_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'sra')
+
 INPUT_FILE = os.path.join(SRA_DIR, 'blank.xml')
+
 SUBMISSION_XSL_FILE = os.path.join(
     SRA_DIR, 'sra-submission-embl-online2isatab-txt.xsl')
+
 STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 
 
@@ -59,7 +63,7 @@ def format_acc_numbers(sra_acc_numbers):
     sra_acc_numbers = sra_acc_numbers.split(',') \
         if isinstance(sra_acc_numbers, str) else sra_acc_numbers
 
-    # filter and clean the elements in the input array tomatch valid SRA types
+    # filter and clean the elements in the input array to match valid SRA types
     sra_acc_numbers = [elem.strip().upper() for elem in sra_acc_numbers]
     return [elem for elem in sra_acc_numbers
             if _RX_ACCESSION_VALIDATION.match(elem)]

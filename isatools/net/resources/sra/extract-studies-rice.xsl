@@ -36,11 +36,11 @@
     
     <xsl:template name="process-lib-strategies-sources">
         <xsl:param name="acc-number" required="yes"/>
-        <xsl:variable name="experiment-ids" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', $acc-number, '&amp;display=xml'))/ROOT/STUDY/STUDY_LINKS/STUDY_LINK/XREF_LINK/DB[contains(.,'NA-EXPERIMENT')]/following-sibling::ID"/>
+        <xsl:variable name="experiment-ids" select="document(concat('https://www.ebi.ac.uk/ena/browser/api/xml/', $acc-number)/STUDY_SET/STUDY/STUDY_LINKS/STUDY_LINK/XREF_LINK/DB[contains(.,'NA-EXPERIMENT')]/following-sibling::ID"/>
         <studies>
             <xsl:for-each select="tokenize($experiment-ids, ',')">
-                <xsl:variable name="experiment-document-lib-desc" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))/ROOT"/>
-                <xsl:value-of select="document(concat('http://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))"/>
+                <xsl:variable name="experiment-document-lib-desc" select="document(concat('https://www.ebi.ac.uk/ena/browser/api/xml/', . ))/EXPERIMENT_SET"/>
+                <xsl:value-of select="document(concat('http://www.ebi.ac.uk/ena/browser/api/xml/', . )"/>
                 <xsl:apply-templates select="$experiment-document-lib-desc/EXPERIMENT" mode="get-studies">
                     <xsl:with-param name="id" select="."/>
                 </xsl:apply-templates>                
@@ -64,11 +64,11 @@
                     <xsl:for-each-group select="current-group()" group-by="@acc-number">
                         <xsl:sort select="current-grouping-key()"/>
                         <experiment library-strategy="{ $lib-strategy }" library-source="{ $lib-source }" acc-number="{ @acc-number }">
-                            <xsl:variable name="exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
+                            <xsl:variable name="exp" select="document(concat('http://www.ebi.ac.uk/ena/browser/api/xml/', @acc-number))"/>
                             <xsl:for-each select="current-group()">
                                 <exp>
                                     <xsl:attribute name="accession">
-                                        <xsl:value-of select="$exp/ROOT/EXPERIMENT[@accession = current()/@accession]/@accession"/>
+                                        <xsl:value-of select="$exp/EXPERIMENT_SET/EXPERIMENT[@accession = current()/@accession]/@accession"/>
                                     </xsl:attribute>
                                 </exp>                                                    
                             </xsl:for-each>
@@ -82,10 +82,10 @@
     
     <xsl:template name="process-samples-attributes">
         <xsl:param name="acc-number" required="yes"/>
-        <xsl:variable name="sample-ids" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', $acc-number, '&amp;display=xml'))/ROOT/STUDY/STUDY_LINKS/STUDY_LINK/XREF_LINK/DB[contains(.,'NA-SAMPLE')]/following-sibling::ID"/>
+        <xsl:variable name="sample-ids" select="document(concat('http://www.ebi.ac.uk/ena/browser/api/xml/', $acc-number))/STUDY_SET/STUDY/STUDY_LINKS/STUDY_LINK/XREF_LINK/DB[contains(.,'NA-SAMPLE')]/following-sibling::ID"/>
         <samples>
             <xsl:for-each select="tokenize($sample-ids, ',')">
-                <xsl:variable name="sample-doc" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', ., '&amp;display=xml'))/ROOT"/>
+                <xsl:variable name="sample-doc" select="document(concat('http://www.ebi.ac.uk/ena/browser/api/xml/', .))/SAMPLE_SET"/>
                 <xsl:apply-templates select="$sample-doc/SAMPLE" mode="get-sample">
                     <xsl:with-param name="id" select="."/>
                 </xsl:apply-templates>                
