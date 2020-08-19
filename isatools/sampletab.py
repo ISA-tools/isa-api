@@ -11,7 +11,7 @@ from io import StringIO
 
 import numpy as np
 import pandas as pd
-import modin.pandas as pd_modin
+# import modin.pandas as pd_modin
 
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
@@ -91,7 +91,7 @@ def read_sampletab_msi(fp):
         :return: DataFrame of the MSI section
         """
         f = strip_comments(f)
-        df = pd_modin.read_csv(f, names=range(0, 128), sep='\t', engine='python',
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python',
                          encoding='utf-8').dropna(axis=1, how='all')
         # load MSI section
         df = df.T  # transpose MSI section
@@ -269,7 +269,7 @@ def load(FP):
 
     # Read in SCD section into DataFrame first
     FP = strip_comments(FP)
-    scd_df = pd_modin.read_csv(_read_tab_section(f=FP, sec_key='[SCD]'),
+    scd_df = pd.read_csv(_read_tab_section(f=FP, sec_key='[SCD]'),
                          sep='\t', encoding='utf-8').fillna('')
 
     study = Study(filename="s_{}.txt".format(ISA.identifier))
@@ -525,7 +525,7 @@ def dumps(investigation):
 
     # build MSI section
 
-    metadata_DF = pd_modin.DataFrame(columns=(
+    metadata_DF = pd.DataFrame(columns=(
         "Submission Title",
         "Submission Identifier",
         "Submission Description",
@@ -561,7 +561,7 @@ def dumps(investigation):
         investigation_update_date
     ]
 
-    org_DF = pd_modin.DataFrame(columns=(
+    org_DF = pd.DataFrame(columns=(
         "Organization Name", "Organization Address", "Organization URI",
         "Organization Email", "Organization Role"))
     org_name_hits = [x for x in investigation.comments
@@ -603,7 +603,7 @@ def dumps(investigation):
             org_role
         ]
 
-    people_DF = pd_modin.DataFrame(columns=(
+    people_DF = pd.DataFrame(columns=(
         "Person Last Name", "Person Initials", "Person First Name",
         "Person Email", "Person Role"))
     for i, contact in enumerate(investigation.contacts):
@@ -619,7 +619,7 @@ def dumps(investigation):
             role
         ]
 
-    term_sources_DF = pd_modin.DataFrame(columns=(
+    term_sources_DF = pd.DataFrame(columns=(
         "Term Source Name", "Term Source URI", "Term Source Version"))
     for i, term_source in enumerate(investigation.ontology_source_references):
         term_sources_DF.loc[i] = [
@@ -627,7 +627,7 @@ def dumps(investigation):
             term_source.file,
             term_source.version
         ]
-    msi_DF = pd_modin.concat(
+    msi_DF = pd.concat(
         [metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
     msi_DF = msi_DF.set_index("Submission Title").T
     msi_DF = msi_DF.replace('', np.nan)
@@ -640,7 +640,7 @@ def dumps(investigation):
         index_label="Submission Title")
     msi_memf.seek(0)
 
-    scd_DF = pd_modin.DataFrame(columns=(
+    scd_DF = pd.DataFrame(columns=(
         "Sample Name", "Sample Accession", "Sample Description",
         "Derived From", "Group Name", "Group Accession"))
 

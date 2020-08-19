@@ -12,7 +12,7 @@ jinja2~=2.11.2
 beautifulsoup4~=4.9.0
 mzml2isa==1.0.2
 #-e git+http://github.com/ISA-tools/mzml2isa@5866b3e8e185ddbb3b784e4d6a2ef6fbbcfcb256#egg=mzml2isa
--e git+http://github.com/ISA-tools/isa-api@4e38b09abac60c6acb787169e6eaeac0ac35c1ae#egg=isatools
+#-e git+http://github.com/ISA-tools/isa-api@6e7fc5b588a78722f4d8030fe820c8bf577b34b0#egg=isatools
 biopython~=1.76
 progressbar2~=3.51.3
 deepdiff~=4.3.2

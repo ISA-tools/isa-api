@@ -40,21 +40,21 @@ SRA schema version considered:
  <xsl:param name="outputdir" required="yes"/>
 
  <xsl:key name="protocols" match="LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
- <xsl:key name="sampletaglookupid" match="/ROOT/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
- <xsl:key name="expprotlookupid" match="/ROOT/EXPERIMENT/DESIGN/LIBRARY_DESCRIPTOR/LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
+ <xsl:key name="sampletaglookupid" match="/SAMPLE_SET/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
+ <xsl:key name="expprotlookupid" match="/EXPERIMENT_SET/EXPERIMENT/DESIGN/LIBRARY_DESCRIPTOR/LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
 
- <xsl:variable name="url" select="concat('https://www.ebi.ac.uk/ena/data/view/', $acc-number, '&amp;display=xml')"/>
+ <xsl:variable name="url" select="concat('https://www.ebi.ac.uk/ena/browser/api/xml/',$acc-number)"/>
  
  <xsl:variable name="experiments-sources-strategies">
   <xsl:call-template name="process-lib-strategies-sources">
    <xsl:with-param name="acc-number" select="$acc-number"/>
-   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/browser/api/xml/'"/>
   </xsl:call-template>
  </xsl:variable>
  
  <xsl:variable name="distinct-exp-sources-strategies">
   <xsl:call-template name="generate-distinct-exp-sources-strategies">
-   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/browser/api/xml/'"/>
    <xsl:with-param name="exp-sources-strategies" select="$experiments-sources-strategies"/>
   </xsl:call-template>
  </xsl:variable>
@@ -62,7 +62,7 @@ SRA schema version considered:
  <xsl:variable name="samples-characteristics">
   <xsl:call-template name="process-samples-attributes">
    <xsl:with-param name="acc-number" select="$acc-number"/>
-   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/browser/api/xml/'"/>
   </xsl:call-template>
  </xsl:variable>
  
@@ -83,7 +83,7 @@ SRA schema version considered:
   
  </xsl:template>
  
- <xsl:template match="ROOT" mode="go">
+ <xsl:template match="SUBMISSION_SET" mode="go">
   <xsl:apply-templates select="SUBMISSION" mode="go"/>
  </xsl:template>
 
@@ -100,7 +100,7 @@ SRA schema version considered:
   <xsl:param name="broker-name" required="yes" tunnel="yes"/>
   <xsl:variable name="study" select="following-sibling::ID"/>
   <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
-   <xsl:text>#SRA Document:</xsl:text>    <xsl:value-of select="isa:quotes($acc-number)"/><xsl:text>&#10;</xsl:text>
+   <!--<xsl:text>#SRA Document:</xsl:text>    <xsl:value-of select="isa:quotes($acc-number)"/><xsl:text>&#10;</xsl:text>-->
    <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Term Source Name', 'OBI')"/>
    <xsl:value-of select="isa:single-name-value('Term Source File', 'http://purl.obolibrary.org/obo/OBI.owl')"/>
@@ -133,7 +133,8 @@ SRA schema version considered:
 "Investigation Person Roles Term Source REF"&#9;""
 "STUDY"
 <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
-   <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>
+   <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/browser/api/xml/',$study))/STUDY_SET/STUDY"/>
+   <!--<xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>-->
    <xsl:text>&#10;"STUDY CONTACTS"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
    <xsl:value-of select="isa:single-name-value('Study Person Last Name', substring-before(CONTACTS/CONTACT/@name,' '))"/>
@@ -156,7 +157,8 @@ SRA schema version considered:
    <xsl:call-template name="generate-study-header"/>
    <xsl:text>"Sample Name"&#10;</xsl:text>
    <xsl:for-each select="tokenize($samples-ids, ',')">
-    <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))/ROOT/SAMPLE"/>
+    <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/browser/api/xml/', . ))/SAMPLE_SET/SAMPLE"/>
+    <!--<xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))/ROOT/SAMPLE"/>-->
    </xsl:for-each>
   </xsl:result-document>
  </xsl:template>
@@ -179,7 +181,9 @@ SRA schema version considered:
  
  <xsl:template match="experiments/experiment" mode="distinct-exp">
   <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
-   <xsl:variable name="my-exp" select="document(concat('https://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
+
+  <xsl:variable name="my-exp" select="document(concat('https://www.ebi.ac.uk/ena/browser/api/xml/',@acc-number))"/>
+   <!--<xsl:variable name="my-exp" select="document(concat('https://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>-->
    <!-- Create the header -->
    <xsl:text>"Sample Name"&#9;</xsl:text>
    <xsl:text>"Protocol REF"&#9;</xsl:text>
@@ -188,17 +192,17 @@ SRA schema version considered:
    <xsl:text>"Parameter Value[library selection]"&#9;</xsl:text>
    <xsl:text>"Parameter Value[library layout]"&#9;</xsl:text>
    
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_taxon: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_taxon: ')]) > 0)
     then 'Parameter Value[target_taxon]&#9;' else ''"/>
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_gene: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_gene: ')]) > 0)
     then 'Parameter Value[target_gene]&#9;' else ''"/>
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_subfragment: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'target_subfragment: ')]) > 0)
     then 'Parameter Value[target_subfragment]&#9;' else ''"/> 
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'mid: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'mid: ')]) > 0)
     then 'Parameter Value[multiplex identifier]&#9;' else ''"/>   
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'pcr_primers: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'pcr_primers: ')]) > 0)
     then 'Parameter Value[pcr_primers]&#9;' else ''"/>   
-   <xsl:value-of select="if (count($my-exp/ROOT/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'pcr_cond: ')]) > 0) 
+   <xsl:value-of select="if (count($my-exp/EXPERIMENT_SET/EXPERIMENT/DESIGN/DESIGN_DESCRIPTION[contains(., 'pcr_cond: ')]) > 0)
     then 'Parameter Value[pcr_conditions]&#9;' else ''"/>
    
    <xsl:text>"Labeled Extract Name"&#9;</xsl:text>
@@ -219,7 +223,7 @@ SRA schema version considered:
  
  <xsl:template match="exp">
   <xsl:param name="my-exp" required="yes"/>
-  <xsl:apply-templates select="$my-exp/ROOT/EXPERIMENT[@accession = current()/@accession]"/>
+  <xsl:apply-templates select="$my-exp/EXPERIMENT_SET/EXPERIMENT[@accession = current()/@accession]"/>
  </xsl:template>
  
  <xsl:template match="STUDY">

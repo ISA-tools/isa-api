@@ -26,8 +26,10 @@ class TestSraImport(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-    def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+    # def tearDown(self):
+    #     shutil.rmtree(self._tmp_dir)
+
+   # https://www.ebi.ac.uk/ena/data/view/SRA108974&amp;display=xml
 
     def test_sra_import(self):
         zipped_bytes = sra2isatab.sra_to_isatab_batch_convert('SRA108974')

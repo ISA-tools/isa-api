@@ -16,7 +16,7 @@ import shutil
 import tempfile
 
 import pandas as pd
-import modin.pandas as pd_modin
+# import modin.pandas as pd_modin
 
 from isatools import isatab
 from isatools.convert import isatab2json

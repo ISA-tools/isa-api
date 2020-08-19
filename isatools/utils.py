@@ -14,7 +14,7 @@ from functools import reduce
 from zipfile import ZipFile
 
 import pandas as pd
-import modin.pandas as pd_modin
+# import modin.pandas as pd_modin
 
 from mzml2isa.mzml import MzMLFile
 

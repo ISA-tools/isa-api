@@ -21,9 +21,9 @@ class TestJson2IsaTab(unittest.TestCase):
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+    #
+    # def tearDown(self):
+    #     shutil.rmtree(self._tmp_dir)
 
     def test_json2isatab_convert_source_split_study_table(self):
         with open(os.path.join(self._json_data_dir, 'TEST-ISA-source-split.json')) as json_fp:
