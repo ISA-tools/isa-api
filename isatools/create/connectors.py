@@ -279,6 +279,7 @@ def generate_study_design_from_config(datascriptor_study_design_config):
                     ds_assay_config, arm_dict['name'], epoch_ix
                 ) for ds_assay_config in datascriptor_study_design_config['assayConfigs']
                 if datascriptor_study_design_config['selectedAssayTypes'][ds_assay_config['name']]
+                and ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
             ]
             sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
             # TODO this method will probably need some rework to bind a sample type to a specific assay plan

@@ -103,4 +103,5 @@ class TestMappings(unittest.TestCase):
         )
         self.assertIsInstance(inv_json, str)
         dataframes = isatab.dump_tables_to_dataframes(investigation)
-        self.assertTrue(dataframes)
+        self.assertIsInstance(dataframes, dict)
+        self.assertGreater(len(dataframes), 1)
