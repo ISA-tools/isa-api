@@ -2912,8 +2912,10 @@ class Sample(Commentable):
             num_derives_from=len(self.derives_from),
             num_comments=len(self.comments))
 
+    # def __hash__(self):
+    #     return hash(repr(self))
     def __hash__(self):
-        return hash(repr(self))
+        return hash((self.name, self.characteristics, self.factor_values, self.derives_from, self.comments))
 
     def __eq__(self, other):
         return isinstance(other, Sample) \
