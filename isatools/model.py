@@ -77,6 +77,7 @@ class Comment(object):
         name: A string name for the comment context (maps to Comment[{name}])
         value: A string value for the comment.
     """
+    __slots__ = ['__name', '__value']
 
     def __init__(self, name='', value=''):
         self.__name = name
@@ -235,6 +236,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         public_release_date: A submission date associated with objects of this
             class.
     """
+    __slots__ = ['__filename', '__identifier', '__title', '__description', '__submission_date',
+                 '__public_release_date', '__publications', '__contacts']
 
     def __init__(self, filename='', identifier='', title='', description='',
                  submission_date='', public_release_date='', publications=None,
@@ -388,6 +391,7 @@ class Investigation(Commentable, MetadataMixin, object):
             subject under study.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__ontology_source_references', '__studies']
 
     def __init__(self, id_='', filename='', identifier='', title='',
                  description='', submission_date='', public_release_date='',
@@ -580,6 +584,7 @@ class OntologySource(Commentable):
         description: A free text description of the resource.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__name', '__file', '__version', '__description']
 
     def __init__(self, name, file='', version='', description='',
                  comments=None):
@@ -688,6 +693,7 @@ class OntologyAnnotation(Commentable):
         term_accession : A URI or resource-specific identifier for the term.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__term', '__term_source', '__term_accession', 'id']
 
     def __init__(self, term='', term_source=None, term_accession='',
                  comments=None, id_=str(uuid.uuid4())) :
@@ -787,6 +793,7 @@ class Publication(Commentable):
             submitted, in preparation, published).
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__pubmed_id', '__doi', '__author_list', '__title', '__status']
 
     def __init__(self, pubmed_id='', doi='', author_list='', title='',
                  status=None, comments=None):
@@ -923,6 +930,9 @@ class Person(Commentable):
             organization.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__last_name', '__first_name', '__mid_initials',
+                 '__email', '__phone', '__fax', '__address', '__affiliation',
+                 '__roles']
 
     def __init__(self, last_name='', first_name='', mid_initials='', email='',
                  phone='', fax='', address='', affiliation='', roles=None,
@@ -1596,6 +1606,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         comments: Comments associated with instances of this class.
         graph: Graph representation of the study graph.
     """
+    __slots__ = ['id', '__design_descriptors', '__protocols', '__assays', '__factors']
 
     def __init__(self, id_='', filename='', identifier='', title='',
                  description='', submission_date='', public_release_date='',
@@ -1887,6 +1898,7 @@ class StudyFactor(Commentable):
         factor_type: An ontology source reference of the study factor type
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__name', '__factor_type']
 
     def __init__(self, id_='', name='', factor_type=None, comments=None):
         super().__init__(comments)
@@ -1983,6 +1995,8 @@ class Assay(Commentable, StudyAssayMixin, object):
         comments: Comments associated with instances of this class.
         graph: A graph representation of the assay graph.
     """
+    __slots__ = ['__measurement_type', '__technology_type', '__technology_platform',
+                 '__data_files']
 
     def __init__(self, measurement_type=None, technology_type=None,
                  technology_platform='', filename='', process_sequence=None,
@@ -2147,6 +2161,8 @@ class Protocol(Commentable):
             names.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__name', '__protocol_type', '__parameters', '__components',
+                 '__protocol_type', '__description', '__uri', '__version']
 
     def __init__(self, id_='', name='', protocol_type=None, uri='',
                  description='', version='', parameters=None, components=None,
@@ -2156,8 +2172,6 @@ class Protocol(Commentable):
         self.id = id_
         self.__name = name
         self.__protocol_type = None
-        self.__parameters = None
-        self.__components = None
 
         if protocol_type is None:
             self.protocol_type = OntologyAnnotation()
@@ -2355,6 +2369,8 @@ class ProtocolParameter(Commentable):
         comments: Comments associated with instances of this class.
     """
 
+    __slots__ = ['id', '__parameter_name']
+
     def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -2412,6 +2428,7 @@ class ParameterValue(Commentable):
         unit: The qualifying unit classifier, if the value is numeric.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__category', '__value', '__unit']
 
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
@@ -2513,6 +2530,7 @@ class ProtocolComponent(Commentable):
         component_type: The classifier as a term for the component.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__name', '__component_type']
 
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
@@ -2591,6 +2609,7 @@ class Source(Commentable):
             properties.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__name', 'id', '__characteristics']
 
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(comments)
@@ -2683,6 +2702,7 @@ class Characteristic(Commentable):
         unit: If applicable, a unit qualifier for the value (if the value is
             numeric).
         """
+    __slots__ = ['__category', '__value', '__unit']
 
     def __init__(self, category=None, value=None, unit=None, comments=None):
 
@@ -2792,6 +2812,8 @@ class Sample(Commentable):
             from.
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__name', '__factor_values', '__characteristics',
+                 '__derives_from']
 
     def __init__(self, name='', id_='', factor_values=None,
                  characteristics=None, derives_from=None, comments=None):
@@ -2927,6 +2949,7 @@ class Sample(Commentable):
 class Material(Commentable, metaclass=abc.ABCMeta):
     """Represents a generic material in an experimental graph.
     """
+    __slots__ = ['id', '__name', '__type', '__characteristics']
 
     def __init__(self, name='', id_='', type_='', characteristics=None,
                  comments=None):
@@ -2990,6 +3013,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 
 class Extract(Material):
     """Represents a extract material in an experimental graph."""
+    __slots__ = ['type']
 
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(name=name, id_=id_, characteristics=characteristics,
@@ -3028,6 +3052,7 @@ class Extract(Material):
 
 class LabeledExtract(Material):
     """Represents a labeled extract material in an experimental graph."""
+    __slots__ = ['type']
 
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(name=name, id_=id_, characteristics=characteristics,
@@ -3075,6 +3100,7 @@ class FactorValue(Commentable):
         unit: str/OntologyAnnotation. If numeric, the unit qualifier for the value. (?? what does this mean ??)
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['__factor_name', '__value', '__unit']
 
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
@@ -3395,6 +3421,7 @@ class DataFile(Commentable):
         generated_from: Reference to Sample(s) the DataFile is generated from
         comments: Comments associated with instances of this class.
     """
+    __slots__ = ['id', '__filename', '__label', '__generated_from']
 
     def __init__(self, filename='', id_='', label='', generated_from=None,
                  comments=None):
@@ -3485,6 +3512,7 @@ class DataFile(Commentable):
 
 class RawDataFile(DataFile):
     """Represents a raw data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3521,6 +3549,7 @@ class RawDataFile(DataFile):
 
 class DerivedDataFile(DataFile):
     """Represents a derived data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3558,6 +3587,7 @@ class DerivedDataFile(DataFile):
 
 class RawSpectralDataFile(DataFile):
     """Represents a raw spectral data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3594,6 +3624,7 @@ class RawSpectralDataFile(DataFile):
 
 class DerivedArrayDataFile(DataFile):
     """Represents a derived array data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3631,6 +3662,7 @@ class DerivedArrayDataFile(DataFile):
 
 class ArrayDataFile(DataFile):
     """Represents a array data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3668,6 +3700,7 @@ class ArrayDataFile(DataFile):
 
 class DerivedSpectralDataFile(DataFile):
     """Represents a derived spectral data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3705,6 +3738,7 @@ class DerivedSpectralDataFile(DataFile):
 
 class ProteinAssignmentFile(DataFile):
     """Represents a protein assignment file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3742,6 +3776,7 @@ class ProteinAssignmentFile(DataFile):
 
 class PeptideAssignmentFile(DataFile):
     """Represents a peptide assignment file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3779,6 +3814,7 @@ class PeptideAssignmentFile(DataFile):
 
 class DerivedArrayDataMatrixFile(DataFile):
     """Represents a derived array data matrix file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3817,6 +3853,7 @@ class DerivedArrayDataMatrixFile(DataFile):
 class PostTranslationalModificationAssignmentFile(DataFile):
     """Represents a post translational modification assignment file in an
     experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3855,6 +3892,7 @@ class PostTranslationalModificationAssignmentFile(DataFile):
 class AcquisitionParameterDataFile(DataFile):
     """Represents a acquisition parameter data file in an experimental
     graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
@@ -3892,6 +3930,7 @@ class AcquisitionParameterDataFile(DataFile):
 
 class FreeInductionDecayDataFile(DataFile):
     """Represents a free induction decay data file in an experimental graph."""
+    __slots__ = ['label']
 
     def __init__(self, filename='', id_='',
                  generated_from=None, comments=None):
