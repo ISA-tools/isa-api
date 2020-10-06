@@ -11,6 +11,8 @@ from io import StringIO
 
 import numpy as np
 import pandas as pd
+# import modin.pandas as pd_modin
+
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
 from isatools import logging as isa_logging

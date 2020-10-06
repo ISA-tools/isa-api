@@ -20,7 +20,8 @@ def read(path):
     global show_pbars
     cparser = ConfigParser()
     cparser.read(path)
-    log_level_ini = cparser.get('Logging', 'loglevel')
+    log_level_ini = cparser.get('Logging', 'LogLevel')
+    print("log_level:", log_level_ini.lower())
     if log_level_ini.lower() == 'warning':
         log_level = logging.WARNING
     elif log_level_ini.lower() == 'debug':

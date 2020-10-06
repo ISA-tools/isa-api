@@ -88,19 +88,18 @@ DOI:
     </xsl:template>      
     
 <xsl:template match="data">
-    <xsl:variable name="investigationfile" select="concat('output/',data,'i_inv_biocrates.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="investigationfile" select="concat('output/isatab/',data,'i_inv_biocrates.txt')[normalize-space()]"></xsl:variable>
     <xsl:value-of select="$investigationfile[normalize-space()]"/>     
     <!-- this is used to generated separate output files -->
     <xsl:result-document href="{$investigationfile}">
         <xsl:copy-of select=".[normalize-space()]"/>
-        <xsl:call-template name="generate-header-comments"/>
         <!-- creates ISA i_investigation file -->
         <xsl:call-template name="generate-ontology-section"/>
         <xsl:call-template name="generate-investigation-section"/>
         
         <!-- TODO: Put the "STUDY" section in its own template name for code readabiltity -->
 <xsl:text>&#10;"STUDY"&#10;</xsl:text>
-        <xsl:value-of select="isa:single-name-value('Study Identifier', /data/project[1]/@identifier)"/>
+        <xsl:value-of select="isa:single-name-value('Study Identifier', concat('MTLBSXXX_',/data/project[1]/@identifier))"/>
         <xsl:value-of select="isa:single-name-value('Study Title', /data/project[1]/@ProjectName)"/>
         <xsl:value-of select="isa:single-name-value('Study Submission Date', '')"/>
         <xsl:value-of select="isa:single-name-value('Study Public Release Date', '')"/>
@@ -206,27 +205,31 @@ DOI:
     <xsl:text>&#9;</xsl:text>
     <xsl:text>"sample collection"&#9;</xsl:text>
     <xsl:text>"extraction/derivatization"&#9;</xsl:text>
-        
-        <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">              
-            <xsl:value-of select="isa:quotes(.)"/>  <xsl:text>&#9;</xsl:text>      
-        </xsl:for-each> 
-    <!-- TODO: Tidy up (same as above) -->
-    <xsl:if test="count($positiveModeCount) > 0">       
-        <xsl:text>"MS acquisition in positive mode"</xsl:text>
-        <xsl:text>&#9;</xsl:text>
-    </xsl:if>   
-    <!-- TODO: Tidy up (same as above) -->    
-    <xsl:if test="count($negativeModeCount) > 0">
-        <xsl:text>"MS acquisition in negative mode"</xsl:text>
-        <xsl:text>&#9;</xsl:text>
-    </xsl:if> 
+
+    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
+
+
+        <!-- TODO: Tidy up (same as above) -->
+        <xsl:if test="count($positiveModeCount) > 0">
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="."/>
+        <!--<xsl:text>&#9;</xsl:text>-->
+            <xsl:text>-MS acquisition in positive mode"</xsl:text>
+            <xsl:text>&#9;</xsl:text>
+        </xsl:if>
+        <!-- TODO: Tidy up (same as above) -->
+        <xsl:if test="count($negativeModeCount) > 0">
+            <xsl:text>"-MS acquisition in negative mode"</xsl:text>
+            <xsl:text>&#9;</xsl:text>
+        </xsl:if>
+     </xsl:for-each>
     <xsl:text>"biocrates analysis"&#9;</xsl:text>
 "Study Protocol Type"<xsl:text>&#9;</xsl:text>
     <xsl:text>"specimen collection"&#9;</xsl:text>
     <xsl:text>"material separation"&#9;</xsl:text>
-        <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">              
-            <xsl:text>"sample preparation for assay"&#9;</xsl:text>        
-        </xsl:for-each>
+        <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
+            <!--<xsl:text>"sample preparation for assay"&#9;</xsl:text>        -->
+
     <!-- TODO: Tidy up (same as above) -->
     <xsl:if test="count($positiveModeCount) > 0">       
         <xsl:text>"data collection"</xsl:text>
@@ -236,16 +239,15 @@ DOI:
     <xsl:if test="count($negativeModeCount) > 0">
         <xsl:text>"data collection"</xsl:text>
         <xsl:text>&#9;</xsl:text>
-    </xsl:if> 
+    </xsl:if>
+         </xsl:for-each>
     <xsl:text>"data transformation"&#9;</xsl:text>
 <xsl:text>    
 "Study Protocol Type Term Accession Number"</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:text>"http://purl.obolibrary.org/obo/OBI_0000659"&#9;</xsl:text>
     <xsl:text>"http://purl.obolibrary.org/obo/OBI_0302884"&#9;</xsl:text>
-    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">              
-            <xsl:text>"http://purl.obolibrary.org/obo/OBI_0000073"&#9;</xsl:text>        
-    </xsl:for-each>
+    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">       
             <xsl:text>"http://purl.obolibrary.org/obo/OBI_0600013"</xsl:text>
@@ -255,16 +257,16 @@ DOI:
         <xsl:if test="count($negativeModeCount) > 0">
             <xsl:text>"http://purl.obolibrary.org/obo/OBI_0600013"</xsl:text>
             <xsl:text>&#9;</xsl:text>
-        </xsl:if> 
+        </xsl:if>
+    </xsl:for-each>
         <xsl:text>"http://purl.obolibrary.org/obo/OBI_0200000"&#9;</xsl:text>
 <xsl:text>        
 "Study Protocol Type Term Source REF"</xsl:text>
     <xsl:text>&#9;</xsl:text>
     <xsl:text>"OBI"&#9;</xsl:text>
     <xsl:text>"OBI"&#9;</xsl:text>
-    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">              
-            <xsl:text>"OBI"&#9;</xsl:text>        
-    </xsl:for-each>
+    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
+
         <!-- TODO: Tidy up (same as above) -->
         <xsl:if test="count($positiveModeCount) > 0">       
             <xsl:text>"OBI"</xsl:text>
@@ -274,13 +276,32 @@ DOI:
         <xsl:if test="count($negativeModeCount) > 0">
             <xsl:text>"OBI"</xsl:text>
             <xsl:text>&#9;</xsl:text>
-        </xsl:if> 
+        </xsl:if>
+         </xsl:for-each>
         <xsl:text>"OBI"&#9;</xsl:text>
 <xsl:text>
 "Study Protocol Description"
 "Study Protocol URI"
-"Study Protocol Version"
-"Study Protocol Parameters Name"
+"Study Protocol Version"</xsl:text>
+<xsl:text>
+"Study Protocol Parameters Name"</xsl:text>
+    <xsl:text>&#9;</xsl:text>
+    <xsl:text>&#9;</xsl:text>
+    <xsl:text>&#9;</xsl:text>
+    <xsl:for-each select="/data/plate[generate-id(.)=generate-id(key('usedOPlist', @usedOP)[1])]/@usedOP">
+        <!-- TODO: Tidy up (same as above) -->
+        <xsl:if test="count($positiveModeCount) > 0">
+            <xsl:text>"kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number"</xsl:text>
+            <xsl:text>&#9;</xsl:text>
+        </xsl:if>
+        <!-- TODO: Tidy up (same as above) -->
+        <xsl:if test="count($negativeModeCount) > 0">
+            <xsl:text>"kit name;plate ID;plate position;mass spectrometry instrument;acquisition parameter file;inlet type;polarity;run number;injection number"</xsl:text>
+            <xsl:text>&#9;</xsl:text>
+        </xsl:if>
+        </xsl:for-each>
+        <xsl:text>"software"&#9;</xsl:text>
+<xsl:text>
 "Study Protocol Parameters Name Term Accession Number"
 "Study Protocol Parameters Name Term Source REF"
 "Study Protocol Components Name"
@@ -312,6 +333,8 @@ DOI:
 "Study Person Roles Term Accession Number"
 "Study Person Roles Term Source REF"
 </xsl:text>
+        <!-- DEACTIVATED AS ISA PYTHON PARSER DOES NOT SUPPORT COMMENTS IN CONTACT SECTION (io objects not commentable)-->
+        <!-- <xsl:call-template name="generate-header-comments"/> -->
 
 </xsl:result-document>
     
@@ -320,11 +343,15 @@ DOI:
 <xsl:text>
 </xsl:text>
     <!-- template invocation to create ISA a_assay table for positive mode acquisition -->
+    <xsl:if test="count($positiveModeCount) > 0">
     <xsl:call-template name="assay-positiveMode"/>
+    </xsl:if>
 <xsl:text>
 </xsl:text>
     <!-- template invocation to create ISA a_assay table for negative mode acquisition-->
+    <xsl:if test="count($negativeModeCount) > 0">
     <xsl:call-template name="assay-negativeMode"/>
+    </xsl:if>
     <xsl:text>
 </xsl:text>
 
@@ -333,19 +360,10 @@ DOI:
     <xsl:call-template name="metabolite_desc_nega"/>  --> 
 
 </xsl:template>
-    
-    <xsl:template name="generate-header-comments">
-        <!--BEGIN a block of commented lines to record some provenance information -->
-        <!-- this information may be used by Metabolights -->
-        <xsl:value-of select="isa:single-name-value('#BIOCRATES software version:', @swVersion)"/>
-        <xsl:value-of select="isa:single-name-value('#BIOCRATES document filename:', base-uri())"/>
-        <xsl:value-of select="isa:single-name-value('#BIOCRATES export date:', substring-before(@dateExport,'T'))"/>
-        <xsl:text>"#ISATab transformation by: Isatools-Biocrates2ISATab.xsl"</xsl:text>
-        <!-- END of the comment block -->
-    </xsl:template>
-    
+
+
     <xsl:template name="generate-ontology-section">
-        <xsl:text>&#10;"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
+        <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
         <xsl:text>"Term Source Name"&#9;"OBI"&#9;"PSI-MS"&#9;"UBERON"&#9;"NCBITax"&#10;</xsl:text> 
         <xsl:text>"Term Source File"&#9;"http://purl.org/obo/obi.owl"&#9;"http://psi-ms.sf.net"&#9;"http://purl.org/obo/uberon.owl"&#9;"http://purl.org/obo/NCBITax.owl"&#10;</xsl:text>
         <xsl:text>"Term Source Version"&#9;"1"&#9;"1"&#9;"1"&#9;"1"&#10;</xsl:text>
@@ -385,16 +403,20 @@ DOI:
 "Investigation Person Roles Term Source REF"</xsl:text>
     </xsl:template>
 
+<!--<xsl:template  match="contact" mode="identifier">-->
+    <!--<xsl:value-of select="if (@identifier != '') then concat('&#9;',isa:quotes(substring-before(@identifier,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>-->
+<!--</xsl:template>    -->
+
 <xsl:template  match="contact" mode="lastname">
-    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-before(@ContactPerson,' '))) else (concat('&#9;&quot;','&quot;'))"/>
+    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-before(@ContactPerson,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>
 </xsl:template>
     
 <xsl:template  match="contact" mode="firstname">
-    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-after(@ContactPerson,' '))) else (concat('&#9;&quot;','&quot;'))"/>
+    <xsl:value-of select="if (@ContactPerson != '') then concat('&#9;',isa:quotes(substring-after(@ContactPerson,' '))) else (concat('&#9;&quot;N/A','&quot;'))"/>
 </xsl:template>
 
 <xsl:template  match="contact" mode="affiliation">
-    <xsl:value-of select="if (@CompanyName != '') then concat('&#9;',isa:quotes(@CompanyName)) else (concat('&#9;&quot;','&quot;'))"/>
+    <xsl:value-of select="if (@CompanyName != '') then concat('&#9;',isa:quotes(@CompanyName)) else (concat('&#9;&quot;N/A','&quot;'))"/>
 </xsl:template>
     
 <xsl:template match="contact" mode="address" >
@@ -402,19 +424,29 @@ DOI:
 </xsl:template>
 
 <xsl:template match="contact" mode="phone" >
-    <xsl:value-of select="if (@Phone != '') then concat('&#9;',isa:quotes(@Phone)) else (concat('&#9;&quot;','&quot;'))"/>  
+    <xsl:value-of select="if (@Phone != '') then concat('&#9;',isa:quotes(@Phone)) else (concat('&#9;&quot;N/A','&quot;'))"/>
 </xsl:template>
     
 <xsl:template match="contact" mode="email" >
-    <xsl:value-of select="if (@Email != '') then concat('&#9;',isa:quotes(@Email)) else (concat('&#9;&quot;','&quot;'))"/>  
+    <xsl:value-of select="if (@Email != '') then concat('&#9;',isa:quotes(@Email)) else (concat('&#9;&quot;N/A','&quot;'))"/>
 </xsl:template> 
-    
-    
+
+
+<!-- DEACTIVATED AS ISA PYTHON PARSER DOES NOT SUPPORT COMMENTS IN CONTACT SECTION (io objects not commentable)-->
+<!--<xsl:template name="generate-header-comments">-->
+    <!--&lt;!&ndash;BEGIN a block of commented lines to record some provenance information &ndash;&gt;-->
+    <!--&lt;!&ndash; this information may be used by Metabolights &ndash;&gt;-->
+    <!--<xsl:value-of select="isa:single-name-value('Comment[BIOCRATES software version]', @swVersion)"/>-->
+    <!--<xsl:value-of select="isa:single-name-value('Comment[BIOCRATES document filename]', base-uri())"/>-->
+    <!--<xsl:value-of select="isa:single-name-value('Comment[BIOCRATES export date]', substring-before(@dateExport,'T'))"/>-->
+    <!--<xsl:text>"Comment[#ISATab transformation by: Isatools-Biocrates2ISATab.xsl]"</xsl:text>-->
+    <!--&lt;!&ndash; END of the comment block &ndash;&gt;-->
+<!--</xsl:template>-->
 
 <!-- ****************************************************** -->
 <xsl:template match="metabolite" name="metabolite_desc_posi">
 
-    <xsl:variable name="datafile" select="concat('output/',data,'maf-positive.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="datafile" select="concat('output/isatab/',data,'maf-positive.txt')[normalize-space()]"></xsl:variable>
     <xsl:value-of select="$datafile[normalize-space()]" /> 
     <xsl:result-document href="{$datafile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>  
@@ -737,7 +769,7 @@ DOI:
 <!-- ****************************************************** -->
 <xsl:template match="metabolite" name="metabolite_desc_nega">
     <xsl:variable name="usedOP" select="@usedOP"/>
-        <xsl:variable name="datafile" select="concat('output/',$usedOP,'-maf-negative.txt')[normalize-space()]"></xsl:variable>
+        <xsl:variable name="datafile" select="concat('output/isatab/',$usedOP,'-maf-negative.txt')[normalize-space()]"></xsl:variable>
         <xsl:value-of select="$datafile[normalize-space()]" /> 
         <xsl:result-document href="{$datafile}">
             <xsl:copy-of select=".[normalize-space()]"/>
@@ -1005,7 +1037,7 @@ DOI:
 <!--     template to create ISA s_study table               -->
     <xsl:template name="study" match="sample"  priority="1">
     
-    <xsl:variable name="studyfile" select="concat('output/',data,'s_study_biocrates.txt')[normalize-space()]"/>
+    <xsl:variable name="studyfile" select="concat('output/isatab/',data,'s_study_biocrates.txt')[normalize-space()]"/>
     <xsl:value-of select="$studyfile[normalize-space()]" /> 
     <xsl:result-document href="{$studyfile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
@@ -1173,7 +1205,7 @@ DOI:
  
 <xsl:template name="assay-negativeMode" match="plate"  priority="1">
 
-    <xsl:variable name="assaynegativefile" select="concat('output/',data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="assaynegativefile" select="concat('output/isatab/',data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"></xsl:variable>
     <xsl:value-of select="$assaynegativefile[normalize-space()]" /> 
     <xsl:result-document href="{$assaynegativefile}">
     
@@ -1219,7 +1251,7 @@ DOI:
 
 
 <xsl:template match="plate" name="assay-positiveMode" priority="1">
-    <xsl:variable name="assaypositivefile" select="concat('output/',data,'a_biocrates_assay_positive_mode.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="assaypositivefile" select="concat('output/isatab/',data,'a_biocrates_assay_positive_mode.txt')[normalize-space()]"></xsl:variable>
     <xsl:value-of select="$assaypositivefile[normalize-space()]" /> 
     <xsl:result-document href="{$assaypositivefile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
@@ -1336,7 +1368,7 @@ DOI:
                     </xsl:otherwise>                        
                 </xsl:choose>
                 
-                <xsl:value-of select="concat(isa:quotes(ancestor::plate/@usedOP),'&#9;')"/>
+                <xsl:value-of select="concat(ancestor::plate/@usedOP,'-MS acquisition in ',$polarity,' mode&#9;')"/>
                 
                 <xsl:choose>   
                     <xsl:when test="starts-with(ancestor::plate/@usedOP,'KIT1-')">
@@ -1445,9 +1477,9 @@ DOI:
                 <xsl:text>&#9;</xsl:text>
                 <xsl:value-of select="isa:quotes(/data/@swVersion)"/>
                 <xsl:text>&#9;</xsl:text>                  
-                <xsl:value-of select="isa:quotes(concat('DT_',ancestor::plate/@usedOP, '_',ancestor::plate/@plateBarcode))"/>
+                <xsl:value-of select="isa:quotes(concat('m_MTBLSXXX_',ancestor::plate/@usedOP, '_',ancestor::plate/@plateBarcode))"/>
                 <xsl:text>&#9;</xsl:text>                  
-                <xsl:value-of select="isa:quotes(concat('DT_',ancestor::plate/@usedOP, '_',ancestor::plate/@plateBarcode,'_',$polarity,'_maf.txt'))"/>
+                <xsl:value-of select="isa:quotes(concat('m_MTBLSXXX_',ancestor::plate/@usedOP, '_',ancestor::plate/@plateBarcode,'_',$polarity,'_maf.txt'))"/>
                 
                
 <xsl:text>

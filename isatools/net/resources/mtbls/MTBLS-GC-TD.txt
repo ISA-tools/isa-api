@@ -1,0 +1,5 @@
+TD/GC (Thermal Desorption)	
+Parameter Value[Thermal Desorption unit]	Parameter Value[Cryogenic Trap]
+GERSTEL TDS	GERSTEL CTS 2
+Markes International UNITY 2	
+Markes International TD-100	
