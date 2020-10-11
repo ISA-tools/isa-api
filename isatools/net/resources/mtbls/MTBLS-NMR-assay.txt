@@ -1,0 +1,75 @@
+Parameter Value[NMR tube type]	Parameter Value[Solvent]	Parameter Value[Instrument]	Parameter Value[NMR Probe]	Parameter Value[Pulse sequence name]	Parameter Value[Magnetic field strength]	Unit	Parameter Value[Magnetic field strength]	Unit
+1.7 mm SampleJet	0.05 mM phosphate buffered D2O	Agilent DD2 600 MHz spectrometer	1.7 mm CPTCI 1H-13C/15N/D Z-GRD	1D 1H spectrum (zg)	400	MHz	9.4	UO:tesla
+1.7 mm standard	0.01 M phosphate buffered D2O	Bruker 400 MHz spectrometer	1.7 mm CPTCI 1H/13C/15N/D Z-GRD cryorobe	1D 1H spectrum (zg30)	500	MHz	11.7	UO:tesla
+1.7 mm (Norell)	0.07 M phosphate buffered D2O	Bruker 500 MHz spectrometer	2.5 mm BBO-1H/D Z-GRD	1D 1H 30 deg excitation with f2 presaturation without spoiling gradient (zg30_f2pr)	600	MHz	14.1	UO:tesla
+2.5 mm standard	0.1 M phosphate buffered D2O	Bruker 600 MHz spectrometer	2.5 mm QXI 1H/15N/13C/31P/D Z-GRD	1D 1H T2-filter sequence eliminating J-modulation with water presaturation	700	MHz	16.4	UO:tesla
+3 mm standard	0.15 M phosphate buffered D2O	Bruker 600 MHz Ultrashield spectrometer	3 mm BB 1H	1D 1H with presaturation (presat)	800	MHz	18.8	UO:tesla
+3 mm (Norell)	0.2 M phosphate buffered D2O	Bruker Ascend 700 MHz spectrometer	3 mm BB 1H/X	1D 1H with presaturation (wet)	850	MHz	20	UO:tesla
+3 mm SampleJet	0.5 M phosphate buffered D2O	Bruker AVANCE 500 MHz spectrometer	3 mm 1H(X)-PFG inverse configuration	1D 1H with presaturation (zgpr)	900	MHz	21.1	UO:tesla
+4 mm standard MAS rotor	1 M phosphate buffered D2O/H2O	Bruker AVANCE 600 MHz spectrometer	3.2 mm MAS BB/1H	1D 1H with water suppression using excitation sculpting with gradients (zgesgp)				
+4 mm Zirconia MAS rotor	CD3OD	Bruker AVANCE 700 MHz spectrometer	4 mm HRMAS 1H/13C/2H Z-GRD	1D 13C with power-gated decoupling (zgpg)				
+4.25 mm (Bruker BioSpin)	D2O	Bruker AVANCE 850 MHz spectrometer	4 mm HRMAS 1H/13C/D Z-GRD	1D CPMG with presaturation (cpmgpr1d)				
+4.25 mm standard	0.04 M phosphate buffered D2O/H2O	Bruker AVANCE 900 MHz spectrometer	4 mm HRMAS 1H/13C/15N/2H Z-GRD	1D CPMG with T2 filter and presaturation (ereticcpmgpr1d)				
+5 mm (New Era)	0.07 M phosphate buffered D2O/H2O	Bruker AVANCE AV 500 MHz spectrometer	4 mm HR-MAS dual inverse 1H/13C with a Magic Angle gradient	"1D homonuclear MQS with selective pulses, without gradients, selects both ZQC and DQC (SSelMQC_refoc_ph)"				
+5 mm (Norell Inc.)	0.1 M phosphate buffered D2O/H2O	Bruker AVANCE AV 600 MHz spectrometer	5 mm 1H-13C cryoprobe	1D NOESY with presaturation (metnoesy)				
+5 mm (Wilmad-LabGlass)	phosphate sodium buffer	Bruker AVANCE DRX 500 MHz spectrometer	5 mm ATMA cryoprobe	1D NOESY with presaturation (noesypr1d)				
+5 mm 541-pp	CDCL3	Bruker AVANCE DRX 600 MHz spectrometer	5 mm BBI	1D NOESY with presaturation (modified) (pusenoesypr1d)				
+5 mm 7 in (Wilmad-LabGlass)	H20 + D20	Bruker AVANCE DRX 700 MHz spectrometer	5 mm BBI 1H	1D NOESY with presaturation (tnnoesy)				
+5 mm 7 in 507-grade	CD3OD + phosphate sodium buffer D2O	Bruker AVANCE HD 700 MHz spectrometer	5 mm BBI 1H-BB Z-GRD	1D NOESY with presaturation and spoil gradients (noesygppr1d)				
+5 mm SampleJet	0.2 M potassium phosphate buffered D2O + 0.128 mM TSP	Bruker AVANCE II 500 MHz spectrometer	5 mm BBI 1H/D-BB Z-GRD	1D NOESY with presaturation during relaxation delay and mixing time and spoil gradient (noesygppr1d_kr)				
+5 mm Shigemi D2O matched	D2O + 0.35 mM TSP	Bruker AVANCE II 500 MHz Ultrashield spectrometer	5 mm BBI double resonance	"1D NOESY 12C custom filtered with presaturation, phase-sensitive gradients, and 13C decoupling (c12filternoesygpc13cpd)"				
+5 mm short	0.9% NaCl in D2O	Bruker AVANCE II+ 500 MHz spectrometer	5 mm BBO-1H Z-GRD	"1D NOESY 12C 13C custom filtered with presaturation, phase-sensitive gradients, and 13C decoupling (c12c13filternoesygpc13cpd)"				
+5 mm ST500-7 (Norell)	0.3 M saline D2O	Bruker AVANCE II+ 800 MHz spectrometer	5 mm BBO-1H/D Z-GRD	1D PROJECT with presaturation (projectedpr)				
+5 mm standard	phosphate-buffered saline D2O	Bruker AVANCE II 600 MHz spectrometer	5 mm BBO H&F cryoprobe	2D 1H-13C HSQC (hsqcetgppr)				
+10 mm standard	0.2 M potassium phosphate buffered D2O + 5 mM maleic acid 	Bruker AVANCE II 700 MHz spectrometer	5 mm CPBBO BB-1H/19F/D Z-GRD cryoprobe	2D homonuclear correlation via dipolar coupling (noesyesgpph)				
+	0.154 M saline D20	Bruker AVANCE II 800 MHz US2 spectrometer	5 mm CPBBO BB-1H/19F/15N/D Z/GRD cryoprobe	2D HSQC with presaturation (hsqcphpr)				
+	saline D2O	Bruker AVANCE III 400 MHz spectrometer	5 mm CPP 1H/19F-13C/15N/D Z-GRD	2D HSQC using echo-antiecho detection and gradient pulses (hsqcedetgp)				
+		Bruker AVANCE III 500 MHz spectrometer	5 mm CPTCI	2D HSQC using echo-antiecho and adiabatic pulses for inversion and refocusing (hsqcetgpsp.2)				
+		Bruker AVANCE III 600 MHz spectrometer	5 mm CPTCI 1H-13C/15N/D Z-GRD	2D HSQC using echo-antiecho and adiabatic pulses for inversion and refocusing with additional water suppression (hsqcetgpsp.2.cl)				
+		Bruker AVANCE III 700 MHz spectrometer	5 mm CPTCI 1H/13C/15N/D Z-GRD cryoprobe	"2D HSQC using echo-antiecho-TPPI gradient selection, constant time, trim pulses, shaped pulses for inversion, no refocussing, off-resonance pulse (hsqcctetgpsp.2)"				
+		Bruker AVANCE III 800 MHz spectrometer	5 mm CPTCI 1H/13C/31P	2D HSQC using PEP and adiabatic pulses for inversion and refocusing with gradients in back-inept (hsqcetgpsisp2.2)				
+		Bruker AVANCE III HD 600 MHz spectrometer	5 mm CPTCI 1H/13C/31P Z-GRD cryoprobe	2D HSQC using PEP and adiabatic pulses for inversion and refocusing with gradients in back-inept and suppression of COSY type artefacts (hsqcetgpsisp2.3)				
+		Bruker AVANCE III HD 700 MHz spectrometer	5 mm CPTCI 1H-13C/31P/D cryoprobe	2D Interleaved Ultrafast COSY (iufcosy)				
+		Bruker AVANCE III HD 800 MHz spectrometer	5 mm CPTCI 1H-13C/31P/D Z-GRD cryoprobe	2D JRES with excitation sculpting & additional water suppression (jresesgp2)				
+		Varian Mercury AS400 MHz spectrometer	5 mm CPTCI 1H/19F-13C/15N/D Z-GRD	2D JRES with homonuclear J-resolved 2D correlation (jresesgp)				
+		Varian Unity Inova 400 MHz spectrometer	5 mm CPTCI 1H-31P/13C/D Z-GRD	"2D JRES with homonuclear J-resolved 2D correlation, presaturation during relaxation delay with gradients (jresgpprqf)"				
+		Varian Unity Inova 500 MHz spectrometer	5 mm CPTCI 1H-31P/13C/D Z-GRD cryoprobe	2D TOCSY with phase sensitive water suppression using MLEV (mlevesgpph)				
+		Varian Unity Inova 600 MHz spectrometer	5 mm CPTXI 1H-13C/15N/D Z-GRD	2D TOCSY with presaturation using MLEV (mlevphpr)				
+		Varian VNMR 600 MHz spectrometer	5 mm CPTXO 13C/D-1H/15N Z-GRD	2D Zero-quantum-filtered total correlation spectra (zTOCSY-em-3)				
+		Varian VNMRS 600 MHz spectrometer	5 mm CPQCI 1H/19F-13C/15N/D Z-GRD	M3S COSY				
+		Varian VNMRS DirectDrive 600 MHz spectrometer	5 mm CPQCI 1H-31P/13C/15N/D Z-GRD					
+			5 mm cryogenic					
+			5 mm HCN triple resonance					
+			5 mm HCN Z-gradient PFG RT					
+			5 mm HRMAS BB/2H-1H MAS-GRD					
+			5 mm HX					
+			5 mm inverse					
+			5 mm inverse 1H/13C/15N/D cryoprobe					
+			5 mm PABBI 1H-BB/D Z-GRD					
+			5 mm PABBI 1H/D-BB Z-GRD					
+			5 mm PABBO BB-1H/D Z-GRD					
+			5 mm PADUL 13C-1H/D Z-GRD					
+			5 mm PATBO BB-1H/19F/D Z-GRD					
+			5 mm PATXI 1H/D-13C/15N Z-GRD					
+			5 mm PATXI 1H-13C/15N XYZ-GRD					
+			5 mm PATXI 1H-13C/15N/D Z-GRD					
+			5 mm QNP 1H/13C/15N/31P					
+			5 mm QXI 1H/15N/13C/31P/D Z-GRD					
+			5 mm TBI 1H-BB XYZ-GRD					
+			5 mm TBO BB-1H/19F/D Z-GRD					
+			5 mm Triple 1H-13C/15N/D					
+			5 mm triple resonance cryoprobe					
+			5 mm TXI					
+			5 mm TXI 1H/13C/15N/D Z/GRD cryoprobe					
+			5 mm TXI 1H/D-13C/15N XYZ-GRD					
+			5 mm TXI ATMA					
+			5 mm TXI D/1H-13C/15N Z-GRD					
+			5 mm TXI HCN CryoProbe					
+			5 mm Triple-resonance cryoprobe with z-gradients					
+			5 mm Triple-resonance salt tolerant cold probe					
+			5 mm 4-Nucleus (13C/31P-1H/19F) (Standard Probe)					
+			"5 mm 1H{13C,15N} triple resonance PFG salt tolerant cold probe"					
+			"5 mm 1H{13C,15N} tunable triple resonance PFG probe"					
+			BBI					
+			5 mm CPTCI 700S4 H&F/C/N-D-05 Z					
+			5 mm AutoX DB					

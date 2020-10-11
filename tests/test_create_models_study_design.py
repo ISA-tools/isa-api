@@ -1,9 +1,5 @@
 import unittest
 from functools import reduce
-from collections import OrderedDict
-
-from isatools.model import *
-from isatools.errors import *
 
 from isatools.create.models import *
 
@@ -12,6 +8,8 @@ import uuid
 import logging
 
 from collections import Counter
+
+from tests.create_sample_assay_plan_odicts import sample_list, ms_assay_dict, lcdad_assay_dict, nmr_assay_dict
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
@@ -42,190 +40,6 @@ SCREEN_DURATION_VALUE = 100
 FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
-
-sample_list = [
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'liver',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'blood',
-            'size': 5,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'heart',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        }
-]
-
-ms_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'mass spectrometry'),
-    ('extraction', {}),
-    ('extract', [
-        {
-            'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
-            'characteristics_value': 'polar fraction',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
-            'characteristics_value': 'lipids',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        }
-    ]),
-    ('labelling', {
-        '#replicates': 2
-    }),
-    ('labelled extract', [
-        {
-            'node_type': LABELED_EXTRACT,
-            'characteristics_category': 'labelled extract type',
-            'characteristics_value': '',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        }
-    ]),
-    ('mass spectrometry', {
-        '#replicates': 2,
-        'instrument': ['Agilent QTQF §'],
-        'injection_mode': ['FIA', 'LC'],
-        'acquisition_mode': ['positive mode']
-    }),
-    ('raw spectral data file', [
-        {
-            'node_type': DATA_FILE,
-            'size': 2,
-            'is_input_to_next_protocols': False
-        }
-    ])
-])
-
-phti_assay_dict = OrderedDict([
-    ('measurement_type', 'phenotyping'),
-    ('technology_type', 'high-throughput imaging'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('phenotyping by high throughput imaging', {
-                'instrument': ['lemnatech gigant'],
-                'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
-                'camera position': ['top','120 degree','240 degree','360 degree'],
-                'imaging daily schedule': ['06.00','19.00']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
-
-lcdad_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite identification'),
-    ('technology_type', 'liquid chromatography diode-array detector'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('lcdad_spectroscopy', {
-                'instrument': ['Shimadzu DAD 400'],
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
-
-nmr_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'nmr spectroscopy'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('nmr_spectroscopy', {
-                '#replicates': 2,
-                'instrument': ['Bruker AvanceII 1 GHz'],
-                'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
-                'pulse_sequence': ['CPMG', 'watergate']
-                # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
-                # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
 
 
 class NonTreatmentTest(unittest.TestCase):
@@ -1022,7 +836,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
-        nmr_nodes = list(filter(lambda n: n.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda n: n.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for node in nmr_nodes:
             self.assertEqual(node.replicates, 2)
@@ -1116,7 +930,7 @@ class AssayGraphTest(unittest.TestCase):
     def test_previous_protocol_nodes(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
-        nmr_nodes = list(filter(lambda node: node.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda node: node.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for nmr_node in nmr_nodes:
             self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
@@ -1291,7 +1105,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
         self.assertEqual(len(smp_ass_plan.assay_plan), 2)
-        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type)[0]
+        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type.term)[0]
         self.assertIsInstance(ms_assay_graph, AssayGraph)
         self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
@@ -1816,7 +1630,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
         extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
         self.assertEqual(len(extraction_processes), 1)
-        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr_spectroscopy']
+        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
         self.assertEqual(len(nmr_processes), 8*2)
         self.assertEqual(len(processes), 1+8*2)
         self.assertEqual(len(other_materials), 2)
@@ -1867,11 +1681,11 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in treatment_assay.process_sequence
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
+                         if process.executes_protocol.name == 'nmr spectroscopy']
         self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
+        self.assertEqual(len(nmr_processes), 8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
                          * expected_num_of_samples_per_plan)
-        self.assertEqual(len(treatment_assay.process_sequence), (8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
+        self.assertEqual(len(treatment_assay.process_sequence), (8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
                                                                  + 1)*expected_num_of_samples_per_plan)
         for ix, process in enumerate(extraction_processes):
             self.assertEqual(process.inputs, [study.samples[ix]])
@@ -1909,7 +1723,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in treatment_assay_st0.process_sequence
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay_st0.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
+                         if process.executes_protocol.name == 'nmr spectroscopy']
         expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
                                                   self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
         expected_num_of_samples_first = sample_list[0]['size'] * single_arm.group_size

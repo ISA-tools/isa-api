@@ -1,0 +1,294 @@
+-
+    measurement type: metabolite profiling
+    technology type: NMR spectroscopy
+    protocol type: NMR spectroscopy
+    parameter-like file: Acquisition Parameter File
+    node name: NMR Assay Name
+    key in json_configuration: nmr_raw_date_file
+    raw data file: Free Induction Decay Data File
+    derived data file:
+    - Derived Spectral Data File
+    - Metabolite Assignment File
+-
+    measurement type: targeted metabolite profiling
+    technology type: NMR spectroscopy
+    protocol type: NMR spectroscopy
+    parameter-like file: 
+    node name: NMR Assay Name
+    key in json_configuration: nmr_raw_date_file
+    raw data file: Free Induction Decay Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: untargeted metabolite profiling
+    technology type: NMR spectroscopy
+    protocol type: NMR spectroscopy
+    parameter-like file: 
+    node name: NMR Assay Name
+    key in json_configuration: nmr_raw_date_file
+    raw data file: Free Induction Decay Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: isotopomer distribution analysis
+    technology type: NMR spectroscopy
+    protocol type: NMR spectroscopy
+    parameter-like file: 
+    node name: NMR Assay Name
+    key in json_configuration: nmr_raw_date_file
+    raw data file: Free Induction Decay Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: metabolite profiling
+    technology type: mass spectrometry
+    protocol type: mass spectrometry
+    parameter-like file: 
+    node name: MS Assay Name
+    key in json_configuration: ms_raw_date_file
+    raw data file: Raw Spectral Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: targeted metabolite profiling
+    technology type: mass spectrometry
+    protocol type: mass spectrometry
+    parameter-like file: 
+    node name: MS Assay Name
+    key in json_configuration: ms_raw_date_file
+    raw data file: Raw Spectral Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: untargeted metabolite profiling
+    technology type: mass spectrometry
+    protocol type: mass spectrometry
+    parameter-like file: 
+    node name: MS Assay Name
+    key in json_configuration: ms_raw_date_file
+    raw data file: Raw Spectral Data File
+    derived data file:
+        - Derived Spectral Data File
+        - Metabolite Assignment File
+-
+    measurement type: isotologue distribution analysis
+    technology type: mass spectrometry
+    protocol type: mass spectrometry
+    parameter-like file: 
+    node name: MS Assay Name
+    key in json_configuration: ms_raw_date_file
+    raw data file: Raw Spectral Data File
+    derived data file: Derived Spectral Data File
+-
+    measurement type: transcription profiling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: genotype profiling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: epigenome profling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: exome profiling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: DNA methylation profiling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: copy number variation profling
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: transcription factor binding site identification
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: protein-DNA binding site identification
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: SNP analysis
+    technology type: DNA microarray
+    protocol type: nucleic acid hybridization
+    parameter-like file: Array Design REF
+    node name: Hybridization Assay Name
+    key in json_configuration: microarray_raw_data_file
+    raw data file: Raw Data File
+    derived data file: Derived Array Data File
+-
+    measurement type: transcription profiling
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: transcription factor binding site identification
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: protein-DNA binding site identification
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: DNA methylation profiling
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: histone modification profiling
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: genome sequencing
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: metagenome sequencing
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: environmental gene survey
+    technology type: nucleic acid sequencing
+    protocol type: nucleic acid sequencing
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: cell sorting
+    technology type: flow cytometry
+    protocol type: flow cytometry
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: cell counting
+    technology type: flow cytometry
+    protocol type: flow cytometry
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: cell migration assay
+    technology type: microscopy imaging
+    protocol type: migration assay
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File
+    derived data file: Derived Data File
+-
+    measurement type: phenotyping
+    technology type: imaging
+    protocol type: migration assay
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File
+    derived data file: Derived Data File
+-
+    measurement type: transcription profiling
+    technology type: RT-pcr
+    protocol type: RT-pcr
+    parameter-like file: 
+    node name: Assay Name
+    key in json_configuration: raw_data_file (default)
+    raw data file: Raw Data File 
+    derived data file: Derived Data File
+-
+    measurement type: 
+    technology type: 
+    protocol type: 
+    parameter-like file: 
+    node name: 
+    key in json_configuration: my_favourite_institution_tag (no white space allowed)
+    raw data file: 
+    derived data file: 
+

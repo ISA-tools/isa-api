@@ -1,0 +1,7 @@
+Parameter Value[Sample mounting]	Parameter Value[Sample preservation]	Parameter Value[Sectioning instrument]	Parameter Value[Instrument]	Parameter Value[Ion source]	Parameter Value[Mass analyzer]	Parameter Value[Line scan direction]	Parameter Value[Line scan sequence]	Parameter Value[Scan pattern]	Parameter Value[Scan type]
+Glass slide	Fresh frozen	Thermo Scientific Shandon Cryotome	Bruker solariX XR	MS:electrospray ionization	Hybrid Qh-FTMS	linescan left right	top down	flyback	horizontal
+Thermo Scientific X72 SuperFrost Plus Adhesion slide		Thermo Scientific Microm HM550 Cryostat	Thermo Scientific LTQ Orbitrap XL ETD	MS:matrix-assisted laser desorption ionization	MS:orbitrap				
+Thermo Scientific FB58628 Fisherbrand Glass slide		Leica CM3050 S	Thermo Scientific MALDI LTQ Orbitrap XL						
+Thermo Scientific SuperFrost Glass slide			Thermo Scientific MALDI LTQ Orbitrap Discovery						
+Delta Electronics ITO one surface glass slide			Thermo Scientific Orbitrap Elite						
+Thermo Scientific Polysine Adhesion Slide									

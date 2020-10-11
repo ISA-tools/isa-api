@@ -1,0 +1,39 @@
+GC/MS Study (Mass Spectometry)		
+Parameter Value[Instrument]	Parameter Value[Ion source]	Parameter Value[Mass analyzer]
+Agilent 5973 MSD	MS:electron ionization	MS:quadrupole
+Agilent 5973N MSD	MS:chemical ionization	MS:quadrupole
+Agilent 5975 MSD	MS:field ionization	MS:quadrupole
+Agilent 5975C inert XL MSD		MS:quadrupole
+Agilent 5975C MSD		MS:quadrupole
+Agilent 5977A MSD		MS:quadrupole
+Agilent 5977B MSD		MS:quadrupole
+Agilent 7000C Triple Quadrupole		triple quadrupole
+Agilent 7010 Triple Quadrupole		triple quadrupole
+Agilent 7200 Q-TOF		quadrupole time-of-flight
+JEOL AccuTOF GCv		MS:time-of-flight
+LECO Pegasus		MS:time-of-flight
+LECO Pegasus 4D		MS:time-of-flight
+LECO Pegasus III		MS:time-of-flight
+LECO Pegasus IV		MS:time-of-flight
+LECO Pegasus BT TOFMS		MS:time-of-flight
+LECO Pegasus GC-HRT		MS:time-of-flight
+LECO Pegasus HT TOFMS		MS:time-of-flight
+PerkinElmer TurboMass		MS:quadrupole
+Shimadzu GCMS-TQ8040		triple quadrupole
+Shimadzu GCMS-TQ8040 NX		triple quadrupole
+Shimadzu GCMS-QP2020		MS:quadrupole
+Shimadzu GCMS-QP2010 Ultra		MS:quadrupole
+Shimadzu GCMS-QP5000		MS:quadrupole
+Thermo Electron PolarisQ		MS:quadrupole ion trap
+Thermo Electron TRACE DSQ		MS:quadrupole
+Thermo Finnigan TRACE DSQ		MS:quadrupole
+Thermo Scientific DSQ II		MS:quadrupole
+Thermo Scientific ISQ		MS:quadrupole
+Thermo Scientific ITQ 900		MS:quadrupole ion trap
+Thermo Scientific ISQ LT		MS:quadrupole
+Thermo Scientific TRACE DSQ		MS:quadrupole
+Thermo Scientific TSQ 8000		triple quadrupole
+Thermo Scientific TSQ Quantum XLS		triple quadrupole
+ThermoQuest Voyager		MS:quadrupole
+Varian 4000 MSD		MS:quadrupole ion trap
+Waters GCT Premier		MS:time-of-flight
