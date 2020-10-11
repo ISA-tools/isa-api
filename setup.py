@@ -61,7 +61,8 @@ setup(
         'biopython~=1.76',
         'progressbar2~=3.51.3',
         'deepdiff~=4.3.2',
-        'PyYAML~=5.3.1'
+        'PyYAML~=5.3.1',
+        'python-igraph==0.8.3'
     ],
     test_suite='tests'
 )

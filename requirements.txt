@@ -28,3 +28,4 @@ behave==1.2.6
 httpretty==0.9.7
 sure==1.4.11
 coveralls~=2.0.0
+python-igraph==0.8.3
