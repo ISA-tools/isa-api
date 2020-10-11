@@ -2,6 +2,7 @@ numpy==1.17.3
 jsonschema==3.1.1
 pandas==0.25.3
 networkx==2.4
+python-igraph==0.8.3
 behave==1.2.6
 httpretty==0.9.7
 sure==1.4.11

@@ -20,6 +20,7 @@ import uuid
 from numbers import Number
 
 from collections.abc import Iterable
+from igraph import Graph
 import networkx as nx
 
 
@@ -29,8 +30,7 @@ from isatools.errors import ISAModelAttributeError
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
 
-
-def _build_assay_graph(process_sequence=None):
+def _build_assay_graph_networkx(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
     g = nx.DiGraph()
@@ -68,6 +68,55 @@ def _build_assay_graph(process_sequence=None):
                 log.debug('linking prev_process {0} to process {1}'.format(
                     getattr(process.prev_process, 'id', None), process.id))
     return g
+
+
+def _build_assay_graph_igraph(process_sequence=None):
+    """:obj:`igraph.Graph`, `list` Returns a directed graph object based on a
+    given ISA process sequence, and list mapping of ISA objects to vertex IDs"""
+    g = Graph(directed=True)
+    if process_sequence is None:
+        return g, list()
+    vertices = list()
+    edges = list()
+    for process in process_sequence:
+        if process.next_process is not None or len(process.outputs) > 0:
+            if len([n for n in process.outputs if
+                    not isinstance(n, DataFile)]) > 0:
+                for output in [n for n in process.outputs if
+                               not isinstance(n, DataFile)]:
+                    vertices.extend([process, output])
+                    edges.append((process, output))
+                    log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
+            else:
+                vertices.extend([process, process.next_process])
+                edges.append((process, process.next_process))
+                log.debug('linking process {1} to prev_process {0}'.format(
+                    getattr(process.next_process, 'id', None), process.id))
+
+        if process.prev_process is not None or len(process.inputs) > 0:
+            if len(process.inputs) > 0:
+                for input_ in process.inputs:
+                    vertices.extend([input_, process])
+                    edges.append((input_, process))
+                    log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
+            else:
+                vertices.extend([process.prev_process, process])
+                edges.append((process.prev_process, process))
+                log.debug('linking prev_process {0} to process {1}'.format(
+                    getattr(process.prev_process, 'id', None), process.id))
+
+    def f7(seq):
+        seen = set()
+        seen_add = seen.add
+        return [x for x in seq if not (x in seen or seen_add(x))]
+
+    unique_vertices = f7(vertices)
+    mapped_edges = [(unique_vertices.index(x), unique_vertices.index(y)) for (x, y) in edges]
+
+    g.add_vertices(len(unique_vertices))
+    g.add_edges(mapped_edges)
+
+    return g, unique_vertices
 
 
 class Comment(object):
@@ -1538,12 +1587,22 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 'OntologyAnnotation'.format(type(self).__name__))
 
     @property
+    def igraph(self):
+        """:obj:`networkx.Graph`, `list` A graph representation of the study's
+        process sequence"""
+        log.info('Building graph for object: {0}'.format(self))
+        if len(self.process_sequence) > 0:
+            return _build_assay_graph_igraph(self.process_sequence)
+        else:
+            return None, None
+
+    @property
     def graph(self):
         """:obj:`networkx.DiGraph` A graph representation of the study's
         process sequence"""
         log.info('Building graph for object: {0}'.format(self))
         if len(self.process_sequence) > 0:
-            return _build_assay_graph(self.process_sequence)
+            return _build_assay_graph_networkx(self.process_sequence)
         else:
             return None
 

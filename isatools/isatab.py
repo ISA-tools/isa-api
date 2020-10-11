@@ -8,6 +8,7 @@ isatools.model package.
 from __future__ import absolute_import
 import csv
 import glob
+import networkx as nx
 import io
 import json
 import logging
@@ -21,7 +22,6 @@ from io import StringIO
 from itertools import tee, zip_longest
 
 import iso8601
-import networkx as nx
 import numpy as np
 import pandas as pd
 from pandas.io.parsers import ParserError
@@ -1111,7 +1111,37 @@ def _longest_path_and_attrs(paths):
     return longest[1]
 
 
-def _all_end_to_end_paths(G, start_nodes):
+def _all_end_to_end_paths_igraph(G, U, start_nodes):
+    """Find all the end-to-end complete paths using a networkx algorithm that
+    uses a modified depth-first search to generate the paths
+
+    :param G: A Graph and vertices tuple of all the assay graphs from the process sequences
+    :param start_nodes: A list of start nodes
+    :return: A list of paths from the start nodes
+    """
+    # we know graphs start with Source or Sample and end with Process
+    paths = []
+    for start in start_nodes:
+        # Find ends
+        if isinstance(start, Source):
+            # only look for Sample ends if start is a Source
+            all_samples = [x for x in U if isinstance(x, Sample)]
+            all_terminating_vertices = [U.index(x) for x in all_samples if G.outdegree(U.index(x)) == 0]
+            paths += G.get_all_simple_paths(U.index(start), all_terminating_vertices)
+        elif isinstance(start, Sample):
+            # only look for Process ends if start is a Sample
+            all_processes = [x for x in U if isinstance(x, Process)]
+            all_terminating_process_vertices = [U.index(x) for x in all_processes if x.next_process is None]
+            paths += G.get_all_simple_paths(U.index(start), all_terminating_process_vertices)
+    log.info("Found {} paths!".format(len(paths)))
+    if len(paths) == 0:
+        log.debug([x.name for x in start_nodes])
+    # rehydrate paths
+    paths = [[U[y] for y in x] for x in paths]
+    return paths
+
+
+def _all_end_to_end_paths_networkx(G, start_nodes):
     """Find all the end-to-end complete paths using a networkx algorithm that
     uses a modified depth-first search to generate the paths
 
@@ -1172,18 +1202,21 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
-        if study_obj.graph is None:
-            break
         protrefcount = 0
         protnames = dict()
 
         def flatten(l): return [item for sublist in l for item in sublist]
         columns = []
 
-        # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        paths = _all_end_to_end_paths(
-            study_obj.graph,
-            [x for x in study_obj.graph.nodes() if isinstance(x, Source)])
+        g, u = study_obj.igraph
+        if g is None:
+            break
+        sources = study_obj.sources
+        if not sources:  # if sources attribute is empty, try collect Source objects from process_sequence
+            all_inputs = flatten([x.inputs for x in study_obj.process_sequence])
+            sources = [x for x in all_inputs if isinstance(x, Source)]
+        paths = _all_end_to_end_paths_igraph(g, u, sources)
+
         sample_in_path_count = 0
         for node in _longest_path_and_attrs(paths):
             if isinstance(node, Source):
@@ -1364,8 +1397,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
-            if assay_obj.graph is None:
-                break
             protrefcount = 0
             protnames = dict()
 
@@ -1373,9 +1404,14 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             columns = []
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
-            paths = _all_end_to_end_paths(
-                assay_obj.graph, [x for x in assay_obj.graph.nodes()
-                                  if isinstance(x, Sample)])
+            g, u = assay_obj.igraph
+            if g is None:
+                break
+            samples = assay_obj.samples
+            if not samples:
+                all_input_processes_inputs = flatten([x.inputs for x in assay_obj.process_sequence if not x.prev_process])
+                samples = [x for x in all_input_processes_inputs if isinstance(x, Sample)]
+            paths = _all_end_to_end_paths_igraph(g, u, samples)
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
