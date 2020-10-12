@@ -425,7 +425,7 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
     def test_info_reporting_mtbls1_isatab(self):
         test_case = 'MTBLS1'
         with open(os.path.join(utils.TAB_DATA_DIR, test_case,
-                               'i_investigation.txt')) as test_case_fp:
+                               'i_Investigation.txt')) as test_case_fp:
             report = isatab.validate(
                 fp=test_case_fp,
                 config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
