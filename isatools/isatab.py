@@ -1211,10 +1211,9 @@ def write_study_table_files(inv_obj, output_dir):
         g, u = study_obj.igraph
         if g is None:
             break
-        sources = study_obj.sources
-        if not sources:  # if sources attribute is empty, try collect Source objects from process_sequence
-            all_inputs = flatten([x.inputs for x in study_obj.process_sequence])
-            sources = [x for x in all_inputs if isinstance(x, Source)]
+
+        all_inputs = flatten([x.inputs for x in study_obj.process_sequence])
+        sources = [x for x in all_inputs if isinstance(x, Source)]
         paths = _all_end_to_end_paths_igraph(g, u, sources)
 
         sample_in_path_count = 0
@@ -1407,10 +1406,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             g, u = assay_obj.igraph
             if g is None:
                 break
-            samples = assay_obj.samples
-            if not samples:
-                all_input_processes_inputs = flatten([x.inputs for x in assay_obj.process_sequence if not x.prev_process])
-                samples = [x for x in all_input_processes_inputs if isinstance(x, Sample)]
+
+            all_input_processes_inputs = flatten([x.inputs for x in assay_obj.process_sequence if not x.prev_process])
+            samples = [x for x in all_input_processes_inputs if isinstance(x, Sample)]
             paths = _all_end_to_end_paths_igraph(g, u, samples)
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
