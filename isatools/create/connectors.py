@@ -289,7 +289,9 @@ def generate_study_design_from_config(datascriptor_study_design_config):
             arm_map[cell] = sa_plan
         arm = StudyArm(
             name=arm_dict['name'],
-            source_type=_map_ontology_annotations(arm_dict['subjectType']),
+            source_type=_map_ontology_annotations(
+                arm_dict['subjectType'] or datascriptor_study_design_config['subjectType']
+            ),
             group_size=arm_dict.get('size', 10),
             arm_map=arm_map
         )

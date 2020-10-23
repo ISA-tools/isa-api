@@ -970,7 +970,7 @@ class QualityControlSample(Sample):
     def __init__(self, **kwargs):
         log.debug('KWARGS are: {0}'.format(kwargs))
         qc_sample_type = kwargs.get('qc_sample_type', None)
-        _kwargs = {key: val for key, val in kwargs.items() if key is not 'qc_sample_type'}
+        _kwargs = {key: val for key, val in kwargs.items() if key != 'qc_sample_type'}
         super(QualityControlSample, self).__init__(**_kwargs)
         self.__qc_sample_type = None
         if qc_sample_type:
@@ -1757,7 +1757,14 @@ class StudyArm(object):
 
     DEFAULT_SOURCE_TYPE = DEFAULT_SOURCE_TYPE
 
-    def __init__(self, name, arm_map=None, source_type=None, group_size=0):
+    def __init__(
+            self,
+            name,
+            arm_map=None,
+            source_type=None,
+            source_characteristics=None,
+            group_size=0
+    ):
         """
         The default constructor.
         :param name: string
@@ -1767,6 +1774,7 @@ class StudyArm(object):
         """
         self.__name = ''
         self.__source_type = None
+        self.__source_characteristics = set()
         self.__group_size = None
         self.__arm_map = OrderedDict()
         self.name = name
@@ -1775,16 +1783,24 @@ class StudyArm(object):
             self.arm_map = arm_map
         if source_type:
             self.source_type = source_type
+        if source_characteristics:
+            self.source_characteristics = source_characteristics
 
     def __repr__(self):
         return '{0}.{1}(' \
                'name={name}, ' \
                'source_type={source_type}, ' \
+               'source_characteristics={source_characteristics}' \
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
-                    self.__class__.__module__, self.__class__.__name__, name=self.name,
-                    source_type=self.source_type, group_size=self.group_size,
+                    self.__class__.__module__, self.__class__.__name__,
+                    name=self.name, source_type=self.source_type,
+                    source_characteristics=[sc for sc in sorted(
+                        self.source_characteristics,
+                        key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
+                    )],
+                    group_size=self.group_size,
                     cells=self.cells, sample_assay_plans=self.sample_assay_plans
                 )
 
@@ -1809,6 +1825,7 @@ class StudyArm(object):
         return isinstance(other, StudyArm) and \
                self.name == other.name and \
                self.source_type == other.source_type and \
+               self.source_characteristics == other.source_characteristics and \
                self.group_size == other.group_size and \
                self.arm_map == other.arm_map
 
@@ -1837,6 +1854,19 @@ class StudyArm(object):
         if not isinstance(source_type, (str, Characteristic)):
             raise AttributeError(self.SOURCE_TYPE_ERROR.format(source_type))
         self.__source_type = source_type
+
+    @property
+    def source_characteristics(self):
+        return self.__source_characteristics
+
+    @source_characteristics.setter
+    def source_characteristics(self, source_characteristics):
+        if not (
+                isinstance(source_characteristics, Iterable) and
+                all(isinstance(sc, Characteristic) for sc in source_characteristics)
+        ):
+            raise AttributeError("all source characteristics must be instance of Characteristic")
+        self.__source_characteristics = {sc for sc in source_characteristics}
 
     @property
     def group_size(self):
@@ -1945,7 +1975,9 @@ class StudyArmEncoder(json.JSONEncoder):
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
             log.debug('StudyArm source_type is: {0}'.format(o.source_type))
             res = dict(
-                name=o.name, groupSize=o.group_size, sourceType=characteristic_encoder.characteristic(o.source_type),
+                name=o.name, groupSize=o.group_size,
+                sourceType=characteristic_encoder.characteristic(o.source_type),
+                sourceCharacteristics=[characteristic_encoder.characteristic(sc) for sc in o.source_characteristics],
                 cells=[], sampleAndAssayPlans=[], mappings=[]
             )
             i = 0
@@ -1974,6 +2006,11 @@ class StudyArmDecoder(object):
         arm = StudyArm(
             name=json_dict['name'],
             source_type=self.characteristic_decoder.loads_characteristic(json_dict['sourceType']),
+            source_characteristics=[
+                self.characteristic_decoder.loads_characteristic(
+                    json_sc
+                ) for json_sc in json_dict['sourceCharacteristics']
+            ],
             group_size=json_dict['groupSize']
         )
         sample_assay_plan_set = {
@@ -2134,7 +2171,7 @@ class StudyDesign(object):
                        category=OntologyAnnotation(term=s_arm.source_type),
                        value=OntologyAnnotation(term=s_arm.source_type)
                    )
-                ]
+                ] + [sc for sc in sorted(s_arm.source_characteristics)]
             )
             srcs = set()
             for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):

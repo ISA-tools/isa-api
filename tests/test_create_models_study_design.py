@@ -1322,6 +1322,28 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], 'The source_type property must be either a string or a '
                                                   'Characteristic. 128 was supplied.')
 
+    def test_source_characteristics_success(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.arm.source_characteristics = test_characteristics
+        self.assertEqual(self.arm.source_characteristics, set(test_characteristics))
+
+    def test_source_characteristics_fail(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic'):
+            self.arm.source_characteristics = 'age group - old'
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            'age group - old'
+        ]
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic') as ex_cm:
+            self.arm.source_characteristics = test_characteristics
+
     def test_group_size_property(self):
         self.assertEqual(self.arm.group_size, 10)
         self.arm.group_size = 100
@@ -1332,6 +1354,35 @@ class StudyArmTest(unittest.TestCase):
                                msg='Only positive integers can be assigned to group_size') as ex_cm:
             self.arm.group_size = -5
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
+
+    def test_eq_and_repr_(self):
+        self.arm.source_type = 'human'
+        self.arm.source_characteristics = {
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        }
+        other_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category='sex', value='M'),
+                Characteristic(category='age group', value='old')
+            ]
+        )
+        self.assertEqual(self.arm, other_arm)
+        self.assertEqual(repr(self.arm), repr(other_arm))
+        yet_another_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category=OntologyAnnotation(term='sex'), value='F'),
+                Characteristic(category=OntologyAnnotation(term='age group'), value='young')
+            ]
+        )
+        self.assertNotEqual(self.arm, yet_another_arm)
+        self.assertNotEqual(repr(self.arm), repr(yet_another_arm))
 
     def test_arm_map_property_success_00(self):
         self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan '

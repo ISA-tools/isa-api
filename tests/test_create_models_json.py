@@ -202,13 +202,23 @@ class BaseTestCase(unittest.TestCase):
         self.sample_assay_plan_for_treatments = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
         self.sample_assay_plan_for_washout = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
         self.sample_assay_plan_for_follow_up = SampleAndAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
-        self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.test_source_characteristics_00 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ],
+        self.single_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=10,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
             (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
@@ -223,11 +233,17 @@ class BaseTestCase(unittest.TestCase):
             (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
             (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
         ]))
-        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.multi_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=35,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
             (self.cell_screen, self.sample_assay_plan_for_screening),
             (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
