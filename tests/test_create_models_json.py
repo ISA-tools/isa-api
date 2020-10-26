@@ -205,7 +205,7 @@ class BaseTestCase(unittest.TestCase):
         self.test_source_characteristics_00 = [
             Characteristic(category='sex', value='M'),
             Characteristic(category='age group', value='old')
-        ],
+        ]
         self.single_treatment_cell_arm = StudyArm(
             name=TEST_STUDY_ARM_NAME_00,
             source_type=DEFAULT_SOURCE_TYPE,
