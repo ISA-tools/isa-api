@@ -1790,7 +1790,7 @@ class StudyArm(object):
         return '{0}.{1}(' \
                'name={name}, ' \
                'source_type={source_type}, ' \
-               'source_characteristics={source_characteristics}' \
+               'source_characteristics={source_characteristics}, ' \
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
@@ -1805,17 +1805,17 @@ class StudyArm(object):
                 )
 
     def __str__(self):
-        return """"{1}(
+        return """"{0}(
                name={name},
                source_type={source_type},
                group_size={group_size}, 
-               cells={cells},
-               sample_assay_plans={sample_assay_plans}
+               no. cells={cells},
+               no. sample_assay_plans={sample_assay_plans}
                )""".format(
-                    self.__class__.__module__, self.__class__.__name__, name=self.name, group_size=self.group_size,
+                    self.__class__.__name__, name=self.name, group_size=self.group_size,
                     source_type=self.source_type,
-                    cells=[cell.name for cell in self.cells],
-                    sample_assay_plans=[plan.name for plan in sorted(self.sample_assay_plans)]
+                    cells=len([cell.name for cell in self.cells]),
+                    sample_assay_plans=len([plan.name for plan in sorted(self.sample_assay_plans)])
         )
 
     def __hash__(self):

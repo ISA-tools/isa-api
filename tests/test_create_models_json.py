@@ -206,6 +206,14 @@ class BaseTestCase(unittest.TestCase):
             Characteristic(category='sex', value='M'),
             Characteristic(category='age group', value='old')
         ]
+        self.test_source_characteristics_01 = [
+            Characteristic(category='sex', value='F'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.test_source_characteristics_02 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='young')
+        ]
         self.single_treatment_cell_arm = StudyArm(
             name=TEST_STUDY_ARM_NAME_00,
             source_type=DEFAULT_SOURCE_TYPE,
@@ -219,20 +227,32 @@ class BaseTestCase(unittest.TestCase):
                 (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
             ])
         )
-        self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.single_treatment_cell_arm_02 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=24, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.single_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=30,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.single_treatment_cell_arm_02 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_02,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_02,
+            group_size=24,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.multi_treatment_cell_arm = StudyArm(
             name=TEST_STUDY_ARM_NAME_00,
             source_type=DEFAULT_SOURCE_TYPE,
@@ -244,11 +264,17 @@ class BaseTestCase(unittest.TestCase):
                 (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
             ])
         )
-        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.multi_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=5,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.mouse_source_type = Characteristic(
             category=OntologyAnnotation(
                 term="Study Subject", term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",
