@@ -1149,7 +1149,7 @@ def _all_end_to_end_paths(G, start_nodes):
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-    log.info("Found {} paths!".format(len(paths)))
+    # log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
         log.debug([x.name for x in start_nodes])
     return paths
