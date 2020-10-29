@@ -2171,7 +2171,11 @@ class StudyDesign(object):
                        category=OntologyAnnotation(term=s_arm.source_type),
                        value=OntologyAnnotation(term=s_arm.source_type)
                    )
-                ] + [sc for sc in sorted(s_arm.source_characteristics)]
+                ] + [sc for sc in sorted(
+                    s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
+                        sc.category, OntologyAnnotation
+                    ) else sc.category
+                )]
             )
             srcs = set()
             for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):

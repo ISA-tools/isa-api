@@ -129,3 +129,15 @@ class TestMappings(unittest.TestCase):
                 self.assertIsInstance(source_char, Characteristic)
                 self.assertIsInstance(source_char.category, OntologyAnnotation)
                 self.assertIsInstance(source_char.value, OntologyAnnotation)
+        investigation = Investigation(studies=[design.generate_isa_study(split_assays_by_sample_type=True)])
+        inv_json = json.dumps(
+            investigation,
+            cls=ISAJSONEncoder,
+            sort_keys=True,
+            indent=4,
+            separators=(',', ': ')
+        )
+        inv_dict = json.loads(inv_json)
+        self.assertIsInstance(inv_dict, dict)
+        data_frames = isatab.dump_tables_to_dataframes(investigation)
+        self.assertIsInstance(data_frames, dict)
