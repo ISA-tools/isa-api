@@ -90,7 +90,7 @@ feedback from a user on-the-fly.
         # an index to the material name. In this case, three samples will be created, with the names
         # 'sample_material-0', 'sample_material-1' and 'sample_material-2'.
 
-        prototype_sample = Sample(name='sample_material', derives_from=source)
+        prototype_sample = Sample(name='sample_material', derives_from=[source])
         
         ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
         investigation.ontology_source_references.append(ncbitaxon) # remember to add the newly declared ontology source to the parent investigation
