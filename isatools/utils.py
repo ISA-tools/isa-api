@@ -30,7 +30,6 @@ from isatools.model import (
     plink,
 )
 
-
 log = logging.getLogger('isatools')
 
 
@@ -67,8 +66,8 @@ def detect_graph_process_pooling(G):
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if len(G.in_edges(process)) > 1:
             log.info('Possible process pooling detected on: {}'
-                     .format(' '.join(
-                         [process.id, process.executes_protocol.name])))
+                .format(' '.join(
+                [process.id, process.executes_protocol.name])))
 
             report.append(process.id)
     return report
@@ -427,7 +426,7 @@ class IsaTabAnalyzer(object):
                         'num_sources': len(assay.samples),
                         'num_samples': len([x for x in assay.data_files
                                             if x.label.startswith(
-                                                raw_data_file_prefix)])
+                                raw_data_file_prefix)])
                     }
                     with open(os.path.join(self.path, assay.filename)) as a_fp:
                         a_df = isatab.load_table(a_fp)
@@ -478,9 +477,9 @@ class IsaTabAnalyzer(object):
                                         factor_value = \
                                             factor_query.split(' == ')
                                         fmt_query_part = \
-                                            "Factor_Value_{0}_ == '{1}'"\
-                                            .format(pyvar(factor_value[0]),
-                                                    factor_value[1])
+                                            "Factor_Value_{0}_ == '{1}'" \
+                                                .format(pyvar(factor_value[0]),
+                                                        factor_value[1])
                                         fmt_query.append(fmt_query_part)
                                     fmt_query = ' and '.join(fmt_query)
                                     log.debug('running query: {}'.format(
@@ -488,9 +487,9 @@ class IsaTabAnalyzer(object):
                                     df2 = merged_df.query(fmt_query)
                                     data_column = [x for x in merged_df.columns
                                                    if x.startswith(
-                                                       raw_data_file_prefix)
+                                            raw_data_file_prefix)
                                                    and x.endswith(
-                                                       'Data File')][0]
+                                            'Data File')][0]
                                     assay_report['group_summary'].append(
                                         dict(study_group=query,
                                              sources=len(
@@ -541,7 +540,7 @@ class IsaTabAnalyzer(object):
             from collections import Counter
             counter = Counter()
             for material in study.sources + study.samples + \
-                    study.other_material:
+                            study.other_material:
                 counter.update(material.characteristics)
             for k, v in counter.items():
                 print('{characteristic} used {num} times'.format(
@@ -681,7 +680,7 @@ class IsaTabFixer(object):
         source_name_index = clean_field_names.index('Source Name')
 
         if factor_index < len(field_names) and \
-            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 1] and \
                 'Term Accession' in field_names[factor_index + 2]:
             log.debug(
                 'Moving Factor Value[{}] with term columns'.format(
@@ -699,7 +698,7 @@ class IsaTabFixer(object):
             del field_names[factor_index + 1 + 2]  # del Term Source REF
             del field_names[factor_index + 2 + 1]  # del Term Accession
         elif factor_index < len(field_names) and \
-            'Unit' in field_names[factor_index + 1] and \
+                'Unit' in field_names[factor_index + 1] and \
                 'Term Source REF' in field_names[factor_index + 2] and \
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
@@ -780,10 +779,10 @@ class IsaTabFixer(object):
         if protocol_ref_index < 0:
             raise IOError(
                 'Could not find protocol ref matching {protocol_ref}'
-                .format(protocol_ref=protocol_ref))
+                    .format(protocol_ref=protocol_ref))
 
         if factor_index < len(field_names) and \
-            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 1] and \
                 'Term Accession' in field_names[factor_index + 2]:
             log.debug(
                 'Moving Factor Value[{}] with term columns'.format(
@@ -799,12 +798,12 @@ class IsaTabFixer(object):
             del field_names[factor_index + 1 + 2]  # del Term Source REF
             del field_names[factor_index + 2 + 1]  # del Term Accession
         elif factor_index < len(field_names) and \
-            'Unit' in field_names[factor_index + 1] and \
+                'Unit' in field_names[factor_index + 1] and \
                 'Term Source REF' in field_names[factor_index + 2] and \
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit term columns'
-                .format(factor_name=factor_name))
+                    .format(factor_name=factor_name))
             # move Factor Value and Unit as ontology annotation
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -822,7 +821,7 @@ class IsaTabFixer(object):
                 'Unit' in field_names[factor_index + 1]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit column'
-                .format(factor_name=factor_name))
+                    .format(factor_name=factor_name))
             # move Factor Value and Unit columns
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -1051,3 +1050,11 @@ def create_and_merge_mzml(
 
     isatab.dump(ISA, output_dir)
 """
+
+
+def n_digits(num):
+    length = 0
+    while num / 10 >= 1:
+        num //= 10
+        length += 1
+    return length + 1

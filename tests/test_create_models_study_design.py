@@ -28,9 +28,9 @@ TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
 TEST_EPOCH_2_NAME = 'test epoch 2'
 
-TEST_STUDY_ARM_NAME_00 = 'test arm'
-TEST_STUDY_ARM_NAME_01 = 'another arm'
-TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+TEST_STUDY_ARM_NAME_00 = 'test arm 0'
+TEST_STUDY_ARM_NAME_01 = 'another arm 1'
+TEST_STUDY_ARM_NAME_02 = 'yet another arm 2'
 
 TEST_STUDY_DESIGN_NAME = 'test study design'
 
@@ -1448,6 +1448,14 @@ class StudyArmTest(unittest.TestCase):
             self.first_treatment, self.second_treatment, self.fourth_treatment, self.third_treatment
         })
 
+    def test_numeric_id_property(self):
+        arm = StudyArm(name='Arm_0', group_size=10)
+        self.assertEqual(arm.numeric_id, 0)
+        arm = StudyArm(name='Arm_14', group_size=10)
+        self.assertEqual(arm.numeric_id, 14)
+        arm = StudyArm(name='Arm_no_number', group_size=10)
+        self.assertEqual(arm.numeric_id, -1)
+
 
 class BaseStudyDesignTest(unittest.TestCase):
 
@@ -1667,8 +1675,9 @@ class StudyDesignTest(BaseStudyDesignTest):
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
+        prefix = 'assay-table-prefix'
         processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
-            node, assay_graph
+            node, assay_graph, prefix
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
@@ -1907,7 +1916,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(study_with_qc, Study)
         self.assertIsNot(study_no_qc, study_with_qc)
         sample_names = [sample.name for sample in study_with_qc.samples]
-        log.info('Sample name occurrences: {}'.format(
+        log.debug('Sample name occurrences: {}'.format(
             json.dumps(Counter(sample_names), sort_keys=True, indent=2)
         ))
         self.assertEqual(len(sample_names), len(set(sample_names))) # all sample names are unique

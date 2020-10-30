@@ -1327,14 +1327,14 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        log.info("Rendered {} paths".format(len(DF.index)))
+        log.debug("Rendered {} paths".format(len(DF.index)))
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
-            log.info("Dropping duplicates...")
+            log.debug("Dropping duplicates...")
             DF = DF_no_dups
 
-        log.info("Writing {} rows".format(len(DF.index)))
+        log.debug("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
         DF = DF.replace('', np.nan)

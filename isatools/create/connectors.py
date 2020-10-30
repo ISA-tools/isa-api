@@ -265,7 +265,7 @@ def generate_study_design_from_config(study_design_config):
     :return: isatools.create.StudyDesign
     """
     arms = []
-    for arm_dict in study_design_config['selectedArms']:
+    for arm_ix, arm_dict in enumerate(study_design_config['selectedArms']):
         arm_map = OrderedDict()
         for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
             element_ids = epoch_dict.get('elements', [])
@@ -276,7 +276,7 @@ def generate_study_design_from_config(study_design_config):
                     study_design_config['generatedStudyDesign']['elements']
                 )
             ]
-            cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
+            cell_name = 'A{}E{}'.format(arm_ix, epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
             sample_type_dicts = [
                 _generate_sample_dict_from_config(
@@ -289,10 +289,10 @@ def generate_study_design_from_config(study_design_config):
                 generate_assay_ord_dict_from_config(
                     ds_assay_config, arm_dict['name'], epoch_ix
                 ) for ds_assay_config in study_design_config['assayConfigs']
-                if study_design_config['selectedAssayTypes'][ds_assay_config['name']]
-                   and ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
+                if study_design_config['selectedAssayTypes'][ds_assay_config['name']] and
+                ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
             ]
-            sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
+            sa_plan_name = 'SAP_A{}E{}'.format(arm_ix, epoch_ix)
             # TODO this method will probably need some rework to bind a sample type to a specific assay plan
             sa_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
                 sa_plan_name, sample_type_dicts, *assay_ord_dicts

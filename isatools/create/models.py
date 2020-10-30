@@ -6,24 +6,18 @@ from __future__ import absolute_import
 import datetime
 import itertools
 import json
-import random
 import re
-from collections import Iterable
 from collections import OrderedDict
 from copy import deepcopy
-from numbers import Number
 import copy
 from isatools.model import *
-from isatools.errors import *
-from isatools.utils import urlify
+from isatools.utils import urlify, n_digits
 from abc import ABC
 from math import factorial
 import os
 import yaml
 import uuid
 import networkx as nx
-import inspect
-import pdb
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
@@ -90,8 +84,11 @@ DATA_FILE = 'data file'
 # sample organism part category
 ORGANISM_PART = 'organism part'
 
-# constant for naming AssayGraphs
-ASSAY_GRAPH = 'ASSAY_GRAPH'
+# constant for naming Groups, Subjects, Samples, AssayGraphs
+GROUP_PREFIX = 'GRP'
+SUBJECT_PREFIX = 'SBJ'
+SAMPLE_PREFIX = 'SMP'
+ASSAY_GRAPH_PREFIX = 'ASSAY'
 
 
 # constants specific to the sampling plan in the study generation from the study design
@@ -1559,7 +1556,7 @@ class SampleAndAssayPlan(object):
         for i, assay_plan_dict in enumerate(assay_plan_dicts):
             assay_graph = AssayGraph.generate_assay_plan_from_dict(
                 assay_plan_dict,
-                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH, str(i).zfill(3)),
+                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH_PREFIX, str(i).zfill(3)),
                 quality_control=quality_controls[i] if len(quality_controls) > i else None
             )
             res.add_assay_graph_to_plan(assay_graph)
@@ -1902,6 +1899,14 @@ class StudyArm(object):
     def sample_assay_plans(self):
         return list(self.arm_map.values())
 
+    @property
+    def numeric_id(self):
+        try:
+            digits = re.findall(r'\d+', self.name)
+            return int(digits[0])
+        except IndexError:
+            return -1
+
     def is_completed(self):
         """
         A StudyArm is considered completed if it contains a FOLLOW-UP cells
@@ -2132,10 +2137,10 @@ class StudyDesign(object):
         """
         idarr = []
         if group_id != '':
-            idarr.append('GRP-{}'.format(group_id))  # study group
+            idarr.append('{}{}'.format(GROUP_PREFIX, group_id))  # study group
         if subject_number != '':
-            idarr.append('SBJ-{}'.format(subject_number))
-        return '.'.join(idarr).replace(' ', '_')
+            idarr.append('{}{}'.format(SUBJECT_PREFIX, subject_number))
+        return '_'.join(idarr).replace(' ', '-')
 
     @staticmethod
     def _idgen_samples(source_name, cell_name, sample_number, sample_type):
@@ -2150,13 +2155,13 @@ class StudyDesign(object):
         if source_name != '':
             idarr.append('{}'.format(source_name))
         if cell_name != '':
-            idarr.append('CEL-{}'.format(cell_name))
-        idarr.append('SMP-')
+            idarr.append('{}'.format(cell_name))
+        idarr.append('{}'.format(SAMPLE_PREFIX))
         if sample_type != '':
             idarr.append(sample_type)
         if sample_number != '':
             idarr.append('{}'.format(sample_number))
-        return '.'.join(idarr).replace(' ', '_')
+        return '_'.join(idarr).replace(' ', '-')
 
     def _generate_sources(self, ontology_source_references):
         """
@@ -2164,7 +2169,7 @@ class StudyDesign(object):
         :return: 
         """
         src_map = dict()
-        for s_arm in self.study_arms:
+        for s_ix, s_arm in enumerate(self.study_arms):
             source_prototype = Source(
                 characteristics=[
                    s_arm.source_type if isinstance(s_arm.source_type, Characteristic) else Characteristic(
@@ -2178,9 +2183,13 @@ class StudyDesign(object):
                 )]
             )
             srcs = set()
-            for subj_n in (str(ix).zfill(3) for ix in range(1, s_arm.group_size + 1)):
+            digits = n_digits(s_arm.group_size)
+            for subj_n in (str(ix).zfill(digits) for ix in range(1, s_arm.group_size + 1)):
                 src = copy.copy(source_prototype)
-                src.name = self._idgen_sources(s_arm.name, subj_n)
+                src.name = self._idgen_sources(
+                    s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix,
+                    subj_n
+                )
                 srcs.add(src)
             src_map[s_arm.name] = list(srcs)
         return src_map
@@ -2205,7 +2214,7 @@ class StudyDesign(object):
             for cell, sample_assay_plan in arm.arm_map.items():
                 if not sample_assay_plan:
                     continue
-                factor_values = []      # TODO
+                factor_values = []      # TODO implement the right list of factor values
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
@@ -2224,7 +2233,6 @@ class StudyDesign(object):
                                     factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
                                 )
                                 sample_batches[sample_node].append(sample)
-                                # sample_batch.append(sample)
                                 sample_count += 1
                                 process = Process(
                                     executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
@@ -2243,40 +2251,11 @@ class StudyDesign(object):
                                 process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
-                # qc_sources_tot = []
-                # qc_samples_tot = []
-                # qc_processes_tot = []
                 for assay_graph in sample_assay_plan.assay_plan:
                     protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
                     if split_assays_by_sample_type is True:
                         for sample_node in sorted(sample_assay_plan.sample_plan, key=lambda st: st.id):
                             if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
-                                """
-                                if assay_graph.quality_control:
-                                    qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, \
-                                        qc_processes = self._generate_quality_control_samples(
-                                            assay_graph.quality_control, cell,
-                                            sampling_protocol=sampling_protocol,
-                                            sample_size=len(sample_batches[sample_node])
-                                        )
-                                    augmented_samples = self._augment_sample_batch_with_qc_samples(
-                                        samples, pre_run_samples=qc_samples_pre_run,
-                                        post_run_samples=qc_samples_post_run,
-                                        interspersed_samples=qc_samples_interspersed
-                                    )
-                                    assays.append(self._generate_assay(assay_graph, augmented_samples, sample_node))
-                                    qc_sources_tot.extend(qc_sources)
-                                    qc_samples_tot.extend(qc_samples_pre_run)
-                                    qc_samples_tot.extend(qc_samples_post_run)
-                                    for qc_samples_int in qc_samples_interspersed.values():
-                                        qc_samples_tot.extend(qc_samples_int)
-                                    qc_processes_tot.extend(qc_processes)
-                                else:
-                                """
-                                """
-                                samp_prs = self._get_sampling_processes_for_sample_batch(
-                                    process_sequence, sample_batches[sample_node]
-                                )"""
                                 assays.append(
                                     self._generate_assay(assay_graph, sample_batches[sample_node], cell.name)
                                 )
@@ -2290,20 +2269,22 @@ class StudyDesign(object):
                         )
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
-    """
     @staticmethod
-    def _get_sampling_processes_for_sample_batch(process_sequence, sample_batch):
-        return {
-            process for process in process_sequence if any(sample in process.outputs for sample in sample_batch)
-        }
-    """
-
-    @staticmethod
-    def _generate_isa_elements_from_node(node, assay_graph, processes=[], other_materials=[], data_files=[],
-                                         previous_items=[], ix=0, jx=0, counter=0):
+    def _generate_isa_elements_from_node(
+            node,
+            assay_graph,
+            assay_file_prefix, # to ensure uniqueness of node names within a study
+            processes=[],
+            other_materials=[],
+            data_files=[],
+            previous_items=[],
+            ix=0,
+            jx=0,
+            counter=0
+    ):
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
         item = isa_objects_factory(
-            node, sequence_no='{0}-{1}'.format(ix, counter),
+            node, sequence_no='{0}-{1}-{2}'.format(assay_file_prefix, ix, counter),
             measurement_type=assay_graph.measurement_type,
             technology_type=assay_graph.technology_type
         )
@@ -2325,8 +2306,8 @@ class StudyDesign(object):
                 counter += 1
                 processes, other_materials, data_files, next_item, counter = \
                     StudyDesign._generate_isa_elements_from_node(
-                        next_node, assay_graph, processes, other_materials, data_files, [item], ix=ix, jx=jx,
-                        counter=counter
+                        next_node, assay_graph, assay_file_prefix, processes, other_materials, data_files,
+                        [item], ix=ix, jx=jx, counter=counter
                 )
                 if isinstance(node, ProtocolNode):
                     item.outputs.append(next_item)
@@ -2356,12 +2337,12 @@ class StudyDesign(object):
             else None
         """
         measurement_type, technology_type = assay_graph.measurement_type, assay_graph.technology_type
+        assay_file_prefix = assay_graph.id if not cell_name else '{}_{}'.format(cell_name, assay_graph.id)
         assay = Assay(
             measurement_type=measurement_type,
             technology_type=technology_type,
-            filename=urlify('a_{0}_{1}_{2}_{3}.txt'.format(
-                cell_name,
-                assay_graph.id,
+            filename=urlify('a_{0}_{1}_{2}.txt'.format(
+                assay_file_prefix,
                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
                 technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type
             ))
@@ -2382,7 +2363,7 @@ class StudyDesign(object):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, ix=ix, jx=0, counter=0, processes=[], other_materials=[], data_files=[],
+                        node, assay_graph, assay_file_prefix, ix=ix, jx=0, counter=0, processes=[], other_materials=[], data_files=[],
                         previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
