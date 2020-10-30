@@ -88,6 +88,8 @@ ORGANISM_PART = 'organism part'
 GROUP_PREFIX = 'GRP'
 SUBJECT_PREFIX = 'SBJ'
 SAMPLE_PREFIX = 'SMP'
+EXTRACT_PREFIX = 'EXTR'
+LABELED_EXTRACT_PREFIX = 'LBLEXTR'
 ASSAY_GRAPH_PREFIX = 'ASSAY'
 
 
@@ -709,7 +711,7 @@ class StudyCellDecoder(object):
             try:
                 cell.insert_element(self.loads_element(element))
             except ValueError as e:
-                print('Element triggers error: {0}'.format(element))
+                log.error('Element triggers error: {0}'.format(element))
                 raise e
         return cell
 
@@ -1556,7 +1558,9 @@ class SampleAndAssayPlan(object):
         for i, assay_plan_dict in enumerate(assay_plan_dicts):
             assay_graph = AssayGraph.generate_assay_plan_from_dict(
                 assay_plan_dict,
-                id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(ASSAY_GRAPH_PREFIX, str(i).zfill(3)),
+                id_=str(uuid.uuid4()) if use_guids else '{0}{1}'.format(
+                    ASSAY_GRAPH_PREFIX, str(i).zfill(n_digits(len(assay_plan_dicts)))
+                ),
                 quality_control=quality_controls[i] if len(quality_controls) > i else None
             )
             res.add_assay_graph_to_plan(assay_graph)
@@ -2156,11 +2160,13 @@ class StudyDesign(object):
             idarr.append('{}'.format(source_name))
         if cell_name != '':
             idarr.append('{}'.format(cell_name))
-        idarr.append('{}'.format(SAMPLE_PREFIX))
+        smparr = []
+        smparr.append('{}'.format(SAMPLE_PREFIX))
         if sample_type != '':
-            idarr.append(sample_type)
+            smparr.append(sample_type)
         if sample_number != '':
-            idarr.append('{}'.format(sample_number))
+            smparr.append('{}'.format(sample_number))
+        idarr.append('-'.join(smparr))
         return '_'.join(idarr).replace(' ', '-')
 
     def _generate_sources(self, ontology_source_references):
@@ -2636,9 +2642,9 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
     log.debug('sequence_no: {0}'.format(sequence_no))
     if isinstance(node, ProtocolNode):
         return Process(
-                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH)),
                 executes_protocol=node,
-                performer=...,
+                performer=...,  # FIXME
                 parameter_values=node.parameter_values,
                 inputs=[],
                 outputs=[],
@@ -2646,17 +2652,17 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
     if isinstance(node, ProductNode):
         if node.type == SAMPLE:
             return Sample(
-                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{0}_{1}'.format(SAMPLE_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         if node.type == EXTRACT:
             return Extract(
-                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{0}_{1}'.format(EXTRACT_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         if node.type == LABELED_EXTRACT:
             return LabeledExtract(
-                name='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{0}_{1}'.format(LABELED_EXTRACT_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
                 characteristics=node.characteristics
             )
         # under the hypothesis that we deal only with raw data files
@@ -2678,7 +2684,9 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
                     measurement_type, technology_type, curr_assay_opt)
                 )
                 isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
-                return isa_class(filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH)))
+                return isa_class(
+                    filename='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH))
+                )
             except StopIteration as e:
                 return RawDataFile(
                     filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH))

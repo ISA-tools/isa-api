@@ -12,12 +12,12 @@ from tests.create_sample_assay_plan_odicts import nmr_assay_dict
 def ordered(o):  # to enable comparison of JSONs with lists using ==
 
     def handle_inner_lists(el):
-        print('el = {}'.format(el))
+        # log.info('el = {}'.format(el))
         if isinstance(el, list):
-            # print('El is list, returning el[0]:{}'.format(el[0]))
+            # log.info('El is list, returning el[0]:{}'.format(el[0]))
             return handle_inner_lists(el[0])
         else:
-            # print('El is not list, returning el: '.format(el))
+            # log.info('El is not list, returning el: '.format(el))
             return el
 
     if isinstance(o, dict):
@@ -26,10 +26,10 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
         if isinstance(o, list):
             return sorted((ordered(x) for x in o if x is not None), key=handle_inner_lists)
     except TypeError as e:
-        print('Object who raised error is {}'.format(o))
-        print('Object which raised error is of type {}'.format(type(o)))
+        log.error('Object who raised error is {}'.format(o))
+        log.error('Object which raised error is of type {}'.format(type(o)))
         for x in o:
-            print('x = {}; type(x) = {}'.format(x, type(x)))
+            log.error('x = {}; type(x) = {}'.format(x, type(x)))
         raise e
     return o
 
