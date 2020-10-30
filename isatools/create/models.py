@@ -106,8 +106,6 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', '
                        'assay-options.yml')) as yaml_file:
     assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-print(assays_opts)
-
 DEFAULT_SOURCE_TYPE = Characteristic(
     category=OntologyAnnotation(
         term='Study Subject',
@@ -678,7 +676,7 @@ class StudyCellDecoder(object):
         return FactorValue(factor_name=study_factor, value=factor_value_dict["value"], unit=unit)
 
     def loads_element(self, element_struct):
-        print(element_struct)
+        log.debug(element_struct)
         if isinstance(element_struct, list):
             # if element_stuct is a list it means that all the element in the list are concomitant
             return {self.loads_element(el_dict) for el_dict in element_struct}
@@ -1147,7 +1145,7 @@ class AssayGraph(object):
             if isinstance(node_params, list):    # the node is a ProductNode
                 for i, node_params_dict in enumerate(node_params):
                     for j, prev_node in enumerate(previous_nodes):
-                        # print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                        # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         product_node = ProductNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                 re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
@@ -1166,11 +1164,11 @@ class AssayGraph(object):
                 except AttributeError as e:
                     raise e
                 node_params = {key: val for key, val in node_params.items() if key != '#replicates'}
-                # print(node_params)
+                # log.debug(node_params)
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for i, pv_combination in enumerate(pv_combinations):
-                    # print('pv_combination: {0}'.format(pv_combination))
+                    # log.debug('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
@@ -1188,7 +1186,7 @@ class AssayGraph(object):
                         current_nodes.append(protocol_node)
                     else:
                         for j, prev_node in enumerate(previous_nodes):
-                            # print('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                            # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
@@ -1326,22 +1324,22 @@ class AssayGraph(object):
         current_nodes = {protocol_node}
         previous_nodes = set()
         while current_nodes:
-            # print('current nodes are: {0}'.format(current_nodes))
+            # log.debug('current nodes are: {0}'.format(current_nodes))
             for node in current_nodes:
                 previous_nodes.update(self.previous_nodes(node))
-                # print('Previous nodes after current node {0} are {1}'.format(node, previous_nodes))
+                # log.debug('Previous nodes after current node {0} are {1}'.format(node, previous_nodes))
             previous_protocol_nodes = list(filter(lambda n: isinstance(n, ProtocolNode), previous_nodes))
-            # print('Previous nodes now are: {0}'.format(previous_nodes))
-            # print('Previous protocol nodes now are: {0}'.format(previous_protocol_nodes))
+            # log.debug('Previous nodes now are: {0}'.format(previous_nodes))
+            # log.debug('Previous protocol nodes now are: {0}'.format(previous_protocol_nodes))
             if previous_protocol_nodes:
-                # print('Returning...')
+                # log.debug('Returning...')
                 return set(previous_protocol_nodes)
             else:
                 current_nodes = previous_nodes
                 previous_nodes = set()
-                # print('Current nodes are now {0}'.format(current_nodes))
-                # print('Previous nodes are now {0}'.format(previous_nodes))
-        # print('Exiting without return...')
+                # log.debug('Current nodes are now {0}'.format(current_nodes))
+                # log.debug('Previous nodes are now {0}'.format(previous_nodes))
+        # log.debug('Exiting without return...')
 
     """
     @property
@@ -1992,15 +1990,15 @@ class StudyArmEncoder(json.JSONEncoder):
             i = 0
             sample_assay_plan_set = set()
             for cell, sample_assay_plan in o.arm_map.items():
-                # print('Now appending cell {0}'.format(cell.name))
+                # log.debug('Now appending cell {0}'.format(cell.name))
                 res['cells'].append(study_cell_encoder.default(cell))
                 if sample_assay_plan is not None and sample_assay_plan not in sample_assay_plan_set:
-                    # print('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
+                    # log.debug('Now appending sample_assay_plan {0}'.format(sample_assay_plan.name))
                     res['sampleAndAssayPlans'].append(sample_assay_plan_encoder.default(sample_assay_plan))
                     sample_assay_plan_set.add(sample_assay_plan)
                 res['mappings'].append([cell.name, sample_assay_plan.name if sample_assay_plan is not None else None])
                 i += 1
-            # print('Mappings: {0}'.format(res['mappings']))
+            # log.debug('Mappings: {0}'.format(res['mappings']))
             return res
 
 
@@ -2027,7 +2025,7 @@ class StudyArmDecoder(object):
             for json_sample_assay_plan in json_dict['sampleAndAssayPlans']
         }
         for i, [cell_name, sample_assay_plan_name] in enumerate(json_dict['mappings']):
-            # print('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
+            # log.debug('i = {0}, mapping = {1}'.format(i, [cell_name, sample_assay_plan_name]))
             json_cell = json_dict['cells'][i]
             if json_cell['name'] != cell_name:
                 raise ValueError()   # FIXME which is the right error type here?
@@ -2395,7 +2393,7 @@ class StudyDesign(object):
         study.protocols = [
             Protocol(**protocol_config) for protocol_config in study_config['protocols']
         ]
-        # print('Sampling protocol is {0}'.format(study.protocols[0]))
+        # log.debug('Sampling protocol is {0}'.format(study.protocols[0]))
         sources_map = self._generate_sources(study.ontology_source_references)
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, protocols, study.samples, study.assays, study.process_sequence, \
@@ -2701,7 +2699,7 @@ class StudyDesignEncoder(json.JSONEncoder):
             study_arms_dict = {
                 arm.name: arm_encoder.default(arm) for arm in obj.study_arms
             }
-            # print(study_arms_dict)
+            # log.debug(study_arms_dict)
             for arm in study_arms_dict.values():
                 arm.pop('name')
             return {
