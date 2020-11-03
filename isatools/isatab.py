@@ -1149,7 +1149,7 @@ def _all_end_to_end_paths(G, start_nodes):
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-    log.info("Found {} paths!".format(len(paths)))
+    # log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
         log.debug([x.name for x in start_nodes])
     return paths
@@ -1327,14 +1327,14 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        log.info("Rendered {} paths".format(len(DF.index)))
+        log.debug("Rendered {} paths".format(len(DF.index)))
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
-            log.info("Dropping duplicates...")
+            log.debug("Dropping duplicates...")
             DF = DF_no_dups
 
-        log.info("Writing {} rows".format(len(DF.index)))
+        log.debug("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
         DF = DF.replace('', np.nan)

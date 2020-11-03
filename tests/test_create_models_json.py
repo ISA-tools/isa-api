@@ -12,12 +12,12 @@ from tests.create_sample_assay_plan_odicts import nmr_assay_dict
 def ordered(o):  # to enable comparison of JSONs with lists using ==
 
     def handle_inner_lists(el):
-        print('el = {}'.format(el))
+        # log.info('el = {}'.format(el))
         if isinstance(el, list):
-            # print('El is list, returning el[0]:{}'.format(el[0]))
+            # log.info('El is list, returning el[0]:{}'.format(el[0]))
             return handle_inner_lists(el[0])
         else:
-            # print('El is not list, returning el: '.format(el))
+            # log.info('El is not list, returning el: '.format(el))
             return el
 
     if isinstance(o, dict):
@@ -26,10 +26,10 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
         if isinstance(o, list):
             return sorted((ordered(x) for x in o if x is not None), key=handle_inner_lists)
     except TypeError as e:
-        print('Object who raised error is {}'.format(o))
-        print('Object which raised error is of type {}'.format(type(o)))
+        log.error('Object who raised error is {}'.format(o))
+        log.error('Object which raised error is of type {}'.format(type(o)))
         for x in o:
-            print('x = {}; type(x) = {}'.format(x, type(x)))
+            log.error('x = {}; type(x) = {}'.format(x, type(x)))
         raise e
     return o
 
@@ -202,37 +202,79 @@ class BaseTestCase(unittest.TestCase):
         self.sample_assay_plan_for_treatments = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
         self.sample_assay_plan_for_washout = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
         self.sample_assay_plan_for_follow_up = SampleAndAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
-        self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.single_treatment_cell_arm_02 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=24, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.test_source_characteristics_00 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.test_source_characteristics_01 = [
+            Characteristic(category='sex', value='F'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.test_source_characteristics_02 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='young')
+        ]
+        self.single_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=10,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.single_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=30,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.single_treatment_cell_arm_02 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_02,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_02,
+            group_size=24,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.multi_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=35,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.multi_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=5,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.mouse_source_type = Characteristic(
             category=OntologyAnnotation(
                 term="Study Subject", term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",

@@ -21,7 +21,7 @@ def read(path):
     cparser = ConfigParser()
     cparser.read(path)
     log_level_ini = cparser.get('Logging', 'LogLevel')
-    print("log_level:", log_level_ini.lower())
+    # print("log_level:", log_level_ini.lower())
     if log_level_ini.lower() == 'warning':
         log_level = logging.WARNING
     elif log_level_ini.lower() == 'debug':

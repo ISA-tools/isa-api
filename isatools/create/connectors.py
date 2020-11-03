@@ -1,4 +1,4 @@
-from isatools.model import OntologyAnnotation, OntologySource, FactorValue
+from isatools.model import OntologyAnnotation, OntologySource, FactorValue, Characteristic
 from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan, \
     SAMPLE, ORGANISM_PART
 from isatools.create.models import SCREEN, BASE_FACTORS, INTERVENTIONS
@@ -196,6 +196,17 @@ def _generate_sample_dict_from_config(datascriptor_sample_type_config, arm_name,
     )
 
 
+def _generate_characteristics_from_observational_factor(observational_factor_dict):
+    category = _map_ontology_annotations(observational_factor_dict['name'], expand_strings=True)
+    value = _map_ontology_annotations(
+        observational_factor_dict['value'], expand_strings=True
+    ) if observational_factor_dict['isQuantitative'] is False else observational_factor_dict['value']
+    unit = _map_ontology_annotations(
+        observational_factor_dict['unit'], expand_strings=True
+    ) if observational_factor_dict['isQuantitative'] is True else None
+    return Characteristic(category=category, value=value, unit=unit)
+
+
 def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epoch_no):
     res = OrderedDict()
     res['name'] = datascriptor_assay_config['name']
@@ -246,15 +257,15 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
     return res
 
 
-def generate_study_design_from_config(datascriptor_study_design_config):
+def generate_study_design_from_config(study_design_config):
     """
-    This function takes a study design configuration as produced from datascriptor
+    This function takes a study design configuration as produced from the Datascriptor application
     and outputs a StudyDesign object
-    :param datascriptor_study_design_config: dict
+    :param study_design_config: dict
     :return: isatools.create.StudyDesign
     """
     arms = []
-    for arm_dict in datascriptor_study_design_config['selectedArms']:
+    for arm_ix, arm_dict in enumerate(study_design_config['selectedArms']):
         arm_map = OrderedDict()
         for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
             element_ids = epoch_dict.get('elements', [])
@@ -262,39 +273,48 @@ def generate_study_design_from_config(datascriptor_study_design_config):
                 _generate_element(element_dict) for element_dict in
                 filter(
                     lambda el: el['id'] in element_ids,
-                    datascriptor_study_design_config['generatedStudyDesign']['elements']
+                    study_design_config['generatedStudyDesign']['elements']
                 )
             ]
-            cell_name = 'CELL_{}_{}'.format(arm_dict['name'], epoch_ix)
+            cell_name = 'A{}E{}'.format(arm_ix, epoch_ix)
             cell = StudyCell(name=cell_name, elements=elements)
             sample_type_dicts = [
                 _generate_sample_dict_from_config(
                     ds_sample_config, arm_dict['name'], epoch_ix
-                ) for ds_sample_config in datascriptor_study_design_config['samplePlan']
+                ) for ds_sample_config in study_design_config['samplePlan']
                 if ds_sample_config['selectedCells'][arm_dict['name']][epoch_ix] and
                 ds_sample_config['sampleTypeSizes'][arm_dict['name']][epoch_ix]
             ]
             assay_ord_dicts = [
                 generate_assay_ord_dict_from_config(
                     ds_assay_config, arm_dict['name'], epoch_ix
-                ) for ds_assay_config in datascriptor_study_design_config['assayConfigs']
-                if datascriptor_study_design_config['selectedAssayTypes'][ds_assay_config['name']]
-                and ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
+                ) for ds_assay_config in study_design_config['assayConfigs']
+                if study_design_config['selectedAssayTypes'][ds_assay_config['name']] and
+                ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
             ]
-            sa_plan_name = 'SA_PLAN_{}_{}'.format(arm_dict['name'], epoch_ix)
+            sa_plan_name = 'SAP_A{}E{}'.format(arm_ix, epoch_ix)
             # TODO this method will probably need some rework to bind a sample type to a specific assay plan
             sa_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
                 sa_plan_name, sample_type_dicts, *assay_ord_dicts
             )
             arm_map[cell] = sa_plan
+
         arm = StudyArm(
             name=arm_dict['name'],
-            source_type=_map_ontology_annotations(arm_dict['subjectType']),
+            # should we generate a Characteristic if subjectType is an OntologyAnnotation?
+            source_type=_map_ontology_annotations(
+                arm_dict.get('subjectType', None) or study_design_config.get('subjectType', None)
+            ),
+            source_characteristics=[
+                _generate_characteristics_from_observational_factor(
+                    obs_factor_dict
+                ) for obs_factor_dict in arm_dict.get('observationalFactors', [])
+            ],
             group_size=arm_dict.get('size', 10),
             arm_map=arm_map
         )
         arms.append(arm)
     return StudyDesign(
-        name=datascriptor_study_design_config['generatedStudyDesign']['type'],
+        name=study_design_config['generatedStudyDesign']['type'],
         study_arms=arms
     )

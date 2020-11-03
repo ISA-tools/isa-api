@@ -28,9 +28,9 @@ TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
 TEST_EPOCH_2_NAME = 'test epoch 2'
 
-TEST_STUDY_ARM_NAME_00 = 'test arm'
-TEST_STUDY_ARM_NAME_01 = 'another arm'
-TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+TEST_STUDY_ARM_NAME_00 = 'test arm 0'
+TEST_STUDY_ARM_NAME_01 = 'another arm 1'
+TEST_STUDY_ARM_NAME_02 = 'yet another arm 2'
 
 TEST_STUDY_DESIGN_NAME = 'test study design'
 
@@ -1322,6 +1322,28 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], 'The source_type property must be either a string or a '
                                                   'Characteristic. 128 was supplied.')
 
+    def test_source_characteristics_success(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.arm.source_characteristics = test_characteristics
+        self.assertEqual(self.arm.source_characteristics, set(test_characteristics))
+
+    def test_source_characteristics_fail(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic'):
+            self.arm.source_characteristics = 'age group - old'
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            'age group - old'
+        ]
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic') as ex_cm:
+            self.arm.source_characteristics = test_characteristics
+
     def test_group_size_property(self):
         self.assertEqual(self.arm.group_size, 10)
         self.arm.group_size = 100
@@ -1332,6 +1354,35 @@ class StudyArmTest(unittest.TestCase):
                                msg='Only positive integers can be assigned to group_size') as ex_cm:
             self.arm.group_size = -5
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
+
+    def test_eq_and_repr_(self):
+        self.arm.source_type = 'human'
+        self.arm.source_characteristics = {
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        }
+        other_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category='sex', value='M'),
+                Characteristic(category='age group', value='old')
+            ]
+        )
+        self.assertEqual(self.arm, other_arm)
+        self.assertEqual(repr(self.arm), repr(other_arm))
+        yet_another_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category=OntologyAnnotation(term='sex'), value='F'),
+                Characteristic(category=OntologyAnnotation(term='age group'), value='young')
+            ]
+        )
+        self.assertNotEqual(self.arm, yet_another_arm)
+        self.assertNotEqual(repr(self.arm), repr(yet_another_arm))
 
     def test_arm_map_property_success_00(self):
         self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan '
@@ -1396,6 +1447,14 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(self.arm.treatments, {
             self.first_treatment, self.second_treatment, self.fourth_treatment, self.third_treatment
         })
+
+    def test_numeric_id_property(self):
+        arm = StudyArm(name='Arm_0', group_size=10)
+        self.assertEqual(arm.numeric_id, 0)
+        arm = StudyArm(name='Arm_14', group_size=10)
+        self.assertEqual(arm.numeric_id, 14)
+        arm = StudyArm(name='Arm_no_number', group_size=10)
+        self.assertEqual(arm.numeric_id, -1)
 
 
 class BaseStudyDesignTest(unittest.TestCase):
@@ -1616,8 +1675,9 @@ class StudyDesignTest(BaseStudyDesignTest):
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
+        prefix = 'assay-table-prefix'
         processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
-            node, assay_graph
+            node, assay_graph, prefix
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
@@ -1856,7 +1916,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(study_with_qc, Study)
         self.assertIsNot(study_no_qc, study_with_qc)
         sample_names = [sample.name for sample in study_with_qc.samples]
-        log.info('Sample name occurrences: {}'.format(
+        log.debug('Sample name occurrences: {}'.format(
             json.dumps(Counter(sample_names), sort_keys=True, indent=2)
         ))
         self.assertEqual(len(sample_names), len(set(sample_names))) # all sample names are unique
