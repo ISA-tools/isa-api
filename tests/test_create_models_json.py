@@ -2,22 +2,59 @@
 import json
 import os
 import unittest
-from io import StringIO
+import logging
+from collections import OrderedDict
 
-from isatools.create.models import *
-from isatools.tests import utils
+from isatools.model import (
+    OntologyAnnotation,
+    StudyFactor,
+    FactorValue,
+    Characteristic,
+    ProtocolParameter,
+    ParameterValue,
+    OntologySource
+)
+from isatools.create.models import (
+    NonTreatment,
+    Treatment,
+    StudyCell,
+    ProductNode,
+    ProtocolNode,
+    AssayGraph,
+    SampleAndAssayPlan,
+    StudyArm,
+    StudyDesign,
+    OntologyAnnotationEncoder,
+    CharacteristicEncoder,
+    CharacteristicDecoder,
+    StudyCellEncoder,
+    StudyCellDecoder,
+    SampleAndAssayPlanEncoder,
+    SampleAndAssayPlanDecoder,
+    StudyArmEncoder,
+    StudyArmDecoder,
+    StudyDesignEncoder,
+    StudyDesignDecoder
+)
+from isatools.create.constants import (
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, INTERVENTIONS, BASE_FACTORS, SAMPLE, EXTRACT,
+    default_ontology_source_reference, DEFAULT_SOURCE_TYPE
+)
 from tests.create_sample_assay_plan_odicts import nmr_assay_dict
+
+log = logging.getLogger('isatools')
+log.setLevel(logging.INFO)
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
 
     def handle_inner_lists(el):
-        # log.info('el = {}'.format(el))
+        log.debug('el = {}'.format(el))
         if isinstance(el, list):
-            # log.info('El is list, returning el[0]:{}'.format(el[0]))
+            log.debug('El is list, returning el[0]:{}'.format(el[0]))
             return handle_inner_lists(el[0])
         else:
-            # log.info('El is not list, returning el: '.format(el))
+            log.debug('El is not list, returning el: '.format(el))
             return el
 
     if isinstance(o, dict):
@@ -448,10 +485,6 @@ class StudyCellDecoderTest(BaseTestCase):
                                'single-treatment-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
-        # print(self.cell_single_treatment)
-        # print('\n')
-        # print(actual_cell)
-        # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
         self.assertEqual(self.cell_single_treatment_00, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
@@ -530,14 +563,6 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
-        """
-        print("Expected Assay Plan:")
-        for graph in self.plan.assay_plan:
-            print(graph)
-        print("\nActual Assay Plan:")
-        for graph in actual_plan.assay_plan:
-            print(graph)
-        """
         self.assertEqual(self.plan.sample_plan, actual_plan.sample_plan)
         unmatched_expected = self.plan.assay_plan - actual_plan.assay_plan
         unmatched_actual = actual_plan.assay_plan - self.plan.assay_plan
@@ -698,13 +723,6 @@ class StudyDesignDecoderTest(BaseTestCase):
                                'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)
-        # print("\nExpected:\n")
-        # print(self.three_arm_study_design)
-        # print("\nActual:\n")
-        # print(actual_study_design)
-        # print("\nDifference:\n")
-        import difflib
-        # difflib.ndiff(repr(self.three_arm_study_design), repr(actual_study_design))
         self.assertEqual(self.three_arm_study_design.name, actual_study_design.name)
         """
         for i, arm in enumerate(self.three_arm_study_design.study_arms):

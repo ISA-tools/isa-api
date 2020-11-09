@@ -16,14 +16,15 @@ from isatools.model import (
     Characteristic,
     OntologyAnnotation
 )
-
+from isatools.model import (
+    Study,
+    Investigation
+)
 from isatools.create.models import (
     StudyDesign,
     StudyArm,
     StudyCell,
     SampleAndAssayPlan,
-    Study,
-    Investigation,
     AssayGraph
 )
 from isatools.isajson import ISAJSONEncoder

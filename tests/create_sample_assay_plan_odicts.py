@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from isatools.create.models import SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE, ORGANISM_PART
+from isatools.create.constants import SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE, ORGANISM_PART
 from isatools.model import OntologyAnnotation
 
 sample_list = [

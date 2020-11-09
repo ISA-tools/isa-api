@@ -7,127 +7,53 @@ import datetime
 import itertools
 import json
 import re
-from collections import OrderedDict
+from collections import OrderedDict, Iterable
 from copy import deepcopy
 import copy
-from isatools.model import *
-from isatools.utils import urlify, n_digits
+import logging
+from numbers import Number
 from abc import ABC
 from math import factorial
 import os
 import yaml
 import uuid
 import networkx as nx
+from isatools.create import errors
+from isatools.create.constants import (
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
+    BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
+    EXTRACT_PREFIX, LABELED_EXTRACT_PREFIX, ASSAY_GRAPH_PREFIX, RUN_ORDER, STUDY_CELL, assays_opts,
+    DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
+    QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH
+)
+from isatools.model import (
+    StudyFactor,
+    FactorValue,
+    OntologyAnnotation,
+    OntologySource,
+    Characteristic,
+    Study,
+    Sample,
+    Assay,
+    Protocol,
+    Process,
+    ProtocolParameter,
+    ParameterValue,
+    Source,
+    Material,
+    DataFile,
+    RawDataFile,
+    RawSpectralDataFile,  # this is required for the module to work
+    Extract,
+    LabeledExtract,
+    plink
+)
+from isatools.utils import urlify, n_digits
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
 
 __author__ = 'massi'
-
-# NON TREATMENT TYPES
-SCREEN = 'screen'
-RUN_IN = 'run in'
-WASHOUT = 'washout'
-FOLLOW_UP = 'follow-up'
-
-ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)
-
-INTERVENTIONS = dict(CHEMICAL='chemical intervention',
-                     BEHAVIOURAL='behavioural intervention',
-                     SURGICAL='surgical intervention',
-                     BIOLOGICAL='biological intervention',
-                     RADIOLOGICAL='radiological intervention',
-                     DIETARY='dietary intervention',
-                     UNSPECIFIED='unspecified intervention')
-
-FACTOR_TYPES = dict(AGENT_VALUES='agent values',
-                    INTENSITY_VALUES='intensity values',
-                    DURATION_VALUES='duration values')
-
-DURATION_FACTOR_ = dict(name='DURATION', type=OntologyAnnotation(term="time"),
-                        display_singular='DURATION VALUE',
-                        display_plural='DURATION VALUES', values=set())
-
-DURATION_FACTOR = StudyFactor(name=DURATION_FACTOR_['name'], factor_type=DURATION_FACTOR_.get('type', None))
-
-BASE_FACTORS_ = (
-    dict(
-        name='AGENT', type=OntologyAnnotation(term="perturbation agent"),
-        display_singular='AGENT VALUE',
-        display_plural='AGENT VALUES', values=set()
-    ),
-    dict(
-        name='INTENSITY', type=OntologyAnnotation(term="intensity"),
-        display_singular='INTENSITY VALUE',
-        display_plural='INTENSITY VALUES', values=set()
-    ),
-    DURATION_FACTOR_
-)
-
-BASE_FACTORS = (
-    StudyFactor(name=BASE_FACTORS_[0]['name'],
-                factor_type=BASE_FACTORS_[0].get('type', None)),
-    StudyFactor(name=BASE_FACTORS_[1]['name'],
-                factor_type=BASE_FACTORS_[1].get('type', None)),
-    DURATION_FACTOR,
-)
-
-DEFAULT_SAMPLE_ASSAY_PLAN_NAME = 'SAMPLE ASSAY PLAN'
-
-# Allowed types of product nodes in ISA create mode
-SOURCE = 'source'
-SAMPLE = 'sample'
-EXTRACT = 'extract'
-LABELED_EXTRACT = 'labeled extract'
-DATA_FILE = 'data file'
-
-# sample organism part category
-ORGANISM_PART = 'organism part'
-
-# constant for naming Groups, Subjects, Samples, AssayGraphs
-GROUP_PREFIX = 'GRP'
-SUBJECT_PREFIX = 'SBJ'
-SAMPLE_PREFIX = 'SMP'
-EXTRACT_PREFIX = 'EXTR'
-LABELED_EXTRACT_PREFIX = 'LBLEXTR'
-ASSAY_GRAPH_PREFIX = 'ASSAY'
-
-
-# constants specific to the sampling plan in the study generation from the study design
-RUN_ORDER = 'run order'
-STUDY_CELL = 'study cell'
-
-with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                       'study-creator-config.yaml')) as yaml_file:
-    yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
-default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
-
-with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                       'assay-options.yml')) as yaml_file:
-    assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
-
-DEFAULT_SOURCE_TYPE = Characteristic(
-    category=OntologyAnnotation(
-        term='Study Subject',
-        term_source=default_ontology_source_reference,
-        term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
-    ),
-    value=OntologyAnnotation(
-        term='Human',
-        term_source=default_ontology_source_reference,
-        term_accession='http://purl.obolibrary.org/obo/NCIT_C14225'
-    )
-)
-
-ZFILL_WIDTH = 3
-
-# CONSTANTS/PARAMS FOR QUALITY CONTROL
-SOURCE_QC_SOURCE_NAME = 'source_QC'
-QC_SAMPLE_NAME = 'sample_QC'
-
-QC_SAMPLE_TYPE_PRE_RUN = 'QC sample type pre-run'
-QC_SAMPLE_TYPE_POST_RUN = 'QC sample type post-run'
-QC_SAMPLE_TYPE_INTERSPERSED = 'QC sample type interspersed'
 
 
 def intersperse(lst, item):
@@ -263,9 +189,10 @@ class Treatment(Element):
         :param factor_values: set of isatools.model.v1.FactorValue
         """
         super(Treatment, self).__init__()
-        if element_type not in INTERVENTIONS.values():
-            raise ValueError('invalid treatment type provided: ')
-
+        if not isinstance(element_type, (str, OntologyAnnotation)):
+            raise ValueError('intervention_type must be string or OntologyAnnotation. {} was provided.'.format(
+                element_type
+            ))
         self.__type = element_type
 
         if factor_values is None:
@@ -746,12 +673,6 @@ class ProtocolNode(SequenceNode, Protocol):
     It represents a node in the AssayGraph which is a to create a Protocol
     """
 
-    PARAMETER_VALUES_ERROR = 'The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue ' \
-                             'objects. {0} was supplied.'
-    REPLICATES_ERROR = 'Replicates must be a positive integer. {0} was supplied.'
-    PARAMETERS_CANNOT_BE_SET_ERROR = 'The \'parameters\' property cannot be set directly. Set parameter_values instead.'
-    COMPONENTS_CANNOT_BE_SET_ERROR = 'The \'components\' property cannot be set.'
-
     def __init__(self, id_=str(uuid.uuid4()), name='', protocol_type=None, uri='',
                  description='', version='', parameter_values=None, replicates=None):
         """
@@ -784,7 +705,7 @@ class ProtocolNode(SequenceNode, Protocol):
     def parameter_values(self, parameter_values):
         if not isinstance(parameter_values, Iterable) or \
                 not all(isinstance(parameter_value, ParameterValue) for parameter_value in parameter_values):
-            raise AttributeError(self.PARAMETER_VALUES_ERROR.format(parameter_values))
+            raise AttributeError(errors.PARAMETER_VALUES_ERROR.format(parameter_values))
         self.__parameter_values = list(parameter_values)
 
     def add_parameter_value(self, protocol_parameter, value, unit=None):
@@ -800,7 +721,7 @@ class ProtocolNode(SequenceNode, Protocol):
     @replicates.setter
     def replicates(self, replicates):
         if not isinstance(replicates, int) or replicates < 1:
-            raise AttributeError(self.REPLICATES_ERROR.format(replicates))
+            raise AttributeError(errors.REPLICATES_ERROR.format(replicates))
         self.__replicates = replicates
 
     @property
@@ -809,7 +730,7 @@ class ProtocolNode(SequenceNode, Protocol):
 
     @parameters.setter
     def parameters(self, parameters):
-        raise AttributeError(self.PARAMETERS_CANNOT_BE_SET_ERROR)
+        raise AttributeError(errors.PARAMETERS_CANNOT_BE_SET_ERROR)
 
     @property
     def components(self):
@@ -817,7 +738,7 @@ class ProtocolNode(SequenceNode, Protocol):
 
     @components.setter
     def components(self, components):
-        raise AttributeError(self.COMPONENTS_CANNOT_BE_SET_ERROR)
+        raise AttributeError(errors.COMPONENTS_CANNOT_BE_SET_ERROR)
 
     def __repr__(self):
         return '{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, ' \
@@ -855,12 +776,7 @@ class ProductNode(SequenceNode):
     A ProductNode caputres information about the inputs or outputs of a process.
     It can contain info about a source, a sample (or its derivatives), or a data file
     """
-
     ALLOWED_TYPES = {SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE}
-    NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed values: {0}'
-    NAME_ERROR = 'ProductNode name must be a string, {0} supplied of type {1}'
-    SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
-    CHARACTERISTIC_TYPE_ERROR = 'A characteristic must be either a string or a Characteristic, {0} supplied'
 
     def __init__(self, id_=str(uuid.uuid4()), node_type=SOURCE, name='', characteristics=[], size=0):
         super().__init__()
@@ -910,7 +826,7 @@ class ProductNode(SequenceNode):
     @type.setter
     def type(self, node_type):
         if node_type not in self.ALLOWED_TYPES:
-            raise AttributeError(self.NOT_ALLOWED_TYPE_ERROR.format(self.ALLOWED_TYPES))
+            raise AttributeError(errors.NOT_ALLOWED_TYPE_ERROR.format(self.ALLOWED_TYPES))
         self.__type = node_type
 
     @property
@@ -920,7 +836,7 @@ class ProductNode(SequenceNode):
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            raise AttributeError(self.NAME_ERROR.format(name, type(name)))
+            raise AttributeError(errors.NAME_ERROR.format(name, type(name)))
         self.__name = name
 
     @property
@@ -938,7 +854,7 @@ class ProductNode(SequenceNode):
 
     def add_characteristic(self, characteristic):
         if not isinstance(characteristic, (str, Characteristic)):
-            raise TypeError(self.CHARACTERISTIC_TYPE_ERROR.format(type(characteristic)))
+            raise TypeError(errors.CHARACTERISTIC_TYPE_ERROR.format(type(characteristic)))
         if isinstance(characteristic, Characteristic):
             self.__characteristics.append(characteristic)
         if isinstance(characteristic, str):
@@ -951,7 +867,7 @@ class ProductNode(SequenceNode):
     @size.setter
     def size(self, size):
         if not isinstance(size, int) or size < 0:
-            raise AttributeError(self.SIZE_ERROR)
+            raise AttributeError(errors.SIZE_ERROR)
         self.__size = size
 
 
@@ -962,7 +878,6 @@ class QualityControlSource(Source):
 class QualityControlSample(Sample):
 
     ALLOWED_QC_SAMPLE_TYPES = [QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, QC_SAMPLE_TYPE_POST_RUN]
-    QC_SAMPLE_TYPE_ERROR = 'qc_sample_type must be one of {0}'.format(ALLOWED_QC_SAMPLE_TYPES)
 
     def __init__(self, **kwargs):
         log.debug('KWARGS are: {0}'.format(kwargs))
@@ -980,7 +895,7 @@ class QualityControlSample(Sample):
     @qc_sample_type.setter
     def qc_sample_type(self, qc_sample_type):
         if qc_sample_type not in self.ALLOWED_QC_SAMPLE_TYPES:
-            raise AttributeError(self.QC_SAMPLE_TYPE_ERROR)
+            raise AttributeError(errors.QC_SAMPLE_TYPE_ERROR.format(self.ALLOWED_QC_SAMPLE_TYPES))
         self.__qc_sample_type = qc_sample_type
 
 
@@ -988,12 +903,6 @@ class QualityControl(object):
     """
     This class captures information about a Quality Control Check. It comes attached to an Assay Graph object
     """
-
-    PRE_BATCH_ATTRIBUTE_ERROR = 'Pre-batch must be an instance of ProductNode'
-    POST_BATCH_ATTRIBUTE_ERROR = 'Post-batch must be an instance of ProductNode'
-    INTERSPERSED_SAMPLE_TYPE_NODE_ERROR = 'Interspersed sample type must be an instance of ProductNode'
-    INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR = 'Sample type interval must be a positive integer'
-    INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR = 'Sample type interval must be a positive integer'
 
     def __init__(self, pre_run_sample_type=None, post_run_sample_type=None, interspersed_sample_type=None):
         self.__pre_run_sample_type = None
@@ -1042,7 +951,7 @@ class QualityControl(object):
     @pre_run_sample_type.setter
     def pre_run_sample_type(self, pre_run_sample_type):
         if not isinstance(pre_run_sample_type, ProductNode):
-            raise AttributeError(self.PRE_BATCH_ATTRIBUTE_ERROR)
+            raise AttributeError(errors.PRE_BATCH_ATTRIBUTE_ERROR)
         self.__pre_run_sample_type = pre_run_sample_type
 
     @property
@@ -1052,7 +961,7 @@ class QualityControl(object):
     @post_run_sample_type.setter
     def post_run_sample_type(self, post_run_sample_type):
         if not isinstance(post_run_sample_type, ProductNode):
-            raise AttributeError(self.POST_BATCH_ATTRIBUTE_ERROR)
+            raise AttributeError(errors.POST_BATCH_ATTRIBUTE_ERROR)
         self.__post_run_sample_type = post_run_sample_type
 
     @property
@@ -1069,11 +978,11 @@ class QualityControl(object):
 
     def add_interspersed_sample_type(self, sample_type, interspersing_interval=10):
         if not isinstance(sample_type, ProductNode):
-            raise TypeError(self.INTERSPERSED_SAMPLE_TYPE_NODE_ERROR)
+            raise TypeError(errors.INTERSPERSED_SAMPLE_TYPE_NODE_ERROR)
         if not isinstance(interspersing_interval, int):
-            raise TypeError(self.INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR)
+            raise TypeError(errors.INTERSPERSED_SAMPLE_TYPE_INTERVAL_TYPE_ERROR)
         if interspersing_interval < 1:
-            raise ValueError(self.INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR)
+            raise ValueError(errors.INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR)
         self.__interspersed_sample_types.append((sample_type, interspersing_interval))
 
 
@@ -1084,17 +993,6 @@ class AssayGraph(object):
     This information is stored in a graph (a directed tree, more correctly) of ProductNodes and
     ProcessNodes. Each ProcessNode has ProductNodes as outputs and potentially as inputs.
     """
-
-    INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
-    INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
-                         "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
-    INVALID_MEASUREMENT_TYPE_ERROR = '{0} is an invalid value for measurement_type. ' \
-                                     'Please provide an OntologyAnnotation or string.'
-    INVALID_TECHNOLOGY_TYPE_ERROR = '{0} is an invalid value for technology_type. ' \
-                                    'Please provide an OntologyAnnotation or string.'
-    MISSING_NODE_ERROR = "Start or target node have not been added to the AssayGraph yet"
-    NODE_ALREADY_PRESENT = "The node {0.id} is already present in the AssayGraph"
-    QUALITY_CONTROL_ERROR = "The 'quality_control' must be a valid QualityControl object. {0} was supplied instead."
 
     def __init__(self, measurement_type, technology_type, id_=str(uuid.uuid4()), nodes=None, links=None,
                  quality_control=None):
@@ -1219,7 +1117,7 @@ class AssayGraph(object):
     @measurement_type.setter
     def measurement_type(self, measurement_type):
         if not isinstance(measurement_type, OntologyAnnotation) and not isinstance(measurement_type, str):
-            raise AttributeError(self.INVALID_MEASUREMENT_TYPE_ERROR.format(measurement_type))
+            raise AttributeError(errors.INVALID_MEASUREMENT_TYPE_ERROR.format(measurement_type))
         self.__measurement_type = measurement_type
 
     @property
@@ -1229,7 +1127,7 @@ class AssayGraph(object):
     @technology_type.setter
     def technology_type(self, technology_type):
         if not isinstance(technology_type, OntologyAnnotation) and not isinstance(technology_type, str):
-            raise AttributeError(self.INVALID_TECHNOLOGY_TYPE_ERROR.format(technology_type))
+            raise AttributeError(errors.INVALID_TECHNOLOGY_TYPE_ERROR.format(technology_type))
         self.__technology_type = technology_type
 
     """
@@ -1256,9 +1154,9 @@ class AssayGraph(object):
 
     def add_node(self, node):
         if not isinstance(node, SequenceNode):
-            raise TypeError(self.INVALID_NODE_ERROR.format(type(node)))
+            raise TypeError(errors.INVALID_NODE_ERROR.format(type(node)))
         if node in self.__graph_dict.keys():
-            raise ValueError(self.NODE_ALREADY_PRESENT.format(node))
+            raise ValueError(errors.NODE_ALREADY_PRESENT.format(node))
         self.__graph_dict[node] = []
 
     def add_nodes(self, nodes):
@@ -1277,9 +1175,9 @@ class AssayGraph(object):
     def add_link(self, start_node, target_node):
         if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
                 not (isinstance(start_node, ProtocolNode) and isinstance(target_node, ProductNode)):
-            raise TypeError(self.INVALID_LINK_ERROR)
+            raise TypeError(errors.INVALID_LINK_ERROR)
         if start_node not in self.__graph_dict.keys() or target_node not in self.__graph_dict.keys():
-            raise ValueError(self.MISSING_NODE_ERROR)
+            raise ValueError(errors.MISSING_NODE_ERROR)
         self.__graph_dict[start_node].append(target_node)
 
     def add_links(self, links):
@@ -1298,16 +1196,16 @@ class AssayGraph(object):
 
     def next_nodes(self, node):
         if not isinstance(node, SequenceNode):
-            raise TypeError(self.INVALID_NODE_ERROR)
+            raise TypeError(errors.INVALID_NODE_ERROR)
         if node not in self.__graph_dict:
-            raise ValueError(self.MISSING_NODE_ERROR)
+            raise ValueError(errors.MISSING_NODE_ERROR)
         return set(self.__graph_dict[node])
 
     def previous_nodes(self, node):
         if not isinstance(node, SequenceNode):
-            raise TypeError(self.INVALID_NODE_ERROR)
+            raise TypeError(errors.INVALID_NODE_ERROR)
         if node not in self.__graph_dict:
-            raise ValueError(self.MISSING_NODE_ERROR)
+            raise ValueError(errors.MISSING_NODE_ERROR)
         return {n for n in self.__graph_dict if node in self.__graph_dict[n]}
 
     def previous_protocol_nodes(self, protocol_node):
@@ -1319,7 +1217,7 @@ class AssayGraph(object):
         :return:
         """
         if not isinstance(protocol_node, ProtocolNode):
-            raise TypeError(self.INVALID_NODE_ERROR)
+            raise TypeError(errors.INVALID_NODE_ERROR)
         # previous_protocol_nodes = set()
         current_nodes = {protocol_node}
         previous_nodes = set()
@@ -1358,12 +1256,12 @@ class AssayGraph(object):
     @quality_control.setter
     def quality_control(self, quality_control):
         if not isinstance(quality_control, QualityControl):
-            raise AttributeError(self.QUALITY_CONTROL_ERROR.format(type(quality_control)))
+            raise AttributeError(errors.QUALITY_CONTROL_ERROR.format(type(quality_control)))
         self.__quality_control = quality_control
 
     def find_paths(self, start_node, end_node, path=[]):
         if start_node not in self.nodes or end_node not in self.nodes:
-            raise ValueError(self.MISSING_NODE_ERROR)
+            raise ValueError(errors.MISSING_NODE_ERROR)
         path += [start_node]
         if start_node == end_node:
             return [path]
@@ -1432,10 +1330,6 @@ def get_full_class_name(instance):
 
 class SampleAndAssayPlan(object):
 
-    NAME_ERROR = 'The attribute \'name\' must be a string. {0} provided'
-    MISSING_SAMPLE_IN_PLAN = 'ProductNode is missing from the sample_plan'
-    MISSING_ASSAY_IN_PLAN = 'AsssayGraph is missing from the assay_plan'
-
     """
     A SampleAndAssayPlan contains metadata about both the sample and assay plan to be applied to a specific
     StudyCell.
@@ -1468,7 +1362,7 @@ class SampleAndAssayPlan(object):
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            raise AttributeError(self.NAME_ERROR.format(name))
+            raise AttributeError(errors.ASSAY_PLAN_NAME_ERROR.format(name))
         self.__name = name
 
     @property
@@ -1519,9 +1413,9 @@ class SampleAndAssayPlan(object):
 
     def add_element_to_map(self, sample_node, assay_graph):
         if sample_node not in self.sample_plan:
-            raise ValueError(self.MISSING_SAMPLE_IN_PLAN)
+            raise ValueError(errors.MISSING_SAMPLE_IN_PLAN)
         if assay_graph not in self.assay_plan:
-            raise ValueError(self.MISSING_ASSAY_IN_PLAN)
+            raise ValueError(errors.MISSING_ASSAY_IN_PLAN)
         if sample_node in self.__sample_to_assay_map:
             self.__sample_to_assay_map[sample_node].add(assay_graph)
         else:
@@ -1744,16 +1638,6 @@ class StudyArm(object):
     We call this mapping arm_map
     """
 
-    SCREEN_ERROR_MESSAGE = 'A SCREEN cell can only be inserted into an empty arm_map.'
-    RUN_IN_ERROR_MESSAGE = 'A RUN-IN cell can only be inserted into an arm_map containing a SCREEN.'
-    WASHOUT_ERROR_MESSAGE = 'A WASHOUT cell cannot be put next to a cell ending with a WASHOUT.'
-    COMPLETE_ARM_ERROR_MESSAGE = 'StudyArm complete. No more cells can be added after a FOLLOW-UP cell.'
-    FOLLOW_UP_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be put next to a SCREEN or a RUN-IN cell.'
-    FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE = 'A FOLLOW-UP cell cannot be put into an empty StudyArm.'
-
-    ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
-    SOURCE_TYPE_ERROR = 'The source_type property must be either a string or a Characteristic. {0} was supplied.'
-
     DEFAULT_SOURCE_TYPE = DEFAULT_SOURCE_TYPE
 
     def __init__(
@@ -1851,7 +1735,7 @@ class StudyArm(object):
     @source_type.setter
     def source_type(self, source_type):
         if not isinstance(source_type, (str, Characteristic)):
-            raise AttributeError(self.SOURCE_TYPE_ERROR.format(source_type))
+            raise AttributeError(errors.SOURCE_TYPE_ERROR.format(source_type))
         self.__source_type = source_type
 
     @property
@@ -1885,7 +1769,7 @@ class StudyArm(object):
     @arm_map.setter
     def arm_map(self, arm_map):
         if not isinstance(arm_map, OrderedDict):
-            raise AttributeError(self.ARM_MAP_ASSIGNMENT_ERROR)
+            raise AttributeError(errors.ARM_MAP_ASSIGNMENT_ERROR)
         self.__arm_map.clear()
         try:
             for cell, sample_assay_plan in arm_map.items():
@@ -1937,30 +1821,30 @@ class StudyArm(object):
         if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAndAssayPlan):
             raise TypeError('{0} is not a SampleAndAssayPlans object'.format(sample_assay_plan))
         if self.is_completed():
-            raise ValueError(self.COMPLETE_ARM_ERROR_MESSAGE)
+            raise ValueError(errors.COMPLETE_ARM_ERROR_MESSAGE)
         if cell.contains_non_treatment_element_by_type(SCREEN):
             if len(self.arm_map.keys()):
-                raise ValueError(self.SCREEN_ERROR_MESSAGE)
+                raise ValueError(errors.SCREEN_ERROR_MESSAGE)
             self.__arm_map[cell] = sample_assay_plan
         elif cell.contains_non_treatment_element_by_type(RUN_IN):
             previous_cells = list(self.arm_map.keys())
             if len(previous_cells) == 1 and previous_cells[0].contains_non_treatment_element_by_type(SCREEN):
                 self.__arm_map[cell] = sample_assay_plan
             else:
-                raise ValueError(self.RUN_IN_ERROR_MESSAGE)
+                raise ValueError(errors.RUN_IN_ERROR_MESSAGE)
         elif cell.contains_non_treatment_element_by_type(WASHOUT) and cell.get_all_elements()[0].type == WASHOUT:
             latest_cell = list(self.arm_map.keys())[-1]
             latest_element = latest_cell.get_all_elements()[-1]
             if isinstance(latest_element, NonTreatment):
-                raise ValueError(self.WASHOUT_ERROR_MESSAGE)
+                raise ValueError(errors.WASHOUT_ERROR_MESSAGE)
         elif cell.contains_non_treatment_element_by_type(FOLLOW_UP):
             previous_cells = list(self.arm_map.keys())
             if not len(previous_cells):
-                raise ValueError(self.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
+                raise ValueError(errors.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
             latest_cell = list(self.arm_map.keys())[-1]
             if latest_cell.contains_non_treatment_element_by_type(SCREEN) or \
                     latest_cell.contains_non_treatment_element_by_type(RUN_IN):
-                raise ValueError(self.FOLLOW_UP_ERROR_MESSAGE)
+                raise ValueError(errors.FOLLOW_UP_ERROR_MESSAGE)
         self.__arm_map[cell] = sample_assay_plan
 
     @property
@@ -2049,12 +1933,6 @@ class StudyDesign(object):
     StudyArms of different lengths (i.e. different number of cells) are allowed.
     """
 
-    NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
-    STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
-    ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
-    ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
-    GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the bounds of the StudyDesign.'
-
     def __init__(self, name='Study Design', source_type=DEFAULT_SOURCE_TYPE, study_arms=None):
         """
         
@@ -2075,7 +1953,7 @@ class StudyDesign(object):
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            raise AttributeError(self.NAME_PROPERTY_ASSIGNMENT_ERROR)
+            raise AttributeError(errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
         self.__name = name
 
     @property
@@ -2095,7 +1973,7 @@ class StudyDesign(object):
     @study_arms.setter
     def study_arms(self, study_arms):
         if not isinstance(study_arms, Iterable):
-            raise AttributeError(self.STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR)
+            raise AttributeError(errors.STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR)
         try:
             for arm in study_arms:
                 self.add_study_arm(arm)
@@ -2109,9 +1987,9 @@ class StudyDesign(object):
         :param study_arm: StudyArm
         """
         if not isinstance(study_arm, StudyArm):
-            raise TypeError('{0}: {1}'.format(self.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, study_arm))
+            raise TypeError('{0}: {1}'.format(errors.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, study_arm))
         if any({arm for arm in self.study_arms if arm.name == study_arm.name}):
-            raise ValueError('{0}'.format(self.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR))
+            raise ValueError('{0}'.format(errors.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR))
         self.__study_arms.add(study_arm)
 
     @property
@@ -2126,7 +2004,7 @@ class StudyDesign(object):
         """
         epoch_cells = [arm.cells[index] if len(arm.cells) > index else None for arm in self.study_arms]
         if all([cell is None for cell in epoch_cells]):
-            raise IndexError(self.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
+            raise IndexError(errors.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
         return epoch_cells
 
     @staticmethod
@@ -2367,8 +2245,8 @@ class StudyDesign(object):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, assay_file_prefix, ix=ix, jx=0, counter=0, processes=[], other_materials=[], data_files=[],
-                        previous_items=[sample]
+                        node, assay_graph, assay_file_prefix, ix=ix, jx=0, counter=0, processes=[], other_materials=[],
+                        data_files=[], previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
@@ -2788,24 +2666,18 @@ class StudyDesignFactory(object):
       A factory class to build a set of study arms.
     """
 
-    TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
-                          'with (Treatment, StudyAssayPlan) pairs.'
-    GROUP_SIZES_ERROR = 'no group sizes have been provided. Group size(s) must be provided either as an integer or as' \
-                        'a tuple or list of integers'
-    GROUP_SIZE_ERROR = 'no group_size have been provided. Group size must be provided as an integer.'
-
     @staticmethod
     def _validate_maps(treatments_map, screen_map=None, run_in_map=None, washout_map=None, follow_up_map=None):
         """Validates Treatment and NonTreatment maps"""
         # TODO allow concomitant treatments as first element in a treatment map???
         if not isinstance(treatments_map, list):
             if not all(isinstance(el, tuple) for el in treatments_map):
-                raise TypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+                raise TypeError(errors.TREATMENT_MAP_ERROR)
         treatments, sample_plans = zip(*treatments_map)
         if not all(isinstance(treatment, Treatment) for treatment in treatments):
-            raise TypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+            raise TypeError(errors.TREATMENT_MAP_ERROR)
         if not all(isinstance(sample_plan, SampleAndAssayPlan) for sample_plan in sample_plans):
-            raise TypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+            raise TypeError(errors.TREATMENT_MAP_ERROR)
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (washout_map, WASHOUT),
                                 (follow_up_map, FOLLOW_UP)]:
             if nt_map is None:
@@ -2822,9 +2694,9 @@ class StudyDesignFactory(object):
         # TODO allow concomitant treatments as first element in a treatment map???
         if not isinstance(treatments, (list, tuple)) or \
                 not all(isinstance(treatment, Treatment) for treatment in treatments):
-            raise TypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+            raise TypeError(errors.TREATMENT_MAP_ERROR)
         if not isinstance(sample_assay_plan, SampleAndAssayPlan):
-            raise TypeError(StudyDesignFactory.TREATMENT_MAP_ERROR)
+            raise TypeError(errors.TREATMENT_MAP_ERROR)
         if washout and (not isinstance(washout, NonTreatment) or not washout.type == WASHOUT):
             raise TypeError('{0} is not a valid NonTreatment of type WASHOUT'.format(washout))
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (follow_up_map, FOLLOW_UP)]:
@@ -2862,7 +2734,7 @@ class StudyDesignFactory(object):
         if not isinstance(group_sizes, int):
             if not all(isinstance(el, int) for el in group_sizes) or \
                     not len(group_sizes) == factorial(len(treatments_map)):
-                raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+                raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps(treatments_map, screen_map, run_in_map, washout_map, follow_up_map)
         treatments, sample_plans = zip(*treatments_map)
         treatment_permutations = list(itertools.permutations(treatments))
@@ -2921,7 +2793,7 @@ class StudyDesignFactory(object):
         """
         if not isinstance(group_sizes, int):
             if not all(isinstance(el, int) for el in group_sizes) or not len(group_sizes) == len(treatments_map):
-                raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+                raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps(treatments_map, screen_map=screen_map, run_in_map=run_in_map,
                                           follow_up_map=follow_up_map)
         treatments, sample_plans = zip(*treatments_map)
@@ -2969,7 +2841,7 @@ class StudyDesignFactory(object):
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
         """
         if not isinstance(group_size, int):
-            raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+            raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps(treatments_map, screen_map=screen_map, run_in_map=run_in_map,
                                           washout_map=washout_map, follow_up_map=follow_up_map)
         treatments, sample_plans = zip(*treatments_map)
@@ -3019,7 +2891,7 @@ class StudyDesignFactory(object):
         :return: StudyDesign - the single arm design. It contains 1 study arm
         """
         if not isinstance(group_size, int):
-            raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+            raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, screen_map=screen_map,
                                                              run_in_map=run_in_map, follow_up_map=follow_up_map)
         design = StudyDesign()
@@ -3073,7 +2945,7 @@ class StudyDesignFactory(object):
         if not isinstance(group_sizes, int):
             if not all(isinstance(el, int) for el in group_sizes) or \
                     not len(group_sizes) == factorial(len(treatments)):
-                raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+                raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, washout, screen_map,
                                                              run_in_map, follow_up_map)
         treatment_permutations = list(itertools.permutations(treatments))
@@ -3124,7 +2996,7 @@ class StudyDesignFactory(object):
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
         """
         if not isinstance(group_size, int):
-            raise TypeError(StudyDesignFactory.GROUP_SIZES_ERROR)
+            raise TypeError(errors.GROUP_SIZES_ERROR)
         StudyDesignFactory._validate_maps_multi_element_cell(treatments, sample_assay_plan, washout, screen_map,
                                                              run_in_map, follow_up_map)
         design = StudyDesign()

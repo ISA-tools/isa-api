@@ -1,14 +1,47 @@
 import unittest
+import os
 from functools import reduce
-
-from isatools.create.models import *
-
+import json
+import yaml
 import networkx as nx
 import uuid
 import logging
+from collections import OrderedDict, Counter
 
-from collections import Counter
-
+from isatools.create import errors
+from isatools.model import (
+    OntologyAnnotation,
+    StudyFactor,
+    FactorValue,
+    Characteristic,
+    Sample,
+    ProtocolParameter,
+    ParameterValue,
+    Study,
+    Assay,
+    Process
+)
+from isatools.create.models import (
+    NonTreatment,
+    Treatment,
+    TreatmentFactory,
+    StudyCell,
+    ProductNode,
+    ProtocolNode,
+    AssayGraph,
+    SampleAndAssayPlan,
+    StudyArm,
+    StudyDesign,
+    StudyDesignFactory,
+    QualityControl,
+    QualityControlSample,
+    QualityControlService
+)
+from isatools.create.constants import (
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
+    BASE_FACTORS_, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, default_ontology_source_reference,
+    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED
+)
 from tests.create_sample_assay_plan_odicts import sample_list, ms_assay_dict, lcdad_assay_dict, nmr_assay_dict
 
 log = logging.getLogger('isatools')
@@ -856,7 +889,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsNotNone(ex_cm.exception.args[0])
         with self.assertRaises(AttributeError, msg='A string is not a valid quality_control') as ex_cm:
             self.assay_graph.quality_control = 'bao'
-        self.assertEqual(ex_cm.exception.args[0], AssayGraph.QUALITY_CONTROL_ERROR.format(type('bao')))
+        self.assertEqual(ex_cm.exception.args[0], errors.QUALITY_CONTROL_ERROR.format(type('bao')))
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -1083,12 +1116,12 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         plan = SampleAndAssayPlan('test plan')
         with self.assertRaises(ValueError, msg='The sample has not been added to the plan yet') as ex_cm:
             plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
-        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_SAMPLE_IN_PLAN)
+        self.assertEqual(ex_cm.exception.args[0], errors.MISSING_SAMPLE_IN_PLAN)
         sample_plan = {self.tissue_node, self.blood_node}
         plan.sample_plan = sample_plan
         with self.assertRaises(ValueError, msg='The assay has not been added to the plan yet') as ex_cm:
             plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
-        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_ASSAY_IN_PLAN)
+        self.assertEqual(ex_cm.exception.args[0], errors.MISSING_ASSAY_IN_PLAN)
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         assay_list = [ms_assay_dict, nmr_assay_dict]
@@ -1185,7 +1218,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_run_in, None)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1195,12 +1228,12 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.RUN_IN_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_single_treatment_00, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1211,12 +1244,12 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.RUN_IN_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_washout_00, None)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1227,7 +1260,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a WASHOUT cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_01, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_single_treatment_02, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1253,14 +1286,14 @@ class StudyArmTest(unittest.TestCase):
 
         with self.assertRaises(ValueError, msg='No more items can be added after a FOLLOW-UP') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_add_item_to_arm__multi_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         with self.assertRaises(ValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
                                                'an ARM ending with a RUN-IN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_00, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1277,7 +1310,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
                                                        'an ARM ending with a SCREEN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1294,7 +1327,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
                                                        'an empty arm.') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
 
     def test_source_type_property(self):
         self.assertIsInstance(self.arm.source_type, Characteristic)
@@ -1412,7 +1445,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong type is '
                                                    'provided to the assignment.') as ex_cm:
             self.arm.arm_map = ['wrong', 'object']
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.ARM_MAP_ASSIGNMENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.ARM_MAP_ASSIGNMENT_ERROR)
 
     def test_arm_map_property_fail_wrong_value_00(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
@@ -1425,7 +1458,7 @@ class StudyArmTest(unittest.TestCase):
                                 (self.cell_washout_01, None)
                                 ])
             self.arm.arm_map = ord_dict
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_arm_map_property_fail_wrong_value_01(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
@@ -1438,7 +1471,7 @@ class StudyArmTest(unittest.TestCase):
                                 (self.cell_follow_up, self.sample_assay_plan)
                                 ])
             self.arm.arm_map = ord_dict
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
 
     def test_treatments_property(self):
         self.arm.arm_map = OrderedDict([(self.cell_screen, None),
@@ -1587,7 +1620,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(self.study_design.name, TEST_STUDY_DESIGN_NAME)
         with self.assertRaises(AttributeError, msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.name = 128
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.NAME_PROPERTY_ASSIGNMENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
 
     def test_study_arms_property(self):
         pass
@@ -1607,7 +1640,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(ValueError,
                                msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.add_study_arm(self.arm_same_name_as_third)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
         self.assertEqual(self.study_design.study_arms, [self.second_arm, self.third_arm])
         self.study_design.add_study_arm(self.first_arm)
         self.assertEqual(self.study_design.study_arms, [self.second_arm, self.first_arm, self.third_arm])
@@ -1616,7 +1649,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(TypeError,
                                msg='A Treatment cannot be added to a StudyDesign, only StudyArms') as ex_cm:
             self.study_design.add_study_arm(self.second_treatment)
-        self.assertIn(StudyDesign.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
+        self.assertIn(errors.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
 
     def test_treatments_property_00(self):
         self.study_design.study_arms = [self.first_arm, self.second_arm]
@@ -1653,7 +1686,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(IndexError, msg='An index error is raised if the epoch is out of bounds '
                                                'for all the StudyArms.') as ex_cm:
             epoch_cells = self.study_design.get_epoch(4)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
 
     # FIXME still failing - sort this out
     """
@@ -1930,13 +1963,13 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         
         ms_processes = [process for process in ms_assay_with_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
-        log.info('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
+        log.debug('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
                  .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
                          self.interspersed_sample_types[0][1]))
-        log.info('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
+        log.debug('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
         expected_num_of_interspersed_samples = \
             (expected_num_of_samples_ms_plan_first_arm - 1) // self.interspersed_sample_types[0][1]
-        log.info('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
+        log.debug('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
             expected_num_of_interspersed_samples
         log.debug('expected qc_samples_size: {0}'.format(qc_samples_size))
@@ -2163,7 +2196,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.second_treatment, self.sample_assay_plan)]
         crossover_design = self.factory.compute_crossover_design(
             treatments_map=treatments_map,
-            group_sizes = 10,
+            group_sizes=10,
             screen_map=(self.screen, None),
             washout_map=(self.washout, None),
             follow_up_map=(self.follow_up, self.sample_assay_plan)
@@ -2257,7 +2290,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, 10)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
 
     def test_compute_crossover_design_raises_group_sizes_error(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2265,7 +2298,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.third_treatment, self.sample_assay_plan)]
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, [10, 12, 19])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_parallel_design_three_treatments(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2316,8 +2349,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.third_treatment, self.sample_assay_plan)]
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
-                                                                           group_sizes=[10, 12])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+                                                                         group_sizes=[10, 12])
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_single_arm_design_tree_treatments(self):
         treatments_map =  [(self.second_treatment, self.sample_assay_plan),
@@ -2353,7 +2386,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_single_arm_design(treatments_map, group_size=12)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
 
     def test_compute_single_arm_design_group_sizes_error(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2362,7 +2395,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             single_arm_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
                                                                              group_size=[10, 12])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_concomitant_treatment_design_three_treatments(self):
         treatments = [self.first_treatment, self.second_treatment, self.fourth_treatment]
@@ -2395,7 +2428,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
             concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
                 treatments, self.sample_assay_plan, group_size=[10, 12, 13]
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_crossover_design_multi_element_cell_three_treatments(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
@@ -2453,7 +2486,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                 run_in_map=(self.run_in, None),
                 follow_up_map=(self.follow_up, self.sample_assay_plan)
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_single_arm_design_multi_element_cell_three_treatments(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
@@ -2487,7 +2520,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                 run_in_map=(self.run_in, None),
                 follow_up_map=(self.follow_up, self.sample_assay_plan)
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
 
 if __name__ == '__main__':
