@@ -49,7 +49,7 @@ ARM_MAP_ASSIGNMENT_ERROR = 'arm_map must be an OrderedDict'
 SOURCE_TYPE_ERROR = 'The source_type property must be either a string or a Characteristic. {0} was supplied.'
 
 # ERROR MESSAGES: STUDY DESIGN
-NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a sting'
+NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a string'
 STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
 ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
 ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'
