@@ -19,14 +19,13 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      UNSPECIFIED='unspecified intervention')
 
 # FACTOR_TYPES
+# The three base factors in our model are AGENT, INTENSITY, and DURATION
 FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
                     DURATION_VALUES='duration values')
 DURATION_FACTOR_ = dict(name='DURATION', type=OntologyAnnotation(term="time"),
                         display_singular='DURATION VALUE',
                         display_plural='DURATION VALUES', values=set())
-
-# The three base factors in our model are AGENT, INTENSITY, and DURATION
 DURATION_FACTOR = StudyFactor(name=DURATION_FACTOR_['name'], factor_type=DURATION_FACTOR_.get('type', None))
 BASE_FACTORS_ = (
     dict(
