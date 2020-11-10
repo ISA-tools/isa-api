@@ -1114,22 +1114,15 @@ class AssayGraph(object):
             raise AttributeError(errors.INVALID_TECHNOLOGY_TYPE_ERROR.format(technology_type))
         self.__technology_type = technology_type
 
-    """
     @property
-    def graph_dict(self):
-        return self.__graph_dict
-
-    @graph_dict.setter
-    def graph_dict(self, graph_dict):
-        try:
-            for node in graph_dict.keys():
-                self.add_node(node)
-            for start_node, target_nodes in graph_dict.items():
-                for target_node in target_nodes:
-                    self.add_link(start_node, target_node)
-        except (TypeError, ValueError) as e:
-            raise AttributeError(e)
-    """
+    def name(self):
+        first_term = self.measurement_type.term if isinstance(
+            self.measurement_type, OntologyAnnotation
+        ) else self.measurement_type
+        second_term = self.technology_type.term if isinstance(
+            self.technology_type, OntologyAnnotation
+        ) else self.technology_type
+        return '{}-{}'.format(first_term, second_term)
 
     @property
     def nodes(self):
