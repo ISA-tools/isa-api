@@ -20,11 +20,14 @@ import uuid
 import networkx as nx
 from isatools.create import errors
 from isatools.create.constants import (
-    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
-    BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
-    EXTRACT_PREFIX, LABELED_EXTRACT_PREFIX, ASSAY_GRAPH_PREFIX, RUN_ORDER, STUDY_CELL, assays_opts,
-    DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
-    QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS,
+    DURATION_FACTOR, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT,
+    DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
+    EXTRACT_PREFIX, LABELED_EXTRACT_PREFIX, ASSAY_GRAPH_PREFIX,
+    RUN_ORDER, STUDY_CELL, assays_opts,
+    DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
+    QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
+    QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER
 )
 from isatools.model import (
     StudyFactor,
@@ -447,12 +450,7 @@ class StudyCell(object):
     @property
     def duration(self):
         # TODO recompute as sum of durations
-        pass
-        """
-        element = next(iter(self.elements))
-        return next(factor_value for factor_value in element.factor_values
-                    if factor_value.factor_name == DURATION_FACTOR)
-        """
+        return None
 
 
 class OntologyAnnotationEncoder(json.JSONEncoder):
@@ -648,22 +646,6 @@ class StudyCellDecoder(object):
 class SequenceNode(ABC):
 
     pass
-    """
-    NEXT_LINKED_NODE_ERROR = 'Linked Item must be instance of isatools.create.models.SequenceNode'
-    
-    def __init__(self):
-        self.__next = None
-
-    @property
-    def next(self):
-        return self.__next
-
-    @next.setter
-    def next(self, next_item):
-        if not isinstance(next_item, SequenceNode):
-            raise AttributeError(self.NEXT_LINKED_NODE_ERROR)
-        self.__next = next_item
-    """
 
 
 class ProtocolNode(SequenceNode, Protocol):
@@ -747,15 +729,15 @@ class ProtocolNode(SequenceNode, Protocol):
                                                                self.__class__.__name__, self)
 
     def __str__(self):
-        return """{1}(
-        id={2.id}, 
-        name={2.name}, 
-        protocol_type={2.protocol_type}, 
-        uri={2.uri}, 
-        description={2.description}, 
-        version={2.version}, 
-        parameter_values={2.parameter_values})
-        """.format(self.__class__.__module__, self.__class__.__name__, self)
+        return """{0}(
+        id={1.id}, 
+        name={1.name}, 
+        protocol_type={1.protocol_type}, 
+        uri={1.uri}, 
+        description={1.description}, 
+        version={1.version}, 
+        parameter_values={1.parameter_values})
+        """.format(self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -796,13 +778,13 @@ class ProductNode(SequenceNode):
                 self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
-        return """{1}(
-        id={2.id}, 
-        type={2.type}, 
-        name={2.name}, 
-        characteristics={2.characteristics}, 
-        size={2.size}
-        )""".format(self.__class__.__module__, self.__class__.__name__, self)
+        return """{0}(
+        id={1.id}, 
+        type={1.type}, 
+        name={1.name}, 
+        characteristics={1.characteristics}, 
+        size={1.size}
+        )""".format(self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -836,7 +818,7 @@ class ProductNode(SequenceNode):
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
-            raise AttributeError(errors.NAME_ERROR.format(name, type(name)))
+            raise AttributeError(errors.PRODUCT_NODE_NAME_ERROR.format(name, type(name)))
         self.__name = name
 
     @property
@@ -918,7 +900,8 @@ class QualityControl(object):
     def __repr__(self):
         return '{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, ' \
                'interspersed_sample_types={2.interspersed_sample_types})'.format(
-                self.__class__.__module__, self.__class__.__name__, self)
+                    self.__class__.__module__, self.__class__.__name__, self
+                )
 
     def __str__(self):
         return """{0}(
@@ -1023,6 +1006,7 @@ class AssayGraph(object):
         Alternative constructor that generates an AssayGraph object from a well structured dictionary
         :param assay_plan_dict: dict
         :param validation_template: dict, not used yet # TODO
+        :param quality_control
         :param use_guids: boolean
         :return: AssayGraph
         """
@@ -1296,19 +1280,18 @@ class AssayGraph(object):
                'nodes={2.nodes}, links={3}, quality_control={2.quality_control})'.format(
                     self.__class__.__module__, self.__class__.__name__, self,
                     sorted(links, key=lambda link: (link[0], link[1]))
-        )
+                )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
-        return """"{1}(
-        id={2.id}
-        measurement_type={2.measurement_type} 
-        technology_type={2.technology_type}
-        nodes={2.nodes} 
-        links={3}
+        return """"{0}(
+        id={1.id}
+        measurement_type={1.measurement_type} 
+        technology_type={1.technology_type}
+        nodes={1.nodes} 
+        links={2}
         )""".format(
-            self.__class__.__module__, self.__class__.__name__, self,
-            sorted(links, key=lambda link: (link[0], link[1]))
+            self.__class__.__name__, self, sorted(links, key=lambda link: (link[0], link[1]))
         )
 
     def __hash__(self):
@@ -1479,11 +1462,11 @@ class SampleAndAssayPlan(object):
                 )
 
     def __str__(self):
-        return """{1}(
-        name={2.name},
-        sample_plan={2.sample_plan}, 
-        assay_plan={2.assay_plan}
-        )""".format(self.__class__.__module__, self.__class__.__name__, self)
+        return """{0}(
+        name={1.name},
+        sample_plan={1.sample_plan}, 
+        assay_plan={1.assay_plan}
+        )""".format(self.__class__.__name__, self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -1935,7 +1918,8 @@ class StudyDesign(object):
 
     def __init__(self, name='Study Design', source_type=DEFAULT_SOURCE_TYPE, study_arms=None):
         """
-        
+        :param name: str
+        :param source_type: str or OntologyAnnotation
         :param study_arms: Iterable
         """
         self.__study_arms = set()
@@ -2155,15 +2139,23 @@ class StudyDesign(object):
     def _generate_isa_elements_from_node(
             node,
             assay_graph,
-            assay_file_prefix, # to ensure uniqueness of node names within a study
-            processes=[],
-            other_materials=[],
-            data_files=[],
-            previous_items=[],
+            assay_file_prefix,  # to ensure uniqueness of node names within a study
+            processes=None,
+            other_materials=None,
+            data_files=None,
+            previous_items=None,
             ix=0,
             jx=0,
             counter=0
     ):
+        if previous_items is None:
+            previous_items = []
+        if data_files is None:
+            data_files = []
+        if other_materials is None:
+            other_materials = []
+        if processes is None:
+            processes = []
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
         item = isa_objects_factory(
             node, sequence_no='{0}-{1}-{2}'.format(assay_file_prefix, ix, counter),
@@ -2291,10 +2283,10 @@ class StudyDesign(object):
                           name=self.name)
 
     def __str__(self):
-        return """{1}(
+        return """{0}(
                name={name},
                study_arms={study_arms}
-               )""".format(self.__class__.__module__, self.__class__.__name__,
+               )""".format(self.__class__.__name__,
                            study_arms=[arm.name for arm in sorted(self.study_arms)],
                            name=self.name)
 
@@ -2506,7 +2498,13 @@ class QualityControlService(object):
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
 
-def isa_objects_factory(node, sequence_no, measurement_type=None, technology_type=None):
+def isa_objects_factory(
+        node,
+        sequence_no,
+        measurement_type=None,
+        technology_type=None,
+        performer=DEFAULT_PERFORMER
+    ):
     """
     This method generates an ISA element from an ISA node
     :param technology_type:
@@ -2520,7 +2518,7 @@ def isa_objects_factory(node, sequence_no, measurement_type=None, technology_typ
         return Process(
                 name='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH)),
                 executes_protocol=node,
-                performer=...,  # FIXME
+                performer=performer,
                 parameter_values=node.parameter_values,
                 inputs=[],
                 outputs=[],
@@ -2714,7 +2712,6 @@ class StudyDesignFactory(object):
         Computes the crossover trial design on the basis of a number of
         treatments, each of them mapped to a SampleAndAssayPlans object. Optionally NonTreatments can be provided
         for SCREEN, RUN-IN, WASHOUT(s), and FOLLOW-UP
-        
         :param treatments_map - a list containing tuples with pairs (Treatment, SampleAndAssayPlans/None).
         :param group_sizes - int/list The size(s) of the groups (i.e. number of subjects) for each study arm.
                                       If an integer is provided all the output arms will have the same group_size
@@ -2755,7 +2752,7 @@ class StudyDesignFactory(object):
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                           elements=[treatment]), sa_plan])
                 counter += 1
-                if washout_map and j < len(permutation) - 1: # do not add a washout after the last treatment cell
+                if washout_map and j < len(permutation) - 1:  # do not add a washout after the last treatment cell
                     arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
                                               elements=[washout_map[0]]), washout_map[1]])
                     counter += 1
@@ -3020,5 +3017,3 @@ class StudyDesignFactory(object):
         arm = StudyArm('ARM_00', group_size=group_size, arm_map=OrderedDict(arm_map))
         design.add_study_arm(arm)
         return design
-
-

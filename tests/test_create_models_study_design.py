@@ -372,9 +372,6 @@ class StudyCellTest(unittest.TestCase):
         self.assertFalse(self.cell._treatment_check([self.follow_up]),
                          'A treatment cannot be inserted into a FOLLOW-UP cell')
 
-    def test_treatment_check__screen_cell(self):
-        self.assertFalse(self.cell._treatment_check([self.screen]), 'A treatment cannot be inserted into a screen cell')
-
     def test_treatment_check__treatment_cell_00(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment]),
                         'A treatment can be inserted into a cell with a treatment')
@@ -388,7 +385,7 @@ class StudyCellTest(unittest.TestCase):
                                                                            self.third_treatment}]),
                         'A treatment can be inserted into a cell with a treatment and a concomitant treatment')
 
-    def test_treatment_check__treatment_cell_02(self):
+    def test_treatment_check__treatment_cell_03(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment,
                                                     self.washout, {
                                                         self.second_treatment,
@@ -857,7 +854,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertEqual(self.assay_graph.id, 'assay-plan/00')
 
-    def test_generate_assay_plan_from_dict_00(self):
+    def test_generate_assay_plan_from_dict_01(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
@@ -917,7 +914,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIn((self.protocol_node_dna, self.dna_node), self.assay_graph.links)
         self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
         self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
-        
+
     def test_add_nodes_and_links_success(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
@@ -1374,7 +1371,7 @@ class StudyArmTest(unittest.TestCase):
             Characteristic(category='sex', value='M'),
             'age group - old'
         ]
-        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic') as ex_cm:
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic'):
             self.arm.source_characteristics = test_characteristics
 
     def test_group_size_property(self):
@@ -1960,7 +1957,6 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
         self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
-        
         ms_processes = [process for process in ms_assay_with_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
         log.debug('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'

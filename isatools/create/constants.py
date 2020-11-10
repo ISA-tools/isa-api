@@ -101,3 +101,6 @@ QC_SAMPLE_TYPE_INTERSPERSED = 'QC sample type interspersed'
 
 # constant for padding digits in node names in isa documents creation
 ZFILL_WIDTH = 3
+
+# Default performer
+DEFAULT_PERFORMER = 'Unknown'
