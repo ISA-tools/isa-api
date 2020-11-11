@@ -2053,13 +2053,12 @@ class StudyDesign(object):
             src_map[s_arm.name] = list(srcs)
         return src_map
 
-    def _generate_samples(self, sources_map, sampling_protocol, performer, split_assays_by_sample_type):
+    def _generate_samples_and_assays(self, sources_map, sampling_protocol, performer):
         """
         Private method to be used in 'generate_isa_study'.
         :param sources_map: dict - the output of '_generate_sources'
         :param sampling_protocol: isatools.model.Protocol
-        :param performer
-        :param split_assays_by_sample_type: bool
+        :param performer: str
         :return: 
         """
         factors = set()
@@ -2069,6 +2068,16 @@ class StudyDesign(object):
         process_sequence = []
         assays = []
         protocols = set()
+        unique_assay_types = {
+            assay_graph for arm in self.study_arms
+            for sample_assay_plan in arm.arm_map.values() if sample_assay_plan is not None
+            for assay_graph in sample_assay_plan.assay_plan if assay_graph is not None
+        }
+        samples_grouped_by_assay_graph = {
+            assay_graph: [] for assay_graph in unique_assay_types
+        }
+
+        # generate samples
         for arm in self.study_arms:
             for cell, sample_assay_plan in arm.arm_map.items():
                 if not sample_assay_plan:
@@ -2110,22 +2119,24 @@ class StudyDesign(object):
                                 process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
+
                 for assay_graph in sample_assay_plan.assay_plan:
-                    protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
-                    if split_assays_by_sample_type is True:
-                        for sample_node in sorted(sample_assay_plan.sample_plan, key=lambda st: st.id):
-                            if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
-                                assays.append(
-                                    self._generate_assay(assay_graph, sample_batches[sample_node], cell.name)
-                                )
-                    else:
-                        sample_batch = []
-                        for sample_node in sample_assay_plan.sample_plan:
-                            if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
-                                sample_batch.extend(sample_batches[sample_node])
-                        assays.append(
-                            self._generate_assay(assay_graph, sample_batch, cell.name)
-                        )
+                    for sample_node in sample_assay_plan.sample_plan:
+                        if assay_graph in sample_assay_plan.sample_to_assay_map[sample_node]:
+                            try:
+                                samples_grouped_by_assay_graph[assay_graph] += sample_batches[sample_node]
+                            except AttributeError:
+                                log.error('Assay graph is: {}'.format(assay_graph))
+                                problematic_sample_group = samples_grouped_by_assay_graph[assay_graph]
+                                log.error('Sample bach for assay graph is: {}'.format(
+                                    problematic_sample_group
+                                ))
+
+        # generate assays
+        for assay_graph in unique_assay_types:
+            protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
+            assays.append(self._generate_assay(assay_graph, samples_grouped_by_assay_graph[assay_graph]))
+
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
     @staticmethod
@@ -2261,8 +2272,8 @@ class StudyDesign(object):
         study.sources = [source for sources in sources_map.values() for source in sources]
         study.factors, protocols, study.samples, study.assays, study.process_sequence, \
             study.ontology_source_references = \
-            self._generate_samples(
-                sources_map, study.protocols[0], study_config['performers'][0]['name'], split_assays_by_sample_type
+            self._generate_samples_and_assays(
+                sources_map, study.protocols[0], study_config['performers'][0]['name']
             )
         for protocol in protocols:
             study.add_protocol(protocol)

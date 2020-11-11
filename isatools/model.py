@@ -690,7 +690,7 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, term='', term_source=None, term_accession='',
-                 comments=None, id_=str(uuid.uuid4())) :
+                 comments=None, id_=str(uuid.uuid4())):
         super().__init__(comments)
 
         self.__term = term

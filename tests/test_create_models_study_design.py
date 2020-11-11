@@ -1749,17 +1749,18 @@ class StudyDesignTest(BaseStudyDesignTest):
             self.assertEqual(len(source.characteristics), 1)
             self.assertEqual(source.characteristics[0], DEFAULT_SOURCE_TYPE)
 
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples = expected_num_of_samples_per_plan * len([
+        expected_num_of_samples = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.nmr_sample_assay_plan.sample_plan, 0
+        ) * single_arm.group_size * len([
             a_plan for a_plan in single_arm.arm_map.values() if a_plan is not None
         ])
-        print('Expected number of samples is: {0}'.format(expected_num_of_samples))
+        log.debug('Expected number of samples is: {0}'.format(expected_num_of_samples))
         self.assertEqual(len(study.samples), expected_num_of_samples)
-        self.assertEqual(len(study.assays), 2)
+        self.assertEqual(len(study.assays), 1)
         treatment_assay = next(iter(study.assays))
         self.assertIsInstance(treatment_assay, Assay)
-        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples_per_plan)
+        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples)
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
@@ -1767,12 +1768,13 @@ class StudyDesignTest(BaseStudyDesignTest):
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay.process_sequence
                          if process.executes_protocol.name == 'nmr spectroscopy']
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
-                         * expected_num_of_samples_per_plan)
+        self.assertEqual(len(extraction_processes), expected_num_of_samples)
+        self.assertEqual(
+            len(nmr_processes),
+            8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] * expected_num_of_samples)
         self.assertEqual(
             len(treatment_assay.process_sequence),
-            (8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] + 1) * expected_num_of_samples_per_plan
+            (8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] + 1) * expected_num_of_samples
         )
         for ix, process in enumerate(extraction_processes):
             self.assertEqual(process.inputs, [study.samples[ix]])
