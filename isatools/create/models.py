@@ -1021,7 +1021,7 @@ class AssayGraph(object):
         current_nodes = []
         for node_key, node_params in assay_plan_dict.items():
 
-            if node_key in ('name', 'selected_sample_types', 'measurement_type', 'technology_type'):
+            if node_key in ('id', 'name', 'selected_sample_types', 'measurement_type', 'technology_type'):
                 continue
 
             if isinstance(node_params, list):    # the node is a ProductNode
@@ -1426,7 +1426,10 @@ class SampleAndAssayPlan(object):
         for i, assay_plan_dict in enumerate(assay_plan_dicts):
             assay_graph = AssayGraph.generate_assay_plan_from_dict(
                 assay_plan_dict,
-                id_=str(uuid.uuid4()) if use_guids else '{0}{1}'.format(
+                # FIXME: this id cannot work as it is
+                id_=str(uuid.uuid4()) if use_guids
+                else assay_plan_dict['id'] if 'id' in assay_plan_dict
+                else '{0}{1}'.format(
                     ASSAY_GRAPH_PREFIX, str(i).zfill(n_digits(len(assay_plan_dicts)))
                 ),
                 quality_control=quality_controls[i] if len(quality_controls) > i else None
@@ -2135,7 +2138,7 @@ class StudyDesign(object):
         # generate assays
         for assay_graph in unique_assay_types:
             protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
-            assays.append(self._generate_assay(assay_graph, samples_grouped_by_assay_graph[assay_graph]))
+            assays.append(self.generate_assay(assay_graph, samples_grouped_by_assay_graph[assay_graph]))
 
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
@@ -2206,7 +2209,7 @@ class StudyDesign(object):
         return processes, other_materials, data_files, item, counter
 
     @staticmethod
-    def _generate_assay(assay_graph, assay_samples, cell_name=''):
+    def generate_assay(assay_graph, assay_samples):
         if not isinstance(assay_graph, AssayGraph):
             raise TypeError()
         """
@@ -2215,12 +2218,11 @@ class StudyDesign(object):
             else None
         """
         measurement_type, technology_type = assay_graph.measurement_type, assay_graph.technology_type
-        assay_file_prefix = assay_graph.id if not cell_name else '{}_{}'.format(cell_name, assay_graph.id)
         assay = Assay(
             measurement_type=measurement_type,
             technology_type=technology_type,
             filename=urlify('a_{0}_{1}_{2}.txt'.format(
-                assay_file_prefix,
+                assay_graph.id,
                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
                 technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type
             ))
@@ -2241,7 +2243,7 @@ class StudyDesign(object):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, assay_file_prefix, ix=ix, jx=0, counter=0, processes=[], other_materials=[],
+                        node, assay_graph, assay_graph.id, ix=ix, jx=0, counter=0, processes=[], other_materials=[],
                         data_files=[], previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
@@ -2330,13 +2332,13 @@ class QualityControlService(object):
                     for assay_graph in study_assay_plan.assay_plan:
                         assert isinstance(assay_graph, AssayGraph)
                         if assay_graph.quality_control:
-                            # CHECK the assumption here is that an assay file can univocally be identified
+                            # CHECK the assumption here is that an assay file can unequivocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
                             # Such an assumption is correct as far a the Assay filename convention is not modified
                             measurement_type, technology_type = assay_graph.measurement_type, \
-                                                                assay_graph.technology_type
-                            assay_filename = urlify('a_{0}_{1}_{2}_{3}.txt'.format(
-                                cell.name, assay_graph.id,
+                                assay_graph.technology_type
+                            assay_filename = urlify('a_{0}_{1}_{2}.txt'.format(
+                                assay_graph.id,
                                 measurement_type.term if isinstance(measurement_type, OntologyAnnotation)
                                 else measurement_type,
                                 technology_type.term if isinstance(technology_type, OntologyAnnotation)
@@ -2368,8 +2370,7 @@ class QualityControlService(object):
                                 post_run_samples=qc_samples_post_run,
                                 interspersed_samples=qc_samples_interspersed
                             )
-                            qc_study.assays[index] = StudyDesign._generate_assay(assay_graph, augmented_samples,
-                                                                                 cell_name=cell.name)
+                            qc_study.assays[index] = StudyDesign.generate_assay(assay_graph, augmented_samples)
         return qc_study
 
     @staticmethod
@@ -2520,13 +2521,13 @@ def isa_objects_factory(
     log.debug('sequence_no: {0}'.format(sequence_no))
     if isinstance(node, ProtocolNode):
         return Process(
-                name='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH)),
-                executes_protocol=node,
-                performer=performer,
-                parameter_values=node.parameter_values,
-                inputs=[],
-                outputs=[],
-            )
+            name='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH)),
+            executes_protocol=node,
+            performer=performer,
+            parameter_values=node.parameter_values,
+            inputs=[],
+            outputs=[],
+        )
     if isinstance(node, ProductNode):
         if node.type == SAMPLE:
             return Sample(
@@ -2562,10 +2563,11 @@ def isa_objects_factory(
                     measurement_type, technology_type, curr_assay_opt)
                 )
                 isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
+                assert isa_class in {RawDataFile, RawSpectralDataFile}
                 return isa_class(
                     filename='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH))
                 )
-            except StopIteration as e:
+            except StopIteration:
                 return RawDataFile(
                     filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH))
                 )

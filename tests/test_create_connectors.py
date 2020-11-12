@@ -69,7 +69,7 @@ class TestMappings(unittest.TestCase):
         self.assertEqual(actual_annotated_json_mp_ms, {
             key: value for key, value in self.met_prof_jsons[1].items() if key not in ['@context']
         })
-    
+
     @staticmethod
     def _load_config(file_name):
         ds_design_config_file_path = os.path.abspath(
@@ -130,7 +130,9 @@ class TestMappings(unittest.TestCase):
                 self.assertIsInstance(source_char, Characteristic)
                 self.assertIsInstance(source_char.category, OntologyAnnotation)
                 self.assertIsInstance(source_char.value, OntologyAnnotation)
-        investigation = Investigation(studies=[design.generate_isa_study(split_assays_by_sample_type=True)])
+        investigation = Investigation(studies=[design.generate_isa_study()])
+        # two assay types are selected, so we expect to find only two assays in the studies
+        self.assertEqual(len(investigation.studies[0].assays), 2)
         inv_json = json.dumps(
             investigation,
             cls=ISAJSONEncoder,

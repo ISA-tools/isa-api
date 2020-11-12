@@ -209,7 +209,7 @@ def _generate_characteristics_from_observational_factor(observational_factor_dic
 
 def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epoch_no):
     res = OrderedDict()
-    res['name'] = datascriptor_assay_config['name']
+    res['id'], res['name'] = datascriptor_assay_config['id'], datascriptor_assay_config['name']
     res['measurement_type'] = _map_ontology_annotation(
         datascriptor_assay_config['measurement_type'], expand_strings=True
     )
