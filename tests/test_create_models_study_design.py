@@ -1792,34 +1792,6 @@ class StudyDesignTest(BaseStudyDesignTest):
         log.debug('NMR assay graph: {0}'.format([(getattr(el, 'name', None), type(el))
                                                  for el in treatment_assay.graph.nodes()]))
 
-    def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
-        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        # study_config = config['study']
-        single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.nmr_sample_assay_plan),
-            (self.cell_follow_up, self.nmr_sample_assay_plan)
-        ]))
-        study_design = StudyDesign(study_arms=(single_arm,))
-        study = study_design.generate_isa_study(split_assays_by_sample_type=True)
-        self.assertEqual(len(study.assays), 6)
-        treatment_assay_st0, treatment_assay_st1, treatment_assay_st2 = study.assays[0:3]
-        self.assertIsInstance(treatment_assay_st0, Assay)
-        self.assertEqual(treatment_assay_st0.measurement_type, nmr_assay_dict['measurement_type'])
-        self.assertEqual(treatment_assay_st0.technology_type, nmr_assay_dict['technology_type'])
-        extraction_processes = [process for process in treatment_assay_st0.process_sequence
-                                if process.executes_protocol.name == 'extraction']
-        nmr_processes = [process for process in treatment_assay_st0.process_sequence
-                         if process.executes_protocol.name == 'nmr spectroscopy']
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples_first = sample_list[0]['size'] * single_arm.group_size
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_first)
-        self.assertEqual(len(nmr_processes), 8 * 2 * expected_num_of_samples_first)
-        self.assertEqual(len(treatment_assay_st0.process_sequence), (8 * 2 + 1) * expected_num_of_samples_first)
-
     def test_generate_isa_study_two_arms_single_cell_elements(self):
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
@@ -1833,7 +1805,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         ]))
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
         study = study_design.generate_isa_study()
-        self.assertEqual(len(study.assays), 4)
+        self.assertEqual(len(study.assays), 2)
         expected_num_of_samples_nmr_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
             self.nmr_sample_assay_plan.sample_plan, 0) * first_arm.group_size
@@ -1904,8 +1876,6 @@ class StudyDesignTest(BaseStudyDesignTest):
                 self.assertEqual(source.characteristics, [control_source_type])
             else:
                 self.assertEqual(source.characteristics, [treatment_source_type])
-        # self.assertIn(control_source_type.category, study.characteristic_categories)
-        # self.assertIn(treatment_source_type.category, study.characteristic_categories)
 
 
 class QualityControlServiceTest(BaseStudyDesignTest):

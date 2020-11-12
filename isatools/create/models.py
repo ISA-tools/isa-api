@@ -2251,7 +2251,7 @@ class StudyDesign(object):
                                                                                             len(data_files)))
         return assay
 
-    def generate_isa_study(self, split_assays_by_sample_type=False):
+    def generate_isa_study(self):
         """
         this is the core method to return the fully populated ISA Study object from the StudyDesign
         :return: isatools.model.Study
