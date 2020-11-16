@@ -660,10 +660,10 @@ class ProtocolNode(SequenceNode, Protocol):
         """
 
         :param id_:
-        :param name:
-        :param protocol_type:
-        :param uri:
-        :param description:
+        :param name: the name of the protocol
+        :param protocol_type: the type of the protocol
+        :param uri: a uri pointing to a resource describing the protocol
+        :param description: a  textual description of the protocol
         :param version:
         :param parameter_values: the values to be supplied to the Protocol Parameters
         :param replicates: int - the number of replicates (biological or technical) for this Protocol step. Must be a
@@ -2143,6 +2143,16 @@ class StudyDesign(object):
         return factors, protocols, samples, assays, process_sequence, ontology_sources
 
     @staticmethod
+    def _increment_counter_by_node_type(counter, node):
+        if isinstance(node, ProductNode):
+            counter[node.type] = counter[node.type] + 1 if node.type in counter else 1
+            # FIXME do we need a check by node.name for DATA_FILE?
+        if isinstance(node, ProtocolNode):
+            # the attribute "name" should contain the same value as "protocol_type.term"
+            counter[node.name] = counter[node.name] + 1 if node.name in counter else 1
+        return counter
+
+    @staticmethod
     def _generate_isa_elements_from_node(
             node,
             assay_graph,
@@ -2153,8 +2163,10 @@ class StudyDesign(object):
             previous_items=None,
             ix=0,
             jx=0,
-            counter=0
+            counter=None
     ):
+        if counter is None:
+            counter = {}
         if previous_items is None:
             previous_items = []
         if data_files is None:
@@ -2164,8 +2176,9 @@ class StudyDesign(object):
         if processes is None:
             processes = []
         log.debug('# processes: {0} - ix: {1}'.format(len(processes), ix))
+        counter = StudyDesign._increment_counter_by_node_type(counter, node)
         item = isa_objects_factory(
-            node, sequence_no='{0}-{1}-{2}'.format(assay_file_prefix, ix, counter),
+            node, assay_file_prefix, ix, counter,
             measurement_type=assay_graph.measurement_type,
             technology_type=assay_graph.technology_type
         )
@@ -2184,7 +2197,7 @@ class StudyDesign(object):
             for jj in range(size):
                 jx = ii * size + jj
                 log.debug('ii = {0} - jj = {1} - jx = {2}'.format(ii, jj, jx))
-                counter += 1
+                # counter += 1
                 processes, other_materials, data_files, next_item, counter = \
                     StudyDesign._generate_isa_elements_from_node(
                         next_node, assay_graph, assay_file_prefix, processes, other_materials, data_files,
@@ -2243,7 +2256,7 @@ class StudyDesign(object):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, assay_graph.id, ix=ix, jx=0, counter=0, processes=[], other_materials=[],
+                        node, assay_graph, assay_graph.id, ix=ix, jx=0, counter=None, processes=[], other_materials=[],
                         data_files=[], previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
@@ -2502,26 +2515,32 @@ class QualityControlService(object):
         log.debug("Completed post-batch samples")
         return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
 
-
+# TODO: should I move this inside the StudyDesign class?
 def isa_objects_factory(
         node,
-        sequence_no,
+        assay_file_prefix,
+        ix,
+        counter,
         measurement_type=None,
         technology_type=None,
         performer=DEFAULT_PERFORMER
-    ):
+):
     """
     This method generates an ISA element from an ISA node
     :param technology_type:
     :param measurement_type:
     :param node: SequenceNode - can be either a ProductNode or a ProtocolNode
-    :param sequence_no: str - a sequential number to discriminate among items built in a batch
+    :param assay_file_prefix: str
+    :param ix: int the index of the starting node in the graph
+    :param counter: dict containing the counts for this specific subgraph
+    :param performer: str/Person
     :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
     """
-    log.debug('sequence_no: {0}'.format(sequence_no))
     if isinstance(node, ProtocolNode):
         return Process(
-            name='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH)),
+            name='{}_{}-{}-<acquisition>{}'.format(
+                urlify(node.name), assay_file_prefix, ix, counter[node.name]
+            ),  # FIXME!!
             executes_protocol=node,
             performer=performer,
             parameter_values=node.parameter_values,
@@ -2531,24 +2550,24 @@ def isa_objects_factory(
     if isinstance(node, ProductNode):
         if node.type == SAMPLE:
             return Sample(
-                name='{0}_{1}'.format(SAMPLE_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{}-{}-Sample{}'.format(assay_file_prefix, ix, counter[SAMPLE]),
                 characteristics=node.characteristics
             )
         if node.type == EXTRACT:
             return Extract(
-                name='{0}_{1}'.format(EXTRACT_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{}-{}-Extract{}'.format(assay_file_prefix, ix, counter[EXTRACT]),
                 characteristics=node.characteristics
             )
         if node.type == LABELED_EXTRACT:
             return LabeledExtract(
-                name='{0}_{1}'.format(LABELED_EXTRACT_PREFIX, str(sequence_no).zfill(ZFILL_WIDTH)),
+                name='{}-{}-LE{}'.format(assay_file_prefix, ix, counter[LABELED_EXTRACT]),
                 characteristics=node.characteristics
             )
         # under the hypothesis that we deal only with raw data files
         # derived data file would require a completely separate approach
         if node.type == DATA_FILE:
             try:
-                log.debug('isa_objects_factory: Assay conf. found: {}; {};'.format(
+                log.debug('Assay conf. found: {}; {};'.format(
                     measurement_type, technology_type)
                 )
                 m_type_term = measurement_type.term if isinstance(measurement_type, OntologyAnnotation) \
@@ -2559,17 +2578,27 @@ def isa_objects_factory(
                     opt for opt in assays_opts if opt['measurement type'] == m_type_term and
                     opt['technology type'] == t_type_term
                 )
-                log.debug('isa_objects_factory: Assay conf. found: {}; {}; {};'.format(
+                log.debug('Assay conf. found: {}; {}; {};'.format(
                     measurement_type, technology_type, curr_assay_opt)
                 )
                 isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
                 assert isa_class in {RawDataFile, RawSpectralDataFile}
                 return isa_class(
-                    filename='{0}_{1}'.format(urlify(node.name), str(sequence_no).zfill(ZFILL_WIDTH))
+                    filename='{}_{}-{}-{}'.format(
+                        urlify(node.name),
+                        assay_file_prefix,
+                        ix,
+                        counter[node.type]  # FIXME should this be changed to "counter[node.name]"?
+                    )
                 )
             except StopIteration:
                 return RawDataFile(
-                    filename='{0}_{1}'.format(node.name, str(sequence_no).zfill(ZFILL_WIDTH))
+                    filename='{}_{}-{}-{}'.format(
+                        urlify(node.name),
+                        assay_file_prefix,
+                        ix,
+                        counter[node.type]  # FIXME should this be changed to "counter[node.name]"?
+                    )
                 )
 
 

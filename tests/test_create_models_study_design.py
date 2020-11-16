@@ -1704,6 +1704,21 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('Sources: {0}'.format(study.sources))
     """
 
+    def test_increment_counter_by_node_type(self):
+        assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        extract_node = next(
+            node for node in assay_graph.nodes if isinstance(node, ProductNode) and node.type == EXTRACT
+        )
+        counter = StudyDesign._increment_counter_by_node_type({}, extract_node)
+        self.assertEqual(counter[EXTRACT], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, extract_node)
+        self.assertEqual(counter[EXTRACT], 2)
+        protocol_node = next(node for node in assay_graph.nodes if isinstance(node, ProtocolNode))
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 2)
+
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
@@ -1716,10 +1731,10 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
         self.assertEqual(len(extraction_processes), 1)
         nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
-        self.assertEqual(len(nmr_processes), 8*2)
-        self.assertEqual(len(processes), 1+8*2)
+        self.assertEqual(len(nmr_processes), 8 * 2)
+        self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
-        self.assertEqual(len(data_files), 8*2)      # 16 raw data files
+        self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)
             print('expected previous process: {0}'.format(extraction_processes[0]))
