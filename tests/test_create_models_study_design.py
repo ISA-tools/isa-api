@@ -93,7 +93,7 @@ class NonTreatmentTest(unittest.TestCase):
     def test_repr(self):
         print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
-                         "isatools.create.models.NonTreatment(type='screen', duration=isatools.model.FactorValue("
+                         "isatools.create.model.NonTreatment(type='screen', duration=isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='DURATION', "
                          "factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value=10.0, "
@@ -125,7 +125,7 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "isatools.create.models.Treatment(type=chemical intervention, "
+                         "isatools.create.model.Treatment(type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='AGENT'"
                          ", factor_type=isatools.model.OntologyAnnotation(term='perturbation agent', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value='nitroglycerin', unit=None), "
