@@ -20,7 +20,7 @@ from isatools.model import (
     Study,
     Investigation
 )
-from isatools.create.models import (
+from isatools.create.model import (
     StudyDesign,
     StudyArm,
     StudyCell,

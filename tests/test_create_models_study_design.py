@@ -21,7 +21,7 @@ from isatools.model import (
     Assay,
     Process
 )
-from isatools.create.models import (
+from isatools.create.model import (
     NonTreatment,
     Treatment,
     TreatmentFactory,

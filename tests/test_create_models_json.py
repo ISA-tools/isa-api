@@ -14,7 +14,7 @@ from isatools.model import (
     ParameterValue,
     OntologySource
 )
-from isatools.create.models import (
+from isatools.create.model import (
     NonTreatment,
     Treatment,
     StudyCell,

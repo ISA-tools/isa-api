@@ -1,5 +1,5 @@
 from isatools.model import OntologyAnnotation, OntologySource, FactorValue, Characteristic
-from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
+from isatools.create.model import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
 from isatools.create.constants import SCREEN, INTERVENTIONS, BASE_FACTORS, SAMPLE, ORGANISM_PART
 from collections import OrderedDict
 
