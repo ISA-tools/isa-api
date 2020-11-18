@@ -377,7 +377,6 @@ class StudyCell(object):
         }
         func = switcher.get(new_element.type, lambda: False)
         # lines = inspect.getsource(func)
-        # print('Element type: {element_type} \nfunc: {func}'.format(element_type=new_element.type, func=lines))
         return func()
 
     @staticmethod
@@ -1428,8 +1427,8 @@ class SampleAndAssayPlan(object):
                 assay_plan_dict,
                 # FIXME: this id cannot work as it is
                 id_=str(uuid.uuid4()) if use_guids
-                else assay_plan_dict['id'] if 'id' in assay_plan_dict
-                else '{0}{1}'.format(
+                else '{}{}'.format(ASSAY_GRAPH_PREFIX, assay_plan_dict['id']) if 'id' in assay_plan_dict
+                else '{}{}'.format(
                     ASSAY_GRAPH_PREFIX, str(i).zfill(n_digits(len(assay_plan_dicts)))
                 ),
                 quality_control=quality_controls[i] if len(quality_controls) > i else None
