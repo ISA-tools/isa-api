@@ -22,7 +22,6 @@ from numbers import Number
 from collections.abc import Iterable
 import networkx as nx
 
-
 from isatools.errors import ISAModelAttributeError
 
 
@@ -441,6 +440,7 @@ class Investigation(Commentable, MetadataMixin, object):
             version: OntologySource version
             description: OntologySource description
             file: OntologySource file
+            comments: list
         """
         c = OntologySource(name=name, version=version, description=description,
                            file=file, comments=comments)
@@ -1749,7 +1749,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
             log.warning(
-                'A factor with name "{}" hasnot been found in the study'
+                'A factor with name "{}" has not been found in the study'
                 .format(name))
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
