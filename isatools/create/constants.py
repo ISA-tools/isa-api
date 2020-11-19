@@ -67,7 +67,7 @@ SUBJECT_PREFIX = 'SBJ'
 SAMPLE_PREFIX = 'SMP'
 EXTRACT_PREFIX = 'EXTR'
 LABELED_EXTRACT_PREFIX = 'LBLEXTR'
-ASSAY_GRAPH_PREFIX = 'ASSAY'
+ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
 # constants specific to the sampling plan in the study generation from the study design
 RUN_ORDER = 'run order'

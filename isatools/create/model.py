@@ -23,7 +23,7 @@ from isatools.create.constants import (
     SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS,
     DURATION_FACTOR, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT,
     DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
-    EXTRACT_PREFIX, LABELED_EXTRACT_PREFIX, ASSAY_GRAPH_PREFIX,
+    ASSAY_GRAPH_PREFIX,
     RUN_ORDER, STUDY_CELL, assays_opts,
     DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
     QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
@@ -47,6 +47,8 @@ from isatools.model import (
     DataFile,
     RawDataFile,
     RawSpectralDataFile,  # this is required for the module to work
+    FreeInductionDecayDataFile,
+    ArrayDataFile,
     Extract,
     LabeledExtract,
     plink
@@ -2334,7 +2336,10 @@ class StudyDesign(object):
                         measurement_type, technology_type, curr_assay_opt)
                     )
                     isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
-                    assert isa_class in {RawDataFile, RawSpectralDataFile}
+                    assert isa_class in {
+                        # expand this set if needed
+                        RawDataFile, RawSpectralDataFile, ArrayDataFile, FreeInductionDecayDataFile
+                    }
                     return isa_class(
                         filename='{}_{}-{}-{}'.format(
                             urlify(node.name),
