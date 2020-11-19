@@ -2,14 +2,7 @@
 """Functions for importing from BioCrates"""
 from time import time
 import os
-
-# os.environ["MODIN_ENGINE"] = "ray"
-# os.environ["MODIN_CPUS"] = "4"
 import pandas as pd
-
-# import ray
-# ray.init(num_cpus=1)
-# import modin.pandas as pd
 import glob
 import logging
 
@@ -39,8 +32,6 @@ __author__ = ['philippe.rocca-serra@oerc.ox.ac.uk',
 DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
         os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
-
-print(DEFAULT_SAXON_EXECUTABLE)
 
 BIOCRATES_DIR = os.path.join(os.path.dirname(__file__), 'resources',
                              'biocrates')
@@ -190,12 +181,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
+    logger.debug('Destination dir is: ' + destination_dir)
     logger.info('Destination dir is: ' + destination_dir)
 
     if os.path.exists(destination_dir):
         logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        logger.debug('Removing dir' + destination_dir)
         rmtree(destination_dir)
 
     try:
@@ -212,12 +203,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
         logger.error("isatools.convert.biocrates2isatab: "
                      "CalledProcessError caught ", err.returncode)
 
-        print(err)
+        logger.debug(err)
 
     with ZipFile(buffer, 'w') as zip_file:
         # use relative dir_name to avoid absolute path on file names
         zipdir(dir_name, zip_file)
-        print("!", zip_file.namelist())
+        logger.debug("!", zip_file.namelist())
 
     # clean up the target directory after the ZIP file has been closed
     # rmtree(destination_dir)
@@ -278,7 +269,7 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
     if len(pos_injection) > 0:
         filename = 'm_MTBLSXXX_' + usedop + '_' + platebarcode + '_' + polarity.lower() \
             + '_maf.txt'
-        print("filename: ", filename)
+        logger.debug("filename: ", filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:
             # writing out the header
             file_handler.write('metabolite_identification')
@@ -331,18 +322,18 @@ def complete_MAF(maf_stub):
 def add_sample_metadata(sample_info_file, input_study_file):
 
     S_STUDY_LOC = os.path.join(DESTINATION_DIR, input_study_file)
-    print("study file location:", S_STUDY_LOC)
+    logger.debug("study file location:", S_STUDY_LOC)
 
     # data = pd_modin.read_csv(S_STUDY_LOC, sep='\t')
     data = pd.read_csv(S_STUDY_LOC, sep='\t')
-    print("study file:", data)
+    logger.debug("study file:", data)
 
     SAMPLE_METADATA_LOC = os.path.join(SAMPLE_METADATA_INPUT_DIR, sample_info_file)
-    print("sample metadata file location:", SAMPLE_METADATA_LOC)
+    logger.debug("sample metadata file location:", SAMPLE_METADATA_LOC)
 
     # sample_desc = pd_modin.read_csv(SAMPLE_METADATA_LOC)
     sample_desc = pd.read_csv(SAMPLE_METADATA_LOC)
-    print("sample metadata: ", sample_desc)
+    logger.debug("sample metadata: ", sample_desc)
 
     # data.join(sample_desc, on='Characteristics[barcode identifier]')
 
@@ -351,7 +342,7 @@ def add_sample_metadata(sample_info_file, input_study_file):
     # result = pd_modin.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     result = pd.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     cols = result.columns.tolist()
-    print(cols)
+    logger.debug(cols)
 
     result = result[['Source Name', 'Material Type', 'Characteristics[barcode identifier]', 'internal_ID', 'resolute_ID',
                      'Characteristics[Organism]', 'Term Source REF', 'Term Accession Number',
@@ -389,11 +380,7 @@ def add_sample_metadata(sample_info_file, input_study_file):
                                     'Term Accession Number.1': 'Term Accession Number'
                                     })
 
-
-    # print("results:", result)
-    result.to_csv(S_STUDY_LOC , sep='\t', encoding='utf-8', index=False)
-
-
+    result.to_csv(S_STUDY_LOC, sep='\t', encoding='utf-8', index=False)
 
 
 def parseSample(biocrates_filename):
@@ -417,7 +404,7 @@ def parseSample(biocrates_filename):
     plates = soup.find_all('plate')
     for plate in plates:
         usedop = plate.get('usedop')
-        # print(usedop)
+        # logger.debug(usedop)
         platebarcode = plate.get('platebarcode')
         # extracting the the distinct column labels, metabolites,
         # and rawdatafilename collect the data into a dictionary
@@ -437,7 +424,7 @@ if __name__ == "__main__":
     parseSample(biocrates_filename='biocrates-merged-output.xml')
     add_sample_metadata('EX0003_sample_metadata.csv', 's_study_biocrates.txt')
     end = time()
-    print('The conversion took {:.2f} s.'.format(end - start))
+    logger.debug('The conversion took {:.2f} s.'.format(end - start))
 # parseSample(sys.argv[1])
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")

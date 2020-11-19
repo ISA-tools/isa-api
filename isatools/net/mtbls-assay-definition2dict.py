@@ -2,8 +2,6 @@ import os
 import csv
 from collections import OrderedDict
 import pandas as pd
-import modin.pandas as pd_modin
-import json
 import rdflib
 
 from rdflib import *
@@ -19,8 +17,6 @@ MTBLS_CV_FILE = os.path.join(MTBLS_DIR, 'StudyTerms4Curators-template.xlsx')
 MTLBS_CV_OWL = os.path.join(MTBLS_DIR, 'Metabolights.owl')
 
 MTBLS_ASSAY_DEF_FILE = os.path.join(MTBLS_DIR, MTBLS_FILE)
-
-print(MTBLS_ASSAY_DEF_FILE)
 
 xls = pd.ExcelFile(MTBLS_CV_FILE)
 
@@ -47,6 +43,7 @@ def load_terms_from_owl():
         print("error reading graph:", g_ioe)
 
     return class_labels, subclasses
+
 
 def build_params(record, assay_dictionary, datafr):
 
