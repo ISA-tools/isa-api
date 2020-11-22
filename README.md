@@ -2,12 +2,12 @@
 <br>
 
 ----
-<img align="right" src="http://www.isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
+<img align="right" src="http://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
 The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
 
 Built around the ‘Investigation’ (the project context), Study’ (a unit of research) and ‘Assay’ (analytical measurement) general-purpose Tabular format, the ISA tools helps you to provide rich description of the experimental metadata (i.e. sample characteristics, technology and measurement types, sample-to-data relationships) so that the resulting data and discoveries are reproducible and reusable.
 
-To find out more about ISA, see [www.isa-tools.org](http://www.isa-tools.org)
+To find out more about ISA, see [www.isa-tools.org](http://isa-tools.org)
 
 To find out who's using ISA and about the ISA development and user community, see [www.isacommons.org](http://www.isacommons.org)
 
@@ -20,6 +20,15 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
 [![PyPI version](https://badge.fury.io/py/isatools.svg)](https://pypi.python.org/pypi/isatools/)
 [![Documentation Status](https://readthedocs.org/projects/isatools/badge/?version=latest)](http://isatools.readthedocs.org/en/latest/?badge=latest)
+
+----
+### Read the Publication...
+
+Access the pre-print article about ISA API on [biorXiv](https://www.biorxiv.org/content/10.1101/2020.11.13.382119v1).
+
+*David Johnson, Keeva Cochrane, Robert P. Davey, Anthony Etuk, Alejandra Gonzalez-Beltran, Kenneth Haug, Massimiliano Izzo, Martin Larralde, Thomas N. Lawson, Alice Minotto, Pablo Moreno, Venkata Chandrasekhar Nainala, Claire O'Donovan, Luca Pireddu, Pierrick Roger, Felix Shaw, Christoph Steinbeck, Ralf J. M. Weber, Susanna-Assunta Sansone, Philippe Rocca-Serra. 
+ISA API: An open platform for interoperable life science experimental metadata. 2020.11.13.382119; doi: 
+[10.1101/2020.11.13.382119](https://doi.org/10.1101/2020.11.13.382119)*
 
 ----
 *Authors*: [The ISA team](http://www.isa-tools.org/team/).
