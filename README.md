@@ -26,9 +26,10 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 
 Access the pre-print article about ISA API on [biorXiv](https://www.biorxiv.org/content/10.1101/2020.11.13.382119v1).
 
-*David Johnson, Keeva Cochrane, Robert P. Davey, Anthony Etuk, Alejandra Gonzalez-Beltran, Kenneth Haug, Massimiliano Izzo, Martin Larralde, Thomas N. Lawson, Alice Minotto, Pablo Moreno, Venkata Chandrasekhar Nainala, Claire O'Donovan, Luca Pireddu, Pierrick Roger, Felix Shaw, Christoph Steinbeck, Ralf J. M. Weber, Susanna-Assunta Sansone, Philippe Rocca-Serra. 
-ISA API: An open platform for interoperable life science experimental metadata. 2020.11.13.382119; doi: 
-[10.1101/2020.11.13.382119](https://doi.org/10.1101/2020.11.13.382119)*
+<i>David Johnson, Keeva Cochrane, Robert P. Davey, Anthony Etuk, Alejandra Gonzalez-Beltran, Kenneth Haug, Massimiliano Izzo, Martin Larralde, Thomas N. Lawson, Alice Minotto, Pablo Moreno, Venkata Chandrasekhar Nainala, Claire O'Donovan, Luca Pireddu, Pierrick Roger, Felix Shaw, Christoph Steinbeck, Ralf J. M. Weber, Susanna-Assunta Sansone, Philippe Rocca-Serra. 
+
+ISA API: An open platform for interoperable life science experimental metadata. biorXiv 2020.11.13.382119; doi: 
+[10.1101/2020.11.13.382119](https://doi.org/10.1101/2020.11.13.382119)</i>
 
 ----
 *Authors*: [The ISA team](http://www.isa-tools.org/team/).
