@@ -40,8 +40,6 @@ DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
         os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
 
-print(DEFAULT_SAXON_EXECUTABLE)
-
 BIOCRATES_DIR = os.path.join(os.path.dirname(__file__), 'resources',
                              'biocrates')
 
@@ -58,7 +56,7 @@ SAMPLE_METADATA_INPUT_DIR = 'resources/biocrates/input-test/'
 logger = logging.getLogger('isatools')
 
 
-def replaceAll(file,searchExp,replaceExp):
+def replaceAll(file, searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
@@ -190,12 +188,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
+    # print('Destination dir is: ' + destination_dir)
     logger.info('Destination dir is: ' + destination_dir)
 
     if os.path.exists(destination_dir):
         logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        # print('Removing dir' + destination_dir)
         rmtree(destination_dir)
 
     try:
@@ -212,12 +210,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
         logger.error("isatools.convert.biocrates2isatab: "
                      "CalledProcessError caught ", err.returncode)
 
-        print(err)
+        # print(err)
 
     with ZipFile(buffer, 'w') as zip_file:
         # use relative dir_name to avoid absolute path on file names
         zipdir(dir_name, zip_file)
-        print("!", zip_file.namelist())
+        # print("!", zip_file.namelist())
 
     # clean up the target directory after the ZIP file has been closed
     # rmtree(destination_dir)
@@ -278,7 +276,7 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
     if len(pos_injection) > 0:
         filename = 'm_MTBLSXXX_' + usedop + '_' + platebarcode + '_' + polarity.lower() \
             + '_maf.txt'
-        print("filename: ", filename)
+        # print("filename: ", filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:
             # writing out the header
             file_handler.write('metabolite_identification')
@@ -331,18 +329,18 @@ def complete_MAF(maf_stub):
 def add_sample_metadata(sample_info_file, input_study_file):
 
     S_STUDY_LOC = os.path.join(DESTINATION_DIR, input_study_file)
-    print("study file location:", S_STUDY_LOC)
+    # print("study file location:", S_STUDY_LOC)
 
     # data = pd_modin.read_csv(S_STUDY_LOC, sep='\t')
     data = pd.read_csv(S_STUDY_LOC, sep='\t')
-    print("study file:", data)
+    # print("study file:", data)
 
     SAMPLE_METADATA_LOC = os.path.join(SAMPLE_METADATA_INPUT_DIR, sample_info_file)
-    print("sample metadata file location:", SAMPLE_METADATA_LOC)
+    # print("sample metadata file location:", SAMPLE_METADATA_LOC)
 
     # sample_desc = pd_modin.read_csv(SAMPLE_METADATA_LOC)
     sample_desc = pd.read_csv(SAMPLE_METADATA_LOC)
-    print("sample metadata: ", sample_desc)
+    # print("sample metadata: ", sample_desc)
 
     # data.join(sample_desc, on='Characteristics[barcode identifier]')
 
@@ -351,7 +349,7 @@ def add_sample_metadata(sample_info_file, input_study_file):
     # result = pd_modin.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     result = pd.merge(data, sample_desc, on='Characteristics[barcode identifier]', left_index=True, how='outer')
     cols = result.columns.tolist()
-    print(cols)
+    # print(cols)
 
     result = result[['Source Name', 'Material Type', 'Characteristics[barcode identifier]', 'internal_ID', 'resolute_ID',
                      'Characteristics[Organism]', 'Term Source REF', 'Term Accession Number',
@@ -389,11 +387,8 @@ def add_sample_metadata(sample_info_file, input_study_file):
                                     'Term Accession Number.1': 'Term Accession Number'
                                     })
 
-
     # print("results:", result)
     result.to_csv(S_STUDY_LOC , sep='\t', encoding='utf-8', index=False)
-
-
 
 
 def parseSample(biocrates_filename):
@@ -437,9 +432,8 @@ if __name__ == "__main__":
     parseSample(biocrates_filename='biocrates-merged-output.xml')
     add_sample_metadata('EX0003_sample_metadata.csv', 's_study_biocrates.txt')
     end = time()
-    print('The conversion took {:.2f} s.'.format(end - start))
+    #print('The conversion took {:.2f} s.'.format(end - start))
 # parseSample(sys.argv[1])
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")
-
 # Conc_R100028_export_incl_information_20200309.xml

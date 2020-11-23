@@ -2,31 +2,38 @@ from __future__ import absolute_import
 import os
 import csv
 from collections import OrderedDict
-import pandas as pd
 import json
-import rdflib
-
-from rdflib import *
 import logging
-
+import hashlib
+import rdflib
+import datetime
+from rdflib import URIRef, Graph, RDFS
 from rdflib.resource import Resource
+
 
 __author__ = ['philippe.rocca-serra@oerc.ox.ac.uk']
 
 MTBLS_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'mtbls')
 MTBLS_FILE = 'MetaboLightsAssayMaster.tsv'
-MTBLS_CV_FILE = os.path.join(MTBLS_DIR, 'StudyTerms4Curators-template.xlsx')
 MTLBS_CV_OWL = os.path.join(MTBLS_DIR, 'Metabolights.owl')
 
 MTBLS_ASSAY_DEF_FILE = os.path.join(MTBLS_DIR, MTBLS_FILE)
 
-print(MTBLS_ASSAY_DEF_FILE)
-
-XLS_LOOKUP = pd.ExcelFile(MTBLS_CV_FILE)
+RESOURCES_MTBLS_DIR = os.path.join('../resources/config/json', 'datascriptor')
 
 logging.basicConfig()
 logger = logging.getLogger('logger')
 logger.warning('warning-message')
+
+logger.debug(MTBLS_ASSAY_DEF_FILE)
+
+
+def sha256_checksum(filename, block_size=65536):
+    sha256 = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha256.update(block)
+    return sha256.hexdigest()
 
 
 def load_terms_from_mtblds_owl():
@@ -36,44 +43,122 @@ def load_terms_from_mtblds_owl():
     """
     vocab_graph = rdflib.Graph()
     try:
+        ontofile_sha256 = sha256_checksum(MTLBS_CV_OWL)
         vocab_graph.parse(MTLBS_CV_OWL, format='xml')
         class_labels = []
         mtbls_class = Resource(vocab_graph, URIRef("http://www.ebi.ac.uk/metabolights/ontology/MTBLS_000283"))
         subclasses = list(mtbls_class.transitive_subjects(RDFS.subClassOf))
 
-        for c in subclasses:
-            # l = list(c.objects(RDFS.label))
-            # print("class name:", c.label(), "| uri: ", c)
-            if str(c.label()) not in class_labels:
-                class_labels.append(str(c.label()))
-
+        for class_item in subclasses:
+            if str(class_item.label()) not in class_labels:
+                class_labels.append(str(class_item.label()))
     except IOError as g_ioe:
-        print("error reading graph:", g_ioe)
+        logger.error(g_ioe)
 
-    return class_labels, subclasses
+    return class_labels, subclasses, ontofile_sha256
 
 
-def build_params(protocol_row_record, assay_dictionary, datafr):
+def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech, mtbls_class_names,
+                      mtbls_associated_subclasses, mtbls_owl_sha256):
     """
     a method too build an isa-create-mode assay dictionary
     :protocol_param protocol_row_record: a row corresponding to a protocol workflow definition
     as found MTBLSAssayMaster.tsv
     :protocol_param assay_dictionary: an isa-create-mode assay dictionary stub
-    :protocol_param datafr: a pandas dataframe obtained from looking up sheet in StudyTerms4Curators-template.xlsx
-    :return:
+    :return: assay_dictionary
     """
     # getting all subclasses of Instruments from Metabolights.owl
-    class_names, associated_subclasses = load_terms_from_mtblds_owl()
-    # print("from ontology:", class_names)
+
+    # associated_subclasses=mtbls_associated_subclasses
+
+    def make_param_values(protocol_params, mtbls_associated_subclasses):
+
+        for protocol_param in protocol_params:
+            search_protocol_param = None
+            if param_prefix in ["Mass Spectrometry Imaging"]:
+                search_protocol_param = protocol_param
+            elif param_prefix == "NMR Spectroscopy Imaging":
+                search_protocol_param = protocol_param
+            elif param_prefix == "Liquid Chromatography" and protocol_param == "Chromatography Instrument":
+                search_protocol_param = "Liquid Chromatography Instrument Model"
+            elif param_prefix == "Liquid Chromatography" and protocol_type == "chromatography":
+                search_protocol_param = "Liquid Chromatography " + protocol_param
+            elif param_prefix == "Liquid Chromatography" and protocol_type == "mass spectrometry":
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            elif param_prefix == "Gas Chromatography" and protocol_param == "Chromatography Instrument":
+                search_protocol_param = "Gas" + " " + "Chromatography" + " " + "Instrument" + " " + "Model"
+            elif param_prefix == "Gas Chromatography" and protocol_type == "chromatography" \
+                    and protocol_param != "Chromatography Instrument":
+                search_protocol_param = "Gas Chromatography " + protocol_param
+            elif param_prefix == "Gas Chromatography" and protocol_type == "mass spectrometry":
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            elif param_prefix == "MALDI" and protocol_type == "mass spectrometry":
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            elif param_prefix == "SPE-IMS" and "mass spectrometry" in protocol_type:
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            elif tech == "GC-FID":
+                search_protocol_param = "Gas Chromatography " + protocol_param
+            elif tech == "LC-DAD":
+                search_protocol_param = "Liquid Chromatography " + protocol_param
+            elif param_prefix == "NMR":
+                protocol_param = protocol_param.replace("NMR ", "")
+                search_protocol_param = "NMR " + protocol_param
+            elif param_prefix == "Capillary electrophoresis" and "instrument" in protocol_param:
+                protocol_param = protocol_param.replace("CE Instrument", "Capillary electrophoresis")
+                search_protocol_param = protocol_param
+            elif param_prefix == "Capillary electrophoresis" and protocol_type == "mass spectrometry":
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            elif param_prefix == "Direct injection" and protocol_type == "mass spectrometry":
+                search_protocol_param = "Mass Spectrometry " + protocol_param
+            else:
+                search_protocol_param = protocol_param
+
+            param_setup[search_protocol_param] = { "description": "", "options": [], "values": [] }
+
+            for this_element in mtbls_associated_subclasses:
+                if str(this_element.label()).lower() == search_protocol_param.lower():
+                    # getting all the subclasses for that matched parameter
+                    param_values = list(this_element.transitive_subjects(RDFS.subClassOf))
+
+                    # this is to skip the parent class
+                    iter_param_values = iter(param_values)
+                    next(iter_param_values)
+
+                    # adding the found parameter uri to the list of context in the assay dictionary definition
+                    iri = str(this_element.identifier)
+                    assay_dictionary["@context"][search_protocol_param] = iri
+
+                    for this_value in iter_param_values:
+                        option = dict()
+                        option.update({
+                            'term': "",
+                            'iri': None,
+                            'source': None
+                        })
+                        option["iri"] = str(this_value.identifier)
+                        option["term"] = str(this_value.label())
+                        option["source"] = "Metabolights.owl"
+                        param_setup[search_protocol_param]["options"].append(option)
+        return param_setup
 
     for element in protocol_row_record:
-        workflow_segment = []
-        if element is not "" and "|" in element:
-            (protocol_type, parameters) = element.split("|")
-            protocol_type = protocol_type.lower()
-            if protocol_type not in ["sample collection","data transformation","metabolite identification","nmr assay"]:
-                workflow_segment.append({"term": protocol_type, "iri": None, "source": None})
 
+        workflow_segment = []
+        node_type = None
+
+        # This is to create the protocol application segment of the workflow:
+        if element != "" and "|" in element:
+
+            (protocol_type, parameters) = element.split("|")
+
+            protocol_type = protocol_type.lower()
+
+            if protocol_type not in ["sample collection",
+                                     "data transformation",
+                                     "histology",
+                                     "metabolite identification",
+                                     "nmr assay"]:
+                workflow_segment.append({"term": protocol_type, "iri": None, "source": None})
             if "sample collection" in protocol_type:
                 node_type = None
                 # node_type = ["sample",
@@ -88,25 +173,28 @@ def build_params(protocol_row_record, assay_dictionary, datafr):
                 #                      "value": True
                 #                  }
                 #              }]
-            elif "extraction" in protocol_type:
-                node_type = ["extract",
-                    {
+            if "preparation" in protocol_type:
+                node_type = None
+            if protocol_type == "histology":
+                node_type = None
+            if protocol_type == "data transformation":
+                node_type = None
+            if "extraction" in protocol_type and "solid" not in protocol_type:
+                node_type = ["extract", {
                         "node_type": "extract",
                         "characteristics_category": "extract type",
                         "characteristics_value": {
-                            "options": ["polar fraction", "nonpolar fraction"],
+                            "options": ["polar fraction", "non-polar fraction"],
                             "values": []
                         },
                         "is_input_to_next_protocols": {
                             "value": True
                         }
                     }]
-            elif "labeling" in protocol_type or "labelling" in protocol_type:
-                node_type = [
-                "labeled extract",
-                    {
+            if "labeling" in protocol_type or "labelling" in protocol_type:
+                node_type = ["labeled extract", {
                         "node_type": "labeled extract",
-                        "characteristics_category": "labelled extract type",
+                        "characteristics_category": "labeled extract type",
                         "characteristics_value": {
                             "options": [
                                 "label_0", "label_1"
@@ -118,7 +206,7 @@ def build_params(protocol_row_record, assay_dictionary, datafr):
                         }
                     }
                 ]
-            elif "nmr spectroscopy" in protocol_type:
+            if "nmr spectroscopy" in protocol_type:
                 node_type = [
                             {
                                 "term": "raw spectral data file",
@@ -132,7 +220,7 @@ def build_params(protocol_row_record, assay_dictionary, datafr):
                                 }
                             }
                         ]
-            elif "mass spectrometry" in protocol_type:
+            if "mass spectrometry" in protocol_type:
                 node_type = [
                             {
                                 "term": "raw spectral data file",
@@ -146,76 +234,75 @@ def build_params(protocol_row_record, assay_dictionary, datafr):
                                 }
                             }
                         ]
-            else:
-                node_type = None
+            if tech == "LC-DAD" and "chromatography" in protocol_type:
+                node_type = [
+                            {
+                                "term": "raw data file",
+                                "iri": "",
+                                "source": None
+                            },
+                            {
+                                "node_type": "data file",
+                                "is_input_to_next_protocols": {
+                                    "value": True
+                                }
+                            }
+                        ]
+            if "Gas Chromatography" in param_prefix and tech == "GC-FID" and "chromatography" in protocol_type:
+                node_type = [
+                            {
+                                "term": "raw data file",
+                                "iri": "",
+                                "source": None
+                            },
+                            {
+                                "node_type": "data file",
+                                "is_input_to_next_protocols": {
+                                    "value": True
+                                }
+                            }
+                        ]
+            if "in vivo magnetic resonance assay" in protocol_type:
+                node_type = [
+                    {
+                        "term": "raw spectral data file",
+                        "iri": "http://purl.obolibrary.org/obo/MS_1003083",
+                        "source": None
+                    },
+                    {
+                        "node_type": "data file",
+                        "is_input_to_next_protocols": {
+                            "value": True
+                        }
+                    }
+                ]
 
-            protocol_params = parameters.split(";")
             param_setup = {}
+            protocol_params = parameters.split(";")
 
-            if len(protocol_params) > 0 and protocol_params[0] is not "":
-
+            if len(protocol_params) > 0 and protocol_params[0] is not "" and \
+                    protocol_type not in ["data transformation", "histology"]:
                 param_setup["#replicates"] = {
                         "value": 1
-                    }
+                }
 
-                for protocol_param in protocol_params:
-                    # print("This particular protocol parameter:", protocol_param)
-                    param_setup[protocol_param] = {"options": ["user defined"], "values": []}
-                    # checking if protocol parameter name is also present in the ontology
-                    # if protocol_param in class_names:
-                    #     print("protocol_param: ", protocol_param, "|", class_names)
-                    #     # print("index", class_labels.index(protocol_param), class_labels[class_labels.index(protocol_param)])
-                    #     this_param_class = associated_subclasses[class_names.index(protocol_param)]
-                    #     print("THIS class:", this_param_class)
-                    #     param_values = list(this_param_class.transitive_subjects(RDFS.subClassOf))
-                    #     for this_value in param_values:
-                    #         print("element v2:", this_value.label(), this_value)
-                    # else:
-                    #     print("no class found:  ", protocol_param)
-                    #     next()
+                # build the list of allowed parameter values from the MTBLS ontology
+                param_setup = make_param_values(protocol_params, mtbls_associated_subclasses)
 
-                    # param_values = ()
-
-                    # obtaining the list of protocol parameters and if any, getting values
-                    # from the relevant assay spreadsheet
-                    for field in datafr.columns:
-
-                        if protocol_param in field:
-
-                            for c in associated_subclasses:
-                                if c.label() in field:
-                                    iri = str(c.identifier)
-                                    assay_dictionary["@context"][protocol_param] = iri
-
-                            for value in datafr[field].unique():
-                                option = {"term": "", "iri": None, "source": None}
-                                if pd.isna(value) is False:
-                                    if isinstance(value, int) is False or isinstance(value, float) is False:
-                                        option["term"] = str(value)
-                                        for c in associated_subclasses:
-                                            if c.label() in field:
-                                                option["iri"] = str(c.identifier)
-                                        param_setup[protocol_param]["options"].append(option)
-
-                                    else:
-                                        option["term"] = value
-                                        param_setup[protocol_param]["options"].append(option)
-                else:
-                    param_setup["#replicates"] = {
-                        "value": 1
-                    }
-
+                # add to the assay protocol workflow section being built
                 workflow_segment.append(param_setup)
 
             if workflow_segment:
                 assay_dictionary["workflow"].append(workflow_segment)
-            if node_type is not None:
-                    assay_dictionary["workflow"].append(node_type)
+
+        # This is to add the output Node of the protocol:
+        if node_type is not None:
+                assay_dictionary["workflow"].append(node_type)
 
     return assay_dictionary
 
 
-def parse_mtbls_assay_def(file):
+def parse_mtbls_assay_def(file, mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256 ):
     """
     parsing the MetabolightsAssayMaster.tsv definition,
     making a lookup on the StudyTerms4Curators-template.xlsx file with one sheet per assay type,
@@ -223,6 +310,8 @@ def parse_mtbls_assay_def(file):
     """
     all_assays = []
     try:
+        mtbls_assaymaster_sha256 = sha256_checksum(MTBLS_ASSAY_DEF_FILE)
+
         with open(file) as tsvfile:
             assay_master = csv.reader(tsvfile, delimiter='\t')
             counter = 0
@@ -232,192 +321,350 @@ def parse_mtbls_assay_def(file):
                     tech_type = row[0].partition("-protocol  ")[0]
                     assay_dict = OrderedDict()
 
+                    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
                     if "NMR" in tech_type:
-                        assay_dict["id"] = counter
-                        assay_dict["name"] = "metabolite profiling by NMR"
-                        assay_dict["icon"] = "fas fa-atom"
-                        assay_dict["color"] = "orange"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "NMR spectroscopy"
-                        assay_dict["workflow"] = []
-                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, 'NMR Study')
+                            assay_dict["id"] = counter
+                            assay_dict["name"] = "metabolite profiling by NMR"
+                            assay_dict["icon"] = "fas fa-atom"
+                            assay_dict["color"] = "orange"
+                            assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                            assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                            assay_dict["creation_date"] = now
+                            assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                              "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                              "source": "OBI"}
+                            assay_dict["technology_type"] = {"term": "NMR spectroscopy",
+                                                             "uri": "http://purl.obolibrary.org/obo/OBI_0000623",
+                                                             "source": "OBI"}
+                            assay_dict["workflow"] = []
+                            assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                      "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                            assay_param_prefix = "NMR"
+                            assay_dict = build_params_slim(protocol_row, assay_dict, assay_param_prefix,
+                                                           tech_type, mtbls_class_names, mtbls_associated_subclasses,
+                                                           mtbls_owl_sha256)
+                            all_assays.append(assay_dict)
 
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
-                        all_assays.append(assay_dict)
+                            counter += 1
 
-                        counter += 1
+                    elif "MRImaging" in tech_type:
+                            assay_dict["id"] = counter
+                            assay_dict["name"] = "metabolite spatial distribution imaging using NMR spectroscopy"
+                            assay_dict["icon"] = "fas fa-atom"
+                            assay_dict["color"] = "orange"
+                            assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                            assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                            assay_dict["creation_date"] = now
+                            assay_dict["measurement_type"] = {"term": "metabolite spatial distribution imaging",
+                                                              "uri": "http://purl.obolibrary.org/obo/OBI_0000185",
+                                                              "source": "OBI"}
+                            assay_dict["technology_type"] = {"term": "NMR spectroscopy",
+                                                             "uri": "http://purl.obolibrary.org/obo/OBI_0000623",
+                                                             "source": "OBI"}
+                            assay_dict["workflow"] = []
+                            assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                      "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                            # assay_param_prefix = "NMRImaging"
+                            param_prefix = "NMR Spectroscopy Imaging"
+                            assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                           mtbls_class_names, mtbls_associated_subclasses,
+                                                           mtbls_owl_sha256)
+                            all_assays.append(assay_dict)
 
-                    if "LC-MS" in tech_type:
+                            counter += 1
+
+                    elif "LC-MS" in tech_type:
                         assay_dict["id"] = counter
                         assay_dict["name"] = "metabolite profiling by LC-MS"
                         assay_dict["icon"] = "fas fa-chart-bar"
                         assay_dict["color"] = "blue"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "liquid chromatography mass spectrometry"
+
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "liquid chromatography mass spectrometry",
+                                                         "uri": "http://purl.obolibrary.org/obo/OBI_0000051",
+                                                         "source": "OBI"}
                         assay_dict["workflow"] = []
                         assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
                                                   "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, 'LC-MS Study')
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
+                        assay_param_prefix = "Liquid Chromatography"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, assay_param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
                         all_assays.append(assay_dict)
                         counter += 1
 
-                    if "Imaging-MS" in tech_type:
+                    elif "MSImaging" in tech_type:
                         assay_dict["id"] = counter
                         assay_dict["name"] = "imaging by MS"
                         assay_dict["icon"] = "fas fa-chart-bar"
                         assay_dict["color"] = "blue"
-                        assay_dict["measurement_type"] = "imaging"
-                        assay_dict["technology_type"] = "mass spectrometry"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "imaging",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000185",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "mass spectrometry",
+                                                         "uri": "http://purl.obolibrary.org/obo/OBI_0000470",
+                                                         "source": "OBI"}
                         assay_dict["workflow"] = []
                         assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
                                                   "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, 'LC-MS Study')
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
+                        param_prefix = "Mass Spectrometry Imaging"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
                         all_assays.append(assay_dict)
                         counter += 1
 
+                    elif "GC-MS" in tech_type and "GCxGC" not in tech_type and "TD-GC" not in tech_type:
+                            assay_dict["id"] = counter
+                            assay_dict["name"] = "metabolite profiling by GC-MS"
+                            assay_dict["icon"] = "fas fa-chart-bar"
+                            assay_dict["color"] = "light-blue"
+                            assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                            assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                            assay_dict["creation_date"] = now
+                            assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                              "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                              "source": "OBI"}
+                            assay_dict["technology_type"] = {"term": "gas chromatography mass spectrometry",
+                                                             "uri": "http://purl.obolibrary.org/obo/OBI_0200199",
+                                                             "source": "OBI"}
+                            assay_dict["workflow"] = []
+                            assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                      "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                            param_prefix = "Gas Chromatography"
+                            assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                           mtbls_class_names, mtbls_associated_subclasses,
+                                                           mtbls_owl_sha256)
+                            all_assays.append(assay_dict)
+                            counter += 1
 
-                    if "GC-MS" in tech_type and "GCxGC" not in tech_type and "TD-GC" not in tech_type:
-                        assay_dict["id"] = counter
-                        assay_dict["name"] = "metabolite profiling by GC-MS"
-                        assay_dict["icon"] = "fas fa-chart-bar"
-                        assay_dict["color"] = "light-blue"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "gas chromatography mass spectrometry"
-                        assay_dict["workflow"] = []
-                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, "GC-MS Study")
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
-                        all_assays.append(assay_dict)
-                        counter += 1
-
-                    if "DI-MS" in tech_type and "MALDI" not in tech_type:
+                    elif "DI-MS" in tech_type and "MALDI" not in tech_type:
                         assay_dict["id"] = counter
                         assay_dict["name"] = "metabolite profiling by DI-MS"
                         assay_dict["icon"] = "fas fa-chart-bar"
                         assay_dict["color"] = "light-blue"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "direct infusion mass spectrometry"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "direct infusion mass spectrometry",
+                                                         "uri": "",
+                                                         "source": ""}
                         assay_dict["workflow"] = []
                         assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
                                                   "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, "DI-MS Study")
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
+                        param_prefix = "Direct injection"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
                         all_assays.append(assay_dict)
                         counter += 1
-                    #
-                    # if "FIA-MS" in tech_type:
-                    #     assay_dict["id"] = counter
-                    #     assay_dict["name"] = "metabolite profiling by FIA-MS"
-                    #     assay_dict["icon"] = "fas fa-chart-bar"
-                    #     assay_dict["color"] = "light-blue"
-                    #     assay_dict["measurement_type"] = "metabolite profiling"
-                    #     assay_dict["technology_type"] = "flow injection mass spectrometry"
-                    #     assay_dict["workflow"] = []
-                    #     assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                    #                               "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                    #     # obtain the list of parameter values by doing the lookup
-                    #     param_df = pd.read_excel(XLS_LOOKUP, "FIA-MS Study")
-                    #     assay_dict = build_params(protocol_row, assay_dict, param_df)
-                    #     all_assays.append(assay_dict)
-                    #     counter += 1
-                    #
-                    # if "CE-MS" in tech_type:
-                    #     assay_dict["id"] = counter
-                    #     assay_dict["name"] = "metabolite profiling by FIA-MS"
-                    #     assay_dict["icon"] = "fas fa-chart-bar"
-                    #     assay_dict["color"] = "light-blue"
-                    #     assay_dict["measurement_type"] = "metabolite profiling"
-                    #     assay_dict["technology_type"] = "capillary electrophoresis mass spectrometry"
-                    #     assay_dict["workflow"] = []
-                    #     assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                    #                               "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                    #     # obtain the list of parameter values by doing the lookup
-                    #     param_df = pd.read_excel(XLS_LOOKUP, "CE-MS Study")
-                    #     assay_dict = build_params(protocol_row, assay_dict, param_df)
-                    #     all_assays.append(assay_dict)
-                    #     counter += 1
-                    #
-                    if "MALDI-MS" in tech_type:
+
+                    elif "FIA-MS" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by FIA-MS"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "flow injection mass spectrometry",
+                                                         "uri": "",
+                                                         "source": ""}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Direct injection"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
+
+                    elif "CE-MS" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by CE-MS"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "capillary electrophoresis mass spectrometry",
+                                                         "uri": "",
+                                                         "source": ""}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Capillary electrophoresis"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
+
+                    elif "MALDI-MS" in tech_type:
                         assay_dict["id"] = counter
                         assay_dict["name"] = "metabolite profiling by MALDI-MS"
                         assay_dict["icon"] = "fas fa-chart-bar"
                         assay_dict["color"] = "light-blue"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "maldi mass spectrometry"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "maldi mass spectrometry",
+                                                         "uri": "http://purl.obolibrary.org/obo/CHMO_0000519",
+                                                         "source": "CHMO"}
                         assay_dict["workflow"] = []
                         assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
                                                   "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, "MALDI-MS Study")
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
+                        param_prefix = "MALDI"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
                         all_assays.append(assay_dict)
                         counter += 1
 
-                    if "SPE-IMS-MS" in tech_type:
+                    elif "SPE-IMS-MS" in tech_type:
                         assay_dict["id"] = counter
                         assay_dict["name"] = "metabolite profiling by SPE-IMS-MS"
                         assay_dict["icon"] = "fas fa-chart-bar"
                         assay_dict["color"] = "light-blue"
-                        assay_dict["measurement_type"] = "metabolite profiling"
-                        assay_dict["technology_type"] = "solid-phase extraction ion mobility mass spectrometry"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "solid-phase extraction ion mobility mass spectrometry"
+                                                       , "uri": "http://purl.obolibrary.org/obo/CHMO_0000499",
+                                                         "source": "CHMO"}
                         assay_dict["workflow"] = []
                         assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
                                                   "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                        # obtain the list of parameter values by doing the lookup
-                        param_df = pd.read_excel(XLS_LOOKUP, "SPE-IMS-MS Study")
-                        assay_dict = build_params(protocol_row, assay_dict, param_df)
+                        param_prefix = "SPE-IMS"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
                         all_assays.append(assay_dict)
                         counter += 1
-                    #
-                    # if "GCxGC-MS" in tech_type:
-                    #     assay_dict["id"] = counter
-                    #     assay_dict["name"] = "metabolite profiling by GCxGC-MS"
-                    #     assay_dict["icon"] = "fas fa-chart-bar"
-                    #     assay_dict["color"] = "light-blue"
-                    #     assay_dict["measurement_type"] = "metabolite profiling"
-                    #     assay_dict["technology_type"] = "tandem gas chromatography mass spectrometry"
-                    #     assay_dict["workflow"] = []
-                    #     assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                    #                               "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                    #     # obtain the list of parameter values by doing the lookup
-                    #     param_df = pd.read_excel(XLS_LOOKUP, "GCxGC-MS Study")
-                    #     assay_dict = build_params(protocol_row, assay_dict, param_df)
-                    #     all_assays.append(assay_dict)
-                    #     counter += 1
-                    #
-                    # if "LC-DAD" in tech_type:
-                    #     assay_dict["id"] = counter
-                    #     assay_dict["name"] = "metabolite profiling by LC-DAD"
-                    #     assay_dict["icon"] = "fas fa-chart-bar"
-                    #     assay_dict["color"] = "light-blue"
-                    #     assay_dict["measurement_type"] = "metabolite profiling"
-                    #     assay_dict["technology_type"] = "liquid chromatography diode-array-detector"
-                    #     assay_dict["workflow"] = []
-                    #     assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
-                    #                               "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
-                    #     # obtain the list of parameter values by doing the lookup
-                    #     param_df = pd.read_excel(XLS_LOOKUP, "LC-DAD Study")
-                    #     assay_dict = build_params(protocol_row, assay_dict, param_df)
-                    #     all_assays.append(assay_dict)
-                    #     counter += 1
+
+                    elif "GCxGC-MS" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by GCxGC-MS"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "tandem gas chromatography mass spectrometry",
+                                                         "uri": "http://purl.obolibrary.org/obo/CHMO_0002862",
+                                                         "source": "CHMO"}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Gas Chromatography"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
+
+                    elif "LC-DAD" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by LC-DAD"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "liquid chromatography diode-array-detector",
+                                                         "uri": "http://purl.obolibrary.org/obo/CHMO_0001738",
+                                                         "source": "CHMO"}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Liquid Chromatography"
+                        tech_type = "LC-DAD"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
+
+                    elif "GC-FID" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by GC-FID"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "gas chromatography flame-ionization-detector",
+                                                         "uri": "http://purl.obolibrary.org/obo/CHMO_0001736",
+                                                         "source": "CHMO"}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Gas Chromatography"
+                        tech_type = "GC-FID"
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
+
+                    elif "TD-GC-MS" in tech_type:
+                        assay_dict["id"] = counter
+                        assay_dict["name"] = "metabolite profiling by tandem gas chromatography mass-spectrometry"
+                        assay_dict["icon"] = "fas fa-chart-bar"
+                        assay_dict["color"] = "light-blue"
+                        assay_dict["mtbls_owl_sha256"] = str(mtbls_owl_sha256)
+                        assay_dict["mtbls_assaymaster_sha256"] = mtbls_assaymaster_sha256
+                        assay_dict["creation_date"] = now
+                        assay_dict["measurement_type"] = {"term": "metabolite profiling",
+                                                          "uri": "http://purl.obolibrary.org/obo/OBI_0000366",
+                                                          "source": "OBI"}
+                        assay_dict["technology_type"] = {"term": "gas chromatography-tandem mass spectrometry",
+                                                         "uri": "http://purl.obolibrary.org/obo/CHMO_0002862",
+                                                         "source": "CHMO"}
+                        assay_dict["workflow"] = []
+                        assay_dict["@context"] = {"measurement type": "http://purl.obolibrary.org/obo/OBI_0000070",
+                                                  "technology type": "http://www.ebi.ac.uk/efo/EFO_0005521"}
+                        param_prefix = "Gas Chromatography"
+                        tech_type = ""
+                        assay_dict = build_params_slim(protocol_row, assay_dict, param_prefix, tech_type,
+                                                       mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256)
+                        all_assays.append(assay_dict)
+                        counter += 1
 
         return all_assays
 
     except IOError as ioe:
-        print("error reading assay definition file:", ioe)
+        logger.error(ioe)
 
 
 if __name__ == "__main__":
-    # assays = parse_mtbls_assay_def(MTBLS_ASSAY_DEF_FILE)
-    # print(json.dumps(assay_dict, indent=4))
-    print(json.dumps(parse_mtbls_assay_def(MTBLS_ASSAY_DEF_FILE), indent=4))
+
+    mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256 = load_terms_from_mtblds_owl()
+    output = os.path.join(RESOURCES_MTBLS_DIR, "mtbls_isa_assay_ds_config.json")
+    with open(output, 'w') as config_file:
+        json.dump(parse_mtbls_assay_def(MTBLS_ASSAY_DEF_FILE, mtbls_class_names, mtbls_associated_subclasses,
+                                        mtbls_owl_sha256),  config_file, indent=4)

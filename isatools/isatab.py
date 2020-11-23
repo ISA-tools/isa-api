@@ -5318,7 +5318,7 @@ def preprocess(DF):
             inferred_protocol_type = 'metabolite identification'
         elif leftcol == 'Raw Data File' and \
                         rightcol == 'Protein Identification File':
-            inferred_protocol_type = 'metabolite identification'
+            inferred_protocol_type = 'protein identification'
 
         # Force use of unknown protocol always, until we can insert missing
         # protocol from above inferences into study metadata

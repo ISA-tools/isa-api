@@ -1,6 +1,0 @@
-LC/DAD (Diode Array Detector)		
-Parameter Value[Detector]	Parameter Value[Signal range]	Parameter Value[Resolution]
-Waters ACQUITY UPLC PDA Detector	190-500 nm	0.25 nm
-Waters ACQUITY UPLC PDA Detector	210-450 nm	2 nm
-Waters ACQUITY UPLC PDA e_ Detector	250-600 nm	1.2 nm
-Agilent 1290 Infinity DAD Detector	200-600 nm	1 nm

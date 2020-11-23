@@ -1,5 +1,0 @@
-LC/MS (MALDI TOF)		
-Parameter Value[Instrument]	Parameter Value[Ion source]	Parameter Value[Mass analyzer]
-AB SCIEX 4800 Plus MALDI TOF/TOF	MS:matrix-assisted laser desorption ionization	MS:time-of-flight
-AB SCIEX TOF/TOF 5800		MS:time-of-flight
-Bruker ultrafleXtreme		MS:time-of-flight
