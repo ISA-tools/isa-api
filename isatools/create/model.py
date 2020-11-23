@@ -1025,15 +1025,17 @@ class AssayGraph(object):
             if node_key in ('id', 'name', 'selected_sample_types', 'measurement_type', 'technology_type'):
                 continue
 
+            node_name = node_key.term if isinstance(node_key, OntologyAnnotation) else node_key
+
             if isinstance(node_params, list):    # the node is a ProductNode
                 for i, node_params_dict in enumerate(node_params):
                     for j, prev_node in enumerate(previous_nodes):
                         # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                         product_node = ProductNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
-                                re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
+                                re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                             ),
-                            name=node_key, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            name=node_name, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
                             characteristics=[
                                 Characteristic(category=node_params_dict['characteristics_category'],
                                                value=node_params_dict['characteristics_value'])
@@ -1051,13 +1053,13 @@ class AssayGraph(object):
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for i, pv_combination in enumerate(pv_combinations):
-                    # log.debug('pv_combination: {0}'.format(pv_combination))
+                    log.debug('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
-                                re.sub(r'\s+', '_', node_key), str(i).zfill(3)
+                                re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
                             ),
-                            name=node_key, protocol_type=node_key,
+                            name=node_name, protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
@@ -1072,9 +1074,9 @@ class AssayGraph(object):
                             # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
-                                    re.sub(r'\s+', '_', node_key), str(i).zfill(3), str(j).zfill(3)
+                                    re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                                 ),
-                                name=node_key, protocol_type=node_key,
+                                name=node_name, protocol_type=node_key,
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)

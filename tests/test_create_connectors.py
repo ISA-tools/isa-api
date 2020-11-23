@@ -144,3 +144,18 @@ class TestMappings(unittest.TestCase):
         self.assertIsInstance(inv_dict, dict)
         data_frames = isatab.dump_tables_to_dataframes(investigation)
         self.assertIsInstance(data_frames, dict)
+
+    def test_generate_study_design_from_config_with_observational_factors_and_ontology_annotations(self):
+        ds_design_config = self._load_config('study-design-crossover-onto-annotated-ms-and-nnmr.json')
+        design = generate_study_design_from_config(ds_design_config)
+        self.assertIsInstance(design, StudyDesign)
+        investigation = Investigation(studies=[design.generate_isa_study()])
+        json.dumps(
+            investigation,
+            cls=ISAJSONEncoder,
+            sort_keys=True,
+            indent=4,
+            separators=(',', ': ')
+        )
+        data_frames = isatab.dump_tables_to_dataframes(investigation)
+        self.assertIsInstance(data_frames, dict)
