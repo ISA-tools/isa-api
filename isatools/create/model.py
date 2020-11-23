@@ -2294,8 +2294,8 @@ class StudyDesign(object):
         """
         if isinstance(node, ProtocolNode):
             return Process(
-                name='{}_{}-{}-<acquisition>{}'.format(
-                    urlify(node.name), assay_file_prefix, start_node_index, counter[node.name]
+                name='{}-S{}-{}-Acquisition-R{}'.format(
+                    assay_file_prefix, start_node_index, urlify(node.name), counter[node.name]
                 ),
                 executes_protocol=node,
                 performer=performer,
@@ -2306,17 +2306,17 @@ class StudyDesign(object):
         if isinstance(node, ProductNode):
             if node.type == SAMPLE:
                 return Sample(
-                    name='{}-{}-Sample{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
+                    name='{}-S{}-Sample-R{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
                     characteristics=node.characteristics
                 )
             if node.type == EXTRACT:
                 return Extract(
-                    name='{}-{}-Extract{}'.format(assay_file_prefix, start_node_index, counter[EXTRACT]),
+                    name='{}-S{}-Extract-R{}'.format(assay_file_prefix, start_node_index, counter[EXTRACT]),
                     characteristics=node.characteristics
                 )
             if node.type == LABELED_EXTRACT:
                 return LabeledExtract(
-                    name='{}-{}-LE{}'.format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
+                    name='{}-S{}-LE-R{}'.format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
                     characteristics=node.characteristics
                 )
             # under the hypothesis that we deal only with raw data files
@@ -2343,19 +2343,19 @@ class StudyDesign(object):
                         RawDataFile, RawSpectralDataFile, ArrayDataFile, FreeInductionDecayDataFile
                     }
                     return isa_class(
-                        filename='{}_{}-{}-{}'.format(
-                            urlify(node.name),
+                        filename='{}-S{}-{}-R{}'.format(
                             assay_file_prefix,
                             start_node_index,
+                            urlify(node.name),
                             counter[node.name]
                         )
                     )
                 except StopIteration:
                     return RawDataFile(
-                        filename='{}_{}-{}-{}'.format(
-                            urlify(node.name),
+                        filename='{}-S{}-{}-R{}'.format(
                             assay_file_prefix,
                             start_node_index,
+                            urlify(node.name),
                             counter[node.name]
                         )
                     )
