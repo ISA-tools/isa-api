@@ -143,7 +143,7 @@ def get_value(object_column, column_group, object_series,
 
         term_source_value = object_series[offset_1r_col]
 
-        if term_source_value is not '':
+        if term_source_value != '':
 
             try:
                 value.term_source = ontology_source_map[term_source_value]
@@ -152,7 +152,7 @@ def get_value(object_column, column_group, object_series,
 
         term_accession_value = str(object_series[offset_2r_col])
 
-        if term_accession_value is not '':
+        if term_accession_value != '':
             value.term_accession = term_accession_value
 
         return value, None
@@ -176,7 +176,7 @@ def get_value(object_column, column_group, object_series,
 
             unit_term_source_value = object_series[offset_2r_col]
 
-            if unit_term_source_value is not '':
+            if unit_term_source_value != '':
 
                 try:
                     unit_term_value.term_source = \
@@ -187,7 +187,7 @@ def get_value(object_column, column_group, object_series,
 
             term_accession_value = object_series[offset_3r_col]
 
-            if term_accession_value is not '':
+            if term_accession_value != '':
                 unit_term_value.term_accession = term_accession_value
 
         return cell_value, unit_term_value
