@@ -35,9 +35,9 @@ import logging
 
 try:
     log = logging.getLogger('isatools')
-    print("LOG:", log)
+    log.debug("LOG:", log)
 except IOError as ioe:
-    print("error:", ioe)
+    log.error("error:", ioe)
 
 
 def _get_sdrf_filenames(ISA):
