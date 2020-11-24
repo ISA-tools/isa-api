@@ -46,9 +46,17 @@ from isatools.model import (
     Material,
     DataFile,
     RawDataFile,
-    RawSpectralDataFile,  # this is required for the module to work
+    RawSpectralDataFile,
     FreeInductionDecayDataFile,
     ArrayDataFile,
+    DerivedDataFile,
+    DerivedSpectralDataFile,
+    DerivedArrayDataFile,
+    ProteinAssignmentFile,
+    PeptideAssignmentFile,
+    DerivedArrayDataMatrixFile,
+    PostTranslationalModificationAssignmentFile,
+    AcquisitionParameterDataFile,
     Extract,
     LabeledExtract,
     plink
@@ -2340,7 +2348,10 @@ class StudyDesign(object):
                     isa_class = globals()[curr_assay_opt['raw data file'].replace(' ', '')]
                     assert isa_class in {
                         # expand this set if needed
-                        RawDataFile, RawSpectralDataFile, ArrayDataFile, FreeInductionDecayDataFile
+                        RawDataFile, RawSpectralDataFile, ArrayDataFile, FreeInductionDecayDataFile,
+                        DerivedDataFile, DerivedSpectralDataFile, DerivedArrayDataFile,
+                        ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
+                        PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile
                     }
                     return isa_class(
                         filename='{}-S{}-{}-R{}'.format(
