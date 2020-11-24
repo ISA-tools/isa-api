@@ -15,8 +15,6 @@ from io import StringIO
 from itertools import zip_longest
 import numpy as np
 import pandas as pd
-# import modin.pandas as pd_modin
-
 from isatools import isatab
 from isatools.model import (
     Assay,
@@ -33,11 +31,7 @@ from isatools.model import (
 )
 import logging
 
-try:
-    log = logging.getLogger('isatools')
-    log.debug("LOG:", log)
-except IOError as ioe:
-    log.error("error:", ioe)
+log = logging.getLogger('isatools')
 
 
 def _get_sdrf_filenames(ISA):
