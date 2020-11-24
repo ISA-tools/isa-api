@@ -2052,7 +2052,7 @@ class StudyDesign(object):
             for subj_n in (str(ix).zfill(digits) for ix in range(1, s_arm.group_size + 1)):
                 src = copy.copy(source_prototype)
                 src.name = self._idgen_sources(
-                    s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix,
+                    s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,  # start counting from 1
                     subj_n
                 )
                 srcs.add(src)
@@ -2103,7 +2103,7 @@ class StudyDesign(object):
                                 isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
                             for samp_idx in range(0, sampling_size):
                                 sample = Sample(
-                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx+1), sample_term),
+                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
                                     factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
                                 )
                                 sample_batches[sample_node].append(sample)
@@ -2261,8 +2261,8 @@ class StudyDesign(object):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
                     processes, other_materials, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, assay_graph.id, start_node_index=ix, counter=None, processes=[], other_materials=[],
-                        data_files=[], previous_items=[sample]
+                        node, assay_graph, assay_graph.id, start_node_index=ix + 1, counter=None, processes=[],
+                        other_materials=[], data_files=[], previous_items=[sample]
                     )
                     assay.other_material.extend(other_materials)
                     assay.process_sequence.extend(processes)
