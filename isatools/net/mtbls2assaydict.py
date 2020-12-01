@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 import os
+import shutil
+import sys
 import csv
 from collections import OrderedDict
 import json
@@ -7,17 +9,19 @@ import logging
 import hashlib
 import rdflib
 import datetime
+import requests
 from rdflib import URIRef, Graph, RDFS
 from rdflib.resource import Resource
 
 
 __author__ = ['philippe.rocca-serra@oerc.ox.ac.uk']
 
-MTBLS_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'mtbls')
-MTBLS_FILE = 'MetaboLightsAssayMaster.tsv'
-MTLBS_CV_OWL = os.path.join(MTBLS_DIR, 'Metabolights.owl')
+MTBLS_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'mtbls/current')
+MTBLS_TMPDIR = os.path.join(os.path.dirname(__file__), 'resources', 'mtbls/tmp')
 
-MTBLS_ASSAY_DEF_FILE = os.path.join(MTBLS_DIR, MTBLS_FILE)
+MTBLS_ASSAY_DEF_FILE = os.path.join(MTBLS_DIR, 'MetaboLightsAssayMaster.tsv')
+
+MTBLS_CV_OWL = os.path.join(MTBLS_DIR, 'Metabolights.owl')
 
 RESOURCES_MTBLS_DIR = os.path.join('../resources/config/json', 'datascriptor')
 
@@ -28,6 +32,79 @@ logger.warning('warning-message')
 logger.debug(MTBLS_ASSAY_DEF_FILE)
 
 
+def update_current_file(input_file):
+    try:
+
+        new_folder_name = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+        dst = os.path.join('resources/mtbls', new_folder_name)
+
+        if os.path.exists(os.path.join('resources/mtbls', new_folder_name)):
+            if ".tsv" in input_file:
+                shutil.move(MTBLS_ASSAY_DEF_FILE, os.path.join(dst, "MetaboLightsAssayMaster.tsv.previous"))
+                shutil.move(input_file, os.path.join('resources/mtbls/current', "MetaboLightsAssayMaster.tsv"))
+                latest_version =  os.path.join('resources/mtbls/current', "MetaboLightsAssayMaster.tsv")
+            elif ".owl" in input_file:
+                shutil.move(MTBLS_CV_OWL, os.path.join(dst, "Metabolights.owl.previous"))
+                shutil.move(input_file, os.path.join('resources/mtbls/current', "Metabolights.owl"))
+                latest_version = os.path.join('resources/mtbls/current', "Metabolights.owl")
+
+        else:
+            os.makedirs(os.path.join('resources/mtbls', new_folder_name))
+            if ".tsv" in input_file:
+                shutil.move(MTBLS_ASSAY_DEF_FILE, os.path.join(dst, "MetaboLightsAssayMaster.tsv.previous"))
+                shutil.move(input_file, os.path.join('resources/mtbls/current', "MetaboLightsAssayMaster.tsv"))
+                latest_version = os.path.join('resources/mtbls/current', "MetaboLightsAssayMaster.tsv")
+            elif ".owl" in input_file:
+                shutil.move(MTBLS_CV_OWL, os.path.join(dst, "Metabolights.owl.previous"))
+                shutil.move(input_file, os.path.join('resources/mtbls/current', "Metabolights.owl"))
+                latest_version = os.path.join('resources/mtbls/current', "Metabolights.owl")
+
+    except IOError as ioe:
+        logger.error(ioe)
+
+    return latest_version
+
+def check_file_for_updates(old_file, resource_url):
+
+    try:
+        if ".tsv" in resource_url:
+            MTBLS_MASTER_LATEST = os.path.join(MTBLS_TMPDIR, 'MetaboLightsAssayMaster-latest.tsv')
+            MTBLS_MASTER_URL = requests.get(resource_url)
+            MTBLS_MASTER_DL = open(MTBLS_MASTER_LATEST, 'wb').write(MTBLS_MASTER_URL.content)
+
+            new_master_file_sha256 = sha256_checksum(MTBLS_MASTER_LATEST)
+            old_master_file_sha256 = sha256_checksum(old_file)
+
+            if old_master_file_sha256 == new_master_file_sha256:
+                mtbls_master_file = old_file
+
+            else:
+                mtbls_master_file = MTBLS_MASTER_LATEST
+                mtbls_master_file = update_current_file(mtbls_master_file)
+
+        elif ".owl" in resource_url:
+            MTBLS_MASTER_LATEST = os.path.join(MTBLS_TMPDIR, 'Metabolights-Ontology-latest.owl')
+            MTBLS_MASTER_URL = requests.get(resource_url)
+            MTBLS_MASTER_DL = open(MTBLS_MASTER_LATEST, 'wb').write(MTBLS_MASTER_URL.content)
+            new_master_file_sha256 = sha256_checksum(MTBLS_MASTER_LATEST)
+            old_master_file_sha256 = sha256_checksum(old_file)
+
+            if old_master_file_sha256 == new_master_file_sha256:
+                mtbls_master_file = old_file
+
+            else:
+                mtbls_master_file = MTBLS_MASTER_LATEST
+                mtbls_master_file = update_current_file(mtbls_master_file)
+
+        else:
+            exit()
+
+    except ConnectionError as con_err:
+        logger.error(con_err)
+
+    return mtbls_master_file
+
+
 def sha256_checksum(filename, block_size=65536):
     sha256 = hashlib.sha256()
     with open(filename, 'rb') as f:
@@ -36,15 +113,15 @@ def sha256_checksum(filename, block_size=65536):
     return sha256.hexdigest()
 
 
-def load_terms_from_mtblds_owl():
+def load_terms_from_mtblds_owl(ontology_file):
     """
     a method to load all subclasses of Instruments from Metabolights.owl ontology file.
     :return:
     """
     vocab_graph = rdflib.Graph()
     try:
-        ontofile_sha256 = sha256_checksum(MTLBS_CV_OWL)
-        vocab_graph.parse(MTLBS_CV_OWL, format='xml')
+        ontofile_sha256 = sha256_checksum(ontology_file)
+        vocab_graph.parse(owl_file, format='xml')
         class_labels = []
         mtbls_class = Resource(vocab_graph, URIRef("http://www.ebi.ac.uk/metabolights/ontology/MTBLS_000283"))
         subclasses = list(mtbls_class.transitive_subjects(RDFS.subClassOf))
@@ -68,8 +145,6 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
     :return: assay_dictionary
     """
     # getting all subclasses of Instruments from Metabolights.owl
-
-    # associated_subclasses=mtbls_associated_subclasses
 
     def make_param_values(protocol_params, mtbls_associated_subclasses):
 
@@ -280,7 +355,7 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
             param_setup = {}
             protocol_params = parameters.split(";")
 
-            if len(protocol_params) > 0 and protocol_params[0] is not "" and \
+            if len(protocol_params) > 0 and protocol_params[0] != "" and \
                     protocol_type not in ["data transformation", "histology"]:
                 param_setup["#replicates"] = {
                         "value": 1
@@ -663,8 +738,14 @@ def parse_mtbls_assay_def(file, mtbls_class_names, mtbls_associated_subclasses, 
 
 if __name__ == "__main__":
 
-    mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256 = load_terms_from_mtblds_owl()
+    assay_file = check_file_for_updates(MTBLS_ASSAY_DEF_FILE, "https://raw.githubusercontent.com/EBI-Metabolights/MtblsWS-Py/master/resources/MetaboLightsAssayMaster.tsv")
+
+    owl_file = check_file_for_updates(MTBLS_CV_OWL, "https://raw.githubusercontent.com/EBI-Metabolights/Ontology/master/Metabolights.owl")
+
+    mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256 = load_terms_from_mtblds_owl(owl_file)
     output = os.path.join(RESOURCES_MTBLS_DIR, "mtbls_isa_assay_ds_config.json")
+
     with open(output, 'w') as config_file:
-        json.dump(parse_mtbls_assay_def(MTBLS_ASSAY_DEF_FILE, mtbls_class_names, mtbls_associated_subclasses,
+        json.dump(parse_mtbls_assay_def(assay_file, mtbls_class_names,
+                                        mtbls_associated_subclasses,
                                         mtbls_owl_sha256),  config_file, indent=4)
