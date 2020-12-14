@@ -666,8 +666,8 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertIsInstance(actual_arm, StudyArm)
-        log.info('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
-        log.info('Actual Arm source type: {}'.format(actual_arm.source_type))
+        log.debug('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
+        log.debug('Actual Arm source type: {}'.format(actual_arm.source_type))
         self.assertEqual(self.multi_treatment_cell_arm_mouse, actual_arm)
 
 
@@ -675,13 +675,20 @@ class StudyDesignEncoderTest(BaseTestCase):
 
     def setUp(self):
         super(StudyDesignEncoderTest, self).setUp()
-        self.three_arm_study_design = StudyDesign(name=TEST_STUDY_DESIGN_NAME_THREE_ARMS, study_arms={
-            self.single_treatment_cell_arm,
-            self.single_treatment_cell_arm_01,
-            self.single_treatment_cell_arm_02
+        self.three_arm_study_design = StudyDesign(
+            name=TEST_STUDY_DESIGN_NAME_THREE_ARMS,
+            description='This is a study design with three single-element arms',
+            design_type='unspecified design',
+            study_arms={
+                self.single_treatment_cell_arm,
+                self.single_treatment_cell_arm_01,
+                self.single_treatment_cell_arm_02
         })
         self.multi_element_cell_two_arm_study_design = StudyDesign(
-            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS, study_arms=[
+            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS,
+            description='This is a study design with two multi-element arms',
+            design_type='unspecified design',
+            study_arms=[
                 self.multi_treatment_cell_arm,
                 self.multi_treatment_cell_arm_01
             ])

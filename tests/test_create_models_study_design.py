@@ -1621,6 +1621,16 @@ class StudyDesignTest(BaseStudyDesignTest):
             self.study_design.name = 128
         self.assertEqual(ex_cm.exception.args[0], errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
 
+    def test_description_property(self):
+        test_study_description = 'some description in here'
+        self.study_design.description = test_study_description
+        self.assertEqual(self.study_design.description, test_study_description)
+
+    def test_design_type_property(self):
+        test_study_design_type = 'factorial design'
+        self.study_design.design_type = test_study_design_type
+        self.assertEqual(self.study_design.design_type, test_study_design_type)
+
     def test_study_arms_property(self):
         pass
 

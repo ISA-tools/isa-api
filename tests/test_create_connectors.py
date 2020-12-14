@@ -83,9 +83,9 @@ class TestMappings(unittest.TestCase):
         return ds_design_config
 
     def test_generate_assay_ord_dict_from_datascriptor_config(self):
-        ds_design_config = self._load_config('study-design-3-repeated-treatment.json')
-        assay_config = ds_design_config['assayConfigs'][0]
-        test_arm_name = 'Arm_0'
+        ds_design_config = self._load_config('factorial-study-design-12-arms-blood-saliva-genomeseq-ms.json')
+        assay_config = ds_design_config['assayPlan'][0]
+        test_arm_name = ds_design_config['arms']['selected'][0]['name']
         test_epoch_no = -1   # last epoch, follow-up
         assay_odict = generate_assay_ord_dict_from_config(assay_config, test_arm_name, test_epoch_no)
         self.assertIsInstance(assay_odict, OrderedDict)
@@ -93,10 +93,10 @@ class TestMappings(unittest.TestCase):
         self.assertIsInstance(assay_graph, AssayGraph)
 
     def test_generate_study_design_from_config(self):
-        ds_design_config = self._load_config('study-design-3-repeated-treatment.json')
+        ds_design_config = self._load_config('factorial-study-design-12-arms-blood-saliva-genomeseq-ms.json')
         design = generate_study_design_from_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
-        self.assertEqual(len(design.study_arms), len(ds_design_config['selectedArms']))
+        self.assertEqual(len(design.study_arms), len(ds_design_config['arms']['selected']))
         for arm in design.study_arms:
             self.assertIsInstance(arm, StudyArm)
             for cell, samp_ass_plan in arm.arm_map.items():
@@ -117,8 +117,8 @@ class TestMappings(unittest.TestCase):
         self.assertIsInstance(data_frames, dict)
         self.assertGreater(len(data_frames), 1)
 
-    def test_generate_study_design_from_config_with_observational_factors(self):
-        ds_design_config = self._load_config('study-design-with-observational-factors.json')
+    def test_generate_study_design_from_config_with_observational_factors_and_ontology_annotations(self):
+        ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms.json')
         design = generate_study_design_from_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         for ix, arm in enumerate(design.study_arms):
@@ -145,14 +145,13 @@ class TestMappings(unittest.TestCase):
         data_frames = isatab.dump_tables_to_dataframes(investigation)
         self.assertIsInstance(data_frames, dict)
 
-    def test_generate_study_design_from_config_with_observational_factors_and_ontology_annotations(self):
-        ds_design_config = self._load_config('study-design-crossover-onto-annotated-ms-and-nnmr.json')
+    def test_generate_study_design_from_config_with_chained_protocols_and_ontology_annotations(self):
+        ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms-chipseq.json')
         design = generate_study_design_from_config(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         investigation = Investigation(studies=[design.generate_isa_study()])
         self.assertIsInstance(investigation.studies[0], Study)
-        """
-        # removed because it takes too long on CI and not really needed.
+        self.assertEqual(len(investigation.studies[0].assays), len(ds_design_config['assayPlan']))
         json.dumps(
             investigation,
             cls=ISAJSONEncoder,
@@ -162,4 +161,4 @@ class TestMappings(unittest.TestCase):
         )
         data_frames = isatab.dump_tables_to_dataframes(investigation)
         self.assertIsInstance(data_frames, dict)
-        """
+        self.assertEqual(len(data_frames), len(ds_design_config['assayPlan']) + 1)

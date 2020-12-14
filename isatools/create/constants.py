@@ -4,7 +4,7 @@ import yaml
 from isatools.model import OntologyAnnotation, StudyFactor, OntologySource, Characteristic
 
 SCREEN = 'screen'
-RUN_IN = 'run in'
+RUN_IN = 'run-in'
 WASHOUT = 'washout'
 FOLLOW_UP = 'follow-up'
 ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)

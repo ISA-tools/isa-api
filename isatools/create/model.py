@@ -136,7 +136,7 @@ class NonTreatment(Element):
     def __init__(self, element_type=ELEMENT_TYPES['SCREEN'], duration_value=0.0, duration_unit=None):
         super(NonTreatment, self).__init__()
         if element_type not in ELEMENT_TYPES.values():
-            raise ValueError('element treatment type provided: ')
+            raise ValueError('element treatment type provided: {}'.format(element_type))
         self.__type = element_type
         if not isinstance(duration_value, Number):
             raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
@@ -1161,8 +1161,11 @@ class AssayGraph(object):
                    for target_node in target_nodes)
 
     def add_link(self, start_node, target_node):
+        """
         if not (isinstance(start_node, ProductNode) and isinstance(target_node, ProtocolNode)) and \
                 not (isinstance(start_node, ProtocolNode) and isinstance(target_node, ProductNode)):
+        """
+        if isinstance(start_node, ProductNode) and isinstance(target_node, ProductNode):
             raise TypeError(errors.INVALID_LINK_ERROR)
         if start_node not in self.__graph_dict.keys() or target_node not in self.__graph_dict.keys():
             raise ValueError(errors.MISSING_NODE_ERROR)
@@ -1923,7 +1926,14 @@ class StudyDesign(object):
     StudyArms of different lengths (i.e. different number of cells) are allowed.
     """
 
-    def __init__(self, name='Study Design', source_type=DEFAULT_SOURCE_TYPE, study_arms=None):
+    def __init__(
+            self,
+            name='Study Design',
+            design_type=None,
+            description=None,
+            source_type=DEFAULT_SOURCE_TYPE,
+            study_arms=None
+    ):
         """
         :param name: str
         :param source_type: str or OntologyAnnotation
@@ -1931,11 +1941,17 @@ class StudyDesign(object):
         """
         self.__study_arms = set()
         self.__name = name if isinstance(name, str) else 'Study Design'
+        self.__design_type = None
+        self.__description = None
         self.__source_type = None
 
         self.source_type = source_type
         if study_arms:
             self.study_arms = study_arms
+        if description:
+            self.description = description
+        if design_type:
+            self.design_type = design_type
 
     @property
     def name(self):
@@ -1946,6 +1962,26 @@ class StudyDesign(object):
         if not isinstance(name, str):
             raise AttributeError(errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
         self.__name = name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @description.setter
+    def description(self, description):
+        if not isinstance(description, str):
+            raise AttributeError(errors.DESCRIPTION_PROPERTY_ASSIGNMENT_ERROR)
+        self.__description = description
+
+    @property
+    def design_type(self):
+        return self.__design_type
+
+    @design_type.setter
+    def design_type(self, design_type):
+        if not isinstance(design_type, (str, OntologyAnnotation)):
+            raise AttributeError(errors.DESIGN_TYPE_PROPERTY_ASSIGNMENT_ERROR)
+        self.__design_type = design_type
 
     @property
     def source_type(self):
@@ -2402,15 +2438,21 @@ class StudyDesign(object):
     def __repr__(self):
         return '{0}.{1}(' \
                'name={name}, ' \
+               'design_type={design_type}, ' \
+               'description={description} ' \
+               'source_type={source_type}, ' \
                'study_arms={study_arms}' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
-                          name=self.name)
+                          name=self.name, design_type=self.design_type, description=self.description,
+                          source_type=self.source_type)
 
     def __str__(self):
         return """{0}(
                name={name},
+               description={description},
                study_arms={study_arms}
                )""".format(self.__class__.__name__,
+                           description=self.description,
                            study_arms=[arm.name for arm in sorted(self.study_arms)],
                            name=self.name)
 
@@ -2626,6 +2668,7 @@ class StudyDesignEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, StudyDesign):
             arm_encoder = StudyArmEncoder()
+            onto_encoder = OntologyAnnotationEncoder()
             study_arms_dict = {
                 arm.name: arm_encoder.default(arm) for arm in obj.study_arms
             }
@@ -2634,6 +2677,8 @@ class StudyDesignEncoder(json.JSONEncoder):
                 arm.pop('name')
             return {
                 'name': obj.name,
+                'designType': onto_encoder.ontology_annotation(obj.design_type),
+                'description': obj.description,
                 'studyArms': study_arms_dict
             }
 
@@ -2650,7 +2695,14 @@ class StudyDesignDecoder(object):
             arm_dict['name'] = name
         study_arms = {self.arm_decoder.loads_arm(arm_dict) for arm_dict in json_dict["studyArms"].values()}
 
-        study_design = StudyDesign(name=json_dict['name'], study_arms=study_arms)
+        study_design = StudyDesign(
+            name=json_dict['name'],
+            description=json_dict['description'],
+            design_type=CharacteristicDecoder.loads_ontology_annotation(json_dict['designType']) if isinstance(
+                json_dict['designType'], dict
+            ) else json_dict['designType'],
+            study_arms=study_arms
+        )
         return study_design
 
 
