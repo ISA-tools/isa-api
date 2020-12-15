@@ -2416,7 +2416,12 @@ class StudyDesign(object):
                                'study-creator-config.yaml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
-        study = Study(filename=urlify(study_config['filename']))
+        study = Study(
+            title=self.name,
+            filename=urlify(study_config['filename']),
+            description=self.description,
+            design_descriptors=[self.design_type] if isinstance(self.design_type, OntologyAnnotation) else None
+        )
         study.ontology_source_references = [
             OntologySource(**study_config['ontology_source_references'][0])
         ]

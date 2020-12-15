@@ -104,6 +104,11 @@ class TestMappings(unittest.TestCase):
                 self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
         study = design.generate_isa_study()
         self.assertIsInstance(study, Study)
+        self.assertEqual(study.title, ds_design_config['name'])
+        self.assertEqual(study.description, ds_design_config['description'])
+        self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
+        self.assertEqual(study.design_descriptors[0].term, ds_design_config['designType']['term'])
+        self.assertEqual(study.design_descriptors[0].term_accession, ds_design_config['designType']['iri'])
         investigation = Investigation(studies=[study])
         inv_json = json.dumps(
             investigation,
