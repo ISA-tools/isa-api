@@ -1,6 +1,6 @@
 from isatools.model import OntologyAnnotation, OntologySource, FactorValue, Characteristic
-from isatools.create.models import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
-from isatools.create.constants import SCREEN, INTERVENTIONS, BASE_FACTORS, SAMPLE, ORGANISM_PART
+from isatools.create.model import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
+from isatools.create.constants import SCREEN, INTERVENTIONS, BASE_FACTORS, SAMPLE, ORGANISM_PART, DEFAULT_SOURCE_TYPE
 from collections import OrderedDict
 
 AGENT = 'agent'
@@ -209,7 +209,7 @@ def _generate_characteristics_from_observational_factor(observational_factor_dic
 
 def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epoch_no):
     res = OrderedDict()
-    res['name'] = datascriptor_assay_config['name']
+    res['id'], res['name'] = datascriptor_assay_config['id'], datascriptor_assay_config['name']
     res['measurement_type'] = _map_ontology_annotation(
         datascriptor_assay_config['measurement_type'], expand_strings=True
     )
@@ -265,7 +265,7 @@ def generate_study_design_from_config(study_design_config):
     :return: isatools.create.StudyDesign
     """
     arms = []
-    for arm_ix, arm_dict in enumerate(study_design_config['selectedArms']):
+    for arm_ix, arm_dict in enumerate(study_design_config['arms']['selected']):
         arm_map = OrderedDict()
         for epoch_ix, epoch_dict in enumerate(arm_dict['epochs']):
             element_ids = epoch_dict.get('elements', [])
@@ -273,7 +273,7 @@ def generate_study_design_from_config(study_design_config):
                 _generate_element(element_dict) for element_dict in
                 filter(
                     lambda el: el['id'] in element_ids,
-                    study_design_config['generatedStudyDesign']['elements']
+                    study_design_config['elements']
                 )
             ]
             cell_name = 'A{}E{}'.format(arm_ix, epoch_ix)
@@ -288,9 +288,8 @@ def generate_study_design_from_config(study_design_config):
             assay_ord_dicts = [
                 generate_assay_ord_dict_from_config(
                     ds_assay_config, arm_dict['name'], epoch_ix
-                ) for ds_assay_config in study_design_config['assayConfigs']
-                if study_design_config['selectedAssayTypes'][ds_assay_config['name']] and
-                ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
+                ) for ds_assay_config in study_design_config['assayPlan']
+                if ds_assay_config['selectedCells'][arm_dict['name']][epoch_ix] is True
             ]
             sa_plan_name = 'SAP_A{}E{}'.format(arm_ix, epoch_ix)
             # TODO this method will probably need some rework to bind a sample type to a specific assay plan
@@ -298,13 +297,17 @@ def generate_study_design_from_config(study_design_config):
                 sa_plan_name, sample_type_dicts, *assay_ord_dicts
             )
             arm_map[cell] = sa_plan
+            source_type = Characteristic(
+                category=DEFAULT_SOURCE_TYPE.category,
+                value=_map_ontology_annotation(
+                    arm_dict.get('subjectType', None) or study_design_config.get('subjectType', None)
+                )
+            )
 
         arm = StudyArm(
             name=arm_dict['name'],
             # should we generate a Characteristic if subjectType is an OntologyAnnotation?
-            source_type=_map_ontology_annotation(
-                arm_dict.get('subjectType', None) or study_design_config.get('subjectType', None)
-            ),
+            source_type=source_type,
             source_characteristics=[
                 _generate_characteristics_from_observational_factor(
                     obs_factor_dict
@@ -315,6 +318,9 @@ def generate_study_design_from_config(study_design_config):
         )
         arms.append(arm)
     return StudyDesign(
-        name=study_design_config['generatedStudyDesign']['type'],
+        # TODO should we actually add the properties 'name' and ''description' to the study design?
+        name=study_design_config['name'],
+        description=study_design_config.get('description', None),
+        design_type=_map_ontology_annotation(study_design_config['designType']),
         study_arms=arms
     )

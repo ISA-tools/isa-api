@@ -23,8 +23,9 @@ INTERSPERSED_SAMPLE_TYPE_INTERVAL_VALUE_ERROR = 'Sample type interval must be a 
 
 # ERROR MESSAGES: ASSAY GRAPH
 INVALID_NODE_ERROR = 'Node must be instance of isatools.create.models.SequenceNode. {0} provided'
-INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are " \
-                     "ProductNode->ProtocolNode or ProtocolNode->ProductNode."
+# INVALID_LINK_ERROR = "The link to be added is not valid. Link that can be created are ProductNode->ProtocolNode
+# or ProtocolNode->ProductNode."
+INVALID_LINK_ERROR = 'ProductNode->ProductNode links are not allowed in an assay workflow.'
 INVALID_MEASUREMENT_TYPE_ERROR = '{0} is an invalid value for measurement_type. ' \
                                  'Please provide an OntologyAnnotation or string.'
 INVALID_TECHNOLOGY_TYPE_ERROR = '{0} is an invalid value for technology_type. ' \
@@ -50,6 +51,8 @@ SOURCE_TYPE_ERROR = 'The source_type property must be either a string or a Chara
 
 # ERROR MESSAGES: STUDY DESIGN
 NAME_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'name\' must be a string'
+DESIGN_TYPE_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'design_type\' must be a string or OntologyAnnotation'
+DESCRIPTION_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'description\' must be text (i.e. string)'
 STUDY_ARM_PROPERTY_ASSIGNMENT_ERROR = 'The value assigned to \'study_arms\' must be an iterable'
 ADD_STUDY_ARM_PARAMETER_TYPE_ERROR = 'Not a valid study arm'
 ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR = 'A StudyArm with the same name is already present in the StudyDesign'

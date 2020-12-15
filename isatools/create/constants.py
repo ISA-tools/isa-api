@@ -4,7 +4,7 @@ import yaml
 from isatools.model import OntologyAnnotation, StudyFactor, OntologySource, Characteristic
 
 SCREEN = 'screen'
-RUN_IN = 'run in'
+RUN_IN = 'run-in'
 WASHOUT = 'washout'
 FOLLOW_UP = 'follow-up'
 ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)
@@ -67,7 +67,7 @@ SUBJECT_PREFIX = 'SBJ'
 SAMPLE_PREFIX = 'SMP'
 EXTRACT_PREFIX = 'EXTR'
 LABELED_EXTRACT_PREFIX = 'LBLEXTR'
-ASSAY_GRAPH_PREFIX = 'ASSAY'
+ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
 # constants specific to the sampling plan in the study generation from the study design
 RUN_ORDER = 'run order'
@@ -104,3 +104,7 @@ ZFILL_WIDTH = 3
 
 # Default performer
 DEFAULT_PERFORMER = 'Unknown'
+
+# Default study identifier
+DEFAULT_STUDY_IDENTIFIER = 's_01'
+DEFAULT_INVESTIGATION_IDENTIFIER = 'i_01'

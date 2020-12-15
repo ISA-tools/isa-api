@@ -5681,7 +5681,6 @@ class ProcessSequenceFactory:
                 # don't drop duplicates
                 for _, object_series in pbar(DF.iterrows()):
                     # if _ == 0:
-                    #     print('processing: ', object_series[object_label])
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(
                         protocol_ref, column_group, _cg, DF.columns,
@@ -5854,8 +5853,6 @@ class ProcessSequenceFactory:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(
                                 sample_node_context)
-
-            # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):

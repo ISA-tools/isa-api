@@ -1,4 +1,4 @@
-from isatools.create.models import *
+from isatools.create.model import *
 
 NAME = 'name'
 

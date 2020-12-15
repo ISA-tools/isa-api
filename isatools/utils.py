@@ -6,20 +6,12 @@ import json
 import logging
 import os
 import re
-import shutil
 import sys
-import tempfile
 import uuid
 from functools import reduce
 from zipfile import ZipFile
-
 import pandas as pd
-# import modin.pandas as pd_modin
-
-from mzml2isa.mzml import MzMLFile
-
 from isatools import isatab
-# from isatools.create import create_from_galaxy_parameters
 from isatools.model import (
     DerivedSpectralDataFile,
     ISAModelAttributeError,
@@ -141,7 +133,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             break
 
     if name_header is not None:
-        print('Are you sure you want to add a column of hash values in {}? '
+        log.debug('Are you sure you want to add a column of hash values in {}? '
               'Y/(N)'.format(name_header))
         confirm = input()
         if confirm == 'Y':
@@ -149,7 +141,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             table_fp.seek(0)
             df.to_csv(table_fp, index=None, header=headers, sep='\t')
     else:
-        print('Could not find appropriate column to fill with hashes')
+        log.debug('Could not find appropriate column to fill with hashes')
 
 
 def contains(small_list, big_list):
@@ -357,9 +349,9 @@ def check_loadable(tab_dir_root):
                       x.startswith('MTBLS')]:
         try:
             isatab.load(os.path.join(tab_dir_root, mtbls_dir))
-            print('{} load OK'.format(mtbls_dir))
+            log.debug('{} load OK'.format(mtbls_dir))
         except Exception as e:
-            print('{0} load FAIL, reason: {1}'.format(mtbls_dir, e))
+            log.debug('{0} load FAIL, reason: {1}'.format(mtbls_dir, e))
 
 
 def compute_study_factors_on_mtbls(tab_dir_root):
@@ -390,6 +382,7 @@ def compute_study_factors_on_mtbls(tab_dir_root):
             pass
 
 
+# TODO: is this any useful at all? (by Massi 18/11/2020)
 class IsaTabAnalyzer(object):
     """A utility to analyze ISA-Tabs"""
 
@@ -503,7 +496,7 @@ class IsaTabAnalyzer(object):
                                                       .drop_duplicates()))
                                              ))
                                 except Exception as e:
-                                    print("error in query, {}".format(e))
+                                    log.debug("error in query, {}".format(e))
                     study_design_report[-1]['assays'].append(assay_report)
         return study_design_report
 
@@ -574,7 +567,7 @@ def batch_fix_isatabs(settings):
     :return: None
     """
     for table_file_path in settings.keys():
-        print('Fixing {table_file_path}...'.format(
+        log.debug('Fixing {table_file_path}...'.format(
             table_file_path=table_file_path))
         fixer = IsaTabFixer(table_file_path=table_file_path)
         fixer.fix_factor(
@@ -897,8 +890,8 @@ class IsaTabFixer(object):
                             process.executes_protocol.name)
                     except KeyError:
                         pass
-            print('Unused protocols: {}'.format(unused_protocol_names))
-            print('Location of unused protocols: {}'.format(
+            log.info('Unused protocols: {}'.format(unused_protocol_names))
+            log.info('Location of unused protocols: {}'.format(
                 list(map(lambda pr: True if pr.name in unused_protocol_names else False, study.protocols))
             ))
             # remove these protocols from study.protocols
@@ -910,9 +903,9 @@ class IsaTabFixer(object):
             study.protocols = clean_protocols_list
             """
             clean_protocols = [pr for pr in study.protocols if pr.name not in unused_protocol_names]
-            print('Clean protocol list: {}'.format([pr.name for pr in clean_protocols]))
+            log.info('Clean protocol list: {}'.format([pr.name for pr in clean_protocols]))
             study.protocols = clean_protocols
-            print('Clean study.protocols: {}'.format([pr.name for pr in study.protocols]))
+            log.info('Clean study.protocols: {}'.format([pr.name for pr in study.protocols]))
         isatab.dump(
             investigation, output_path=os.path.dirname(self.path),
             i_file_name='{filename}.fix'.format(

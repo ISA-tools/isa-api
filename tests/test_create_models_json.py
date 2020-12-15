@@ -14,7 +14,7 @@ from isatools.model import (
     ParameterValue,
     OntologySource
 )
-from isatools.create.models import (
+from isatools.create.model import (
     NonTreatment,
     Treatment,
     StudyCell,
@@ -154,7 +154,7 @@ class OntologyAnnotationTest(unittest.TestCase):
     def test_simple_ontology_annotation(self):
         annotation = OntologyAnnotation(term="aspirin")
         annotation_json = json.dumps(annotation, cls=OntologyAnnotationEncoder, sort_keys=True, indent=4)
-        print(annotation_json)
+        log.debug(annotation_json)
         self.assertEqual(json.loads(annotation_json), {"term": "aspirin"})
 
 
@@ -461,7 +461,7 @@ class StudyCellEncoderTest(BaseTestCase):
         te1.factor_values = [f1v1, f2v1, f3v1]
         cell = StudyCell(name='test_cell', elements=(te1, ))
         json_cell = json.loads(json.dumps(cell, cls=StudyCellEncoder))
-        print(json.dumps(cell, cls=StudyCellEncoder, indent=4, sort_keys=True))
+        log.debug(json.dumps(cell, cls=StudyCellEncoder, indent=4, sort_keys=True))
         for factor_value_dict in json_cell['elements'][0]['factorValues']:
             self.assertIsNotNone(factor_value_dict['value'])
 
@@ -495,9 +495,9 @@ class StudyCellDecoderTest(BaseTestCase):
             actual_cell = decoder.loads(json_text)
         self.assertEqual(len(self.cell_multi_elements_padded.elements), len(actual_cell.elements))
         for i in range(len(actual_cell.elements)):
-            print(i)
-            print(actual_cell.elements[i])
-            print(self.cell_multi_elements_padded.elements[i])
+            log.debug(i)
+            log.debug(actual_cell.elements[i])
+            log.debug(self.cell_multi_elements_padded.elements[i])
             self.assertEqual(self.cell_multi_elements_padded.elements[i], actual_cell.elements[i])
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
@@ -566,10 +566,10 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         self.assertEqual(self.plan.sample_plan, actual_plan.sample_plan)
         unmatched_expected = self.plan.assay_plan - actual_plan.assay_plan
         unmatched_actual = actual_plan.assay_plan - self.plan.assay_plan
-        print(unmatched_actual)
-        print(unmatched_expected)
+        log.debug(unmatched_actual)
+        log.debug(unmatched_expected)
         if unmatched_expected and unmatched_actual:
-            print('here we are')
+            log.debug('here we are')
             unmatched_expected_el = unmatched_expected.pop()
             unmatched_actual_el = unmatched_actual.pop()
             self.assertEqual(unmatched_expected_el.id, unmatched_actual_el.id)
@@ -578,7 +578,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             self.assertEqual(repr(unmatched_expected_el.links), repr(unmatched_actual_el.links))
             self.assertEqual(repr(unmatched_expected_el), repr(unmatched_actual_el))
             self.assertEqual(unmatched_expected_el, unmatched_actual_el)
-            print('all these test passed')
+            log.debug('all these test passed')
         self.assertEqual(self.plan.assay_plan, actual_plan.assay_plan)
         self.assertEqual(self.plan.sample_to_assay_map, actual_plan.sample_to_assay_map)
         self.assertEqual(self.plan, actual_plan)
@@ -607,7 +607,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         sample2assay_plan = {input_material: [nmr_assay_graph]}
         sap1.sample_to_assay_map = sample2assay_plan
         actual_json_plan = json.loads(json.dumps(sap1, cls=SampleAndAssayPlanEncoder))
-        print(json.dumps(sap1, cls=SampleAndAssayPlanEncoder, indent=4, sort_keys=True))
+        log.debug(json.dumps(sap1, cls=SampleAndAssayPlanEncoder, indent=4, sort_keys=True))
         assay_node_json = next(node for node in actual_json_plan["assayPlan"][0]["nodes"]
                                if node["@id"] == "nmr_spectroscopy_000_000")
         for param_val_json in assay_node_json["parameterValues"]:
@@ -625,8 +625,8 @@ class StudyArmEncoderTest(BaseTestCase):
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
-        print('expected source type is {}'.format(expected_json_arm['sourceType']))
-        print('actual source type is {}'.format(actual_json_arm['sourceType']))
+        log.debug('expected source type is {}'.format(expected_json_arm['sourceType']))
+        log.debug('actual source type is {}'.format(actual_json_arm['sourceType']))
         self.assertEqual(ordered(actual_json_arm["sourceType"]), ordered(expected_json_arm["sourceType"]))
         self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
 
@@ -666,8 +666,8 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertIsInstance(actual_arm, StudyArm)
-        log.info('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
-        log.info('Actual Arm source type: {}'.format(actual_arm.source_type))
+        log.debug('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
+        log.debug('Actual Arm source type: {}'.format(actual_arm.source_type))
         self.assertEqual(self.multi_treatment_cell_arm_mouse, actual_arm)
 
 
@@ -675,13 +675,20 @@ class StudyDesignEncoderTest(BaseTestCase):
 
     def setUp(self):
         super(StudyDesignEncoderTest, self).setUp()
-        self.three_arm_study_design = StudyDesign(name=TEST_STUDY_DESIGN_NAME_THREE_ARMS, study_arms={
-            self.single_treatment_cell_arm,
-            self.single_treatment_cell_arm_01,
-            self.single_treatment_cell_arm_02
+        self.three_arm_study_design = StudyDesign(
+            name=TEST_STUDY_DESIGN_NAME_THREE_ARMS,
+            description='This is a study design with three single-element arms',
+            design_type='unspecified design',
+            study_arms={
+                self.single_treatment_cell_arm,
+                self.single_treatment_cell_arm_01,
+                self.single_treatment_cell_arm_02
         })
         self.multi_element_cell_two_arm_study_design = StudyDesign(
-            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS, study_arms=[
+            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS,
+            description='This is a study design with two multi-element arms',
+            design_type='unspecified design',
+            study_arms=[
                 self.multi_treatment_cell_arm,
                 self.multi_treatment_cell_arm_01
             ])
@@ -726,13 +733,13 @@ class StudyDesignDecoderTest(BaseTestCase):
         self.assertEqual(self.three_arm_study_design.name, actual_study_design.name)
         """
         for i, arm in enumerate(self.three_arm_study_design.study_arms):
-            print("comparing study arm #{0} - {1}".format(i, arm.name))
-            print("Difference:\n")
+            log.debug("comparing study arm #{0} - {1}".format(i, arm.name))
+            log.debug("Difference:\n")
             difflib.ndiff(arm, actual_study_design.study_arms[i])
-            print("\nExpected:\n")
-            print(arm)
-            print("\nActual:\n")
-            print(actual_study_design.study_arms[i])
+            log.debug("\nExpected:\n")
+            log.debug(arm)
+            log.debug("\nActual:\n")
+            log.debug(actual_study_design.study_arms[i])
             self.assertEqual(arm, actual_study_design.study_arms[i])
         self.assertEqual(self.three_arm_study_design.study_arms[0], actual_study_design.study_arms[0])
         self.assertEqual(self.three_arm_study_design.study_arms[1], actual_study_design.study_arms[1])
@@ -740,13 +747,13 @@ class StudyDesignDecoderTest(BaseTestCase):
         self.assertEqual(expected_third_arm.name, actual_study_design.study_arms[2].name)
         self.assertEqual(expected_third_arm.group_size,
                          actual_study_design.study_arms[2].group_size)
-        # print("Arm map:")
-        # print(list(actual_study_design.study_arms[2].arm_map.keys()))
+        # log.debug("Arm map:")
+        # log.debug(list(actual_study_design.study_arms[2].arm_map.keys()))
         i = 0
         for cell, sample_assay_plan in expected_third_arm.arm_map.items():
-            print("testing cell {0}".format(cell.name))
-            print(cell)
-            print(list(actual_study_design.study_arms[2].arm_map.keys())[i])
+            log.debug("testing cell {0}".format(cell.name))
+            log.debug(cell)
+            log.debug(list(actual_study_design.study_arms[2].arm_map.keys())[i])
             self.assertTrue(cell in actual_study_design.study_arms[2].arm_map)
             self.assertEqual(sample_assay_plan, actual_study_design.study_arms[2].arm_map[cell])
             i = i + 1

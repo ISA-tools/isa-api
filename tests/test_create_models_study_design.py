@@ -21,7 +21,7 @@ from isatools.model import (
     Assay,
     Process
 )
-from isatools.create.models import (
+from isatools.create.model import (
     NonTreatment,
     Treatment,
     TreatmentFactory,
@@ -40,7 +40,7 @@ from isatools.create.models import (
 from isatools.create.constants import (
     SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
     BASE_FACTORS_, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, default_ontology_source_reference,
-    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED
+    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, DEFAULT_STUDY_IDENTIFIER
 )
 from tests.create_sample_assay_plan_odicts import sample_list, ms_assay_dict, lcdad_assay_dict, nmr_assay_dict
 
@@ -93,7 +93,7 @@ class NonTreatmentTest(unittest.TestCase):
     def test_repr(self):
         print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
-                         "isatools.create.models.NonTreatment(type='screen', duration=isatools.model.FactorValue("
+                         "isatools.create.model.NonTreatment(type='screen', duration=isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='DURATION', "
                          "factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value=10.0, "
@@ -125,7 +125,7 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "isatools.create.models.Treatment(type=chemical intervention, "
+                         "isatools.create.model.Treatment(type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='AGENT'"
                          ", factor_type=isatools.model.OntologyAnnotation(term='perturbation agent', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value='nitroglycerin', unit=None), "
@@ -1621,6 +1621,16 @@ class StudyDesignTest(BaseStudyDesignTest):
             self.study_design.name = 128
         self.assertEqual(ex_cm.exception.args[0], errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
 
+    def test_description_property(self):
+        test_study_description = 'some description in here'
+        self.study_design.description = test_study_description
+        self.assertEqual(self.study_design.description, test_study_description)
+
+    def test_design_type_property(self):
+        test_study_design_type = 'factorial design'
+        self.study_design.design_type = test_study_design_type
+        self.assertEqual(self.study_design.design_type, test_study_design_type)
+
     def test_study_arms_property(self):
         pass
 
@@ -1704,6 +1714,21 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('Sources: {0}'.format(study.sources))
     """
 
+    def test_increment_counter_by_node_type(self):
+        assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        extract_node = next(
+            node for node in assay_graph.nodes if isinstance(node, ProductNode) and node.type == EXTRACT
+        )
+        counter = StudyDesign._increment_counter_by_node_type({}, extract_node)
+        self.assertEqual(counter[EXTRACT], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, extract_node)
+        self.assertEqual(counter[EXTRACT], 2)
+        protocol_node = next(node for node in assay_graph.nodes if isinstance(node, ProtocolNode))
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 2)
+
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
@@ -1716,10 +1741,10 @@ class StudyDesignTest(BaseStudyDesignTest):
         extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
         self.assertEqual(len(extraction_processes), 1)
         nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
-        self.assertEqual(len(nmr_processes), 8*2)
-        self.assertEqual(len(processes), 1+8*2)
+        self.assertEqual(len(nmr_processes), 8 * 2)
+        self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
-        self.assertEqual(len(data_files), 8*2)      # 16 raw data files
+        self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)
             print('expected previous process: {0}'.format(extraction_processes[0]))
@@ -1743,23 +1768,25 @@ class StudyDesignTest(BaseStudyDesignTest):
         study_design = StudyDesign(study_arms=(single_arm,))
         study = study_design.generate_isa_study()
         self.assertIsInstance(study, Study)
+        self.assertEqual(study.identifier, DEFAULT_STUDY_IDENTIFIER)
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), single_arm.group_size)
         for source in study.sources:
             self.assertEqual(len(source.characteristics), 1)
             self.assertEqual(source.characteristics[0], DEFAULT_SOURCE_TYPE)
 
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples = expected_num_of_samples_per_plan * len([
+        expected_num_of_samples = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.nmr_sample_assay_plan.sample_plan, 0
+        ) * single_arm.group_size * len([
             a_plan for a_plan in single_arm.arm_map.values() if a_plan is not None
         ])
-        print('Expected number of samples is: {0}'.format(expected_num_of_samples))
+        log.debug('Expected number of samples is: {0}'.format(expected_num_of_samples))
         self.assertEqual(len(study.samples), expected_num_of_samples)
-        self.assertEqual(len(study.assays), 2)
+        self.assertEqual(len(study.assays), 1)
         treatment_assay = next(iter(study.assays))
         self.assertIsInstance(treatment_assay, Assay)
-        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples_per_plan)
+        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples)
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
@@ -1767,12 +1794,13 @@ class StudyDesignTest(BaseStudyDesignTest):
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay.process_sequence
                          if process.executes_protocol.name == 'nmr spectroscopy']
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8 * nmr_assay_dict['nmr spectroscopy']['#replicates']
-                         * expected_num_of_samples_per_plan)
+        self.assertEqual(len(extraction_processes), expected_num_of_samples)
+        self.assertEqual(
+            len(nmr_processes),
+            8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] * expected_num_of_samples)
         self.assertEqual(
             len(treatment_assay.process_sequence),
-            (8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] + 1) * expected_num_of_samples_per_plan
+            (8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] + 1) * expected_num_of_samples
         )
         for ix, process in enumerate(extraction_processes):
             self.assertEqual(process.inputs, [study.samples[ix]])
@@ -1790,34 +1818,6 @@ class StudyDesignTest(BaseStudyDesignTest):
         log.debug('NMR assay graph: {0}'.format([(getattr(el, 'name', None), type(el))
                                                  for el in treatment_assay.graph.nodes()]))
 
-    def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
-        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        # study_config = config['study']
-        single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.nmr_sample_assay_plan),
-            (self.cell_follow_up, self.nmr_sample_assay_plan)
-        ]))
-        study_design = StudyDesign(study_arms=(single_arm,))
-        study = study_design.generate_isa_study(split_assays_by_sample_type=True)
-        self.assertEqual(len(study.assays), 6)
-        treatment_assay_st0, treatment_assay_st1, treatment_assay_st2 = study.assays[0:3]
-        self.assertIsInstance(treatment_assay_st0, Assay)
-        self.assertEqual(treatment_assay_st0.measurement_type, nmr_assay_dict['measurement_type'])
-        self.assertEqual(treatment_assay_st0.technology_type, nmr_assay_dict['technology_type'])
-        extraction_processes = [process for process in treatment_assay_st0.process_sequence
-                                if process.executes_protocol.name == 'extraction']
-        nmr_processes = [process for process in treatment_assay_st0.process_sequence
-                         if process.executes_protocol.name == 'nmr spectroscopy']
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples_first = sample_list[0]['size'] * single_arm.group_size
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_first)
-        self.assertEqual(len(nmr_processes), 8 * 2 * expected_num_of_samples_first)
-        self.assertEqual(len(treatment_assay_st0.process_sequence), (8 * 2 + 1) * expected_num_of_samples_first)
-
     def test_generate_isa_study_two_arms_single_cell_elements(self):
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
@@ -1830,8 +1830,10 @@ class StudyDesignTest(BaseStudyDesignTest):
             (self.cell_follow_up_01, self.nmr_sample_assay_plan)
         ]))
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
-        study = study_design.generate_isa_study()
-        self.assertEqual(len(study.assays), 4)
+        study_identifier = 'st_001'
+        study = study_design.generate_isa_study(identifier=study_identifier)
+        self.assertEqual(study.identifier, study_identifier)
+        self.assertEqual(len(study.assays), 2)
         expected_num_of_samples_nmr_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
             self.nmr_sample_assay_plan.sample_plan, 0) * first_arm.group_size
@@ -1902,8 +1904,6 @@ class StudyDesignTest(BaseStudyDesignTest):
                 self.assertEqual(source.characteristics, [control_source_type])
             else:
                 self.assertEqual(source.characteristics, [treatment_source_type])
-        # self.assertIn(control_source_type.category, study.characteristic_categories)
-        # self.assertIn(treatment_source_type.category, study.characteristic_categories)
 
 
 class QualityControlServiceTest(BaseStudyDesignTest):
