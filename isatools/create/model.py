@@ -770,21 +770,35 @@ class ProductNode(SequenceNode):
     """
     ALLOWED_TYPES = {SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FILE}
 
-    def __init__(self, id_=str(uuid.uuid4()), node_type=SOURCE, name='', characteristics=[], size=0):
+    def __init__(self, id_=str(uuid.uuid4()), node_type=SOURCE, name='', characteristics=[], size=0, extension=None):
+        """
+        ProductNode constructor method
+        :param id_: an identifier for the ProductNode
+        :param node_type: str - the type of ProductNode. Must be one of the allowed types.
+        :param name: str - the name of the ProductNone
+        :param characteristics: list<Characteristics> - characteristics of the node
+        :param size: int
+        :param extension: str/OntologyAnnotation - an extension to be appended to the elements generated from this
+                          ProductNode. It can be used to specify file extensions to a DATA_FILE node
+        """
         super().__init__()
         self.__id = id_
         self.__type = None
         self.__name = None
         self.__characteristics = []
         self.__size = None
+        self.__extension = None
         self.type = node_type
         self.name = name
         self.characteristics = characteristics
         self.size = size
+        if extension:
+            self.extension = extension
 
     def __repr__(self):
         return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
-               'characteristics={2.characteristics}, size={2.size})'.format(
+               'characteristics={2.characteristics}, size={2.size}, ' \
+               'extension={2.extension})'.format(
                 self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
@@ -802,7 +816,7 @@ class ProductNode(SequenceNode):
     def __eq__(self, other):
         return isinstance(other, ProductNode) and self.id == other.id and self.type == other.type \
                and self.name == other.name and self.characteristics == other.characteristics \
-               and self.size == other.size
+               and self.size == other.size and self.extension == other.extension
 
     def __ne__(self, other):
         return not self == other
@@ -861,6 +875,16 @@ class ProductNode(SequenceNode):
         if not isinstance(size, int) or size < 0:
             raise AttributeError(errors.SIZE_ERROR)
         self.__size = size
+
+    @property
+    def extension(self):
+        return self.__extension
+
+    @extension.setter
+    def extension(self, extension):
+        if not isinstance(extension, (str, OntologyAnnotation)):
+            raise AttributeError(errors.PRODUCT_NODE_EXTENSION_ERROR)
+        self.__extension = extension
 
 
 class QualityControlSource(Source):
