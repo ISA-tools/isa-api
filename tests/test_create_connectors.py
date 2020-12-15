@@ -27,6 +27,7 @@ from isatools.create.model import (
     SampleAndAssayPlan,
     AssayGraph
 )
+from  isatools.create.constants import DEFAULT_STUDY_IDENTIFIER
 from isatools.isajson import ISAJSONEncoder
 from tests.create_sample_assay_plan_odicts import ms_assay_dict, annotated_ms_assay_dict
 
@@ -105,6 +106,7 @@ class TestMappings(unittest.TestCase):
         study = design.generate_isa_study()
         self.assertIsInstance(study, Study)
         self.assertEqual(study.title, ds_design_config['name'])
+        self.assertEqual(study.identifier, DEFAULT_STUDY_IDENTIFIER)
         self.assertEqual(study.description, ds_design_config['description'])
         self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
         self.assertEqual(study.design_descriptors[0].term, ds_design_config['designType']['term'])

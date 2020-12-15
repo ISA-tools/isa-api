@@ -40,7 +40,7 @@ from isatools.create.model import (
 from isatools.create.constants import (
     SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
     BASE_FACTORS_, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, default_ontology_source_reference,
-    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED
+    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, DEFAULT_STUDY_IDENTIFIER
 )
 from tests.create_sample_assay_plan_odicts import sample_list, ms_assay_dict, lcdad_assay_dict, nmr_assay_dict
 
@@ -1768,6 +1768,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         study_design = StudyDesign(study_arms=(single_arm,))
         study = study_design.generate_isa_study()
         self.assertIsInstance(study, Study)
+        self.assertEqual(study.identifier, DEFAULT_STUDY_IDENTIFIER)
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), single_arm.group_size)
         for source in study.sources:
@@ -1829,7 +1830,9 @@ class StudyDesignTest(BaseStudyDesignTest):
             (self.cell_follow_up_01, self.nmr_sample_assay_plan)
         ]))
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
-        study = study_design.generate_isa_study()
+        study_identifier = 'st_001'
+        study = study_design.generate_isa_study(identifier=study_identifier)
+        self.assertEqual(study.identifier, study_identifier)
         self.assertEqual(len(study.assays), 2)
         expected_num_of_samples_nmr_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,

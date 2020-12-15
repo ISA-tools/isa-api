@@ -27,7 +27,8 @@ from isatools.create.constants import (
     RUN_ORDER, STUDY_CELL, assays_opts,
     DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
     QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
-    QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER
+    QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER,
+    DEFAULT_STUDY_IDENTIFIER
 )
 from isatools.model import (
     StudyFactor,
@@ -2407,7 +2408,7 @@ class StudyDesign(object):
                         )
                     )
 
-    def generate_isa_study(self):
+    def generate_isa_study(self, identifier=None):
         """
         this is the core method to return the fully populated ISA Study object from the StudyDesign
         :return: isatools.model.Study
@@ -2417,6 +2418,7 @@ class StudyDesign(object):
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         study = Study(
+            identifier=identifier or DEFAULT_STUDY_IDENTIFIER,
             title=self.name,
             filename=urlify(study_config['filename']),
             description=self.description,
