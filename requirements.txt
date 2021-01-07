@@ -2,7 +2,7 @@ numpy==1.17.3
 jsonschema==3.1.1
 pandas==0.25.3
 networkx==2.4
-lxml==4.4.1
+lxml==4.6.2
 requests==2.22.0
 iso8601==0.1.12
 chardet==3.0.4
