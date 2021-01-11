@@ -803,11 +803,9 @@ class ProductNode(SequenceNode):
 
     def __str__(self):
         return """{0}(
-        id={1.id}, 
-        type={1.type}, 
-        name={1.name}, 
-        characteristics={1.characteristics}, 
-        size={1.size}
+        id={1.id},
+        type={1.type},
+        name={1.name},
         )""".format(self.__class__.__name__, self)
 
     def __hash__(self):
@@ -1069,6 +1067,7 @@ class AssayGraph(object):
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                             ),
                             name=node_name, node_type=node_params_dict['node_type'], size=node_params_dict['size'],
+                            extension=node_params_dict.get('extension', None),
                             characteristics=[
                                 Characteristic(category=node_params_dict['characteristics_category'],
                                                value=node_params_dict['characteristics_value'])
