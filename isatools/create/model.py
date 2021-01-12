@@ -2413,12 +2413,14 @@ class StudyDesign(object):
                         ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
                         PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile
                     }
+                    file_extension = '.{}'.format(node.extension) if node.extension else ''
                     return isa_class(
-                        filename='{}-S{}-{}-R{}'.format(
+                        filename='{}-S{}-{}-R{}{}'.format(
                             assay_file_prefix,
                             start_node_index,
                             urlify(node.name),
-                            counter[node.name]
+                            counter[node.name],
+                            file_extension
                         )
                     )
                 except StopIteration:
