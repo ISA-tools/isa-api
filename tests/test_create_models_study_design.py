@@ -42,7 +42,12 @@ from isatools.create.constants import (
     BASE_FACTORS_, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, default_ontology_source_reference,
     DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, DEFAULT_STUDY_IDENTIFIER
 )
-from tests.create_sample_assay_plan_odicts import sample_list, ms_assay_dict, lcdad_assay_dict, nmr_assay_dict
+from tests.create_sample_assay_plan_odicts import (
+    sample_list,
+    ms_assay_dict,
+    lcdad_assay_dict,
+    nmr_assay_dict
+)
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
