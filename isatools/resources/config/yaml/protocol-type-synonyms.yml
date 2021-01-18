@@ -1,0 +1,53 @@
+phenotyping:
+  header: Assay Name
+  synonyms:
+    - phenotyping
+nucleic acid sequencing:
+  header: Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600047
+  synonyms:
+    - library sequencing
+    - nucleic acid sequencing
+mass spectrometry:
+  header: MS Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000470
+  synonyms:
+    - mass spectrometry
+    - mass spec
+    - mass spec.
+    - ms
+nmr spectroscopy:
+  header: NMR Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000623
+  synonyms:
+    - nmr spectroscopy
+    - nmr
+nucleic acid hydridization:
+  header: Hybridization Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0302903
+  synonyms:
+    - nucleic acid hydridization
+data acquisition:
+  header: Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600013
+  synonyms:
+    - data acquisition
+data transformation:
+  header: Data Transformation Name
+  iri: http://purl.obolibrary.org/obo/OBI_0200000
+  synonyms:
+    - data transformation
+normalisation:
+  header: Data Transformation Name
+  iri: http://purl.obolibrary.org/obo/OBI_0200169
+  synonyms:
+    - normalisation
+metabolite identification:
+  header: Data Transformation Name
+  iri: http://purl.obolibrary.org/obo/MI_2131
+  synonyms:
+    - metabolite identification
+protein identification:
+  header: Data Transformation Name
+  synonyms:
+    - protein identification
