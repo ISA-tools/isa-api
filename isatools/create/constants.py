@@ -108,3 +108,6 @@ DEFAULT_PERFORMER = 'Unknown'
 # Default study identifier
 DEFAULT_STUDY_IDENTIFIER = 's_01'
 DEFAULT_INVESTIGATION_IDENTIFIER = 'i_01'
+
+# Default file extension (no dot required)
+DEFAULT_EXTENSION = 'raw'

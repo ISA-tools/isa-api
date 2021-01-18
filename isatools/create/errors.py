@@ -10,6 +10,7 @@ NOT_ALLOWED_TYPE_ERROR = 'The provided ProductNode is not one of the allowed val
 PRODUCT_NODE_NAME_ERROR = 'ProductNode name must be a string, {0} supplied of type {1}'
 SIZE_ERROR = 'ProductNode size must be a natural number, i.e integer >= 0'
 CHARACTERISTIC_TYPE_ERROR = 'A characteristic must be either a string or a Characteristic, {0} supplied'
+PRODUCT_NODE_EXTENSION_ERROR = 'ProductNode extension must be either a string or an OntologyAnnotation.'
 
 # ERROR MESSAGES: QC SAMPLE (QUALITY CONTROL)
 QC_SAMPLE_TYPE_ERROR = 'qc_sample_type must be one of {0}'

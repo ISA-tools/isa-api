@@ -1,6 +1,15 @@
 from isatools.model import OntologyAnnotation, OntologySource, FactorValue, Characteristic
 from isatools.create.model import StudyDesign, NonTreatment, Treatment, StudyCell, StudyArm, SampleAndAssayPlan
-from isatools.create.constants import SCREEN, INTERVENTIONS, BASE_FACTORS, SAMPLE, ORGANISM_PART, DEFAULT_SOURCE_TYPE
+from isatools.create.constants import (
+    SCREEN,
+    INTERVENTIONS,
+    BASE_FACTORS,
+    SAMPLE,
+    ORGANISM_PART,
+    DEFAULT_SOURCE_TYPE,
+    DATA_FILE,
+    DEFAULT_EXTENSION
+)
 from collections import OrderedDict
 
 AGENT = 'agent'
@@ -238,6 +247,8 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                     ]
         elif 'node_type' in node:
             # this is a product node
+            extension = node['extension']['value'] if 'extension' in node else DEFAULT_EXTENSION \
+                if node['node_type'] == DATA_FILE else None
             if "characteristics_value" in node:
                 prepared_nodes = [
                     dict(
@@ -246,13 +257,18 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                                                                           expand_strings=True),
                         characteristics_value=_map_ontology_annotation(value),
                         size=node.get('size', 1),
-                        is_input_to_next_protocols=node['is_input_to_next_protocols']['value']
+                        is_input_to_next_protocols=node['is_input_to_next_protocols']['value'],
+                        extension=extension
                     ) for value in node["characteristics_value"]["values"]
                 ]
             else:
-                prepared_nodes = [dict(node_type=node['node_type'],
-                                       size=node.get('size', 1),
-                                       is_input_to_next_protocols=node['is_input_to_next_protocols']['value'])]
+                prepared_nodes = [dict(
+                    node_type=node['node_type'],
+                    size=node.get('size', 1),
+                    is_input_to_next_protocols=node['is_input_to_next_protocols']['value'],
+                    extension=extension
+                )]
+
         res[_map_ontology_annotation(name)] = prepared_nodes
     return res
 
@@ -297,13 +313,12 @@ def generate_study_design_from_config(study_design_config):
                 sa_plan_name, sample_type_dicts, *assay_ord_dicts
             )
             arm_map[cell] = sa_plan
-            source_type = Characteristic(
-                category=DEFAULT_SOURCE_TYPE.category,
-                value=_map_ontology_annotation(
-                    arm_dict.get('subjectType', None) or study_design_config.get('subjectType', None)
-                )
+        source_type = Characteristic(
+            category=DEFAULT_SOURCE_TYPE.category,
+            value=_map_ontology_annotation(
+                arm_dict.get('subjectType', None) or study_design_config.get('subjectType', None)
             )
-
+        )
         arm = StudyArm(
             name=arm_dict['name'],
             # should we generate a Characteristic if subjectType is an OntologyAnnotation?
@@ -318,7 +333,6 @@ def generate_study_design_from_config(study_design_config):
         )
         arms.append(arm)
     return StudyDesign(
-        # TODO should we actually add the properties 'name' and ''description' to the study design?
         name=study_design_config['name'],
         description=study_design_config.get('description', None),
         design_type=_map_ontology_annotation(study_design_config['designType']),

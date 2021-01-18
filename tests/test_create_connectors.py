@@ -159,6 +159,18 @@ class TestMappings(unittest.TestCase):
         investigation = Investigation(studies=[design.generate_isa_study()])
         self.assertIsInstance(investigation.studies[0], Study)
         self.assertEqual(len(investigation.studies[0].assays), len(ds_design_config['assayPlan']))
+        ms_assay = next(
+            assay for assay in investigation.studies[0].assays if assay.filename.endswith('mass-spectrometry.txt')
+        )
+        self.assertTrue(
+            all(data_file.filename.split('.')[-1] == 'mzML' for data_file in ms_assay.data_files)
+        )
+        nmr_assay = next(
+            assay for assay in investigation.studies[0].assays if assay.filename.endswith('NMR-spectroscopy.txt')
+        )
+        self.assertTrue(
+            all(data_file.filename.split('.')[-1] == 'raw' for data_file in nmr_assay.data_files)
+        )
         json.dumps(
             investigation,
             cls=ISAJSONEncoder,
