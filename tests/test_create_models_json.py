@@ -40,7 +40,7 @@ from isatools.create.constants import (
     SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, INTERVENTIONS, BASE_FACTORS, SAMPLE, EXTRACT,
     default_ontology_source_reference, DEFAULT_SOURCE_TYPE
 )
-from tests.create_sample_assay_plan_odicts import nmr_assay_dict
+from isatools.tests.create_sample_assay_plan_odicts import nmr_assay_dict
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
