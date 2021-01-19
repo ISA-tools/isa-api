@@ -22,11 +22,12 @@ nmr spectroscopy:
   synonyms:
     - nmr spectroscopy
     - nmr
-nucleic acid hydridization:
+nucleic acid hybridization:
   header: Hybridization Assay Name
   iri: http://purl.obolibrary.org/obo/OBI_0302903
   synonyms:
-    - nucleic acid hydridization
+    - nucleic acid hybridization
+    - nucleic acid hybridisation
 data acquisition:
   header: Assay Name
   iri: http://purl.obolibrary.org/obo/OBI_0600013
@@ -37,11 +38,20 @@ data transformation:
   iri: http://purl.obolibrary.org/obo/OBI_0200000
   synonyms:
     - data transformation
-normalisation:
+data collection:
+  header: Scan Name
+  synonyms:
+    - data collection
+sequence analysis data transformation:
   header: Data Transformation Name
+  synonyms:
+    - sequence analysis data transformation
+normalization:
+  header: Normalization Name
   iri: http://purl.obolibrary.org/obo/OBI_0200169
   synonyms:
     - normalisation
+    - normalization
 metabolite identification:
   header: Data Transformation Name
   iri: http://purl.obolibrary.org/obo/MI_2131

@@ -10,6 +10,7 @@ import csv
 import glob
 import io
 import json
+import yaml
 import logging
 import math
 import os
@@ -54,8 +55,13 @@ from isatools.model import (
 
 from isatools.utils import utf8_text_file_open
 
-
 log = logging.getLogger('isatools')
+
+with open(
+        os.path.join(os.path.dirname(__file__), 'resources', 'config', 'yaml', 'protocol-type-synonyms.yml')
+) as yaml_file:
+    protocol_types_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
+SYNONYMS = 'synonyms'
 
 
 def xml_config_contents(filename):
@@ -816,7 +822,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                     seen_comments[comment.name].append(comment.value)
                 else:
                     seen_comments[comment.name] = [comment.value]
-                    
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
             study_design_descriptors_df_cols.append('Comment[' + comment_name + ']')
@@ -907,8 +912,10 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         index_label='Investigation Identifier')
 
     # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = _build_publications_section_df(prefix='Investigation',
-        publications=investigation.publications)
+    investigation_publications_df = _build_publications_section_df(
+        prefix='Investigation',
+        publications=investigation.publications
+    )
     fp.write('INVESTIGATION PUBLICATIONS\n')
     investigation_publications_df.to_csv(
         path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -1405,33 +1412,35 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                            node.parameter_values))
                     oname_label = None
                     if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
+                        if node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["nucleic acid sequencing"][SYNONYMS] \
+                                + protocol_types_dict["phenotyping"][SYNONYMS]:
                             oname_label = "Assay Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "data collection":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["data collection"][SYNONYMS]:
                             oname_label = "Scan Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "mass spectrometry":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["mass spectrometry"][SYNONYMS]:
                             oname_label = "MS Assay Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "NMR spectroscopy":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
                             oname_label = "NMR Assay Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "data transformation":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["data transformation"][SYNONYMS]:
                             oname_label = "Data Transformation Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "sequence analysis data transformation":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
                             oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term \
-                                == "normalization":
+                        elif node.executes_protocol.protocol_type.term.lower() in \
+                                protocol_types_dict["normalization"][SYNONYMS]:
                             oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term \
+                        if node.executes_protocol.protocol_type.term.lower() \
                                 == "unknown protocol":
                             oname_label = "Unknown Protocol Name"
                         if oname_label is not None:
                             columns.append(oname_label)
-                        elif node.executes_protocol.protocol_type.term \
-                                == "nucleic acid hybridization":
+                        elif node.executes_protocol.protocol_type.term.lower() \
+                                in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
@@ -1489,34 +1498,34 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         df_dict[olabel][-1] = node.executes_protocol.name
                         oname_label = None
                         if node.executes_protocol.protocol_type:
-                            if node.executes_protocol.protocol_type.term == \
-                                    "nucleic acid sequencing":
+                            if node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["nucleic acid sequencing"][SYNONYMS]:
                                 oname_label = "Assay Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "data collection":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["data collection"][SYNONYMS]:
                                 oname_label = "Scan Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "mass spectrometry":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["mass spectrometry"][SYNONYMS]:
                                 oname_label = "MS Assay Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "NMR spectroscopy":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
                                 oname_label = "NMR Assay Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "data transformation":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["data transformation"][SYNONYMS]:
                                 oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "sequence analysis data transformation":
-                                oname_label = "Normalization Name"
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "normalization":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
+                                oname_label = "Data Transformation Name"
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["normalization"][SYNONYMS]:
                                 oname_label = "Normalization Name"
                             if node.executes_protocol.protocol_type.term == \
                                     "unknown protocol":
                                 oname_label = "Unknown Protocol Name"
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
-                            elif node.executes_protocol.protocol_type.term == \
-                                    "nucleic acid hybridization":
+                            elif node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 df_dict["Hybridization Assay Name"][-1] = \
                                     node.name
                                 df_dict["Array Design REF"][-1] = \
