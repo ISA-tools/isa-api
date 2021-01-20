@@ -240,6 +240,12 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                 if candidate_param_name[0] == '#' and not isinstance(param, list):
                     prepared_nodes[candidate_param_name] = param['value']
                 else:
+                    if not param['values']:
+                        raise ValueError('Missing values for Protocol Param {}'.format(
+                            candidate_param_name['term'] if isinstance(
+                                candidate_param_name, dict
+                            ) else candidate_param_name
+                        ))
                     # this is really a parameter name
                     param_name = _map_ontology_annotation(candidate_param_name, expand_strings=True)
                     prepared_nodes[param_name] = [
@@ -250,6 +256,12 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
             extension = node['extension']['value'] if 'extension' in node else DEFAULT_EXTENSION \
                 if node['node_type'] == DATA_FILE else None
             if "characteristics_value" in node:
+                if not node["characteristics_value"]['values']:
+                    raise ValueError('Missing values for Characteristic {}'.format(
+                        node['characteristics_category']['term'] if isinstance(
+                            node['characteristics_category'], dict
+                        ) else node['characteristics_category']
+                    ))
                 prepared_nodes = [
                     dict(
                         node_type=node['node_type'],

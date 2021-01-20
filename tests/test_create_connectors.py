@@ -96,6 +96,24 @@ class TestMappings(unittest.TestCase):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(assay_odict)
         self.assertIsInstance(assay_graph, AssayGraph)
 
+    def test_generate_assay_ord_dict_from_datascriptor_config_fail_missing_param_value(self):
+        assay_config_with_empty_param_value = self._load_config('assay-empty-param-value.json')
+        test_arm_name = next(key for key in assay_config_with_empty_param_value['selectedCells'].keys())
+        test_epoch_no = -1  # last epoch, follow-up
+        self.assertRaises(
+            ValueError, generate_assay_ord_dict_from_config, assay_config_with_empty_param_value,
+            test_arm_name, test_epoch_no
+        )
+
+    def test_generate_assay_ord_dict_from_datascriptor_config_fail_missing_char_value(self):
+        assay_config_with_empty_param_value = self._load_config('assay-empty-characteristic-value.json')
+        test_arm_name = next(key for key in assay_config_with_empty_param_value['selectedCells'].keys())
+        test_epoch_no = -1  # last epoch, follow-up
+        self.assertRaises(
+            ValueError, generate_assay_ord_dict_from_config, assay_config_with_empty_param_value,
+            test_arm_name, test_epoch_no
+        )
+
     def test_generate_study_design_from_config(self):
         ds_design_config = self._load_config('factorial-study-design-12-arms-blood-saliva-genomeseq-ms.json')
         design = generate_study_design_from_config(ds_design_config)
