@@ -690,13 +690,13 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, term='', term_source=None, term_accession='',
-                 comments=None, id_=str(uuid.uuid4())):
+                 comments=None, id_=None):
         super().__init__(comments)
 
         self.__term = term
         self.__term_source = term_source
         self.__term_accession = term_accession
-        self.id = id_
+        self.id = str(uuid.uuid4()) if not id_ else id_
 
     @property
     def term(self):
