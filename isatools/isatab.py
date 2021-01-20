@@ -1519,7 +1519,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             elif node.executes_protocol.protocol_type.term.lower() in \
                                     protocol_types_dict["normalization"][SYNONYMS]:
                                 oname_label = "Normalization Name"
-                            if node.executes_protocol.protocol_type.term == \
+                            if node.executes_protocol.protocol_type.term.lower() == \
                                     "unknown protocol":
                                 oname_label = "Unknown Protocol Name"
                             if oname_label is not None:
@@ -5300,6 +5300,7 @@ def preprocess(DF):
         inferred_protocol_type = ''
         leftcol = columns[find_lt(all_cols_indicies, i)]
         rightcol = columns[i]
+        """
         if leftcol == 'Source Name' and rightcol == 'Sample Name':
             inferred_protocol_type = 'sample collection'
         elif leftcol == 'Sample Name' and rightcol == 'Extract Name':
@@ -5308,7 +5309,7 @@ def preprocess(DF):
             inferred_protocol_type = 'labeling'
         elif leftcol == 'Labeled Extract Name' and rightcol in (
                 'Assay Name', 'MS Assay Name'):
-            inferred_protocol_type = 'library sequencing'
+            inferred_protocol_type = 'nucleic acid sequencing'
         elif leftcol == 'Extract Name' and rightcol in (
              'MS Assay Name'):
             inferred_protocol_type = 'mass spectrometry'
@@ -5328,7 +5329,7 @@ def preprocess(DF):
         elif leftcol == 'Raw Data File' and \
                         rightcol == 'Protein Identification File':
             inferred_protocol_type = 'metabolite identification'
-
+        """
         # Force use of unknown protocol always, until we can insert missing
         # protocol from above inferences into study metadata
         inferred_protocol_type = ''
