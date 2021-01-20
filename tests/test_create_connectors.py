@@ -29,7 +29,7 @@ from isatools.create.model import (
 )
 from isatools.create.constants import DEFAULT_STUDY_IDENTIFIER
 from isatools.isajson import ISAJSONEncoder
-from tests.create_sample_assay_plan_odicts import (
+from isatools.tests.create_sample_assay_plan_odicts import (
     ms_assay_dict,
     annotated_ms_assay_dict
 )
