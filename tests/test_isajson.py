@@ -1,7 +1,9 @@
-# from isatools import isajson
-from isatools.isatab import *
-from isatools.isajson import *
-from isatools.model import *
+from isatools import isajson
+from isatools.model import (
+    Investigation, Study, Comment, OntologySource, OntologyAnnotation, Person, Publication, Source, Characteristic,
+    Sample, batch_create_materials, Protocol, Process, StudyFactor, Assay, Material, DataFile, plink,
+
+)
 from isatools.tests import utils
 import unittest
 import json
@@ -16,7 +18,7 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
 
 
-def create_descriptor():
+def create_descriptor(use_strings_for_characteristic_categories=False):
     """
     Returns a simple but complete ISA-JSON 1.0 descriptor for illustration.
     """
@@ -114,7 +116,7 @@ def create_descriptor():
     investigation.ontology_source_references.append(ncbitaxon)
 
     characteristic_organism = Characteristic(
-        category=OntologyAnnotation(term="Organism"),
+        category=OntologyAnnotation(term="Organism") if not use_strings_for_characteristic_categories else "Organism",
         value=OntologyAnnotation(
             term="Homo Sapiens",
             term_source=ncbitaxon,
@@ -130,7 +132,9 @@ def create_descriptor():
 
     # preparing an ISA Characteristic object (~Material Property ) to annotate sample materials
     characteristic_organ = Characteristic(
-        category=OntologyAnnotation(term="OrganismPart"),
+        category=OntologyAnnotation(
+            term="OrganismPart"
+        ) if not use_strings_for_characteristic_categories else "OrganismPart",
         value=OntologyAnnotation(
             term="liver",
             term_source=uberon,
@@ -143,8 +147,7 @@ def create_descriptor():
     study.samples = batch_create_materials(prototype_sample, n=3)
     # creates a batch of 3 samples
 
-
-    #IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
+    # IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
     study.characteristic_categories.append(characteristic_organism.category)
     study.characteristic_categories.append(characteristic_organ.category)
 
@@ -167,7 +170,6 @@ def create_descriptor():
     study.protocols[0].comments.append(Comment(name="Study End Date", value="2017-08-11"))
     # checking that the ISA Protocol object has been modified
     # print(study.protocols[0])
-
 
     # Creation of an ISA Study Factor object
     f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment['modality']"))
@@ -229,7 +231,6 @@ def create_descriptor():
     # graphs are NOT interconnected.
 
     for i, sample in enumerate(study.samples):
-
         # create an extraction process that executes the extraction protocol
 
         extraction_process = Process(executes_protocol=extraction_protocol)
@@ -293,12 +294,13 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_and_dump_bii_i_1(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-I-1', 'BII-I-1.json')) as isajson_fp:
-            ISA = load(isajson_fp)
+            ISA = isajson.load(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
 
-            self.assertListEqual([s['filename'] for s in ISA_J['studies']], ['s_BII-S-1.txt', 's_BII-S-2.txt'])  # 2 studies in i_investigation.txt
+            self.assertListEqual([s['filename'] for s in ISA_J['studies']],
+                                 ['s_BII-S-1.txt', 's_BII-S-2.txt'])  # 2 studies in i_investigation.txt
 
             study_bii_s_1 = [s for s in ISA_J['studies'] if s['filename'] == 's_BII-S-1.txt'][0]
 
@@ -306,28 +308,35 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(study_bii_s_1['materials']['samples']), 164)  # 164 study samples in s_BII-S-1.txt
             self.assertEqual(len(study_bii_s_1['processSequence']), 18)  # 18 study processes in s_BII-S-1.txt
 
-            self.assertListEqual([a['filename'] for a in study_bii_s_1['assays']], ['a_proteome.txt', 'a_metabolome.txt', 'a_transcriptome.txt'])  # 2 assays in s_BII-S-1.txt
+            self.assertListEqual([a['filename'] for a in study_bii_s_1['assays']],
+                                 ['a_proteome.txt', 'a_metabolome.txt',
+                                  'a_transcriptome.txt'])  # 2 assays in s_BII-S-1.txt
 
             assay_proteome = [a for a in study_bii_s_1['assays'] if a['filename'] == 'a_proteome.txt'][0]
 
             self.assertEqual(len(assay_proteome['materials']['samples']), 8)  # 8 assay samples in a_proteome.txt
-            self.assertEqual(len(assay_proteome['materials']['otherMaterials']), 19)  # 19 other materials in a_proteome.txt
+            self.assertEqual(len(assay_proteome['materials']['otherMaterials']),
+                             19)  # 19 other materials in a_proteome.txt
             self.assertEqual(len(assay_proteome['dataFiles']), 7)  # 7 data files  in a_proteome.txt
             self.assertEqual(len(assay_proteome['processSequence']), 25)  # 25 processes in in a_proteome.txt
 
             assay_metabolome = [a for a in study_bii_s_1['assays'] if a['filename'] == 'a_metabolome.txt'][0]
 
             self.assertEqual(len(assay_metabolome['materials']['samples']), 92)  # 92 assay samples in a_metabolome.txt
-            self.assertEqual(len(assay_metabolome['materials']['otherMaterials']), 92)  # 92 other materials in a_metabolome.txt
+            self.assertEqual(len(assay_metabolome['materials']['otherMaterials']),
+                             92)  # 92 other materials in a_metabolome.txt
             self.assertEqual(len(assay_metabolome['dataFiles']), 111)  # 111 data files  in a_metabolome.txt
             self.assertEqual(len(assay_metabolome['processSequence']), 203)  # 203 processes in in a_metabolome.txt
 
             assay_transcriptome = [a for a in study_bii_s_1['assays'] if a['filename'] == 'a_transcriptome.txt'][0]
 
-            self.assertEqual(len(assay_transcriptome['materials']['samples']), 48)  # 48 assay samples in a_transcriptome.txt
-            self.assertEqual(len(assay_transcriptome['materials']['otherMaterials']), 96)  # 96 other materials in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome['materials']['samples']),
+                             48)  # 48 assay samples in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome['materials']['otherMaterials']),
+                             96)  # 96 other materials in a_transcriptome.txt
             self.assertEqual(len(assay_transcriptome['dataFiles']), 49)  # 49 data files  in a_transcriptome.txt
-            self.assertEqual(len(assay_transcriptome['processSequence']), 193)  # 203 processes in in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome['processSequence']),
+                             193)  # 203 processes in in a_transcriptome.txt
 
             study_bii_s_2 = [s for s in ISA_J['studies'] if s['filename'] == 's_BII-S-2.txt'][0]
 
@@ -336,24 +345,27 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(study_bii_s_2['processSequence']), 1)  # 1 study processes in s_BII-S-2.txt
 
             self.assertEqual(len(study_bii_s_2['assays']), 1)  # 1 assays in s_BII-S-2.txt
-            self.assertListEqual([a['filename'] for a in study_bii_s_2['assays']], ['a_microarray.txt'])  # 1 assays in s_BII-S-2.txt
+            self.assertListEqual([a['filename'] for a in study_bii_s_2['assays']],
+                                 ['a_microarray.txt'])  # 1 assays in s_BII-S-2.txt
 
             assay_microarray = [a for a in study_bii_s_2['assays'] if a['filename'] == 'a_microarray.txt'][0]
 
             self.assertEqual(len(assay_microarray['materials']['samples']), 2)  # 2 assay samples in a_microarray.txt
-            self.assertEqual(len(assay_microarray['materials']['otherMaterials']), 28)  # 28 other materials in a_microarray.txt
+            self.assertEqual(len(assay_microarray['materials']['otherMaterials']),
+                             28)  # 28 other materials in a_microarray.txt
             self.assertEqual(len(assay_microarray['dataFiles']), 15)  # 15 data files  in a_microarray.txt
             self.assertEqual(len(assay_microarray['processSequence']), 45)  # 45 processes in in a_microarray.txt
 
     def test_json_load_and_dump_bii_s_3(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-S-3', 'BII-S-3.json')) as isajson_fp:
-            ISA = load(isajson_fp)
+            ISA = isajson.load(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
 
-            self.assertListEqual([s['filename'] for s in ISA_J['studies']], ['s_BII-S-3.txt'])  # 1 studies in i_gilbert.txt
+            self.assertListEqual([s['filename'] for s in ISA_J['studies']],
+                                 ['s_BII-S-3.txt'])  # 1 studies in i_gilbert.txt
 
             study_bii_s_3 = [s for s in ISA_J['studies'] if s['filename'] == 's_BII-S-3.txt'][0]
 
@@ -361,31 +373,35 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(study_bii_s_3['materials']['samples']), 4)  # 4 study samples in s_BII-S-1.txt
             self.assertEqual(len(study_bii_s_3['processSequence']), 4)  # 4 study processes in s_BII-S-1.txt
 
-            self.assertListEqual([a['filename'] for a in study_bii_s_3['assays']], ['a_gilbert-assay-Gx.txt', 'a_gilbert-assay-Tx.txt'])  # 2 assays in s_BII-S-1.txt
+            self.assertListEqual([a['filename'] for a in study_bii_s_3['assays']],
+                                 ['a_gilbert-assay-Gx.txt', 'a_gilbert-assay-Tx.txt'])  # 2 assays in s_BII-S-1.txt
 
             assay_gx = [a for a in study_bii_s_3['assays'] if a['filename'] == 'a_gilbert-assay-Gx.txt'][0]
 
             self.assertEqual(len(assay_gx['materials']['samples']), 4)  # 4 assay samples in a_gilbert-assay-Gx.txt
-            self.assertEqual(len(assay_gx['materials']['otherMaterials']), 4)  # 4 other materials in a_gilbert-assay-Gx.txt
+            self.assertEqual(len(assay_gx['materials']['otherMaterials']),
+                             4)  # 4 other materials in a_gilbert-assay-Gx.txt
             self.assertEqual(len(assay_gx['dataFiles']), 6)  # 6 data files  in a_gilbert-assay-Gx.txt
             self.assertEqual(len(assay_gx['processSequence']), 18)  # 18 processes in in a_gilbert-assay-Gx.txt
 
             assay_tx = [a for a in study_bii_s_3['assays'] if a['filename'] == 'a_gilbert-assay-Tx.txt'][0]
 
             self.assertEqual(len(assay_tx['materials']['samples']), 4)  # 4 assay samples in a_gilbert-assay-Tx.txt
-            self.assertEqual(len(assay_tx['materials']['otherMaterials']), 4)  # 4 other materials in a_gilbert-assay-Tx.txt
+            self.assertEqual(len(assay_tx['materials']['otherMaterials']),
+                             4)  # 4 other materials in a_gilbert-assay-Tx.txt
             self.assertEqual(len(assay_tx['dataFiles']), 24)  # 24 data files  in a_gilbert-assay-Tx.txt
             self.assertEqual(len(assay_tx['processSequence']), 36)  # 36 processes in in a_gilbert-assay-Tx.txt
 
     def test_json_load_and_dump_bii_s_7(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-S-7', 'BII-S-7.json')) as isajson_fp:
-            ISA = load(isajson_fp)
+            ISA = isajson.load(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
 
-            self.assertListEqual([s['filename'] for s in ISA_J['studies']], ['s_BII-S-7.txt'])  # 1 studies in i_gilbert.txt
+            self.assertListEqual([s['filename'] for s in ISA_J['studies']],
+                                 ['s_BII-S-7.txt'])  # 1 studies in i_gilbert.txt
 
             study_bii_s_7 = [s for s in ISA_J['studies'] if s['filename'] == 's_BII-S-7.txt'][0]
 
@@ -393,26 +409,24 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(study_bii_s_7['materials']['samples']), 29)  # 29 study samples in s_BII-S-1.txt
             self.assertEqual(len(study_bii_s_7['processSequence']), 29)  # 29 study processes in s_BII-S-1.txt
 
-            self.assertListEqual([a['filename'] for a in study_bii_s_7['assays']], ['a_matteo-assay-Gx.txt'])  # 1 assays in s_BII-S-1.txt
+            self.assertListEqual([a['filename'] for a in study_bii_s_7['assays']],
+                                 ['a_matteo-assay-Gx.txt'])  # 1 assays in s_BII-S-1.txt
 
             assay_gx = [a for a in study_bii_s_7['assays'] if a['filename'] == 'a_matteo-assay-Gx.txt'][0]
 
             self.assertEqual(len(assay_gx['materials']['samples']), 29)  # 29 assay samples in a_matteo-assay-Gx.txt
-            self.assertEqual(len(assay_gx['materials']['otherMaterials']), 29)  # 29 other materials in a_matteo-assay-Gx.txt
+            self.assertEqual(len(assay_gx['materials']['otherMaterials']),
+                             29)  # 29 other materials in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx['dataFiles']), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx['processSequence']), 116)  # 116 processes in in a_matteo-assay-Gx.txt
 
-
     def test_json_load_from_file_and_create_isa_objects(self):
-
-        #reading from file
+        # reading from file
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json')) as isajson_fp:
-
-            inv = load(isajson_fp)
+            inv = isajson.load(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(inv, cls=ISAJSONEncoder))
-            # print("ISAJSON-1: ", ISA_J)
+            ISA_J = json.loads(json.dumps(inv, cls=isajson.ISAJSONEncoder))
 
             self.assertListEqual([s['filename'] for s in ISA_J['studies']], ['s_study.txt'])
 
@@ -420,15 +434,27 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(study_isa_1['materials']['sources']), 1)  # 1 sources in s_study.txt
             self.assertEqual(len(study_isa_1['materials']['samples']), 3)  # 3 sources in s_study.txt
 
-            # print(study_isa_1)
-
     def test_create_isajson_and_write_to_file(self):
         test_isainvestigation = create_descriptor()
 
-        isa_j = json.dumps(test_isainvestigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
+        isa_j = json.dumps(
+            test_isainvestigation, cls=isajson.ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')
+        )
 
-        with open(os.path.join(utils.JSON_DATA_DIR,'ISA-1', 'isa-test1.json'), 'w') as out_fp:
+        with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json'), 'w') as out_fp:
             out_fp.write(isa_j)
 
         out_fp.close()
 
+    def test_isajson_with_strings_as_characteristic_category(self):
+        test_isa_investigation = create_descriptor(use_strings_for_characteristic_categories=True)
+        isa_j = json.dumps(
+            test_isa_investigation, cls=isajson.ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')
+        )
+        self.assertIsInstance(isa_j, str)
+        with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json'), 'w') as out_fp:
+            out_fp.write(isa_j)
+        # FIXME fix this
+        # with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json')) as in_fp:
+        #     reverse_test_isa_investigation = isajson.load(in_fp)
+        #     self.assertIsInstance(reverse_test_isa_investigation, Investigation)
