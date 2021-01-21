@@ -454,7 +454,6 @@ class TestIsaJson(unittest.TestCase):
         self.assertIsInstance(isa_j, str)
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json'), 'w') as out_fp:
             out_fp.write(isa_j)
-        # FIXME fix this
-        # with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json')) as in_fp:
-        #     reverse_test_isa_investigation = isajson.load(in_fp)
-        #     self.assertIsInstance(reverse_test_isa_investigation, Investigation)
+        with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json')) as in_fp:
+            reverse_test_isa_investigation = isajson.load(in_fp)
+            self.assertIsInstance(reverse_test_isa_investigation, Investigation)

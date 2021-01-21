@@ -102,7 +102,8 @@ class Comment(object):
     def value(self, val):
         if isinstance(val, str):
             self.__value = val
-        raise ISAModelAttributeError('Comment.value must be a string')
+        else:
+            raise ISAModelAttributeError('Comment.value must be a string')
 
     def __repr__(self):
         return "isatools.model.Comment(name='{comment.name}', " \
@@ -2690,7 +2691,8 @@ class Characteristic(Commentable):
         self.__value = None
         self.__unit = None
 
-        self.category = category
+        if category is not None:
+            self.category = category
         self.value = value
         self.unit = unit
 
@@ -2702,12 +2704,14 @@ class Characteristic(Commentable):
 
     @category.setter
     def category(self, val):
-        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+        if isinstance(val, OntologyAnnotation) or val is None:
+            self.__category = val
+        elif isinstance(val, str):
+            self.__category = OntologyAnnotation(term=val)
+        else:
+            raise AttributeError(
                 'Characteristic.category must be either a string ot an OntologyAnnotation,'
                 ' or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__category = val
 
     @property
     def value(self):

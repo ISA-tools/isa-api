@@ -1645,7 +1645,7 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_characteristic(obj):
-            res = clean_nulls(
+            return clean_nulls(
                 {
                     "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     # "category": get_value(o.category) if o.category else None,
@@ -1653,7 +1653,6 @@ class ISAJSONEncoder(JSONEncoder):
                     "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
                 }
             )
-            return res
 
         def get_characteristics(obj):
             return list(map(lambda x: get_characteristic(x), obj))
@@ -1667,11 +1666,10 @@ class ISAJSONEncoder(JSONEncoder):
                 raise ValueError("Unexpected value type found: " + type(obj))
 
         def get_characteristic_category(obj):  # TODO: Deal with Material Type
-            ont_ann = OntologyAnnotation(term=obj) if isinstance(obj, str) else obj
             res = clean_nulls(
                 {
-                    "@id": id_gen(ont_ann),
-                    "characteristicType": get_ontology_annotation(ont_ann)
+                    "@id": id_gen(obj),
+                    "characteristicType": get_ontology_annotation(obj)
                 }
             )
             return res
