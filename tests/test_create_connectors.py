@@ -35,6 +35,7 @@ from isatools.tests.create_sample_assay_plan_odicts import (
 )
 
 
+
 class TestMappings(unittest.TestCase):
 
     def setUp(self):
