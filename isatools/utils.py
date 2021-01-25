@@ -14,7 +14,6 @@ import pandas as pd
 from isatools import isatab
 from isatools.model import (
     DerivedSpectralDataFile,
-    ISAModelAttributeError,
     OntologyAnnotation,
     ParameterValue,
     Process,
@@ -844,13 +843,13 @@ class IsaTabFixer(object):
         study = investigation.studies[-1]
         protocol = study.get_prot(protocol_ref)
         if protocol is None:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'No protocol with name {protocol_ref} was found'.format(
                     protocol_ref=protocol_ref))
         protocol.add_param(factor_name)
         factor = study.get_factor(factor_name)
         if factor is None:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'No factor with name {factor_name} was found'.format(
                     factor_name=factor_name))
         else:

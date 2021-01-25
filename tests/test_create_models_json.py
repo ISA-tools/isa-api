@@ -374,7 +374,9 @@ class CharacteristicEncoderTest(unittest.TestCase):
         # log.info('Characteristic is {0}'.format(characteristic))
         actual_json_characteristic = json.loads(json.dumps(characteristic, cls=CharacteristicEncoder))
         expected_json_characteristic = {
-            'category': characteristic.category,
+            'category': {
+                'term': characteristic.category.term
+            },
             'value': characteristic.value
         }
         self.assertEqual(ordered(actual_json_characteristic), ordered(expected_json_characteristic))

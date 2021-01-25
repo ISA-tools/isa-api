@@ -29,6 +29,7 @@ sample_list = [
             'is_input_to_next_protocols': True
         }
 ]
+
 ms_assay_dict = OrderedDict([
     ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
     ('technology_type', OntologyAnnotation(term='mass spectrometry')),
@@ -75,6 +76,7 @@ ms_assay_dict = OrderedDict([
         }
     ])
 ])
+
 annotated_ms_assay_dict = OrderedDict([
     ('measurement_type', OntologyAnnotation(term='metabolite profiling',
                                             term_accession='http://purl.obolibrary.org/obo/OBI_0000366')),

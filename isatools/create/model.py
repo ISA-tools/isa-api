@@ -527,7 +527,7 @@ class CharacteristicDecoder(object):
         if isinstance(ontology_annotation_dict.get("termSource", None), dict):
             term_source = OntologySource(**ontology_annotation_dict["termSource"])
         return OntologyAnnotation(
-            term=ontology_annotation_dict["term"], term_accession=ontology_annotation_dict["termAccession"],
+            term=ontology_annotation_dict["term"], term_accession=ontology_annotation_dict.get("termAccession", ''),
             term_source=term_source
         )
 

@@ -2,7 +2,7 @@ wheel~=0.36.2
 setuptools~=51.1.2
 numpy~=1.19.5
 jsonschema~=3.2.0
-pandas~=1.2.0
+pandas~=1.2.1
 networkx~=2.5
 lxml~=4.6.2
 requests~=2.25.1
@@ -15,8 +15,8 @@ mzml2isa==1.0.3
 #-e git+http://github.com/ISA-tools/isa-api@4e38b09abac60c6acb787169e6eaeac0ac35c1ae#egg=isatools
 biopython~=1.78
 progressbar2~=3.53.1
-deepdiff~=5.2.1
-PyYAML~=5.3.1
+deepdiff~=5.2.2
+PyYAML~=5.4.1
 bokeh~=2.2.3
 # test dependencies
 # tox==3.14.0
