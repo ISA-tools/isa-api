@@ -285,7 +285,7 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
     return res
 
 
-def generate_study_design_from_config(study_design_config):
+def generate_study_design(study_design_config):
     """
     This function takes a study design configuration as produced from the Datascriptor application
     and outputs a StudyDesign object

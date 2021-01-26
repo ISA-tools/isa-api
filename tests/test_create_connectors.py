@@ -4,7 +4,7 @@ from isatools import isatab
 from isatools.create.connectors import (
     assay_template_to_ordered_dict,
     assay_ordered_dict_to_template,
-    generate_study_design_from_config,
+    generate_study_design,
     generate_assay_ord_dict_from_config
 )
 
@@ -115,9 +115,9 @@ class TestMappings(unittest.TestCase):
             test_arm_name, test_epoch_no
         )
 
-    def test_generate_study_design_from_config(self):
+    def test_generate_study_design(self):
         ds_design_config = self._load_config('factorial-study-design-12-arms-blood-saliva-genomeseq-ms.json')
-        design = generate_study_design_from_config(ds_design_config)
+        design = generate_study_design(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         self.assertEqual(len(design.study_arms), len(ds_design_config['arms']['selected']))
         for arm in design.study_arms:
@@ -146,9 +146,9 @@ class TestMappings(unittest.TestCase):
         self.assertIsInstance(data_frames, dict)
         self.assertGreater(len(data_frames), 1)
 
-    def test_generate_study_design_from_config_with_observational_factors_and_ontology_annotations(self):
+    def test_generate_study_design_with_observational_factors_and_ontology_annotations(self):
         ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms.json')
-        design = generate_study_design_from_config(ds_design_config)
+        design = generate_study_design(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         for ix, arm in enumerate(design.study_arms):
             self.assertIsInstance(arm, StudyArm)
@@ -174,9 +174,9 @@ class TestMappings(unittest.TestCase):
         data_frames = isatab.dump_tables_to_dataframes(investigation)
         self.assertIsInstance(data_frames, dict)
 
-    def test_generate_study_design_from_config_with_chained_protocols_and_ontology_annotations(self):
+    def test_generate_study_design_with_chained_protocols_and_ontology_annotations(self):
         ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms-chipseq.json')
-        design = generate_study_design_from_config(ds_design_config)
+        design = generate_study_design(ds_design_config)
         self.assertIsInstance(design, StudyDesign)
         investigation = Investigation(studies=[design.generate_isa_study()])
         self.assertIsInstance(investigation.studies[0], Study)
