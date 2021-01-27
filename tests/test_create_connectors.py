@@ -34,6 +34,7 @@ from isatools.tests.create_sample_assay_plan_odicts import (
     annotated_ms_assay_dict
 )
 
+SLOW_TESTS = int(os.getenv('SLOW_TESTS', '0'))
 
 
 class TestMappings(unittest.TestCase):
@@ -142,9 +143,10 @@ class TestMappings(unittest.TestCase):
             separators=(',', ': ')
         )
         self.assertIsInstance(inv_json, str)
-        data_frames = isatab.dump_tables_to_dataframes(investigation)
-        self.assertIsInstance(data_frames, dict)
-        self.assertGreater(len(data_frames), 1)
+        if SLOW_TESTS:
+            data_frames = isatab.dump_tables_to_dataframes(investigation)
+            self.assertIsInstance(data_frames, dict)
+            self.assertGreater(len(data_frames), 1)
 
     def test_generate_study_design_with_observational_factors_and_ontology_annotations(self):
         ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms.json')
@@ -162,17 +164,18 @@ class TestMappings(unittest.TestCase):
         investigation = Investigation(studies=[design.generate_isa_study()])
         # two assay types are selected, so we expect to find only two assays in the studies
         self.assertEqual(len(investigation.studies[0].assays), 2)
-        inv_json = json.dumps(
-            investigation,
-            cls=ISAJSONEncoder,
-            sort_keys=True,
-            indent=4,
-            separators=(',', ': ')
-        )
-        inv_dict = json.loads(inv_json)
-        self.assertIsInstance(inv_dict, dict)
-        data_frames = isatab.dump_tables_to_dataframes(investigation)
-        self.assertIsInstance(data_frames, dict)
+        if SLOW_TESTS:
+            inv_json = json.dumps(
+                investigation,
+                cls=ISAJSONEncoder,
+                sort_keys=True,
+                indent=4,
+                separators=(',', ': ')
+            )
+            inv_dict = json.loads(inv_json)
+            self.assertIsInstance(inv_dict, dict)
+            data_frames = isatab.dump_tables_to_dataframes(investigation)
+            self.assertIsInstance(data_frames, dict)
 
     def test_generate_study_design_with_chained_protocols_and_ontology_annotations(self):
         ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms-chipseq.json')
@@ -193,13 +196,14 @@ class TestMappings(unittest.TestCase):
         self.assertTrue(
             all(data_file.filename.split('.')[-1] == 'raw' for data_file in nmr_assay.data_files)
         )
-        json.dumps(
-            investigation,
-            cls=ISAJSONEncoder,
-            sort_keys=True,
-            indent=4,
-            separators=(',', ': ')
-        )
-        data_frames = isatab.dump_tables_to_dataframes(investigation)
-        self.assertIsInstance(data_frames, dict)
-        self.assertEqual(len(data_frames), len(ds_design_config['assayPlan']) + 1)
+        if SLOW_TESTS:
+            json.dumps(
+                investigation,
+                cls=ISAJSONEncoder,
+                sort_keys=True,
+                indent=4,
+                separators=(',', ': ')
+            )
+            data_frames = isatab.dump_tables_to_dataframes(investigation)
+            self.assertIsInstance(data_frames, dict)
+            self.assertEqual(len(data_frames), len(ds_design_config['assayPlan']) + 1)
