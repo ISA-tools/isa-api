@@ -15,16 +15,28 @@ Todo:
 from __future__ import absolute_import
 import abc
 import logging
+import os
 import warnings
 import uuid
 from numbers import Number
-
 from collections.abc import Iterable
+import pprint
 import networkx as nx
-
+import yaml
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
+
+
+def load_protocol_types_info():
+    """
+    Load the protocol types info from the YAML protocol types file
+    """
+    with open(
+            os.path.join(os.path.dirname(__file__), 'resources', 'config', 'yaml', 'protocol-types.yml')
+    ) as yaml_file:
+        protocol_types_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
+        return protocol_types_dict
 
 
 def _build_assay_graph(process_sequence=None):
@@ -2175,6 +2187,15 @@ class Protocol(Commentable):
         if components is not None:
             self.components = components
 
+    @staticmethod
+    def show_allowed_protocol_types():
+        """
+        Pretty prints the allowed values (i.e. the values that pass the ISA-tab validation using the default
+        XML validations) for Protocol Types
+        """
+        protocol_types_dict = load_protocol_types_info()
+        pprint.pprint(protocol_types_dict)
+
     @property
     def name(self):
         """:obj:`str`: the name of the protocol"""
@@ -2261,7 +2282,6 @@ class Protocol(Commentable):
                                          'containing ProtocolParameters')
         for el in val:
             self.add_param(el)
-
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:

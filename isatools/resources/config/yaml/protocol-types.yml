@@ -1,3 +1,20 @@
+sample collection:
+  header: Sample Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000659
+  synonyms:
+    - sample collection
+    - sampling
+extraction:
+  header: Extract Name
+  iri: http://purl.obolibrary.org/obo/OBI_0302884
+  synonyms:
+    - extraction
+labeling:
+  header: Labeled Extract Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600038
+  synonyms:
+    - labeling
+    - labelling
 phenotyping:
   header: Assay Name
   synonyms:

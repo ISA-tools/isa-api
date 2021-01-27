@@ -2,13 +2,15 @@
 from __future__ import absolute_import
 import datetime
 import unittest
+from unittest.mock import patch
 
 from isatools.model import (
     Comment, Investigation, OntologySource, OntologyAnnotation, Publication, Person, Study, StudyFactor, Characteristic,
     Assay, Protocol, ProtocolParameter, ParameterValue, ProtocolComponent, Source, Sample, Extract, LabeledExtract,
     FactorValue, DataFile, RawDataFile, DerivedDataFile, RawSpectralDataFile, ArrayDataFile, DerivedSpectralDataFile,
     ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
-    PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile, FreeInductionDecayDataFile
+    PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile, FreeInductionDecayDataFile,
+    load_protocol_types_info
 )
 
 
@@ -631,6 +633,12 @@ class ProtocolTest(unittest.TestCase):
         self.protocol = Protocol(
             name='N', protocol_type=OntologyAnnotation(term='PT'), uri='U',
             version='1')
+
+    @patch('pprint.pprint')
+    def test_allowed_protocol_types(self, mock_pprint):
+        protocol_types_dict = load_protocol_types_info()
+        Protocol.show_allowed_protocol_types()
+        mock_pprint.assert_called_with(protocol_types_dict)
 
     def test_repr(self):
         self.assertEqual("isatools.model.Protocol(name='', "

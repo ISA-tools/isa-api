@@ -51,17 +51,12 @@ from isatools.model import (
     Study,
     StudyFactor,
     plink,
+    load_protocol_types_info
 )
-
+from isatools.constants import SYNONYMS
 from isatools.utils import utf8_text_file_open
 
 log = logging.getLogger('isatools')
-
-with open(
-        os.path.join(os.path.dirname(__file__), 'resources', 'config', 'yaml', 'protocol-type-synonyms.yml')
-) as yaml_file:
-    protocol_types_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
-SYNONYMS = 'synonyms'
 
 
 def xml_config_contents(filename):
@@ -1369,6 +1364,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
+    protocol_types_dict = load_protocol_types_info()
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
             if assay_obj.graph is None:
@@ -1666,7 +1662,7 @@ def get_value_columns(label, x):
         else:
             return ["{0}.Unit".format(label)]
     elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda x: "{0}.{1}".format(label, x),
+        return map(lambda y: "{0}.{1}".format(label, y),
                    ["Term Source REF", "Term Accession Number"])
     else:
         return []
@@ -1688,6 +1684,7 @@ def get_characteristic_columns(label, c):
 def get_fv_columns(label, fv):
     """Generates Factor Value columns for a given material
 
+    :param fv: Factor Value
     :param label: Header label needed for the material type,
     e.g. "Sample Name"
     :param c: The Factor Value object of interest
