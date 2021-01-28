@@ -2,7 +2,7 @@
 """ ISA-specific exceptions """
 
 
-class ISAModelAttributeError(AttributeError):
+class AttributeError(AttributeError):
     """
     If attempting to set a ISA Python object attribute to an invalid value.
     """

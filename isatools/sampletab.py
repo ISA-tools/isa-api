@@ -11,7 +11,6 @@ from io import StringIO
 
 import numpy as np
 import pandas as pd
-# import modin.pandas as pd_modin
 
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
@@ -144,16 +143,16 @@ def get_value(object_column, column_group, object_series,
 
         term_source_value = object_series[offset_1r_col]
 
-        if term_source_value is not '':
+        if term_source_value != '':
 
             try:
                 value.term_source = ontology_source_map[term_source_value]
             except KeyError:
-                print('term source: ', term_source_value, ' not found')
+                log.warning('term source: ', term_source_value, ' not found')
 
         term_accession_value = str(object_series[offset_2r_col])
 
-        if term_accession_value is not '':
+        if term_accession_value != '':
             value.term_accession = term_accession_value
 
         return value, None
@@ -177,18 +176,18 @@ def get_value(object_column, column_group, object_series,
 
             unit_term_source_value = object_series[offset_2r_col]
 
-            if unit_term_source_value is not '':
+            if unit_term_source_value != '':
 
                 try:
                     unit_term_value.term_source = \
                         ontology_source_map[unit_term_source_value]
                 except KeyError:
-                    print('term source: ', unit_term_source_value,
-                          ' not found')
+                    log.warning('term source: ', unit_term_source_value,
+                                ' not found')
 
             term_accession_value = object_series[offset_3r_col]
 
-            if term_accession_value is not '':
+            if term_accession_value != '':
                 unit_term_value.term_accession = term_accession_value
 
         return cell_value, unit_term_value

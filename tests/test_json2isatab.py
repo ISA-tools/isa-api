@@ -54,8 +54,6 @@ class TestJson2IsaTab(unittest.TestCase):
                 with open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool', 'a_test-template3-splitting_transcription_profiling_DNA_microarray.txt')) as reference_fp:
                     self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
-    # FIXME broken test
-    @unittest.skip("skipping for now as it breaks, to be fixed")
     def test_json2isatab_convert_bii_s_3_investigation(self):
         with open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, i_file_name='i_gilbert.txt', validate_first=False)

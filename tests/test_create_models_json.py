@@ -2,22 +2,59 @@
 import json
 import os
 import unittest
-from io import StringIO
+import logging
+from collections import OrderedDict
 
-from isatools.create.models import *
-from isatools.tests import utils
-from tests.create_sample_assay_plan_odicts import nmr_assay_dict
+from isatools.model import (
+    OntologyAnnotation,
+    StudyFactor,
+    FactorValue,
+    Characteristic,
+    ProtocolParameter,
+    ParameterValue,
+    OntologySource
+)
+from isatools.create.model import (
+    NonTreatment,
+    Treatment,
+    StudyCell,
+    ProductNode,
+    ProtocolNode,
+    AssayGraph,
+    SampleAndAssayPlan,
+    StudyArm,
+    StudyDesign,
+    OntologyAnnotationEncoder,
+    CharacteristicEncoder,
+    CharacteristicDecoder,
+    StudyCellEncoder,
+    StudyCellDecoder,
+    SampleAndAssayPlanEncoder,
+    SampleAndAssayPlanDecoder,
+    StudyArmEncoder,
+    StudyArmDecoder,
+    StudyDesignEncoder,
+    StudyDesignDecoder
+)
+from isatools.create.constants import (
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, INTERVENTIONS, BASE_FACTORS, SAMPLE, EXTRACT,
+    default_ontology_source_reference, DEFAULT_SOURCE_TYPE
+)
+from isatools.tests.create_sample_assay_plan_odicts import nmr_assay_dict
+
+log = logging.getLogger('isatools')
+log.setLevel(logging.INFO)
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
 
     def handle_inner_lists(el):
-        print('el = {}'.format(el))
+        log.debug('el = {}'.format(el))
         if isinstance(el, list):
-            # print('El is list, returning el[0]:{}'.format(el[0]))
+            log.debug('El is list, returning el[0]:{}'.format(el[0]))
             return handle_inner_lists(el[0])
         else:
-            # print('El is not list, returning el: '.format(el))
+            log.debug('El is not list, returning el: '.format(el))
             return el
 
     if isinstance(o, dict):
@@ -26,10 +63,10 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
         if isinstance(o, list):
             return sorted((ordered(x) for x in o if x is not None), key=handle_inner_lists)
     except TypeError as e:
-        print('Object who raised error is {}'.format(o))
-        print('Object which raised error is of type {}'.format(type(o)))
+        log.error('Object who raised error is {}'.format(o))
+        log.error('Object which raised error is of type {}'.format(type(o)))
         for x in o:
-            print('x = {}; type(x) = {}'.format(x, type(x)))
+            log.error('x = {}; type(x) = {}'.format(x, type(x)))
         raise e
     return o
 
@@ -117,7 +154,7 @@ class OntologyAnnotationTest(unittest.TestCase):
     def test_simple_ontology_annotation(self):
         annotation = OntologyAnnotation(term="aspirin")
         annotation_json = json.dumps(annotation, cls=OntologyAnnotationEncoder, sort_keys=True, indent=4)
-        print(annotation_json)
+        log.debug(annotation_json)
         self.assertEqual(json.loads(annotation_json), {"term": "aspirin"})
 
 
@@ -202,37 +239,79 @@ class BaseTestCase(unittest.TestCase):
         self.sample_assay_plan_for_treatments = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR TREATMENTS')
         self.sample_assay_plan_for_washout = SampleAndAssayPlan(name='SAMPLE ASSAY PLAN FOR WASHOUT')
         self.sample_assay_plan_for_follow_up = SampleAndAssayPlan(name='FOLLOW-UP SAMPLE ASSAY PLAN')
-        self.single_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.single_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=30, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.single_treatment_cell_arm_02 = StudyArm(name=TEST_STUDY_ARM_NAME_02, group_size=24, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_washout_00, self.sample_assay_plan_for_washout),
-            (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.multi_treatment_cell_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=35, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
-        self.multi_treatment_cell_arm_01 = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=5, arm_map=OrderedDict([
-            (self.cell_screen, self.sample_assay_plan_for_screening),
-            (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
-            (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
-        ]))
+        self.test_source_characteristics_00 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.test_source_characteristics_01 = [
+            Characteristic(category='sex', value='F'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.test_source_characteristics_02 = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='young')
+        ]
+        self.single_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=10,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.single_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=30,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.single_treatment_cell_arm_02 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_02,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_02,
+            group_size=24,
+            arm_map=OrderedDict([
+                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_washout_00, self.sample_assay_plan_for_washout),
+                (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.multi_treatment_cell_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_00,
+            group_size=35,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_padded, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
+        self.multi_treatment_cell_arm_01 = StudyArm(
+            name=TEST_STUDY_ARM_NAME_01,
+            source_type=DEFAULT_SOURCE_TYPE,
+            source_characteristics=self.test_source_characteristics_01,
+            group_size=5,
+            arm_map=OrderedDict([
+                (self.cell_screen, self.sample_assay_plan_for_screening),
+                (self.cell_multi_elements_bio_diet, self.sample_assay_plan_for_treatments),
+                (self.cell_follow_up, self.sample_assay_plan_for_follow_up)
+            ])
+        )
         self.mouse_source_type = Characteristic(
             category=OntologyAnnotation(
                 term="Study Subject", term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",
@@ -295,7 +374,9 @@ class CharacteristicEncoderTest(unittest.TestCase):
         # log.info('Characteristic is {0}'.format(characteristic))
         actual_json_characteristic = json.loads(json.dumps(characteristic, cls=CharacteristicEncoder))
         expected_json_characteristic = {
-            'category': characteristic.category,
+            'category': {
+                'term': characteristic.category.term
+            },
             'value': characteristic.value
         }
         self.assertEqual(ordered(actual_json_characteristic), ordered(expected_json_characteristic))
@@ -382,7 +463,7 @@ class StudyCellEncoderTest(BaseTestCase):
         te1.factor_values = [f1v1, f2v1, f3v1]
         cell = StudyCell(name='test_cell', elements=(te1, ))
         json_cell = json.loads(json.dumps(cell, cls=StudyCellEncoder))
-        print(json.dumps(cell, cls=StudyCellEncoder, indent=4, sort_keys=True))
+        log.debug(json.dumps(cell, cls=StudyCellEncoder, indent=4, sort_keys=True))
         for factor_value_dict in json_cell['elements'][0]['factorValues']:
             self.assertIsNotNone(factor_value_dict['value'])
 
@@ -406,10 +487,6 @@ class StudyCellDecoderTest(BaseTestCase):
                                'single-treatment-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
-        # print(self.cell_single_treatment)
-        # print('\n')
-        # print(actual_cell)
-        # self.assertEqual(self.cell_single_treatment.elements[0], actual_cell.elements[0])
         self.assertEqual(self.cell_single_treatment_00, actual_cell)
 
     def test_decode_multi_treatment_cell(self):
@@ -420,9 +497,9 @@ class StudyCellDecoderTest(BaseTestCase):
             actual_cell = decoder.loads(json_text)
         self.assertEqual(len(self.cell_multi_elements_padded.elements), len(actual_cell.elements))
         for i in range(len(actual_cell.elements)):
-            print(i)
-            print(actual_cell.elements[i])
-            print(self.cell_multi_elements_padded.elements[i])
+            log.debug(i)
+            log.debug(actual_cell.elements[i])
+            log.debug(self.cell_multi_elements_padded.elements[i])
             self.assertEqual(self.cell_multi_elements_padded.elements[i], actual_cell.elements[i])
         self.assertEqual(self.cell_multi_elements_padded, actual_cell)
 
@@ -488,21 +565,13 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
-        """
-        print("Expected Assay Plan:")
-        for graph in self.plan.assay_plan:
-            print(graph)
-        print("\nActual Assay Plan:")
-        for graph in actual_plan.assay_plan:
-            print(graph)
-        """
         self.assertEqual(self.plan.sample_plan, actual_plan.sample_plan)
         unmatched_expected = self.plan.assay_plan - actual_plan.assay_plan
         unmatched_actual = actual_plan.assay_plan - self.plan.assay_plan
-        print(unmatched_actual)
-        print(unmatched_expected)
+        log.debug(unmatched_actual)
+        log.debug(unmatched_expected)
         if unmatched_expected and unmatched_actual:
-            print('here we are')
+            log.debug('here we are')
             unmatched_expected_el = unmatched_expected.pop()
             unmatched_actual_el = unmatched_actual.pop()
             self.assertEqual(unmatched_expected_el.id, unmatched_actual_el.id)
@@ -511,7 +580,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
             self.assertEqual(repr(unmatched_expected_el.links), repr(unmatched_actual_el.links))
             self.assertEqual(repr(unmatched_expected_el), repr(unmatched_actual_el))
             self.assertEqual(unmatched_expected_el, unmatched_actual_el)
-            print('all these test passed')
+            log.debug('all these test passed')
         self.assertEqual(self.plan.assay_plan, actual_plan.assay_plan)
         self.assertEqual(self.plan.sample_to_assay_map, actual_plan.sample_to_assay_map)
         self.assertEqual(self.plan, actual_plan)
@@ -540,7 +609,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
         sample2assay_plan = {input_material: [nmr_assay_graph]}
         sap1.sample_to_assay_map = sample2assay_plan
         actual_json_plan = json.loads(json.dumps(sap1, cls=SampleAndAssayPlanEncoder))
-        print(json.dumps(sap1, cls=SampleAndAssayPlanEncoder, indent=4, sort_keys=True))
+        log.debug(json.dumps(sap1, cls=SampleAndAssayPlanEncoder, indent=4, sort_keys=True))
         assay_node_json = next(node for node in actual_json_plan["assayPlan"][0]["nodes"]
                                if node["@id"] == "nmr_spectroscopy_000_000")
         for param_val_json in assay_node_json["parameterValues"]:
@@ -558,8 +627,8 @@ class StudyArmEncoderTest(BaseTestCase):
         with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
-        print('expected source type is {}'.format(expected_json_arm['sourceType']))
-        print('actual source type is {}'.format(actual_json_arm['sourceType']))
+        log.debug('expected source type is {}'.format(expected_json_arm['sourceType']))
+        log.debug('actual source type is {}'.format(actual_json_arm['sourceType']))
         self.assertEqual(ordered(actual_json_arm["sourceType"]), ordered(expected_json_arm["sourceType"]))
         self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
 
@@ -599,8 +668,8 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertIsInstance(actual_arm, StudyArm)
-        log.info('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
-        log.info('Actual Arm source type: {}'.format(actual_arm.source_type))
+        log.debug('Expected Arm source type: {}'.format(self.multi_treatment_cell_arm_mouse.source_type))
+        log.debug('Actual Arm source type: {}'.format(actual_arm.source_type))
         self.assertEqual(self.multi_treatment_cell_arm_mouse, actual_arm)
 
 
@@ -608,13 +677,20 @@ class StudyDesignEncoderTest(BaseTestCase):
 
     def setUp(self):
         super(StudyDesignEncoderTest, self).setUp()
-        self.three_arm_study_design = StudyDesign(name=TEST_STUDY_DESIGN_NAME_THREE_ARMS, study_arms={
-            self.single_treatment_cell_arm,
-            self.single_treatment_cell_arm_01,
-            self.single_treatment_cell_arm_02
+        self.three_arm_study_design = StudyDesign(
+            name=TEST_STUDY_DESIGN_NAME_THREE_ARMS,
+            description='This is a study design with three single-element arms',
+            design_type='unspecified design',
+            study_arms={
+                self.single_treatment_cell_arm,
+                self.single_treatment_cell_arm_01,
+                self.single_treatment_cell_arm_02
         })
         self.multi_element_cell_two_arm_study_design = StudyDesign(
-            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS, study_arms=[
+            name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS,
+            description='This is a study design with two multi-element arms',
+            design_type='unspecified design',
+            study_arms=[
                 self.multi_treatment_cell_arm,
                 self.multi_treatment_cell_arm_01
             ])
@@ -656,23 +732,16 @@ class StudyDesignDecoderTest(BaseTestCase):
                                'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)
-        # print("\nExpected:\n")
-        # print(self.three_arm_study_design)
-        # print("\nActual:\n")
-        # print(actual_study_design)
-        # print("\nDifference:\n")
-        import difflib
-        # difflib.ndiff(repr(self.three_arm_study_design), repr(actual_study_design))
         self.assertEqual(self.three_arm_study_design.name, actual_study_design.name)
         """
         for i, arm in enumerate(self.three_arm_study_design.study_arms):
-            print("comparing study arm #{0} - {1}".format(i, arm.name))
-            print("Difference:\n")
+            log.debug("comparing study arm #{0} - {1}".format(i, arm.name))
+            log.debug("Difference:\n")
             difflib.ndiff(arm, actual_study_design.study_arms[i])
-            print("\nExpected:\n")
-            print(arm)
-            print("\nActual:\n")
-            print(actual_study_design.study_arms[i])
+            log.debug("\nExpected:\n")
+            log.debug(arm)
+            log.debug("\nActual:\n")
+            log.debug(actual_study_design.study_arms[i])
             self.assertEqual(arm, actual_study_design.study_arms[i])
         self.assertEqual(self.three_arm_study_design.study_arms[0], actual_study_design.study_arms[0])
         self.assertEqual(self.three_arm_study_design.study_arms[1], actual_study_design.study_arms[1])
@@ -680,13 +749,13 @@ class StudyDesignDecoderTest(BaseTestCase):
         self.assertEqual(expected_third_arm.name, actual_study_design.study_arms[2].name)
         self.assertEqual(expected_third_arm.group_size,
                          actual_study_design.study_arms[2].group_size)
-        # print("Arm map:")
-        # print(list(actual_study_design.study_arms[2].arm_map.keys()))
+        # log.debug("Arm map:")
+        # log.debug(list(actual_study_design.study_arms[2].arm_map.keys()))
         i = 0
         for cell, sample_assay_plan in expected_third_arm.arm_map.items():
-            print("testing cell {0}".format(cell.name))
-            print(cell)
-            print(list(actual_study_design.study_arms[2].arm_map.keys())[i])
+            log.debug("testing cell {0}".format(cell.name))
+            log.debug(cell)
+            log.debug(list(actual_study_design.study_arms[2].arm_map.keys())[i])
             self.assertTrue(cell in actual_study_design.study_arms[2].arm_map)
             self.assertEqual(sample_assay_plan, actual_study_design.study_arms[2].arm_map[cell])
             i = i + 1

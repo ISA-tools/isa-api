@@ -139,3 +139,4 @@ class TestUtils(unittest.TestCase):
 
     def test_assert_xml_equal(self):
         self.assertTrue(utils.assert_xml_equal(etree.fromstring(self.x1), etree.fromstring(self.x2)))
+
