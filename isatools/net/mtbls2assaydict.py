@@ -64,6 +64,7 @@ def update_current_file(input_file):
 
     return latest_version
 
+
 def check_file_for_updates(old_file, resource_url):
 
     try:
@@ -188,7 +189,13 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
             else:
                 search_protocol_param = protocol_param
 
-            param_setup[search_protocol_param] = { "description": "", "options": [], "values": [] }
+            # param_setup[search_protocol_param] = { "description": "", "options": [], "values": [] }
+
+            param_setup[search_protocol_param] = {"newValues": False,
+                                                  "isQuantitative": False,
+                                                  "description": "",
+                                                  "options": [],
+                                                  "values": []}
 
             for this_element in mtbls_associated_subclasses:
                 if str(this_element.label()).lower() == search_protocol_param.lower():
@@ -214,6 +221,7 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                         option["term"] = str(this_value.label())
                         option["source"] = "Metabolights.owl"
                         param_setup[search_protocol_param]["options"].append(option)
+
         return param_setup
 
     for element in protocol_row_record:
@@ -292,6 +300,11 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                                 "node_type": "data file",
                                 "is_input_to_next_protocols": {
                                     "value": True
+                                },
+                                "extension": {
+                                    "options": ["nmrML", "RAW", "Bruker "],
+                                    "value": "nmrML",
+                                    "newValues": True
                                 }
                             }
                         ]
@@ -306,6 +319,11 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                                 "node_type": "data file",
                                 "is_input_to_next_protocols": {
                                     "value": True
+                                },
+                                "extension": {
+                                    "options": ["mzML", "RAW", "wiff", "netCDF"],
+                                    "value": "mzML",
+                                    "newValues": True
                                 }
                             }
                         ]
@@ -320,6 +338,11 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                                 "node_type": "data file",
                                 "is_input_to_next_protocols": {
                                     "value": True
+                                },
+                                "extension": {
+                                    "options": ["raw", "netCDF"],
+                                    "value": "raw",
+                                    "newValues": True
                                 }
                             }
                         ]
@@ -334,6 +357,11 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                                 "node_type": "data file",
                                 "is_input_to_next_protocols": {
                                     "value": True
+                                },
+                                "extension": {
+                                    "options": ["mzML", "RAW", "wiff", "netCDF"],
+                                    "value": "mzML",
+                                    "newValues": True
                                 }
                             }
                         ]
@@ -348,6 +376,11 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                         "node_type": "data file",
                         "is_input_to_next_protocols": {
                             "value": True
+                        },
+                        "extension": {
+                            "options": ["raw", "Bruker"],
+                            "value": "raw",
+                            "newValues": True
                         }
                     }
                 ]
@@ -743,9 +776,23 @@ if __name__ == "__main__":
     owl_file = check_file_for_updates(MTBLS_CV_OWL, "https://raw.githubusercontent.com/EBI-Metabolights/Ontology/master/Metabolights.owl")
 
     mtbls_class_names, mtbls_associated_subclasses, mtbls_owl_sha256 = load_terms_from_mtblds_owl(owl_file)
-    output = os.path.join(RESOURCES_MTBLS_DIR, "mtbls_isa_assay_ds_config.json")
 
-    with open(output, 'w') as config_file:
-        json.dump(parse_mtbls_assay_def(assay_file, mtbls_class_names,
-                                        mtbls_associated_subclasses,
-                                        mtbls_owl_sha256),  config_file, indent=4)
+    outputdirname = os.path.join(RESOURCES_MTBLS_DIR, str(datetime.datetime.now().strftime("%Y-%m-%d")))
+
+    output = os.path.join(outputdirname, "mtbls_isa_assay_ds_config.json")
+
+    try:
+        if os.path.exists(outputdirname):
+            with open(output, 'w') as config_file:
+                json.dump(parse_mtbls_assay_def(assay_file, mtbls_class_names,
+                                                mtbls_associated_subclasses,
+                                                mtbls_owl_sha256), config_file, indent=4)
+        else:
+            os.makedirs(outputdirname)
+            with open(output, 'w') as config_file:
+                json.dump(parse_mtbls_assay_def(assay_file, mtbls_class_names,
+                                                mtbls_associated_subclasses,
+                                                mtbls_owl_sha256),  config_file, indent=4)
+
+    except  IOError as another_ioe:
+        logger.error(another_ioe)

@@ -132,7 +132,6 @@ class TestIsaTabDump(unittest.TestCase):
         organism_category = OntologyAnnotation(term='organism')
 
         source1 = Source(name='source1')
-        source1.
         source1.characteristics = [
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
