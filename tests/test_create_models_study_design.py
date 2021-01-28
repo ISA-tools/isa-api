@@ -1,17 +1,53 @@
 import unittest
+import os
 from functools import reduce
-from collections import OrderedDict
-
-from isatools.model import *
-from isatools.errors import *
-
-from isatools.create.models import *
-
+import json
+import yaml
 import networkx as nx
 import uuid
 import logging
+from collections import OrderedDict, Counter
 
-from collections import Counter
+from isatools.create import errors
+from isatools.model import (
+    OntologyAnnotation,
+    StudyFactor,
+    FactorValue,
+    Characteristic,
+    Sample,
+    ProtocolParameter,
+    ParameterValue,
+    Study,
+    Assay,
+    Process
+)
+from isatools.create.model import (
+    NonTreatment,
+    Treatment,
+    TreatmentFactory,
+    StudyCell,
+    ProductNode,
+    ProtocolNode,
+    AssayGraph,
+    SampleAndAssayPlan,
+    StudyArm,
+    StudyDesign,
+    StudyDesignFactory,
+    QualityControl,
+    QualityControlSample,
+    QualityControlService
+)
+from isatools.create.constants import (
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, DURATION_FACTOR,
+    BASE_FACTORS_, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT, default_ontology_source_reference,
+    DEFAULT_SOURCE_TYPE, QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, DEFAULT_STUDY_IDENTIFIER
+)
+from isatools.tests.create_sample_assay_plan_odicts import (
+    sample_list,
+    ms_assay_dict,
+    lcdad_assay_dict,
+    nmr_assay_dict
+)
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.INFO)
@@ -30,9 +66,9 @@ TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
 TEST_EPOCH_2_NAME = 'test epoch 2'
 
-TEST_STUDY_ARM_NAME_00 = 'test arm'
-TEST_STUDY_ARM_NAME_01 = 'another arm'
-TEST_STUDY_ARM_NAME_02 = 'yet another arm'
+TEST_STUDY_ARM_NAME_00 = 'test arm 0'
+TEST_STUDY_ARM_NAME_01 = 'another arm 1'
+TEST_STUDY_ARM_NAME_02 = 'yet another arm 2'
 
 TEST_STUDY_DESIGN_NAME = 'test study design'
 
@@ -42,190 +78,6 @@ SCREEN_DURATION_VALUE = 100
 FOLLOW_UP_DURATION_VALUE = 5 * 366
 WASHOUT_DURATION_VALUE = 30
 DURATION_UNIT = OntologyAnnotation(term='day')
-
-sample_list = [
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'liver',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'blood',
-            'size': 5,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': 'organism part',
-            'characteristics_value': 'heart',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        }
-]
-
-ms_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'mass spectrometry'),
-    ('extraction', {}),
-    ('extract', [
-        {
-            'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
-            'characteristics_value': 'polar fraction',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': EXTRACT,
-            'characteristics_category': 'extract type',
-            'characteristics_value': 'lipids',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        }
-    ]),
-    ('labelling', {
-        '#replicates': 2
-    }),
-    ('labelled extract', [
-        {
-            'node_type': LABELED_EXTRACT,
-            'characteristics_category': 'labelled extract type',
-            'characteristics_value': '',
-            'size': 1,
-            'is_input_to_next_protocols': True
-        }
-    ]),
-    ('mass spectrometry', {
-        '#replicates': 2,
-        'instrument': ['Agilent QTQF §'],
-        'injection_mode': ['FIA', 'LC'],
-        'acquisition_mode': ['positive mode']
-    }),
-    ('raw spectral data file', [
-        {
-            'node_type': DATA_FILE,
-            'size': 2,
-            'is_input_to_next_protocols': False
-        }
-    ])
-])
-
-phti_assay_dict = OrderedDict([
-    ('measurement_type', 'phenotyping'),
-    ('technology_type', 'high-throughput imaging'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('phenotyping by high throughput imaging', {
-                'instrument': ['lemnatech gigant'],
-                'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
-                'camera position': ['top','120 degree','240 degree','360 degree'],
-                'imaging daily schedule': ['06.00','19.00']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
-
-lcdad_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite identification'),
-    ('technology_type', 'liquid chromatography diode-array detector'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('lcdad_spectroscopy', {
-                'instrument': ['Shimadzu DAD 400'],
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
-
-nmr_assay_dict = OrderedDict([
-    ('measurement_type', 'metabolite profiling'),
-    ('technology_type', 'nmr spectroscopy'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('nmr_spectroscopy', {
-                '#replicates': 2,
-                'instrument': ['Bruker AvanceII 1 GHz'],
-                'acquisition_mode': ['1D 13C NMR', '2D 13C-13C NMR'],
-                'pulse_sequence': ['CPMG', 'watergate']
-                # 'acquisition_mode': ['1D 13C NMR', '1D 1H NMR', '2D 13C-13C NMR'],
-                # 'pulse_sequence': ['CPMG', 'TOCSY', 'HOESY', 'watergate']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
 
 
 class NonTreatmentTest(unittest.TestCase):
@@ -243,17 +95,10 @@ class NonTreatmentTest(unittest.TestCase):
                                                                   value=self.DURATION_VALUE,
                                                                   unit=self.DURATION_UNIT))
 
-    def test_init_missing_unit(self):
-        try:
-            non_treatment = NonTreatment(duration_value=self.DURATION_VALUE)
-            self.fail('Missing duration_unit must throw a ValueError')
-        except ValueError as ve:
-            self.assertEqual(str(ve), NonTreatment.MISSING_UNIT_ERROR_MESSAGE)
-
     def test_repr(self):
         print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
-                         "isatools.create.models.NonTreatment(type='screen', duration=isatools.model.FactorValue("
+                         "isatools.create.model.NonTreatment(type='screen', duration=isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='DURATION', "
                          "factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value=10.0, "
@@ -285,7 +130,7 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "isatools.create.models.Treatment(type=chemical intervention, "
+                         "isatools.create.model.Treatment(type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='AGENT'"
                          ", factor_type=isatools.model.OntologyAnnotation(term='perturbation agent', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), value='nitroglycerin', unit=None), "
@@ -532,9 +377,6 @@ class StudyCellTest(unittest.TestCase):
         self.assertFalse(self.cell._treatment_check([self.follow_up]),
                          'A treatment cannot be inserted into a FOLLOW-UP cell')
 
-    def test_treatment_check__screen_cell(self):
-        self.assertFalse(self.cell._treatment_check([self.screen]), 'A treatment cannot be inserted into a screen cell')
-
     def test_treatment_check__treatment_cell_00(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment]),
                         'A treatment can be inserted into a cell with a treatment')
@@ -548,7 +390,7 @@ class StudyCellTest(unittest.TestCase):
                                                                            self.third_treatment}]),
                         'A treatment can be inserted into a cell with a treatment and a concomitant treatment')
 
-    def test_treatment_check__treatment_cell_02(self):
+    def test_treatment_check__treatment_cell_03(self):
         self.assertTrue(self.cell._treatment_check([self.first_treatment,
                                                     self.washout, {
                                                         self.second_treatment,
@@ -892,7 +734,7 @@ class QualityControlSampleTest(unittest.TestCase):
         qc_sample = QualityControlSample(characteristics=self.sample_characteristic, name='qc_sample_test',
                                          qc_sample_type=QC_SAMPLE_TYPE_INTERSPERSED)
         self.assertEqual(qc_sample.qc_sample_type, QC_SAMPLE_TYPE_INTERSPERSED)
-        with self.assertRaises(AttributeError, msg='qc_sample_type must be one from allowed values') as ex_cm:
+        with self.assertRaises(AttributeError, msg='qc_sample_type must be one from allowed values'):
             qc_sample.qc_sample_type = 'some incorrect QC sample type'
 
 
@@ -1017,12 +859,12 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertEqual(self.assay_graph.id, 'assay-plan/00')
 
-    def test_generate_assay_plan_from_dict_00(self):
+    def test_generate_assay_plan_from_dict_01(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
-        nmr_nodes = list(filter(lambda n: n.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda n: n.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for node in nmr_nodes:
             self.assertEqual(node.replicates, 2)
@@ -1030,6 +872,7 @@ class AssayGraphTest(unittest.TestCase):
     def test_properties_success(self):
         self.assertEqual(self.assay_graph.measurement_type, 'genomic extraction')
         self.assertEqual(self.assay_graph.technology_type, 'nucleic acid extraction')
+        self.assertEqual(self.assay_graph.name, 'genomic extraction-nucleic acid extraction')
         self.assay_graph.measurement_type = 'some other measurement'
         self.assay_graph.technology_type = 'some other tech'
         self.assertEqual(self.assay_graph.measurement_type, 'some other measurement')
@@ -1038,6 +881,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assay_graph.technology_type = OntologyAnnotation(term='some other tech')
         self.assertEqual(self.assay_graph.measurement_type, OntologyAnnotation(term='some other measurement'))
         self.assertEqual(self.assay_graph.technology_type, OntologyAnnotation(term='some other tech'))
+        self.assertEqual(self.assay_graph.name, 'some other measurement-some other tech')
         self.assertEqual(self.assay_graph.quality_control, None)
         self.assay_graph.quality_control = self.qc
         self.assertEqual(self.assay_graph.quality_control, self.qc)
@@ -1049,7 +893,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsNotNone(ex_cm.exception.args[0])
         with self.assertRaises(AttributeError, msg='A string is not a valid quality_control') as ex_cm:
             self.assay_graph.quality_control = 'bao'
-        self.assertEqual(ex_cm.exception.args[0], AssayGraph.QUALITY_CONTROL_ERROR.format(type('bao')))
+        self.assertEqual(ex_cm.exception.args[0], errors.QUALITY_CONTROL_ERROR.format(type('bao')))
 
     def test_add_first_node(self):
         first_node = ProductNode(node_type=SOURCE, size=10)
@@ -1077,7 +921,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIn((self.protocol_node_dna, self.dna_node), self.assay_graph.links)
         self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
         self.assertIn((self.protocol_node_rna, self.mrna_node), self.assay_graph.links)
-        
+
     def test_add_nodes_and_links_success(self):
         nodes = [self.sample_node, self.protocol_node_rna, self.mrna_node, self.mirna_node]
         links = [(self.sample_node, self.protocol_node_rna), (self.protocol_node_rna, self.mrna_node),
@@ -1116,7 +960,7 @@ class AssayGraphTest(unittest.TestCase):
     def test_previous_protocol_nodes(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
-        nmr_nodes = list(filter(lambda node: node.name == 'nmr_spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda node: node.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for nmr_node in nmr_nodes:
             self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
@@ -1276,12 +1120,12 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         plan = SampleAndAssayPlan('test plan')
         with self.assertRaises(ValueError, msg='The sample has not been added to the plan yet') as ex_cm:
             plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
-        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_SAMPLE_IN_PLAN)
+        self.assertEqual(ex_cm.exception.args[0], errors.MISSING_SAMPLE_IN_PLAN)
         sample_plan = {self.tissue_node, self.blood_node}
         plan.sample_plan = sample_plan
         with self.assertRaises(ValueError, msg='The assay has not been added to the plan yet') as ex_cm:
             plan.add_element_to_map(self.blood_node, self.genomic_assay_graph)
-        self.assertEqual(ex_cm.exception.args[0], SampleAndAssayPlan.MISSING_ASSAY_IN_PLAN)
+        self.assertEqual(ex_cm.exception.args[0], errors.MISSING_ASSAY_IN_PLAN)
 
     def test_from_sample_and_assay_plan_dict_no_validation(self):
         assay_list = [ms_assay_dict, nmr_assay_dict]
@@ -1291,7 +1135,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         # print([node.name for node in ms_assay_plan.nodes])
         self.assertEqual(len(smp_ass_plan.sample_plan), len(sample_list))
         self.assertEqual(len(smp_ass_plan.assay_plan), 2)
-        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type)[0]
+        ms_assay_graph = sorted(smp_ass_plan.assay_plan, key=lambda el: el.technology_type.term)[0]
         self.assertIsInstance(ms_assay_graph, AssayGraph)
         self.assertEqual(ms_assay_graph.measurement_type, ms_assay_dict['measurement_type'])
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
@@ -1378,7 +1222,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_run_in, None)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1388,12 +1232,12 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.RUN_IN_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_single_treatment_00, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1404,12 +1248,12 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a screen cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.SCREEN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.SCREEN_ERROR_MESSAGE)
 
         with self.assertRaises(ValueError, msg='Another cell containing a run-in cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_other_run_in, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.RUN_IN_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.RUN_IN_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_washout_00, None)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1420,7 +1264,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='Another cell containing a WASHOUT cannot be added to the '
                                                'StudyArm') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_01, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
 
         self.arm.add_item_to_arm_map(self.cell_single_treatment_02, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1446,14 +1290,14 @@ class StudyArmTest(unittest.TestCase):
 
         with self.assertRaises(ValueError, msg='No more items can be added after a FOLLOW-UP') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_add_item_to_arm__multi_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen_and_run_in, None)
         with self.assertRaises(ValueError, msg='A cell beginning with a WASHOUT element cannot be added to a'
                                                'an ARM ending with a RUN-IN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_washout_00, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1470,7 +1314,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
                                                        'an ARM ending with a SCREEN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, None)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
         cells, plans = zip(*self.arm.arm_map.items())
         self.assertEqual(len(cells), 2, 'One mapping has been added to the arm')
@@ -1487,7 +1331,7 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
                                                        'an empty arm.') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
 
     def test_source_type_property(self):
         self.assertIsInstance(self.arm.source_type, Characteristic)
@@ -1515,6 +1359,28 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], 'The source_type property must be either a string or a '
                                                   'Characteristic. 128 was supplied.')
 
+    def test_source_characteristics_success(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        ]
+        self.arm.source_characteristics = test_characteristics
+        self.assertEqual(self.arm.source_characteristics, set(test_characteristics))
+
+    def test_source_characteristics_fail(self):
+        self.arm.source_type = 'human'
+        self.assertEqual(self.arm.source_characteristics, set())
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic'):
+            self.arm.source_characteristics = 'age group - old'
+        test_characteristics = [
+            Characteristic(category='sex', value='M'),
+            'age group - old'
+        ]
+        with self.assertRaises(AttributeError, msg='source_characteristics can only contain Characteristic'):
+            self.arm.source_characteristics = test_characteristics
+
     def test_group_size_property(self):
         self.assertEqual(self.arm.group_size, 10)
         self.arm.group_size = 100
@@ -1525,6 +1391,35 @@ class StudyArmTest(unittest.TestCase):
                                msg='Only positive integers can be assigned to group_size') as ex_cm:
             self.arm.group_size = -5
         self.assertEqual(ex_cm.exception.args[0], 'group_size must be a positive integer; -5 provided')
+
+    def test_eq_and_repr_(self):
+        self.arm.source_type = 'human'
+        self.arm.source_characteristics = {
+            Characteristic(category='sex', value='M'),
+            Characteristic(category='age group', value='old')
+        }
+        other_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category='sex', value='M'),
+                Characteristic(category='age group', value='old')
+            ]
+        )
+        self.assertEqual(self.arm, other_arm)
+        self.assertEqual(repr(self.arm), repr(other_arm))
+        yet_another_arm = StudyArm(
+            name=TEST_STUDY_ARM_NAME_00,
+            source_type='human',
+            group_size=10,
+            source_characteristics=[
+                Characteristic(category=OntologyAnnotation(term='sex'), value='F'),
+                Characteristic(category=OntologyAnnotation(term='age group'), value='young')
+            ]
+        )
+        self.assertNotEqual(self.arm, yet_another_arm)
+        self.assertNotEqual(repr(self.arm), repr(yet_another_arm))
 
     def test_arm_map_property_success_00(self):
         self.assertEqual(self.arm.arm_map, OrderedDict(), 'The ordered mapping StudyCell -> SampleAndAssayPlan '
@@ -1554,33 +1449,33 @@ class StudyArmTest(unittest.TestCase):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong type is '
                                                    'provided to the assignment.') as ex_cm:
             self.arm.arm_map = ['wrong', 'object']
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.ARM_MAP_ASSIGNMENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.ARM_MAP_ASSIGNMENT_ERROR)
 
     def test_arm_map_property_fail_wrong_value_00(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
                                                    'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
-                                (self.cell_single_treatment_00, self.sample_assay_plan),
-                                (self.cell_washout_00, None),
-                                (self.cell_single_treatment_01, self.sample_assay_plan),
-                                (self.cell_follow_up, self.sample_assay_plan),
-                                (self.cell_washout_01, None)
-                                ])
+                                    (self.cell_single_treatment_00, self.sample_assay_plan),
+                                    (self.cell_washout_00, None),
+                                    (self.cell_single_treatment_01, self.sample_assay_plan),
+                                    (self.cell_follow_up, self.sample_assay_plan),
+                                    (self.cell_washout_01, None)
+                                    ])
             self.arm.arm_map = ord_dict
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.COMPLETE_ARM_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.COMPLETE_ARM_ERROR_MESSAGE)
 
     def test_arm_map_property_fail_wrong_value_01(self):
         with self.assertRaises(AttributeError, msg='An error is raised if an object of the wrong value is '
                                                    'provided to the assignment.') as ex_cm:
             ord_dict = OrderedDict([(self.cell_screen, None), (self.cell_run_in, None),
-                                (self.cell_single_treatment_00, self.sample_assay_plan),
-                                (self.cell_single_treatment_01, self.sample_assay_plan),
-                                (self.cell_washout_00, None),
-                                (self.cell_washout_01, None),
-                                (self.cell_follow_up, self.sample_assay_plan)
-                                ])
+                                    (self.cell_single_treatment_00, self.sample_assay_plan),
+                                    (self.cell_single_treatment_01, self.sample_assay_plan),
+                                    (self.cell_washout_00, None),
+                                    (self.cell_washout_01, None),
+                                    (self.cell_follow_up, self.sample_assay_plan)
+                                    ])
             self.arm.arm_map = ord_dict
-        self.assertEqual(ex_cm.exception.args[0], StudyArm.WASHOUT_ERROR_MESSAGE)
+        self.assertEqual(ex_cm.exception.args[0], errors.WASHOUT_ERROR_MESSAGE)
 
     def test_treatments_property(self):
         self.arm.arm_map = OrderedDict([(self.cell_screen, None),
@@ -1589,6 +1484,14 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(self.arm.treatments, {
             self.first_treatment, self.second_treatment, self.fourth_treatment, self.third_treatment
         })
+
+    def test_numeric_id_property(self):
+        arm = StudyArm(name='Arm_0', group_size=10)
+        self.assertEqual(arm.numeric_id, 0)
+        arm = StudyArm(name='Arm_14', group_size=10)
+        self.assertEqual(arm.numeric_id, 14)
+        arm = StudyArm(name='Arm_no_number', group_size=10)
+        self.assertEqual(arm.numeric_id, -1)
 
 
 class BaseStudyDesignTest(unittest.TestCase):
@@ -1721,7 +1624,17 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(self.study_design.name, TEST_STUDY_DESIGN_NAME)
         with self.assertRaises(AttributeError, msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.name = 128
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.NAME_PROPERTY_ASSIGNMENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.NAME_PROPERTY_ASSIGNMENT_ERROR)
+
+    def test_description_property(self):
+        test_study_description = 'some description in here'
+        self.study_design.description = test_study_description
+        self.assertEqual(self.study_design.description, test_study_description)
+
+    def test_design_type_property(self):
+        test_study_design_type = 'factorial design'
+        self.study_design.design_type = test_study_design_type
+        self.assertEqual(self.study_design.design_type, test_study_design_type)
 
     def test_study_arms_property(self):
         pass
@@ -1741,7 +1654,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(ValueError,
                                msg='An integer cannot be assigned as StudyDesign name') as ex_cm:
             self.study_design.add_study_arm(self.arm_same_name_as_third)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR)
         self.assertEqual(self.study_design.study_arms, [self.second_arm, self.third_arm])
         self.study_design.add_study_arm(self.first_arm)
         self.assertEqual(self.study_design.study_arms, [self.second_arm, self.first_arm, self.third_arm])
@@ -1750,7 +1663,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(TypeError,
                                msg='A Treatment cannot be added to a StudyDesign, only StudyArms') as ex_cm:
             self.study_design.add_study_arm(self.second_treatment)
-        self.assertIn(StudyDesign.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
+        self.assertIn(errors.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, ex_cm.exception.args[0])
 
     def test_treatments_property_00(self):
         self.study_design.study_arms = [self.first_arm, self.second_arm]
@@ -1787,7 +1700,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         with self.assertRaises(IndexError, msg='An index error is raised if the epoch is out of bounds '
                                                'for all the StudyArms.') as ex_cm:
             epoch_cells = self.study_design.get_epoch(4)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesign.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR)
 
     # FIXME still failing - sort this out
     """
@@ -1806,21 +1719,37 @@ class StudyDesignTest(BaseStudyDesignTest):
         print('Sources: {0}'.format(study.sources))
     """
 
+    def test_increment_counter_by_node_type(self):
+        assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
+        extract_node = next(
+            node for node in assay_graph.nodes if isinstance(node, ProductNode) and node.type == EXTRACT
+        )
+        counter = StudyDesign._increment_counter_by_node_type({}, extract_node)
+        self.assertEqual(counter[EXTRACT], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, extract_node)
+        self.assertEqual(counter[EXTRACT], 2)
+        protocol_node = next(node for node in assay_graph.nodes if isinstance(node, ProtocolNode))
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 1)
+        counter = StudyDesign._increment_counter_by_node_type(counter, protocol_node)
+        self.assertEqual(counter[protocol_node.name], 2)
+
     def test__generate_isa_elements_from_node(self):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
+        prefix = 'assay-table-prefix'
         processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
-            node, assay_graph
+            node, assay_graph, prefix
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
         extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
         self.assertEqual(len(extraction_processes), 1)
-        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr_spectroscopy']
-        self.assertEqual(len(nmr_processes), 8*2)
-        self.assertEqual(len(processes), 1+8*2)
+        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
+        self.assertEqual(len(nmr_processes), 8 * 2)
+        self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
-        self.assertEqual(len(data_files), 8*2)      # 16 raw data files
+        self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)
             print('expected previous process: {0}'.format(extraction_processes[0]))
@@ -1844,43 +1773,48 @@ class StudyDesignTest(BaseStudyDesignTest):
         study_design = StudyDesign(study_arms=(single_arm,))
         study = study_design.generate_isa_study()
         self.assertIsInstance(study, Study)
+        self.assertEqual(study.identifier, DEFAULT_STUDY_IDENTIFIER)
         self.assertEqual(study.filename, study_config['filename'])
         self.assertEqual(len(study.sources), single_arm.group_size)
         for source in study.sources:
             self.assertEqual(len(source.characteristics), 1)
             self.assertEqual(source.characteristics[0], DEFAULT_SOURCE_TYPE)
 
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples = expected_num_of_samples_per_plan * len([
+        expected_num_of_samples = reduce(
+            lambda acc_value, sample_node: acc_value + sample_node.size,
+            self.nmr_sample_assay_plan.sample_plan, 0
+        ) * single_arm.group_size * len([
             a_plan for a_plan in single_arm.arm_map.values() if a_plan is not None
         ])
-        print('Expected number of samples is: {0}'.format(expected_num_of_samples))
+        log.debug('Expected number of samples is: {0}'.format(expected_num_of_samples))
         self.assertEqual(len(study.samples), expected_num_of_samples)
-        self.assertEqual(len(study.assays), 2)
+        self.assertEqual(len(study.assays), 1)
         treatment_assay = next(iter(study.assays))
         self.assertIsInstance(treatment_assay, Assay)
-        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples_per_plan)
+        # self.assertEqual(len(treatment_assay.samples), expected_num_of_samples)
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
         extraction_processes = [process for process in treatment_assay.process_sequence
                                 if process.executes_protocol.name == 'extraction']
         nmr_processes = [process for process in treatment_assay.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_per_plan)
-        self.assertEqual(len(nmr_processes), 8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
-                         * expected_num_of_samples_per_plan)
-        self.assertEqual(len(treatment_assay.process_sequence), (8*nmr_assay_dict['nmr_spectroscopy']['#replicates']
-                                                                 + 1)*expected_num_of_samples_per_plan)
+                         if process.executes_protocol.name == 'nmr spectroscopy']
+        self.assertEqual(len(extraction_processes), expected_num_of_samples)
+        self.assertEqual(
+            len(nmr_processes),
+            8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] * expected_num_of_samples)
+        self.assertEqual(
+            len(treatment_assay.process_sequence),
+            (8 * nmr_assay_dict['nmr spectroscopy']['#replicates'] + 1) * expected_num_of_samples
+        )
         for ix, process in enumerate(extraction_processes):
             self.assertEqual(process.inputs, [study.samples[ix]])
         for ix, process in enumerate(nmr_processes):
             self.assertIsInstance(process, Process)
             # 1 extraction protocol feeds into 16 nmr processes
-            self.assertEqual(process.prev_process, extraction_processes[ix//(8*2)])
+            self.assertEqual(process.prev_process, extraction_processes[ix // (8 * 2)])
             # 1 extract ends up into 8 different nmr protocol runs (i.e. processes)
-            self.assertEqual(process.inputs, [treatment_assay.other_material[ix//8]])
+            self.assertEqual(process.inputs, [treatment_assay.other_material[ix // 8]])
             self.assertEqual(process.outputs, [treatment_assay.data_files[ix]])
         log.debug('Process sequence: {0}'.format([
             (process.name, getattr(process.prev_process, 'name', None),
@@ -1888,34 +1822,6 @@ class StudyDesignTest(BaseStudyDesignTest):
         ]))
         log.debug('NMR assay graph: {0}'.format([(getattr(el, 'name', None), type(el))
                                                  for el in treatment_assay.graph.nodes()]))
-
-    def test_generate_isa_study_single_arm_single_cell_elements_split_assay_by_sample_type(self):
-        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
-            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        # study_config = config['study']
-        single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
-            (self.cell_screen, None), (self.cell_run_in, None),
-            (self.cell_single_treatment_00, self.nmr_sample_assay_plan),
-            (self.cell_follow_up, self.nmr_sample_assay_plan)
-        ]))
-        study_design = StudyDesign(study_arms=(single_arm,))
-        study = study_design.generate_isa_study(split_assays_by_sample_type=True)
-        self.assertEqual(len(study.assays), 6)
-        treatment_assay_st0, treatment_assay_st1, treatment_assay_st2 = study.assays[0:3]
-        self.assertIsInstance(treatment_assay_st0, Assay)
-        self.assertEqual(treatment_assay_st0.measurement_type, nmr_assay_dict['measurement_type'])
-        self.assertEqual(treatment_assay_st0.technology_type, nmr_assay_dict['technology_type'])
-        extraction_processes = [process for process in treatment_assay_st0.process_sequence
-                                if process.executes_protocol.name == 'extraction']
-        nmr_processes = [process for process in treatment_assay_st0.process_sequence
-                         if process.executes_protocol.name == 'nmr_spectroscopy']
-        expected_num_of_samples_per_plan = reduce(lambda acc_value, sample_node: acc_value+sample_node.size,
-                                                  self.nmr_sample_assay_plan.sample_plan, 0) * single_arm.group_size
-        expected_num_of_samples_first = sample_list[0]['size'] * single_arm.group_size
-        self.assertEqual(len(extraction_processes), expected_num_of_samples_first)
-        self.assertEqual(len(nmr_processes), 8 * 2 * expected_num_of_samples_first)
-        self.assertEqual(len(treatment_assay_st0.process_sequence), (8 * 2 + 1) * expected_num_of_samples_first)
 
     def test_generate_isa_study_two_arms_single_cell_elements(self):
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
@@ -1929,8 +1835,10 @@ class StudyDesignTest(BaseStudyDesignTest):
             (self.cell_follow_up_01, self.nmr_sample_assay_plan)
         ]))
         study_design = StudyDesign(study_arms=(first_arm, second_arm))
-        study = study_design.generate_isa_study()
-        self.assertEqual(len(study.assays), 4)
+        study_identifier = 'st_001'
+        study = study_design.generate_isa_study(identifier=study_identifier)
+        self.assertEqual(study.identifier, study_identifier)
+        self.assertEqual(len(study.assays), 2)
         expected_num_of_samples_nmr_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
             self.nmr_sample_assay_plan.sample_plan, 0) * first_arm.group_size
@@ -2001,8 +1909,6 @@ class StudyDesignTest(BaseStudyDesignTest):
                 self.assertEqual(source.characteristics, [control_source_type])
             else:
                 self.assertEqual(source.characteristics, [treatment_source_type])
-        # self.assertIn(control_source_type.category, study.characteristic_categories)
-        # self.assertIn(treatment_source_type.category, study.characteristic_categories)
 
 
 class QualityControlServiceTest(BaseStudyDesignTest):
@@ -2049,7 +1955,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(study_with_qc, Study)
         self.assertIsNot(study_no_qc, study_with_qc)
         sample_names = [sample.name for sample in study_with_qc.samples]
-        log.info('Sample name occurrences: {}'.format(
+        log.debug('Sample name occurrences: {}'.format(
             json.dumps(Counter(sample_names), sort_keys=True, indent=2)
         ))
         self.assertEqual(len(sample_names), len(set(sample_names))) # all sample names are unique
@@ -2060,16 +1966,15 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
         self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
-        
         ms_processes = [process for process in ms_assay_with_qc.process_sequence
                         if process.executes_protocol.name == 'mass spectrometry']
-        log.info('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
+        log.debug('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
                  .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
                          self.interspersed_sample_types[0][1]))
-        log.info('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
+        log.debug('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
         expected_num_of_interspersed_samples = \
             (expected_num_of_samples_ms_plan_first_arm - 1) // self.interspersed_sample_types[0][1]
-        log.info('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
+        log.debug('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
             expected_num_of_interspersed_samples
         log.debug('expected qc_samples_size: {0}'.format(qc_samples_size))
@@ -2296,7 +2201,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.second_treatment, self.sample_assay_plan)]
         crossover_design = self.factory.compute_crossover_design(
             treatments_map=treatments_map,
-            group_sizes = 10,
+            group_sizes=10,
             screen_map=(self.screen, None),
             washout_map=(self.washout, None),
             follow_up_map=(self.follow_up, self.sample_assay_plan)
@@ -2306,21 +2211,21 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design.study_arms[1],
                          StudyArm(name='ARM_01', group_size=10, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_01_CELL_01', elements=(self.second_treatment,)), self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_02', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_01_CELL_03', elements=(self.first_treatment,)), self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_01_CELL_01', elements=(self.second_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_02', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_01_CELL_03', elements=(self.first_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2340,49 +2245,49 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_00_CELL_04', elements=(self.second_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_04', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design.study_arms[1],
                          StudyArm(name='ARM_01', group_size=15, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_01_CELL_02', elements=(self.first_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_03', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_01_CELL_04', elements=(self.third_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_05', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_01_CELL_06', elements=(self.second_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_01_CELL_02', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_03', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_01_CELL_04', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_05', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_01_CELL_06', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design.study_arms[2],
                          StudyArm(name='ARM_02', group_size=12, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_02_CELL_02', elements=(self.second_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_02_CELL_03', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_02_CELL_04', elements=(self.first_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_02_CELL_05', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_02_CELL_06', elements=(self.third_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_02_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_02_CELL_02', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_02_CELL_03', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_02_CELL_04', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_02_CELL_05', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_02_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_02_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2390,7 +2295,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, 10)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
 
     def test_compute_crossover_design_raises_group_sizes_error(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2398,7 +2303,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.third_treatment, self.sample_assay_plan)]
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             StudyDesignFactory.compute_crossover_design(treatments_map, [10, 12, 19])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_parallel_design_three_treatments(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2415,31 +2320,31 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(parallel_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.first_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(parallel_design.study_arms[1],
                          StudyArm(name='ARM_01', group_size=15, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_01_CELL_02', elements=(self.second_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_01_CELL_02', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(parallel_design.study_arms[2],
                          StudyArm(name='ARM_02', group_size=14, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_02_CELL_02', elements=(self.third_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_02_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_02_CELL_02', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_02_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2449,11 +2354,11 @@ class StudyDesignFactoryTest(unittest.TestCase):
                           (self.third_treatment, self.sample_assay_plan)]
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
-                                                                           group_sizes=[10, 12])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+                                                                         group_sizes=[10, 12])
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_single_arm_design_tree_treatments(self):
-        treatments_map =  [(self.second_treatment, self.sample_assay_plan),
+        treatments_map = [(self.second_treatment, self.sample_assay_plan),
                           (self.fourth_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
         parallel_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
@@ -2468,17 +2373,17 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(parallel_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=19, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.second_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_00_CELL_04', elements=(self.fourth_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None],
-                                 [StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan]
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.second_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_04', elements=(self.fourth_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_05', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_06', elements=(self.third_treatment,)),
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_07', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2486,7 +2391,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.second_treatment)]
         with self.assertRaises(TypeError, msg='The treatment map is malformed') as ex_cm:
             StudyDesignFactory.compute_single_arm_design(treatments_map, group_size=12)
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.TREATMENT_MAP_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
 
     def test_compute_single_arm_design_group_sizes_error(self):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
@@ -2495,7 +2400,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
         with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
             single_arm_design = StudyDesignFactory.compute_single_arm_design(treatments_map,
                                                                              group_size=[10, 12])
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_concomitant_treatment_design_three_treatments(self):
         treatments = [self.first_treatment, self.second_treatment, self.fourth_treatment]
@@ -2512,15 +2417,17 @@ class StudyDesignFactoryTest(unittest.TestCase):
                          repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
                                      key=lambda el: hash(el))))
         """
-        self.assertEqual(concomitant_treatment_design.study_arms[0],
-                            StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
-                                [StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
-                                                                       self.second_treatment,
-                                                                       self.first_treatment},)),
-                                 self.sample_assay_plan],
-                                [StudyCell('ARM_00_CELL_01', elements=(self.follow_up,)), self.sample_assay_plan]
-                            ]))
-                        )
+        self.assertEqual(
+            concomitant_treatment_design.study_arms[0],
+            StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
+                (StudyCell('ARM_00_CELL_00', elements=({
+                    self.fourth_treatment,
+                    self.second_treatment,
+                    self.first_treatment
+                },)), self.sample_assay_plan),
+                (StudyCell('ARM_00_CELL_01', elements=(self.follow_up,)), self.sample_assay_plan)
+            ]))
+        )
 
     def test_compute_concomitant_treatment_design_group_size_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
@@ -2528,7 +2435,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
             concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
                 treatments, self.sample_assay_plan, group_size=[10, 12, 13]
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_crossover_design_multi_element_cell_three_treatments(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
@@ -2543,37 +2450,37 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment, self.washout,
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.first_treatment, self.washout,
                                                                         self.third_treatment, self.washout,
                                                                         self.fourth_treatment)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[1],
                          StudyArm(name='ARM_01', group_size=15, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_01_CELL_02', elements=(self.first_treatment, self.washout,
+                                 (StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_01_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_01_CELL_02', elements=(self.first_treatment, self.washout,
                                                                         self.fourth_treatment, self.washout,
                                                                         self.third_treatment)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_01_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[2],
                          StudyArm(name='ARM_02', group_size=12, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_02_CELL_02', elements=(self.third_treatment, self.washout,
+                                 (StudyCell('ARM_02_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_02_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_02_CELL_02', elements=(self.third_treatment, self.washout,
                                                                         self.first_treatment, self.washout,
                                                                         self.fourth_treatment)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_02_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_02_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2586,7 +2493,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                 run_in_map=(self.run_in, None),
                 follow_up_map=(self.follow_up, self.sample_assay_plan)
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
     def test_compute_single_arm_design_multi_element_cell_three_treatments(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
@@ -2601,13 +2508,13 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[0],
                          StudyArm(name='ARM_00', group_size=12, arm_map=OrderedDict(
                              [
-                                 [StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None],
-                                 [StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None],
-                                 [StudyCell('ARM_00_CELL_02', elements=(self.first_treatment, self.washout,
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), None),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.first_treatment, self.washout,
                                                                         self.third_treatment, self.washout,
                                                                         self.fourth_treatment)),
-                                  self.sample_assay_plan],
-                                 [StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan]
+                                  self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
 
@@ -2620,7 +2527,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
                 run_in_map=(self.run_in, None),
                 follow_up_map=(self.follow_up, self.sample_assay_plan)
             )
-        self.assertEqual(ex_cm.exception.args[0], StudyDesignFactory.GROUP_SIZES_ERROR)
+        self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
 
 
 if __name__ == '__main__':

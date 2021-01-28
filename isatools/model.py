@@ -15,19 +15,28 @@ Todo:
 from __future__ import absolute_import
 import abc
 import logging
+import os
 import warnings
 import uuid
 from numbers import Number
-
 from collections.abc import Iterable
+import pprint
 import networkx as nx
-
-
-from isatools.errors import ISAModelAttributeError
-
+import yaml
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
+
+
+def load_protocol_types_info():
+    """
+    Load the protocol types info from the YAML protocol types file
+    """
+    with open(
+            os.path.join(os.path.dirname(__file__), 'resources', 'config', 'yaml', 'protocol-types.yml')
+    ) as yaml_file:
+        protocol_types_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
+        return protocol_types_dict
 
 
 def _build_assay_graph(process_sequence=None):
@@ -52,21 +61,21 @@ def _build_assay_graph(process_sequence=None):
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
                     g.add_edge(process, output)
-                    log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
+                    # log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
             else:
                 g.add_edge(process, process.next_process)
-                log.debug('linking process {1} to prev_process {0}'.format(
-                    getattr(process.next_process, 'id', None), process.id))
+                # log.debug('linking process {1} to prev_process {0}'.format(
+                #    getattr(process.next_process, 'id', None), process.id))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
                     g.add_edge(input_, process)
-                    log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
+                    # log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
             else:
                 g.add_edge(process.prev_process, process)
-                log.debug('linking prev_process {0} to process {1}'.format(
-                    getattr(process.prev_process, 'id', None), process.id))
+                # log.debug('linking prev_process {0} to process {1}'.format(
+                #     getattr(process.prev_process, 'id', None), process.id))
     return g
 
 
@@ -92,7 +101,7 @@ class Comment(object):
         if val is not None and isinstance(val, str):
             self.__name = val
         else:
-            raise ISAModelAttributeError('Comment.name must be a string')
+            raise AttributeError('Comment.name must be a string')
 
     @property
     def value(self):
@@ -103,7 +112,8 @@ class Comment(object):
     def value(self, val):
         if isinstance(val, str):
             self.__value = val
-        raise ISAModelAttributeError('Comment.value must be a string')
+        else:
+            raise AttributeError('Comment.value must be a string')
 
     def __repr__(self):
         return "isatools.model.Comment(name='{comment.name}', " \
@@ -151,7 +161,7 @@ class Commentable(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Comment) for x in val):
                 self.__comments = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.comments must be iterable containing Comments'
                 .format(type(self).__name__))
 
@@ -267,8 +277,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__filename = val
         else:
-            raise ISAModelAttributeError('{0}.filename must be a string'
-                                         .format(type(self).__name__))
+            raise AttributeError('{0}.filename must be a string'
+                                 .format(type(self).__name__))
 
     @property
     def identifier(self):
@@ -280,8 +290,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__identifier = val
         else:
-            raise ISAModelAttributeError('{0}.identifier must be a string'
-                                         .format(type(self).__name__))
+            raise AttributeError('{0}.identifier must be a string'
+                                 .format(type(self).__name__))
 
     @property
     def title(self):
@@ -293,8 +303,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__title = val
         else:
-            raise ISAModelAttributeError('{0}.title must be a string'
-                                         .format(type(self).__name__))
+            raise AttributeError('{0}.title must be a string'
+                                 .format(type(self).__name__))
 
     @property
     def description(self):
@@ -306,8 +316,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__description = val
         else:
-            raise ISAModelAttributeError('{0}.description must be a string'
-                                         .format(type(self).__name__))
+            raise AttributeError('{0}.description must be a string'
+                                 .format(type(self).__name__))
 
     @property
     def submission_date(self):
@@ -319,8 +329,8 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__submission_date = val
         else:
-            raise ISAModelAttributeError('{0}.submission_date must be a string'
-                                         .format(type(self).__name__))
+            raise AttributeError('{0}.submission_date must be a string'
+                                 .format(type(self).__name__))
 
     @property
     def public_release_date(self):
@@ -332,7 +342,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         if val is not None and isinstance(val, str):
             self.__public_release_date = val
         else:
-            raise ISAModelAttributeError('{0}.public_release_date must be a '
+            raise AttributeError('{0}.public_release_date must be a '
                                          'string'.format(type(self).__name__))
 
     @property
@@ -346,7 +356,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Publication) for x in val):
                 self.__publications = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.publications must be iterable containing Publications'
                 .format(type(self).__name__))
 
@@ -361,7 +371,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Person) for x in val):
                 self.__contacts = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.contacts must be iterable containing Person objects'
                 .format(type(self).__name__))
 
@@ -425,7 +435,7 @@ class Investigation(Commentable, MetadataMixin, object):
             if val == [] or all(isinstance(x, OntologySource) for x in val):
                 self.__ontology_source_references = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Investigation.ontology_source_references must be iterable '
                 'containing OntologySource objects')
 
@@ -441,6 +451,7 @@ class Investigation(Commentable, MetadataMixin, object):
             version: OntologySource version
             description: OntologySource description
             file: OntologySource file
+            comments: list
         """
         c = OntologySource(name=name, version=version, description=description,
                            file=file, comments=comments)
@@ -508,7 +519,7 @@ class Investigation(Commentable, MetadataMixin, object):
             if val == [] or all(isinstance(x, Study) for x in val):
                 self.__studies = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Investigation.studies must be iterable containing Study '
                 'objects')
 
@@ -598,7 +609,7 @@ class OntologySource(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologySource.name must be a str; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -612,7 +623,7 @@ class OntologySource(Commentable):
     @file.setter
     def file(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologySource.file must be a str; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -626,7 +637,7 @@ class OntologySource(Commentable):
     @version.setter
     def version(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologySource.version must be a str; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -640,7 +651,7 @@ class OntologySource(Commentable):
     @description.setter
     def description(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologySource.description must be a str; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -690,13 +701,13 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, term='', term_source=None, term_accession='',
-                 comments=None, id_=str(uuid.uuid4())) :
+                 comments=None, id_=None):
         super().__init__(comments)
 
         self.__term = term
         self.__term_source = term_source
         self.__term_accession = term_accession
-        self.id = id_
+        self.id = str(uuid.uuid4()) if not id_ else id_
 
     @property
     def term(self):
@@ -706,7 +717,7 @@ class OntologyAnnotation(Commentable):
     @term.setter
     def term(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologyAnnotation.term must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -721,7 +732,7 @@ class OntologyAnnotation(Commentable):
     @term_source.setter
     def term_source(self, val):
         if val is not None and not isinstance(val, OntologySource):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologyAnnotation.term_source must be a OntologySource or '
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -735,7 +746,7 @@ class OntologyAnnotation(Commentable):
     @term_accession.setter
     def term_accession(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'OntologyAnnotation.term_accession must be a str or None')
         else:
             self.__term_accession = val
@@ -806,7 +817,7 @@ class Publication(Commentable):
     @pubmed_id.setter
     def pubmed_id(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Publication.pubmed_id must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -820,7 +831,7 @@ class Publication(Commentable):
     @doi.setter
     def doi(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Publication.doi must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -834,7 +845,7 @@ class Publication(Commentable):
     @author_list.setter
     def author_list(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Publication.author_list must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -848,7 +859,7 @@ class Publication(Commentable):
     @title.setter
     def title(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Publication.title must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -863,7 +874,7 @@ class Publication(Commentable):
     @status.setter
     def status(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Publication.status must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -952,7 +963,7 @@ class Person(Commentable):
     @last_name.setter
     def last_name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.last_name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -966,7 +977,7 @@ class Person(Commentable):
     @first_name.setter
     def first_name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.first_name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -980,7 +991,7 @@ class Person(Commentable):
     @mid_initials.setter
     def mid_initials(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.mid_initials must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -994,7 +1005,7 @@ class Person(Commentable):
     @email.setter
     def email(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.email must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1008,7 +1019,7 @@ class Person(Commentable):
     @phone.setter
     def phone(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.phone must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1022,7 +1033,7 @@ class Person(Commentable):
     @fax.setter
     def fax(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.fax must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1036,7 +1047,7 @@ class Person(Commentable):
     @address.setter
     def address(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.address must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1050,7 +1061,7 @@ class Person(Commentable):
     @affiliation.setter
     def affiliation(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Person.affiliation must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1069,7 +1080,7 @@ class Person(Commentable):
                                 for x in val):
                 self.__roles = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.roles must be iterable containing OntologyAnnotations'
                 .format(type(self).__name__))
 
@@ -1178,7 +1189,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.filename must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
         else:
@@ -1197,7 +1208,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                                 for x in val):
                 self.__units = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.units must be iterable containing OntologyAnnotations'
                 .format(type(self).__name__))
 
@@ -1212,7 +1223,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Source) for x in val):
                 self.__materials['sources'] = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.sources must be iterable containing Sources'
                 .format(type(self).__name__))
 
@@ -1314,7 +1325,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__materials['samples'] = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.samples must be iterable containing Samples'
                 .format(type(self).__name__))
 
@@ -1454,7 +1465,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Material) for x in val):
                 self.__materials['other_material'] = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.other_material must be iterable containing Materials'
                 .format(type(self).__name__))
 
@@ -1516,7 +1527,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Process) for x in val):
                 self.__process_sequence = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.process_sequence must be iterable containing Processes'
                 .format(type(self).__name__))
 
@@ -1533,7 +1544,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                                 for x in val):
                 self.__characteristic_categories = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.characteristic_categories must be iterable containing '
                 'OntologyAnnotation'.format(type(self).__name__))
 
@@ -1541,7 +1552,6 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def graph(self):
         """:obj:`networkx.DiGraph` A graph representation of the study's
         process sequence"""
-        log.info('Building graph for object: {0}'.format(self))
         if len(self.process_sequence) > 0:
             return _build_assay_graph(self.process_sequence)
         else:
@@ -1549,8 +1559,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     @graph.setter
     def graph(self, graph):
-        raise ISAModelAttributeError('{}.graph is not settable'
-                                     .format(type(self).__name__))
+        raise AttributeError('{}.graph is not settable'
+                             .format(type(self).__name__))
 
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
@@ -1652,7 +1662,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                                 for x in val):
                 self.__design_descriptors = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.design_descriptors must be iterable containing '
                 'OntologyAnnotations'.format(type(self).__name__))
 
@@ -1750,7 +1760,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
             log.warning(
-                'A factor with name "{}" hasnot been found in the study'
+                'A factor with name "{}" has not been found in the study'
                 .format(name))
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
@@ -1775,7 +1785,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, Assay) for x in val):
                 self.__assays = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.assays must be iterable containing Assays'
                 .format(type(self).__name__))
 
@@ -1791,7 +1801,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, StudyFactor) for x in val):
                 self.__factors = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.factors must be iterable containing StudyFactors'
                 .format(type(self).__name__))
 
@@ -1907,7 +1917,7 @@ class StudyFactor(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'StudyFactor.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -1922,7 +1932,7 @@ class StudyFactor(Commentable):
     @factor_type.setter
     def factor_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'StudyFactor.factor_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -2019,7 +2029,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     @measurement_type.setter
     def measurement_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Assay.measurement_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -2034,7 +2044,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     @technology_type.setter
     def technology_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Assay.technology_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -2048,7 +2058,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     @technology_platform.setter
     def technology_platform(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Assay.technology_platform must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2065,7 +2075,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             if val == [] or all(isinstance(x, DataFile) for x in val):
                 self.__data_files = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.data_files must be iterable containing DataFiles'
                 .format(type(self).__name__))
 
@@ -2177,6 +2187,15 @@ class Protocol(Commentable):
         if components is not None:
             self.components = components
 
+    @staticmethod
+    def show_allowed_protocol_types():
+        """
+        Pretty prints the allowed values (i.e. the values that pass the ISA-tab validation using the default
+        XML validations) for Protocol Types
+        """
+        protocol_types_dict = load_protocol_types_info()
+        pprint.pprint(protocol_types_dict)
+
     @property
     def name(self):
         """:obj:`str`: the name of the protocol"""
@@ -2185,7 +2204,7 @@ class Protocol(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2200,7 +2219,7 @@ class Protocol(Commentable):
     @protocol_type.setter
     def protocol_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.protocol_type must be a OntologyAnnotation, a string or '
                 'None; got {0}:{1}'.format(val, type(val)))
         if isinstance(val, str):
@@ -2216,7 +2235,7 @@ class Protocol(Commentable):
     @description.setter
     def description(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.description must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2230,7 +2249,7 @@ class Protocol(Commentable):
     @uri.setter
     def uri(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.uri must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2244,7 +2263,7 @@ class Protocol(Commentable):
     @version.setter
     def version(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.version must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2259,11 +2278,10 @@ class Protocol(Commentable):
     @parameters.setter
     def parameters(self, val):
         if val is None or not isinstance(val, Iterable):
-            raise ISAModelAttributeError('Protocol.parameters must be an iterable '
+            raise AttributeError('Protocol.parameters must be an iterable '
                                          'containing ProtocolParameters')
         for el in val:
             self.add_param(el)
-
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
@@ -2275,7 +2293,7 @@ class Protocol(Commentable):
             elif isinstance(parameter_name, ProtocolParameter):
                 self.__parameters.append(parameter_name)
             else:
-                raise ISAModelAttributeError('Parameter name must be either a string or a ProtocolParameter')
+                raise AttributeError('Parameter name must be either a string or a ProtocolParameter')
 
     def get_param(self, parameter_name):
         param = None
@@ -2284,8 +2302,8 @@ class Protocol(Commentable):
                          x.parameter_name.term == parameter_name)
         except StopIteration:
             pass
-        except AttributeError as e:
-            print('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
+        except AttributeError:
+            log.error('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
             # raise AttributeError(e)
         return param
 
@@ -2302,7 +2320,7 @@ class Protocol(Commentable):
                                 for x in val):
                 self.__components = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Protocol.components must be iterable containing '
                 'OntologyAnnotations')
 
@@ -2370,7 +2388,7 @@ class ProtocolParameter(Commentable):
     @parameter_name.setter
     def parameter_name(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -2434,7 +2452,7 @@ class ParameterValue(Commentable):
     @category.setter
     def category(self, val):
         if val is not None and not isinstance(val, ProtocolParameter):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ParameterValue.category must be a ProtocolParameter '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -2450,7 +2468,7 @@ class ParameterValue(Commentable):
     def value(self, val):
         if val is not None \
                 and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ParameterValue.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2465,7 +2483,7 @@ class ParameterValue(Commentable):
     @unit.setter
     def unit(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ParameterValue.unit must be a OntologyAnnotation, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
@@ -2533,7 +2551,7 @@ class ProtocolComponent(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ProtocolComponent.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2548,7 +2566,7 @@ class ProtocolComponent(Commentable):
     @component_type.setter
     def component_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'ProtocolComponent.component_type must be a '
                 'OntologyAnnotation, or None; got {0}:{1}'.format(
                     val, type(val)))
@@ -2611,7 +2629,7 @@ class Source(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Source.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2629,7 +2647,7 @@ class Source(Commentable):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Source.characteristics must be iterable containing '
                 'Characteristics')
 
@@ -2691,7 +2709,8 @@ class Characteristic(Commentable):
         self.__value = None
         self.__unit = None
 
-        self.category = category
+        if category is not None:
+            self.category = category
         self.value = value
         self.unit = unit
 
@@ -2703,12 +2722,14 @@ class Characteristic(Commentable):
 
     @category.setter
     def category(self, val):
-        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+        if isinstance(val, OntologyAnnotation) or val is None:
+            self.__category = val
+        elif isinstance(val, str):
+            self.__category = OntologyAnnotation(term=val)
+        else:
+            raise AttributeError(
                 'Characteristic.category must be either a string ot an OntologyAnnotation,'
                 ' or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__category = val
 
     @property
     def value(self):
@@ -2720,7 +2741,7 @@ class Characteristic(Commentable):
     def value(self, val):
         if val is not None \
                 and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Characteristic.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2735,7 +2756,7 @@ class Characteristic(Commentable):
     @unit.setter
     def unit(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Characteristic.unit must be either a string ot an OntologyAnnotation, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
@@ -2823,7 +2844,7 @@ class Sample(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Sample.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
         else:
@@ -2841,7 +2862,7 @@ class Sample(Commentable):
             if val == [] or all(isinstance(x, FactorValue) for x in val):
                 self.__factor_values = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Sample.factor_values must be iterable containing '
                 'FactorValues')
 
@@ -2857,7 +2878,7 @@ class Sample(Commentable):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Sample.characteristics must be iterable containing '
                 'Characteristics')
 
@@ -2887,7 +2908,7 @@ class Sample(Commentable):
             if val == [] or all(isinstance(x, Source) for x in val):
                 self.__derives_from = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Sample.derives_from must be iterable containing Sources')
 
     def __repr__(self):
@@ -2949,7 +2970,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.name must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
         else:
@@ -2964,7 +2985,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
     def type(self, val):
         if val is not None and not isinstance(val, str) \
                 and val not in ('Extract Name', 'Labeled Extract Name'):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.type must be a str in ("Extract Name", "Labeled Extract '
                 'Name") or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
@@ -2983,7 +3004,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.characteristics must be iterable containing '
                 'Characteristics'.format(type(self).__name__))
 
@@ -3094,7 +3115,7 @@ class FactorValue(Commentable):
     @factor_name.setter
     def factor_name(self, val):
         if val is not None and not isinstance(val, StudyFactor):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'FactorValue.factor_name must be a StudyFactor '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -3110,7 +3131,7 @@ class FactorValue(Commentable):
     def value(self, val):
         if val is not None \
                 and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'FactorValue.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -3126,7 +3147,7 @@ class FactorValue(Commentable):
     def unit(self, val):
         # FIXME can this be a string as well?
         if val is not None and not isinstance(val, (OntologyAnnotation, str)):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'FactorValue.unit must be an OntologyAnnotation, o string, or None; '
                 'got {0}:{1}'.format(val, type(val)))
         else:
@@ -3230,7 +3251,7 @@ class Process(Commentable):
         if val is not None and isinstance(val, str):
             self.__name = val
         else:
-            raise ISAModelAttributeError('Process.name must be a string')
+            raise AttributeError('Process.name must be a string')
 
     @property
     def executes_protocol(self):
@@ -3241,7 +3262,7 @@ class Process(Commentable):
     @executes_protocol.setter
     def executes_protocol(self, val):
         if val is not None and not isinstance(val, Protocol):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.executes_protocol must be a Protocol '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -3257,7 +3278,7 @@ class Process(Commentable):
         if val is not None and isinstance(val, str):
             self.__date = val
         else:
-            raise ISAModelAttributeError('Process.date must be a string')
+            raise AttributeError('Process.date must be a string')
 
     @property
     def performer(self):
@@ -3269,7 +3290,7 @@ class Process(Commentable):
         if val is not None and isinstance(val, str):
             self.__performer = val
         else:
-            raise ISAModelAttributeError('Process.performer must be a string')
+            raise AttributeError('Process.performer must be a string')
 
     @property
     def parameter_values(self):
@@ -3283,7 +3304,7 @@ class Process(Commentable):
             if val == [] or all(isinstance(x, ParameterValue) for x in val):
                 self.__parameter_values = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.parameter_values must be iterable containing '
                 'ParameterValues')
 
@@ -3302,7 +3323,7 @@ class Process(Commentable):
                     val):
                 self.__inputs = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.inputs must be iterable containing objects of types '
                 '(Material, Source, Sample, DataFile)')
 
@@ -3320,7 +3341,7 @@ class Process(Commentable):
                     x in val):
                 self.__outputs = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.outputs must be iterable containing objects of types '
                 '(Material, Source, Sample, DataFile)')
 
@@ -3333,7 +3354,7 @@ class Process(Commentable):
     @prev_process.setter
     def prev_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.prev_process must be a Process '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -3348,7 +3369,7 @@ class Process(Commentable):
     @next_process.setter
     def next_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'Process.next_process must be a Process '
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
@@ -3417,7 +3438,7 @@ class DataFile(Commentable):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.name must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
         else:
@@ -3431,7 +3452,7 @@ class DataFile(Commentable):
     @label.setter
     def label(self, val):
         if val is not None and not isinstance(val, str):
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{0}.label must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
         else:
@@ -3449,7 +3470,7 @@ class DataFile(Commentable):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__generated_from = list(val)
         else:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 '{}.generated_from must be iterable containing Samples'.format(
                     type(self).__name__))
 

@@ -5,29 +5,18 @@ import csv
 import json
 import logging
 import os
-import shutil
+import re
 import sys
-import tempfile
 import uuid
 from functools import reduce
 from zipfile import ZipFile
-
 import pandas as pd
-
-from mzml2isa.mzml import MzMLFile
+import yaml
 
 from isatools import isatab
-# from isatools.create import create_from_galaxy_parameters
 from isatools.model import (
-    DerivedSpectralDataFile,
-    ISAModelAttributeError,
-    OntologyAnnotation,
-    ParameterValue,
-    Process,
-    Protocol,
-    plink,
+    Process
 )
-
 
 log = logging.getLogger('isatools')
 
@@ -65,8 +54,8 @@ def detect_graph_process_pooling(G):
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if len(G.in_edges(process)) > 1:
             log.info('Possible process pooling detected on: {}'
-                     .format(' '.join(
-                         [process.id, process.executes_protocol.name])))
+                .format(' '.join(
+                [process.id, process.executes_protocol.name])))
 
             report.append(process.id)
     return report
@@ -140,7 +129,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             break
 
     if name_header is not None:
-        print('Are you sure you want to add a column of hash values in {}? '
+        log.debug('Are you sure you want to add a column of hash values in {}? '
               'Y/(N)'.format(name_header))
         confirm = input()
         if confirm == 'Y':
@@ -148,7 +137,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             table_fp.seek(0)
             df.to_csv(table_fp, index=None, header=headers, sep='\t')
     else:
-        print('Could not find appropriate column to fill with hashes')
+        log.debug('Could not find appropriate column to fill with hashes')
 
 
 def contains(small_list, big_list):
@@ -356,9 +345,9 @@ def check_loadable(tab_dir_root):
                       x.startswith('MTBLS')]:
         try:
             isatab.load(os.path.join(tab_dir_root, mtbls_dir))
-            print('{} load OK'.format(mtbls_dir))
+            log.debug('{} load OK'.format(mtbls_dir))
         except Exception as e:
-            print('{0} load FAIL, reason: {1}'.format(mtbls_dir, e))
+            log.debug('{0} load FAIL, reason: {1}'.format(mtbls_dir, e))
 
 
 def compute_study_factors_on_mtbls(tab_dir_root):
@@ -389,6 +378,7 @@ def compute_study_factors_on_mtbls(tab_dir_root):
             pass
 
 
+# TODO: is this any useful at all? (by Massi 18/11/2020)
 class IsaTabAnalyzer(object):
     """A utility to analyze ISA-Tabs"""
 
@@ -425,7 +415,7 @@ class IsaTabAnalyzer(object):
                         'num_sources': len(assay.samples),
                         'num_samples': len([x for x in assay.data_files
                                             if x.label.startswith(
-                                                raw_data_file_prefix)])
+                                raw_data_file_prefix)])
                     }
                     with open(os.path.join(self.path, assay.filename)) as a_fp:
                         a_df = isatab.load_table(a_fp)
@@ -476,9 +466,9 @@ class IsaTabAnalyzer(object):
                                         factor_value = \
                                             factor_query.split(' == ')
                                         fmt_query_part = \
-                                            "Factor_Value_{0}_ == '{1}'"\
-                                            .format(pyvar(factor_value[0]),
-                                                    factor_value[1])
+                                            "Factor_Value_{0}_ == '{1}'" \
+                                                .format(pyvar(factor_value[0]),
+                                                        factor_value[1])
                                         fmt_query.append(fmt_query_part)
                                     fmt_query = ' and '.join(fmt_query)
                                     log.debug('running query: {}'.format(
@@ -486,9 +476,9 @@ class IsaTabAnalyzer(object):
                                     df2 = merged_df.query(fmt_query)
                                     data_column = [x for x in merged_df.columns
                                                    if x.startswith(
-                                                       raw_data_file_prefix)
+                                            raw_data_file_prefix)
                                                    and x.endswith(
-                                                       'Data File')][0]
+                                            'Data File')][0]
                                     assay_report['group_summary'].append(
                                         dict(study_group=query,
                                              sources=len(
@@ -502,7 +492,7 @@ class IsaTabAnalyzer(object):
                                                       .drop_duplicates()))
                                              ))
                                 except Exception as e:
-                                    print("error in query, {}".format(e))
+                                    log.debug("error in query, {}".format(e))
                     study_design_report[-1]['assays'].append(assay_report)
         return study_design_report
 
@@ -539,7 +529,7 @@ class IsaTabAnalyzer(object):
             from collections import Counter
             counter = Counter()
             for material in study.sources + study.samples + \
-                    study.other_material:
+                            study.other_material:
                 counter.update(material.characteristics)
             for k, v in counter.items():
                 print('{characteristic} used {num} times'.format(
@@ -573,12 +563,27 @@ def batch_fix_isatabs(settings):
     :return: None
     """
     for table_file_path in settings.keys():
-        print('Fixing {table_file_path}...'.format(
+        log.debug('Fixing {table_file_path}...'.format(
             table_file_path=table_file_path))
         fixer = IsaTabFixer(table_file_path=table_file_path)
         fixer.fix_factor(
             factor_name=settings[table_file_path]['factor'],
             protocol_ref=settings[table_file_path]['protocol_ref'])
+
+
+def urlify(s):
+    """
+    Utility function to remove all problematic characters (whitespaces, etc...)
+    :param s: string
+    :return: cleaned string
+    """
+    # Remove all non-word characters (everything except numbers and letters)
+    # s = re.sub(r"[^\w\s]", '', s)
+
+    # Replace all runs of whitespace with a single dash
+    s = re.sub(r"\s+", '-', s)
+
+    return s
 
 
 class IsaTabFixer(object):
@@ -664,7 +669,7 @@ class IsaTabFixer(object):
         source_name_index = clean_field_names.index('Source Name')
 
         if factor_index < len(field_names) and \
-            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 1] and \
                 'Term Accession' in field_names[factor_index + 2]:
             log.debug(
                 'Moving Factor Value[{}] with term columns'.format(
@@ -682,7 +687,7 @@ class IsaTabFixer(object):
             del field_names[factor_index + 1 + 2]  # del Term Source REF
             del field_names[factor_index + 2 + 1]  # del Term Accession
         elif factor_index < len(field_names) and \
-            'Unit' in field_names[factor_index + 1] and \
+                'Unit' in field_names[factor_index + 1] and \
                 'Term Source REF' in field_names[factor_index + 2] and \
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
@@ -763,10 +768,10 @@ class IsaTabFixer(object):
         if protocol_ref_index < 0:
             raise IOError(
                 'Could not find protocol ref matching {protocol_ref}'
-                .format(protocol_ref=protocol_ref))
+                    .format(protocol_ref=protocol_ref))
 
         if factor_index < len(field_names) and \
-            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 1] and \
                 'Term Accession' in field_names[factor_index + 2]:
             log.debug(
                 'Moving Factor Value[{}] with term columns'.format(
@@ -782,12 +787,12 @@ class IsaTabFixer(object):
             del field_names[factor_index + 1 + 2]  # del Term Source REF
             del field_names[factor_index + 2 + 1]  # del Term Accession
         elif factor_index < len(field_names) and \
-            'Unit' in field_names[factor_index + 1] and \
+                'Unit' in field_names[factor_index + 1] and \
                 'Term Source REF' in field_names[factor_index + 2] and \
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit term columns'
-                .format(factor_name=factor_name))
+                    .format(factor_name=factor_name))
             # move Factor Value and Unit as ontology annotation
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -805,7 +810,7 @@ class IsaTabFixer(object):
                 'Unit' in field_names[factor_index + 1]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit column'
-                .format(factor_name=factor_name))
+                    .format(factor_name=factor_name))
             # move Factor Value and Unit columns
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -835,13 +840,13 @@ class IsaTabFixer(object):
         study = investigation.studies[-1]
         protocol = study.get_prot(protocol_ref)
         if protocol is None:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'No protocol with name {protocol_ref} was found'.format(
                     protocol_ref=protocol_ref))
         protocol.add_param(factor_name)
         factor = study.get_factor(factor_name)
         if factor is None:
-            raise ISAModelAttributeError(
+            raise AttributeError(
                 'No factor with name {factor_name} was found'.format(
                     factor_name=factor_name))
         else:
@@ -881,8 +886,8 @@ class IsaTabFixer(object):
                             process.executes_protocol.name)
                     except KeyError:
                         pass
-            print('Unused protocols: {}'.format(unused_protocol_names))
-            print('Location of unused protocols: {}'.format(
+            log.info('Unused protocols: {}'.format(unused_protocol_names))
+            log.info('Location of unused protocols: {}'.format(
                 list(map(lambda pr: True if pr.name in unused_protocol_names else False, study.protocols))
             ))
             # remove these protocols from study.protocols
@@ -894,9 +899,9 @@ class IsaTabFixer(object):
             study.protocols = clean_protocols_list
             """
             clean_protocols = [pr for pr in study.protocols if pr.name not in unused_protocol_names]
-            print('Clean protocol list: {}'.format([pr.name for pr in clean_protocols]))
+            log.info('Clean protocol list: {}'.format([pr.name for pr in clean_protocols]))
             study.protocols = clean_protocols
-            print('Clean study.protocols: {}'.format([pr.name for pr in study.protocols]))
+            log.info('Clean study.protocols: {}'.format([pr.name for pr in study.protocols]))
         isatab.dump(
             investigation, output_path=os.path.dirname(self.path),
             i_file_name='{filename}.fix'.format(
@@ -916,121 +921,9 @@ def utf8_text_file_open(path):
     return fp
 
 
-"""
-def create_and_merge_mzml(
-        galaxy_prameters_file, mapping_file, data_dir, output_dir):
-    ""Runs the create mode and merges mzML input  files for the CUDDEL
-    merger
-
-    :param galaxy_prameters_file: Galaxy inputs JSON
-    :param mapping_file: a mapping JSON
-    :param data_dir: Input data directory containing the mzMLs
-    :param output_dir: output for the merged outputs
-    :return: None
-    ""
-    tmp = tempfile.mkdtemp()
-    create_from_galaxy_parameters(
-        galaxy_parameters_file=galaxy_prameters_file, target_dir=tmp)
-    ISA = isatab.load(tmp)
-    shutil.rmtree(tmp)
-
-    # load mzml metadata from files in data_dir
-    mzml_meta = {}
-    for i, mzml in enumerate(os.listdir(data_dir)):
-        if not mzml.lower().endswith('.mzml'):
-            continue
-        mzml_pth = os.path.join(data_dir, mzml)
-        # mz = mzMLmeta(mzml_pth)
-        mz= mzml.MzMLFile(mzml_pth)
-        # mz = mzml_meta(mzml_pth)
-
-        mzml_name, _ = os.path.splitext(mzml_pth)
-        mzml_meta[os.path.basename(mzml_name)] = mz.meta
-
-    # only get first assay from first study obj
-    study = ISA.studies[0]
-
-    mapping = {}
-    with open(mapping_file) as fp:
-        mapping = json.load(fp)
-
-    for assay in study.assays:
-        # get mass spectrometry processes only
-        ms_processes = [
-            x for x in assay.process_sequence if
-            x.executes_protocol.protocol_type.term == 'mass spectrometry']
-        # insert the new parameter values
-        for k, v in mapping.items():
-            with open(os.path.join('MTBLS265-no-binary', 'json_meta',
-                                   v + '.json')) as fp2:
-                mzml_meta = json.load(fp2)
-                data_trans_meta = {k: v for k, v in mzml_meta.items() if
-                                   k.startswith('Data Transformation')}
-                labels = {k: v for k, v in mzml_meta.items() if
-                          k.endswith(('File', 'Name'))}
-                ms_prot_meta = {k: v for k, v in mzml_meta.items() if
-                                not k.startswith('Data Transformation') and
-                                k not in labels.keys()}
-            try:  # add parameter values to MS process
-                ms_process = [x for x in ms_processes if
-                              k in [y.filename for y in x.outputs]][0]
-                # pvs = ms_process.parameter_values
-                for item in ms_prot_meta:
-                    if not ms_process.executes_protocol.get_param(item):
-                        ms_process.executes_protocol.add_param(item)
-                    param = ms_process.executes_protocol.get_param(item)
-                    meta_item = ms_prot_meta[item]
-                    if 'value' in meta_item.keys():
-                        value = meta_item['value']  # check for unit as well
-                    elif 'name' in meta_item.keys():
-                        value = meta_item[
-                            'name']  # check for ontology annotation
-                    elif 'entry_list' in meta_item.keys():
-                        values = meta_item['entry_list']
-                        if 'value' in values[-1].keys():
-                            value = values[-1][
-                                'value']  # check for unit as well
-                        elif 'name' in values[-1].keys():
-                            value = values[-1][
-                                'name']  # check for ontology annotation
-                        else:
-                            raise IOError(values[-1])
-                    else:
-                        raise IOError(meta_item)
-                    pv = ParameterValue(category=param, value=value)
-                    ms_process.parameter_values.append(pv)
-
-                # set raw file name to mzML meta raw file name and sample name
-                # too
-                for output in ms_process.outputs:
-                    if output.label in labels.keys():
-                        output.filename = labels[
-                            output.label]['entry_list'][-1]['value']
-                        output.generated_from[-1].name = labels[
-                            'Sample Name']['value']
-                #  set MS Assay Name to mzML metadata
-                ms_process.name = labels['MS Assay Name']['value']
-
-                #  add data transformation to describe conversion to mzML
-                if data_trans_meta['Data Transformation Name']:
-                    if not study.get_prot('Conversion to mzML'):
-                        dt_prot = Protocol(name='Conversion to mzML',
-                                           protocol_type=OntologyAnnotation(
-                                               term='data transformation'))
-                        dt_prot.add_param('peak picking')
-                        dt_prot.add_param('software')
-                        dt_prot.add_param('software version')
-                        study.protocols.append(dt_prot)
-                    dt_prot = study.get_prot('Conversion to mzML')
-                    dt_process = Process(executes_protocol=dt_prot)
-                    dt_process.outputs = [DerivedSpectralDataFile(
-                        filename=labels['Derived Spectral Data File'][
-                            'entry_list'][-1]['value'])]
-                    dt_process.inputs = ms_process.outputs
-                    plink(ms_process, dt_process)
-                    assay.process_sequence.append(dt_process)
-            except IndexError:
-                pass
-
-    isatab.dump(ISA, output_dir)
-"""
+def n_digits(num):
+    length = 0
+    while num / 10 >= 1:
+        num //= 10
+        length += 1
+    return length + 1

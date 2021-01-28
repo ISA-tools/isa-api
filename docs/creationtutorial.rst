@@ -90,8 +90,11 @@ feedback from a user on-the-fly.
         # an index to the material name. In this case, three samples will be created, with the names
         # 'sample_material-0', 'sample_material-1' and 'sample_material-2'.
 
-        prototype_sample = Sample(name='sample_material', derives_from=source)
+        prototype_sample = Sample(name='sample_material', derives_from=[source])
+        
         ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+        investigation.ontology_source_references.append(ncbitaxon) # remember to add the newly declared ontology source to the parent investigation
+
         characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
                                          value=OntologyAnnotation(term="Homo Sapiens", term_source=ncbitaxon,
                                                                   term_accession="http://purl.bioontology.org/ontology/NCBITAXON/9606"))
@@ -186,6 +189,9 @@ feedback from a user on-the-fly.
         # attach the assay to the study
 
         study.assays.append(assay)
+
+        #IMPORTANT: remember to list all Characteristics used in the study object: do as follows:
+        study.characteristic_categories.append(characteristic_organism.category)
 
 To write out the ISA-Tab, you can use the ``isatab.dumps()`` function:
 

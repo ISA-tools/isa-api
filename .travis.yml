@@ -2,21 +2,19 @@ sudo: false
 language: python
 cache: pip
 python:
-  - 3.6
   - 3.7
   - 3.8
+  - 3.9
 before_install:
 - bash -x get_test_data.sh
 install:
-- pip install --upgrade pip && pip install -r requirements-tests.txt
+- pip install --upgrade pip && pip install -r requirements.txt
 - pip install tox-travis
 script:
-#- flake8 --show-source --exclude=.svn,CVS,.bzr,.hg,.git,isatab_configurator.py,study_design_wizard.py isatools
+#- flake8 --show-source --exclude=.svn,CVS,.bzr,.hg,.git,isatab_configurator.py isatools
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
-#- python -m unittest tests.test_ax tests.test_magetab2isatab
-#- python -m unittest discover tests
-#- travis_wait 30 tox -r
-- coverage run -m unittest discover tests
+- travis_wait 30 python -m unittest discover -s tests/
+- coverage run -m unittest discover -s tests/
 - coverage report -m
 branches:
   only:

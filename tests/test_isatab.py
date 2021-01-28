@@ -764,7 +764,6 @@ class TestIsaTabLoad(unittest.TestCase):
 
         self.assertEqual(len(protocol.description),70)
 
-
     def test_isatab_load_issue200(self):
         with open(os.path.join(self._tab_data_dir, 'issue200', 'i_Investigation.txt')) as fp:
             ISA = isatab.load(fp)
@@ -1116,29 +1115,155 @@ source1\tsample collection\taliquoting\taliquot1"""
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
         self.assertIn(expected, isatab.dumps(i))
 
-    def test_sample_protocol_ref_material_protocol_ref_data(self):
+#     def test_sample_protocol_ref_material_protocol_ref_data(self):
+#         i = Investigation()
+#         s = Study(
+#             filename='s_test.txt',
+#             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+#         )
+#         sample1 = Sample(name='sample1')
+#         extract1 = Material(name='extract1', type_='Extract Name')
+#         data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+#         extraction_process = Process(executes_protocol=s.protocols[0])
+#         scanning_process = Process(executes_protocol=s.protocols[1])
+#         extraction_process.inputs = [sample1]
+#         extraction_process.outputs = [extract1]
+#         scanning_process.inputs = [extract1]
+#         scanning_process.outputs = [data1]
+#         scanning_process.name = "assay-1"
+#         plink(extraction_process, scanning_process)
+#         a = Assay(filename='a_test.txt')
+#         a.process_sequence = [extraction_process, scanning_process]
+#         s.assays = [a]
+#         i.studies = [s]
+#         # expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
+# # sample1\textraction\textract1\tscanning\tassay-1\tdatafile.raw"""
+#
+#         # print("Expected:", expected)
+#         # print(isatab.dumps(i))
+#         dump_out = isatab.dumps(i)
+#         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tScan Name\tRaw Data File"""
+#         expected_line2 = """sample1\textraction\textract1\tscanning\tassay-1\tdatafile.raw"""
+#
+#         self.assertIn(expected_line1, dump_out)
+#         self.assertIn(expected_line2, dump_out)
+#         # self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data2(self):
+            i = Investigation()
+            s = Study(
+                filename='s_test.txt',
+                protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')), Protocol(name='nucleic acid sequencing', protocol_type=OntologyAnnotation(term='nucleic acid sequencing'))]
+            )
+            sample1 = Sample(name='sample1')
+            extract1 = Material(name='extract1', type_='Extract Name')
+            data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+            extraction_process = Process(executes_protocol=s.protocols[0])
+            sequencing_assay_process = Process(executes_protocol=s.protocols[1])
+            extraction_process.inputs = [sample1]
+            extraction_process.outputs = [extract1]
+            sequencing_assay_process.inputs = [extract1]
+            sequencing_assay_process.outputs = [data1]
+            sequencing_assay_process.name = "assay-1"
+
+            plink(extraction_process, sequencing_assay_process)
+            a = Assay(filename='a_test.txt')
+            a.process_sequence = [extraction_process, sequencing_assay_process]
+            a.measurement_type = OntologyAnnotation(term="gene sequencing")
+            a.technology_type = OntologyAnnotation(term="nucleotide sequencing")
+            s.assays = [a]
+            i.studies = [s]
+            expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
+sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+
+            # print("Expected:", expected)
+            # print(isatab.dumps(i))
+            # dump_out = isatab.dumps(i)
+            # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
+            # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+
+            # self.assertIn(expected_line1, dump_out)
+            # self.assertIn(expected_line2, dump_out)
+            self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data3(self):
         i = Investigation()
         s = Study(
             filename='s_test.txt',
-            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+            protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
+                       Protocol(name='mass spectrometry',
+                                protocol_type=OntologyAnnotation(term='mass spectrometry'))]
         )
         sample1 = Sample(name='sample1')
         extract1 = Material(name='extract1', type_='Extract Name')
-        data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+        data1 = DataFile(filename='datafile.raw', label='Raw Spectral Data File')
         extraction_process = Process(executes_protocol=s.protocols[0])
-        scanning_process = Process(executes_protocol=s.protocols[1])
+        sequencing_assay_process = Process(executes_protocol=s.protocols[1])
         extraction_process.inputs = [sample1]
         extraction_process.outputs = [extract1]
-        scanning_process.inputs = [extract1]
-        scanning_process.outputs = [data1]
-        plink(extraction_process, scanning_process)
+        sequencing_assay_process.inputs = [extract1]
+        sequencing_assay_process.outputs = [data1]
+        sequencing_assay_process.name = "assay-1"
+
+        plink(extraction_process, sequencing_assay_process)
         a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process, scanning_process]
+        a.process_sequence = [extraction_process, sequencing_assay_process]
+        a.measurement_type = OntologyAnnotation(term="metabolite profiling")
+        a.technology_type = OntologyAnnotation(term="mass spectrometry")
         s.assays = [a]
         i.studies = [s]
-        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File
-sample1\textraction\textract1\tscanning\tdatafile.raw"""
+        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tMS Assay Name\tRaw Spectral Data File
+sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
+
+        # print("Expected:", expected)
+        # print(isatab.dumps(i))
+        # dump_out = isatab.dumps(i)
+        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
+        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+
+        # self.assertIn(expected_line1, dump_out)
+        # self.assertIn(expected_line2, dump_out)
         self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data4(self):
+            i = Investigation()
+            s = Study(
+                filename='s_test.txt',
+                protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
+                           Protocol(name='NMR spectroscopy',
+                                    protocol_type=OntologyAnnotation(term='NMR spectroscopy'))]
+            )
+            sample1 = Sample(name='sample1')
+            extract1 = Material(name='extract1', type_='Extract Name')
+            data1 = DataFile(filename='datafile.raw', label='Free Induction Decay Data File')
+            extraction_process = Process(executes_protocol=s.protocols[0])
+            nmr_assay_process = Process(executes_protocol=s.protocols[1])
+            extraction_process.inputs = [sample1]
+            extraction_process.outputs = [extract1]
+            nmr_assay_process.inputs = [extract1]
+            nmr_assay_process.outputs = [data1]
+            nmr_assay_process.name = "assay-1"
+
+            plink(extraction_process, nmr_assay_process)
+            a = Assay(filename='a_test.txt')
+            a.process_sequence = [extraction_process, nmr_assay_process]
+            a.measurement_type = OntologyAnnotation(term="metabolite profiling")
+            a.technology_type = OntologyAnnotation(term="NMR spectroscopy")
+            s.assays = [a]
+            i.studies = [s]
+            expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tNMR Assay Name\tFree Induction Decay Data File
+sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
+
+            # print("Expected:", expected)
+            # print(isatab.dumps(i))
+            # dump_out = isatab.dumps(i)
+            # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
+            # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+
+            # self.assertIn(expected_line1, dump_out)
+            # self.assertIn(expected_line2, dump_out)
+            self.assertIn(expected, isatab.dumps(i))
+
 
     def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
         i = Investigation()
@@ -1314,6 +1439,7 @@ sample1\textraction\textract1\tscanning\tdatafile.raw"""
         extraction_process2.outputs = [extract2]
 
         scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.name = "assay-name-1"
         scanning_process1.inputs = [extract1, extract2]
         scanning_process1.outputs = [data1]
         plink(extraction_process1, scanning_process1)
@@ -1414,6 +1540,12 @@ sample1\textraction\te2\tscanning\td2"""
             ISA = isatab.load(fp)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 1)
             self.assertEqual(len(ISA.studies[0].assays[1].data_files), 1)
+
+    def test_isatab_load_issue210_on_MTBLS1(self):
+        with open(os.path.join(self._tab_data_dir, 'MTBLS1', 'i_Investigation.txt'), encoding='utf-8') as fp:
+            ISA = isatab.load(fp)
+            print("ISA loaded?", ISA.studies[0].assays[0].data_files)
+            self.assertEqual(len(ISA.studies[0].assays[0].data_files), 134)
 
     def test_isatab_load_issue210_on_Sacurine(self):
         with open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8') as fp:

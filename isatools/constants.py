@@ -1,0 +1,1 @@
+SYNONYMS = 'synonyms'

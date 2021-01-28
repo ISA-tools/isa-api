@@ -1,0 +1,80 @@
+sample collection:
+  header: Sample Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000659
+  synonyms:
+    - sample collection
+    - sampling
+extraction:
+  header: Extract Name
+  iri: http://purl.obolibrary.org/obo/OBI_0302884
+  synonyms:
+    - extraction
+labeling:
+  header: Labeled Extract Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600038
+  synonyms:
+    - labeling
+    - labelling
+phenotyping:
+  header: Assay Name
+  synonyms:
+    - phenotyping
+nucleic acid sequencing:
+  header: Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600047
+  synonyms:
+    - library sequencing
+    - nucleic acid sequencing
+mass spectrometry:
+  header: MS Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000470
+  synonyms:
+    - mass spectrometry
+    - mass spec
+    - mass spec.
+    - ms
+nmr spectroscopy:
+  header: NMR Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0000623
+  synonyms:
+    - nmr spectroscopy
+    - nmr
+nucleic acid hybridization:
+  header: Hybridization Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0302903
+  synonyms:
+    - nucleic acid hybridization
+    - nucleic acid hybridisation
+data acquisition:
+  header: Assay Name
+  iri: http://purl.obolibrary.org/obo/OBI_0600013
+  synonyms:
+    - data acquisition
+data transformation:
+  header: Data Transformation Name
+  iri: http://purl.obolibrary.org/obo/OBI_0200000
+  synonyms:
+    - data transformation
+data collection:
+  header: Scan Name
+  synonyms:
+    - data collection
+sequence analysis data transformation:
+  header: Data Transformation Name
+  synonyms:
+    - sequence analysis data transformation
+normalization:
+  header: Normalization Name
+  iri: http://purl.obolibrary.org/obo/OBI_0200169
+  synonyms:
+    - normalisation
+    - normalization
+metabolite identification:
+  header: Data Transformation Name
+  iri: http://purl.obolibrary.org/obo/MI_2131
+  synonyms:
+    - metabolite identification
+protein identification:
+  header: Data Transformation Name
+  synonyms:
+    - protein identification

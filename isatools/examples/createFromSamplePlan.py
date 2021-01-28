@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from isatools import isatab
-from isatools.create.models import (
+from isatools.create.model import (
     IsaModelObjectFactory,
     SampleAssayPlan,
     TreatmentFactory,

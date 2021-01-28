@@ -13,7 +13,11 @@ from io import StringIO
 from json import JSONEncoder
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 
-from isatools.model import *
+from isatools.model import (
+    Investigation, OntologyAnnotation, Comment, OntologySource, Publication, Person, Study, Protocol, ProtocolParameter,
+    ProtocolComponent, StudyFactor, Source, Characteristic, Sample, FactorValue, Process, ParameterValue, Assay,
+    DataFile, Material,
+)
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
@@ -158,8 +162,8 @@ def load(fp):
                 term_source=term_source_dict[study_characteristics_category_json["characteristicType"]["termSource"]],
                 term_accession=study_characteristics_category_json["characteristicType"]["termAccession"],
             )
-            study.characteristic_categories.append(characteristic_category)
             categories_dict[characteristic_category.id] = characteristic_category
+            study.characteristic_categories.append(characteristic_category)
         for study_unit_json in study_json["unitCategories"]:
             unit = OntologyAnnotation(id_=study_unit_json["@id"],
                                       term=study_unit_json["annotationValue"],
@@ -958,7 +962,7 @@ def check_utf8(fp):
     import chardet
     with open(fp.name, "rb") as fp:
         charset = chardet.detect(fp.read())
-        if charset["encoding"] is not "UTF-8" and charset["encoding"] is not "ascii":
+        if charset["encoding"] != "UTF-8" and charset["encoding"] != "ascii":
             warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"], charset["confidence"]),
@@ -991,7 +995,7 @@ def check_isa_schemas(isa_json, investigation_schema_path):
 def check_date_formats(isa_json):
     """Used for rule 3001"""
     def check_iso8601_date(date_str):
-        if date_str is not "":
+        if date_str != "":
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -1029,7 +1033,7 @@ def check_date_formats(isa_json):
 def check_dois(isa_json):
     """Used for rule 3002"""
     def check_doi(doi_str):
-        if doi_str is not "":
+        if doi_str != "":
             if not _RX_DOI.match(doi_str):
                 warnings.append({
                     "message": "DOI is not valid format",
@@ -1053,7 +1057,7 @@ def check_dois(isa_json):
 def check_filenames_present(isa_json):
     """Used for rule 3005"""
     for s_pos, study in enumerate(isa_json["studies"]):
-        if study["filename"] is "":
+        if study["filename"] == "":
             warnings.append({
                 "message": "Missing study file name",
                 "supplemental": "At study position {}".format(s_pos),
@@ -1061,7 +1065,7 @@ def check_filenames_present(isa_json):
             })
             log.warning("(W) A study filename is missing")
         for a_pos, assay in enumerate(study["assays"]):
-            if assay["filename"] is "":
+            if assay["filename"] == "":
                 warnings.append({
                     "message": "Missing assay file name",
                     "supplemental": "At study position {}, assay position {}".format(s_pos, a_pos),
@@ -1073,7 +1077,7 @@ def check_filenames_present(isa_json):
 def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
-        if pubmed_id_str is not "":
+        if pubmed_id_str != "":
             if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
                 warnings.append({
                     "message": "PubMed ID is not valid format",
@@ -1092,7 +1096,7 @@ def check_protocol_names(isa_json):
     """Used for rule 1010"""
     for study in isa_json["studies"]:
         for protocol in study["protocols"]:
-            if protocol["name"] is "":
+            if protocol["name"] == "":
                 warnings.append({
                     "message": "Protocol missing name",
                     "supplemental": "Protocol @id={}".format(protocol["@id"]),
@@ -1107,7 +1111,7 @@ def check_protocol_parameter_names(isa_json):
     for study in isa_json["studies"]:
         for protocol in study["protocols"]:
             for parameter in protocol["parameters"]:
-                if parameter["parameterName"] is "":
+                if parameter["parameterName"] == "":
                     warnings.append({
                         "message": "Protocol Parameter missing name",
                         "supplemental": "Protocol Parameter @id={}".format(parameter["@id"]),
@@ -1121,7 +1125,7 @@ def check_study_factor_names(isa_json):
     """Used for rule 1012"""
     for study in isa_json["studies"]:
         for factor in study["factors"]:
-            if factor["factorName"] is "":
+            if factor["factorName"] == "":
                 warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor @id={}".format(factor["@id"]),
@@ -1134,7 +1138,7 @@ def check_study_factor_names(isa_json):
 def check_ontology_sources(isa_json):
     """Used for rule 3008"""
     for ontology_source in isa_json["ontologySourceReferences"]:
-        if ontology_source["name"] is "":
+        if ontology_source["name"] == "":
             warnings.append({
                 "message": "Ontology Source missing name ref",
                 "supplemental": "name={}".format(ontology_source["name"]),
@@ -1173,7 +1177,7 @@ def check_term_source_refs(isa_json):
     term_sources_declared = get_ontology_source_refs(isa_json)
     collector = list()
     walk_and_get_annotations(isa_json, collector)
-    term_sources_used = [annotation["termSource"] for annotation in collector if annotation["termSource"] is not ""]
+    term_sources_used = [annotation["termSource"] for annotation in collector if annotation["termSource"] != ""]
     if len(set(term_sources_used) - set(term_sources_declared)) > 0:
         diff = set(term_sources_used) - set(term_sources_declared)
         errors.append({
@@ -1186,7 +1190,7 @@ def check_term_source_refs(isa_json):
     elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
         diff = set(term_sources_declared) - set(term_sources_used)
         warnings.append({
-            "message": "Ontology Source Reference is not used",
+            "message": "Ontology Source Reference != used",
             "supplemental": "Ontology sources not used {}".format(list(diff)),
             "code": 3007
         })
@@ -1198,8 +1202,9 @@ def check_term_accession_used_no_source_ref(isa_json):
     """Used for rule 3010"""
     collector = list()
     walk_and_get_annotations(isa_json, collector)
-    terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation["termAccession"]
-                                           is not "" and annotation["termSource"] is ""]
+    terms_using_accession_no_source_ref = [
+        annotation for annotation in collector if annotation["termAccession"] != "" and annotation["termSource"] == ""
+    ]
     if len(terms_using_accession_no_source_ref) > 0:
         warnings.append({
             "message": "Missing Term Source REF in annotation",
@@ -1541,285 +1546,286 @@ class ISAJSONEncoder(JSONEncoder):
         clean_nulls = nulls_to_str  # creates verbose JSON if using nulls to str
         # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings but breaks reader
 
-        def get_comment(o):
+        def get_comment(obj):
             return clean_nulls(
                 {
-                    "name": o.name,
-                    "value": o.value
+                    "name": obj.name,
+                    "value": obj.value
                 }
             )
 
-        def get_comments(o):
-            return list(map(lambda x: get_comment(x), o if o else []))
+        def get_comments(obj):
+            return list(map(lambda x: get_comment(x), obj if obj else []))
 
-        def get_ontology_source(o):
+        def get_ontology_source(obj):
             return clean_nulls(
                 {
-                    "name": o.name,
-                    "description": o.description,
-                    "file": o.file,
-                    "version": o.version
+                    "name": obj.name,
+                    "description": obj.description,
+                    "file": obj.file,
+                    "version": obj.version
                 }
             )
 
-        def get_ontology_annotation(o):
-            if o is not None:
+        def get_ontology_annotation(obj):
+            if obj is not None:
                 return clean_nulls(
                     {
-                        "@id": id_gen(o),
-                        "annotationValue": o.term,
-                        "termAccession": o.term_accession,
-                        "termSource": o.term_source.name if o.term_source else None,
-                        "comments": get_comments(o.comments)
+                        "@id": id_gen(obj),
+                        "annotationValue": obj.term,
+                        "termAccession": obj.term_accession,
+                        "termSource": obj.term_source.name if obj.term_source else None,
+                        "comments": get_comments(obj.comments)
                     }
                 )
             else:
                 return None
 
-        def get_ontology_annotations(o):
-            return list(map(lambda x: get_ontology_annotation(x), o))
+        def get_ontology_annotations(obj):
+            return list(map(lambda x: get_ontology_annotation(x), obj))
 
-        def get_person(o):
+        def get_person(obj):
             return clean_nulls(
                 {
-                    "address": o.address,
-                    "affiliation": o.affiliation,
-                    "comments": get_comments(o.comments),
-                    "email": o.email,
-                    "fax": o.fax,
-                    "firstName": o.first_name,
-                    "lastName": o.last_name,
-                    "midInitials": o.mid_initials if o.mid_initials else '',
-                    "phone": o.phone,
-                    "roles": get_ontology_annotations(o.roles)
+                    "address": obj.address,
+                    "affiliation": obj.affiliation,
+                    "comments": get_comments(obj.comments),
+                    "email": obj.email,
+                    "fax": obj.fax,
+                    "firstName": obj.first_name,
+                    "lastName": obj.last_name,
+                    "midInitials": obj.mid_initials if obj.mid_initials else '',
+                    "phone": obj.phone,
+                    "roles": get_ontology_annotations(obj.roles)
                 }
             )
 
-        def get_people(o):
-            return list(map(lambda x: get_person(x), o))
+        def get_people(obj):
+            return list(map(lambda x: get_person(x), obj))
 
-        def get_publication(o):
+        def get_publication(obj):
             return clean_nulls(
                 {
-                    "authorList": o.author_list,
-                    "doi": o.doi,
-                    "pubMedID": o.pubmed_id,
-                    "status": get_ontology_annotation(o.status) if o.status else {"@id": ''},
-                    "title": o.title
+                    "authorList": obj.author_list,
+                    "doi": obj.doi,
+                    "pubMedID": obj.pubmed_id,
+                    "status": get_ontology_annotation(obj.status) if obj.status else {"@id": ''},
+                    "title": obj.title
                 }
             )
 
-        def get_publications(o):
-            return list(map(lambda x: get_publication(x), o))
+        def get_publications(obj):
+            return list(map(lambda x: get_publication(x), obj))
 
-        def get_protocol(o):
+        def get_protocol(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "description": o.description,
+                    "@id": id_gen(obj),
+                    "description": obj.description,
                     "parameters": list(map(lambda x: {
                         "@id": id_gen(x),
                         "parameterName": get_ontology_annotation(x.parameter_name)
-                    }, o.parameters)),  # TODO: Deal with Array Design REF
-                    "name": o.name,
-                    "protocolType": get_ontology_annotation(o.protocol_type),
-                    "uri": o.uri,
-                    "comments": get_comments(o.comments) if o.comments else [],
+                    }, obj.parameters)),  # TODO: Deal with Array Design REF
+                    "name": obj.name,
+                    "protocolType": get_ontology_annotation(obj.protocol_type),
+                    "uri": obj.uri,
+                    "comments": get_comments(obj.comments) if obj.comments else [],
                     "components": [],  # TODO: Output components
-                    "version": o.version
+                    "version": obj.version
                 }
             )
 
-        def get_source(o):
+        def get_source(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "name": o.name,
-                    "characteristics": get_characteristics(o.characteristics)
+                    "@id": id_gen(obj),
+                    "name": obj.name,
+                    "characteristics": get_characteristics(obj.characteristics)
                 }
             )
 
-        def get_characteristic(o):
+        def get_characteristic(obj):
             return clean_nulls(
                 {
-                    "category": {"@id": id_gen(o.category)} if o.category else None,
+                    "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     # "category": get_value(o.category) if o.category else None,
-                    "value": get_value(o.value),
-                    "unit": {"@id": id_gen(o.unit)} if o.unit else None
+                    "value": get_value(obj.value),
+                    "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
                 }
             )
 
-        def get_characteristics(o):
-            return list(map(lambda x: get_characteristic(x), o))
+        def get_characteristics(obj):
+            return list(map(lambda x: get_characteristic(x), obj))
 
-        def get_value(o):
-            if isinstance(o, OntologyAnnotation):
-                return get_ontology_annotation(o)
-            elif isinstance(o, (str, int, float)):
-                return o
+        def get_value(obj):
+            if isinstance(obj, OntologyAnnotation):
+                return get_ontology_annotation(obj)
+            elif isinstance(obj, (str, int, float)):
+                return obj
             else:
-                raise ValueError("Unexpected value type found: " + type(o))
+                raise ValueError("Unexpected value type found: " + type(obj))
 
-        def get_characteristic_category(o):  # TODO: Deal with Material Type
-            return clean_nulls(
+        def get_characteristic_category(obj):  # TODO: Deal with Material Type
+            res = clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "characteristicType": get_ontology_annotation(o)
+                    "@id": id_gen(obj),
+                    "characteristicType": get_ontology_annotation(obj)
                 }
             )
+            return res
 
-        def get_sample(o):
+        def get_sample(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "name": o.name,
-                    "characteristics": get_characteristics(o.characteristics),
+                    "@id": id_gen(obj),
+                    "name": obj.name,
+                    "characteristics": get_characteristics(obj.characteristics),
                     "factorValues": list(map(lambda x: clean_nulls(
                         {
                             "category": {"@id": id_gen(x.factor_name)} if x.factor_name else None,
                             "value": get_value(x.value),
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
-                    ), o.factor_values))
+                    ), obj.factor_values))
             })
 
-        def get_factor(o):
+        def get_factor(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "factorName": o.name,
-                    "factorType": get_ontology_annotation(o.factor_type)
+                    "@id": id_gen(obj),
+                    "factorName": obj.name,
+                    "factorType": get_ontology_annotation(obj.factor_type)
                 }
             )
 
-        def get_other_material(o):
+        def get_other_material(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "name": o.name,
-                    "type": o.type,
-                    "characteristics": get_characteristics(o.characteristics)
+                    "@id": id_gen(obj),
+                    "name": obj.name,
+                    "type": obj.type,
+                    "characteristics": get_characteristics(obj.characteristics)
                 }
             )
 
         def sqeezstr(s):
             return s.replace(' ', '').lower()
 
-        def id_gen(o):
-            if o is not None:
-                o_id = getattr(o, 'id', None)
+        def id_gen(obj):
+            if obj is not None:
+                o_id = getattr(obj, 'id', None)
                 if not o_id:
-                    o_id = str(id(o))
-                if isinstance(o, Source):
+                    o_id = str(id(obj))
+                if isinstance(obj, Source):
                     return '#source/' + o_id
-                elif isinstance(o, Sample):
+                elif isinstance(obj, Sample):
                     return '#sample/' + o_id
-                elif isinstance(o, Material):
-                    if o.type == 'Extract Name':
+                elif isinstance(obj, Material):
+                    if obj.type == 'Extract Name':
                         return '#material/extract-' + o_id
-                    elif o.type == 'Labeled Extract Name':
+                    elif obj.type == 'Labeled Extract Name':
                         return '#material/labledextract-' + o_id
                     else:
-                        raise TypeError("Could not resolve data type labeled: " + o.type)
-                elif isinstance(o, DataFile):
-                        return '#data/{}-'.format(sqeezstr(o.label)) + o_id
-                elif isinstance(o, Process):
+                        raise TypeError("Could not resolve data type labeled: " + obj.type)
+                elif isinstance(obj, DataFile):
+                        return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
+                elif isinstance(obj, Process):
                     return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
                     return '#' + o_id
             else:
                 return None
 
-        def get_process(o):
+        def get_process(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "name": o.name,
-                    "executesProtocol": {"@id": id_gen(o.executes_protocol)},
-                    "parameterValues": list(map(lambda x: get_parameter_value(x), o.parameter_values)),
-                    "performer": o.performer,
-                    "date": o.date,
-                    "previousProcess": {"@id": id_gen(o.prev_process)} if o.prev_process else None,
-                    "nextProcess": {"@id": id_gen(o.next_process)} if o.next_process else None,
-                    "inputs": list(map(lambda x: {"@id": id_gen(x)}, o.inputs)),
-                    "outputs": list(map(lambda x: {"@id": id_gen(x)}, o.outputs)),
-                    "comments": get_comments(o.comments)
+                    "@id": id_gen(obj),
+                    "name": obj.name,
+                    "executesProtocol": {"@id": id_gen(obj.executes_protocol)},
+                    "parameterValues": list(map(lambda x: get_parameter_value(x), obj.parameter_values)),
+                    "performer": obj.performer,
+                    "date": obj.date,
+                    "previousProcess": {"@id": id_gen(obj.prev_process)} if obj.prev_process else None,
+                    "nextProcess": {"@id": id_gen(obj.next_process)} if obj.next_process else None,
+                    "inputs": list(map(lambda x: {"@id": id_gen(x)}, obj.inputs)),
+                    "outputs": list(map(lambda x: {"@id": id_gen(x)}, obj.outputs)),
+                    "comments": get_comments(obj.comments)
                 }
             )
 
-        def get_parameter_value(o):
+        def get_parameter_value(obj):
             return clean_nulls(
                 {
-                    "category": {"@id": id_gen(o.category)} if o.category else None,
-                    "value": get_value(o.value),
-                    "unit": {"@id": id_gen(o.unit)} if o.unit else None
+                    "category": {"@id": id_gen(obj.category)} if obj.category else None,
+                    "value": get_value(obj.value),
+                    "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
                 }
             )
 
-        def get_study(o): return clean_nulls(
+        def get_study(obj): return clean_nulls(
             {
-                "filename": o.filename,
-                "identifier": o.identifier,
-                "title": o.title,
-                "description": o.description,
-                "submissionDate": o.submission_date,
-                "publicReleaseDate": o.public_release_date,
-                "publications": get_publications(o.publications),
-                "people": get_people(o.contacts),
-                "studyDesignDescriptors": get_ontology_annotations(o.design_descriptors),
-                "protocols": list(map(lambda x: get_protocol(x), o.protocols)),
+                "filename": obj.filename,
+                "identifier": obj.identifier,
+                "title": obj.title,
+                "description": obj.description,
+                "submissionDate": obj.submission_date,
+                "publicReleaseDate": obj.public_release_date,
+                "publications": get_publications(obj.publications),
+                "people": get_people(obj.contacts),
+                "studyDesignDescriptors": get_ontology_annotations(obj.design_descriptors),
+                "protocols": list(map(lambda x: get_protocol(x), obj.protocols)),
                 "materials": {
-                    "sources": list(map(lambda x: get_source(x), o.sources)),
-                    "samples": get_samples(o.samples),
-                    "otherMaterials": get_other_materials(o.other_material)
+                    "sources": list(map(lambda x: get_source(x), obj.sources)),
+                    "samples": get_samples(obj.samples),
+                    "otherMaterials": get_other_materials(obj.other_material)
                 },
-                "processSequence": list(map(lambda x: get_process(x), o.process_sequence)),
-                "factors": list(map(lambda x: get_factor(x), o.factors)),
-                "characteristicCategories": get_characteristic_categories(o.characteristic_categories),
-                "unitCategories": get_ontology_annotations(o.units),
-                "comments": get_comments(o.comments),
-                "assays": list(map(lambda x: get_assay(x), o.assays))
+                "processSequence": list(map(lambda x: get_process(x), obj.process_sequence)),
+                "factors": list(map(lambda x: get_factor(x), obj.factors)),
+                "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
+                "unitCategories": get_ontology_annotations(obj.units),
+                "comments": get_comments(obj.comments),
+                "assays": list(map(lambda x: get_assay(x), obj.assays))
             }
         )
 
-        def get_characteristic_categories(o):
-            return list(map(lambda x: get_characteristic_category(x), o))
+        def get_characteristic_categories(obj):
+            return list(map(lambda x: get_characteristic_category(x), obj))
 
-        def get_samples(o):
-            return list(map(lambda x: get_sample(x), o))
+        def get_samples(obj):
+            return list(map(lambda x: get_sample(x), obj))
 
-        def get_other_materials(o):
-            return list(map(lambda x: get_other_material(x), o))
+        def get_other_materials(obj):
+            return list(map(lambda x: get_other_material(x), obj))
 
-        def get_processes(o):
-            return list(map(lambda x: get_process(x), o))
+        def get_processes(obj):
+            return list(map(lambda x: get_process(x), obj))
 
-        def get_assay(o):
+        def get_assay(obj):
             return clean_nulls(
                 {
-                    "measurementType": get_ontology_annotation(o.measurement_type),
-                    "technologyType": get_ontology_annotation(o.technology_type),
-                    "technologyPlatform": o.technology_platform,
-                    "filename": o.filename,
-                    "characteristicCategories": get_characteristic_categories(o.characteristic_categories),
-                    "unitCategories": get_ontology_annotations(o.units),
-                    "comments": get_comments(o.comments) if o.comments else [],
+                    "measurementType": get_ontology_annotation(obj.measurement_type),
+                    "technologyType": get_ontology_annotation(obj.technology_type),
+                    "technologyPlatform": obj.technology_platform,
+                    "filename": obj.filename,
+                    "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
+                    "unitCategories": get_ontology_annotations(obj.units),
+                    "comments": get_comments(obj.comments) if obj.comments else [],
                     "materials": {
-                        "samples": get_samples(o.samples),
-                        "otherMaterials": get_other_materials(o.other_material)
+                        "samples": get_samples(obj.samples),
+                        "otherMaterials": get_other_materials(obj.other_material)
                     },
-                    "dataFiles": list(map(lambda x: get_data_file(x), o.data_files)),
-                    "processSequence": get_processes(o.process_sequence)
+                    "dataFiles": list(map(lambda x: get_data_file(x), obj.data_files)),
+                    "processSequence": get_processes(obj.process_sequence)
                 }
             )
 
-        def get_data_file(o):
+        def get_data_file(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
-                    "name": o.filename,
-                    "type": o.label,
-                    "comments": get_comments(o.comments)
+                    "@id": id_gen(obj),
+                    "name": obj.filename,
+                    "type": obj.label,
+                    "comments": get_comments(obj.comments)
                 }
             )
 

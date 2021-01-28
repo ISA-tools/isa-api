@@ -2,8 +2,16 @@
 from __future__ import absolute_import
 import datetime
 import unittest
+from unittest.mock import patch
 
-from isatools.model import *
+from isatools.model import (
+    Comment, Investigation, OntologySource, OntologyAnnotation, Publication, Person, Study, StudyFactor, Characteristic,
+    Assay, Protocol, ProtocolParameter, ParameterValue, ProtocolComponent, Source, Sample, Extract, LabeledExtract,
+    FactorValue, DataFile, RawDataFile, DerivedDataFile, RawSpectralDataFile, ArrayDataFile, DerivedSpectralDataFile,
+    ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
+    PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile, FreeInductionDecayDataFile,
+    load_protocol_types_info
+)
 
 
 class CommentTest(unittest.TestCase):
@@ -41,17 +49,17 @@ class CommentTest(unittest.TestCase):
         self.assertNotEqual(expected_other_comment, self.comment)
         self.assertNotEqual(hash(expected_other_comment), hash(self.comment))
 
-    def test_raises_ISAModelAttributeError(self):
+    def test_raises_AttributeError(self):
         try:
             self.comment_default.name = 0
-        except ISAModelAttributeError:
+        except AttributeError:
             pass
         except Exception:
             self.fail('ISAModelAttributeError not raised')
 
         try:
             self.comment_default.value = 0
-        except ISAModelAttributeError:
+        except AttributeError:
             pass
         except Exception:
             self.fail('ISAModelAttributeError not raised')
@@ -626,6 +634,12 @@ class ProtocolTest(unittest.TestCase):
             name='N', protocol_type=OntologyAnnotation(term='PT'), uri='U',
             version='1')
 
+    @patch('pprint.pprint')
+    def test_allowed_protocol_types(self, mock_pprint):
+        protocol_types_dict = load_protocol_types_info()
+        Protocol.show_allowed_protocol_types()
+        mock_pprint.assert_called_with(protocol_types_dict)
+
     def test_repr(self):
         self.assertEqual("isatools.model.Protocol(name='', "
                          "protocol_type=isatools.model.OntologyAnnotation("
@@ -891,13 +905,13 @@ class SampleTest(unittest.TestCase):
     def test_eq(self):
         expected_sample = Sample(name='S')
         self.assertEqual(expected_sample, self.sample)
-        self.assertEqual(hash(expected_sample),  hash(self.sample))
+        self.assertEqual(hash(expected_sample), hash(self.sample))
 
     def test_ne(self):
         expected_other_sample = Sample(name='S2')
         self.assertNotEqual(expected_other_sample, self.sample)
         self.assertNotEqual(hash(expected_other_sample), hash(self.sample))
-        
+
 
 class ExtractTest(unittest.TestCase):
 
@@ -1110,8 +1124,8 @@ class RawDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class DerivedDataFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1149,7 +1163,7 @@ class DerivedDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class RawSpectralDataFileTest(unittest.TestCase):
 
@@ -1188,7 +1202,7 @@ class RawSpectralDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class ArrayDataFileTest(unittest.TestCase):
 
@@ -1227,7 +1241,7 @@ class ArrayDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class DerivedSpectralDataFileTest(unittest.TestCase):
 
@@ -1266,8 +1280,8 @@ class DerivedSpectralDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class ProteinAssignmentFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1305,8 +1319,8 @@ class ProteinAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class PeptideAssignmentFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1344,7 +1358,7 @@ class PeptideAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class DerivedArrayDataMatrixFileTest(unittest.TestCase):
 
@@ -1383,7 +1397,7 @@ class DerivedArrayDataMatrixFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class PostTranslationalModificationAssignmentFileTest(unittest.TestCase):
 
@@ -1427,7 +1441,7 @@ class PostTranslationalModificationAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class AcquisitionParameterDataFileTest(unittest.TestCase):
 
@@ -1466,7 +1480,7 @@ class AcquisitionParameterDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class FreeInductionDecayDataFileTest(unittest.TestCase):
 

@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.11.0',
+    version='0.12.0alpha',
     packages=['isatools',
               'isatools.convert',
               'isatools.create',
@@ -44,23 +44,24 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         ],
     install_requires=[
-        'numpy>=1.17',
-        'jsonschema>=3.1',
-        'pandas>=0.25',
-        'networkx>=2.4',
-        'lxml>=4.4',
-        'requests>=2.22',
-        'chardet>=3.0.4',
-        'iso8601>=0.1.12',
-        'jinja2>=2.10.3',
-        'beautifulsoup4>=4.8',
-        'mzml2isa>=1.0.2',
-        'biopython>=1.74',
-        'progressbar2>=3.47.0',
-        'deepdiff>=4.0.8',
-        'PyYAML>=5.2'
+        'numpy~=1.19.4',
+        'jsonschema~=3.2.0',
+        'pandas~=1.1.4',
+        'networkx~=2.5',
+        'lxml~=4.6.1',
+        'requests~=2.24',
+        'chardet~=3.0.4',
+        'iso8601~=0.1.13',
+        'jinja2~=2.11.2',
+        'beautifulsoup4~=4.9.3',
+        'mzml2isa==1.0.3',
+        'biopython~=1.78',
+        'progressbar2~=3.53.1',
+        'deepdiff~=5.0.2',
+        'PyYAML~=5.3.1'
     ],
     test_suite='tests'
 )
