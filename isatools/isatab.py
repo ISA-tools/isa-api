@@ -10,7 +10,6 @@ import csv
 import glob
 import io
 import json
-import yaml
 import logging
 import math
 import os
@@ -51,10 +50,10 @@ from isatools.model import (
     Study,
     StudyFactor,
     plink,
-    load_protocol_types_info
 )
-from isatools.constants import SYNONYMS
+
 from isatools.utils import utf8_text_file_open
+
 
 log = logging.getLogger('isatools')
 
@@ -241,7 +240,7 @@ _LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File',
                       'Free Induction Decay Data File',
                       'Derived Array Data Matrix File', 'Image File',
                       'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', "NMR Assay Name",
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
                        'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -817,6 +816,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                     seen_comments[comment.name].append(comment.value)
                 else:
                     seen_comments[comment.name] = [comment.value]
+                    
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
             study_design_descriptors_df_cols.append('Comment[' + comment_name + ']')
@@ -907,10 +907,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         index_label='Investigation Identifier')
 
     # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = _build_publications_section_df(
-        prefix='Investigation',
-        publications=investigation.publications
-    )
+    investigation_publications_df = _build_publications_section_df(prefix='Investigation',
+        publications=investigation.publications)
     fp.write('INVESTIGATION PUBLICATIONS\n')
     investigation_publications_df.to_csv(
         path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -1151,7 +1149,7 @@ def _all_end_to_end_paths(G, start_nodes):
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-    # log.info("Found {} paths!".format(len(paths)))
+    log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
         log.debug([x.name for x in start_nodes])
     return paths
@@ -1329,14 +1327,14 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        log.debug("Rendered {} paths".format(len(DF.index)))
+        log.info("Rendered {} paths".format(len(DF.index)))
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
-            log.debug("Dropping duplicates...")
+            log.info("Dropping duplicates...")
             DF = DF_no_dups
 
-        log.debug("Writing {} rows".format(len(DF.index)))
+        log.info("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
         DF = DF.replace('', np.nan)
@@ -1364,7 +1362,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
-    protocol_types_dict = load_protocol_types_info()
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
             if assay_obj.graph is None:
@@ -1408,35 +1405,30 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                            node.parameter_values))
                     oname_label = None
                     if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["nucleic acid sequencing"][SYNONYMS] \
-                                + protocol_types_dict["phenotyping"][SYNONYMS]:
+                        if node.executes_protocol.protocol_type.term in ["nucleic acid sequencing", "phenotyping"]:
                             oname_label = "Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["data collection"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "data collection":
                             oname_label = "Scan Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["mass spectrometry"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "mass spectrometry":
                             oname_label = "MS Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
-                            oname_label = "NMR Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["data transformation"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "data transformation":
                             oname_label = "Data Transformation Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "sequence analysis data transformation":
                             oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["normalization"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "normalization":
                             oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term.lower() \
+                        if node.executes_protocol.protocol_type.term \
                                 == "unknown protocol":
                             oname_label = "Unknown Protocol Name"
                         if oname_label is not None:
                             columns.append(oname_label)
-                        elif node.executes_protocol.protocol_type.term.lower() \
-                                in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
+                        elif node.executes_protocol.protocol_type.term \
+                                == "nucleic acid hybridization":
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
@@ -1489,39 +1481,35 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
-                            node.executes_protocol.name
-                        )
+                            node.executes_protocol.name)
                         df_dict[olabel][-1] = node.executes_protocol.name
                         oname_label = None
                         if node.executes_protocol.protocol_type:
-                            if node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nucleic acid sequencing"][SYNONYMS]:
+                            if node.executes_protocol.protocol_type.term == \
+                                    "nucleic acid sequencing":
                                 oname_label = "Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["data collection"][SYNONYMS]:
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "data collection":
                                 oname_label = "Scan Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["mass spectrometry"][SYNONYMS]:
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "mass spectrometry":
                                 oname_label = "MS Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
-                                oname_label = "NMR Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["data transformation"][SYNONYMS]:
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "data transformation":
                                 oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
-                                oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["normalization"][SYNONYMS]:
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "sequence analysis data transformation":
                                 oname_label = "Normalization Name"
-                            if node.executes_protocol.protocol_type.term.lower() == \
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "normalization":
+                                oname_label = "Normalization Name"
+                            if node.executes_protocol.protocol_type.term == \
                                     "unknown protocol":
                                 oname_label = "Unknown Protocol Name"
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
+                            elif node.executes_protocol.protocol_type.term == \
+                                    "nucleic acid hybridization":
                                 df_dict["Hybridization Assay Name"][-1] = \
                                     node.name
                                 df_dict["Array Design REF"][-1] = \
@@ -1662,7 +1650,7 @@ def get_value_columns(label, x):
         else:
             return ["{0}.Unit".format(label)]
     elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda y: "{0}.{1}".format(label, y),
+        return map(lambda x: "{0}.{1}".format(label, x),
                    ["Term Source REF", "Term Accession Number"])
     else:
         return []
@@ -1684,7 +1672,6 @@ def get_characteristic_columns(label, c):
 def get_fv_columns(label, fv):
     """Generates Factor Value columns for a given material
 
-    :param fv: Factor Value
     :param label: Header label needed for the material type,
     e.g. "Sample Name"
     :param c: The Factor Value object of interest
@@ -1908,8 +1895,8 @@ def check_utf8(fp):
     import chardet
     with utf8_text_file_open(fp.name) as fp:
         charset = chardet.detect(fp.read())
-        if charset['encoding'] != 'UTF-8' \
-                and charset['encoding'] != 'ascii':
+        if charset['encoding'] is not 'UTF-8' \
+                and charset['encoding'] is not 'ascii':
             validator_warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(
@@ -2091,7 +2078,7 @@ def check_filenames_present(i_df):
     :return: None
     """
     for s_pos, study_df in enumerate(i_df['studies']):
-        if study_df.iloc[0]['Study File Name'] == '':
+        if study_df.iloc[0]['Study File Name'] is '':
             validator_warnings.append({
                 "message": "Missing study file name",
                 "supplemental": "STUDY.{}".format(s_pos),
@@ -2102,7 +2089,7 @@ def check_filenames_present(i_df):
         for a_pos, filename in \
                 enumerate(i_df['s_assays'][s_pos][
                     'Study Assay File Name'].tolist()):
-            if filename == '':
+            if filename is '':
                 validator_warnings.append({
                     "message": "Missing assay file name",
                     "supplemental": "STUDY.{}, STUDY ASSAY.{}".format(
@@ -2125,7 +2112,7 @@ def check_date_formats(i_df):
         :param date_str: The string to check, expecting a date
         :return: None
         """
-        if date_str != '':
+        if date_str is not '':
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -2168,7 +2155,7 @@ def check_dois(i_df):
         :param doi_str: A string, expecting a DOI
         :return: None
         """
-        if doi_str != '':
+        if doi_str is not '':
             if not _RX_DOI.match(doi_str):
                 validator_warnings.append({
                     "message": "DOI is not valid format",
@@ -2197,7 +2184,7 @@ def check_pubmed_ids_format(i_df):
         :param pubmed_id_str: String to check, expecting a PubMed ID
         :return: None
         """
-        if pubmed_id_str != '':
+        if pubmed_id_str is not '':
             if (_RX_PMID.match(pubmed_id_str) is None) \
                     and (_RX_PMCID.match(pubmed_id_str) is None):
                 validator_warnings.append({
@@ -2224,7 +2211,7 @@ def check_protocol_names(i_df):
         for i, protocol_name in enumerate(study_protocols_df[
                 'Study Protocol Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
-            if protocol_name == '' or 'Unnamed: ' in protocol_name:
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:
                 validator_warnings.append({
                     "message": "Protocol missing name",
                     "supplemental": "pos={}".format(i),
@@ -2248,7 +2235,7 @@ def check_protocol_parameter_names(i_df):
             if len(protocol_parameters_names.split(sep=';')) > 1:
                 for protocol_parameter_name in \
                         protocol_parameters_names.split(sep=';'):
-                    if protocol_parameter_name == '' \
+                    if protocol_parameter_name is '' \
                             or 'Unnamed: ' in protocol_parameter_name:
                         validator_warnings.append({
                             "message": "Protocol Parameter missing name",
@@ -2272,7 +2259,7 @@ def check_study_factor_names(i_df):
         for i, factor_name in enumerate(study_factors_df[
                 'Study Factor Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
-            if factor_name == '' or 'Unnamed: ' in factor_name:
+            if factor_name is '' or 'Unnamed: ' in factor_name:
                 validator_warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor pos={}".format(i),
@@ -2292,7 +2279,7 @@ def check_ontology_sources(i_df):
     term_source_refs = []
     for i, ontology_source_name in enumerate(
             i_df['ontology_sources']['Term Source Name'].tolist()):
-        if ontology_source_name == '' or 'Unnamed: ' in ontology_source_name:
+        if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
             validator_warnings.append({
                 "message": "Ontology Source missing name ref",
                 "supplemental": "pos={}".format(i),
@@ -2315,7 +2302,7 @@ def check_table_files_read(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)):
@@ -2332,7 +2319,7 @@ def check_table_files_read(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i][
                 'Study Assay File Name']
                 .tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)):
@@ -2357,7 +2344,7 @@ def check_table_files_load(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as fp:
@@ -2366,7 +2353,7 @@ def check_table_files_load(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as fp:
@@ -2385,7 +2372,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
     """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as s_fp:
@@ -2395,7 +2382,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2424,7 +2411,7 @@ def check_protocol_usage(i_df, dir_context):
             'Study Protocol Name'].tolist())
         protocols_declared.add('')
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 protocol_refs_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2455,7 +2442,7 @@ def check_protocol_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     protocol_refs_used = set()
                     with utf8_text_file_open(
@@ -2487,7 +2474,7 @@ def check_protocol_usage(i_df, dir_context):
         # now collect all protocols in all assays to compare to
         # declared protocols
         protocol_refs_used = set()
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2501,7 +2488,7 @@ def check_protocol_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2580,7 +2567,7 @@ def load_table_checks(fp):
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name','NMR Assay Name'
+                           'Raw Data File', 'Material Type', 'MS Assay Name',
                            'Raw Spectral Data File', 'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',
@@ -2746,7 +2733,7 @@ def check_study_factor_usage(i_df, dir_context):
         study_factors_declared = set(
             i_df['s_factors'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 study_factors_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2767,7 +2754,7 @@ def check_study_factor_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     study_factors_used = set()
                     with utf8_text_file_open(os.path.join(
@@ -2791,7 +2778,7 @@ def check_study_factor_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2805,7 +2792,7 @@ def check_study_factor_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -2844,7 +2831,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         protocol_parameters_declared = protocol_parameters_declared - \
             {''}  # empty string is not a valid protocol parameter
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 protocol_parameters_used = set()
                 with utf8_text_file_open(os.path.join(
@@ -2870,7 +2857,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     protocol_parameters_used = set()
                     with utf8_text_file_open(os.path.join(
@@ -2897,7 +2884,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         # now collect all protocol parameters in all assays to compare to
         # declared protocol parameters
         protocol_parameters_used = set()
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
@@ -2913,7 +2900,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 pass
         for j, assay_filename in enumerate(
                 i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -3043,7 +3030,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
     ontology_sources_list = set(get_ontology_source_refs(i_df))
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(os.path.join(dir_context,
                                                       study_filename)) as s_fp:
@@ -3121,7 +3108,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                 pass
             for j, assay_filename in enumerate(
                     i_df['s_assays'][i]['Study Assay File Name'].tolist()):
-                if assay_filename != '':
+                if assay_filename is not '':
                     try:
                         with utf8_text_file_open(
                                 os.path.join(
@@ -3603,7 +3590,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         protocol_names = i_df['s_protocols'][i]['Study Protocol Name'].tolist()
         protocol_types = i_df['s_protocols'][i]['Study Protocol Type'].tolist()
         protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-        if study_filename != '':
+        if study_filename is not '':
             try:
                 with utf8_text_file_open(os.path.join(
                         dir_context, study_filename)) as s_fp:
@@ -3623,7 +3610,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             technology_type = assay_df[
                 'Study Assay Technology Type'].tolist()[
                 0]
-            if assay_filename != '':
+            if assay_filename is not '':
                 try:
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
@@ -4248,7 +4235,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
             assay_tables = list()
-            if study_filename != '':
+            if study_filename is not '':
                 protocol_names = i_df[
                     's_protocols'][i]['Study Protocol Name'].tolist(
                 )
@@ -4329,7 +4316,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                     technology_type = assay_df[
                         'Study Assay Technology Type'].tolist()[
                         x]
-                    if assay_filename != '':
+                    if assay_filename is not '':
                         try:
                             lowered_mt = measurement_type.lower()
                             lowered_tt = technology_type.lower()
@@ -5076,7 +5063,7 @@ def get_value(object_column, column_group, object_series,
 
         term_source_value = object_series[offset_1r_col]
 
-        if term_source_value != '':
+        if term_source_value is not '':
 
             try:
                 value.term_source = ontology_source_map[term_source_value]
@@ -5085,7 +5072,7 @@ def get_value(object_column, column_group, object_series,
 
         term_accession_value = object_series[offset_2r_col]
 
-        if term_accession_value != '':
+        if term_accession_value is not '':
             value.term_accession = str(term_accession_value)
 
         return value, None
@@ -5109,7 +5096,7 @@ def get_value(object_column, column_group, object_series,
 
             unit_term_source_value = object_series[offset_2r_col]
 
-            if unit_term_source_value != '':
+            if unit_term_source_value is not '':
 
                 try:
                     unit_term_value.term_source = \
@@ -5120,7 +5107,7 @@ def get_value(object_column, column_group, object_series,
 
             term_accession_value = object_series[offset_3r_col]
 
-            if term_accession_value != '':
+            if term_accession_value is not '':
                 unit_term_value.term_accession = term_accession_value
 
         return cell_value, unit_term_value
@@ -5167,7 +5154,7 @@ class IsaTabDataFrame(pd.DataFrame):
                        'Labeled Extract Name']
     OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
     NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
-    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'NMR Assay Name', 'Hybridization Assay Name',
+    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
                     'Scan Name', 'Data Transformation Name',
                     'Normalization Name', 'Array Design REF']
     QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF',
@@ -5297,7 +5284,6 @@ def preprocess(DF):
         inferred_protocol_type = ''
         leftcol = columns[find_lt(all_cols_indicies, i)]
         rightcol = columns[i]
-        """
         if leftcol == 'Source Name' and rightcol == 'Sample Name':
             inferred_protocol_type = 'sample collection'
         elif leftcol == 'Sample Name' and rightcol == 'Extract Name':
@@ -5306,13 +5292,10 @@ def preprocess(DF):
             inferred_protocol_type = 'labeling'
         elif leftcol == 'Labeled Extract Name' and rightcol in (
                 'Assay Name', 'MS Assay Name'):
-            inferred_protocol_type = 'nucleic acid sequencing'
+            inferred_protocol_type = 'library sequencing'
         elif leftcol == 'Extract Name' and rightcol in (
-             'MS Assay Name'):
-            inferred_protocol_type = 'mass spectrometry'
-        elif leftcol == 'Extract Name' and rightcol in (
-             'NMR Assay Name'):
-            inferred_protocol_type = 'NMR spectroscopy'
+                'Assay Name', 'MS Assay Name'):
+            inferred_protocol_type = 'library preparation'
         elif leftcol == 'Scan Name' and rightcol == 'Raw Data File':
             inferred_protocol_type = 'data acquisition'
         elif leftcol == 'Assay Name' and rightcol == 'Normalization Name':
@@ -5320,18 +5303,13 @@ def preprocess(DF):
         elif leftcol == 'Normalization Name' and \
                         rightcol == 'Data Transformation Name':
             inferred_protocol_type = 'data transformation'
-        elif leftcol == 'Raw Spectral Data File' and \
+        elif leftcol == 'Raw Data File' and \
                         rightcol == 'Metabolite Identification File':
             inferred_protocol_type = 'metabolite identification'
         elif leftcol == 'Raw Data File' and \
                         rightcol == 'Protein Identification File':
-<<<<<<< HEAD
-            inferred_protocol_type = 'protein identification'
-
-=======
             inferred_protocol_type = 'metabolite identification'
-        """
->>>>>>> 2d179896e6520529c17e1bee2c40cceaba240023
+
         # Force use of unknown protocol always, until we can insert missing
         # protocol from above inferences into study metadata
         inferred_protocol_type = ''
@@ -5693,6 +5671,7 @@ class ProcessSequenceFactory:
                 # don't drop duplicates
                 for _, object_series in pbar(DF.iterrows()):
                     # if _ == 0:
+                    #     print('processing: ', object_series[object_label])
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(
                         protocol_ref, column_group, _cg, DF.columns,
@@ -5865,6 +5844,8 @@ class ProcessSequenceFactory:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(
                                 sample_node_context)
+
+            # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):
@@ -6565,7 +6546,8 @@ def get_sources_for_sample(input_path, sample_name):
     for study in ISA.studies:
         for sample in study.samples:
             if sample.name == sample_name:
-                log.debug('found a hit: {sample_name}'.format(sample_name=sample.name))
+                print('found a hit: {sample_name}'.format(
+                    sample_name=sample.name))
 
                 for source in sample.derives_from:
                     hits.append(source.name)
@@ -6774,15 +6756,15 @@ def get_filtered_df_on_factors_list(input_path):
             df2 = df.query(query)  # query uses pandas.eval, which evaluates
             # queries like pure Python notation
             if 'Sample_Name' in df.columns:
-                log.debug('Group: {query} / Sample_Name: {sample_name}'.format(
+                print('Group: {query} / Sample_Name: {sample_name}'.format(
                     query=query, sample_name=list(df2['Sample_Name'])))
 
             if 'Source_Name' in df.columns:
-                log.debug('Group: {} / Sources_Name: {}'.format(
+                print('Group: {} / Sources_Name: {}'.format(
                     query, list(df2['Source_Name'])))
 
             if 'Raw_Spectral_Data_File' in df.columns:
-                log.debug('Group: {query} / Raw_Spectral_Data_File: {filename}'
+                print('Group: {query} / Raw_Spectral_Data_File: {filename}'
                       .format(query=query[13:-2],
                               filename=list(df2['Raw_Spectral_Data_File'])))
     return queries
@@ -6825,14 +6807,14 @@ def filter_data(input_path, output_path, slice, filename_filter):
         #         filepath, os.path.join(output_path,
         #                                os.path.basename(filepath)))
         # except Exception as e:
-        #     log.debug(e)
+        #     print(e)
         #     exit(1)
         try:
             os.symlink(
                 filepath, os.path.join(output_path,
                                        os.path.basename(filepath)))
         except Exception as e:
-            log.debug(e)
+            print(e)
             exit(1)
     with open('cli.log', 'w') as fp:
         fp.writelines(loglines)
@@ -6850,8 +6832,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     debug = True
     if galaxy_parameters_file:
         galaxy_parameters = json.load(galaxy_parameters_file)
-        log.debug('Galaxy parameters:')
-        log.debug(json.dumps(galaxy_parameters, indent=4))
+        print('Galaxy parameters:')
+        print(json.dumps(galaxy_parameters, indent=4))
     else:
         raise IOError('Could not load Galaxy parameters file!')
     if source_dir:
@@ -6859,8 +6841,8 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
             raise IOError('Source path does not exist!')
     query = galaxy_parameters['query']
     if debug:
-        log.debug('Query is:')
-        log.debug(json.dumps(query, indent=4))  # for debugging only
+        print('Query is:')
+        print(json.dumps(query, indent=4))  # for debugging only
     if source_dir:
         investigation = load(source_dir)
     else:
@@ -6889,7 +6871,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     for assay in matching_assays:
         assay_samples.extend(assay.samples)
     if debug:
-        log.debug('Total samples: {}'.format(len(assay_samples)))
+        print('Total samples: {}'.format(len(assay_samples)))
 
     # filter samples by fv
     factor_selection = {
@@ -6980,7 +6962,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     final_samples = final_cv_samples
 
     if debug:
-        log.debug('Final number of samples: {}'.format(len(final_samples)))
+        print('Final number of samples: {}'.format(len(final_samples)))
     results = []
     for sample in final_samples:
         results.append({
