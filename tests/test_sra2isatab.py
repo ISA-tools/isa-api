@@ -5,8 +5,11 @@ import shutil
 import tempfile
 import zipfile
 
+from unittest.mock import patch
 from isatools.tests import utils
 from isatools.net import sra2isatab
+
+SLOW_TESTS = int(os.getenv('SLOW_TESTS', '0'))
 
 
 def setUpModule():
@@ -29,10 +32,12 @@ class TestSraImport(unittest.TestCase):
     # def tearDown(self):
     #     shutil.rmtree(self._tmp_dir)
 
-   # https://www.ebi.ac.uk/ena/data/view/SRA108974&amp;display=xml
+    # https://www.ebi.ac.uk/ena/data/view/SRA108974&amp;display=xml
 
-    def test_sra_import(self):
+    @unittest.skipIf(not SLOW_TESTS, "slow")
+    def test_sra_import(self, mock_call):
         zipped_bytes = sra2isatab.sra_to_isatab_batch_convert('SRA108974')
+        mock_call.assert_called_with()
         with open(os.path.join(self._tmp_dir, 'o.zip'), 'wb') as zip_fp:
             shutil.copyfileobj(zipped_bytes, zip_fp, length=131072)
 
@@ -42,3 +47,9 @@ class TestSraImport(unittest.TestCase):
                 sorted([os.path.basename(x) for x in zip_fp.namelist()]),
                 ['a_wgs-genomic.txt', 'i_SRA108974.txt', 's_SRA108974.txt']
             )
+
+    @patch("subprocess.call")
+    def test_sra_import_mocked(self, mock_call):
+        with self.assertRaises(FileNotFoundError, msg='as subprocess.call is mocked files are nor generated'):
+            sra2isatab.sra_to_isatab_batch_convert('SRA108974')
+            mock_call.assert_called_with('java', '-jar')
