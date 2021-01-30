@@ -4,7 +4,8 @@ omit =
     /docs/*
     /features/*
     /tests/*
-    /isatools/convert/experimental/nih-dcc-flux.py
+    /isatools/convert/experimental/nih_dcc_flux.py
+    /isatools/net/storage_adapter.py
     /isatools/io/isatab_configurator.py
     /isatools/io/storage_adapter.py
 
