@@ -1,11 +1,12 @@
 [run]
 source = isatools
 omit =
-    /docs/*
-    /features/*
-    /tests/*
-    /isatools/io/isatab_configurator.py
-    /isatools/io/storage_adapter.py
+    docs/*
+    features/*
+    tests/*
+    isatools/convert/experimental/*
+    isatools/net/storage_adapter.py
+    isatools/io/isatab_configurator.py
 
 [report]
 exclude_lines =
