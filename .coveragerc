@@ -1,13 +1,12 @@
 [run]
 source = isatools
 omit =
-    /docs/*
-    /features/*
-    /tests/*
-    /isatools/convert/experimental/nih_dcc_flux.py
-    /isatools/net/storage_adapter.py
-    /isatools/io/isatab_configurator.py
-    /isatools/io/storage_adapter.py
+    docs/*
+    features/*
+    tests/*
+    isatools/convert/experimental/*
+    isatools/net/storage_adapter.py
+    isatools/io/isatab_configurator.py
 
 [report]
 exclude_lines =
