@@ -23,6 +23,7 @@ setup(
         'resources/config/json/sra/*.json',
         'resources/config/json/sra/schemas/*.json',
         'resources/config/xml/*.xml',
+        'resources/config/yaml/*.yml',
         'resources/sra_schemas/*.xsd',
         'resources/sra_templates/*.xml',
         'resources/tab_templates/*.txt',

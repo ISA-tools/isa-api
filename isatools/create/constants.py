@@ -73,7 +73,7 @@ ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 RUN_ORDER = 'run order'
 STUDY_CELL = 'study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                       'study-creator-config.yaml')) as yaml_file:
+                       'study-creator-config.yml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',

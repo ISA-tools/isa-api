@@ -1706,7 +1706,7 @@ class StudyDesignTest(BaseStudyDesignTest):
     """
     def test_generate_isa_study_00(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
+                               'study-creator-config.yml')) as yaml_file:
             config = yaml.load(yaml_file)
         study_config = config['study']
         print('study_config: {0}'.format(study_config))
@@ -1762,7 +1762,7 @@ class StudyDesignTest(BaseStudyDesignTest):
 
     def test_generate_isa_study_single_arm_single_cell_elements(self):
         with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
+                               'study-creator-config.yml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=OrderedDict([
