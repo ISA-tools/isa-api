@@ -9,7 +9,7 @@ The open source ISA metadata tracking tools help to manage an increasingly diver
 
 Built around the ‘Investigation’ (the project context), Study’ (a unit of research) and ‘Assay’ (analytical measurement) general-purpose Tabular format, the ISA tools helps you to provide rich description of the experimental metadata (i.e. sample characteristics, technology and measurement types, sample-to-data relationships) so that the resulting data and discoveries are reproducible and reusable.
 
-To find out more about ISA, see [www.isa-tools.org](http://www.isa-tools.org)
+To find out more about ISA, see [https://isa-tools.org/](https://isa-tools.org/)
 
 To find out who's using ISA and about the ISA development and user community, see [www.isacommons.org](http://www.isacommons.org)
 
