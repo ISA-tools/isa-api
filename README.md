@@ -1,15 +1,8 @@
-![ISA-API Logo](https://raw.githubusercontent.com/ISA-tools/ISA-tools.github.io/master/wp-content/uploads/2016/03/isa-api-logo.png){: .image-left }
 
-
-<style type="text/css">
-    .image-left {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      float: right;
-    }
-</style>
-
+<div>
+<img src="https://raw.githubusercontent.com/ISA-tools/ISA-tools.github.io/master/wp-content/uploads/2016/03/isa-api-logo.png" alt="ISA-API Logo" title="ISA-API Logo" width="350" align="left" display: block; />
+</div>
+<br />
 
 ----
 
