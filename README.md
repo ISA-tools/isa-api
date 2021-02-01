@@ -1,8 +1,8 @@
-<img align="left" src="http://www.isa-tools.org/wp-content/uploads/2016/03/isa-api-logo.png" width="150px">
+<img align="left" src="https://isa-tools.org/wp-content/uploads/2016/10/specification.png?resize=140%2C150" width="150px">
 <br>
 
 ----
-<img align="right" src="http://www.isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
+<img align="right" src="https://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
 The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
 
 Built around the ‘Investigation’ (the project context), Study’ (a unit of research) and ‘Assay’ (analytical measurement) general-purpose Tabular format, the ISA tools helps you to provide rich description of the experimental metadata (i.e. sample characteristics, technology and measurement types, sample-to-data relationships) so that the resulting data and discoveries are reproducible and reusable.
