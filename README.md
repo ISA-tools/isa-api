@@ -1,5 +1,5 @@
 
-<div>
+<div style="width:100%;">
 <img src="https://raw.githubusercontent.com/ISA-tools/ISA-tools.github.io/master/wp-content/uploads/2016/03/isa-api-logo.png" alt="ISA-API Logo" title="ISA-API Logo" width="350" align="left" display: block; />
 </div>
 <br />
