@@ -1406,33 +1406,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         protrefcount += 1
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
-                    oname_label = None
                     if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["nucleic acid sequencing"][SYNONYMS] \
-                                + protocol_types_dict["phenotyping"][SYNONYMS]:
-                            oname_label = "Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["data collection"][SYNONYMS]:
-                            oname_label = "Scan Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["mass spectrometry"][SYNONYMS]:
-                            oname_label = "MS Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
-                            oname_label = "NMR Assay Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["data transformation"][SYNONYMS]:
-                            oname_label = "Data Transformation Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
-                            oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term.lower() in \
-                                protocol_types_dict["normalization"][SYNONYMS]:
-                            oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term.lower() \
-                                == "unknown protocol":
-                            oname_label = "Unknown Protocol Name"
+                        oname_label = get_column_header(
+                            node.executes_protocol.protocol_type.term,
+                            protocol_types_dict
+                        )
                         if oname_label is not None:
                             columns.append(oname_label)
                         elif node.executes_protocol.protocol_type.term.lower() \
@@ -1492,32 +1470,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             node.executes_protocol.name
                         )
                         df_dict[olabel][-1] = node.executes_protocol.name
-                        oname_label = None
                         if node.executes_protocol.protocol_type:
-                            if node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nucleic acid sequencing"][SYNONYMS]:
-                                oname_label = "Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["data collection"][SYNONYMS]:
-                                oname_label = "Scan Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["mass spectrometry"][SYNONYMS]:
-                                oname_label = "MS Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
-                                oname_label = "NMR Assay Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["data transformation"][SYNONYMS]:
-                                oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["sequence analysis data transformation"][SYNONYMS]:
-                                oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["normalization"][SYNONYMS]:
-                                oname_label = "Normalization Name"
-                            if node.executes_protocol.protocol_type.term.lower() == \
-                                    "unknown protocol":
-                                oname_label = "Unknown Protocol Name"
+                            oname_label = get_column_header(
+                                node.executes_protocol.protocol_type.term,
+                                protocol_types_dict
+                            )
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
                             elif node.executes_protocol.protocol_type.term.lower() in \
@@ -1641,6 +1598,37 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     output_dir, assay_obj.filename), 'w') as out_fp:
                 DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                           encoding='utf-8')
+
+
+def get_column_header(protocol_type_term, protocol_types_dict):
+    column_header = None
+    if protocol_type_term.lower() in \
+            protocol_types_dict["nucleic acid sequencing"][SYNONYMS] \
+            + protocol_types_dict["phenotyping"][SYNONYMS] \
+            + protocol_types_dict["data acquisition"][SYNONYMS]:
+        column_header = "Assay Name"
+    elif protocol_type_term.lower() in \
+            protocol_types_dict["data collection"][SYNONYMS]:
+        column_header = "Scan Name"
+    elif protocol_type_term.lower() in \
+            protocol_types_dict["mass spectrometry"][SYNONYMS]:
+        column_header = "MS Assay Name"
+    elif protocol_type_term.lower() in \
+            protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
+        column_header = "NMR Assay Name"
+    elif protocol_type_term.lower() in \
+            protocol_types_dict["data transformation"][SYNONYMS] \
+            + protocol_types_dict["sequence analysis data transformation"][SYNONYMS] \
+            + protocol_types_dict["metabolite identification"][SYNONYMS] \
+            + protocol_types_dict["protein identification"][SYNONYMS]:
+        column_header = "Data Transformation Name"
+    elif protocol_type_term.lower() in \
+            protocol_types_dict["normalization"][SYNONYMS]:
+        column_header = "Normalization Name"
+    if protocol_type_term.lower() \
+            == "unknown protocol":
+        column_header = "Unknown Protocol Name"
+    return column_header
 
 
 def get_value_columns(label, x):
