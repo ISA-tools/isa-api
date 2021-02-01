@@ -2439,7 +2439,7 @@ class StudyDesign(object):
         :return: isatools.model.Study
         """
         with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
+                               'study-creator-config.yml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         study = Study(

@@ -3371,7 +3371,8 @@ class Process(Commentable):
         if val is not None and not isinstance(val, Process):
             raise AttributeError(
                 'Process.next_process must be a Process '
-                'or None; got {0}:{1}'.format(val, type(val)))
+                'or None; got {0}:{1}'.format(val, type(val))
+            )
         else:
             self.__next_process = val
 
@@ -3383,12 +3384,6 @@ class Process(Commentable):
     def __str__(self):
         return """{0}(name={1.name})""".format(self.__class__.__name__, self)
 
-    # def __repr__(self):
-    #     return 'Process(name="{0.name}", ' \
-    #            'executes_protocol={0.executes_protocol}, ' \
-    #            'date="{0.date}", performer="{0.performer}", ' \
-    #            'inputs={0.inputs}, outputs={0.outputs})'.format(self)
-    #
     def __hash__(self):
         return hash(repr(self))
 
