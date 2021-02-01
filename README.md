@@ -1,9 +1,10 @@
 <img align="left" src="https://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg" width="250px">
+
 <br>
 
-----
-
 # ISA API
+
+----
 
 The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
 
