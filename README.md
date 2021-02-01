@@ -1,7 +1,8 @@
+
 <div>
-    <img align="left" src="https://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg" width="250px">
-    </br />
+<img src="https://raw.githubusercontent.com/ISA-tools/ISA-tools.github.io/master/wp-content/uploads/2016/03/isa-api-logo.png" alt="ISA-API Logo" title="ISA-API Logo" width="350" align="left" />
 </div>
+<br />
 
 ----
 
