@@ -1,6 +1,7 @@
-<img align="left" src="https://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg" width="250px">
-
-<br>
+<div>
+    <img align="left" src="https://isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg" width="250px">
+    </br />
+</div>
 
 # ISA API
 
