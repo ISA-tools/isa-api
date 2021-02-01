@@ -3,9 +3,9 @@
     </br />
 </div>
 
-# ISA API
-
 ----
+
+# ISA API
 
 The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
 
