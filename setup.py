@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.12.0-rc.2',
+    version='0.12.0-rc.3',
     packages=['isatools',
               'isatools.convert',
               'isatools.create',
