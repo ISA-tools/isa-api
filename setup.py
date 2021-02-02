@@ -37,7 +37,7 @@ setup(
     author_email='isatools@googlegroups.com',
     url='https://github.com/ISA-tools/isa-api',
     classifiers=[
-        'Development Status :: 3 - Release Candidate',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
