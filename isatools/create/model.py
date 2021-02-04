@@ -1593,8 +1593,15 @@ class SampleAndAssayPlanDecoder(object):
 
     @staticmethod
     def loads_parameter_value(pv_dict):
-        return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
-                              unit=pv_dict.get('unit', None))
+        pv_name = pv_dict["name"]
+        return ParameterValue(
+            category=ProtocolParameter(
+                parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
+                if isinstance(pv_name, dict) else pv_name
+            ),
+            value=pv_dict["value"],
+            unit=pv_dict.get('unit', None)
+        )
 
     @staticmethod
     def loads_protocol_type(pt_dict):
