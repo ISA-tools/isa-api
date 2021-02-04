@@ -2387,12 +2387,15 @@ class ProtocolParameter(Commentable):
 
     @parameter_name.setter
     def parameter_name(self, val):
-        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
+        if val is None or isinstance(val, OntologyAnnotation):
+            self.__parameter_name = val
+        elif isinstance(val, str):
+            self.__parameter_name = OntologyAnnotation(term=val)
+        else:
             raise AttributeError(
                 'ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation '
-                'or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__parameter_name = val
+                'or None; got {0}:{1}'.format(val, type(val))
+            )
 
     def __repr__(self):
         return 'isatools.model.ProtocolParameter(' \
