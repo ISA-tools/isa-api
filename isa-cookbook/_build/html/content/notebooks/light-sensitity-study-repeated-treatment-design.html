@@ -1,0 +1,1257 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Light Sensitivity Experiment: &#8212; The ISA cookbook</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mermaid.js"></script>
+    <script src="../../_static/mermaid.min.js"></script>
+    <script src="../../_static/mermaid.core.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/light-sensitity-study-repeated-treatment-design.html" />
+    <link rel="shortcut icon" href="../../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="" href="isa-metabolomics-study-design-create.html" />
+    <link rel="prev" title="ISA-API built-in semantic requirements for protocol type values" href="isa-protocol-type-synonym-effect-on-assay-table.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+<!-- Opengraph tags -->
+<meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/light-sensitity-study-repeated-treatment-design.html" />
+<meta property="og:type"        content="article" />
+<meta property="og:title"       content="Light Sensitivity Experiment:" />
+<meta property="og:description" content="Light Sensitivity Experiment:  Reporting a repeated treatment design with ISA create mode  This example creates ISA study descriptor for study with sequential t" />
+<meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
+
+<meta name="twitter:card" content="summary" />
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   ISA API example programs
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../knownissues.html">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../notebooks.html">
+   Hands-on Practicals
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/light-sensitity-study-repeated-treatment-design.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/isa-cookbook/isa-cookbook/content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/isa-cookbook?urlpath=lab/tree/isa-cookbook/content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/isa-cookbook/isa-cookbook/content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reporting-a-repeated-treatment-design-with-isa-create-mode">
+   Reporting a repeated treatment design with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ISA
+    </span>
+    <span class="pre">
+     create
+    </span>
+    <span class="pre">
+     mode
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#study-metadata">
+   Study metadata
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-the-first-isa-study-design-element-and-setting-both-element-type-and-duration-unit-attributes">
+     1. Creation of the first
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     and setting
+     <em>
+      both
+     </em>
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       element_type
+      </span>
+     </code>
+     AND
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       duration_unit
+      </span>
+     </code>
+     attributes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-another-isa-study-design-element-of-type-treatment">
+     2. Creation of another
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     , of type
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Treatment
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#defining-the-first-treatment-as-a-vector-of-isa-factor-values">
+     2.1 defining the first treatment as a vector of ISA factor values:
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-a-second-isa-study-design-element-of-type-treatment-following-the-same-pattern">
+     3. Creation of a second
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     , of type
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Treatment
+      </span>
+     </code>
+     , following the same pattern.
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-wash-out-period-as-an-isa-study-design-element">
+     4. Creation of ‘wash out’ period as an
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     .
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-follow-up-period-as-an-isa-study-design-element">
+     5. Creation of ‘follow-up’ period as an
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     .
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-the-associated-container-known-as-an-isa-cell-for-each-isa-element">
+     6. Creation of the associated container, known as an ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cell
+      </span>
+     </code>
+     for each ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Element
+      </span>
+     </code>
+     .
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-an-isa-study-arm-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells">
+     7. Creation of an ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Arm
+      </span>
+     </code>
+     and setting the number of subjects associated to that unique sequence of ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cell
+      </span>
+     </code>
+     s.
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#declaring-an-isa-sample-assay-plan-defining-which-sample-are-to-be-collected-and-which-assays-to-be-used">
+     8. Declaring an ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Sample
+      </span>
+      <span class="pre">
+       Assay
+      </span>
+      <span class="pre">
+       Plan
+      </span>
+     </code>
+     , defining which
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Sample
+      </span>
+     </code>
+     are to be collected and which
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Assay
+      </span>
+     </code>
+     s to be used
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay">
+     9. Declaration of an ISA assay and linking specimen type and data acquisition plan for this assay
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#build-an-isa-study-design-arm-by-adding-the-first-set-of-isa-cells-and-setting-the-sample-assay-plan">
+     10. Build an ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       Arm
+      </span>
+     </code>
+     by adding the first set of ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cells
+      </span>
+     </code>
+     and setting the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Sample
+      </span>
+      <span class="pre">
+       Assay
+      </span>
+      <span class="pre">
+       Plan
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#now-expanding-the-arm-by-adding-a-new-cell-which-uses-the-same-sample-assay-plan-as-the-one-used-in-cell-1">
+     11 Now expanding the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Arm
+      </span>
+     </code>
+     by adding a new
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cell
+      </span>
+     </code>
+     , which uses the same
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Sample
+      </span>
+      <span class="pre">
+       Assay
+      </span>
+      <span class="pre">
+       Plan
+      </span>
+     </code>
+     as the one used in Cell #1.
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creation-of-additional-isa-study-arms-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells">
+     12. Creation of additional ISA Study Arms and setting the number of subjects associated to that unique sequence of ISA Cells.
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#we-can-now-create-the-isa-study-design-object-which-will-receive-the-arms-defined-by-the-user">
+     14. We can now create the ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+     </code>
+     object, which will receive the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Arms
+      </span>
+     </code>
+     defined by the user.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#about-this-notebook">
+   About this notebook
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="light-sensitivity-experiment">
+<h1>Light Sensitivity Experiment:<a class="headerlink" href="#light-sensitivity-experiment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="reporting-a-repeated-treatment-design-with-isa-create-mode">
+<h2>Reporting a repeated treatment design with <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">create</span> <span class="pre">mode</span></code><a class="headerlink" href="#reporting-a-repeated-treatment-design-with-isa-create-mode" title="Permalink to this headline">¶</a></h2>
+<p>This example creates <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">study</span> <span class="pre">descriptor</span></code> for study with sequential treatments organized in an arm. This shows how to use objects from the <code class="docutils literal notranslate"><span class="pre">isatools.create</span></code> component in a granular fashion. It creates each <code class="docutils literal notranslate"><span class="pre">Element</span></code> of the Study <code class="docutils literal notranslate"><span class="pre">Arm</span></code> at a time.
+Finally, the <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">design</span> <span class="pre">plan</span></code> is shown by serializing the <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Model</span></code> content as an  <code class="docutils literal notranslate"><span class="pre">ISA_design</span></code> JSON document, which can be rendered in various ways (tables, figures).</p>
+</div>
+<div class="section" id="study-metadata">
+<h2>Study metadata<a class="headerlink" href="#study-metadata" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">isatools</span>
+<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
+
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="o">*</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+<span class="n">investigation1</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span> <span class="c1"># to be used with the study create function</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">Study</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;s_study_xover.txt&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;elifesprint2019-1&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;elifesprint2019-1: light sensitivity&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;a study about light sensitivity difference between a control population (n=10) and a genotype A population (n=10).&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source1&quot;</span><span class="p">)]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample1&quot;</span><span class="p">)]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">)]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])]</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s see the object :</span>
+<span class="n">investigation</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(dumps(investigation))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(&#39;,&#39;, &#39;: &#39;)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-the-first-isa-study-design-element-and-setting-both-element-type-and-duration-unit-attributes">
+<h3>1. Creation of the first <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code> and setting <em>both</em> <code class="docutils literal notranslate"><span class="pre">element_type</span></code> AND <code class="docutils literal notranslate"><span class="pre">duration_unit</span></code> attributes<a class="headerlink" href="#creation-of-the-first-isa-study-design-element-and-setting-both-element-type-and-duration-unit-attributes" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># IMPORTANT: note how duration_unit value is supplied as an OntologyAnnotation object</span>
+<span class="n">nte1</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="s1">&#39;screen&#39;</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nte1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-another-isa-study-design-element-of-type-treatment">
+<h3>2. Creation of another <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code>, of type <code class="docutils literal notranslate"><span class="pre">Treatment</span></code><a class="headerlink" href="#creation-of-another-isa-study-design-element-of-type-treatment" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te1</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te1</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">te1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-the-first-treatment-as-a-vector-of-isa-factor-values">
+<h3>2.1 defining the first treatment as a vector of ISA factor values:<a class="headerlink" href="#defining-the-first-treatment-as-a-vector-of-isa-factor-values" title="Permalink to this headline">¶</a></h3>
+<p>Under “ISA Study Design Create mode”, a <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code> of type <code class="docutils literal notranslate"><span class="pre">Treatment</span></code> needs to be defined by a vector of <code class="docutils literal notranslate"><span class="pre">Factors</span></code> and their respective associated <code class="docutils literal notranslate"><span class="pre">Factor</span> <span class="pre">Values</span></code>. This is done as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;electromagnetic energy&quot;</span><span class="p">))</span>
+<span class="n">f1v</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;visible light at 3000K produced by LED array&quot;</span><span class="p">)</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dose&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">))</span>
+
+<span class="c1"># IMPORTANT: note how *FactorValue value* is supplied as an *numeral*</span>
+<span class="n">f2v</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;lux&#39;</span><span class="p">))</span>
+<span class="n">f3</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+<span class="n">f3v</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f1v</span><span class="p">,</span><span class="n">f2v</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#assigning the factor values declared above to the ISA treatment element</span>
+<span class="n">te1</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">f1v</span><span class="p">,</span><span class="n">f2v</span><span class="p">,</span><span class="n">f3v</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">te1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-a-second-isa-study-design-element-of-type-treatment-following-the-same-pattern">
+<h3>3. Creation of a second  <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code>, of type <code class="docutils literal notranslate"><span class="pre">Treatment</span></code>, following the same pattern.<a class="headerlink" href="#creation-of-a-second-isa-study-design-element-of-type-treatment-following-the-same-pattern" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te3</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te3</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;radiological intervention&#39;</span>
+<span class="n">rays</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;electromagnetic energy&quot;</span><span class="p">))</span>
+
+<span class="n">raysv</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">rays</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;visible light at 3000K produced by LED array&#39;</span><span class="p">)</span>
+<span class="n">rays_intensity</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dose&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">))</span>
+<span class="n">rays_intensityv</span><span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">rays_intensity</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;lux&#39;</span><span class="p">))</span>
+<span class="n">rays_duration</span> <span class="o">=</span>  <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+<span class="n">rays_durationv</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">rays_duration</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">))</span>
+
+<span class="n">te3</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">raysv</span><span class="p">,</span><span class="n">rays_intensityv</span><span class="p">,</span><span class="n">rays_durationv</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">te3</span><span class="p">)</span>
+                
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-wash-out-period-as-an-isa-study-design-element">
+<h3>4. Creation of ‘wash out’ period as an <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code>.<a class="headerlink" href="#creation-of-wash-out-period-as-an-isa-study-design-element" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creation of another ISA element, which is not a Treatment element, which is of type `screen` by default</span>
+<span class="c1"># nte2 = NonTreatment()</span>
+<span class="c1"># nte2.type = &#39;washout&#39;</span>
+<span class="c1"># net2.duration_unit=OntologyAnnotation(term=&quot;days&quot;)</span>
+
+<span class="n">nte2</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="s1">&#39;washout&#39;</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nte2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting the factor values associated with &#39;default&#39; DURATION Factor associated with such elements</span>
+<span class="n">nte2</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">nte2</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;weeks&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-follow-up-period-as-an-isa-study-design-element">
+<h3>5. Creation of ‘follow-up’ period as an <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code>.<a class="headerlink" href="#creation-of-follow-up-period-as-an-isa-study-design-element" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nte3</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="n">FOLLOW_UP</span><span class="p">,</span> <span class="n">duration_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">))</span>
+<span class="c1">#print(nte3)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-the-associated-container-known-as-an-isa-cell-for-each-isa-element">
+<h3>6. Creation of the associated container, known as an ISA <code class="docutils literal notranslate"><span class="pre">Cell</span></code> for each ISA <code class="docutils literal notranslate"><span class="pre">Element</span></code>.<a class="headerlink" href="#creation-of-the-associated-container-known-as-an-isa-cell-for-each-isa-element" title="Permalink to this headline">¶</a></h3>
+<p>In this example, a single <code class="docutils literal notranslate"><span class="pre">Element</span></code> is hosted by a <code class="docutils literal notranslate"><span class="pre">Cell</span></code>, which must be named. In more complex designs (e.g. study designs with assymetric arms), a <code class="docutils literal notranslate"><span class="pre">Cell</span></code> may contain more than one <code class="docutils literal notranslate"><span class="pre">Element</span></code>, hence the list attribute.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">st_cl1</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl1&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">nte1</span><span class="p">])</span>
+<span class="n">st_cl2</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl2&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">te1</span><span class="p">])</span>
+<span class="n">st_cl3</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl3&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">nte2</span><span class="p">])</span>
+<span class="n">st_cl4</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl4&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">te3</span><span class="p">])</span>
+<span class="n">st_cl5</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl5&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">nte3</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-an-isa-study-arm-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells">
+<h3>7. Creation of an ISA <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Arm</span></code> and setting the number of subjects associated to that unique sequence of ISA <code class="docutils literal notranslate"><span class="pre">Cell</span></code>s.<a class="headerlink" href="#creation-of-an-isa-study-arm-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">genotype_cat</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genotype&quot;</span><span class="p">)</span>
+<span class="n">genotype_value1</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;control - normal&quot;</span><span class="p">)</span>
+<span class="n">genotype_value2</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mutant&quot;</span><span class="p">)</span>
+
+<span class="n">arm1</span> <span class="o">=</span> <span class="n">StudyArm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Arm 1&#39;</span><span class="p">,</span> 
+                <span class="n">group_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">arm1</span><span class="o">.</span><span class="n">source_type</span><span class="o">=</span><span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">genotype_cat</span><span class="p">,</span>
+                                           <span class="n">value</span><span class="o">=</span><span class="n">genotype_value1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">arm1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="declaring-an-isa-sample-assay-plan-defining-which-sample-are-to-be-collected-and-which-assays-to-be-used">
+<h3>8. Declaring an ISA <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Assay</span> <span class="pre">Plan</span></code>, defining which <code class="docutils literal notranslate"><span class="pre">Sample</span></code> are to be collected and which <code class="docutils literal notranslate"><span class="pre">Assay</span></code>s to be used<a class="headerlink" href="#declaring-an-isa-sample-assay-plan-defining-which-sample-are-to-be-collected-and-which-assays-to-be-used" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">whole_patient</span><span class="o">=</span><span class="n">ProductNode</span><span class="p">(</span><span class="n">id_</span><span class="o">=</span><span class="s2">&quot;MAT1&quot;</span><span class="p">,</span>
+                          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span>
+                          <span class="n">node_type</span><span class="o">=</span><span class="n">SAMPLE</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">characteristics</span><span class="o">=</span><span class="p">[</span><span class="n">Characteristic</span><span class="p">(</span>
+                                <span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;organism part&#39;</span><span class="p">),</span> 
+                                <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;whole organism&#39;</span><span class="p">))])</span>
+
+<span class="n">saliva</span><span class="o">=</span><span class="n">ProductNode</span><span class="p">(</span><span class="n">id_</span><span class="o">=</span><span class="s2">&quot;MAT2&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;saliva&quot;</span><span class="p">,</span> <span class="n">node_type</span><span class="o">=</span><span class="n">SAMPLE</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;organism part&#39;</span><span class="p">),</span>
+                   <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;saliva&#39;</span><span class="p">))])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we load an isa assay definition in the form of an ordered dictionary. It corresponds to an ISA configuration assay table but expressed in JSON.</p>
+<p>We now show how to create an new AssayGraph structure from scratch, as if we were defining a completely new assay type.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">light_sensitivity_phenotyping_1</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;measurement_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;melatonine concentration&#39;</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s1">&#39;technology_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;radioimmunoprecipitation assay&#39;</span><span class="p">)),</span>
+     <span class="p">(</span><span class="s1">&#39;extraction&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">(</span><span class="s1">&#39;extract&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;node_type&#39;</span><span class="p">:</span> <span class="n">EXTRACT</span><span class="p">,</span>
+                    <span class="s1">&#39;characteristics_category&#39;</span><span class="p">:</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;extract type&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;characteristics_value&#39;</span><span class="p">:</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;extract&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;technical_replicates&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s1">&#39;is_input_to_next_protocols&#39;</span><span class="p">:</span> <span class="kc">True</span>
+                <span class="p">}]),</span>
+                
+    <span class="p">(</span><span class="s1">&#39;radioimmunoprecipitation&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;instrument&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;Beckon Dickison XYZ&#39;</span><span class="p">)],</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;antibody&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;AbCam antiMelatonine &#39;</span><span class="p">)],</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;time point&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;1 hr&#39;</span><span class="p">),</span>
+                                                        <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;2 hr&#39;</span><span class="p">)]</span>
+            <span class="p">}),</span>
+            <span class="p">(</span><span class="s1">&#39;raw_data_file&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;node_type&#39;</span><span class="p">:</span> <span class="n">DATA_FILE</span><span class="p">,</span>
+                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;technical_replicates&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;is_input_to_next_protocols&#39;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">}</span>
+            <span class="p">])</span>
+<span class="p">])</span>
+
+
+<span class="n">light_sensitivity_phenotyping_2</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
+        <span class="p">(</span><span class="s1">&#39;measurement_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;light sensitivity&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;technology_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;electroencephalography&#39;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s1">&#39;data_collection&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;instrument&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;Somnotouch&#39;</span><span class="p">)],</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;sampling_rate&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;200 Hz&#39;</span><span class="p">)],</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;time point&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;1 hr&#39;</span><span class="p">),</span>
+                                                        <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;2 hr&#39;</span><span class="p">)]</span>
+            <span class="p">}),</span>
+            <span class="p">(</span><span class="s1">&#39;raw_data_file&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;node_type&#39;</span><span class="p">:</span> <span class="n">DATA_FILE</span><span class="p">,</span>
+                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;technical_replicates&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;is_input_to_next_protocols&#39;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">}</span>
+            <span class="p">])</span>
+<span class="p">])</span>
+
+<span class="n">light_sensitivity_phenotyping_3</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
+        <span class="p">(</span><span class="s1">&#39;measurement_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;light sensitivity phenotyping&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;technology_type&#39;</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;direct measurement&#39;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s1">&#39;data_collection&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;variables&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;sleepiness&#39;</span><span class="p">),</span>
+                                                       <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;heart rate&#39;</span><span class="p">),</span>
+                                                       <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;pupilla size&#39;</span><span class="p">)],</span>
+                <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;time point&#39;</span><span class="p">):</span> <span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;1 hr&#39;</span><span class="p">),</span>
+                                                        <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;2 hr&#39;</span><span class="p">)]</span>
+            <span class="p">}),</span>
+            <span class="p">(</span><span class="s1">&#39;raw_data_file&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;node_type&#39;</span><span class="p">:</span> <span class="n">DATA_FILE</span><span class="p">,</span>
+                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;technical_replicates&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;is_input_to_next_protocols&#39;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">}</span>
+            <span class="p">])</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alterness_assay_graph</span> <span class="o">=</span> <span class="n">AssayGraph</span><span class="o">.</span><span class="n">generate_assay_plan_from_dict</span><span class="p">(</span><span class="n">light_sensitivity_phenotyping_1</span><span class="p">)</span>
+<span class="n">melatonine_assay_graph</span> <span class="o">=</span> <span class="n">AssayGraph</span><span class="o">.</span><span class="n">generate_assay_plan_from_dict</span><span class="p">(</span><span class="n">light_sensitivity_phenotyping_2</span><span class="p">)</span>
+<span class="n">general_phenotyping_assay_graph</span> <span class="o">=</span> <span class="n">AssayGraph</span><span class="o">.</span><span class="n">generate_assay_plan_from_dict</span><span class="p">(</span><span class="n">light_sensitivity_phenotyping_3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sap1</span> <span class="o">=</span> <span class="n">SampleAndAssayPlan</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;sap1&#39;</span><span class="p">,</span> <span class="n">sample_plan</span><span class="o">=</span><span class="p">[</span><span class="n">whole_patient</span><span class="p">,</span><span class="n">saliva</span><span class="p">],</span><span class="n">assay_plan</span><span class="o">=</span><span class="p">[</span><span class="n">alterness_assay_graph</span><span class="p">,</span><span class="n">melatonine_assay_graph</span><span class="p">,</span><span class="n">general_phenotyping_assay_graph</span><span class="p">])</span>
+
+<span class="n">sap1</span><span class="o">.</span><span class="n">add_element_to_map</span><span class="p">(</span><span class="n">sample_node</span><span class="o">=</span><span class="n">saliva</span><span class="p">,</span> <span class="n">assay_graph</span><span class="o">=</span><span class="n">melatonine_assay_graph</span><span class="p">)</span>
+<span class="n">sap1</span><span class="o">.</span><span class="n">add_element_to_map</span><span class="p">(</span><span class="n">sample_node</span><span class="o">=</span><span class="n">whole_patient</span><span class="p">,</span> <span class="n">assay_graph</span><span class="o">=</span><span class="n">alterness_assay_graph</span><span class="p">)</span>
+<span class="n">sap1</span><span class="o">.</span><span class="n">add_element_to_map</span><span class="p">(</span><span class="n">sample_node</span><span class="o">=</span><span class="n">whole_patient</span><span class="p">,</span><span class="n">assay_graph</span><span class="o">=</span><span class="n">general_phenotyping_assay_graph</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sap1</span><span class="o">.</span><span class="n">sample_to_assay_map</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay">
+<h3>9. Declaration of an ISA assay and linking specimen type and data acquisition plan for this assay<a class="headerlink" href="#declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="build-an-isa-study-design-arm-by-adding-the-first-set-of-isa-cells-and-setting-the-sample-assay-plan">
+<h3>10. Build an ISA <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Arm</span></code> by adding the first set of ISA <code class="docutils literal notranslate"><span class="pre">Cells</span></code> and setting the <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Assay</span> <span class="pre">Plan</span></code><a class="headerlink" href="#build-an-isa-study-design-arm-by-adding-the-first-set-of-isa-cells-and-setting-the-sample-assay-plan" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span> <span class="n">sap1</span><span class="p">)</span>
+<span class="c1"># print(arm1)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="now-expanding-the-arm-by-adding-a-new-cell-which-uses-the-same-sample-assay-plan-as-the-one-used-in-cell-1">
+<h3>11 Now expanding the <code class="docutils literal notranslate"><span class="pre">Arm</span></code> by adding a new <code class="docutils literal notranslate"><span class="pre">Cell</span></code>, which uses the same <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Assay</span> <span class="pre">Plan</span></code> as the one used in Cell #1.<a class="headerlink" href="#now-expanding-the-arm-by-adding-a-new-cell-which-uses-the-same-sample-assay-plan-as-the-one-used-in-cell-1" title="Permalink to this headline">¶</a></h3>
+<p>Of course, the <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Assay</span> <span class="pre">Plan</span></code> for this new <code class="docutils literal notranslate"><span class="pre">Cell</span></code> could be different. It would have to be to built as shown before.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl2</span><span class="p">,</span> <span class="n">sap1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Adding the last section of the Arm, with a cell which also uses the same sample assay plan.</span>
+<span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl3</span><span class="p">,</span> <span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl4</span><span class="p">,</span> <span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl5</span><span class="p">,</span> <span class="n">sap1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creation-of-additional-isa-study-arms-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells">
+<h3>12. Creation of additional ISA Study Arms and setting the number of subjects associated to that unique sequence of ISA Cells.<a class="headerlink" href="#creation-of-additional-isa-study-arms-and-setting-the-number-of-subjects-associated-to-that-unique-sequence-of-isa-cells" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm2</span> <span class="o">=</span> <span class="n">StudyArm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Arm 2&#39;</span><span class="p">)</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">group_size</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">source_type</span><span class="o">=</span><span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">genotype_cat</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">genotype_value2</span><span class="p">)</span>
+
+<span class="c1"># st_cl6= StudyCell(name=&quot;st_cl6&quot;, elements=[nte1])</span>
+<span class="c1"># st_cl7= StudyCell(name=&quot;st_cl7&quot;, elements=[te1])</span>
+<span class="c1"># st_cl8= StudyCell(name=&quot;st_cl8&quot;, elements=[nte2])</span>
+<span class="c1"># st_cl9= StudyCell(name=&quot;st_cl9&quot;, elements=[te3])</span>
+<span class="c1"># st_cl10= StudyCell(name=&quot;st_cl10&quot;, elements=[nte3])</span>
+
+
+
+<span class="n">arm2</span><span class="o">.</span><span class="n">source_type</span><span class="o">.</span><span class="n">category</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl4</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl3</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl2</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm2</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl5</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm3</span> <span class="o">=</span> <span class="n">StudyArm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Arm 3&#39;</span><span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">group_size</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">source_type</span><span class="o">=</span><span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">genotype_cat</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">genotype_value1</span>
+                               <span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl2</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl3</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl4</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm3</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl5</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm4</span> <span class="o">=</span> <span class="n">StudyArm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Arm 4&#39;</span><span class="p">)</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">group_size</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">source_type</span><span class="o">=</span><span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">genotype_cat</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">genotype_value2</span><span class="p">)</span>
+
+<span class="n">arm4</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl4</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl3</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl2</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">arm4</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl5</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="we-can-now-create-the-isa-study-design-object-which-will-receive-the-arms-defined-by-the-user">
+<h3>14. We can now create the ISA <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Design</span></code> object, which will receive the <code class="docutils literal notranslate"><span class="pre">Arms</span></code> defined by the user.<a class="headerlink" href="#we-can-now-create-the-isa-study-design-object-which-will-receive-the-arms-defined-by-the-user" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study_design_final</span><span class="o">=</span> <span class="n">StudyDesign</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;trial design #1&#39;</span><span class="p">)</span>
+<span class="c1"># print(sd)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Adding a study arm to the study design object.</span>
+<span class="n">study_design_final</span><span class="o">.</span><span class="n">add_study_arm</span><span class="p">(</span><span class="n">arm1</span><span class="p">)</span>
+<span class="n">study_design_final</span><span class="o">.</span><span class="n">add_study_arm</span><span class="p">(</span><span class="n">arm2</span><span class="p">)</span>
+<span class="n">study_design_final</span><span class="o">.</span><span class="n">add_study_arm</span><span class="p">(</span><span class="n">arm3</span><span class="p">)</span>
+<span class="n">study_design_final</span><span class="o">.</span><span class="n">add_study_arm</span><span class="p">(</span><span class="n">arm4</span><span class="p">)</span>
+
+<span class="n">study_finale</span> <span class="o">=</span> <span class="n">study_design_final</span><span class="o">.</span><span class="n">generate_isa_study</span><span class="p">()</span>
+<span class="n">investigation1</span><span class="o">.</span><span class="n">studies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study_finale</span><span class="p">)</span>
+<span class="c1"># print(investigation1.studies[0].name)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s now serialize the ISA study design to JSON</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="n">StudyDesignEncoder</span>
+
+<span class="n">f</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">study_design_final</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">StudyDesignEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
+
+<span class="n">final_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;notebook-output&#39;</span><span class="p">,</span> <span class="s1">&#39;isa-study-custom-assay-light-sensitivity&#39;</span><span class="p">))</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_dir</span><span class="p">,</span><span class="s1">&#39;./light-sensitivity-study_design_final.json&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">isa_sdf_jf</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">isa_sdf_jf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(&#39;,&#39;, &#39;: &#39;)))</span>
+<span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
+<span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation1</span><span class="p">,</span> <span class="n">final_dir</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
+<span class="n">dataframes</span> <span class="o">=</span> <span class="n">dumpdf</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="about-this-notebook">
+<h2>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>authors: philippe.rocca-serra&#64;oerc.ox.ac.uk, massimiliano.izzo&#64;oerc.ox.ac.uk</p></li>
+<li><p>license: CC-BY 4.0</p></li>
+<li><p>support: isatools&#64;googlegroups.com</p></li>
+<li><p>issue tracker: https://github.com/ISA-tools/isa-api/issues</p></li>
+</ul>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "isa-api-py38"
+        },
+        kernelOptions: {
+            kernelName: "isa-api-py38",
+            path: "./content/notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'isa-api-py38'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="isa-protocol-type-synonym-effect-on-assay-table.html" title="previous page">ISA-API built-in semantic requirements for <code class="docutils literal notranslate"><span class="pre">protocol</span> <span class="pre">type</span></code> values</a>
+    <a class='right-next' id="next-link" href="isa-metabolomics-study-design-create.html" title="next page"></a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>

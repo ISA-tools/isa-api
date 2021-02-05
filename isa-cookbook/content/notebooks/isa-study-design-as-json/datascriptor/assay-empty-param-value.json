@@ -1,0 +1,208 @@
+{
+  "id": 0,
+  "name": "metabolite profiling using mass spectrometry",
+  "icon": "fas fa-chart-bar fas fa-bullseye",
+  "color": "green",
+  "measurement_type": "metabolite profiling",
+  "technology_type": "mass spectrometry",
+  "workflow": [
+    [
+      "extraction",
+      {
+        "#replicates": {
+          "value": 2
+        }
+      }
+    ],
+    [
+      "extract",
+      {
+        "node_type": "extract",
+        "characteristics_category": "extract type",
+        "characteristics_value": {
+          "options": [
+            "polar fraction",
+            "non-polar fraction"
+          ],
+          "values": [
+            "polar fraction",
+            "non-polar fraction"
+          ]
+        },
+        "is_input_to_next_protocols": {
+          "value": true
+        }
+      }
+    ],
+    [
+      "labeling",
+      {
+        "#replicates": {
+          "value": 1
+        }
+      }
+    ],
+    [
+      "labeled extract",
+      {
+        "node_type": "labeled extract",
+        "characteristics_category": "labeled extract type",
+        "characteristics_value": {
+          "options": [
+            "label_0",
+            "label_1"
+          ],
+          "values": [
+            "label_0"
+          ]
+        },
+        "is_input_to_next_protocols": {
+          "value": true
+        }
+      }
+    ],
+    [
+      "mass spectrometry",
+      {
+        "#replicates": {
+          "value": 2
+        },
+        "instrument": {
+          "options": [
+            "Agilent QTQF 6510",
+            "Agilent QTQF 6520A"
+          ],
+          "values": [
+            "Agilent QTQF 6510"
+          ]
+        },
+        "injection_mode": {
+          "options": [
+            "FIA",
+            "LC"
+          ],
+          "values": [
+            "FIA",
+            "LC"
+          ]
+        },
+        "acquisition_mode": {
+          "options": [
+            "positive mode",
+            "negative mode"
+          ],
+          "values": []
+        }
+      }
+    ],
+    [
+      "raw spectral data file",
+      {
+        "node_type": "data file",
+        "is_input_to_next_protocols": {
+          "value": true
+        }
+      }
+    ]
+  ],
+  "selectedCells": {
+    "Arm_0": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ],
+    "Arm_2": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ],
+    "Arm_5": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ],
+    "Arm_7": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "selectedSampleTypes": {
+    "Arm_0": [
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ],
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ]
+    ],
+    "Arm_2": [
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ],
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ]
+    ],
+    "Arm_5": [
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ],
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ]
+    ],
+    "Arm_7": [
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ],
+      [],
+      [
+        "blood"
+      ],
+      [
+        "blood"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Release Notes &#8212; The ISA cookbook</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/mermaid.js"></script>
+    <script src="../_static/mermaid.min.js"></script>
+    <script src="../_static/mermaid.core.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/knownissues.html" />
+    <link rel="shortcut icon" href="../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hands-on Practicals" href="notebooks.html" />
+    <link rel="prev" title="Downloading files stored in Github" href="github.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+<!-- Opengraph tags -->
+<meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/knownissues.html" />
+<meta property="og:type"        content="article" />
+<meta property="og:title"       content="Release Notes" />
+<meta property="og:description" content="Release Notes  ============    List of ISA-API changes and fixes:    isatools v0.12 package    isatools v0.11 package    isatools v0.10 package    isatools v0.9" />
+<meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
+
+<meta name="twitter:card" content="summary" />
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/isa_footer_logo.svg" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="examples.html">
+   ISA API example programs
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="notebooks.html">
+   Hands-on Practicals
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/light-sensitity-study-repeated-treatment-design.html">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/isa-metabolomics-study-design-create.html">
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/content/knownissues.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/knownissues.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/isa-cookbook/isa-cookbook/content/knownissues.md"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="release-notes">
+<h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<p>============</p>
+<p>List of ISA-API changes and fixes:</p>
+<hr class="docutils" />
+<p>isatools v0.12 package</p>
+<hr class="docutils" />
+<p>isatools v0.11 package</p>
+<hr class="docutils" />
+<p>isatools v0.10 package</p>
+<hr class="docutils" />
+<p>isatools v0.9 package</p>
+<ul class="simple">
+<li><p>Various API packages have been refactored and moved.
+<code class="docutils literal notranslate"><span class="pre">isatools.model.v1</span></code> is now in <code class="docutils literal notranslate"><span class="pre">isatools.model</span></code>. Packages
+<code class="docutils literal notranslate"><span class="pre">isatools.validate</span></code>, <code class="docutils literal notranslate"><span class="pre">isatools.config</span></code>, <code class="docutils literal notranslate"><span class="pre">isatools.schemas</span></code> have been
+removed. Some items from <code class="docutils literal notranslate"><span class="pre">isatools.convert</span></code> and <code class="docutils literal notranslate"><span class="pre">isatools.io</span></code> have
+been split into the <code class="docutils literal notranslate"><span class="pre">isatools.io</span></code> or <code class="docutils literal notranslate"><span class="pre">isatools.net</span></code> packages, where
+the latter has been created to distinguish parts of the ISA API that
+require network access</p></li>
+<li><p>Issue #153 is still outstanding since version 0.4, as per below;
+new issue #235 where missing `Protocol REF`s are sometimes
+incorrectly inserted on loading ISA-Tab</p></li>
+<li><p>New ISA creation functionality from planning objects in
+<code class="docutils literal notranslate"><span class="pre">isatools.create.models</span></code> currently only support a limited number of
+technology types (DNA microarray, DNA sequencing, mass spectrometry,
+and NMR)</p></li>
+<li><p>SRA/ENA importer and Biocrates importer relies on XSLT2 processing
+only available with SAXON and requires .jar file to run</p></li>
+<li><p>It has been decided to stop work on retrofitting support for Python
+2.7 and focus on keeping up to date with the current and future
+Python versions</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.8 package</p>
+<ul class="simple">
+<li><p>Issues #153 is still outstanding, as per below; new issue #208
+(ISA-Tab validation issue)</p></li>
+<li><p>SRA/ENA importer and Biocrates importer relies on XSLT2 processing
+only available with SAXON and requires .jar file to run</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.7 package</p>
+<ul class="simple">
+<li><p>Issues #101, #153 are still outstanding, as per below</p></li>
+<li><p>SRA/ENA importer and Biocrates importer relies on XSLT2 processing
+only available with SAXON and requires .jar file to run</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.6 package</p>
+<ul class="simple">
+<li><p>Issues #146, #101, #153 are still outstanding, as per below</p></li>
+<li><p>SRA/ENA importer and Biocrates importer relies on XSLT2 processing
+only available with SAXON and requires .jar file to run</p></li>
+<li><p>We are aware that there may be some performance issues when loading
+and writing ISA-Tab documents with several thousand samples. This
+has been worked on and there is ongoing efforts to improve on the
+current performance of ISA-Tab I/O</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.5 package</p>
+<ul class="simple">
+<li><p>All issues inherited from v0.4 (see below)</p></li>
+<li><p>Currently only Python 3.4 and 3.5 is supported. Python 2.7 support
+is present in the <code class="docutils literal notranslate"><span class="pre">py2</span></code> source branch on Github.</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.4 package</p>
+<ul class="simple">
+<li><p>For certain of ISA-Tab table files, the ISA-Tab parser cannot
+disambiguate between process instances where a <code class="docutils literal notranslate"><span class="pre">Name</span></code> column is
+required to qualify a <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> has been left blank. Utility
+functions have been written to detect these anomalies and to assist
+in correcting them, in the <code class="docutils literal notranslate"><span class="pre">isatools.utils</span></code> package. #146 (see
+detail after bullet points)</p></li>
+<li><p>When converting to ISA JSON in using <code class="docutils literal notranslate"><span class="pre">UUID</span></code> or <code class="docutils literal notranslate"><span class="pre">counter</span></code> Identifier
+Types, some elements are not detected, such as <code class="docutils literal notranslate"><span class="pre">Array_Design_REF</span></code>
+#101</p></li>
+<li><p>The ISA-Tab parser does not support reading
+<code class="docutils literal notranslate"><span class="pre">Protein</span> <span class="pre">Assignment</span> <span class="pre">File</span></code>, <code class="docutils literal notranslate"><span class="pre">Peptide</span> <span class="pre">Assignment</span> <span class="pre">File</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Post</span> <span class="pre">Translational</span> <span class="pre">Modification</span> <span class="pre">Assignment</span> <span class="pre">File</span></code> columns, and
+therefore the <code class="docutils literal notranslate"><span class="pre">isatab2*</span></code> converters also do not support these #174</p></li>
+<li><p>The SRA/ENA importer in <code class="docutils literal notranslate"><span class="pre">sra2isatab</span></code> relies on XSLT2 processing
+functionality only available with SAXON, so you must provide the JAR
+file yourself to use this</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sra2isatab</span></code> converter does not support SRA pools #153</p></li>
+<li><p>The legacy functionality (marked in the documentation) relies on
+Java 1.6</p></li>
+</ul>
+<p>To check for possible erroneous pooling events in an ISA-Tab archive,
+you can try something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">detect_isatab_process_pooling</span><span class="p">(</span><span class="s1">&#39;tests/data/tab/MTBLS1/&#39;</span><span class="p">)</span>
+<span class="go">INFO: Converting ISA-Tab to ISA JSON...</span>
+<span class="go">INFO: Converting ISAtab to ISAjson for tests/data/tab/MTBLS1/</span>
+<span class="go">INFO: ... conversion finished.</span>
+<span class="go">Checking s_MTBLS1.txt</span>
+<span class="go">Checking a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt</span>
+<span class="go">Possible process pooling detected on:  #process/Extraction1</span>
+<span class="go">Possible process pooling detected on:  #process/ADG_normalized_data.xlsx</span>
+<span class="go">[{&#39;a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt&#39;: [&#39;#process/Extraction1&#39;, &#39;#process/ADG_normalized_data.xlsx&#39;]}]</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">#process/Extraction1</span></code> is the pooling that we did not
+expect. This is a pooling on a single <code class="docutils literal notranslate"><span class="pre">Extraction</span></code>. From manual
+inspection of the ISA-Tab file
+<code class="docutils literal notranslate"><span class="pre">a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt</span></code> we can then confirm
+that values are entirely missing from <code class="docutils literal notranslate"><span class="pre">Extract</span> <span class="pre">Name</span></code>, causing the parser
+to think the experimental graph converges on one process node. To
+rectify this, individual values should be put into this <code class="docutils literal notranslate"><span class="pre">Name</span></code> column.
+We can try fix erroneous pooling by filling out an empty <code class="docutils literal notranslate"><span class="pre">Name</span></code> column
+with a corresponding <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> by doing the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">insert_distinct_parameter</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;tests/data/tab/MTBLS1/a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">),</span> <span class="s1">&#39;Extraction&#39;</span><span class="p">)</span>
+<span class="go">Are you sure you want to add a column of hash values in Extract Name? Y/(N)</span>
+<span class="go">&gt;? Y</span>
+</pre></div>
+</div>
+<p>If successful, this will fill out the empty column with 8 character-long
+UUIDs (e.g. 4078cb03).</p>
+<p>Please be aware that these utility functions
+<code class="docutils literal notranslate"><span class="pre">detect_isatab_process_pooling()</span></code> and <code class="docutils literal notranslate"><span class="pre">insert_distinct_parameter()</span></code> are
+there to help you manually fix your ISA-Tabs, not to automatically fix
+them for you. We wil address this issue in more depth in following
+releases.</p>
+<hr class="docutils" />
+<p>isatools v0.3 package</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">required</span></code> constraints on JSON schemas causes validation failure for
+<code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> objects, meaning some constraints using JSON schemas cannot be
+used for validation #108</p></li>
+<li><p>Chained processes (i.e. a process followed by another process
+without any intermediate inputs and outputs, in ISAtab a
+<code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns followed by another <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns
+without any materials in between) are not currently supported. It is
+not recommended to attempt to use such patterns with this version of
+the <code class="docutils literal notranslate"><span class="pre">isatools</span></code> package #111</p></li>
+<li><p>When converting to ISA JSON in using <code class="docutils literal notranslate"><span class="pre">UUID</span></code> or <code class="docutils literal notranslate"><span class="pre">counter</span></code> Identifier
+Types, some elements are not detected, such as <code class="docutils literal notranslate"><span class="pre">Array_Design_REF</span></code>
+#101</p></li>
+<li><p>The SRA/ENA importer in <code class="docutils literal notranslate"><span class="pre">sra2isatab</span></code> relies on XSLT2 processing
+functionality only available with SAXON, so you must provide the JAR
+file yourself to use this</p></li>
+<li><p>The legacy functionality (marked in the documentation) relies on
+Java 1.6</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.2 package</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">required</span></code> constraints on JSON schemas causes validation failure for
+<code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> objects, meaning some constraints using JSON schemas cannot be
+used for validation #108</p></li>
+<li><p>When converting to ISA JSON in using <code class="docutils literal notranslate"><span class="pre">UUID</span></code> or <code class="docutils literal notranslate"><span class="pre">counter</span></code> Identifier
+Types, some elements are not detected, such as <code class="docutils literal notranslate"><span class="pre">Array_Design_REF</span></code>
+#101</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns must be present in order for the ISA-Tab to
+JSON conversion to pick up processes in the process sequences #111</p></li>
+<li><p>Characteristics and Factor Values declared in assay tables in ISAtab
+are associated to Sample objects only. This means that when writing
+from Python objects, or converting from ISA JSON, to ISAtab these
+columns appear at the study table.</p></li>
+<li><p>Chained processes (i.e. a process followed by another process
+without any intermediate inputs and outputs, in ISAtab a
+<code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns followed by another <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns
+without any materials in between) are not currently supported. It is
+not recommended to attempt to use such patterns with this version of
+the <code class="docutils literal notranslate"><span class="pre">isatools</span></code> package #111</p></li>
+<li><p>For experimental graph patterns to work, should follow relatively
+simple patterns. e.g. Straight Sample -&gt; … -&gt; Materials -&gt;
+… -&gt; Data paths (per assay), or simple splitting and pooling.
+See test package code for examples of what works.</p></li>
+<li><p>No ISA JSON configurations have been included that correspond with
+the following default XML configurations: <code class="docutils literal notranslate"><span class="pre">clinical_chemistry.xml</span></code>
+and most are as yet untested.</p></li>
+</ul>
+<hr class="docutils" />
+<p>isatools v0.1 package</p>
+<ul class="simple">
+<li><p>Characteristics and Factor Values declared in assay tables in ISAtab
+are associated to Sample objects only. This means that when writing
+from Python objects, or converting from ISA JSON, to ISAtab these
+columns appear at the study table.</p></li>
+<li><p>Chained processes (i.e. a process followed by another process
+without any intermediate inputs and outputs, in ISAtab a
+<code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns followed by another <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">REF</span></code> columns
+without any materials in between) are not currently supported. It is
+not recommended to attempt to use such patterns with this version of
+the <code class="docutils literal notranslate"><span class="pre">isatools</span></code> package #111</p></li>
+<li><p>For experimental graph patterns to work, should follow relatively
+simple patterns. e.g. Straight Sample -&gt; … -&gt; Materials -&gt;
+… -&gt; Data paths (per assay), or simple splitting and pooling.
+See test package code for examples of what works.</p></li>
+</ul>
+<p>For a full up-to-date list of issues, or to report an issue or ask a
+question, please see the <a class="reference external" href="https://github.com/ISA-tools/isa-api/issues">issue
+tracker</a>.</p>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="github.html" title="previous page">Downloading files stored in Github</a>
+    <a class='right-next' id="next-link" href="notebooks.html" title="next page">Hands-on Practicals</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>

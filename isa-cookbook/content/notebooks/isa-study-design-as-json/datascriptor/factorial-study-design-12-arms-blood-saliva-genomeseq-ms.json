@@ -1,0 +1,1718 @@
+{
+    "name": "Test factorial study",
+    "description": "This is a test factorial study with three agents (\"ibuprofen\", \"paracetamol\", \"hydroxyclorochine\") and three dosages (5, 10, 15 mg/day) and 2 durations (15 and 30 days).",
+    "subjectType": "Homo sapiens",
+    "subjectSize": 5,
+    "designType": {
+      "term": "full factorial design",
+      "id": "STATO:0000270",
+      "iri": "http://purl.obolibrary.org/obo/STATO_0000270",
+      "label": "Study subjects receive a single treatment",
+      "value": "fullFactorial"
+    },
+    "observationalFactors": [],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": "Homo sapiens",
+          "characteristics": []
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "screen": {
+        "selected": true,
+        "name": "screen",
+        "duration": 5,
+        "durationUnit": "days"
+      },
+      "runIn": {
+        "selected": false,
+        "name": "run-in",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "washout": {
+        "selected": false,
+        "name": "washout",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 60,
+        "durationUnit": "days"
+      },
+      "treatments": [
+        {
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        },
+        {
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        }
+      ],
+      "elementParams": {
+        "interventionType": {
+          "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+          "short_form": "ERO_0000600",
+          "obo_id": "ERO:0000600",
+          "label": "drug intervention",
+          "ontology_name": "ero",
+          "ontology_prefix": "ERO",
+          "type": "class"
+        },
+        "agents": [
+          "ibuprofen",
+          "paracetamol",
+          "hydroxychloroquine"
+        ],
+        "intensities": [
+          5,
+          10,
+          15
+        ],
+        "intensityUnit": "mg/day",
+        "durations": [
+          20,
+          30
+        ],
+        "durationUnit": "days"
+      }
+    },
+    "elements": [
+      {
+        "id": "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980",
+        "name": "screen",
+        "duration": 5,
+        "durationUnit": "days"
+      },
+      {
+        "id": "#element/0",
+        "name": "treatment_0",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "e5741b32-192e-47d4-931d-4f5e68a3ecce",
+        "name": "follow-up",
+        "duration": 60,
+        "durationUnit": "days"
+      },
+      {
+        "id": "#element/1",
+        "name": "treatment_1",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/2",
+        "name": "treatment_2",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/3",
+        "name": "treatment_3",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/4",
+        "name": "treatment_4",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/5",
+        "name": "treatment_5",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/6",
+        "name": "treatment_6",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/7",
+        "name": "treatment_7",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/8",
+        "name": "treatment_8",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/9",
+        "name": "treatment_9",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/10",
+        "name": "treatment_10",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/11",
+        "name": "treatment_11",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "paracetamol",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/12",
+        "name": "treatment_12",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/13",
+        "name": "treatment_13",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 15,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/14",
+        "name": "treatment_14",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/15",
+        "name": "treatment_15",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/16",
+        "name": "treatment_16",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 20,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "#element/17",
+        "name": "treatment_17",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "hydroxychloroquine",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      }
+    ],
+    "arms": {
+      "selected": [
+        {
+          "id": "#arm/6",
+          "name": "Arm_6",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/6"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/7",
+          "name": "Arm_7",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/8",
+          "name": "Arm_8",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/8"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/9",
+          "name": "Arm_9",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/9"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/10",
+          "name": "Arm_10",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/10"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/11",
+          "name": "Arm_11",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/11"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/2",
+          "name": "Arm_2",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/2"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/3",
+          "name": "Arm_3",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/3"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/4",
+          "name": "Arm_4",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/4"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/5",
+          "name": "Arm_5",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/16",
+          "name": "Arm_16",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/16"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/17",
+          "name": "Arm_17",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/17"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        }
+      ],
+      "unselected": [
+        {
+          "id": "#arm/0",
+          "name": "Arm_0",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/0"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/1",
+          "name": "Arm_1",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/1"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/12",
+          "name": "Arm_12",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/12"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/13",
+          "name": "Arm_13",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/13"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/14",
+          "name": "Arm_14",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/14"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/15",
+          "name": "Arm_15",
+          "observationalFactors": [],
+          "size": 5,
+          "epochs": [
+            {
+              "elements": [
+                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "#element/15"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+              ],
+              "events": []
+            }
+          ]
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": "blood",
+        "selectedCells": {
+          "Arm_6": [
+            false,
+            true,
+            true
+          ],
+          "Arm_7": [
+            false,
+            true,
+            true
+          ],
+          "Arm_8": [
+            false,
+            true,
+            true
+          ],
+          "Arm_9": [
+            false,
+            true,
+            true
+          ],
+          "Arm_10": [
+            false,
+            true,
+            true
+          ],
+          "Arm_11": [
+            false,
+            true,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            true
+          ],
+          "Arm_3": [
+            false,
+            true,
+            true
+          ],
+          "Arm_4": [
+            false,
+            true,
+            true
+          ],
+          "Arm_5": [
+            false,
+            true,
+            true
+          ],
+          "Arm_16": [
+            false,
+            true,
+            true
+          ],
+          "Arm_17": [
+            false,
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_6": [
+            null,
+            1,
+            6
+          ],
+          "Arm_7": [
+            null,
+            1,
+            6
+          ],
+          "Arm_8": [
+            null,
+            1,
+            6
+          ],
+          "Arm_9": [
+            null,
+            1,
+            6
+          ],
+          "Arm_10": [
+            null,
+            1,
+            6
+          ],
+          "Arm_11": [
+            null,
+            1,
+            6
+          ],
+          "Arm_2": [
+            null,
+            1,
+            6
+          ],
+          "Arm_3": [
+            null,
+            1,
+            6
+          ],
+          "Arm_4": [
+            null,
+            1,
+            6
+          ],
+          "Arm_5": [
+            null,
+            1,
+            6
+          ],
+          "Arm_16": [
+            null,
+            1,
+            6
+          ],
+          "Arm_17": [
+            null,
+            1,
+            6
+          ]
+        }
+      },
+      {
+        "sampleType": "saliva",
+        "selectedCells": {
+          "Arm_6": [
+            false,
+            false,
+            true
+          ],
+          "Arm_7": [
+            false,
+            false,
+            true
+          ],
+          "Arm_8": [
+            false,
+            false,
+            true
+          ],
+          "Arm_9": [
+            false,
+            false,
+            true
+          ],
+          "Arm_10": [
+            false,
+            false,
+            true
+          ],
+          "Arm_11": [
+            false,
+            false,
+            true
+          ],
+          "Arm_2": [
+            false,
+            false,
+            true
+          ],
+          "Arm_3": [
+            false,
+            false,
+            true
+          ],
+          "Arm_4": [
+            false,
+            false,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false,
+            true
+          ],
+          "Arm_16": [
+            false,
+            false,
+            true
+          ],
+          "Arm_17": [
+            false,
+            false,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_6": [
+            null,
+            null,
+            3
+          ],
+          "Arm_7": [
+            null,
+            null,
+            3
+          ],
+          "Arm_8": [
+            null,
+            null,
+            3
+          ],
+          "Arm_9": [
+            null,
+            null,
+            3
+          ],
+          "Arm_10": [
+            null,
+            null,
+            3
+          ],
+          "Arm_11": [
+            null,
+            null,
+            3
+          ],
+          "Arm_2": [
+            null,
+            null,
+            3
+          ],
+          "Arm_3": [
+            null,
+            null,
+            3
+          ],
+          "Arm_4": [
+            null,
+            null,
+            3
+          ],
+          "Arm_5": [
+            null,
+            null,
+            3
+          ],
+          "Arm_16": [
+            null,
+            null,
+            3
+          ],
+          "Arm_17": [
+            null,
+            null,
+            3
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 1,
+        "name": "metabolite profiling - mass spectrometry (ontology annotated)",
+        "icon": "fas fa-chart-bar",
+        "color": "blue",
+        "measurement_type": {
+          "term": "metabolite profiling",
+          "iri": "http://purl.obolibrary.org/obo/OBI_0000366",
+          "source": null
+        },
+        "technology_type": {
+          "term": "mass spectrometry",
+          "iri": "http://purl.obolibrary.org/obo/OBI_0000470",
+          "source": null
+        },
+        "workflow": [
+          [
+            {
+              "term": "extraction",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0302884",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            {
+              "term": "extract",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0000423"
+            },
+            {
+              "node_type": "extract",
+              "characteristics_category": {
+                "term": "extract type",
+                "iri": "http://purl.obolibrary.org/obo/OBI_0000423",
+                "source": "OBI"
+              },
+              "characteristics_value": {
+                "options": [
+                  {
+                    "term": "polar fraction",
+                    "iri": "polar fraction",
+                    "source": null
+                  },
+                  {
+                    "term": "lipids",
+                    "iri": "lipids",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "polar fraction",
+                    "iri": "polar fraction",
+                    "source": null
+                  },
+                  {
+                    "term": "lipids",
+                    "iri": "lipids",
+                    "source": null
+                  }
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            {
+              "term": "labeling",
+              "iri": "http://purl.obolibrary.org/obo/CHMO_0001675",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            {
+              "term": "labeled extract",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0000924",
+              "source": null
+            },
+            {
+              "node_type": "labeled extract",
+              "characteristics_category": {
+                "term": "labeled extract type",
+                "iri": "http://purl.obolibrary.org/obo/OBI_0000924",
+                "source": null
+              },
+              "characteristics_value": {
+                "options": [
+                  "label_0",
+                  "label_1"
+                ],
+                "values": [
+                  "label_0"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            {
+              "term": "mass spectrometry",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0200085",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  {
+                    "term": "Agilent QTQF 6510",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000676",
+                    "source": null
+                  },
+                  {
+                    "term": "Agilent QTQF 6520A",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000677",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "Agilent QTQF 6520A",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000677",
+                    "source": null
+                  }
+                ]
+              },
+              "injection_mode": {
+                "options": [
+                  {
+                    "term": "FIA",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000058",
+                    "source": null
+                  },
+                  {
+                    "term": "LC",
+                    "iri": null,
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "FIA",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000058",
+                    "source": null
+                  },
+                  {
+                    "term": "LC",
+                    "iri": null,
+                    "source": null
+                  }
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  {
+                    "term": "positive mode",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1002807",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "positive mode",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1002807",
+                    "source": null
+                  }
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "term": "raw spectral data file",
+              "iri": "http://purl.obolibrary.org/obo/MS_1003083",
+              "source": null
+            },
+            {
+              "node_type": "data file",
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ]
+        ],
+        "@context": {
+          "measurement_type": "http://purl.obolibrary.org/obo/NCIT_C25209",
+          "technology_type": "http://www.ebi.ac.uk/efo/EFO_0005521",
+          "instrument": "http://purl.obolibrary.org/obo/MS_1000463",
+          "injection_mode": "http://purl.obolibrary.org/obo/MS_1000007",
+          "acquisition_mode": "http://purl.obolibrary.org/obo/MS_1000027"
+        },
+        "selectedCells": {
+          "Arm_6": [
+            false,
+            false,
+            true
+          ],
+          "Arm_7": [
+            false,
+            false,
+            true
+          ],
+          "Arm_8": [
+            false,
+            false,
+            true
+          ],
+          "Arm_9": [
+            false,
+            false,
+            true
+          ],
+          "Arm_10": [
+            false,
+            false,
+            true
+          ],
+          "Arm_11": [
+            false,
+            false,
+            true
+          ],
+          "Arm_2": [
+            false,
+            false,
+            true
+          ],
+          "Arm_3": [
+            false,
+            false,
+            true
+          ],
+          "Arm_4": [
+            false,
+            false,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false,
+            true
+          ],
+          "Arm_16": [
+            false,
+            false,
+            true
+          ],
+          "Arm_17": [
+            false,
+            false,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_6": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_7": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_8": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_9": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_10": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_11": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_3": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_4": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_5": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_16": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_17": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "saliva"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "name": "genome sequencing by nucleotide sequencing",
+        "icon": "fa fa-dna",
+        "color": "purple",
+        "measurement_type": "genome sequencing",
+        "technology_type": "nucleic acid sequencing",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 2
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "gDNA",
+                  "DNA"
+                ],
+                "values": [
+                  "DNA"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "library_preparation",
+            {
+              "#replicates": {
+                "value": 1
+              },
+              "instrument": {
+                "options": [
+                  "MinION",
+                  "GridION",
+                  "PromethION",
+                  "Illumina HiSeq 4000",
+                  "Illumina NovaSeq 6000",
+                  "AB 3730xL Genetic Analyzer"
+                ],
+                "values": [
+                  "Illumina HiSeq 4000",
+                  "GridION"
+                ]
+              },
+              "library_orientation": {
+                "options": [
+                  "single",
+                  "paired"
+                ],
+                "values": [
+                  "paired"
+                ]
+              },
+              "library_strategy": {
+                "options": [
+                  "AMPLICON",
+                  "CLONE",
+                  "WGA",
+                  "WGS",
+                  "WXS",
+                  "OTHER"
+                ],
+                "values": [
+                  "WGA"
+                ]
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_6": [
+            false,
+            true,
+            true
+          ],
+          "Arm_7": [
+            false,
+            true,
+            true
+          ],
+          "Arm_8": [
+            false,
+            true,
+            true
+          ],
+          "Arm_9": [
+            false,
+            true,
+            true
+          ],
+          "Arm_10": [
+            false,
+            true,
+            true
+          ],
+          "Arm_11": [
+            false,
+            true,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            true
+          ],
+          "Arm_3": [
+            false,
+            true,
+            true
+          ],
+          "Arm_4": [
+            false,
+            true,
+            true
+          ],
+          "Arm_5": [
+            false,
+            true,
+            true
+          ],
+          "Arm_16": [
+            false,
+            true,
+            true
+          ],
+          "Arm_17": [
+            false,
+            true,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_6": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_7": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_8": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_9": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_10": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_11": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_3": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_4": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_5": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_16": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_17": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ]
+        }
+      }
+    ]
+  }
