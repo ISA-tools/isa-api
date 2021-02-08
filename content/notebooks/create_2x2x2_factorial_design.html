@@ -71,7 +71,7 @@
 <meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/create_2x2x2_factorial_design.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Create an ISA Study representing a 2x2x2 factorial design with single measurements" />
-<meta property="og:description" content="Create an ISA Study representing a 2x2x2 factorial design with single measurements  from isatools.model import * import pandas as pd import datetime as dt from " />
+<meta property="og:description" content="Create an ISA Study representing a 2x2x2 factorial design with single measurements  Abstract:  In this notebook, we’ll show how a study design defines a series " />
 <meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
 
 <meta name="twitter:card" content="summary" />
@@ -246,6 +246,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2">
@@ -373,6 +374,173 @@
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#abstract">
+   Abstract:
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#let-s-get-the-toolkit">
+     Let’s get the toolkit
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-the-isa-study-core-metadata">
+     Creating the ISA Study core metadata
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#let-s-build-the-isa-study-design-object">
+     Let’s build the ISA Study Design Object
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#declaring-the-3-independent-variables-isa-factors-of-the-study">
+       Declaring the 3 independent variables (ISA Factors) of the Study
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#declaring-the-treatment-groups">
+       Declaring the treatment groups
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#now-building-the-study-arms">
+       Now building the Study Arms
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#a-new-data-structure-for-defining-an-assay-workflow">
+       A new data structure for defining an assay workflow
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#associating-each-study-arm-with-the-study-cell-and-its-sample-to-assay-plan">
+       Associating each
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         study
+        </span>
+        <span class="pre">
+         arm
+        </span>
+       </code>
+       with the
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         study
+        </span>
+        <span class="pre">
+         cell
+        </span>
+       </code>
+       and its
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sample
+        </span>
+        <span class="pre">
+         to
+        </span>
+        <span class="pre">
+         assay
+        </span>
+        <span class="pre">
+         plan
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adding-all-the-study-arm-to-the-study-design-object">
+       Adding all the
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         study
+        </span>
+        <span class="pre">
+         arm
+        </span>
+       </code>
+       to the
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         study
+        </span>
+        <span class="pre">
+         design
+        </span>
+       </code>
+       object
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-s-now-serialize-the-isa-study-design-object-as-a-json-document">
+       Let’s now serialize the ISA Study Design Object as a JSON document.
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-s-produce-a-graphical-representation-of-the-study-groups-and-their-size-using-python-bokeh-library">
+       Let’s produce a graphical representation of the study groups and their size using python bokeh library
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#let-s-now-generate-the-full-isa-study-object-from-the-isa-study-design-object">
+     Let’s now generate the full
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       object
+      </span>
+     </code>
+     from the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISA
+      </span>
+      <span class="pre">
+       Study
+      </span>
+      <span class="pre">
+       Design
+      </span>
+      <span class="pre">
+       object
+      </span>
+     </code>
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#we-can-now-check-the-objects-which-have-been-generated">
+       We can now check the objects which have been generated
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#we-can-also-simply-write-to-file-either-as-isa-tab-or-as-isa-json">
+       We can also simply write to file either as ISA-Tab or as ISA-JSON
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#one-can-also-check-out-the-tables-as-dataframes">
+       One can also check out the tables as dataframes
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#or-use-the-graph-structure-to-count-objects">
+       or use the graph structure to count objects
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#about-this-notebook">
    About this notebook
   </a>
@@ -390,19 +558,82 @@
                 
   <div class="section" id="create-an-isa-study-representing-a-2x2x2-factorial-design-with-single-measurements">
 <h1>Create an ISA Study representing a 2x2x2 factorial design with single measurements<a class="headerlink" href="#create-an-isa-study-representing-a-2x2x2-factorial-design-with-single-measurements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="abstract">
+<h2>Abstract:<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>In this notebook, we’ll show how a study design defines a series of interventions with two distinct radiological agents, at two distinct dose levels and 2 distinct timepoints of observation post-exposure.</p>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>Factor Name</p></th>
+<th class="text-align:left head"><p>Factor Type</p></th>
+<th class="text-align:left head"><p>Factor Value</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+<th class="text-align:left head"><p>Factor Value</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+<th class="text-align:right head"><p>Number of factor levels</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>radionucleide</p></td>
+<td class="text-align:left"><p>radiological agent</p></td>
+<td class="text-align:left"><p>Cs 137</p></td>
+<td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>Fe 56</p></td>
+<td class="text-align:center"><p></p></td>
+<td class="text-align:right"><p>2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>dose</p></td>
+<td class="text-align:left"><p>intensity</p></td>
+<td class="text-align:left"><p>2.5</p></td>
+<td class="text-align:center"><p>cGy</p></td>
+<td class="text-align:left"><p>10</p></td>
+<td class="text-align:center"><p>cGy</p></td>
+<td class="text-align:right"><p>2</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>time post exposure</p></td>
+<td class="text-align:left"><p>time</p></td>
+<td class="text-align:left"><p>1</p></td>
+<td class="text-align:center"><p>hr</p></td>
+<td class="text-align:left"><p>72</p></td>
+<td class="text-align:center"><p>hr</p></td>
+<td class="text-align:right"><p>2</p></td>
+</tr>
+</tbody>
+</table>
+<p>In this experiment, <em>muscle</em> samples are collected once from each study subject (n=10 per group) and <code class="docutils literal notranslate"><span class="pre">metabolite</span> <span class="pre">profiling</span></code> using <code class="docutils literal notranslate"><span class="pre">1D</span> <span class="pre">13C</span> <span class="pre">NMR</span></code> is performed on the <code class="docutils literal notranslate"><span class="pre">supernatant</span></code> and <code class="docutils literal notranslate"><span class="pre">pellet</span></code> of the extracted fraction.
+Subjects were also <code class="docutils literal notranslate"><span class="pre">phenotyped</span> <span class="pre">using</span> <span class="pre">a</span> <span class="pre">custom</span> <span class="pre">hyperspectral</span> <span class="pre">imaging</span></code>.</p>
+<div class="section" id="let-s-get-the-toolkit">
+<h3>Let’s get the toolkit<a class="headerlink" href="#let-s-get-the-toolkit" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="o">*</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
 
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Investigation</span><span class="p">,</span> <span class="n">Study</span><span class="p">,</span><span class="n">StudyFactor</span><span class="p">,</span><span class="n">FactorValue</span><span class="p">,</span> <span class="n">Assay</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Material</span><span class="p">,</span>
+                            <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
+                            <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
+                            <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span><span class="n">ProtocolParameter</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Treatment</span><span class="p">,</span><span class="n">StudyCell</span><span class="p">,</span><span class="n">StudyArm</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">OrderedDict</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">ProtocolNode</span><span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="creating-the-isa-study-core-metadata">
+<h3>Creating the ISA Study core metadata<a class="headerlink" href="#creating-the-isa-study-core-metadata" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
@@ -410,12 +641,9 @@
 <span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;2x2x2&quot;</span>
 <span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;2x2x2 factorial design study&quot;</span>
 <span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;a simple full factorial design study 2x2x2&quot;</span>
-<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="s2">&quot;2013-04-23&quot;</span>
-<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="s2">&quot;2013-05-30&quot;</span>
-<span class="c1">#study.sources = [Source(name=&quot;source1&quot;)]</span>
-<span class="c1">#study.samples = [Sample(name=&quot;sample1&quot;)]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="s2">&quot;2021-04-21&quot;</span> <span class="c1"># Note the ISO8601 format for dates</span>
+<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="s2">&quot;2021-05-30&quot;</span>  <span class="c1"># Note the ISO8601 format for dates</span>
 <span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">)]</span>
-<span class="c1">#study.process_sequence = [Process(executes_protocol=study.protocols[-1], inputs=[study.sources[-1]], outputs=[study.samples[-1]])]</span>
 <span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
 </pre></div>
@@ -429,23 +657,32 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="let-s-build-the-isa-study-design-object">
+<h3>Let’s build the ISA Study Design Object<a class="headerlink" href="#let-s-build-the-isa-study-design-object" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="declaring-the-3-independent-variables-isa-factors-of-the-study">
+<h4>Declaring the 3 independent variables (ISA Factors) of the Study<a class="headerlink" href="#declaring-the-3-independent-variables-isa-factors-of-the-study" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ionizing radiation&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;radiological agent&quot;</span><span class="p">))</span>
-<span class="n">f2</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dose&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;radionucleide&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;radiological agent&quot;</span><span class="p">))</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dose&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;intensity&quot;</span><span class="p">))</span>
 <span class="n">f3</span> <span class="o">=</span> <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;time post exposure&#39;</span><span class="p">,</span> <span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="declaring-the-treatment-groups">
+<h4>Declaring the treatment groups<a class="headerlink" href="#declaring-the-treatment-groups" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
-<span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te1</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te1</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
+<span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te1</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te1</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te1</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v1</span><span class="p">,</span><span class="n">f2v1</span><span class="p">,</span><span class="n">f3v1</span><span class="p">)</span>
 <span class="c1"># te1.factor_values.add(f1v1)</span>
 </pre></div>
@@ -454,12 +691,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te6</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te6</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
 <span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te6</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te6</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te6</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v1</span><span class="p">,</span><span class="n">f2v1</span><span class="p">,</span><span class="n">f3v2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -467,12 +705,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te2</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te2</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
 <span class="n">f2v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te2</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te2</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te2</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v1</span><span class="p">,</span><span class="n">f2v2</span><span class="p">,</span><span class="n">f3v2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -480,12 +719,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te7</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te7</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Cs 137&quot;</span><span class="p">))</span>
 <span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te7</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te7</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te7</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v2</span><span class="p">,</span><span class="n">f2v1</span><span class="p">,</span><span class="n">f3v2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -493,12 +733,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56 ion beam&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te3</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te3</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56&quot;</span><span class="p">))</span>
 <span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te3</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te3</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te3</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v2</span><span class="p">,</span><span class="n">f2v1</span><span class="p">,</span><span class="n">f3v1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -506,12 +747,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56 ion beam&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te5</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te5</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56&quot;</span><span class="p">))</span>
 <span class="n">f2v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te5</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te5</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te5</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v2</span><span class="p">,</span><span class="n">f2v1</span><span class="p">,</span><span class="n">f3v2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -519,12 +761,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56 ion beam&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te8</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te8</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56&quot;</span><span class="p">))</span>
 <span class="n">f2v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te8</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te8</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te8</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v2</span><span class="p">,</span><span class="n">f2v2</span><span class="p">,</span><span class="n">f3v1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -532,17 +775,21 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56 ion beam&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te4</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
+<span class="n">te4</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
+
+<span class="n">f1v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Fe 56&quot;</span><span class="p">))</span>
 <span class="n">f2v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;cGy&#39;</span><span class="p">))</span>
 <span class="n">f3v2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">f3</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;hr&#39;</span><span class="p">))</span>
 
-<span class="n">te4</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
-<span class="n">te4</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;chemical intervention&#39;</span>
 <span class="n">te4</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1v2</span><span class="p">,</span><span class="n">f2v2</span><span class="p">,</span><span class="n">f3v2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="now-building-the-study-arms">
+<h4>Now building the Study Arms<a class="headerlink" href="#now-building-the-study-arms" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">st_cl1</span><span class="o">=</span> <span class="n">StudyCell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_cl1&quot;</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">te1</span><span class="p">])</span>
@@ -579,6 +826,10 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="a-new-data-structure-for-defining-an-assay-workflow">
+<h4>A new data structure for defining an assay workflow<a class="headerlink" href="#a-new-data-structure-for-defining-an-assay-workflow" title="Permalink to this headline">¶</a></h4>
+<p>The following cells show 2 distinct assay workflows, which are consumed by the <code class="docutils literal notranslate"><span class="pre">ISAcreate</span> <span class="pre">module</span></code> of the ISA-API to drive to creation of ISA objects. In this notebook, we show how the data structure can be used to pass workflow settings.  Each <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">Node</span></code> can be used to specify the number of technical replicates and parameter settings for each data acquisition to be executed. Note how these values are <code class="docutils literal notranslate"><span class="pre">OntologyAnnotation</span></code> and therefore can be marked up with URI.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nmr_assay_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
@@ -675,6 +926,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="associating-each-study-arm-with-the-study-cell-and-its-sample-to-assay-plan">
+<h4>Associating each <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">arm</span></code> with the <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">cell</span></code> and its <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">to</span> <span class="pre">assay</span> <span class="pre">plan</span></code><a class="headerlink" href="#associating-each-study-arm-with-the-study-cell-and-its-sample-to-assay-plan" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
@@ -689,6 +943,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="adding-all-the-study-arm-to-the-study-design-object">
+<h4>Adding all the <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">arm</span></code> to the <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">design</span></code> object<a class="headerlink" href="#adding-all-the-study-arm-to-the-study-design-object" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study_design</span><span class="o">=</span> <span class="n">StudyDesign</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;parallel group design 2x2x2 #1&#39;</span><span class="p">)</span>
@@ -704,6 +961,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="let-s-now-serialize-the-isa-study-design-object-as-a-json-document">
+<h4>Let’s now serialize the ISA Study Design Object as a JSON document.<a class="headerlink" href="#let-s-now-serialize-the-isa-study-design-object-as-a-json-document" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
@@ -711,6 +971,22 @@
 <span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="n">StudyDesignEncoder</span>
 
 <span class="n">f</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">study_design</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">StudyDesignEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="let-s-produce-a-graphical-representation-of-the-study-groups-and-their-size-using-python-bokeh-library">
+<h4>Let’s produce a graphical representation of the study groups and their size using python bokeh library<a class="headerlink" href="#let-s-produce-a-graphical-representation-of-the-study-groups-and-their-size-using-python-bokeh-library" title="Permalink to this headline">¶</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">Range1d</span><span class="p">,</span> <span class="n">BoxAnnotation</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">LegendItem</span><span class="p">,</span> <span class="n">LabelSet</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.tools</span> <span class="kn">import</span> <span class="n">HoverTool</span>
+<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
+<span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span><span class="p">,</span> <span class="n">dim</span>
+<span class="n">hv</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;bokeh&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -738,19 +1014,6 @@
                         <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">some_element</span><span class="p">[</span><span class="s1">&#39;factorValues&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">treat</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show</span>
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span>
-<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">Range1d</span><span class="p">,</span> <span class="n">BoxAnnotation</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">LegendItem</span><span class="p">,</span> <span class="n">LabelSet</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.tools</span> <span class="kn">import</span> <span class="n">HoverTool</span>
-<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
-<span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span><span class="p">,</span> <span class="n">dim</span>
-<span class="n">hv</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;bokeh&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -886,6 +1149,11 @@
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="section" id="let-s-now-generate-the-full-isa-study-object-from-the-isa-study-design-object">
+<h3>Let’s now generate the full <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">object</span></code> from the <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">object</span></code><a class="headerlink" href="#let-s-now-generate-the-full-isa-study-object-from-the-isa-study-design-object" title="Permalink to this headline">¶</a></h3>
+<p>This is done by invoking the new <code class="docutils literal notranslate"><span class="pre">generate_isa_study</span></code> method on the ISA <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">design</span></code> object</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span> <span class="o">=</span> <span class="n">study_design</span><span class="o">.</span><span class="n">generate_isa_study</span><span class="p">()</span>
@@ -893,13 +1161,8 @@
 </div>
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
+<div class="section" id="we-can-now-check-the-objects-which-have-been-generated">
+<h4>We can now check the objects which have been generated<a class="headerlink" href="#we-can-now-check-the-objects-which-have-been-generated" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span><span class="o">.</span><span class="n">studies</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="p">]</span>
@@ -909,12 +1172,14 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(investigation.studies[0].assays[1])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">investigation</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">investigation</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="we-can-also-simply-write-to-file-either-as-isa-tab-or-as-isa-json">
+<h4>We can also simply write to file either as ISA-Tab or as ISA-JSON<a class="headerlink" href="#we-can-also-simply-write-to-file-either-as-isa-tab-or-as-isa-json" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># WRITING ISA-JSON document</span>
@@ -931,6 +1196,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="one-can-also-check-out-the-tables-as-dataframes">
+<h4>One can also check out the tables as dataframes<a class="headerlink" href="#one-can-also-check-out-the-tables-as-dataframes" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
@@ -960,6 +1228,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="or-use-the-graph-structure-to-count-objects">
+<h4>or use the graph structure to count objects<a class="headerlink" href="#or-use-the-graph-structure-to-count-objects" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Sample</span><span class="p">)]</span>
@@ -978,6 +1249,9 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
 </pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>

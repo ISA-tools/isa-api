@@ -60,7 +60,7 @@
     <link rel="shortcut icon" href="../../_static/isa.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="" href="isa-metabolomics-study-design-create.html" />
+    <link rel="next" title="ISA Create Mode example" href="isa-metabolomics-study-design-create.html" />
     <link rel="prev" title="ISA-API built-in semantic requirements for protocol type values" href="isa-protocol-type-synonym-effect-on-assay-table.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -246,6 +246,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2">
@@ -712,14 +713,28 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <h2>Study metadata<a class="headerlink" href="#study-metadata" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">isatools</span>
-<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Investigation</span><span class="p">,</span> <span class="n">Study</span><span class="p">,</span><span class="n">StudyFactor</span><span class="p">,</span><span class="n">FactorValue</span><span class="p">,</span> <span class="n">Assay</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Material</span><span class="p">,</span>
+                            <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
+                            <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
+                            <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span><span class="n">ProtocolParameter</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Treatment</span><span class="p">,</span><span class="n">NonTreatment</span><span class="p">,</span><span class="n">StudyDesign</span><span class="p">,</span><span class="n">StudyCell</span><span class="p">,</span><span class="n">StudyArm</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">OrderedDict</span><span class="p">,</span><span class="n">ProtocolNode</span><span class="p">,</span><span class="n">SampleAndAssayPlan</span><span class="p">,</span> <span class="n">AssayGraph</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.create.constants</span> <span class="kn">import</span> <span class="o">*</span>
+
 <span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
-
-<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="o">*</span> 
 </pre></div>
 </div>
 </div>
@@ -869,7 +884,7 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <h3>5. Creation of ‘follow-up’ period as an <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Element</span></code>.<a class="headerlink" href="#creation-of-follow-up-period-as-an-isa-study-design-element" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nte3</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="n">FOLLOW_UP</span><span class="p">,</span> <span class="n">duration_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nte3</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="s1">&#39;follow-up&#39;</span><span class="p">,</span> <span class="n">duration_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">))</span>
 <span class="c1">#print(nte3)</span>
 </pre></div>
 </div>
@@ -1026,6 +1041,9 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay">
+<h3>9. Declaration of an ISA assay and linking specimen type and data acquisition plan for this assay<a class="headerlink" href="#declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sap1</span><span class="o">.</span><span class="n">sample_to_assay_map</span>
@@ -1033,9 +1051,6 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay">
-<h3>9. Declaration of an ISA assay and linking specimen type and data acquisition plan for this assay<a class="headerlink" href="#declaration-of-an-isa-assay-and-linking-specimen-type-and-data-acquisition-plan-for-this-assay" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="build-an-isa-study-design-arm-by-adding-the-first-set-of-isa-cells-and-setting-the-sample-assay-plan">
 <h3>10. Build an ISA <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Design</span> <span class="pre">Arm</span></code> by adding the first set of ISA <code class="docutils literal notranslate"><span class="pre">Cells</span></code> and setting the <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Assay</span> <span class="pre">Plan</span></code><a class="headerlink" href="#build-an-isa-study-design-arm-by-adding-the-first-set-of-isa-cells-and-setting-the-sample-assay-plan" title="Permalink to this headline">¶</a></h3>
@@ -1225,7 +1240,7 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="isa-protocol-type-synonym-effect-on-assay-table.html" title="previous page">ISA-API built-in semantic requirements for <code class="docutils literal notranslate"><span class="pre">protocol</span> <span class="pre">type</span></code> values</a>
-    <a class='right-next' id="next-link" href="isa-metabolomics-study-design-create.html" title="next page"></a>
+    <a class='right-next' id="next-link" href="isa-metabolomics-study-design-create.html" title="next page">ISA Create Mode example</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

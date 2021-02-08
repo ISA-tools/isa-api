@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title> &#8212; The ISA cookbook</title>
+    <title>ISA Create Mode example &#8212; The ISA cookbook</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -70,8 +70,8 @@
 <!-- Opengraph tags -->
 <meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/isa-metabolomics-study-design-create.html" />
 <meta property="og:type"        content="article" />
-<meta property="og:title"       content="The ISA cookbook" />
-<meta property="og:description" content="  Abstract:  In this notebook, we’ll show how to generate an ISA-Tab and an ISA JSON representation of a metabolomics study. The study uses GC-MS and 13C NMR on" />
+<meta property="og:title"       content="ISA Create Mode example" />
+<meta property="og:description" content="ISA Create Mode example  Abstract:  In this notebook, we’ll show how to generate an ISA-Tab and an ISA JSON representation of a metabolomics study. The study us" />
 <meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
 
 <meta name="twitter:card" content="summary" />
@@ -246,6 +246,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2">
@@ -402,6 +403,26 @@
      </code>
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#declaring-study-design-key-elements-in-terms-of-treatments-and-non-treatment-elements-study-cell-arms">
+     5. Declaring Study Design key elements in terms of Treatments and Non-Treatment elements, Study Cell &amp; Arms
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generated-isa-study-from-isa-study-design-object">
+     6. Generated ISA Study from ISA Study Design Object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#serialization-as-isa-json-and-isa-tab">
+     7. Serialization as ISA-JSON and ISA-Tab
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#performing-syntactic-validation-by-invoking-isa-validator">
+     8. Performing syntactic validation by invoking ISA Validator
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -425,8 +446,8 @@
         
               <div>
                 
-  <div class="section" id="id1">
-<h1><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="isa-create-mode-example">
+<h1>ISA Create Mode example<a class="headerlink" href="#isa-create-mode-example" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="abstract">
 <h2>Abstract:<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
 <p>In this notebook, we’ll show how to generate an ISA-Tab and an ISA JSON representation of a metabolomics study.
@@ -437,8 +458,18 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
 <h3>1. Loading ISA-API model and relevant library<a class="headerlink" href="#loading-isa-api-model-and-relevant-library" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># from isatools.model import *</span>
+<span class="c1"># from isatools.create.model import *</span>
 <span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
 <span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isajson</span>
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
@@ -446,6 +477,9 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
                             <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
                             <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
                             <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Treatment</span><span class="p">,</span><span class="n">StudyCell</span><span class="p">,</span><span class="n">StudyArm</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">OrderedDict</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">ProtocolNode</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">isatools.create.constants</span>
 
 <span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
@@ -703,6 +737,9 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="declaring-study-design-key-elements-in-terms-of-treatments-and-non-treatment-elements-study-cell-arms">
+<h3>5. Declaring Study Design key elements in terms of Treatments and Non-Treatment elements, Study Cell &amp; Arms<a class="headerlink" href="#declaring-study-design-key-elements-in-terms-of-treatments-and-non-treatment-elements-study-cell-arms" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">first_treatment</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">(</span><span class="n">factor_values</span><span class="o">=</span><span class="p">(</span>
@@ -816,7 +853,16 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
     <span class="p">(</span><span class="n">cell_follow_up</span><span class="p">,</span> <span class="n">nmr_sample_assay_plan</span><span class="p">)</span>
 <span class="p">]))</span>
 <span class="n">study_design</span> <span class="o">=</span> <span class="n">StudyDesign</span><span class="p">(</span><span class="n">study_arms</span><span class="o">=</span><span class="p">(</span><span class="n">single_arm</span><span class="p">,))</span>
-<span class="n">study</span> <span class="o">=</span> <span class="n">study_design</span><span class="o">.</span><span class="n">generate_isa_study</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="generated-isa-study-from-isa-study-design-object">
+<h3>6. Generated ISA Study from ISA Study Design Object<a class="headerlink" href="#generated-isa-study-from-isa-study-design-object" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span> <span class="o">=</span> <span class="n">study_design</span><span class="o">.</span><span class="n">generate_isa_study</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -940,6 +986,9 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="serialization-as-isa-json-and-isa-tab">
+<h3>7. Serialization as ISA-JSON and ISA-Tab<a class="headerlink" href="#serialization-as-isa-json-and-isa-tab" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">isa_j</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">isa_investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
@@ -955,10 +1004,12 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="performing-syntactic-validation-by-invoking-isa-validator">
+<h3>8. Performing syntactic validation by invoking ISA Validator<a class="headerlink" href="#performing-syntactic-validation-by-invoking-isa-validator" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">final_dir</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_dir</span><span class="p">,</span><span class="s1">&#39;i_investigation.txt&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">isa</span><span class="p">:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_dir</span><span class="p">,</span><span class="s1">&#39;i_investigation.txt&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">isa</span><span class="p">:</span>
     <span class="n">validation_report</span><span class="o">=</span><span class="n">isatab</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">isa</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -975,6 +1026,7 @@ The study uses GC-MS and 13C NMR on 3 distinct sample types (liver, blood and he
 </div>
 <div class="section" id="conclusion">
 <h2>Conclusion:<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>With this notebook, we have shown how to use study design information to generate a populated instance of ISA Study object and write it to file.</p>
 </div>
 <div class="section" id="about-this-notebook">
 <h2>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h2>

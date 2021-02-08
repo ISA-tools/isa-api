@@ -70,7 +70,7 @@
 <meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/isa-tab-unused-sources-not-serialized-brapi.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Known Issue: unused ISA Source aren’t serialized to ISA-Tab" />
-<meta property="og:description" content="Known Issue: unused ISA Source aren’t serialized to ISA-Tab  Let’s get the tools  import os import json import datetime from isatools.model import (Investigatio" />
+<meta property="og:description" content="Known Issue: unused ISA Source aren’t serialized to ISA-Tab  Abtract:  This notebook documents a behavior of the ISA-Tab writer which results in declared but un" />
 <meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
 
 <meta name="twitter:card" content="summary" />
@@ -245,6 +245,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2">
@@ -371,6 +372,11 @@
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#abtract">
+   Abtract:
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#let-s-get-the-tools">
    Let’s get the tools
@@ -523,8 +529,24 @@
                 
   <div class="section" id="known-issue-unused-isa-source-aren-t-serialized-to-isa-tab">
 <h1>Known Issue: unused ISA Source aren’t serialized to ISA-Tab<a class="headerlink" href="#known-issue-unused-isa-source-aren-t-serialized-to-isa-tab" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="abtract">
+<h2>Abtract:<a class="headerlink" href="#abtract" title="Permalink to this headline">¶</a></h2>
+<p>This notebook documents a behavior of the ISA-Tab writer which results in declared but unused ISA Source objects not to be serialized in the ISA-Tab file.
+The ISA objects are serialized fine if using the ISA-JSON write.
+The future releases of the ISA-API will see to address the issue.</p>
+</div>
 <div class="section" id="let-s-get-the-tools">
 <h2>Let’s get the tools<a class="headerlink" href="#let-s-get-the-tools" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
