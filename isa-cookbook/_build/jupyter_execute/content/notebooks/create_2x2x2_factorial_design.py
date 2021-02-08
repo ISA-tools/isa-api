@@ -1,99 +1,140 @@
 # Create an ISA Study representing a 2x2x2 factorial design with single measurements
 
-from isatools.model import *
+## Abstract:
+
+In this notebook, we'll show how a study design defines a series of interventions with two distinct radiological agents, at two distinct dose levels and 2 distinct timepoints of observation post-exposure.
+
+|Factor Name|Factor Type|Factor Value|Unit| Factor Value|Unit|Number of factor levels|
+|:---|:---|:---|:---:|:---|:---:|---:|
+|radionucleide|radiological agent|Cs 137| |Fe 56|| 2 |
+|dose|intensity | 2.5 | cGy | 10 | cGy | 2 |
+|time post exposure| time| 1 | hr | 72 | hr | 2 |
+
+In this experiment, *muscle* samples are collected once from each study subject (n=10 per group) and `metabolite profiling` using `1D 13C NMR` is performed on the `supernatant` and `pellet` of the extracted fraction.
+Subjects were also `phenotyped using a custom hyperspectral imaging`.
+
+
+### Let's get the toolkit
+
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
 import pandas as pd
 import datetime as dt
-from isatools.create.model import * 
-
 import json
+
+from isatools.model import (Investigation, Study,StudyFactor,FactorValue, Assay, Person, Material,
+                            DataFile, plink,
+                            OntologySource, OntologyAnnotation, Sample,
+                            Source, Characteristic, Protocol,ProtocolParameter, Process)
+
+from isatools.create.model import (Treatment,StudyCell,StudyArm,ProductNode,OrderedDict,ProductNode,ProtocolNode)
+
 from isatools.isajson import ISAJSONEncoder
 
+
+### Creating the ISA Study core metadata
 
 investigation = Investigation()
 study = Study(filename="s_study_2by2by2.txt")
 study.identifier = "2x2x2"
 study.title = "2x2x2 factorial design study"
 study.description = "a simple full factorial design study 2x2x2"
-study.submission_date = "2013-04-23"
-study.public_release_date = "2013-05-30"
-#study.sources = [Source(name="source1")]
-#study.samples = [Sample(name="sample1")]
+study.submission_date = "2021-04-21" # Note the ISO8601 format for dates
+study.public_release_date = "2021-05-30"  # Note the ISO8601 format for dates
 study.protocols = [Protocol(name="sample collection")]
-#study.process_sequence = [Process(executes_protocol=study.protocols[-1], inputs=[study.sources[-1]], outputs=[study.samples[-1]])]
 investigation.studies = [study]
 print(investigation)
 
 
 print(json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')))
 
-f1 = StudyFactor(name='ionizing radiation', factor_type=OntologyAnnotation(term="radiological agent"))
-f2 = StudyFactor(name='dose', factor_type=OntologyAnnotation(term="quantity"))
+### Let's build the ISA Study Design Object
+
+#### Declaring the 3 independent variables (ISA Factors) of the Study
+
+f1 = StudyFactor(name='radionucleide', factor_type=OntologyAnnotation(term="radiological agent"))
+f2 = StudyFactor(name='dose', factor_type=OntologyAnnotation(term="intensity"))
 f3 = StudyFactor(name='time post exposure', factor_type=OntologyAnnotation(term="time"))
 
-f1v1 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Cs 137"))
-f2v1 = FactorValue(factor_name=f2, value=3, unit=OntologyAnnotation(term='cGy'))
-f3v1 = FactorValue(factor_name=f3, value=1, unit=OntologyAnnotation(term='hr'))
+#### Declaring the treatment groups
 
 te1 = Treatment()
-te1.type='chemical intervention'
+te1.type='radiological intervention'
+
+f1v1 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Cs 137"))
+f2v1 = FactorValue(factor_name=f2, value=2.5, unit=OntologyAnnotation(term='cGy'))
+f3v1 = FactorValue(factor_name=f3, value=1, unit=OntologyAnnotation(term='hr'))
+
 te1.factor_values = (f1v1,f2v1,f3v1)
 # te1.factor_values.add(f1v1)
+
+te6 = Treatment()
+te6.type='radiological intervention'
 
 f1v1 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Cs 137"))
 f2v1 = FactorValue(factor_name=f2, value=2.5,unit=OntologyAnnotation(term='cGy'))
 f3v2 = FactorValue(factor_name=f3, value=72, unit=OntologyAnnotation(term='hr'))
 
-te6 = Treatment()
-te6.type='chemical intervention'
 te6.factor_values = (f1v1,f2v1,f3v2)
+
+te2 = Treatment()
+te2.type='radiological intervention'
 
 f1v1 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Cs 137"))
 f2v2 = FactorValue(factor_name=f2, value=10,unit=OntologyAnnotation(term='cGy'))
 f3v2 = FactorValue(factor_name=f3, value=72, unit=OntologyAnnotation(term='hr'))
 
-te2 = Treatment()
-te2.type='chemical intervention'
 te2.factor_values = (f1v1,f2v2,f3v2)
+
+te7 = Treatment()
+te7.type='radiological intervention'
 
 f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Cs 137"))
 f2v1 = FactorValue(factor_name=f2, value=10,unit=OntologyAnnotation(term='cGy'))
 f3v2 = FactorValue(factor_name=f3, value=72, unit=OntologyAnnotation(term='hr'))
 
-te7 = Treatment()
-te7.type='chemical intervention'
 te7.factor_values = (f1v2,f2v1,f3v2)
 
-f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56 ion beam"))
+te3 = Treatment()
+te3.type='radiological intervention'
+
+f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56"))
 f2v1 = FactorValue(factor_name=f2, value=2.5,unit=OntologyAnnotation(term='cGy'))
 f3v1 = FactorValue(factor_name=f3, value=1, unit=OntologyAnnotation(term='hr'))
 
-te3 = Treatment()
-te3.type='chemical intervention'
 te3.factor_values = (f1v2,f2v1,f3v1)
 
-f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56 ion beam"))
+te5 = Treatment()
+te5.type='radiological intervention'
+
+f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56"))
 f2v1 = FactorValue(factor_name=f2, value=2.5,unit=OntologyAnnotation(term='cGy'))
 f3v2 = FactorValue(factor_name=f3, value=72, unit=OntologyAnnotation(term='hr'))
 
-te5 = Treatment()
-te5.type='chemical intervention'
 te5.factor_values = (f1v2,f2v1,f3v2)
 
-f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56 ion beam"))
+te8 = Treatment()
+te8.type='radiological intervention'
+
+f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56"))
 f2v2 = FactorValue(factor_name=f2, value=10,unit=OntologyAnnotation(term='cGy'))
 f3v1 = FactorValue(factor_name=f3, value=1, unit=OntologyAnnotation(term='hr'))
 
-te8 = Treatment()
-te8.type='chemical intervention'
 te8.factor_values = (f1v2,f2v2,f3v1)
 
-f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56 ion beam"))
+te4 = Treatment()
+te4.type='radiological intervention'
+
+f1v2 = FactorValue(factor_name=f1, value=OntologyAnnotation(term="Fe 56"))
 f2v2 = FactorValue(factor_name=f2, value=10,unit=OntologyAnnotation(term='cGy'))
 f3v2 = FactorValue(factor_name=f3, value=72, unit=OntologyAnnotation(term='hr'))
 
-te4 = Treatment()
-te4.type='chemical intervention'
 te4.factor_values = (f1v2,f2v2,f3v2)
+
+#### Now building the Study Arms
 
 st_cl1= StudyCell(name="st_cl1", elements=[te1])
 st_cl2= StudyCell(name="st_cl2", elements=[te2])
@@ -116,6 +157,10 @@ arm8 = StudyArm(name='Group 8', group_size=10)
 
 input_material1=ProductNode(id_="MAT1", name="muscle tissue", node_type=SAMPLE,size=1,characteristics=[Characteristic(category=OntologyAnnotation(term='organism part'), value=OntologyAnnotation(term='muscle'))])
 #input_material2=ProductNode(id_="MAT2", name="blood", node_type=SAMPLE,size=1,characteristics=[Characteristic(category='organism part', value='blood')])
+
+#### A new data structure for defining an assay workflow
+
+The following cells show 2 distinct assay workflows, which are consumed by the `ISAcreate module` of the ISA-API to drive to creation of ISA objects. In this notebook, we show how the data structure can be used to pass workflow settings.  Each `Protocol Node` can be used to specify the number of technical replicates and parameter settings for each data acquisition to be executed. Note how these values are `OntologyAnnotation` and therefore can be marked up with URI.
 
 nmr_assay_dict = OrderedDict([
     ('measurement_type', OntologyAnnotation(term='metabolite profiling')),
@@ -198,6 +243,8 @@ sap1.sample_to_assay_map=sample2assay_plan
 
 sorted(sap1.assay_plan)[0].quality_control
 
+#### Associating each `study arm` with the `study cell` and its `sample to assay plan`
+
 arm1.add_item_to_arm_map(st_cl1,sap1)
 arm2.add_item_to_arm_map(st_cl2,sap1)
 arm3.add_item_to_arm_map(st_cl3,sap1)
@@ -206,6 +253,8 @@ arm5.add_item_to_arm_map(st_cl5,sap1)
 arm6.add_item_to_arm_map(st_cl6,sap1)
 arm7.add_item_to_arm_map(st_cl7,sap1)
 arm8.add_item_to_arm_map(st_cl8,sap1)
+
+#### Adding all the `study arm` to the `study design` object
 
 study_design= StudyDesign(name='parallel group design 2x2x2 #1')
 study_design.add_study_arm(arm1)
@@ -217,11 +266,23 @@ study_design.add_study_arm(arm6)
 study_design.add_study_arm(arm7)
 study_design.add_study_arm(arm8)
 
+#### Let's now serialize the ISA Study Design Object as a JSON document.
+
 import json
 from isatools.isajson import ISAJSONEncoder
 from isatools.create.model import StudyDesignEncoder
 
 f=json.dumps(study_design, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': '))
+
+#### Let's produce a graphical representation of the study groups and their size using python bokeh library
+
+from bokeh.io import output_file, show
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, Range1d, BoxAnnotation, Label, Legend, LegendItem, LabelSet
+from bokeh.models.tools import HoverTool
+import holoviews as hv
+from holoviews import opts, dim
+hv.extension('bokeh')
 
 def get_treatment_factors(some_element):
     treat = ""
@@ -244,14 +305,6 @@ def get_treatment_factors(some_element):
                         + str(some_element['factorValues'][j]['value'])
 
     return treat
-
-from bokeh.io import output_file, show
-from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Range1d, BoxAnnotation, Label, Legend, LegendItem, LabelSet
-from bokeh.models.tools import HoverTool
-import holoviews as hv
-from holoviews import opts, dim
-hv.extension('bokeh')
 
 design = json.loads(json.dumps(study_design, cls=StudyDesignEncoder, sort_keys=True, indent=4, separators=(',', ': ')))
 frames = []
@@ -379,20 +432,27 @@ fig.add_layout(citation)
 
 show(fig)
 
+### Let's now generate the full `ISA Study object` from the `ISA Study Design object`
+
+This is done by invoking the new `generate_isa_study` method on the ISA `study design` object
+
 study = study_design.generate_isa_study()
 
-len(study.assays)
+#### We can now check the objects which have been generated
 
 investigation.studies=[study]
 
-# print(investigation.studies[0].assays[1])
 print(investigation.studies[0].assays[0])
+
+#### We can also simply write to file either as ISA-Tab or as ISA-JSON
 
 # WRITING ISA-JSON document
 print(json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')))
 
 from isatools import isatab
 isatab.dump(investigation, './notebook-output/isa-2x2x2-single-measure-design')
+
+#### One can also check out the tables as dataframes
 
 from isatools.isatab import dump_tables_to_dataframes as dumpdf
 dataframes = dumpdf(investigation)
@@ -402,6 +462,8 @@ dataframes.keys()
 len(dataframes.keys())
 
 dataframes[list(dataframes.keys())[1]]
+
+#### or use the graph structure to count objects
 
 [x for x in study.assays[0].graph.nodes() if isinstance(x, Sample)]
 

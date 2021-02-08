@@ -1,6 +1,18 @@
 # Known Issue: unused ISA Source aren't serialized to ISA-Tab
 
+## Abtract:
+
+This notebook documents a behavior of the ISA-Tab writer which results in declared but unused ISA Source objects not to be serialized in the ISA-Tab file.
+The ISA objects are serialized fine if using the ISA-JSON write.
+The future releases of the ISA-API will see to address the issue.
+
+
 ## Let's get the tools
+
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
 
 import os
 import json

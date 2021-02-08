@@ -16,6 +16,11 @@ Or study design configuration consists of:
 
 Let's import all the required libraries
 
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
 from time import time
 import os
 import json
@@ -131,7 +136,7 @@ For the Chip-Seq assay table, we have 300 (blood) samples, 1200 extracts (4 per 
 
 dataframes['a_AT16_protein-DNA-binding-site-identification_nucleic-acid-sequencing.txt']
 
-dataframes['a_AT1_metabolite-profiling_mass-spectrometry.txt'].nunique(axis=0, dropna=True)
+dataframes['a_AT0_metabolite-profiling_mass-spectrometry.txt'].nunique(axis=0, dropna=True)
 
 dataframes['a_AT2_metabolite-profiling_NMR-spectroscopy.txt'].nunique(axis=0, dropna=True)
 

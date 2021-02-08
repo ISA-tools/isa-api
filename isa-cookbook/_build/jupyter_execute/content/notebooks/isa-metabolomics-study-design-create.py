@@ -1,4 +1,4 @@
-#
+# ISA Create Mode example
 
 ## Abstract:
     
@@ -12,8 +12,13 @@ GC-MS acquisition were carried out in duplicate, extracts were derivatized using
 
 ### 1. Loading ISA-API model and relevant library
 
-from isatools.model import *
-from isatools.create.model import *
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
+# from isatools.model import *
+# from isatools.create.model import *
 from isatools import isatab
 from isatools import isajson
 from isatools.isajson import ISAJSONEncoder
@@ -21,6 +26,9 @@ from isatools.model import (Investigation, Study, Assay, Person, Material,
                             DataFile, plink,
                             OntologySource, OntologyAnnotation, Sample,
                             Source, Characteristic, Protocol, Process)
+
+from isatools.create.model import (Treatment,StudyCell,StudyArm,ProductNode,OrderedDict,ProductNode,ProtocolNode)
+import isatools.create.constants
 
 from isatools.isatab import dump_tables_to_dataframes as dumpdf
 import networkx as nx
@@ -257,6 +265,8 @@ nmr_assay_dict = OrderedDict([
             ])
     ])
 
+### 5. Declaring Study Design key elements in terms of Treatments and Non-Treatment elements, Study Cell & Arms
+
 first_treatment = Treatment(factor_values=(
     FactorValue(factor_name=BASE_FACTORS[0], value=FACTORS_0_VALUE),
     FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
@@ -363,6 +373,10 @@ single_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=10, arm_map=Ordere
     (cell_follow_up, nmr_sample_assay_plan)
 ]))
 study_design = StudyDesign(study_arms=(single_arm,))
+
+
+### 6. Generated ISA Study from ISA Study Design Object
+
 study = study_design.generate_isa_study()
 
 study
@@ -399,18 +413,23 @@ isa_tables['a_AT0_metabolite-profiling_mass-spectrometry.txt']
 
 final_dir = os.path.abspath(os.path.join('notebook-output', 'sd-test'))
 
+### 7. Serialization as ISA-JSON and ISA-Tab
+
 isa_j = json.dumps(isa_investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 open(os.path.join(final_dir,"isa_as_json_from_dumps2.json"),"w").write(isa_j) # this call write the string 'isa_j' to the file called 'isa_as_json_from_dumps.json'
 
 isatab.dump(isa_obj=isa_investigation, output_path=final_dir)
 
-print(final_dir)
+### 8. Performing syntactic validation by invoking ISA Validator
+
 with open(os.path.join(final_dir,'i_investigation.txt')) as isa:
     validation_report=isatab.validate(isa)
 
 validation_report["errors"]
 
 ## Conclusion:
+
+With this notebook, we have shown how to use study design information to generate a populated instance of ISA Study object and write it to file.
 
 
 

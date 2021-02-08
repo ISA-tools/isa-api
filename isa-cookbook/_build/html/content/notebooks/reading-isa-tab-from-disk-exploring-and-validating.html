@@ -71,7 +71,7 @@
 <meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Reading ISA-Tab from files and Validating ISA-Tab files" />
-<meta property="og:description" content="Reading ISA-Tab from files and Validating ISA-Tab files  Abstract:  The aim of this notebook is to: - show essential function to read and load an ISA-tab file i" />
+<meta property="og:description" content="Reading ISA-Tab from files and Validating ISA-Tab files  Abstract:  The aim of this notebook is to:  show essential function to read and load an ISA-tab file in" />
 <meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
 
 <meta name="twitter:card" content="summary" />
@@ -246,6 +246,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2">
@@ -533,14 +534,26 @@
 <h1>Reading ISA-Tab from files and Validating ISA-Tab files<a class="headerlink" href="#reading-isa-tab-from-files-and-validating-isa-tab-files" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="abstract">
 <h2>Abstract:<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
-<p>The aim of this notebook is to:
-- show essential function to read and load an ISA-tab file in memory.
-- navigate key objects and pull essential attributes.
-- learn how to invoke the ISA-tab validation function.
-- interpret the output of the validation report.</p>
+<p>The aim of this notebook is to:</p>
+<ul class="simple">
+<li><p>show essential function to read and load an ISA-tab file in memory.</p></li>
+<li><p>navigate key objects and pull key attributes.</p></li>
+<li><p>learn how to invoke the ISA-tab validation function.</p></li>
+<li><p>interpret the output of the validation report.</p></li>
+</ul>
 </div>
 <div class="section" id="getting-the-tools">
 <h2>1. Getting the tools<a class="headerlink" href="#getting-the-tools" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">isatools</span>
@@ -605,7 +618,15 @@
 <h4>Let’s check what is the first <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Source</span> <span class="pre">property</span></code>:<a class="headerlink" href="#let-s-check-what-is-the-first-isa-study-source-property" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">term</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># here, we get all the characteristics of the first Source object</span>
+<span class="n">first_source_characteristics</span> <span class="o">=</span> <span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">first_source_characteristics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">term</span>
 </pre></div>
 </div>
 </div>
@@ -615,7 +636,7 @@
 <h4>Let’s now check what is the <code class="docutils literal notranslate"><span class="pre">value</span></code> associated with that first <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Source</span> <span class="pre">property</span></code>:<a class="headerlink" href="#let-s-now-check-what-is-the-value-associated-with-that-first-isa-study-source-property" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">first_source_characteristics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span>
 </pre></div>
 </div>
 </div>
@@ -625,7 +646,7 @@
 <h4>Let’s now check what are all the properties associated with this first <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Source</span></code><a class="headerlink" href="#let-s-now-check-what-are-all-the-properties-associated-with-this-first-isa-study-source" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">term</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">))]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">char</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">term</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">first_source_characteristics</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -635,7 +656,7 @@
 <h4>And the corresponding values are:<a class="headerlink" href="#and-the-corresponding-values-are" title="Permalink to this headline">¶</a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="p">))]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">char</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">first_source_characteristics</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -681,7 +702,7 @@
 </div>
 </div>
 <ul class="simple">
-<li><p>This Validation Report shows that No Error has been logged</p></li>
+<li><p>This <code class="docutils literal notranslate"><span class="pre">Validation</span> <span class="pre">Report</span></code> shows that No Error has been logged</p></li>
 <li><p>The rest of the report consists in warnings meant to draw the attention of the curator to elements which may be provided but which do not break the ISA syntax.</p></li>
 <li><p>Notice the <code class="docutils literal notranslate"><span class="pre">study</span> <span class="pre">group</span></code> information reported on both study and assay files. If ISA <code class="docutils literal notranslate"><span class="pre">Factor</span> <span class="pre">Value[]</span></code> fields are found present in the <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span></code> or <code class="docutils literal notranslate"> <span class="pre">ISA</span> <span class="pre">Assay</span></code> tables, the validator will try to identify the set of unique <code class="docutils literal notranslate"><span class="pre">Factor</span> <span class="pre">Value</span></code> combination defining a <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">Group</span></code>.</p>
 <ul>
@@ -704,7 +725,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_json_report_bii_s_5</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_json_report_bii_s_5</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>

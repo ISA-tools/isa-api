@@ -61,7 +61,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Known Issue: unused ISA Source aren’t serialized to ISA-Tab" href="isa-tab-unused-sources-not-serialized-brapi.html" />
-    <link rel="prev" title="" href="isa-metabolomics-study-design-create.html" />
+    <link rel="prev" title="ISA Create Mode example" href="isa-metabolomics-study-design-create.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -246,6 +246,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -467,6 +468,16 @@
 <p>Let’s import all the required libraries</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -668,7 +679,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT1_metabolite-profiling_mass-spectrometry.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT0_metabolite-profiling_mass-spectrometry.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -721,7 +732,7 @@
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="isa-metabolomics-study-design-create.html" title="previous page"></a>
+    <a class='left-prev' id="prev-link" href="isa-metabolomics-study-design-create.html" title="previous page">ISA Create Mode example</a>
     <a class='right-next' id="next-link" href="isa-tab-unused-sources-not-serialized-brapi.html" title="next page">Known Issue: unused ISA Source aren’t serialized to ISA-Tab</a>
 
     </div>

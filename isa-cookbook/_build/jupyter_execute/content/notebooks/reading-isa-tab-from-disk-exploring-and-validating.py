@@ -3,13 +3,18 @@
 ## Abstract:
 
 The aim of this notebook is to:
-    - show essential function to read and load an ISA-tab file in memory.
-    - navigate key objects and pull essential attributes.
-    - learn how to invoke the ISA-tab validation function.
-    - interpret the output of the validation report.
+   - show essential function to read and load an ISA-tab file in memory.
+   - navigate key objects and pull key attributes.
+   - learn how to invoke the ISA-tab validation function.
+   - interpret the output of the validation report.
 
 
 ## 1. Getting the tools
+
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
 
 import isatools
 import os
@@ -41,19 +46,22 @@ ISA.studies[0].description
 
 #### Let's check what is the first `ISA Study Source property`:
 
-ISA.studies[0].sources[0].characteristics[0].category.term
+# here, we get all the characteristics of the first Source object
+first_source_characteristics = ISA.studies[0].sources[0].characteristics
+
+first_source_characteristics[0].category.term
 
 #### Let's now check what is the `value` associated with that first `ISA Study Source property`:
 
-ISA.studies[0].sources[0].characteristics[0].value.term
+first_source_characteristics[0].value.term
 
 #### Let's now check what are all the properties associated with this first `ISA Study Source`
 
-[ISA.studies[0].sources[0].characteristics[n].category.term for n in range(len(ISA.studies[0].sources[0].characteristics))]
+[char.category.term for char in first_source_characteristics]
 
 #### And the corresponding values are:
 
-[ISA.studies[0].sources[0].characteristics[n].value for n in range(len(ISA.studies[0].sources[0].characteristics))]
+[char.value for char in first_source_characteristics]
 
 ## 3. Invoking the python ISA-Tab Validator
 
@@ -67,7 +75,7 @@ my_json_report_bii_s_7 = isatab.validate(open(os.path.join('./BII-S-7/', 'i_matt
 
 my_json_report_bii_s_7
 
-- This Validation Report shows that No Error has been logged
+- This `Validation Report` shows that No Error has been logged
 - The rest of the report consists in warnings meant to draw the attention of the curator to elements which may be provided but which do not break the ISA syntax.
 - Notice the `study group` information reported on both study and assay files. If ISA `Factor Value[]` fields are found present in the `ISA Study` or ` ISA Assay` tables, the validator will try to identify the set of unique `Factor Value` combination defining a `Study Group`.
     - When no `Factor Value` are found in a ISA `Study` or `Assay` table, the value is left to its default value: -1, which means that `No Study Group` have been found.
@@ -80,7 +88,7 @@ my_json_report_bii_s_7
 
 my_json_report_bii_s_5 = isatab.validate(open(os.path.join('./BII-S-5/', 'i_investigation.txt')))
 
-my_json_report_bii_s_5
+my_json_report_bii_s_5["errors"]
 
 - The Validator report the Error Array is not empty and shows the root cause of the syntactic validator error.
 - There is a typo in the Investigation file which affects 2 positions on the file for both Investigation and Study Object: 

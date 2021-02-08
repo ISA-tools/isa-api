@@ -4,8 +4,15 @@ This example creates minimal metadata for a single study ISA descriptor with no 
 
 It shows how to serialize (write) the ISA Model content to ISA-Tab and ISA-JSON formats.
 
-from isatools.model import *
-from isatools.create.model import *
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
+from isatools.model import (Investigation, Study, Assay, Person, Material,
+                            DataFile, plink,
+                            OntologySource, OntologyAnnotation, Sample,
+                            Source, Characteristic, Protocol,ProtocolParameter, Process)
 import datetime
 
 ## Study metadata

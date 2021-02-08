@@ -7,14 +7,24 @@ Finally, the `study design plan` is shown by serializing the `ISA Study Design M
 
 ## Study metadata
 
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
 import datetime
 import isatools
-from isatools.model import *
+from isatools.model import (Investigation, Study,StudyFactor,FactorValue, Assay, Person, Material,
+                            DataFile, plink,
+                            OntologySource, OntologyAnnotation, Sample,
+                            Source, Characteristic, Protocol,ProtocolParameter, Process)
+from isatools.create.model import (Treatment,NonTreatment,StudyDesign,StudyCell,StudyArm,ProductNode,OrderedDict,ProtocolNode,SampleAndAssayPlan, AssayGraph)
+from isatools.create.constants import *
+
 from isatools.isatab import dumps
 import json
 from isatools.isajson import ISAJSONEncoder
 
-from isatools.create.model import * 
 
 investigation = Investigation()
 investigation1 = Investigation() # to be used with the study create function
@@ -104,7 +114,7 @@ nte2.duration.unit=OntologyAnnotation(term="weeks")
 
 ### 5. Creation of 'follow-up' period as an `ISA Study Design Element`.
 
-nte3 = NonTreatment(element_type=FOLLOW_UP, duration_value=1, duration_unit=OntologyAnnotation(term="month"))
+nte3 = NonTreatment(element_type='follow-up', duration_value=1, duration_unit=OntologyAnnotation(term="month"))
 #print(nte3)
 
 ### 6. Creation of the associated container, known as an ISA `Cell` for each ISA `Element`.
@@ -232,9 +242,9 @@ sap1.add_element_to_map(sample_node=whole_patient, assay_graph=alterness_assay_g
 sap1.add_element_to_map(sample_node=whole_patient,assay_graph=general_phenotyping_assay_graph)
 
 
-sap1.sample_to_assay_map
-
 ### 9. Declaration of an ISA assay and linking specimen type and data acquisition plan for this assay
+
+sap1.sample_to_assay_map
 
 ### 10. Build an ISA `Study Design Arm` by adding the first set of ISA `Cells` and setting the `Sample Assay Plan`
 

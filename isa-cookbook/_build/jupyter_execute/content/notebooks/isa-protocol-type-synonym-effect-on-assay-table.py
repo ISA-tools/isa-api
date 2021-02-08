@@ -11,6 +11,11 @@ We have documented the full list of protocol types in the following document [li
 
 ## Let's get the tools
 
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
 import os
 import isatools
 from isatools import isatab
@@ -352,6 +357,8 @@ dataframes = dump_tables_to_dataframes(investigation)
 
 for key in dataframes.keys():
     display(key)
+
+## Inspecting the different assay tables reveals the importance of using the right strings 
 
  dataframes['a_assay.txt']
 

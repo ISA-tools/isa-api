@@ -127,3 +127,6 @@ tests/data
 
 # ignore virtual environment in subdirectory
 venv/
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints

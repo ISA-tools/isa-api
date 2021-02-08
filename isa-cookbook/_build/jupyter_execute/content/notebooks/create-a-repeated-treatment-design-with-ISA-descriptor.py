@@ -8,8 +8,16 @@ Finally, the `study design plan` is shown by serializing the `ISA Study Design M
 
 ## Let's load the tools
 
+# If executing the notebooks on `Google Colab`,uncomment the following command 
+# and run it to install the required python libraries. Also, make the test datasets available.
+
+# !pip install -r requirements.txt
+
 import datetime
-from isatools.model import *
+from isatools.model import (Investigation, Study, Assay, Person, Material,
+                            DataFile, plink,
+                            OntologySource, OntologyAnnotation, Sample,
+                            Source, Characteristic, Protocol, Process)
 
 from bokeh.io import output_file, show
 from bokeh.plotting import figure
@@ -51,7 +59,8 @@ from isatools.isajson import ISAJSONEncoder
 
 ### Let's load the new ISA create module
 
-from isatools.create.model import * 
+from isatools.create.model import (Treatment,StudyCell,StudyArm,ProductNode,OrderedDict,ProductNode,ProtocolNode)
+import isatools.create.constants
 
 
 ### 1. Creation of the first `ISA Study Design Element` and setting its type
