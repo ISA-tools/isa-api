@@ -624,7 +624,28 @@ Subjects were also <code class="docutils literal notranslate"><span class="pre">
                             <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
                             <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span><span class="n">ProtocolParameter</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Treatment</span><span class="p">,</span><span class="n">StudyCell</span><span class="p">,</span><span class="n">StudyArm</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">OrderedDict</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">ProtocolNode</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Treatment</span><span class="p">,</span>
+    <span class="n">StudyCell</span><span class="p">,</span>
+    <span class="n">StudyArm</span><span class="p">,</span>
+    <span class="n">ProductNode</span><span class="p">,</span>
+    <span class="n">OrderedDict</span><span class="p">,</span>
+    <span class="n">ProductNode</span><span class="p">,</span>
+    <span class="n">ProtocolNode</span><span class="p">,</span>
+    <span class="n">AssayGraph</span><span class="p">,</span>
+    <span class="n">SampleAndAssayPlan</span><span class="p">,</span>
+    <span class="n">StudyDesign</span><span class="p">,</span>
+    <span class="n">QualityControl</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">isatools.create.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RUN_IN</span><span class="p">,</span>
+    <span class="n">WASHOUT</span><span class="p">,</span>
+    <span class="n">FOLLOW_UP</span><span class="p">,</span>
+    <span class="n">SAMPLE</span><span class="p">,</span>
+    <span class="n">EXTRACT</span><span class="p">,</span>
+    <span class="n">DATA_FILE</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
 </pre></div>
@@ -986,7 +1007,7 @@ Subjects were also <code class="docutils literal notranslate"><span class="pre">
 <span class="kn">from</span> <span class="nn">bokeh.models.tools</span> <span class="kn">import</span> <span class="n">HoverTool</span>
 <span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
 <span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span><span class="p">,</span> <span class="n">dim</span>
-<span class="n">hv</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;bokeh&#39;</span><span class="p">)</span>
+<span class="c1"># hv.extension(&#39;bokeh&#39;)</span>
 </pre></div>
 </div>
 </div>
@@ -1275,16 +1296,16 @@ Subjects were also <code class="docutils literal notranslate"><span class="pre">
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "isa-api-py38"
+            mode: "python"
         },
         kernelOptions: {
-            kernelName: "isa-api-py38",
+            kernelName: "python3",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'isa-api-py38'</script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

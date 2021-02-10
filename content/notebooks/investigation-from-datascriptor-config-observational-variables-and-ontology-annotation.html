@@ -587,20 +587,17 @@
 </div>
 <div class="section" id="dump-the-isa-investigation-to-isa-tab">
 <h2>6. Dump the ISA Investigation to ISA-Tab<a class="headerlink" href="#dump-the-isa-investigation-to-isa-tab" title="Permalink to this headline">¶</a></h2>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-<span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;notebook-output/isa-study-from-design-config&#39;</span><span class="p">)))</span>
-<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The Tab serialisation of the ISA investigation took </span><span class="si">{:.2f}</span><span class="s1"> s.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>To use them on the notebook we can also dump the tables to pandas DataFrames, using the <code class="docutils literal notranslate"><span class="pre">dump_tables_to_dataframes</span></code> function rather than dump</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump_tables_to_dataframes</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+<span class="n">dataframes</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump_tables_to_dataframes</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The Tab serialisation of the ISA investigation took </span><span class="si">{:.2f}</span><span class="s1"> s.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+
+<span class="c1"># alternatively, if you just want to write the isatab files to file, you can run</span>
+
+<span class="c1"># isatab.dump(investigation, os.path.abspath(os.path.join(&#39;notebook-output/isa-study-from-design-config&#39;)))</span>
 </pre></div>
 </div>
 </div>
@@ -713,16 +710,16 @@
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "isa-api-py38"
+            mode: "python"
         },
         kernelOptions: {
-            kernelName: "isa-api-py38",
+            kernelName: "python3",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'isa-api-py38'</script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               
