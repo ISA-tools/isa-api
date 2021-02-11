@@ -47,6 +47,41 @@
     <script src="../../_static/mermaid.js"></script>
     <script src="../../_static/mermaid.min.js"></script>
     <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "https://github.com/isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -420,10 +455,16 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Investigation</span><span class="p">,</span> <span class="n">Study</span><span class="p">,</span> <span class="n">Assay</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Material</span><span class="p">,</span>
-                            <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
-                            <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
-                            <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span><span class="n">ProtocolParameter</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Investigation</span><span class="p">,</span>
+    <span class="n">Study</span><span class="p">,</span>
+    <span class="n">OntologyAnnotation</span><span class="p">,</span>
+    <span class="n">Sample</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">ProtocolParameter</span><span class="p">,</span>
+    <span class="n">Process</span>
+<span class="p">)</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 </pre></div>
 </div>
@@ -444,17 +485,30 @@
 <span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
 <span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source1&quot;</span><span class="p">)]</span>
 <span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample1&quot;</span><span class="p">)]</span>
-<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">),</span>
-                   <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data analysis with Galaxy&quot;</span><span class="p">,</span>
-                            <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5464/workflow.cwl&quot;</span><span class="p">,</span>
-                            <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
-                            <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genome assembly&quot;</span><span class="p">)),</span>
-                                        <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;cut-off value&quot;</span><span class="p">))]),</span>
-                    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data visualization with Intermine&quot;</span><span class="p">,</span>
-                             <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://intermine.org/10.5464/network.svg&quot;</span><span class="p">,</span>
-                             <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data visualization&quot;</span><span class="p">),</span>
-                                                                <span class="p">)]</span>
-<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">),</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data analysis with Galaxy&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5464/workflow.cwl&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genome assembly&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;cut-off value&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data visualization with Intermine&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://intermine.org/10.5464/network.svg&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data visualization&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Process</span><span class="p">(</span>
+        <span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
 <span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
 </pre></div>
 </div>

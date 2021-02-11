@@ -47,6 +47,41 @@
     <script src="../../_static/mermaid.js"></script>
     <script src="../../_static/mermaid.min.js"></script>
     <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "https://github.com/isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -723,17 +758,44 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">isatools</span>
-<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Investigation</span><span class="p">,</span> <span class="n">Study</span><span class="p">,</span><span class="n">StudyFactor</span><span class="p">,</span><span class="n">FactorValue</span><span class="p">,</span> <span class="n">Assay</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Material</span><span class="p">,</span>
-                            <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
-                            <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
-                            <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span><span class="n">ProtocolParameter</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Treatment</span><span class="p">,</span><span class="n">NonTreatment</span><span class="p">,</span><span class="n">StudyDesign</span><span class="p">,</span><span class="n">StudyCell</span><span class="p">,</span><span class="n">StudyArm</span><span class="p">,</span><span class="n">ProductNode</span><span class="p">,</span><span class="n">OrderedDict</span><span class="p">,</span><span class="n">ProtocolNode</span><span class="p">,</span><span class="n">SampleAndAssayPlan</span><span class="p">,</span> <span class="n">AssayGraph</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">isatools.create.constants</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Investigation</span><span class="p">,</span>
+    <span class="n">Study</span><span class="p">,</span>
+    <span class="n">Sample</span><span class="p">,</span>
+    <span class="n">OntologyAnnotation</span><span class="p">,</span>
+    <span class="n">StudyFactor</span><span class="p">,</span>
+    <span class="n">FactorValue</span><span class="p">,</span>
+    <span class="n">Characteristic</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">Process</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Treatment</span><span class="p">,</span>
+    <span class="n">NonTreatment</span><span class="p">,</span>
+    <span class="n">StudyDesign</span><span class="p">,</span>
+    <span class="n">StudyCell</span><span class="p">,</span>
+    <span class="n">StudyArm</span><span class="p">,</span>
+    <span class="n">ProductNode</span><span class="p">,</span>
+    <span class="n">OrderedDict</span><span class="p">,</span>
+    <span class="n">SampleAndAssayPlan</span><span class="p">,</span>
+    <span class="n">AssayGraph</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.create.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BASE_FACTORS</span><span class="p">,</span>
+    <span class="n">SCREEN</span><span class="p">,</span>
+    <span class="n">RUN_IN</span><span class="p">,</span>
+    <span class="n">WASHOUT</span><span class="p">,</span>
+    <span class="n">FOLLOW_UP</span><span class="p">,</span>
+    <span class="n">SAMPLE</span><span class="p">,</span>
+    <span class="n">EXTRACT</span><span class="p">,</span>
+    <span class="n">LABELED_EXTRACT</span><span class="p">,</span>
+    <span class="n">DATA_FILE</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
 </pre></div>
 </div>
@@ -1172,8 +1234,6 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s now serialize the ISA study design to JSON</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
 <span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="n">StudyDesignEncoder</span>
 
 <span class="n">f</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">study_design_final</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">StudyDesignEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
@@ -1220,16 +1280,16 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "isa-api-py38"
+            mode: "python"
         },
         kernelOptions: {
-            kernelName: "isa-api-py38",
+            kernelName: "python3",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'isa-api-py38'</script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

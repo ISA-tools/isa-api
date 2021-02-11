@@ -47,6 +47,41 @@
     <script src="../../_static/mermaid.js"></script>
     <script src="../../_static/mermaid.min.js"></script>
     <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "https://github.com/isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -552,10 +587,22 @@ The future releases of the ISA-API will see to address the issue.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Investigation</span><span class="p">,</span> <span class="n">Study</span><span class="p">,</span> <span class="n">Assay</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Material</span><span class="p">,</span>
-                            <span class="n">DataFile</span><span class="p">,</span> <span class="n">plink</span><span class="p">,</span>
-                            <span class="n">OntologySource</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">,</span> <span class="n">Sample</span><span class="p">,</span>
-                            <span class="n">Source</span><span class="p">,</span> <span class="n">Characteristic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Process</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Investigation</span><span class="p">,</span>
+    <span class="n">Study</span><span class="p">,</span>
+    <span class="n">Assay</span><span class="p">,</span>
+    <span class="n">Person</span><span class="p">,</span>
+    <span class="n">Material</span><span class="p">,</span>
+    <span class="n">DataFile</span><span class="p">,</span>
+    <span class="n">OntologySource</span><span class="p">,</span>
+    <span class="n">OntologyAnnotation</span><span class="p">,</span>
+    <span class="n">Sample</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+    <span class="n">Characteristic</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">Process</span><span class="p">,</span>
+    <span class="n">plink</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
 <span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
 
@@ -878,7 +925,8 @@ The future releases of the ISA-API will see to address the issue.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">isa_obj</span><span class="o">=</span><span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">final_dir</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">isa_obj</span><span class="o">=</span><span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">final_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -927,16 +975,16 @@ The future releases of the ISA-API will see to address the issue.</p>
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "isa-api-py38"
+            mode: "python"
         },
         kernelOptions: {
-            kernelName: "isa-api-py38",
+            kernelName: "python3",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'isa-api-py38'</script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

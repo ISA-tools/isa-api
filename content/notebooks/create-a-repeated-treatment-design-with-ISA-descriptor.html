@@ -47,6 +47,41 @@
     <script src="../../_static/mermaid.js"></script>
     <script src="../../_static/mermaid.min.js"></script>
     <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "https://github.com/isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -722,18 +757,9 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Investigation</span><span class="p">,</span>
     <span class="n">Study</span><span class="p">,</span>
-    <span class="n">Assay</span><span class="p">,</span>
-    <span class="n">Person</span><span class="p">,</span>
-    <span class="n">Material</span><span class="p">,</span>
-    <span class="n">DataFile</span><span class="p">,</span> 
-    <span class="n">plink</span><span class="p">,</span>
-    <span class="n">OntologySource</span><span class="p">,</span>
     <span class="n">OntologyAnnotation</span><span class="p">,</span>
     <span class="n">Sample</span><span class="p">,</span>
-    <span class="n">Source</span><span class="p">,</span>
     <span class="n">Characteristic</span><span class="p">,</span>
-    <span class="n">Protocol</span><span class="p">,</span>
-    <span class="n">Process</span><span class="p">,</span>
     <span class="n">ProtocolParameter</span><span class="p">,</span>
     <span class="n">ParameterValue</span><span class="p">,</span>
     <span class="n">StudyFactor</span><span class="p">,</span>
@@ -805,7 +831,6 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
     <span class="n">NonTreatment</span><span class="p">,</span>
     <span class="n">StudyCell</span><span class="p">,</span>
     <span class="n">StudyArm</span><span class="p">,</span>
-    <span class="n">ProductNode</span><span class="p">,</span>
     <span class="n">OrderedDict</span><span class="p">,</span>
     <span class="n">ProductNode</span><span class="p">,</span>
     <span class="n">ProtocolNode</span><span class="p">,</span>
@@ -1464,8 +1489,8 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># WRITING ISA-JSON document</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># WRITING ISA-JSON document to string</span>
+<span class="n">isa_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1475,12 +1500,24 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
 <span class="n">dataframes</span> <span class="o">=</span> <span class="n">dumpdf</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
 <span class="n">dataframes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-<span class="c1"># Alternatevely you can run:</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Alternatevely, if you want to save the ISA-TAB files to a specific directory, you can run:</span>
 <span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="c1"># import os</span>
 <span class="c1"># os.makedirs(&#39;/notebook-output/isa-repeated-measure-crossover-design&#39;, exist_ok = True)</span>
 <span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="s1">&#39;./notebook-output/isa-repeated-measure-crossover-design&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">dataframes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>

@@ -47,6 +47,41 @@
     <script src="../../_static/mermaid.js"></script>
     <script src="../../_static/mermaid.min.js"></script>
     <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "https://github.com/isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -589,7 +624,7 @@
 <h3>Let’s check the protocols declared in ISA the study (using a python list comprehension):<a class="headerlink" href="#let-s-check-the-protocols-declared-in-isa-the-study-using-a-python-list-comprehension" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">protocols</span><span class="p">))]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">description</span> <span class="k">for</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">protocols</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -599,7 +634,9 @@
 <h3>Let’s now checks the ISA Assay Measurement and Technology Types  are used in this ISA Study object<a class="headerlink" href="#let-s-now-checks-the-isa-assay-measurement-and-technology-types-are-used-in-this-isa-study-object" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">measurement_type</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span> <span class="s2">&quot; using &quot;</span> <span class="o">+</span> <span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">technology_type</span><span class="o">.</span><span class="n">term</span>  <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">))]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">measurement_type</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span> <span class="s2">&quot; using &quot;</span> <span class="o">+</span> <span class="n">assay</span><span class="o">.</span><span class="n">technology_type</span><span class="o">.</span><span class="n">term</span>  <span class="k">for</span> <span class="n">assay</span> <span class="ow">in</span> <span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -609,7 +646,7 @@
 <h3>Let’s now check the <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">Study</span> <span class="pre">Source</span></code> Material:<a class="headerlink" href="#let-s-now-check-the-isa-study-source-material" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>   <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">))]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">ISA</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -693,10 +730,146 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-02-11 13:21:09,102 [WARNING]: isatab.py(check_protocol_parameter_usage:2919) &gt;&gt; (W) Some protocol parameters declared in the investigation file are not used in any assay file: [&#39;base caller&#39;]
+2021-02-11 13:21:09,104 [INFO]: isatab.py(validate:4219) &gt;&gt; Finished prechecks...
+2021-02-11 13:21:09,105 [INFO]: isatab.py(validate:4220) &gt;&gt; Loading configurations found in /Users/massi/.pyenv/versions/3.9.1/envs/isa-cookbook-3.9.1/src/isatools/isatools/resources/config/xml
+2021-02-11 13:21:09,133 [INFO]: isatab.py(validate:4225) &gt;&gt; Using configurations found in /Users/massi/.pyenv/versions/3.9.1/envs/isa-cookbook-3.9.1/src/isatools/isatools/resources/config/xml
+2021-02-11 13:21:09,134 [INFO]: isatab.py(validate:4227) &gt;&gt; Checking investigation file against configuration...
+2021-02-11 13:21:09,135 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Investigation Title of investigation file at column 1 is required
+2021-02-11 13:21:09,136 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Investigation Description of investigation file at column 1 is required
+2021-02-11 13:21:09,137 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Publication DOI of investigation file at column 1 is required
+2021-02-11 13:21:09,141 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 1 is required
+2021-02-11 13:21:09,142 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 2 is required
+2021-02-11 13:21:09,143 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 3 is required
+2021-02-11 13:21:09,143 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 4 is required
+2021-02-11 13:21:09,144 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 5 is required
+2021-02-11 13:21:09,146 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 6 is required
+2021-02-11 13:21:09,147 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 7 is required
+2021-02-11 13:21:09,148 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 8 is required
+2021-02-11 13:21:09,149 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 9 is required
+2021-02-11 13:21:09,149 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 10 is required
+2021-02-11 13:21:09,150 [INFO]: isatab.py(validate:4230) &gt;&gt; Finished checking investigation file
+2021-02-11 13:21:09,152 [INFO]: isatab.py(validate:4249) &gt;&gt; Loading... s_BII-S-7.txt
+2021-02-11 13:21:09,169 [INFO]: isatab.py(validate:4255) &gt;&gt; Validating s_BII-S-7.txt against default study table configuration
+2021-02-11 13:21:09,170 [INFO]: isatab.py(validate:4257) &gt;&gt; Checking Factor Value presence...
+2021-02-11 13:21:09,177 [INFO]: isatab.py(validate:4260) &gt;&gt; Checking required fields...
+2021-02-11 13:21:09,178 [INFO]: isatab.py(validate:4263) &gt;&gt; Checking generic fields...
+2021-02-11 13:21:09,196 [INFO]: isatab.py(validate:4271) &gt;&gt; Checking unit fields...
+2021-02-11 13:21:09,197 [INFO]: isatab.py(validate:4278) &gt;&gt; Checking protocol fields...
+2021-02-11 13:21:09,198 [INFO]: isatab.py(validate:4288) &gt;&gt; Checking ontology fields...
+2021-02-11 13:21:09,209 [INFO]: isatab.py(validate:4298) &gt;&gt; Checking study group size...
+2021-02-11 13:21:09,211 [INFO]: isatab.py(validate:4302) &gt;&gt; Finished validation on s_BII-S-7.txt
+2021-02-11 13:21:09,213 [INFO]: isatab.py(validate:4339) &gt;&gt; Loading... a_matteo-assay-Gx.txt
+2021-02-11 13:21:09,223 [INFO]: isatab.py(validate:4347) &gt;&gt; Validating a_matteo-assay-Gx.txt against assay table configuration (environmental gene survey, nucleotide sequencing)...
+2021-02-11 13:21:09,224 [INFO]: isatab.py(validate:4353) &gt;&gt; Checking Factor Value presence...
+2021-02-11 13:21:09,224 [INFO]: isatab.py(validate:4357) &gt;&gt; Checking required fields...
+2021-02-11 13:21:09,226 [INFO]: isatab.py(validate:4360) &gt;&gt; Checking generic fields...
+2021-02-11 13:21:09,227 [WARNING]: isatab.py(check_single_field:3818) &gt;&gt; (W) Invalid value &#39;V6 and V5&#39; for type &#39;list&#39; of the field &#39;Parameter Value[target_subfragment]&#39;
+2021-02-11 13:21:09,228 [WARNING]: isatab.py(check_single_field:3822) &gt;&gt; (W) Value must be one of: V6,V9,ITS
+2021-02-11 13:21:09,247 [WARNING]: isatab.py(validate:4364) &gt;&gt; (W) There are some field value inconsistencies in a_matteo-assay-Gx.txt against (&#39;environmental gene survey&#39;, &#39;nucleotide sequencing&#39;) configuration
+2021-02-11 13:21:09,247 [INFO]: isatab.py(validate:4371) &gt;&gt; Checking unit fields...
+2021-02-11 13:21:09,249 [INFO]: isatab.py(validate:4381) &gt;&gt; Checking protocol fields...
+2021-02-11 13:21:09,253 [INFO]: isatab.py(validate:4393) &gt;&gt; Checking ontology fields...
+2021-02-11 13:21:09,254 [INFO]: isatab.py(validate:4406) &gt;&gt; Checking study group size...
+2021-02-11 13:21:09,255 [INFO]: isatab.py(validate:4410) &gt;&gt; Finished validation on a_matteo-assay-Gx.txt
+2021-02-11 13:21:09,256 [INFO]: isatab.py(validate:4416) &gt;&gt; Checking consistencies between study sample table and assay tables...
+2021-02-11 13:21:09,257 [INFO]: isatab.py(validate:4421) &gt;&gt; Finished checking study sample table against assay tables...
+2021-02-11 13:21:10,110 [INFO]: utils.py(detect_isatab_process_pooling:76) &gt;&gt; Checking s_BII-S-7.txt
+2021-02-11 13:21:10,305 [INFO]: utils.py(detect_isatab_process_pooling:85) &gt;&gt; Checking a_matteo-assay-Gx.txt
+2021-02-11 13:21:10,669 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,671 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,672 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,674 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,676 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,678 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,680 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,682 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,684 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,686 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,688 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,690 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,692 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,694 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,697 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-02-11 13:21:10,699 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,701 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,704 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,706 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,708 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,711 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,713 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,716 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,718 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,720 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,723 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,724 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,727 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,730 [INFO]: utils.py(detect_graph_process_pooling:56) &gt;&gt; Possible process pooling detected on:  PCR amplification
+2021-02-11 13:21:10,765 [INFO]: isatab.py(validate:4434) &gt;&gt; Finished validation...
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_json_report_bii_s_7</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;errors&#39;: [],
+ &#39;warnings&#39;: [{&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Investigation Title of investigation file at column 1 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Investigation Description of investigation file at column 1 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Publication DOI of investigation file at column 1 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 1 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 2 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 3 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 4 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 5 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 6 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 7 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 8 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 9 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A required property is missing&#39;,
+   &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 10 is required&#39;,
+   &#39;code&#39;: 4003},
+  {&#39;message&#39;: &#39;A value does not correspond to the correct data type&#39;,
+   &#39;supplemental&#39;: &quot;Invalid value &#39;V6 and V5&#39; for type &#39;list&#39; of the field &#39;Parameter Value[target_subfragment]&#39;&quot;,
+   &#39;code&#39;: 4011}],
+ &#39;info&#39;: [{&#39;message&#39;: &#39;Found 2 study groups in s_BII-S-7.txt&#39;,
+   &#39;supplemental&#39;: &#39;Found 2 study groups in s_BII-S-7.txt&#39;,
+   &#39;code&#39;: 5001},
+  {&#39;message&#39;: &#39;Found -1 study groups in a_matteo-assay-Gx.txt&#39;,
+   &#39;supplemental&#39;: &#39;Found -1 study groups in a_matteo-assay-Gx.txt&#39;,
+   &#39;code&#39;: 5001}],
+ &#39;validation_finished&#39;: True}
 </pre></div>
 </div>
 </div>
@@ -719,6 +892,27 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_json_report_bii_s_5</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./BII-S-5/&#39;</span><span class="p">,</span> <span class="s1">&#39;i_investigation.txt&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-02-11 13:21:10,776 [INFO]: isatab.py(validate:4196) &gt;&gt; Loading... ./BII-S-5/i_investigation.txt
+2021-02-11 13:21:10,909 [CRITICAL]: isatab.py(check_labels:1933) &gt;&gt; (F) In INVESTIGATION PUBLICATIONS section, expected labels {&#39;Investigation Publication Author List&#39;} not found in {&#39;Investigation Publication Status&#39;, &#39;Investigation PubMed ID&#39;, &#39;Investigation Publication Author list&#39;, &#39;Investigation Publication Status Term Accession Number&#39;, &#39;Investigation Publication DOI&#39;, &#39;Investigation Publication Status Term Source REF&#39;, &#39;Investigation Publication Title&#39;}
+2021-02-11 13:21:10,910 [CRITICAL]: isatab.py(check_labels:1940) &gt;&gt; (F) In INVESTIGATION PUBLICATIONS section, label Investigation Publication Author list is not allowed
+2021-02-11 13:21:10,910 [CRITICAL]: isatab.py(check_labels:1933) &gt;&gt; (F) In STUDY PUBLICATIONS section, expected labels {&#39;Study Publication Author List&#39;} not found in {&#39;Study PubMed ID&#39;, &#39;Study Publication Status Term Accession Number&#39;, &#39;Study Publication Status&#39;, &#39;Study Publication Author list&#39;, &#39;Study Publication Title&#39;, &#39;Study Publication Status Term Source REF&#39;, &#39;Study Publication DOI&#39;}
+2021-02-11 13:21:10,911 [CRITICAL]: isatab.py(check_labels:1940) &gt;&gt; (F) In STUDY PUBLICATIONS section, label Study Publication Author list is not allowed
+2021-02-11 13:21:10,911 [INFO]: isatab.py(validate:4198) &gt;&gt; Running prechecks...
+2021-02-11 13:21:10,981 [WARNING]: isatab.py(check_protocol_usage:2513) &gt;&gt; (W) Some protocols declared in the investigation file are not used neither in the study file s_001456_GCAT_sample.txt nor in any related assay file: [&#39;sample collection&#39;]
+2021-02-11 13:21:11,011 [WARNING]: isatab.py(check_doi:2166) &gt;&gt; (W) DOI 10.1186/1471-2164-10-36 does not conform to DOI format
+2021-02-11 13:21:11,012 [INFO]: isatab.py(validate:4219) &gt;&gt; Finished prechecks...
+2021-02-11 13:21:11,012 [INFO]: isatab.py(validate:4220) &gt;&gt; Loading configurations found in /Users/massi/.pyenv/versions/3.9.1/envs/isa-cookbook-3.9.1/src/isatools/isatools/resources/config/xml
+2021-02-11 13:21:11,033 [INFO]: isatab.py(validate:4225) &gt;&gt; Using configurations found in /Users/massi/.pyenv/versions/3.9.1/envs/isa-cookbook-3.9.1/src/isatools/isatools/resources/config/xml
+2021-02-11 13:21:11,034 [INFO]: isatab.py(validate:4227) &gt;&gt; Checking investigation file against configuration...
+2021-02-11 13:21:11,036 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3353) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 1 is required
+2021-02-11 13:21:11,038 [INFO]: isatab.py(validate:4230) &gt;&gt; Finished checking investigation file
+2021-02-11 13:21:11,038 [INFO]: isatab.py(validate:4249) &gt;&gt; Loading... s_001456_GCAT_sample.txt
+2021-02-11 13:21:11,050 [INFO]: isatab.py(validate:4255) &gt;&gt; Validating s_001456_GCAT_sample.txt against default study table configuration
+2021-02-11 13:21:11,050 [INFO]: isatab.py(validate:4257) &gt;&gt; Checking Factor Value presence...
 </pre></div>
 </div>
 </div>
@@ -757,16 +951,16 @@
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "isa-api-py38"
+            mode: "python"
         },
         kernelOptions: {
-            kernelName: "isa-api-py38",
+            kernelName: "python3",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'isa-api-py38'</script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               
