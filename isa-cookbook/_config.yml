@@ -42,7 +42,7 @@ html:
   comments:
     hypothesis: true
     utterances:
-      repo: "https://github.com/isa-tools/isa-api"
+      repo: "isa-tools/isa-api"
 
 #######################################################################################
 # Launch button settings

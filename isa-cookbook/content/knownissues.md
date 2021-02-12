@@ -33,6 +33,12 @@ isatools v0.12 package
      * Fixed raising of an error when correctly setting a comment value (issue #360)
      * Assigned correct header "Data Transformation Name" for protocol type "sequence analysis data transformation" (commit b8f2f55b4e046f1841ffba7d6fb190c87918375f)
 
+- New Documentation:
+     * Creation of a `jupyter-book` based documentation: https://isa-tools.org/isa-cookbook/content/index.html
+     * This documentation supercedes the readthedocs based one.
+     * The new documentation contains a number of `jupyter` notebooks showing various features of the isa-api.
+
+
 ***
 
 isatools v0.11 package
