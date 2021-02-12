@@ -22,16 +22,16 @@ isatools v0.12 package
      * Removed leftover `print()` statements (issue #374)
      * overall test coverage increased from 67% to 75%. The increase is due both to an increase in the number of tests and the removal of some deprecated, experimental or spurious modules.
 
-Breaking changes:
-    * `isatools.create.models` has been renamed to `isatools.create.model` (issue #368)
-    * `IsaModelAttributeError` has been replaced with `AttributeError`. We will favour standard Exceptions whenever applicable.
+- Breaking changes:
+     * `isatools.create.models` has been renamed to `isatools.create.model` (issue #368)
+     * `IsaModelAttributeError` has been replaced with `AttributeError`. We will favour standard Exceptions whenever applicable.
 
-Bug Fixes:
-    * Fixed typo in NAME_PROPERTY_ASSIGNMENT_ERROR (issue #328)
-    * Silent expansion of `Characteristic` categories from `str` to `OntologyAnnotation` now supported. You can assign a string to a characteristic category and it will be automatically wrapped into an ontology annotation. (issue #332)
-    * Fixed duplicated in `OntologyAnnotation` ids (issue #381)
-    * Fixed raising of an error when correctly setting a comment value (issue #360)
-    * Assigned correct header "Data Transformation Name" for protocol type "sequence analysis data transformation" (commit b8f2f55b4e046f1841ffba7d6fb190c87918375f)
+- Bug Fixes:
+     * Fixed typo in NAME_PROPERTY_ASSIGNMENT_ERROR (issue #328)
+     * Silent expansion of `Characteristic` categories from `str` to `OntologyAnnotation` now supported. You can assign a string to a characteristic category and it will be automatically wrapped into an ontology annotation. (issue #332)
+     * Fixed duplicated in `OntologyAnnotation` ids (issue #381)
+     * Fixed raising of an error when correctly setting a comment value (issue #360)
+     * Assigned correct header "Data Transformation Name" for protocol type "sequence analysis data transformation" (commit b8f2f55b4e046f1841ffba7d6fb190c87918375f)
 
 ***
 
