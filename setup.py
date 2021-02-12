@@ -1,10 +1,19 @@
 #!/usr/bin/env python
-
+import os
 from setuptools import setup
+
+
+# Utility function to read the README file.
+# Used for the long_description.  It's nice, because now 1) we have a top level
+# README file and 2) it's easier to type in the README file than to put a raw
+# string in below ...
+def read(f_name):
+    return open(os.path.join(os.path.dirname(__file__), f_name)).read()
+
 
 setup(
     name='isatools',
-    version='0.12.0-rc.3',
+    version='0.12.0',
     packages=['isatools',
               'isatools.convert',
               'isatools.create',
@@ -32,12 +41,14 @@ setup(
         'net/resources/sra/*.xml',
         'resources/isatools.ini'],
         '': ['LICENSE.txt', 'README.md']},
-    description='Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments',
+    description='Metadata tracking tools help to manage an increasingly diverse set of life science, '
+                'environmental and biomedical experiments',
+    long_description=read('README.md'),
     author='ISA Infrastructure Team',
     author_email='isatools@googlegroups.com',
     url='https://github.com/ISA-tools/isa-api',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
