@@ -45,7 +45,7 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 Using the ISA-API
 -----------------
 
-The documentation to install and use the ISA-API (v0.12) can be found [here](https://isa-tools.org/isa-cookbook/content/index.html).
+The documentation to install and use the ISA-API (v0.12) can be found [here](https://isa-tools.org/isa-api/content/index.html).
 
 For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
