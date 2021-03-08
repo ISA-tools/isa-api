@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA study arm schema",
+    "description": "JSON-schema representing an assay type for sample assay planning in ISA model v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "name": {
+            "type": "string",
+            "minLength": 1 
+            },
+        "groupSize" : {
+            "type": "integer",
+            "mininum" : 1
+            },
+        "cells" : {
+            "type":"array",
+            "items": {
+                "$ref": "cell_schema.json#"
+            }
+        },
+        "sampleAssayPlans": {
+            "type":"array",
+            "items": {
+                "$ref": "sample_assay_plan_schema.json#"
+            }            
+        },
+        "mappings": {
+            "type":"array",
+            "items": {
+                "type": "array",
+                "items": { "type":"string" },
+                "minItems": 2,
+                "maxItems": 2
+            }
+        }
+    }
+}

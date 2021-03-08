@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA protocol node schema",
+    "description": "JSON-schema representing a product node in ISA create model v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "@type": {"enum":["isatools.create.models.ProtocolNode"]},
+        "name": { "type":"string"},
+        "protocolType": 
+             {
+            "anyOf" : [                
+                { "type": "string"},
+                { "$ref": "ontology_annotation_schema.json#"}
+                ]
+            },
+        "description": { "type":"string"},
+        "uri": { "type": "string", "format": "uri" },
+        "version": { "type":"string"},
+        "parameterValue": {
+            
+        },      
+        "characteristics": { 
+            "type":"array",
+            "items" : {
+                "$ref": "characteristic_schema.json#"
+            }
+    }
+}
+}

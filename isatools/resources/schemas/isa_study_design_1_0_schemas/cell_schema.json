@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA cell schema",
+    "description": "JSON-schema representing an assay type for sample assay planning in ISA model v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "name": {
+            "type": "string",
+            "minLength": 1 
+            },
+         "elements": {
+             "type": "array",
+             "items" : {"$ref": "element_schema.json#"}
+             }
+         }
+    }

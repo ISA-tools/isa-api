@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA element schema",
+    "description": "JSON-schema representing an assay type for sample assay planning in ISA model v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "type": {
+            "description" : "todo",
+            "type": "string",
+            "enum":  ["screen","run-in","chemical intervention", "behavioural intervention","radiological intervention","dietary intervention", "surgical intervention","washout","follow-up"] 
+            },
+            "isTreatment": {
+                "description":"todo",
+                "type":"boolean"
+            },
+            "factorValues": {
+                "type":"array",
+                "items": {
+                    "$ref":"sdfactor_schema.json#"
+                }
+            }
+         }
+    }

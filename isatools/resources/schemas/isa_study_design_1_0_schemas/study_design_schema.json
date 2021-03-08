@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA study design schema",
+    "description": "JSON-schema representing an assay type for sample assay planning in ISA model v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "name": {"type": "string"},
+        "studyArms": {
+            "type": "array",
+            "items" : {
+                "$ref": "study_arm_schema.json#"}        
+            }
+        }
+}

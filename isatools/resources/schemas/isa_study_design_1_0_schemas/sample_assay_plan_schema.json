@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA sample assay plan schema",
+    "description": "JSON-schema representing an assay type for sample assay planning in ISA model v2",
+    "type": "object",
+    "properties": {
+        "samplePlan": {
+            "type": "array",
+            "items": {
+                "$ref":"product_node_schema.json#"
+            }
+        },
+        "assayPlan": {
+            "type": "array",
+            "items": {
+                "$ref":"assay_graph_schema.json#"
+            }
+        },
+        "sampleToAssayMap": {
+            "type": "object",
+            "additionalProperties" : {"type":"array"}
+            }
+    }
+}

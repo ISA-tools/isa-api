@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema-extension",
+    "title": "ISA characteristics schema",
+    "description": "JSON-schema representing a product node characteristics in the ISA create model v2.0",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "category": {
+            "anyOf" : [                
+                { "type": "string"},
+                { "$ref": "ontology_annotation_schema.json#"}
+                ]
+        },
+        "value": {
+            "anyOf" : [
+                { "$ref": "ontology_annotation_schema.json#"},
+                { "type": "string"},
+                { "type": "number"}
+                ]
+        }
+    }
+}

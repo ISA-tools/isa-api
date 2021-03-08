@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema-extension",
+    "title": "ISA sdfactor schema",
+    "description": "JSON-schema representing a study factor, aka an independent variable in the ISA model v2.0",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "name" : {
+            "type" : "string"
+        },
+        "type": {
+            "anyOf" : [                
+                { "type": "string"},
+                { "$ref": "ontology_annotation_schema.json#"}
+                ]
+        }
+    }
+}

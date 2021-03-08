@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA assay graph schema",
+    "description": "JSON-schema representing an assay graph in ISA create model  v2",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "measurementType": {
+            "anyOf" : [                
+                { "type": "string"},
+                { "$ref": "ontology_annotation_schema.json#"}
+                ]
+        },
+        "technologyType": {
+            "anyOf" : [                
+                { "type": "string"},
+                { "$ref": "ontology_annotation_schema.json#"}
+                ]
+        },
+        "nodes": {
+            "type": "array",
+            "items": {
+                "anyOf" : [                
+                { "$ref": "protocol_node_schema.json#"},
+                { "$ref": "product_node_schema.json#"}
+                ]
+            }
+        },
+        "links": {
+            "type":"array",
+            "items": {
+                "type": "array",
+                "items": { "type":"string"},
+                "minItems": 2,
+                "maxItems": 2
+            }
+            
+        }
+    }
+}
