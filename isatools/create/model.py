@@ -2069,8 +2069,8 @@ class StudyDesign(object):
     def _idgen_sources(group_id, subject_number):
         """
         Identifiers generator
-        :param gid: group ID
-        :param subn: subject ID
+        :param group_id: group ID
+        :param subject_number: subject ID
         :return: str
         """
         idarr = []
@@ -2163,41 +2163,44 @@ class StudyDesign(object):
             for cell, sample_assay_plan in arm.arm_map.items():
                 if not sample_assay_plan:
                     continue
-                factor_values = []      # TODO implement the right list of factor values
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
+                factor_values = []
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
-                    for sample_node in sample_assay_plan.sample_plan:
-                        for source in sources_map[arm.name]:
-                            sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
-                            sample_term_source = sample_type.value.term_source if \
-                                hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
-                            if sample_term_source:
-                                ontology_sources.add(sample_term_source)
-                            sample_term = sample_type.value.term if \
-                                isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
-                            for samp_idx in range(0, sampling_size):
-                                sample = Sample(
-                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
-                                    factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
-                                )
-                                sample_batches[sample_node].append(sample)
-                                sample_count += 1
-                                process = Process(
-                                    executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
-                                    performer=performer,
-                                    date_=datetime.date.isoformat(datetime.date.today()),
-                                    parameter_values=[
-                                        ParameterValue(
-                                            category=sampling_protocol.get_param(RUN_ORDER),
-                                            value=str(sample_count).zfill(3)
-                                        ), ParameterValue(
-                                            category=sampling_protocol.get_param(STUDY_CELL),
-                                            value=str(cell.name)
-                                        )
-                                    ]
-                                )
-                                process_sequence.append(process)
+                    # all the factor values up to the current element in the cell are actually serialised
+                    # FIXME could this be an issue for concomitant treatments?
+                    factor_values.extend([f_val for f_val in element.factor_values])
+                for sample_node in sample_assay_plan.sample_plan:
+                    for source in sources_map[arm.name]:
+                        sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
+                        sample_term_source = sample_type.value.term_source if \
+                            hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
+                        if sample_term_source:
+                            ontology_sources.add(sample_term_source)
+                        sample_term = sample_type.value.term if \
+                            isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
+                        for samp_idx in range(0, sampling_size):
+                            sample = Sample(
+                                name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
+                                factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
+                            )
+                            sample_batches[sample_node].append(sample)
+                            sample_count += 1
+                            process = Process(
+                                executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
+                                performer=performer,
+                                date_=datetime.date.isoformat(datetime.date.today()),
+                                parameter_values=[
+                                    ParameterValue(
+                                        category=sampling_protocol.get_param(RUN_ORDER),
+                                        value=str(sample_count).zfill(3)
+                                    ), ParameterValue(
+                                        category=sampling_protocol.get_param(STUDY_CELL),
+                                        value=str(cell.name)
+                                    )
+                                ]
+                            )
+                            process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
 
