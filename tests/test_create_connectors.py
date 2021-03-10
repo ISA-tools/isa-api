@@ -18,7 +18,8 @@ from isatools.model import (
 )
 from isatools.model import (
     Study,
-    Investigation
+    Investigation,
+    Sample
 )
 from isatools.create.model import (
     StudyDesign,
@@ -27,7 +28,7 @@ from isatools.create.model import (
     SampleAndAssayPlan,
     AssayGraph
 )
-from isatools.create.constants import DEFAULT_STUDY_IDENTIFIER
+from isatools.create.constants import DEFAULT_STUDY_IDENTIFIER, BASE_FACTORS
 from isatools.isajson import ISAJSONEncoder
 from isatools.tests.create_sample_assay_plan_odicts import (
     ms_assay_dict,
@@ -134,6 +135,18 @@ class TestMappings(unittest.TestCase):
         self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
         self.assertEqual(study.design_descriptors[0].term, ds_design_config['designType']['term'])
         self.assertEqual(study.design_descriptors[0].term_accession, ds_design_config['designType']['iri'])
+        for sample in study.samples:
+            self.assertIsInstance(sample, Sample)
+            self.assertTrue(len(sample.factor_values), 3)
+            try:
+                agent_fv = next(fv for fv in sample.factor_values if fv.factor_name.name == 'AGENT')
+                intensity_fv = next(fv for fv in sample.factor_values if fv.factor_name.name == 'INTENSITY')
+                duration_fv = next(fv for fv in sample.factor_values if fv.factor_name.name == 'DURATION')
+                self.assertIn(agent_fv.value, ds_design_config['treatmentPlan']['elementParams']['agents'])
+                self.assertIn(intensity_fv.value, ds_design_config['treatmentPlan']['elementParams']['intensities'])
+                self.assertIn(duration_fv.value, ds_design_config['treatmentPlan']['elementParams']['durations'])
+            except StopIteration:
+                continue
         investigation = Investigation(studies=[study])
         inv_json = json.dumps(
             investigation,
