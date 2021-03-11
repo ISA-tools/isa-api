@@ -20,7 +20,7 @@ import uuid
 import networkx as nx
 from isatools.create import errors
 from isatools.create.constants import (
-    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS,
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, OBSERVATION_PERIOD,
     DURATION_FACTOR, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT,
     DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
     ASSAY_GRAPH_PREFIX,
@@ -350,6 +350,9 @@ class StudyCell(object):
         if insertion_index is None:
             insertion_index = len(previous_elements)
 
+        def check_observation_period():
+            return True
+
         def check_screen():
             if len(previous_elements) > 1:
                 return False
@@ -381,6 +384,7 @@ class StudyCell(object):
             return not bool(len(previous_elements))
 
         switcher = {
+            OBSERVATION_PERIOD: check_observation_period,
             SCREEN: check_screen,
             RUN_IN: check_run_in,
             WASHOUT: check_washout,
