@@ -1,5 +1,5 @@
 study:
-  filename: 's_study_01.txt'
+    filename: 's_study_01.txt'
   ontology_source_references:
     - name: 'OBI'
       file: 'https://raw.githubusercontent.com/obi-ontology/obi/v2018-02-12/obi.owl'

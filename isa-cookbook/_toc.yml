@@ -6,6 +6,7 @@ sections:
 - file: content/creation
 - file: content/creationtutorial
 - file: content/custom-assay
+- file: content/isa-arms-epochs-cells
 - file: content/validation
 - file: content/conversions
 - file: content/importdata

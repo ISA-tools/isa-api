@@ -25,7 +25,7 @@ nucleic acid sequencing:
   synonyms:
     - library sequencing
     - nucleic acid sequencing
-mass spectrometry:
+mass spectrometry:  
   header: MS Assay Name
   iri: http://purl.obolibrary.org/obo/OBI_0000470
   synonyms:
