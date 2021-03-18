@@ -5,6 +5,7 @@ sections:
 - file: content/reading
 - file: content/creation
 - file: content/creationtutorial
+- file: content/custom-assay
 - file: content/validation
 - file: content/conversions
 - file: content/importdata
