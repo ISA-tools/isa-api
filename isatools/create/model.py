@@ -2151,7 +2151,7 @@ class StudyDesign(object):
         :param performer: str
         :return: 
         """
-        factors = set()
+        factors = {SEQUENCE_ORDER_FACTOR}
         ontology_sources = set()
         samples = []
         sample_count = 0
