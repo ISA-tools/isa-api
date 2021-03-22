@@ -91,8 +91,8 @@ LABELED_EXTRACT_PREFIX = 'LBLEXTR'
 ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
 # constants specific to the sampling plan in the study generation from the study design
-RUN_ORDER = 'run order'
-STUDY_CELL = 'study cell'
+RUN_ORDER = 'Sampling order'
+STUDY_CELL = 'Study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
