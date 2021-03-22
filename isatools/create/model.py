@@ -28,7 +28,7 @@ from isatools.create.constants import (
     DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
     QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
     QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER,
-    DEFAULT_STUDY_IDENTIFIER
+    DEFAULT_STUDY_IDENTIFIER, IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR
 )
 from isatools.model import (
     StudyFactor,
@@ -38,6 +38,7 @@ from isatools.model import (
     Characteristic,
     Study,
     Sample,
+    Comment,
     Assay,
     Protocol,
     Process,
@@ -460,6 +461,10 @@ class StudyCell(object):
                 for concomitant_el in el:
                     all_elements.append(concomitant_el)
         return all_elements
+
+    @property
+    def has_treatments(self):
+        return any(isinstance(el, Treatment) for el in self.get_all_elements())
 
     @property
     def duration(self):
@@ -2164,11 +2169,20 @@ class StudyDesign(object):
 
         # generate samples
         for arm in self.study_arms:
+            epoch_nb = 0
             for cell, sample_assay_plan in arm.arm_map.items():
+                is_treatment_comment = Comment(
+                    name=IS_TREATMENT_EPOCH,
+                    value='YES' if cell.has_treatments else 'NO'
+                )
+                seq_order_fv = FactorValue(
+                    factor_name=SEQUENCE_ORDER_FACTOR,
+                    value=epoch_nb
+                )
                 if not sample_assay_plan:
                     continue
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
-                factor_values = []
+                factor_values = [seq_order_fv]
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
                     # all the factor values up to the current element in the cell are actually serialised
@@ -2186,7 +2200,10 @@ class StudyDesign(object):
                         for samp_idx in range(0, sampling_size):
                             sample = Sample(
                                 name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
-                                factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
+                                factor_values=factor_values,
+                                characteristics=[sample_type],
+                                derives_from=[source],
+                                comments=[is_treatment_comment]
                             )
                             sample_batches[sample_node].append(sample)
                             sample_count += 1
@@ -2219,7 +2236,7 @@ class StudyDesign(object):
                                 log.error('Sample bach for assay graph is: {}'.format(
                                     problematic_sample_group
                                 ))
-
+                epoch_nb += 1
         # generate assays
         for assay_graph in unique_assay_types:
             protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})

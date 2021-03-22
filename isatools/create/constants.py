@@ -55,6 +55,20 @@ BASE_FACTORS = (
     DURATION_FACTOR,
 )
 
+# Is treatment EPOCH
+IS_TREATMENT_EPOCH = 'Treatment?'
+
+# Sequence Order Study Factor
+SEQUENCE_ORDER_FACTOR_ = dict(
+    name='Sequence Order',
+    type=OntologyAnnotation(term='sequence order')
+)
+
+SEQUENCE_ORDER_FACTOR = StudyFactor(
+    name=SEQUENCE_ORDER_FACTOR_['name'],
+    factor_type=SEQUENCE_ORDER_FACTOR_['type']
+)
+
 # Allowed types of product nodes in ISA create mode
 SOURCE = 'source'
 SAMPLE = 'sample'
