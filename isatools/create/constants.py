@@ -90,13 +90,14 @@ EXTRACT_PREFIX = 'EXTR'
 LABELED_EXTRACT_PREFIX = 'LBLEXTR'
 ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
-# constants specific to the sampling plan in the study generation from the study design
-RUN_ORDER = 'Sampling order'
-STUDY_CELL = 'Study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
+
+# constants specific to the sampling plan in the study generation from the study design
+RUN_ORDER = yaml_config['study']['protocols'][0]['parameters'][0]
+STUDY_CELL = yaml_config['study']['protocols'][0]['parameters'][1]
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'assay-options.yml')) as yaml_file:
     assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
