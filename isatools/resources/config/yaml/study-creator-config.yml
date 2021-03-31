@@ -12,8 +12,9 @@ study:
   protocols:
     - name: 'sample collection'
       protocol_type: 'sample_collection'
-      parameters: [ 'run order', 'study cell' ]
+      parameters: [ 'Sampling order', 'Study cell' ]
   performers:
+    - name: 'Unknown'
     - name: 'Bob'
     - name: 'Alice'
     - name: 'Carol'

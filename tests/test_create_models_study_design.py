@@ -659,6 +659,14 @@ class StudyCellTest(unittest.TestCase):
         self.cell.elements = [self.follow_up]
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
+    def test_has_treatments_true(self):
+        self.cell.elements = [self.first_treatment, self.washout, self.fourth_treatment]
+        self.assertTrue(self.cell.has_treatments)
+
+    def test_has_treatments_false(self):
+        self.cell.elements = [self.screen, self.run_in]
+        self.assertFalse(self.cell.has_treatments)
+
 
 class ProtocolNodeTest(unittest.TestCase):
 
