@@ -56,7 +56,7 @@ BASE_FACTORS = (
 )
 
 # Is treatment EPOCH
-IS_TREATMENT_EPOCH = 'Treatment?'
+IS_TREATMENT_EPOCH = 'study step with treatment'
 
 # Sequence Order Study Factor
 SEQUENCE_ORDER_FACTOR_ = dict(
