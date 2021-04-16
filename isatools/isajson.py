@@ -79,7 +79,8 @@ def load(fp):
             name=ontologySourceReference_json["name"],
             file=ontologySourceReference_json["file"],
             version=ontologySourceReference_json["version"],
-            description=ontologySourceReference_json["description"]
+            description=ontologySourceReference_json["description"],
+            comments=get_comments(ontologySourceReference_json)
         )
         term_source_dict[ontology_source_reference.name] = ontology_source_reference
         investigation.ontology_source_references.append(ontology_source_reference)
@@ -118,6 +119,7 @@ def load(fp):
                 term_accession=role_json["termAccession"],
                 term_source=term_source_dict[role_json["termSource"]]
             )
+            role.comments = get_comments(role_json)
             person.roles.append(role)
         person.comments = get_comments(person_json)
         investigation.contacts.append(person)
@@ -1358,17 +1360,28 @@ def check_study_groups(study_or_assay):
 
 BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
+default_isa_json_schemas_dir = os.path.join(
+    BASE_DIR,
+    "resources",
+    "schemas",
+    "isa_model_version_1_0_schemas",
+    "core"
+)
 
 
-def validate(fp, config_dir=default_config_dir, log_level=None,
-             base_schemas_dir="isa_model_version_1_0_schemas"):
+def validate(
+        fp,
+        config_dir=default_config_dir,
+        log_level=None,
+        base_schemas_dir="isa_model_version_1_0_schemas"
+):
     if config_dir is None:
         config_dir = default_config_dir
     if log_level in (
         logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
         logging.ERROR, logging.CRITICAL):
         log.setLevel(log_level)
-    log.info("ISA JSON Validator from ISA tools API v0.3")
+    log.info("ISA JSON Validator from ISA tools API v0.12.")
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     log.addHandler(handler)
@@ -1440,9 +1453,13 @@ def validate(fp, config_dir=default_config_dir, log_level=None,
             for assay_json in study_json["assays"]:
                 check_measurement_technology_types(assay_json, configs)  # Rule 4002
         log.info("Checking against configuration schemas...")
-        check_isa_schemas(isa_json=isa_json,
-                          investigation_schema_path=os.path.join(config_dir, "schemas",
-                                                                 "investigation_schema.json"))  # Rule 4003
+        check_isa_schemas(
+            isa_json=isa_json,
+            investigation_schema_path=os.path.join(
+                default_isa_json_schemas_dir,
+                "investigation_schema.json"
+            )
+        )  # Rule 4003
         # if all ERRORS are resolved, then try and validate against configuration
         handler.flush()
         if "(E)" in stream.getvalue():
@@ -1563,7 +1580,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "name": obj.name,
                     "description": obj.description,
                     "file": obj.file,
-                    "version": obj.version
+                    "version": obj.version,
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
@@ -1610,7 +1628,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "doi": obj.doi,
                     "pubMedID": obj.pubmed_id,
                     "status": get_ontology_annotation(obj.status) if obj.status else {"@id": ''},
-                    "title": obj.title
+                    "title": obj.title,
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
@@ -1640,7 +1659,8 @@ class ISAJSONEncoder(JSONEncoder):
                 {
                     "@id": id_gen(obj),
                     "name": obj.name,
-                    "characteristics": get_characteristics(obj.characteristics)
+                    "characteristics": get_characteristics(obj.characteristics),
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
@@ -1650,7 +1670,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     # "category": get_value(o.category) if o.category else None,
                     "value": get_value(obj.value),
-                    "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
+                    "unit": {"@id": id_gen(obj.unit)} if obj.unit else None,
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
@@ -1686,7 +1707,8 @@ class ISAJSONEncoder(JSONEncoder):
                             "value": get_value(x.value),
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
-                    ), obj.factor_values))
+                    ), obj.factor_values)),
+                    "comments": get_comments(obj.comments) if obj.comments else []
             })
 
         def get_factor(obj):
@@ -1694,7 +1716,8 @@ class ISAJSONEncoder(JSONEncoder):
                 {
                     "@id": id_gen(obj),
                     "factorName": obj.name,
-                    "factorType": get_ontology_annotation(obj.factor_type)
+                    "factorType": get_ontology_annotation(obj.factor_type),
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
@@ -1704,7 +1727,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "@id": id_gen(obj),
                     "name": obj.name,
                     "type": obj.type,
-                    "characteristics": get_characteristics(obj.characteristics)
+                    "characteristics": get_characteristics(obj.characteristics),
+                    "comments": get_comments(obj.comments) if obj.comments else []
                 }
             )
 
