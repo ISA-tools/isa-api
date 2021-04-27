@@ -23,6 +23,7 @@ sections:
   sections:
     - file: content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.ipynb
     - file: content/notebooks/create-a-simple-ISA-descriptor.ipynb
+    - file: content/notebooks/create_ISA_node_pool_events.ipynb 
     - file: content/notebooks/create_2x2x2_factorial_design.ipynb
     - file: content/notebooks/create-a-repeated-treatment-design-with-ISA-descriptor.ipynb
     - file: content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.ipynb
