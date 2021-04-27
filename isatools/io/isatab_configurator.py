@@ -23,8 +23,10 @@ log = logging.getLogger('isatools')
 
 
 def load(config_dir):
+
     config_dict = dict()
     for file in glob.iglob(os.path.join(config_dir, '*.xml')):
+
         try:
             config_obj = parse(inFileName=file, silence=True)
             measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
@@ -48,6 +50,7 @@ def get_config(config_dict, measurement_type=None, technology_type=None):
             fields[structured_field.pos] = structured_field
         sorted_fields = OrderedDict(sorted(fields.items(), key=lambda x: x[0]))
         sorted_config = list(sorted_fields.values())
+
     except KeyError:
         sorted_config = None
     return sorted_config

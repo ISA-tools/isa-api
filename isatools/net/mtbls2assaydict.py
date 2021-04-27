@@ -275,20 +275,20 @@ def build_params_slim(protocol_row_record, assay_dictionary, param_prefix, tech,
                         }
                     }]
             if "labeling" in protocol_type or "labelling" in protocol_type:
-                node_type = ["labeled extract", {
-                        "node_type": "labeled extract",
-                        "characteristics_category": "labeled extract type",
-                        "characteristics_value": {
-                            "options": [
-                                "label_0", "label_1"
-                            ],
-                            "values": []
-                        },
-                        "is_input_to_next_protocols": {
-                            "value": True
+                    node_type = ["labeled extract", {
+                            "node_type": "labeled extract",
+                            "characteristics_category": "labeled extract type",
+                            "characteristics_value": {
+                                "options": [
+                                    "label_0", "label_1"
+                                ],
+                                "values": []
+                            },
+                            "is_input_to_next_protocols": {
+                                "value": True
+                            }
                         }
-                    }
-                ]
+                    ]
             if "nmr spectroscopy" in protocol_type:
                 node_type = [
                             {

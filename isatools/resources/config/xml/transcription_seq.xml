@@ -13,6 +13,15 @@
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]
             </generated-value-template>
         </field>
+        <field header="Characteristics[organism]" data-type="Ontology term" is-file-field="false"
+               is-multiple-value="false" is-required="false" is-hidden="false" is-forced-ontology="false">
+            <description>
+                <![CDATA[Provide a taxonomic information associated to the Source Biological material (for example, Species, genus, strain,....). Ideally, provide NCBI TaxID or NEWT identifier]]></description>
+            <default-value></default-value>
+            <recommended-ontologies>
+                <ontology id="" abbreviation="NEWT" name="NEWT UniProt Taxonomy Database" version="Jun 2010"/>
+            </recommended-ontologies>
+        </field>
         <protocol-field protocol-type="nucleic acid extraction"/>
         <field header="Extract Name" data-type="String" is-file-field="false" is-multiple-value="false"
                is-required="true" is-hidden="false" is-forced-ontology="false">
