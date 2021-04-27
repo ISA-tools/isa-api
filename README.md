@@ -44,7 +44,10 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 ----
 Using the ISA-API
 -----------------
-To install and start using the ISA-API, check out the project documentation at [isatools.readthedocs.org](https://isatools.readthedocs.org).
+
+The documentation to install and use the ISA-API (v0.12) can be found [here](https://isa-tools.org/isa-api/content/index.html).
+
+For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
 Contributing
 ------------

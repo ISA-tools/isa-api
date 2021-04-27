@@ -20,7 +20,7 @@ import uuid
 import networkx as nx
 from isatools.create import errors
 from isatools.create.constants import (
-    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS,
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, OBSERVATION_PERIOD,
     DURATION_FACTOR, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT,
     DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
     ASSAY_GRAPH_PREFIX,
@@ -28,7 +28,7 @@ from isatools.create.constants import (
     DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
     QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
     QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER,
-    DEFAULT_STUDY_IDENTIFIER
+    DEFAULT_STUDY_IDENTIFIER, IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR
 )
 from isatools.model import (
     StudyFactor,
@@ -38,6 +38,7 @@ from isatools.model import (
     Characteristic,
     Study,
     Sample,
+    Comment,
     Assay,
     Protocol,
     Process,
@@ -350,6 +351,9 @@ class StudyCell(object):
         if insertion_index is None:
             insertion_index = len(previous_elements)
 
+        def check_observation_period():
+            return True
+
         def check_screen():
             if len(previous_elements) > 1:
                 return False
@@ -381,6 +385,7 @@ class StudyCell(object):
             return not bool(len(previous_elements))
 
         switcher = {
+            OBSERVATION_PERIOD: check_observation_period,
             SCREEN: check_screen,
             RUN_IN: check_run_in,
             WASHOUT: check_washout,
@@ -456,6 +461,10 @@ class StudyCell(object):
                 for concomitant_el in el:
                     all_elements.append(concomitant_el)
         return all_elements
+
+    @property
+    def has_treatments(self):
+        return any(isinstance(el, Treatment) for el in self.get_all_elements())
 
     @property
     def duration(self):
@@ -2069,8 +2078,8 @@ class StudyDesign(object):
     def _idgen_sources(group_id, subject_number):
         """
         Identifiers generator
-        :param gid: group ID
-        :param subn: subject ID
+        :param group_id: group ID
+        :param subject_number: subject ID
         :return: str
         """
         idarr = []
@@ -2142,7 +2151,7 @@ class StudyDesign(object):
         :param performer: str
         :return: 
         """
-        factors = set()
+        factors = {SEQUENCE_ORDER_FACTOR}
         ontology_sources = set()
         samples = []
         sample_count = 0
@@ -2160,44 +2169,59 @@ class StudyDesign(object):
 
         # generate samples
         for arm in self.study_arms:
+            epoch_nb = 0
             for cell, sample_assay_plan in arm.arm_map.items():
+                is_treatment_comment = Comment(
+                    name=IS_TREATMENT_EPOCH,
+                    value='YES' if cell.has_treatments else 'NO'
+                )
+                seq_order_fv = FactorValue(
+                    factor_name=SEQUENCE_ORDER_FACTOR,
+                    value=epoch_nb
+                )
                 if not sample_assay_plan:
                     continue
-                factor_values = []      # TODO implement the right list of factor values
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
+                factor_values = [seq_order_fv]
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
-                    for sample_node in sample_assay_plan.sample_plan:
-                        for source in sources_map[arm.name]:
-                            sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
-                            sample_term_source = sample_type.value.term_source if \
-                                hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
-                            if sample_term_source:
-                                ontology_sources.add(sample_term_source)
-                            sample_term = sample_type.value.term if \
-                                isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
-                            for samp_idx in range(0, sampling_size):
-                                sample = Sample(
-                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
-                                    factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
-                                )
-                                sample_batches[sample_node].append(sample)
-                                sample_count += 1
-                                process = Process(
-                                    executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
-                                    performer=performer,
-                                    date_=datetime.date.isoformat(datetime.date.today()),
-                                    parameter_values=[
-                                        ParameterValue(
-                                            category=sampling_protocol.get_param(RUN_ORDER),
-                                            value=str(sample_count).zfill(3)
-                                        ), ParameterValue(
-                                            category=sampling_protocol.get_param(STUDY_CELL),
-                                            value=str(cell.name)
-                                        )
-                                    ]
-                                )
-                                process_sequence.append(process)
+                    # all the factor values up to the current element in the cell are actually serialised
+                    # FIXME could this be an issue for concomitant treatments?
+                    factor_values.extend([f_val for f_val in element.factor_values])
+                for sample_node in sample_assay_plan.sample_plan:
+                    for source in sources_map[arm.name]:
+                        sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
+                        sample_term_source = sample_type.value.term_source if \
+                            hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
+                        if sample_term_source:
+                            ontology_sources.add(sample_term_source)
+                        sample_term = sample_type.value.term if \
+                            isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
+                        for samp_idx in range(0, sampling_size):
+                            sample = Sample(
+                                name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
+                                factor_values=factor_values,
+                                characteristics=[sample_type],
+                                derives_from=[source],
+                                comments=[is_treatment_comment]
+                            )
+                            sample_batches[sample_node].append(sample)
+                            sample_count += 1
+                            process = Process(
+                                executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
+                                performer=performer,
+                                date_=datetime.date.isoformat(datetime.date.today()),
+                                parameter_values=[
+                                    ParameterValue(
+                                        category=sampling_protocol.get_param(RUN_ORDER),
+                                        value=str(sample_count).zfill(3)
+                                    ), ParameterValue(
+                                        category=sampling_protocol.get_param(STUDY_CELL),
+                                        value=str(cell.name)
+                                    )
+                                ]
+                            )
+                            process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
 
@@ -2212,7 +2236,7 @@ class StudyDesign(object):
                                 log.error('Sample bach for assay graph is: {}'.format(
                                     problematic_sample_group
                                 ))
-
+                epoch_nb += 1
         # generate assays
         for assay_graph in unique_assay_types:
             protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})

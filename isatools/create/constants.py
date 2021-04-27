@@ -7,7 +7,14 @@ SCREEN = 'screen'
 RUN_IN = 'run-in'
 WASHOUT = 'washout'
 FOLLOW_UP = 'follow-up'
-ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)
+OBSERVATION_PERIOD = 'observation period'
+ELEMENT_TYPES = dict(
+    SCREEN=SCREEN,
+    RUN_IN=RUN_IN,
+    WASHOUT=WASHOUT,
+    FOLLOW_UP=FOLLOW_UP,
+    OBSERVATION_PERIOD=OBSERVATION_PERIOD
+)
 
 # TREATMENT/INTERVENTION TYPES
 INTERVENTIONS = dict(CHEMICAL='chemical intervention',
@@ -48,6 +55,20 @@ BASE_FACTORS = (
     DURATION_FACTOR,
 )
 
+# Is treatment EPOCH
+IS_TREATMENT_EPOCH = 'study step with treatment'
+
+# Sequence Order Study Factor
+SEQUENCE_ORDER_FACTOR_ = dict(
+    name='Sequence Order',
+    type=OntologyAnnotation(term='sequence order')
+)
+
+SEQUENCE_ORDER_FACTOR = StudyFactor(
+    name=SEQUENCE_ORDER_FACTOR_['name'],
+    factor_type=SEQUENCE_ORDER_FACTOR_['type']
+)
+
 # Allowed types of product nodes in ISA create mode
 SOURCE = 'source'
 SAMPLE = 'sample'
@@ -69,13 +90,14 @@ EXTRACT_PREFIX = 'EXTR'
 LABELED_EXTRACT_PREFIX = 'LBLEXTR'
 ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
-# constants specific to the sampling plan in the study generation from the study design
-RUN_ORDER = 'run order'
-STUDY_CELL = 'study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
+
+# constants specific to the sampling plan in the study generation from the study design
+RUN_ORDER = yaml_config['study']['protocols'][0]['parameters'][0]
+STUDY_CELL = yaml_config['study']['protocols'][0]['parameters'][1]
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'assay-options.yml')) as yaml_file:
     assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
