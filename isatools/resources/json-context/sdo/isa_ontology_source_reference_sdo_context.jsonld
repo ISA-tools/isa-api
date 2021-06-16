@@ -3,7 +3,7 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Ontology Source Reference": "sdo:DefinedTermSet",
+    "OntologySourceReference": "sdo:DefinedTermSet",
     "type" :{
         "@id" : "sdo:",
         "@type" : ["sdo:"]
