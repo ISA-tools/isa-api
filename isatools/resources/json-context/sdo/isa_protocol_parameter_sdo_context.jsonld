@@ -3,7 +3,7 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Parameter": "sdo:Property",
+    "ProtocolParameter": "sdo:Property",
 
     "parameterName": {
       "@id":"sdo:name",
