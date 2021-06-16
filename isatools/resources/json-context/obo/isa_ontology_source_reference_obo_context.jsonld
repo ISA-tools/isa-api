@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Ontology Source Reference": "obo:IAO_8000000",
+    "OntologySourceReference": "obo:IAO_8000000",
     "type" :{
         "@id" : "",
         "@type" : ["obo:IAO_8000000"]
