@@ -17,6 +17,7 @@
     }
   },
   "comments":{
-      "@id" : "obo:IAO_0000300"
+             "@id" : "obo:IAO_0000235",
+             "@type" : "obo:IAO_0000300"
   }
 }

@@ -17,7 +17,7 @@
       "@type":""
     },
     "comments": {
-      "@id" : "obo:MISSING",
+      "@id" : "obo:IAO_0000235",
       "@type" : "obo:IAO_0000300"
     }
   }
