@@ -1,4 +1,5 @@
 {
+  "id": "https://w3id.org/isa/assay_schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Assay JSON Schema",
   "name": "Assay JSON Schema",

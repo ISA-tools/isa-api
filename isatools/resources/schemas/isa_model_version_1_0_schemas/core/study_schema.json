@@ -1,4 +1,5 @@
 {
+  "id": "https://w3id.org/isa/study_schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Study JSON Schema",
   "description": "JSON Schema describing an Study",

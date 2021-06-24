@@ -1,4 +1,5 @@
 {
+    "id": "https://w3id.org/isa/person_schema.json",
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA person schema",
     "description" : "JSON-schema representing a person in the ISA model",

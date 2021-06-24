@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "sdo:DefinedTerm",	
+    	"annotationValue" : {
+    		"@id":"sdo:StructuredValue",
+    		"@type": ["xsd:string","xsd:float"]
+    	},
+    	"termSource" : {
+    		"@id":"sdo:inCodeSet",
+    		"@type": "sdo:CategoryCodeSet"
+    	},
+    	"termAccession" : {
+    		"@id":"obo:codeValue",
+    		"@type": "obo:CategoryCode"
+    		},
+    	"comments": {
+      		"@id" : "sdo:comment",
+      		"@type" : "sdo:Comment"
+    	}
+    }
+}

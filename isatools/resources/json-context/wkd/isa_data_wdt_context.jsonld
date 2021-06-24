@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Data": "wdt:Q5227290",
+    "type" :{
+        "@id" : "",
+        "@type" : ["wdt:Q2360668","wdt:Q5227290", "wdt:Q848722", "wdt:Q104514053"]
+    },
+    "identifier": {
+      "@id": "wdt:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+            "@id": ["wdt:Property:P527","wdt:Property:P1448"],
+            "@type":"wdt:Q82799"
+    },
+    "comments": {
+             "@id" : "wdt:Property:P6607",
+             "@type" : "wdt:Q58897583"
+    }
+  }
+}

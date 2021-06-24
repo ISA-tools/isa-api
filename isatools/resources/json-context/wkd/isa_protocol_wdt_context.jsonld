@@ -1,0 +1,49 @@
+{
+  "@context":{
+     "@language": "en",
+     "wdt": "http://www.wikidata.org/wiki/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Protocol": "wdt:Q41689629",
+    "filename" : {
+         "@id": "wdt:Property:P7793",
+         "@type": "wdt:Q1144928"
+    },
+    "identifier" : {
+      "@id": "wdt:Q853614",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "wdt:Property:P1476",
+        "@type":"wdt:Q783521"
+    },
+    "description" : {
+        "@id":"wdt:Property:P1552",
+        "@type":"wdt:Q1200750"
+    },
+    "version" : {
+         "@id": "wdt:Property:P348",
+         "@type":"wdt:Q3331189"
+         },   
+    "components" : {
+                "@id":"wdt:Property:P2283",
+                "@type":["wdt:Q1183543","wdt:Q7397"]
+    },
+    "parameters" : {
+                "@id":"wdt:Property:P2283",
+                "@type":["wdt:Q1207505","wdt:Q1183543","wdt:Q7397"]
+    },
+    "uri" :{
+       "@id": "wdt:Property:P2699",
+      "@type": "wdt:Q42253"
+    },  
+    "publications" : {
+             "@id":"wdt:Property:P527",
+             "@type":"wdt:Q591041"
+    },
+    "comments" : {
+         "@id" : "wdt:Property:P6607",
+         "@type" : "wdt:Q58897583"
+        
+    }
+    }
+}

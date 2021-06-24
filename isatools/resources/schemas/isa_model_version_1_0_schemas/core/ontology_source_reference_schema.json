@@ -1,4 +1,5 @@
 {
+    "id": "https://w3id.org/isa/ontology_source_reference_schema.json",
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA ontology source reference schema",
     "name" : "ISA ontology source reference schema",

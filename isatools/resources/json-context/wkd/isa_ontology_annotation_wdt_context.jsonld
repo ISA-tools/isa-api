@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "enm": "http://purl.enanomapper.org/onto/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "wdt:BFO:0000001",	
+    	"annotationValue" : {
+    		"@id":"wdt:STATO_0000129",
+    		"@type": ["xsd:string","xsd:float"]
+    	},
+    	"termSource" : {
+    		"@id":"wdt:IAO_0000235",
+    		"@type": "enm:ENM_8000073"
+    	},
+    	"termAccession" : {
+    		"@id":"wdt:IAO_0000235",
+    		"@type": "wdt:IAO:0000578"
+    		},
+    	"comments": {
+      		"@id" : "wdt:IAO_0000235	",
+      		"@type" : "wdt:IAO_0000300"
+    	}
+    }
+}

@@ -1,4 +1,5 @@
 {
+  "id": "https://w3id.org/isa/material_schema.json",
   "$schema": "http://json-schema.org/draft-04/schema",
   "title" : "ISA material node schema",
   "description" : "JSON-schema representing a material node in the ISA model, which is not a source or a sample (as they have specific schemas) - this will correspond to 'Extract Name', 'Labeled Extract Name'",

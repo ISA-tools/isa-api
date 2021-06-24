@@ -1,4 +1,5 @@
 {
+        "id": "https://w3id.org/isa/process_parameter_value_schema.json",
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA process parameter value schema",
     "description" : "JSON-schema representing a Parameter Value (associated with a Protocol REF) in the ISA model",

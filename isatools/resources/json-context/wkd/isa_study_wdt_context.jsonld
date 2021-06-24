@@ -1,0 +1,75 @@
+{
+  "@context":{
+     "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "wdt:OBI_0000066",
+    "filename" : {
+         "@id": "wdt:IAO_0000235",
+         "@type" : ["wdt:IAO:0000590","wdt:STATO_0000002","wdt:EFO_0004095"]
+    },
+    "identifier" : {
+      "@id": "wdt:Q853614",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "wdt:Property:P1476",
+        "@type":"wdt:Q783521"
+    },
+    "description" : {   
+        "@id":"wdt:Property:P1552",
+        "@type":"wdt:Q1200750"
+    } ,
+    "submissionDate" : {
+            "@id":"wdt:Property:P585",
+            "@type": "xsd:date"
+    } ,
+    "publicReleaseDate" : {
+            "@id":"wdt:Property:P577",
+            "@type": "xsd:date"
+    } ,
+    "publications" : {
+             "@id":"wdt:Property:P527",
+             "@type":"wdt:Q591041"
+    },
+    "people" : {
+             "@id":"wdt:Property:P50",
+             "@type":"wdt:Q215627"
+    },
+    "studyDesignDescriptors": {
+        "@id":"wdt:Property:P2283",
+        "@type":"wdt:Q2334061"
+    },
+    "protocols" : {
+        "@id":"wdt:Property:P2283",
+      "@type":"wdt:Q41689629"
+    },
+    "materials": {  
+        "@id":"wdt:Property:P2283",
+        "@type" : "wdt:Q53617407"
+    },
+    "processSequence": {
+        "@id":"wdt:Property:P527",
+        "@type" : "wdt:Q627335"
+    },
+    "assays" : {
+        "@id":"wdt:Property:P527",
+        "@type" : "wdt:Q739897"
+    },
+    "factors": {
+        "@id":"wdt:Property:P2283",
+        "@type":"wdt:Q2487752"
+    },
+    "characteristicCategories": {
+         "@id" : "wdt:Property:P1552",
+         "@type" : ["wdt:Q1207505", "wdt:Q3249551", "wdt:Q214609"]
+    },
+    "unitCategories": {
+          "@id": "wdt:Property:P8111" ,
+          "@type" : "wdt:Q47574"
+    },
+    "comments" : {
+                 "@id" : "wdt:Property:P6607",
+             "@type" : "wdt:Q58897583"
+    }
+}
