@@ -125,15 +125,6 @@ class ISALDSerializer:
             output[field] = instance[field]
         return output
 
-    @staticmethod
-    def get_any_of_ref(input_val):
-        """
-        Return the corresponding schema reference or false
-        :param input_val: value to evaluate
-        :return: False or a the schema reference string
-        """
-        return input_val.split("#")[1].split("/")[0] + "_schema.json"
-
     def get_context_url(self, raw_name):
         """
         Build the url of the context given a schema name
@@ -144,6 +135,15 @@ class ISALDSerializer:
                       "resources/json-context/obo/"
         filename = "_%s_context.jsonld" % self.ontology
         return context_url + "isa_" + raw_name.replace("_schema.json", filename)
+
+    @staticmethod
+    def get_any_of_ref(input_val):
+        """
+        Return the corresponding schema reference or false
+        :param input_val: value to evaluate
+        :return: False or a the schema reference string
+        """
+        return input_val.split("#")[1].split("/")[0] + "_schema.json"
 
     @staticmethod
     def get_context_key(name):
