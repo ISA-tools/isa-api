@@ -67,7 +67,7 @@ class ISALDSerializer:
     def set_ontology(self, ontology):
         """
         Setter to change the ontology source used to build the context URLs
-        :param {String} ontology: an ontology name (e.g.: sdo)
+        :param {String} ontology: an ontology name (e.g.: "sdo")
         """
         self.ontology = ontology
 
