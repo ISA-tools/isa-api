@@ -1,0 +1,161 @@
+import os
+import json
+from requests import get
+
+
+class LocalResolver:
+
+    def __init__(self, schemas_path="data/schemas/"):
+        import os
+        self.main_schema_name = "investigation_schema.json"
+        self.network = {
+            "schemas": {},
+            "contexts": {}
+        }
+        path = os.path.join('./', schemas_path)
+        schemas_path = os.listdir(path)
+        for schema_name in schemas_path:
+            schema_path = os.path.join(path, schema_name)
+            with open(schema_path, 'r') as schema:
+                self.network['schemas'][schema_name] = json.load(schema)
+                self.network['contexts'][schema_name] = {}
+                schema.close()
+
+
+def singleton(class_):
+    """
+    Decorator to create singleton
+    :param class_:
+    :return: the new object or the already existing instance
+    """
+    instances = {}
+
+    def get_instance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
+
+    return get_instance
+
+
+@singleton
+class ISALDSerializer:
+
+    def __init__(self, json_instance):
+        """
+        Given an instance url, serializes it into a JSON-LD. You can find the output of the serializer in self.output.
+        This is a soft singleton.
+        :param json_instance: An ISA JSON instance or the URL of the instance.
+        """
+
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "../resources/schemas/isa_model_version_1_0_schemas/core/")
+        schema_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
+                     "resources/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json"
+        self.context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
+                           "resources/json-context/obo/"
+        resolver = LocalResolver(schemas_path=schema_path)
+        self.data_conditions = {
+            '#material/': "material_schema.json"
+        }
+        self.main_schema = schema_url.split("/")[-1]
+        self.schemas = resolver.network['schemas']
+        self.contexts = resolver.network['contexts']
+        self.instance = json_instance
+        self.output = None
+        self.set_instance(json_instance)
+
+    def get_context_url(self, raw_name):
+        """
+        Build the url of the context given a schema name
+        :param raw_name: the schema name
+        :return: the corresponding context url
+        """
+        return self.context_url + "isa_" + raw_name.replace("_schema.json", "_obo_context.jsonld")
+
+    @staticmethod
+    def get_context_key(name):
+        """
+        Get the @type value of the LD injection given a string name
+        :param name: string to extract the type from
+        :return: the @type value to inject
+        """
+        name = name.replace("_schema.json", "").replace("#", "")
+        return "".join([x.capitalize() for x in name.split("_")])
+
+    def set_instance(self, instance):
+        """
+        Changes the instance without reloading the schemas and restart the injection process
+        :param instance: url of the instance to load
+        """
+        self.instance = instance
+        if isinstance(instance, str) \
+                and (instance.startswith('http://') or instance.startswith('https://')):
+            self.instance = json.loads(get(instance).text)
+        self.output = self.inject_ld(self.main_schema, {}, self.instance)
+
+    def inject_ld(self, schema_name, output, instance, reference=False):
+        """
+        Inject the LD properties at for the given instance or subinstance
+        :param schema_name: the name of the schema to get the properties from
+        :param output: the output to add the properties to
+        :param instance: the instance to get the values from
+        :param reference: string indicating a fake reference for building the context url
+        :return: the output of the LD injection
+        """
+        props = self.schemas[schema_name]
+        if 'properties' in self.schemas[schema_name].keys():
+            props = self.schemas[schema_name]['properties']
+        context_key = self.get_context_key(schema_name)
+        output["@context"] = self.get_context_url(schema_name)
+        if isinstance(reference, str):
+            context_key = schema_name.replace("_schema.json", "").replace("#", "")
+            output["@context"] = self.get_context_url(reference)
+        output["@type"] = context_key
+        for field in instance:
+            if field in props:
+                if 'type' in props[field].keys() and props[field]['type'] == 'array':
+                    if 'items' in props[field].keys() and '$ref' in props[field]['items']:
+                        ref = props[field]['items']['$ref'].replace("#", "")
+                        for value in instance[field]:
+                            value = self.inject_ld(ref, value, value)
+                    else:
+                        if field == 'inputs':
+                            for input_val in instance['inputs']:
+                                ref = self.get_any_of_ref(input_val["@id"])
+                                if ref:
+                                    input_val = self.inject_ld(ref, input_val, input_val)
+                        elif field == 'outputs':
+                            for output_val in instance['outputs']:
+                                ref = self.get_any_of_ref(output_val["@id"])
+                                if ref:
+                                    output_val = self.inject_ld(ref, output_val, output_val)
+                        else:
+                            ref = field + '_schema.json'
+                            self.schemas[ref] = props[field]
+                            for value in instance[field]:
+                                value = self.inject_ld(ref, value, value, schema_name)
+                elif 'type' in props[field].keys() and props[field]['type'] == 'object':
+                    ref = field + '_schema.json'
+                    self.schemas[ref] = props[field]
+                    instance[field] = self.inject_ld(ref, instance[field], instance[field], schema_name)
+                elif '$ref' in props[field].keys():
+                    ref = props[field]['$ref'].replace("#", "")
+                    instance[field] = self.inject_ld(ref, instance[field], instance[field])
+                elif 'anyOf' in props[field].keys() and field == 'value' and isinstance(instance[field], dict):
+                    ref = [n for n in props[field]['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
+                    instance[field] = self.inject_ld(ref, instance[field], instance[field])
+            output[field] = instance[field]
+        return output
+
+    def get_any_of_ref(self, input_val):
+        """
+        Return the corresponding schema reference or false
+        :param input_val: value to evaluate
+        :return: False or a the schema reference string
+        """
+        ref = False
+        for match in self.data_conditions.keys():
+            if match in input_val:
+                ref = self.data_conditions[match]
+        return ref
