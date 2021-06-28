@@ -54,7 +54,7 @@ class ISALDSerializer:
     def set_instance(self, instance):
         """
         Changes the instance without reloading the schemas and restart the injection process
-        :param instance: url of the instance to load
+        :param instance: ISA JSON instance or url of the instance to load
         """
         self.instance = instance
         if isinstance(instance, str) \
