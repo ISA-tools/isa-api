@@ -118,8 +118,9 @@ class TestMappings(unittest.TestCase):
         )
 
     def test_generate_study_design(self):
-        ds_design_config = self._load_config('factorial-study-design-12-arms-blood-saliva-genomeseq-ms.json')
-        design = generate_study_design(ds_design_config)
+        ds_study_config = self._load_config('factorial-sweeteners-study.json')
+        ds_design_config = ds_study_config['design']
+        design = generate_study_design(ds_study_config)
         self.assertIsInstance(design, StudyDesign)
         self.assertEqual(len(design.study_arms), len(ds_design_config['arms']['selected']))
         for arm in design.study_arms:
@@ -129,9 +130,9 @@ class TestMappings(unittest.TestCase):
                 self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
         study = design.generate_isa_study()
         self.assertIsInstance(study, Study)
-        self.assertEqual(study.title, ds_design_config['name'])
-        self.assertEqual(study.identifier, DEFAULT_STUDY_IDENTIFIER)
-        self.assertEqual(study.description, ds_design_config['description'])
+        self.assertEqual(study.title, ds_study_config['name'])
+        self.assertEqual(study.identifier, ds_study_config['_id'])
+        self.assertEqual(study.description, ds_study_config['description'])
         self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
         self.assertEqual(study.design_descriptors[0].term, ds_design_config['designType']['term'])
         self.assertEqual(study.design_descriptors[0].term_accession, ds_design_config['designType']['iri'])
@@ -157,6 +158,12 @@ class TestMappings(unittest.TestCase):
                 counter += 1
             except StopIteration:
                 continue
+        ms_assay = next(
+            assay for assay in study.assays if assay.filename.endswith('mass-spectrometry.txt')
+        )
+        self.assertTrue(
+            all(data_file.filename.split('.')[-1] == 'mzML' for data_file in ms_assay.data_files)
+        )
         self.assertGreater(counter, 0)      # at least one sample must have factor value annotations
         investigation = Investigation(studies=[study])
         inv_json = json.dumps(
@@ -172,9 +179,46 @@ class TestMappings(unittest.TestCase):
             self.assertIsInstance(data_frames, dict)
             self.assertGreater(len(data_frames), 1)
 
+    def test_generate_study_design_observational(self):
+        ds_study_config = self._load_config('observational-study-students.json')
+        design = generate_study_design(ds_study_config)
+        ds_design_config = ds_study_config['design']
+        self.assertIsInstance(design, StudyDesign)
+        self.assertEqual(len(design.study_arms), len(ds_design_config['arms']['selected']))
+        for arm in design.study_arms:
+            self.assertIsInstance(arm, StudyArm)
+            for cell, samp_ass_plan in arm.arm_map.items():
+                self.assertIsInstance(cell, StudyCell)
+                self.assertIsInstance(samp_ass_plan, SampleAndAssayPlan)
+        study = design.generate_isa_study()
+        self.assertIsInstance(study, Study)
+        self.assertEqual(study.title, ds_study_config['name'])
+        self.assertEqual(study.identifier, ds_study_config['_id'])
+        self.assertEqual(study.description, ds_study_config['description'])
+        self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
+        self.assertEqual(study.design_descriptors[0].term, ds_design_config['designType']['term'])
+        self.assertEqual(study.design_descriptors[0].term_accession, ds_design_config['designType']['iri'])
+        for sample in study.samples:
+            self.assertIsInstance(sample, Sample)
+        investigation = Investigation(studies=[study])
+        inv_json = json.dumps(
+            investigation,
+            cls=ISAJSONEncoder,
+            sort_keys=True,
+            indent=4,
+            separators=(',', ': ')
+        )
+        self.assertIsInstance(inv_json, str)
+        if SLOW_TESTS:
+            data_frames = isatab.dump_tables_to_dataframes(investigation)
+            self.assertIsInstance(data_frames, dict)
+            self.assertGreater(len(data_frames), 1)
+
+    # in this test subject and samples are ontology annotations
     def test_generate_study_design_with_observational_factors_and_ontology_annotations(self):
-        ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms.json')
-        design = generate_study_design(ds_design_config)
+        ds_study_config = self._load_config('crossover-study-dietary-dog.json')
+        design = generate_study_design(ds_study_config)
+        ds_design_config = ds_study_config['design']
         self.assertIsInstance(design, StudyDesign)
         for ix, arm in enumerate(design.study_arms):
             self.assertIsInstance(arm, StudyArm)
@@ -201,24 +245,37 @@ class TestMappings(unittest.TestCase):
             data_frames = isatab.dump_tables_to_dataframes(investigation)
             self.assertIsInstance(data_frames, dict)
 
+    # in this test subject and samples are ontology annotations
     def test_generate_study_design_with_chained_protocols_and_ontology_annotations(self):
-        ds_design_config = self._load_config('crossover-study-design-4-arms-blood-derma-nmr-ms-chipseq.json')
-        design = generate_study_design(ds_design_config)
+        ds_study_config = self._load_config('crossover-study-human.json')
+        design = generate_study_design(ds_study_config)
+        ds_design_config = ds_study_config['design']
         self.assertIsInstance(design, StudyDesign)
         investigation = Investigation(studies=[design.generate_isa_study()])
         self.assertIsInstance(investigation.studies[0], Study)
         self.assertEqual(len(investigation.studies[0].assays), len(ds_design_config['assayPlan']))
-        ms_assay = next(
-            assay for assay in investigation.studies[0].assays if assay.filename.endswith('mass-spectrometry.txt')
+        sequencing_assay = next(
+            assay for assay in investigation.studies[0].assays if assay.filename.endswith('nucleic-acid-sequencing.txt')
         )
         self.assertTrue(
-            all(data_file.filename.split('.')[-1] == 'mzML' for data_file in ms_assay.data_files)
+            all(data_file.filename.split('.')[-1] == 'raw' for data_file in sequencing_assay.data_files)
         )
-        nmr_assay = next(
-            assay for assay in investigation.studies[0].assays if assay.filename.endswith('NMR-spectroscopy.txt')
+        marker_panel_assay = next(
+            assay for assay in investigation.studies[0].assays if assay.filename.endswith('marker-panel.txt')
+        )
+        marker_panel_samples = [
+            proc.inputs[0] for proc in marker_panel_assay.process_sequence
+            if proc.executes_protocol.name == 'sample preparation'
+        ]
+        blood_sample = ds_design_config['samplePlan'][0]['sampleType']
+        self.assertTrue(
+            all(sample.characteristics[0].value.term == blood_sample['term'] for sample in marker_panel_samples)
         )
         self.assertTrue(
-            all(data_file.filename.split('.')[-1] == 'raw' for data_file in nmr_assay.data_files)
+            all(sample.characteristics[0].value.term_accession == blood_sample['iri'] for sample in marker_panel_samples)
+        )
+        self.assertTrue(
+            all(data_file.filename.split('.')[-1] == 'raw' for data_file in marker_panel_assay.data_files)
         )
         if SLOW_TESTS:
             json.dumps(
