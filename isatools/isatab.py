@@ -1078,7 +1078,7 @@ def _get_start_end_nodes(G):
     return start_nodes, end_nodes
 
 
-def _longest_path_and_attrs(paths):
+def _longest_path_and_attrs(paths, indexes):
     """Function to find the longest paths and attributes to determine the
     most appropriate ISA-Tab header. This is calculated by adding up the length
     of each path with the number of attributes needed to describe each node in
@@ -1088,9 +1088,11 @@ def _longest_path_and_attrs(paths):
     :return: The longest path and attributes
     """
     longest = (0, None)
+    log.info(paths)
     for path in paths:
         length = len(path)
-        for n in path:
+        for node in path:
+            n = indexes[node]
             if isinstance(n, Source):
                 length += len(n.characteristics)
             elif isinstance(n, Sample):
@@ -1126,10 +1128,12 @@ def _all_end_to_end_paths(G, start_nodes):
     num_start_nodes = len(start_nodes)
     message = 'Calculating for paths for {} start nodes: '.format(
         num_start_nodes)
-    if isinstance(start_nodes[0], Source):
+    log.info(start_nodes)
+    start_node = G.indexes[start_nodes[0]]
+    if isinstance(start_node, Source):
         message = 'Calculating for paths for {} sources: '.format(
             num_start_nodes)
-    elif isinstance(start_nodes[0], Sample):
+    elif isinstance(start_node, Sample):
         message = 'Calculating for paths for {} samples: '.format(
             num_start_nodes)
     if isa_logging.show_pbars:
@@ -1141,19 +1145,20 @@ def _all_end_to_end_paths(G, start_nodes):
         def pbar(x): return x
     for start in pbar(start_nodes):
         # Find ends
-        if isinstance(start, Source):
+        node = G.indexes[start]
+        if isinstance(node, Source):
             # only look for Sample ends if start is a Source
             for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Sample) and len(G.out_edges(x)) == 0]:
+                        isinstance(G.indexes[x], Sample) and len(G.out_edges(x)) == 0]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-        elif isinstance(start, Sample):
+        elif isinstance(node, Sample):
             # only look for Process ends if start is a Sample
             for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Process) and x.next_process is None]:
+                        isinstance(G.indexes[x], Process) and G.indexes[x].next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
     # log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
-        log.debug([x.name for x in start_nodes])
+        log.debug([G.indexes[x].name for x in start_nodes])
     return paths
 
 
@@ -1185,9 +1190,11 @@ def write_study_table_files(inv_obj, output_dir):
         # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(
             study_obj.graph,
-            [x for x in study_obj.graph.nodes() if isinstance(x, Source)])
+            [x for x in study_obj.graph.nodes() if isinstance(study_obj.graph.indexes[x], Source)])
+        log.warning(study_obj.graph.nodes())
         sample_in_path_count = 0
-        for node in _longest_path_and_attrs(paths):
+        for node_index in _longest_path_and_attrs(paths, study_obj.graph.indexes):
+            node = study_obj.graph.indexes[node_index]
             if isinstance(node, Source):
                 olabel = "Source Name"
                 columns.append(olabel)
@@ -1377,15 +1384,16 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(
-                assay_obj.graph, [x for x in assay_obj.graph.nodes()
-                                  if isinstance(x, Sample)])
+                assay_obj.graph, [assay_obj.graph.indexes[x] for x in assay_obj.graph.nodes()
+                                  if isinstance(assay_obj.graph.indexes[x], Sample)])
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
-            if _longest_path_and_attrs(paths) is None:
+            if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
-            for node in _longest_path_and_attrs(paths):
+            for node_index in _longest_path_and_attrs(paths):
+                node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
