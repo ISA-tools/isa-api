@@ -34,7 +34,7 @@ class ISALDSerializer:
         self.output = None
         self.schemas = {}
         self.contexts = {}
-        self.set_ontology(ontology)
+        self.ontology = ontology
         self.__resolve_network()
         self.set_instance(json_instance)
 
