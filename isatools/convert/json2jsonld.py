@@ -3,25 +3,6 @@ import json
 from requests import get
 
 
-class LocalResolver:
-
-    def __init__(self, schemas_path="data/schemas/"):
-        import os
-        self.main_schema_name = "investigation_schema.json"
-        self.network = {
-            "schemas": {},
-            "contexts": {}
-        }
-        path = os.path.join('./', schemas_path)
-        schemas_path = os.listdir(path)
-        for schema_name in schemas_path:
-            schema_path = os.path.join(path, schema_name)
-            with open(schema_path, 'r') as schema:
-                self.network['schemas'][schema_name] = json.load(schema)
-                self.network['contexts'][schema_name] = {}
-                schema.close()
-
-
 def singleton(class_):
     """
     Decorator to create singleton
@@ -47,41 +28,28 @@ class ISALDSerializer:
         This is a soft singleton.
         :param json_instance: An ISA JSON instance or the URL of the instance.
         """
-
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "../resources/schemas/isa_model_version_1_0_schemas/core/")
-        schema_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
-                     "resources/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json"
-        self.context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
-                           "resources/json-context/obo/"
-        resolver = LocalResolver(schemas_path=schema_path)
-        self.data_conditions = {
-            '#material/': "material_schema.json"
-        }
-        self.main_schema = schema_url.split("/")[-1]
-        self.schemas = resolver.network['schemas']
-        self.contexts = resolver.network['contexts']
-        self.instance = json_instance
+        self.main_schema = "investigation_schema.json"
+        self.instance = None
         self.output = None
+        self.schemas = {}
+        self.contexts = {}
+        self.resolve_network()
         self.set_instance(json_instance)
 
-    def get_context_url(self, raw_name):
+    def resolve_network(self):
         """
-        Build the url of the context given a schema name
-        :param raw_name: the schema name
-        :return: the corresponding context url
+        Resolves the network into self.schemas and self.contexts
         """
-        return self.context_url + "isa_" + raw_name.replace("_schema.json", "_obo_context.jsonld")
-
-    @staticmethod
-    def get_context_key(name):
-        """
-        Get the @type value of the LD injection given a string name
-        :param name: string to extract the type from
-        :return: the @type value to inject
-        """
-        name = name.replace("_schema.json", "").replace("#", "")
-        return "".join([x.capitalize() for x in name.split("_")])
+        schemas_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "../resources/schemas/isa_model_version_1_0_schemas/core/")
+        path = os.path.join('./', schemas_path)
+        schemas_path = os.listdir(path)
+        for schema_name in schemas_path:
+            schema_path = os.path.join(path, schema_name)
+            with open(schema_path, 'r') as schema:
+                self.schemas[schema_name] = json.load(schema)
+                self.contexts[schema_name] = self.get_context_url(schema_name)
+                schema.close()
 
     def set_instance(self, instance):
         """
@@ -148,14 +116,32 @@ class ISALDSerializer:
             output[field] = instance[field]
         return output
 
-    def get_any_of_ref(self, input_val):
+    @staticmethod
+    def get_any_of_ref(input_val):
         """
         Return the corresponding schema reference or false
         :param input_val: value to evaluate
         :return: False or a the schema reference string
         """
-        ref = False
-        for match in self.data_conditions.keys():
-            if match in input_val:
-                ref = self.data_conditions[match]
-        return ref
+        return input_val.split("#")[1].split("/")[0] + "_schema.json"
+
+    @staticmethod
+    def get_context_url(raw_name):
+        """
+        Build the url of the context given a schema name
+        :param raw_name: the schema name
+        :return: the corresponding context url
+        """
+        context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
+                      "resources/json-context/obo/"
+        return context_url + "isa_" + raw_name.replace("_schema.json", "_obo_context.jsonld")
+
+    @staticmethod
+    def get_context_key(name):
+        """
+        Get the @type value of the LD injection given a string name
+        :param name: string to extract the type from
+        :return: the @type value to inject
+        """
+        name = name.replace("_schema.json", "").replace("#", "")
+        return "".join([x.capitalize() for x in name.split("_")])
