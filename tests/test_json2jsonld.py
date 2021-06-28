@@ -22,5 +22,6 @@ class TestJson2JsonLD(unittest.TestCase):
         with open(instance_path, 'r') as instance_file:
             instance = load(instance_file)
             instance_file.close()
+        self.serializer.set_ontology("obo")
         self.serializer.set_instance(instance)
         self.assertEqual(self.serializer.output, self.expected_markup)

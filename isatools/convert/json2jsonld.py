@@ -22,13 +22,15 @@ def singleton(class_):
 @singleton
 class ISALDSerializer:
 
-    def __init__(self, json_instance):
+    def __init__(self, json_instance, ontology="obo"):
         """
         Given an instance url, serializes it into a JSON-LD. You can find the output of the serializer in self.output.
         This is a soft singleton.
-        :param json_instance: An ISA JSON instance or the URL of the instance.
+        :param {String|Object} json_instance: An ISA JSON instance or the URL of the instance.
+        :param {String} ontology: name of the ontology used to build the context names
         """
         self.main_schema = "investigation_schema.json"
+        self.ontology = ontology
         self.instance = None
         self.output = None
         self.schemas = {}
@@ -61,6 +63,13 @@ class ISALDSerializer:
                 and (instance.startswith('http://') or instance.startswith('https://')):
             self.instance = json.loads(get(instance).text)
         self.output = self.inject_ld(self.main_schema, {}, self.instance)
+
+    def set_ontology(self, ontology):
+        """
+        Setter to change the ontology source used to build the context URLs
+        :param {String} ontology: an ontology name (e.g.: sdo)
+        """
+        self.ontology = ontology
 
     def inject_ld(self, schema_name, output, instance, reference=False):
         """
@@ -125,8 +134,7 @@ class ISALDSerializer:
         """
         return input_val.split("#")[1].split("/")[0] + "_schema.json"
 
-    @staticmethod
-    def get_context_url(raw_name):
+    def get_context_url(self, raw_name):
         """
         Build the url of the context given a schema name
         :param raw_name: the schema name
@@ -134,7 +142,8 @@ class ISALDSerializer:
         """
         context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
                       "resources/json-context/obo/"
-        return context_url + "isa_" + raw_name.replace("_schema.json", "_obo_context.jsonld")
+        filename = "_%s_context.jsonld" % self.ontology
+        return context_url + "isa_" + raw_name.replace("_schema.json", filename)
 
     @staticmethod
     def get_context_key(name):
