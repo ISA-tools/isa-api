@@ -120,7 +120,6 @@ class TestIsaTabDump(unittest.TestCase):
         s.design_descriptors.append(OntologyAnnotation(term="factorial design"))
         s.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
 
-
         # testing if study factors can receive comments[]
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
         f.comments.append(Comment(name="Study Start Date", value="Moon"))
@@ -175,6 +174,10 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
         i.studies = [s]
+
+        # from isatools.model import _build_assay_graph
+        # graph =_build_assay_graph(s.process_sequence)
+
         isatab.dump(i, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
@@ -349,7 +352,7 @@ class TestIsaTabDump(unittest.TestCase):
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
             self.assertIsInstance(isatab.dumps(i), str)
 
-    def test_isatab_dump_investigation_multiple_comments(self):
+    def test_isatab_dump_investigation_with_assay(self):
         # Create an empty Investigation object and set some values to the
         # instance variables.
 
@@ -730,6 +733,11 @@ class TestIsaTabDump(unittest.TestCase):
         study.assays.append(assay2)
 
         investigation.studies.append(study)
+
+        from isatools.model import _build_assay_graph
+        graph = _build_assay_graph(study.process_sequence)
+        graph1 = _build_assay_graph(assay1.process_sequence)
+        graph2 = _build_assay_graph(assay2.process_sequence)
 
         try:
             isatab.dump(investigation, self._tmp_dir)
@@ -1311,9 +1319,14 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         i = Investigation()
         s = Study(
             filename='s_test.txt',
-            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning'), Protocol(name="sampling")]
         )
+
+        source = Source(name="source1")
         sample1 = Sample(name='sample1')
+        sampling_process = Process(executes_protocol=s.protocols[2])
+        sampling_process.inputs = [source]
+        sampling_process.outputs = [sample1]
         extract1 = Material(name='extract1', type_='Extract Name')
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')

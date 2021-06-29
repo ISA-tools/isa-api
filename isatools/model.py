@@ -49,7 +49,7 @@ def _build_assay_graph(process_sequence=None):
     for process in process_sequence:
         g.indexes[process.sequence_identifier] = process
         # log.debug('Current process is: {0}'.format(process.identifier))
-        # log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'id', None)))
+        # log.debug('Next process for current process is: {0}'.format(getattr(process.next_process_identifier, 'id', None)))
         # log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'id', None)))
         # log.debug('Inputs for current process are: {0}'.format(
         #    [getattr(input_, 'id', None) for input_ in process.inputs]
@@ -66,12 +66,12 @@ def _build_assay_graph(process_sequence=None):
                     g.indexes[output.sequence_identifier] = output
                     # log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
             else:
-                next_process = getattr(process.next_process, "sequence_identifier", None)
-                if next_process is not None:
-                    g.add_edge(process.sequence_identifier, next_process)
-                    g.indexes[next_process] = process.next_process
+                next_process_identifier = getattr(process.next_process, "sequence_identifier", None)
+                if next_process_identifier is not None:
+                    g.add_edge(process.sequence_identifier, next_process_identifier)
+                    g.indexes[next_process_identifier] = process.next_process
                 # log.debug('linking process {1} to prev_process {0}'.format(
-                #    getattr(process.next_process, 'id', None), process.id))
+                #    getattr(process.next_process_identifier, 'id', None), process.id))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
@@ -80,10 +80,10 @@ def _build_assay_graph(process_sequence=None):
                     g.indexes[input_.sequence_identifier] = input_
                     # log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
             else:
-                previous_process = getattr(process.prev_process, "sequence_identifier", None)
-                if previous_process is not None:
-                    g.add_edge(previous_process, process.sequence_identifier)
-                    g.indexes[previous_process] = process.prev_process
+                previous_process_identifier = getattr(process.prev_process, "sequence_identifier", None)
+                if previous_process_identifier is not None:
+                    g.add_edge(previous_process_identifier, process.sequence_identifier)
+                    g.indexes[previous_process_identifier] = process.prev_process
                 # log.debug('linking prev_process {0} to process {1}'.format(
                 #     getattr(process.prev_process, 'id', None), process.id))
     return g

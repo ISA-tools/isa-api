@@ -874,7 +874,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     investigation = isa_obj
 
     # Write ONTOLOGY SOURCE REFERENCE section
-    ontology_source_references_df =_build_ontology_reference_section(ontologies=investigation.ontology_source_references)
+    ontology_source_references_df = _build_ontology_reference_section(ontologies=investigation.ontology_source_references)
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
     #  Need to set index_label as top left cell
     ontology_source_references_df.to_csv(
@@ -1136,14 +1136,14 @@ def _all_end_to_end_paths(G, start_nodes):
     elif isinstance(start_node, Sample):
         message = 'Calculating for paths for {} samples: '.format(
             num_start_nodes)
-    if isa_logging.show_pbars:
+    """if isa_logging.show_pbars:
         pbar = ProgressBar(
             min_value=0, max_value=num_start_nodes, widgets=[
                 message, SimpleProgress(), Bar(left=" |", right="| "),
                 ETA()]).start()
     else:
-        def pbar(x): return x
-    for start in pbar(start_nodes):
+        def pbar(x): return x"""
+    for start in start_nodes:
         # Find ends
         node = G.indexes[start]
         if isinstance(node, Source):
@@ -1193,7 +1193,8 @@ def write_study_table_files(inv_obj, output_dir):
             [x for x in study_obj.graph.nodes() if isinstance(study_obj.graph.indexes[x], Source)])
         log.warning(study_obj.graph.nodes())
         sample_in_path_count = 0
-        for node_index in _longest_path_and_attrs(paths, study_obj.graph.indexes):
+        longest_path = _longest_path_and_attrs(paths, study_obj.graph.indexes)
+        for node_index in longest_path:
             node = study_obj.graph.indexes[node_index]
             if isinstance(node, Source):
                 olabel = "Source Name"
@@ -1236,7 +1237,7 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-        if isa_logging.show_pbars:
+        """if isa_logging.show_pbars:
             pbar = ProgressBar(min_value=0, max_value=len(paths),
                                widgets=['Writing {} paths: '
                                         .format(len(paths)),
@@ -1244,13 +1245,14 @@ def write_study_table_files(inv_obj, output_dir):
                                         Bar(left=" |", right="| "),
                                         ETA()]).start()
         else:
-            def pbar(x): return x
-        for path in pbar(paths):
+            def pbar(x): return x"""
+        for path in paths:
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
 
             sample_in_path_count = 0
-            for node in path:
+            for node_index in path:
+                node = study_obj.graph.indexes[node_index]
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
@@ -1293,8 +1295,8 @@ def write_study_table_files(inv_obj, output_dir):
                         fvlabel = "{0}.Factor Value[{1}]".format(
                             olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
-        if isinstance(pbar, ProgressBar):
-            pbar.finish()
+        """if isinstance(pbar, ProgressBar):
+            pbar.finish()"""
 
         DF = pd.DataFrame(columns=columns)
         DF = DF.from_dict(data=df_dict)
@@ -1384,7 +1386,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(
-                assay_obj.graph, [assay_obj.graph.indexes[x] for x in assay_obj.graph.nodes()
+                assay_obj.graph, [x for x in assay_obj.graph.nodes()
                                   if isinstance(assay_obj.graph.indexes[x], Sample)])
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
@@ -1392,7 +1394,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
-            for node_index in _longest_path_and_attrs(paths):
+            for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
                 node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
