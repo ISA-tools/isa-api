@@ -4761,9 +4761,9 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
         if len(df_dict['investigation'].index) > 0:
             row = df_dict['investigation'].iloc[0]
-            investigation.identifier = row['Investigation Identifier']
-            investigation.title = row['Investigation Title']
-            investigation.description = row['Investigation Description']
+            investigation.identifier = str(row['Investigation Identifier'])
+            investigation.title = str(row['Investigation Title'])
+            investigation.description = str(row['Investigation Description'])
             investigation.submission_date = \
                 row['Investigation Submission Date']
             investigation.public_release_date = \
