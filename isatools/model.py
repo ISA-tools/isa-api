@@ -2620,6 +2620,11 @@ class ProcessSequenceNode(metaclass=abc.ABCMeta):
         self.sequence_identifier = ProcessSequenceNode.sequence_identifier
         ProcessSequenceNode.sequence_identifier += 1
 
+    def assign_identifier(self):
+        # ProcessSequenceNode.sequence_identifier += 1
+        self.sequence_identifier = ProcessSequenceNode.sequence_identifier
+        ProcessSequenceNode.sequence_identifier += 1
+
 
 class Source(Commentable, ProcessSequenceNode):
     """Represents a Source material in an experimental graph.
@@ -3972,6 +3977,17 @@ class FreeInductionDecayDataFile(DataFile):
         return not self == other
 
 
+def _deep_copy(isa_object):
+    """
+    Re-implementation of the deepcopy function that also increases and sets the object identifiers for copied objects.
+    :param {Object} isa_object: the object to copy
+    """
+    from copy import deepcopy
+    new_obj = deepcopy(isa_object)
+    new_obj.assign_identifier()
+    return new_obj
+
+
 def batch_create_materials(material=None, n=1):
     """Creates a batch of material objects (Source, Sample or Material) from a
     prototype material object
@@ -3994,11 +4010,9 @@ def batch_create_materials(material=None, n=1):
     """
     material_list = list()
     if isinstance(material, (Source, Sample, Material)):
-        from copy import deepcopy
         for x in range(0, n):
-            new_obj = deepcopy(material)
+            new_obj = _deep_copy(material)
             new_obj.name = material.name + '-' + str(x)
-
             if hasattr(material, 'derives_from'):
                 new_obj.derives_from = material.derives_from
 
@@ -4047,13 +4061,12 @@ def batch_create_assays(*args, n=1):
     materialA = None
     process = None
     materialB = None
-    from copy import deepcopy
     for x in range(0, n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
                 if isinstance(arg[0], (Source, Sample, Material)):
                     if materialA is None:
-                        materialA = deepcopy(arg)
+                        materialA = _deep_copy(arg)
                         y = 0
                         for material in materialA:
                             material.name = \
@@ -4061,7 +4074,7 @@ def batch_create_assays(*args, n=1):
                                 + str(y)
                             y += 1
                     else:
-                        materialB = deepcopy(arg)
+                        materialB = _deep_copy(arg)
                         y = 0
                         for material in materialB:
                             material.name = \
@@ -4069,20 +4082,20 @@ def batch_create_assays(*args, n=1):
                                 + str(y)
                             y += 1
                 elif isinstance(arg[0], Process):
-                    process = deepcopy(arg)
+                    process = _deep_copy(arg)
                     y = 0
                     for p in process:
                         p.name = p.name + '-' + str(x) + '-' + str(y)
                         y += 1
             if isinstance(arg, (Source, Sample, Material)):
                 if materialA is None:
-                    materialA = deepcopy(arg)
+                    materialA = _deep_copy(arg)
                     materialA.name = materialA.name + '-' + str(x)
                 else:
-                    materialB = deepcopy(arg)
+                    materialB = _deep_copy(arg)
                     materialB.name = materialB.name + '-' + str(x)
             elif isinstance(arg, Process):
-                process = deepcopy(arg)
+                process = _deep_copy(arg)
                 process.name = process.name + '-' + str(x)
             if materialA is not None and materialB is not None \
                     and process is not None:
