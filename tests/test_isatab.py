@@ -1327,6 +1327,7 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         sampling_process = Process(executes_protocol=s.protocols[2])
         sampling_process.inputs = [source]
         sampling_process.outputs = [sample1]
+        s.process_sequence = [sampling_process]
         extract1 = Material(name='extract1', type_='Extract Name')
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')

@@ -1473,8 +1473,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
 
-                for node in path:
-
+                for node_index in path:
+                    node = assay_obj.graph.indexes[node_index]
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
                             node.executes_protocol.name
