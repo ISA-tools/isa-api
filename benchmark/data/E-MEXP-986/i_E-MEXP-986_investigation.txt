@@ -1,0 +1,93 @@
+ONTOLOGY SOURCE REFERENCE							
+Term Source Name	CHEBI	OBI	NCBITaxon				
+Term Source File	http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=CHEBI		http://bioportal.bioontology.org/ontologies/47845				
+Term Source Version	Jun-10		47845				
+Term Source Description	Chemical Entities of Biological Interest	Ontology for Biomedical Investigations	NCBI organismal classification				
+INVESTIGATION							
+Investigation Identifier							
+Investigation Title							
+Investigation Description							
+Investigation Submission Date							
+Investigation Public Release Date							
+Comment [Created with configuration]							
+Comment [Last Opened With Configuration]							
+INVESTIGATION PUBLICATIONS							
+Investigation PubMed ID							
+Investigation Publication DOI							
+Investigation Publication Author List							
+Investigation Publication Title							
+Investigation Publication Status							
+Investigation Publication Status Term Accession Number							
+Investigation Publication Status Term Source REF							
+INVESTIGATION CONTACTS							
+Investigation Person Last Name							
+Investigation Person First Name							
+Investigation Person Mid Initials							
+Investigation Person Email							
+Investigation Person Phone							
+Investigation Person Fax							
+Investigation Person Address							
+Investigation Person Affiliation							
+Investigation Person Roles							
+Investigation Person Roles Term Accession Number							
+Investigation Person Roles Term Source REF							
+STUDY							
+Study Identifier	E-MEXP-986						
+Study Title	Transcription profiling of wild type and DREB2C over-expression Arabidopsis plants						
+Study Description	"We analysed DREB2C overexpressing Arabidopsis plants (35S:DREB2C-a line: S15, 35S:DREB2C-c line: S22) with cDNA microarray (A-MEXP-187)."						
+Study Submission Date							
+Study Public Release Date	10/03/2007						
+Study File Name	s_E-MEXP-986_study_samples.txt						
+STUDY DESIGN DESCRIPTORS							
+Study Design Type	dye swap design	parallel group design	intervention design	genetic modification design			
+Study Design Type Term Accession Number	obo:OBI_0500017	obo:OBI_0500006	obo:OBI_0000115	obo:OBI_0001460			
+Study Design Type Term Source REF	OBI	OBI	OBI	OBI			
+STUDY PUBLICATIONS							
+Study PubMed ID							
+Study Publication DOI							
+Study Publication Author List							
+Study Publication Title							
+Study Publication Status							
+Study Publication Status Term Accession Number							
+Study Publication Status Term Source REF							
+STUDY FACTORS							
+Study Factor Name	genetic transformation						
+Study Factor Type	genetic transformation						
+Study Factor Type Term Accession Number	OBI_0600043						
+Study Factor Type Term Source REF	OBI						
+STUDY ASSAYS							
+Study Assay File Name	a_E-MEXP-986_assay.txt						
+Study Assay Measurement Type	transcription profiling						
+Study Assay Measurement Type Term Accession Number	obo:OBI_0000424						
+Study Assay Measurement Type Term Source REF	OBI						
+Study Assay Technology Type	DNA microarray						
+Study Assay Technology Type Term Accession Number	obo:OBI_0400148						
+Study Assay Technology Type Term Source REF	OBI						
+Study Assay Technology Platform							
+STUDY PROTOCOLS							
+Study Protocol Name	P-MEXP-43818	P-MEXP-8529	P-MEXP-5856	P-MEXP-5857	P-MEXP-5859	P-MEXP-5860	P-MEXP-5864
+Study Protocol Type	material maintenance	nucleic acid extraction	labeling	labeling	nucleic acid hybridization	array image acquisition	data transformation
+Study Protocol Type Term Accession Number	obo:OBI_0000838	obo:OBI_0666667	obo:OBI_0600038	obo:OBI_0600038	obo:OBI_0302903	obo:OBI_0001031	obo:OBI_0200000
+Study Protocol Type Term Source REF	OBI	OBI	OBI	OBI	OBI	OBI	OBI
+Study Protocol Description	Arabidopsis thaliana seeds were sown on MSO medium (Duchefa) containg 0.25% phyta-gel and in cubated at 4C for 3 days under short-day condition to induce synchronous germination. They were then transferred to a growth chamber and grown at 22C for 10 days under long-day condition. <br> <br> Transgenic plants were created by Agrobacterium mediated transformation (binary vector pBI121)<br> 	"0.1 g of Arabidopsis were homogenized with 2 ml of guanidinium thiocyanate homogenization buffer. By centrifugation (9000 rpm for 5 min) at room temperature, cell debris had been removed from the suspension. To the suspension solution, the equal volumne of chloroform was added and voltexed for 5 min, then centrifuged. 700 ul of the cushion of CsCl was added in a new tube and 1.2 ml of supernatant was carefully added in upper. The tubes were centrifuged for 14 hrs at 45,000 rpm (Beckman). Following centrifugation, fluid above the 0.5 cm above was removed, and the bottom of the tube filled with 500 ul of 70% ethanol for washing the remnant and pelltet was dissolved in 300 ul of 0.1% DEPC water containing 0.1% SDS. The equal volumn of water saturated water was added the solution and voltexed for 5 min then centrifuged. The surpernatant was yielded and added equal volumn of chloroform. It was voltexed for 5 min and the surpernatant was yield and RNA was precipitated with 2.5 volumne of ethanol and 0.1% of 3M NaOAc then stored -20��_ for 2 hr. It was centrifuged for 20 mins at 4C and the pellet was washed with 70% ethanol. The surpernatant was removed by gentle spiration and then dried for 15-20 mins. RNA was dissolved with 30 ul of DEPC-H2O. The yield of RNA was calculated by measuring the absorbance of the RNA solution at 260 nm and 280 nm. OD 260/280 ratio of RNA solution between 1.8 ~ 2.1 was used for hybridizations."	Genisphere 3DNA Array 50 kit protocol provided by the manufacturer was used without modifications. cDNA synthesis was primed with a 3DNA Array 50 kit Cy3 primer and reverse transcript was performed with TOYOBO AceTra MMLV reverse transcriptase. 	Genisphere 3DNA Array 50 kit protocol provied by the manufacturer was used without modifications. cDNA synthesis was primed with a 3DNA Array 50 kit Cy5 primer and reverse transcript was performed with TOYOBO AceTra MMLV reverse transcriptase. 	"First hybridization was perfomed following 3DNA Array kit protocol provided by the manufacturer. All material generated from 40 ug of total RNA was labeled. Hybridization was carried out overnight (16h) at 55C in a Big Shot (Boekel scientific) hybridization chamber. To dry the washed slides, we put a slide in a slide jar and centrifuged it at 800 rpm. Then, slides were stored in the dark until scanned."	"Microarrays were scanned in both the Cy5 and Cy3 channels with a ScanArray Lite (GSI Lumonics) at 5 um resolution. Slides were scanned first in Cy5 channel, then the Cy3. The fluorescence intensity of the raw scan data was quantified using QuantArray software (Packard BioScience, Billerica, MA, USA)."	
+Study Protocol URI							
+Study Protocol Version							
+Study Protocol Parameters Name							
+Study Protocol Parameters Name Term Accession Number							
+Study Protocol Parameters Name Term Source REF							
+Study Protocol Components Name							
+Study Protocol Components Type							
+Study Protocol Components Type Term Accession Number							
+Study Protocol Components Type Term Source REF							
+STUDY CONTACTS							
+Study Person Last Name	Yang						
+Study Person First Name	Kyung Ae						
+Study Person Mid Initials							
+Study Person Email	colimpbl@naver.com						
+Study Person Phone	-6121						
+Study Person Fax							
+Study Person Address	#900						
+Study Person Affiliation	Molecular Biology						
+Study Person Roles	reporting party role						
+Study Person Roles Term Accession Number	obo:OBI_0000068						
+Study Person Roles Term Source REF	OBI						

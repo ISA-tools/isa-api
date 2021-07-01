@@ -1,0 +1,8 @@
+"Source Name"	"Characteristics[organism]"	"Term Source REF"	"Term Accession Number"	"Protocol REF"	"Sample Name"	"Factor Value[genotype]"	"Term Source REF"	"Term Accession Number"	"Factor Value[cell type]"	"Term Source REF"	"Term Accession Number"
+"GSM678684"	"mus musculus"	""	""	"sample collection"	"GSM678684"	"TDG gene heterozygous knock-out"	""	""	"embryonic stem cell"	"CL"	"0002322"
+"ARC_2"	"metagenome"	""	""	"sample collection"	"ARC_2_1"	""	""	""	""	""	""
+"ARC_2"	"metagenome"	""	""	"sample collection"	"ARC_2_2"	""	""	""	""	""	""
+"ARC_3"	"metagenome"	""	""	"sample collection"	"ARC_3_1"	""	""	""	""	""	""
+"ARC_3"	"metagenome"	""	""	"sample collection"	"ARC_3_2"	""	""	""	""	""	""
+"S45_CNL"	"Rattus norvegicus"	""	""	"sample collection"	"S45_CNL"	""	""	""	""	""	""
+"S46_FDA"	"Rattus norvegicus"	""	""	"sample collection"	"S46_FDA"	""	""	""	""	""	""

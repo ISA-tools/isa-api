@@ -1,0 +1,93 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	"OBI"	"CHEBI"	"SYMP"	"HP"	"MDR"	"VO"	"PATO"	"EFO"	"birnlex"	"NIF_Dysfunction"	"BTO"	"NCBITaxon"	
+Term Source File	""	"http://bioportal.bioontology.org/ontologies/49638"	"http://bioportal.bioontology.org/ontologies/44749"	"http://bioportal.bioontology.org/ontologies/49662"	"http://bioportal.bioontology.org/ontologies/42280"	"http://bioportal.bioontology.org/ontologies/49603"	"http://bioportal.bioontology.org/ontologies/49640"	"http://bioportal.bioontology.org/ontologies/49673"	"http://bioportal.bioontology.org/ontologies/29684"	"http://bioportal.bioontology.org/ontologies/49566"	"http://bioportal.bioontology.org/ontologies/47507"	"http://bioportal.bioontology.org/ontologies/38802"	
+Term Source Version	""	"49638"	"44749"	"49662"	"42280"	"49603"	"49640"	"49673"	"29684"	"49566"	"47507"	"38802"	
+Term Source Description	"Ontology for Biomedical Investigations"	"Chemical entities of biological interest"	"Symptom Ontology"	"Human Phenotype Ontology"	"MedDRA"	"Vaccine Ontology"	"Phenotypic quality"	"Experimental Factor Ontology"	"BIRNLex"	"NIF Dysfunction"	"BRENDA tissue / enzyme source"	"NCBI organismal classification"	
+INVESTIGATION
+Investigation Identifier	"Inv_001"
+Investigation Title	"Investigation"
+Investigation Description	""
+Investigation Submission Date	""
+Investigation Public Release Date	""
+Comment [Created with configuration]	""
+Comment [Last Opened With Configuration]	""
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID	
+Investigation Publication DOI	
+Investigation Publication Author List	
+Investigation Publication Title	
+Investigation Publication Status	
+Investigation Publication Status Term Accession Number	
+Investigation Publication Status Term Source REF	
+INVESTIGATION CONTACTS
+Investigation Person Last Name	
+Investigation Person First Name	
+Investigation Person Mid Initials	
+Investigation Person Email	
+Investigation Person Phone	
+Investigation Person Fax	
+Investigation Person Address	
+Investigation Person Affiliation	
+Investigation Person Roles	
+Investigation Person Roles Term Accession Number	
+Investigation Person Roles Term Source REF	
+STUDY
+Study Identifier	"T4"
+Study Title	"3x2x2"
+Study Description	"a study following methylation profiling and gene expression between 2 age groups and gender for 3 distinct diseases"
+Study Submission Date	"2006-01-10"
+Study Public Release Date	"2007-01-02"
+Study File Name	"s_T4.txt"
+STUDY DESIGN DESCRIPTORS
+Study Design Type	parallel group design	observation design	factorial design
+Study Design Type Term Accession Number	obo:OBI_0500006	obo:OBI_0300311	obo:OBI_0500014
+Study Design Type Term Source REF	OBI	OBI	OBI
+STUDY PUBLICATIONS
+Study PubMed ID	21682188
+Study Publication DOI	
+Study Publication Author List	Suciu B, Bud V, Copotoiu C, Br�nzaniuc K, Copotoiu R, Fodor D, Butiurca V.
+Study Publication Title	Factors affecting early morbidity and mortality in non-small cell lung cancer surgery, the experience of Surgical Clinic No. 1, Tg. Mures.
+Study Publication Status	Published
+Study Publication Status Term Accession Number	
+Study Publication Status Term Source REF	
+STUDY FACTORS
+Study Factor Name	disease	biological sex	age
+Study Factor Type	disease	biological sex	age
+Study Factor Type Term Accession Number		PATO:0000047	PATO:0000011
+Study Factor Type Term Source REF		PATO	PATO
+STUDY ASSAYS
+Study Assay File Name	a_T4-A2.txt	a_T4-A1.txt
+Study Assay Measurement Type	transcription profiling	DNA methylation profiling
+Study Assay Measurement Type Term Accession Number	0000424 OBI_0000634	
+Study Assay Measurement Type Term Source REF	OBI	OBI
+Study Assay Technology Type	DNA microarray	nucleotide sequencing
+Study Assay Technology Type Term Accession Number	0400148	
+Study Assay Technology Type Term Source REF	OBI	OBI
+Study Assay Technology Platform		
+STUDY PROTOCOLS
+Study Protocol Name	RNA extraction	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	sample collection	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	sample collection
+Study Protocol Type	RNA extraction	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	sample collection	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	sample collection
+Study Protocol Type Term Accession Number																					
+Study Protocol Type Term Source REF																					
+Study Protocol Description																					
+Study Protocol URI																					
+Study Protocol Version																					
+Study Protocol Parameters Name							cross linking;DNA fragmentation;DNA fragment size;immunoprecipitation antibody	library strategy;library selection;library layout;mid	sequencing instrument;base caller;quality scorer								cross linking;DNA fragmentation;DNA fragment size;immunoprecipitation antibody	library strategy;library selection;library layout;mid	sequencing instrument;base caller;quality scorer		
+Study Protocol Parameters Name Term Accession Number							;;;	;;;	;;								;;;	;;;	;;		
+Study Protocol Parameters Name Term Source REF							;;;	;;;	;;								;;;	;;;	;;		
+Study Protocol Components Name																					
+Study Protocol Components Type																					
+Study Protocol Components Type Term Accession Number																					
+Study Protocol Components Type Term Source REF																					
+STUDY CONTACTS
+Study Person Last Name	Smith
+Study Person First Name	John
+Study Person Mid Initials	P
+Study Person Email	jps@wkri.org
+Study Person Phone	
+Study Person Fax	
+Study Person Address	1024 research drive, research state, science land
+Study Person Affiliation	Well Known Research Institute
+Study Person Roles	investigation agent role
+Study Person Roles Term Accession Number	
+Study Person Roles Term Source REF	

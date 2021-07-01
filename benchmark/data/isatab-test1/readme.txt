@@ -1,0 +1,4 @@
+- splitting from sources to samples: 2 sources, 3 samples each
+- characteristics - 3 samples with organism homo sapiens, 3 samples with organism mus musculus
+- library construction - two sets of parameter values
+- 4 assays, 4 raw data files

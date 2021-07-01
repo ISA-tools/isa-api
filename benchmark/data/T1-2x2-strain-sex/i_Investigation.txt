@@ -1,0 +1,93 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	"OBI"	"NCBITaxon"	"RS"	"PATO"	"CHEBI"	"BTO"	
+Term Source File	""	"http://bioportal.bioontology.org/ontologies/47845"	"http://bioportal.bioontology.org/ontologies/49663"	"http://bioportal.bioontology.org/ontologies/49640"	"http://bioportal.bioontology.org/ontologies/49638"	"http://bioportal.bioontology.org/ontologies/49596"	
+Term Source Version	""	"47845"	"49663"	"49640"	"49638"	"49596"	
+Term Source Description	"Ontology for Biomedical Investigations"	"NCBI organismal classification"	"Rat Strain Ontology"	"Phenotypic quality"	"Chemical entities of biological interest"	"BRENDA tissue / enzyme source"	
+INVESTIGATION
+Investigation Identifier	"Inv_001"
+Investigation Title	"Investigation"
+Investigation Description	""
+Investigation Submission Date	""
+Investigation Public Release Date	""
+Comment [Created with configuration]	""
+Comment [Last Opened With Configuration]	""
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID		
+Investigation Publication DOI		
+Investigation Publication Author List		
+Investigation Publication Title		
+Investigation Publication Status		
+Investigation Publication Status Term Accession Number		
+Investigation Publication Status Term Source REF		
+INVESTIGATION CONTACTS
+Investigation Person Last Name		
+Investigation Person First Name		
+Investigation Person Mid Initials		
+Investigation Person Email		
+Investigation Person Phone		
+Investigation Person Fax		
+Investigation Person Address		
+Investigation Person Affiliation		
+Investigation Person Roles		
+Investigation Person Roles Term Accession Number		
+Investigation Person Roles Term Source REF		
+STUDY
+Study Identifier	"T1"
+Study Title	"T1-2x2-strain-sex"
+Study Description	"T1"
+Study Submission Date	""
+Study Public Release Date	""
+Study File Name	"s_T1.txt"
+STUDY DESIGN DESCRIPTORS
+Study Design Type	
+Study Design Type Term Accession Number	
+Study Design Type Term Source REF	
+STUDY PUBLICATIONS
+Study PubMed ID	
+Study Publication DOI	
+Study Publication Author List	
+Study Publication Title	
+Study Publication Status	
+Study Publication Status Term Accession Number	
+Study Publication Status Term Source REF	
+STUDY FACTORS
+Study Factor Name	RS:rat strain	PATO:biological sex	
+Study Factor Type	RS:rat strain	PATO:biological sex	
+Study Factor Type Term Accession Number			
+Study Factor Type Term Source REF			
+STUDY ASSAYS
+Study Assay File Name	a_T1-A1.txt
+Study Assay Measurement Type	transcription profiling
+Study Assay Measurement Type Term Accession Number	0000424
+Study Assay Measurement Type Term Source REF	OBI
+Study Assay Technology Type	DNA microarray
+Study Assay Technology Type Term Accession Number	0400148
+Study Assay Technology Type Term Source REF	OBI
+Study Assay Technology Platform	Affymetrix
+STUDY PROTOCOLS
+Study Protocol Name	RNA extraction	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	sample collection	
+Study Protocol Type	RNA extraction	labeling	nucleic acid hybridization	data collection	normalization data transformation	data transformation	sample collection	
+Study Protocol Type Term Accession Number								
+Study Protocol Type Term Source REF								
+Study Protocol Description								
+Study Protocol URI								
+Study Protocol Version								
+Study Protocol Parameters Name								
+Study Protocol Parameters Name Term Accession Number								
+Study Protocol Parameters Name Term Source REF								
+Study Protocol Components Name								
+Study Protocol Components Type								
+Study Protocol Components Type Term Accession Number								
+Study Protocol Components Type Term Source REF								
+STUDY CONTACTS
+Study Person Last Name	
+Study Person First Name	
+Study Person Mid Initials	
+Study Person Email	
+Study Person Phone	
+Study Person Fax	
+Study Person Address	
+Study Person Affiliation	
+Study Person Roles	
+Study Person Roles Term Accession Number	
+Study Person Roles Term Source REF	

@@ -1,0 +1,93 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	"OBI"	"BTO"	"NCBITaxon"	"UO"	"CHEBI"	
+Term Source File	""	"http://bioportal.bioontology.org/ontologies/47507"	"http://bioportal.bioontology.org/ontologies/38802"	"http://bioportal.bioontology.org/ontologies/47686"	"http://bioportal.bioontology.org/ontologies/46957"	
+Term Source Version	""	"47507"	"38802"	"47686"	"46957"	
+Term Source Description	"Ontology for Biomedical Investigations"	"BRENDA tissue / enzyme source"	"NCBI organismal classification"	"Units of measurement"	"Chemical entities of biological interest"	
+INVESTIGATION
+Investigation Identifier	"Inv_001"
+Investigation Title	"Investigation"
+Investigation Description	""
+Investigation Submission Date	""
+Investigation Public Release Date	""
+Comment [Created with configuration]	""
+Comment [Last Opened With Configuration]	""
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID		
+Investigation Publication DOI		
+Investigation Publication Author List		
+Investigation Publication Title		
+Investigation Publication Status		
+Investigation Publication Status Term Accession Number		
+Investigation Publication Status Term Source REF		
+INVESTIGATION CONTACTS
+Investigation Person Last Name		
+Investigation Person First Name		
+Investigation Person Mid Initials		
+Investigation Person Email		
+Investigation Person Phone		
+Investigation Person Fax		
+Investigation Person Address		
+Investigation Person Affiliation		
+Investigation Person Roles		
+Investigation Person Roles Term Accession Number		
+Investigation Person Roles Term Source REF		
+STUDY
+Study Identifier	"T3"
+Study Title	"T3-2x3x3-compound-dose-time"
+Study Description	"a study evaluating the effect of 2 non steroidian anti inflammatory drugs administered in a single time, at 3 doses and with samples collected at 3 differents times following exposure"
+Study Submission Date	"2013-01-21"
+Study Public Release Date	"2013-01-21"
+Study File Name	"s_T3.txt"
+STUDY DESIGN DESCRIPTORS
+Study Design Type	OBI:parallel group design	OBI:intervention design	OBI:dose response design	OBI:factorial design	
+Study Design Type Term Accession Number					
+Study Design Type Term Source REF					
+STUDY PUBLICATIONS
+Study PubMed ID	21360558	
+Study Publication DOI	10.1002/jat.1638	
+Study Publication Author List	Ch‡vez E, Castro-S‡nchez L, Shibayama M, Tsutsumi V, PŽrez Salazar E, Moreno MG, Muriel P.	
+Study Publication Title	Effects of acetyl salycilic acid and ibuprofen in chronic liver damage induced by CCl4.	
+Study Publication Status	Published	
+Study Publication Status Term Accession Number		
+Study Publication Status Term Source REF		
+STUDY FACTORS
+Study Factor Name	compound	dose	time	
+Study Factor Type	chemical compound(http://purl.obolibrary.org/obo/CHEBI_37577)	dose(http://purl.obolibrary.org/obo/OBI_0000984)	time(http://purl.obolibrary.org/obo/PATO_0000165)	
+Study Factor Type Term Accession Number				
+Study Factor Type Term Source REF				
+STUDY ASSAYS
+Study Assay File Name	a_T3-A1.txt	a_T3-A2.txt
+Study Assay Measurement Type	transcription profiling	metabolite profiling
+Study Assay Measurement Type Term Accession Number	0000424	0000366
+Study Assay Measurement Type Term Source REF	OBI	OBI
+Study Assay Technology Type	nucleotide sequencing	NMR spectroscopy
+Study Assay Technology Type Term Accession Number		
+Study Assay Technology Type Term Source REF	OBI	OBI
+Study Assay Technology Platform		
+STUDY PROTOCOLS
+Study Protocol Name	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	extraction	labeling	NMR spectroscopy	nmr assay	data normalization	data transformation	sample collection	
+Study Protocol Type	nucleic acid extraction	library construction	nucleic acid sequencing	sequence analysis data transformation	extraction	labeling	NMR spectroscopy	nmr assay	data normalization	data transformation	sample collection	
+Study Protocol Type Term Accession Number												
+Study Protocol Type Term Source REF												
+Study Protocol Description												
+Study Protocol URI												
+Study Protocol Version												
+Study Protocol Parameters Name		library layout;mid;	sequencing instrument;base caller;quality score;				instrument;NMR Probe;number of acquisition;magnetic field strength;					
+Study Protocol Parameters Name Term Accession Number												
+Study Protocol Parameters Name Term Source REF												
+Study Protocol Components Name												
+Study Protocol Components Type												
+Study Protocol Components Type Term Accession Number												
+Study Protocol Components Type Term Source REF												
+STUDY CONTACTS
+Study Person Last Name	Smith	
+Study Person First Name	John	
+Study Person Mid Initials	P	
+Study Person Email	jps@wkri.org	
+Study Person Phone		
+Study Person Fax		
+Study Person Address	1024 research drive, research state, science land	
+Study Person Affiliation	Well Known Research Institute	
+Study Person Roles	OBI:investigation agent role	
+Study Person Roles Term Accession Number		
+Study Person Roles Term Source REF		
