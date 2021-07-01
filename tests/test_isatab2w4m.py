@@ -30,7 +30,6 @@ class TestIsatab2w4m(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    @unittest.skip
     def plain_test(self, study, test_dir):
         # Convert
         isatab2w4m.convert(
@@ -64,7 +63,6 @@ class TestIsatab2w4m(unittest.TestCase):
         self.plain_test('MTBLS338', 'MTBLS338-w4m')
 
     # Test NA filtering
-    @unittest.skip
     def na_filtering_test(self, study, test_dir, samp_na_filtering=None, 
                           var_na_filtering=None):
         var_filtering = ','.join(var_na_filtering)
