@@ -28,6 +28,7 @@ from isatools.create.model import (
     SampleAndAssayPlan,
     AssayGraph
 )
+from isatools.create.constants import DATA_FILE, DEFAULT_EXTENSION
 from isatools.create.constants import DEFAULT_STUDY_IDENTIFIER, BASE_FACTORS, IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR_
 from isatools.isajson import ISAJSONEncoder
 from isatools.tests.create_sample_assay_plan_odicts import (
@@ -116,6 +117,19 @@ class TestMappings(unittest.TestCase):
             ValueError, generate_assay_ord_dict_from_config, assay_config_with_empty_param_value,
             test_arm_name, test_epoch_no
         )
+
+    def test_generate_assay_ord_dict_from_config_file_extension(self):
+        ds_study_config = self._load_config('crossover-study-human.json')
+        marker_panel_assay_plan_config = ds_study_config['design']['assayPlan'][0]
+        self.assertEqual(marker_panel_assay_plan_config['name'], 'hematology by marker panel')
+        assay_odict = generate_assay_ord_dict_from_config(
+            marker_panel_assay_plan_config, arm_name="Arm_0", epoch_no=1
+        )
+        assay_graph = AssayGraph.generate_assay_plan_from_dict(assay_odict)
+        self.assertIsInstance(assay_graph, AssayGraph)
+        file_node = next(node for node in assay_graph.nodes if getattr(node, 'type', None) == DATA_FILE)
+        self.assertEqual(file_node.name, marker_panel_assay_plan_config['workflow'][-1][0])
+        self.assertTrue(file_node.extension, DEFAULT_EXTENSION)
 
     def test_generate_study_design(self):
         ds_study_config = self._load_config('factorial-sweeteners-study.json')

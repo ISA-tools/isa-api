@@ -2459,12 +2459,14 @@ class StudyDesign(object):
                         )
                     )
                 except StopIteration:
+                    file_extension = '.{}'.format(node.extension) if node.extension else ''
                     return RawDataFile(
-                        filename='{}-S{}-{}-R{}'.format(
+                        filename='{}-S{}-{}-R{}-{}'.format(
                             assay_file_prefix,
                             start_node_index,
                             urlify(node.name),
-                            counter[node.name]
+                            counter[node.name],
+                            file_extension
                         )
                     )
 
