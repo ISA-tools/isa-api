@@ -8,6 +8,7 @@ import unittest
 from isatools.convert import isatab2w4m
 from isatools.tests import utils
 
+
 # Test presence of data folder
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -30,7 +31,6 @@ class TestIsatab2w4m(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def plain_test(self, study, test_dir):
-        
         # Convert
         isatab2w4m.convert(
             input_dir=os.path.join(utils.TAB_DATA_DIR, test_dir), 
@@ -38,7 +38,6 @@ class TestIsatab2w4m(unittest.TestCase):
             sample_output='%s-w4m-sample-metadata.tsv', 
             variable_output='%s-w4m-variable-metadata.tsv', 
             matrix_output='%s-w4m-sample-variable-matrix.tsv')
-        
         # Check files
         for x in [
             'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
@@ -50,25 +49,24 @@ class TestIsatab2w4m(unittest.TestCase):
             self.assertTrue(filecmp.cmp(output_file, ref_file),
                 'Output file "{0}" differs from reference file "{1}".'.format(
                     output_file, ref_file))
-        
+
     # Test MTBLS30
     def test_MTBLS30(self):
         self.plain_test('MTBLS30', 'MTBLS30-w4m')
-        
+
     # Test MTBLS404
     def test_MTBLS404(self):
         self.plain_test('MTBLS404', 'MTBLS404-w4m')
-        
+
     # Test MTBLS338
     def test_MTBLS338(self):
         self.plain_test('MTBLS338', 'MTBLS338-w4m')
-        
+
     # Test NA filtering
     def na_filtering_test(self, study, test_dir, samp_na_filtering=None, 
                           var_na_filtering=None):
-        
         var_filtering = ','.join(var_na_filtering)
-        
+
         # Set file names
         output_files = dict()
         ref_files = dict()
@@ -79,7 +77,6 @@ class TestIsatab2w4m(unittest.TestCase):
                  'tsv'])
             output_files[x] = os.path.join(self._tmp_dir, filename)
             ref_files[x] = os.path.join(utils.TAB_DATA_DIR, test_dir, filename)
-        
         # Convert
         isatab2w4m.convert(input_dir=os.path.join(utils.TAB_DATA_DIR, test_dir),
                            output_dir=self._tmp_dir,
@@ -88,7 +85,6 @@ class TestIsatab2w4m(unittest.TestCase):
                            matrix_output=output_files['sample-variable-matrix'],
                            samp_na_filtering=samp_na_filtering,
                            var_na_filtering=var_na_filtering)
-        
         # Check files
         for x in [
             'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
@@ -97,7 +93,7 @@ class TestIsatab2w4m(unittest.TestCase):
             filecmp.cmp(output_files[x], ref_files[x]),
             'Output file "{0}" differs from reference file "{1}".'.format(
                 output_files[x], ref_files[x]))
-    
+
     # Test MTBLS404 NA filtering
     def test_MTBLS404_na_filtering(self):
         self.na_filtering_test('MTBLS404', 'MTBLS404-w4m',
@@ -116,16 +112,16 @@ class TestIsatab2w4m(unittest.TestCase):
         self.na_filtering_test('MTBLS404', 'MTBLS404-w4m',
                                samp_na_filtering=['Characteristics[gender]'],
                                var_na_filtering=['charge', 'database'])
-        
+
     # Test assay selection
     def test_assay_selection(self):
-        
+
         study = 'MTBLS30'
         test_dir = 'MTBLS30-w4m'
 
         for assay in ['a_york_src_GC_mass_spectrometry.txt',
                       'a_york_src_FIA_mass_spectrometry.txt']:
-                    
+
             # Convert
             isatab2w4m.convert(
                 input_dir=os.path.join(utils.TAB_DATA_DIR, test_dir),
@@ -135,7 +131,7 @@ class TestIsatab2w4m(unittest.TestCase):
                     assay),
                 matrix_output='%s-w4m-sample-variable-matrix-{0}.tsv'.format(
                     assay), assay_filename=assay)
-            
+
             # Check files
             for x in ['sample-metadata', 'variable-metadata',
                       'sample-variable-matrix']:
