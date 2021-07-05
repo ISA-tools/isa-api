@@ -1100,7 +1100,8 @@ class AssayGraph(object):
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
                             ),
-                            name=node_name, protocol_type=node_key,
+                            name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                            protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
@@ -1117,8 +1118,8 @@ class AssayGraph(object):
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                                 ),
-                                name='assay{}_{}'.format(assay_plan_dict.get('id', None), node_name),
-                                protocol_type='assay{}_{}'.format(assay_plan_dict.get('id', None), node_key),
+                                name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                                protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)
