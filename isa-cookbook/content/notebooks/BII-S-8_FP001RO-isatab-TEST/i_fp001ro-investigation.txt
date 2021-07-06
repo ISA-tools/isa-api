@@ -1,0 +1,93 @@
+ONTOLOGY SOURCE REFERENCE																																	
+Term Source Name	FMA	CHEBI	MI	OBI	NEWT	UO	MS																										
+Term Source File																																	
+Term Source Version	v 1.26	v 1.26	v 1.26	v 1.26	v 1.26	v 1.26	v 1.26																										
+Term Source Description	Foundational Model of Anatomy	Chemical Entities of Biological Interest	PSI-MI	Ontology for Biomedical Investigation	NEWT UniProt Taxonomy Database	Unit Ontology	PSI-MS																										
+INVESTIGATION																																	
+Investigation Identifier																																	
+Investigation Title																																	
+Investigation Description																																	
+Investigation Submission Date																																	
+Investigation Public Release Date																																	
+Comment[Created with configuration]																																	
+Comment[Last Opened With Configuration]																																	
+INVESTIGATION PUBLICATIONS																																	
+Investigation PubMed ID																																	
+Investigation Publication DOI																																	
+Investigation Publication Author List																																	
+Investigation Publication Title																																	
+Investigation Publication Status																																	
+Investigation Publication Status Term Accession Number																																	
+Investigation Publication Status Term Source REF																																	
+INVESTIGATION CONTACTS																																	
+Investigation Person Last Name																																	
+Investigation Person First Name																																	
+Investigation Person Mid Initials																																	
+Investigation Person Email																																	
+Investigation Person Phone																																	
+Investigation Person Fax																																	
+Investigation Person Address																																	
+Investigation Person Affiliation																																	
+Investigation Person Roles																																	
+Investigation Person Roles Term Accession Number																																	
+Investigation Person Roles Term Source REF																																	
+STUDY																																	
+Study Identifier	BII-S-8																																
+Study Title	"Study FP001RO: Evaluation of the Acute Toxicity, Gene Expression, Protein Expression, Metabolite Production, Clinical Chemistry and Pathology Profile Following an Oral Administration of Compound R2717 to Rats"																																
+Study Description	"Repeated dose 14-day toxicity study in adult male rats (Rattus norvegicus), Wistar strain, using chemical compound FP001RO, administered daily orally, sponsored by Hoffmann-La Roche AG, funded by European Union Framework Program 6 - Innovative Medicines Initiatives - Integrated Project Predictive Toxicology (EU FP6 InnoMed PredTox: LSHB-CT-2005-518170), The study will examine the gene, protein and metabolite profiles, along with traditional toxicological endpoint information in the liver, kidney, blood and urine of rats 1-14 days after exposure. By design, low doses lie between No Observed Adverse Effect Level (NOAEL) and Lowest Observed Adverse Effect Level (LOAEL)."																																
+Study Submission Date	28/04/2006																																
+Study Public Release Date																																	
+Study File Name	s_FP001RO-all-samples.txt																																
+STUDY DESIGN DESCRIPTORS																																	
+Study Design Type	factorial design																																
+Study Design Type Term Accession Number	obo:OBI_0500014																																
+Study Design Type Term Source REF	OBI																																
+STUDY PUBLICATIONS																																	
+Study PubMed ID	21315101	20162557																															
+Study Publication DOI	10.1016/j.taap.2011.01.021	10.1002/pmic.200900608																															
+Study Publication Author List	"Boitier E, Amberg A, Barbi? V, Blichenberg A, Brandenburg A, Gmuender H, Gruhler A, McCarthy D, Meyer K, Riefke B, Raschke M, Schoonen W, Sieber M, Suter L, Thomas CE, Sajot N."	"Collins BC, Sposny A, McCarthy D, Brandenburg A, Woodbury R, Pennington SR, Gautier JC, Hewitt P, Gallagher WM"																															
+Study Publication Title	A comparative integrated transcript analysis and functional characterization of differential mechanisms for induction of liver hypertrophy in the rat.	"Use of SELDI MS to discover and identify potential biomarkers of toxicity in InnoMed PredTox: a multi-site, multi-compound study."																															
+Study Publication Status	published	published																															
+Study Publication Status Term Accession Number																																	
+Study Publication Status Term Source REF																																	
+STUDY FACTORS																																	
+Study Factor Name	compound	dose	duration of exposure																														
+Study Factor Type	compound	dose	duration of exposure																														
+Study Factor Type Term Accession Number																																	
+Study Factor Type Term Source REF																																	
+STUDY ASSAYS																																	
+Study Assay File Name	a_FP001RO-hematology.txt	a_FP001RO-SELDI-MS-proteome.txt	a_FP001RO-liver-histopath.txt	a_FP001RO-kidney-histopath.txt	a_FP001RO-2DPAGE-MALDI-MS-proteome.txt	a_FP001RO-DNACHIP-transcriptome.txt	a_FP001RO-NMR-metabonome.txt	a_FP001RO-serum-biochemistry.txt	a_FP001RO-urine-biochemistry.txt	a_FP001RO-LCMS-metabonome.txt																							
+Study Assay Measurement Type	Hematology	protein expression profiling	Histology	Histology	protein expression profiling	transcription profiling	metabolite profiling	Clinical Chemistry Analysis	Clinical Chemistry Analysis	metabolite profiling																							
+Study Assay Measurement Type Term Accession Number						424	366			366																							
+Study Assay Measurement Type Term Source REF	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI																							
+Study Assay Technology Type	X	mass spectrometry	X	X	mass spectrometry	DNA microarray	NMR spectroscopy	X	X	mass spectrometry																							
+Study Assay Technology Type Term Accession Number						400148																											
+Study Assay Technology Type Term Source REF	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI	OBI																							
+Study Assay Technology Platform		SELDI-TOF MS			2D-PAGE / MALDI-TOF MS	Affymetrix GeneChip	1D NMR			LC / MS																							
+STUDY PROTOCOLS																																	
+Study Protocol Name	aliquoting	animal care and treatment	necropsy	mRNA extraction	labeling	hybridization	scanning	MAS5 normalization	RMA normalization	ttest-anova	protein depletion and extraction	SELDI analysis	"Aligned,BG Subtracted|Normalized"	metabolite extraction	NMR data acquisition	baseline correction-water suppression-normalization to integral	metabolite extraction for LCMS	lcms separation	spectral analysis	LCMS spectral analysis	protein extraction	2D-polyacrylamide gel electrophoresis	gel analysis and spot picking	MALDI-TOF mass spectrometry	clinchem protocol	histology protocol	hematology protocol	pooling	protein extract preparation	spot picking gel electrophoresis	gel imaging and analysis	MALDI TOF mass spectrometry	ttest-anova-pca
+Study Protocol Type	material separation	dosing	necropsy	mRNA extraction	labeling	hybridization	data acquisition	normalization data transformation	normalization data transformation	statistical test	protein extraction	data acquisition	normalization data transformation	material separation	data acquisition	normalization data transformation	protein extraction	material separation	data acquisition	normalization data transformation	material separation	gel electrophoresis	material separation	data acquisition	clinical chemistry	histology	hematology	pooling	material separation	gel electrophoresis	data acquisition	material separation	statistical test
+Study Protocol Type Term Accession Number																																	
+Study Protocol Type Term Source REF																																	
+Study Protocol Description																	"injection volume = 10 ul,column temperature = 40 degree C,elution buffer gradient = [ [A=0.1% formic acid in water, B=0.1% formic acid in acetonitrile],[ (0.0 min:  100% A, 0%  B);(0.5 min:  100% A, 0%   B);(9.0 min:5% A, 95% B);(10.0 min:5% A, 95% B);(12.0 min:100% A, 0%  B)] ]"																
+Study Protocol URI																																	
+Study Protocol Version																																	
+Study Protocol Parameters Name	collection environment;storage environment	housing density - cage type - bedding;diet name - diet form;compound name - formula;quantitative dose;vehicle;substance administration;substance formulation	sacrifice event	quantity of tissue;sample volume	labeling kit lot number;amount of cRNA	amount of labeled probe;chip lot number;chip expiration date;staining lot number;staining duration	scanner model;scanner version;scanner speed;number of pixel per row				quantity of tissue	energy range;mass spectrometry instrument;manufacturer;software version;array type;surface type;array barcode;spot array index;spot name		volume of sample;buffer composition	internal reference;NMR instrument;acquisition method;pulse program;acquisition time;bucket width;spectra exclusion;file format	software	volume of sample;solvent	liquid chromatography instrument;liquid chromatography column;mass spectrometry instrument;ionization type;polarity mode;file format				volume on gel;1rst dimension gradient;2nd dimension gradient	staining reagent;gel name;gel image filepath	mass spectrometry instrument;ion optics;array type									
+Study Protocol Parameters Name Term Accession Number																																	
+Study Protocol Parameters Name Term Source REF																																	
+Study Protocol Components Name																																	
+Study Protocol Components Type																																	
+Study Protocol Components Type Term Accession Number																																	
+Study Protocol Components Type Term Source REF																																	
+STUDY CONTACTS																																	
+Study Person Last Name	Suter																																
+Study Person First Name	Laura																																
+Study Person Mid Initials																																	
+Study Person Email	laura.suter-dick@roche.com																																
+Study Person Phone																																	
+Study Person Fax																																	
+Study Person Address																																	
+Study Person Affiliation	Roche CRO:RCC (A64552)																																
+Study Person Roles	Principal Investigator																																
+Study Person Roles Term Accession Number																																	
+Study Person Roles Term Source REF																																	

@@ -1,0 +1,5 @@
+Sample Name	Factor Value[compound]	Factor Value[dose]	Factor Value[collection time]	Protocol REF	Extract Name	Protocol REF	Assay Name	Raw Data File	Comment[data_comment]
+GSM255770	carbon dioxide	high	may 13th, 2006	nucleic acid extraction	extract-0	nucleic acid sequencing	assay-name-0	sequenced-data-0	data_value
+GSM255771	carbon dioxide	normal	may 13th, 2006	nucleic acid extraction	extract-1	nucleic acid sequencing	assay-name-1	sequenced-data-1	data_value
+GSM255772	carbon dioxide	high	may 19th, 2006	nucleic acid extraction	extract-2	nucleic acid sequencing	assay-name-2	sequenced-data-2	data_value
+GSM255773	carbon dioxide	normal	may 19th, 2006	nucleic acid extraction	extract-3	nucleic acid sequencing	assay-name-3	sequenced-data-3	data_value

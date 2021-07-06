@@ -1,0 +1,11 @@
+# Notebooks w/ extensions that auto-run code must be "trusted" to work the first time
+
+jupyter trust content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.ipynb
+jupyter trust content/notebooks/create-a-simple-ISA-descriptor.ipynb
+jupyter trust content/notebooks/create_2x2x2_factorial_design.ipynb
+jupyter trust content/notebooks/create-a-repeated-treatment-design-with-ISA-descriptor.ipynb
+jupyter trust content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.ipynb
+jupyter trust content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb
+jupyter trust content/notebooks/isa-metabolomics-study-design-create.ipynb    
+jupyter trust content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb
+jupyter trust content/notebooks/isa-tab-unused-sources-not-serialized-brapi.ipynb

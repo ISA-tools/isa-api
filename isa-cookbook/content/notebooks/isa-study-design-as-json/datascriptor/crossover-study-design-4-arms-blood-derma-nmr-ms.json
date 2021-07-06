@@ -1,0 +1,1236 @@
+{
+    "name": "Chained protocols study",
+    "subjectType": "Homo sapiens",
+    "subjectSize": 10,
+    "designType": {
+      "term": "crossover design",
+      "id": "OBI:0500003",
+      "iri": "http://purl.obolibrary.org/obo/OBI_0500003",
+      "label": "Study subjects receive repeated treatments",
+      "value": "crossover"
+    },
+    "observationalFactors": [
+      {
+        "name": "sex",
+        "values": [
+          "M",
+          "F"
+        ],
+        "isQuantitative": false,
+        "unit": null
+      },
+      {
+        "name": "condition",
+        "values": [
+          "healthy",
+          "diseased"
+        ],
+        "isQuantitative": false,
+        "unit": null
+      }
+    ],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_1",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_2",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_3",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "screen": {
+        "selected": true,
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      "runIn": {
+        "selected": true,
+        "name": "run-in",
+        "duration": 2,
+        "durationUnit": "days"
+      },
+      "washout": {
+        "selected": true,
+        "name": "washout",
+        "duration": 5,
+        "durationUnit": "days"
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      },
+      "treatments": [
+        {
+          "interventionType": {
+            "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+            "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+            "short_form": "ERO_0000600",
+            "obo_id": "ERO:0000600",
+            "label": "drug intervention",
+            "ontology_name": "ero",
+            "ontology_prefix": "ERO",
+            "type": "class"
+          },
+          "agent": "ibuprofen",
+          "intensity": 8,
+          "intensityUnit": "mg/day",
+          "duration": 12,
+          "durationUnit": "days"
+        },
+        {
+          "interventionType": {
+            "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0001553",
+            "iri": "http://purl.obolibrary.org/obo/ERO_0001553",
+            "short_form": "ERO_0001553",
+            "obo_id": "ERO:0001553",
+            "label": "biologic intervention",
+            "ontology_name": "ero",
+            "ontology_prefix": "ERO",
+            "type": "class"
+          },
+          "agent": "KpJH46Φ2 phage",
+          "intensity": 3,
+          "intensityUnit": "injections/day",
+          "duration": 14,
+          "durationUnit": "days"
+        }
+      ],
+      "elementParams": {
+        "interventionType": null,
+        "agents": [],
+        "intensities": [],
+        "intensityUnit": "",
+        "durations": [],
+        "durationUnit": ""
+      }
+    },
+    "elements": [
+      {
+        "id": "d9c13049-a235-41e2-a3be-f929e54ee2ee",
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      {
+        "id": "39e80594-b9ee-47f2-baf1-b954d7c1b124",
+        "name": "run-in",
+        "duration": 2,
+        "durationUnit": "days"
+      },
+      {
+        "id": "ca5c2ebf-facf-46af-b698-99b81a28d88b",
+        "name": "treatment_0",
+        "interventionType": {
+          "term": "drug intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
+        },
+        "duration": 12,
+        "durationUnit": "days",
+        "agent": "ibuprofen",
+        "intensity": 8,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "id": "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7",
+        "name": "washout",
+        "duration": 5,
+        "durationUnit": "days"
+      },
+      {
+        "id": "200e4d48-4ab2-492c-abd8-7b59a01b39d5",
+        "name": "treatment_1",
+        "interventionType": {
+          "term": "biologic intervention",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0001553"
+        },
+        "duration": 14,
+        "durationUnit": "days",
+        "agent": "KpJH46Φ2 phage",
+        "intensity": 3,
+        "intensityUnit": "injections/day"
+      },
+      {
+        "id": "e5664aeb-182f-49e2-849b-82e4c5e269e3",
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      }
+    ],
+    "arms": {
+      "selected": [
+        {
+          "id": "#arm/0",
+          "name": "Arm_0",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/2",
+          "name": "Arm_2",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/5",
+          "name": "Arm_5",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/7",
+          "name": "Arm_7",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        }
+      ],
+      "unselected": [
+        {
+          "id": "#arm/1",
+          "name": "Arm_1",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/3",
+          "name": "Arm_3",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/4",
+          "name": "Arm_4",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": "#arm/6",
+          "name": "Arm_6",
+          "observationalFactors": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "condition",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "d9c13049-a235-41e2-a3be-f929e54ee2ee"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39e80594-b9ee-47f2-baf1-b954d7c1b124"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "ca5c2ebf-facf-46af-b698-99b81a28d88b"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "b9ce4ff5-7dd4-42c0-bf6b-9e0cf3d605e7"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "200e4d48-4ab2-492c-abd8-7b59a01b39d5"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "e5664aeb-182f-49e2-849b-82e4c5e269e3"
+              ],
+              "events": []
+            }
+          ]
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": "blood",
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_5": [
+            false,
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_7": [
+            false,
+            true,
+            true,
+            false,
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            null,
+            1,
+            1,
+            null,
+            1,
+            6
+          ],
+          "Arm_2": [
+            null,
+            1,
+            1,
+            null,
+            1,
+            6
+          ],
+          "Arm_5": [
+            null,
+            1,
+            1,
+            null,
+            1,
+            6
+          ],
+          "Arm_7": [
+            null,
+            1,
+            1,
+            null,
+            1,
+            6
+          ]
+        }
+      },
+      {
+        "sampleType": "derma",
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_2": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_7": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          "Arm_2": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          "Arm_5": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          "Arm_7": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            2
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 0,
+        "name": "metabolite profiling using mass spectrometry",
+        "icon": "fas fa-chart-bar fas fa-bullseye",
+        "color": "green",
+        "measurement_type": "metabolite profiling",
+        "technology_type": "mass spectrometry",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 2
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "polar fraction",
+                  "non-polar fraction"
+                ],
+                "values": [
+                  "polar fraction",
+                  "non-polar fraction"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "labeling",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "labeled extract",
+            {
+              "node_type": "labeled extract",
+              "characteristics_category": "labeled extract type",
+              "characteristics_value": {
+                "options": [
+                  "label_0",
+                  "label_1"
+                ],
+                "values": [
+                  "label_0"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "mass spectrometry",
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  "Agilent QTQF 6510",
+                  "Agilent QTQF 6520A"
+                ],
+                "values": [
+                  "Agilent QTQF 6510"
+                ]
+              },
+              "injection_mode": {
+                "options": [
+                  "FIA",
+                  "LC"
+                ],
+                "values": [
+                  "FIA",
+                  "LC"
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  "positive mode",
+                  "negative mode"
+                ],
+                "values": [
+                  "positive mode"
+                ]
+              }
+            }
+          ],
+          [
+            "raw spectral data file",
+            {
+              "node_type": "data file",
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            true
+          ],
+          "Arm_5": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            true
+          ],
+          "Arm_7": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_5": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_7": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "name": "metabolite profiling using NMR spectroscopy",
+        "icon": "fas fa-atom",
+        "color": "orange",
+        "measurement_type": "metabolite profiling",
+        "technology_type": "NMR spectroscopy",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "supernatant",
+                  "pellet"
+                ],
+                "values": [
+                  "supernatant",
+                  "pellet"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "nmr_spectroscopy",
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  "Bruker Avance II 1 GHz"
+                ],
+                "values": [
+                  "Bruker Avance II 1 GHz"
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  "1D 13C NMR",
+                  "1D 1H NMR",
+                  "2D 13C-13C NMR"
+                ],
+                "values": [
+                  "1D 13C NMR",
+                  "2D 13C-13C NMR"
+                ]
+              },
+              "pulse_sequence": {
+                "options": [
+                  "CPMG",
+                  "TOCSY",
+                  "HOESY",
+                  "watergate"
+                ],
+                "values": [
+                  "TOCSY",
+                  "watergate"
+                ]
+              }
+            }
+          ],
+          [
+            "raw_spectral_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_2": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "Arm_7": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "derma"
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "derma"
+            ]
+          ],
+          "Arm_5": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "derma"
+            ]
+          ],
+          "Arm_7": [
+            [],
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ],
+            [],
+            [
+              "blood"
+            ],
+            [
+              "derma"
+            ]
+          ]
+        }
+      }
+    ]
+  }
