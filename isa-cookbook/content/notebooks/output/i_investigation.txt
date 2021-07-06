@@ -1,8 +1,8 @@
 ONTOLOGY SOURCE REFERENCE
-Term Source Name	CHEBI	EFO	OBI	PATO
-Term Source File				
-Term Source Version				
-Term Source Description	Chemical Entity of Biological Interest	Experimental Factor Ontology	Ontology for Biomedical Investigations	Phenotype and Trait Ontology
+Term Source Name	CHEBI	EFO	OBI	PATO	NCIBTaxon
+Term Source File					
+Term Source Version					
+Term Source Description	Chemical Entity of Biological Interest	Experimental Factor Ontology	Ontology for Biomedical Investigations	Phenotype and Trait Ontology	NCBI Taxonomy
 INVESTIGATION
 Investigation Identifier	
 Investigation Title	
@@ -96,4 +96,4 @@ Study Person Affiliation	Plymouth Marine Laboratory	NERC Centre for Ecology and 
 Study Person Roles	principal investigator role;SRA Inform On Status;SRA Inform On Error	principal investigator role
 Study Person Roles Term Accession Number	;;	
 Study Person Roles Term Source REF	;;	
-Comment[Study Person REF]	https://orcid.org/xxxx-xxxx-xxxx-xxxx	https://orcid.org/xxxx-xxxx-xxxx-xxxx
+Comment[Study Person REF]		
