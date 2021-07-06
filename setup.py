@@ -62,7 +62,7 @@ setup(
     install_requires=[
         'numpy~=1.21.0',
         'jsonschema~=3.2.0',
-        'pandas~=1.3.0',
+        'pandas~=1.2.5',
         'networkx~=2.5.1',
         'lxml~=4.6.3',
         'requests~=2.25.1',
