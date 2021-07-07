@@ -1589,6 +1589,36 @@ sample1\textraction\te2\tscanning\td2"""
             for sample in s.samples:
                 self.assertGreater(len(sample.factor_values), 0)
 
+    def test_isatab_protocol_chain_parsing(self):
+        logging.info("Testing")
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'),
+                  encoding='utf-8') as fp:
+            investigation = isatab.load(fp)
+            self.assertIsInstance(investigation, Investigation)
+            study = investigation.studies[0]
+            nucleotide_sequencing_assay = next(
+                assay for assay in study.assays if assay.technology_type.term == 'nucleotide sequencing'
+            )
+            nucl_ac_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'nucleic acid extraction - standard procedure 2'
+            )
+            gen_dna_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'genomic DNA extraction - standard procedure 4'
+            )
+            extract = next(
+                mat for mat in nucleotide_sequencing_assay.materials['other_material'] if mat.name == 'GSM255770.e1'
+            )
+            self.assertTrue(nucl_ac_extraction_process.next_process is gen_dna_extraction_process)
+            self.assertEqual(len(gen_dna_extraction_process.outputs), 1)
+            self.assertFalse(nucl_ac_extraction_process.outputs)
+            self.assertTrue(gen_dna_extraction_process.outputs[0] is extract)
+            self.assertTrue(nucl_ac_extraction_process.inputs)
+            self.assertFalse(gen_dna_extraction_process.inputs)
+            # FIXME characteristics are not loaded into the extract name
+            # self.assertTrue(extract.characteristics)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
@@ -1615,30 +1645,3 @@ label2\trow2_value1\trow2_value2\n"""
             'header': ['label1', 'label2']
         }
         self.assertEqual(ttable_dict, expected_ttable)
-
-
-class UnitTestIsaStudyGroups():
-
-    def setUp(self):
-        self.fp = open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8')
-        self.i_df = isatab.load_investigation(fp=self.fp)
-        for i, study_df in enumerate(self.i_df['studies']):
-            study_filename = study_df.iloc[0]['Study File Name']
-            self.s_fp = open(os.path.join(os.path.dirname(self.fp.name), study_filename), encoding='utf-8')
-            self.study_sample_table = isatab.load_table(self.s_fp)
-            self.study_sample_table.filename = study_filename
-
-    def tearDown(self):
-        self.fp.close()
-        self.s_fp.close()
-
-    def test_get_num_study_groups(self):
-        num_study_groups = isatab.get_num_study_groups(self.study_sample_table, self.study_filename)
-        self.assertEqual(num_study_groups, 1)
-
-    def test_check_study_groups(self):
-        self.assertTrue(isatab.NUMBER_OF_STUDY_GROUPS in self.study_df.columns)
-        study_group_sizes = self.study_df[isatab.NUMBER_OF_STUDY_GROUPS]
-        study_group_size_in_comment = next(iter(study_group_sizes))
-        self.assertTrue(isatab.check_study_groups(self.study_sample_table, self.study_filename, study_group_size_in_comment))
-
