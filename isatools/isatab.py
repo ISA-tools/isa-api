@@ -4771,7 +4771,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
         if len(df_dict['investigation'].index) > 0:
             row = df_dict['investigation'].iloc[0]
-            investigation.identifier = row['Investigation Identifier']
+            investigation.identifier = str(row['Investigation Identifier'])
             investigation.title = row['Investigation Title']
             investigation.description = row['Investigation Description']
             investigation.submission_date = \
@@ -4786,7 +4786,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         for i in range(0, len(df_dict['studies'])):
             row = df_dict['studies'][i].iloc[0]
             study = Study()
-            study.identifier = row['Study Identifier']
+            study.identifier = str(row['Study Identifier'])
             study.title = row['Study Title']
             study.description = row['Study Description']
             study.submission_date = row['Study Submission Date']
