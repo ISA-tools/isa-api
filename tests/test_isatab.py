@@ -1618,6 +1618,9 @@ sample1\textraction\te2\tscanning\td2"""
             self.assertFalse(gen_dna_extraction_process.inputs)
             # FIXME characteristics are not loaded into the extract name
             # self.assertTrue(extract.characteristics)
+            dumps_out = isatab.dumps(investigation)
+            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
+            self.assertIn(expected_chained_protocol_snippet, dumps_out)
 
 
 class TestTransposedTabParser(unittest.TestCase):
