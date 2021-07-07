@@ -5703,7 +5703,12 @@ class ProcessSequenceFactory:
                     output_node_index = find_gt(node_cols, object_label_index)
                     output_proc_index = find_gt(proc_cols, object_label_index)
 
-                    if output_proc_index < output_node_index > -1:
+                    post_chained_protocol = any(
+                        col_name for col_name in DF.columns[(object_label_index + 1): output_node_index].values
+                        if col_name.startswith('Protocol REF')
+                    )
+
+                    if (output_proc_index < output_node_index > -1 and not post_chained_protocol) or (output_proc_index > output_node_index):
 
                         output_node_label = DF.columns[output_node_index]
                         output_node_value = str(
@@ -5727,7 +5732,12 @@ class ProcessSequenceFactory:
                     input_node_index = find_lt(node_cols, object_label_index)
                     input_proc_index = find_lt(proc_cols, object_label_index)
 
-                    if input_proc_index < input_node_index > -1:
+                    previous_chained_protocol = any(
+                        col_name for col_name in DF.columns[input_node_index: (object_label_index - 1)].values
+                        if col_name.startswith('Protocol REF')
+                    )
+
+                    if input_proc_index < input_node_index > -1 and not previous_chained_protocol:
 
                         input_node_label = DF.columns[input_node_index]
                         input_node_value = str(object_series[input_node_label])
