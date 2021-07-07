@@ -13,7 +13,7 @@ def read(f_name):
 
 setup(
     name='isatools',
-    version='0.12.2',
+    version='0.13.0-rc.1',
     packages=['isatools',
               'isatools.convert',
               'isatools.create',
@@ -60,20 +60,20 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     install_requires=[
-        'numpy~=1.20.2',
+        'numpy~=1.21.0',
         'jsonschema~=3.2.0',
-        'pandas~=1.2.4',
+        'pandas~=1.2.5',
         'networkx~=2.5.1',
         'lxml~=4.6.3',
         'requests~=2.25.1',
         'chardet~=4.0.0',
         'iso8601~=0.1.14',
-        'jinja2~=2.11.3',
+        'jinja2~=3.0.1',
         'beautifulsoup4~=4.9.3',
         'mzml2isa==1.0.3',
-        'biopython~=1.78',
+        'biopython~=1.79',
         'progressbar2~=3.53.1',
-        'deepdiff~=5.2.3',
+        'deepdiff~=5.5.0',
         'PyYAML~=5.4.1'
     ],
     test_suite='tests'

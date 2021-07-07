@@ -285,13 +285,14 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
     return res
 
 
-def generate_study_design(study_design_config):
+def generate_study_design(datascriptor_study_config):
     """
     This function takes a study design configuration as produced from the Datascriptor application
     and outputs a StudyDesign object
-    :param study_design_config: dict
+    :param datascriptor_study_config: dict
     :return: isatools.create.StudyDesign
     """
+    study_design_config = datascriptor_study_config['design']
     arms = []
     for arm_ix, arm_dict in enumerate(study_design_config['arms']['selected']):
         arm_map = OrderedDict()
@@ -345,8 +346,9 @@ def generate_study_design(study_design_config):
         )
         arms.append(arm)
     return StudyDesign(
-        name=study_design_config['name'],
-        description=study_design_config.get('description', None),
+        identifier=datascriptor_study_config.get('_id', None),
+        name=datascriptor_study_config['name'],
+        description=datascriptor_study_config.get('description', None),
         design_type=_map_ontology_annotation(study_design_config['designType']),
         study_arms=arms
     )

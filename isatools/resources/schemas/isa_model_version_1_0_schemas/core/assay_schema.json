@@ -10,12 +10,6 @@
   "type": "object",
   "properties": {
     "@id": { "type": "string", "format": "uri" },
-    "comments" : {
-      "type": "array",
-      "items": {
-        "$ref": "comment_schema.json#"
-      }
-    },
     "filename" : { "type" : "string" },
     "measurementType" : {
       "$ref": "ontology_annotation_schema.json#"
@@ -70,6 +64,12 @@
       "type": "array",
       "items" : {
         "$ref" : "process_schema.json#"
+      }
+    },
+    "comments" : {
+      "type": "array",
+      "items": {
+        "$ref": "comment_schema.json#"
       }
     }
   },
