@@ -1,3 +1,6 @@
+
+old-tests/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -124,3 +127,9 @@ tests/data
 
 # ignore virtual environment in subdirectory
 venv/
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# jupyter notebook output
+isa-cookbook/content/notebooks/notebook-output/

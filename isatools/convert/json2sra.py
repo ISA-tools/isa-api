@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-JSON to SRA-XML"""
 import logging
 
-
-from isatools import isajson
-from isatools import sra
-
+from isatools import isajson, sra
 
 
 log = logging.getLogger('isatools')
@@ -33,6 +32,7 @@ def convert(json_fp, path, config_dir=None, sra_settings=None,
     log.debug("Using SRA settings ".format(sra_settings))
     sra.export(isa, path, sra_settings=sra_settings,
                datafilehashes=datafilehashes)
+
 
 """
 sra_settings = {

@@ -2,9 +2,10 @@
 
 # Inspired by validateSBML.py example from libSBML Python API
 
-from isatools import isajson
-import sys
 import os
+import sys
+
+from isatools import isajson
 
 
 def main(args):
@@ -22,7 +23,7 @@ def main(args):
     totalwarnings = 0
 
     for i in range(1, len(args)):
-        print("---------------------------------------------------------------------------")
+        print("-" * 75)
         if not os.path.isfile(args[i]):
             print("Cannot open file {}, skipping".format(args[i]))
             skipped += 1
@@ -34,17 +35,20 @@ def main(args):
                 numwarnings = len(report['warnings'])
                 if numerrors > 0:
                     invalid += 1
-                print("Validator found {} errors and {} warnings in this ISA-JSON file".format(numerrors, numwarnings))
+                print("Validator found {} errors and {} warnings in this "
+                      "ISA-JSON file".format(numerrors, numwarnings))
                 totalerrors += numerrors
                 totalwarnings += numwarnings
                 numfiles += 1
-    print("---------------------------------------------------------------------------")
+        print("-" * 75)
     print("Validated {} ISA-JSONs, {} valid ISA-JSONs, {} invalid ISA-JSONs"
           .format(numfiles - skipped, numfiles - invalid - skipped, invalid))
-    print("Found {} errors and {} warnings in across all ISA-JSONs".format(totalerrors, totalwarnings))
+    print("Found {} errors and {} warnings in across all ISA-JSONs".format(
+        totalerrors, totalwarnings))
 
     if invalid > 0:
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main(sys.argv)

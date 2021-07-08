@@ -1,8 +1,13 @@
 from __future__ import absolute_import
 
-from isatools.create.models import *
-from isatools.model import *
 from isatools import isatab
+from isatools.create.model import (
+    IsaModelObjectFactory,
+    SampleAssayPlan,
+    TreatmentFactory,
+    TreatmentSequence,
+)
+from isatools.model import Investigation, OntologyAnnotation, StudyFactor
 
 
 def create_descriptor():
@@ -35,6 +40,7 @@ def create_descriptor():
     study.filename = 's_study.txt'
     investigation.studies = [study]
     print(isatab.dumps(investigation))
+
 
 if __name__ == '__main__':
     create_descriptor()
