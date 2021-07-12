@@ -91,9 +91,10 @@ class ISALDSerializer:
         output["@type"] = context_key
         for field in instance:
             if field in props:
-                if 'type' in props[field].keys() and props[field]['type'] == 'array':
-                    if 'items' in props[field].keys() and '$ref' in props[field]['items']:
-                        ref = props[field]['items']['$ref'].replace("#", "")
+                field_props = props[field]
+                if 'type' in field_props.keys() and field_props['type'] == 'array':
+                    if 'items' in field_props.keys() and '$ref' in field_props['items']:
+                        ref = field_props['items']['$ref'].replace("#", "")
                         for value in instance[field]:
                             value = self.__inject_ld(ref, value, value)
                     else:
@@ -109,18 +110,18 @@ class ISALDSerializer:
                                     output_val = self.__inject_ld(ref, output_val, output_val)
                         else:
                             ref = field + '_schema.json'
-                            self.schemas[ref] = props[field]
+                            self.schemas[ref] = field_props
                             for value in instance[field]:
                                 value = self.__inject_ld(ref, value, value, schema_name)
-                elif 'type' in props[field].keys() and props[field]['type'] == 'object':
+                elif 'type' in field_props.keys() and field_props['type'] == 'object':
                     ref = field + '_schema.json'
-                    self.schemas[ref] = props[field]
+                    self.schemas[ref] = field_props
                     instance[field] = self.__inject_ld(ref, instance[field], instance[field], schema_name)
-                elif '$ref' in props[field].keys():
-                    ref = props[field]['$ref'].replace("#", "")
+                elif '$ref' in field_props.keys():
+                    ref = field_props['$ref'].replace("#", "")
                     instance[field] = self.__inject_ld(ref, instance[field], instance[field])
-                elif 'anyOf' in props[field].keys() and field == 'value' and isinstance(instance[field], dict):
-                    ref = [n for n in props[field]['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
+                elif 'anyOf' in field_props.keys() and field == 'value' and isinstance(instance[field], dict):
+                    ref = [n for n in field_props['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
                     instance[field] = self.__inject_ld(ref, instance[field], instance[field])
             output[field] = instance[field]
         return output
