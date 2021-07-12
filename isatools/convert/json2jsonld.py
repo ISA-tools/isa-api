@@ -3,24 +3,9 @@ import json
 from requests import get
 
 
-def singleton(class_):
-    """
-    Decorator to create singleton
-    :param class_:
-    :return: the new object or the already existing instance
-    """
-    instances = {}
-
-    def get_instance(*args, **kwargs):
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-        return instances[class_]
-
-    return get_instance
-
-
-@singleton
 class ISALDSerializer:
+
+    _instance = None
 
     def __init__(self, json_instance, ontology="obo"):
         """
@@ -30,13 +15,18 @@ class ISALDSerializer:
         :param {String} ontology: name of the ontology used to build the context names
         """
         self.main_schema = "investigation_schema.json"
-        self.instance = None
-        self.output = None
+        self.instance = {}
+        self.output = {}
         self.schemas = {}
         self.contexts = {}
         self.ontology = ontology
         self._resolve_network()
         self.set_instance(json_instance)
+
+    def __new__(cls, json_instance, ontology="obo"):
+        if cls._instance is None:
+            cls._instance = super(ISALDSerializer, cls).__new__(cls)
+        return cls._instance
 
     def _resolve_network(self):
         """
