@@ -25,3 +25,9 @@ class TestJson2JsonLD(unittest.TestCase):
         self.serializer.set_ontology("obo")
         self.serializer.set_instance(instance)
         self.assertEqual(self.serializer.output, self.expected_markup)
+
+    def test_singleton(self):
+        instance_url = "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/master/json/BII-S-3/BII-S-3.json"
+        serializer = ISALDSerializer(instance_url)
+        self.assertTrue(self.serializer is serializer)
+        self.assertTrue(id(self.serializer) == id(serializer))
