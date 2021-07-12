@@ -51,13 +51,13 @@ def detect_graph_process_pooling(G):
     """
     report = []
 
-    for process in [n for n in G.nodes() if isinstance(n, Process)]:
-        if len(G.in_edges(process)) > 1:
-            log.info('Possible process pooling detected on: {}'
-                .format(' '.join(
-                [process.id, process.executes_protocol.name])))
-
-            report.append(process.id)
+    for node_index in G.nodes():
+        node = G.indexes[node_index]
+        if isinstance(node, Process) and len(G.in_edges(node_index)) > 1:
+            log.info('Possible process pooling detected on: {}'.format(
+                ' '.join([node.id, node.executes_protocol.name])
+            ))
+            report.append(node.id)
     return report
 
 

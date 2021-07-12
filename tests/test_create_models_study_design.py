@@ -872,7 +872,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
-        nmr_nodes = list(filter(lambda n: n.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda n: n.name.endswith('nmr spectroscopy'), nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for node in nmr_nodes:
             self.assertEqual(node.replicates, 2)
@@ -967,8 +967,8 @@ class AssayGraphTest(unittest.TestCase):
 
     def test_previous_protocol_nodes(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
-        extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
-        nmr_nodes = list(filter(lambda node: node.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
+        extraction_node = next(node for node in nmr_assay_graph.nodes if node.name.endswith('extraction'))
+        nmr_nodes = list(filter(lambda node: node.name.endswith('nmr spectroscopy'), nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for nmr_node in nmr_nodes:
             self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
@@ -1149,11 +1149,11 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
         self.assertEqual(len(ms_assay_graph.nodes), 15)
         self.assertEqual(len(ms_assay_graph.links), 14)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('extraction'), ms_assay_graph.nodes))), 1)
         self.assertEqual(len(list(filter(lambda node: node.name == 'extract', ms_assay_graph.nodes))), 2)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'labelling', ms_assay_graph.nodes))), 2)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('labelling'), ms_assay_graph.nodes))), 2)
         self.assertEqual(len(list(filter(lambda node: node.name == 'labelled extract', ms_assay_graph.nodes))), 2)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('mass spectrometry'), ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
                                          ms_assay_graph.nodes))), 4)
         self.assertEqual(len(smp_ass_plan.sample_to_assay_map.keys()), len(sample_list))
@@ -1751,9 +1751,13 @@ class StudyDesignTest(BaseStudyDesignTest):
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
         print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
-        extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
+        extraction_processes = [
+            process for process in processes if process.executes_protocol.name.endswith('extraction')
+        ]
         self.assertEqual(len(extraction_processes), 1)
-        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
+        nmr_processes = [
+            process for process in processes if process.executes_protocol.name.endswith('nmr spectroscopy')
+        ]
         self.assertEqual(len(nmr_processes), 8 * 2)
         self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
@@ -1803,10 +1807,14 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
-        extraction_processes = [process for process in treatment_assay.process_sequence
-                                if process.executes_protocol.name == 'extraction']
-        nmr_processes = [process for process in treatment_assay.process_sequence
-                         if process.executes_protocol.name == 'nmr spectroscopy']
+        extraction_processes = [
+            process for process in treatment_assay.process_sequence
+            if process.executes_protocol.name.endswith('extraction')
+        ]
+        nmr_processes = [
+            process for process in treatment_assay.process_sequence
+            if process.executes_protocol.name.endswith('nmr spectroscopy')
+        ]
         self.assertEqual(len(extraction_processes), expected_num_of_samples)
         self.assertEqual(
             len(nmr_processes),
@@ -1864,8 +1872,10 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertIsNotNone(ms_assay)
         self.assertIsInstance(ms_assay, Assay)
         # self.assertEqual(len(ms_assay.samples), expected_num_of_samples_ms_plan_first_arm)
-        ms_processes = [process for process in ms_assay.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
 
     def test_generate_isa_study_two_arms_single_cell_elements_check_source_characteristics(self):
@@ -1955,8 +1965,10 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         expected_num_of_samples_ms_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
             ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
-        ms_processes = [process for process in ms_assay_no_qc.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay_no_qc.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
         log.debug('MS Assay no QC: {0}'.format(ms_assay_no_qc))
         study_with_qc = QualityControlService.augment_study(study_no_qc, study_design)
@@ -1974,8 +1986,10 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
         self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
-        ms_processes = [process for process in ms_assay_with_qc.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay_with_qc.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         log.debug('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
                  .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
                          self.interspersed_sample_types[0][1]))

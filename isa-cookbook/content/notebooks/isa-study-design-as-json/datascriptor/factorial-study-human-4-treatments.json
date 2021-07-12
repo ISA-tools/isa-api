@@ -1,8 +1,13 @@
 {
-    "name": "Test factorial study",
-    "description": "This is a test factorial study with three agents (\"ibuprofen\", \"paracetamol\", \"hydroxyclorochine\") and three dosages (5, 10, 15 mg/day) and 2 durations (15 and 30 days).",
-    "subjectType": "Homo sapiens",
-    "subjectSize": 5,
+  "_id": "60d8b601b832df0008a19abc",
+  "name": "4-treatments factorial study",
+  "description": "Patients were randomised to one of 4 groups – intravenous streptokinase, oral aspirin, both or neither – and mortality was measured. (Lancet 1988;ii:349-60 )",
+  "design": {
+    "subjectType": {
+      "term": "Homo sapiens",
+      "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+    },
+    "subjectSize": 12,
     "designType": {
       "term": "full factorial design",
       "id": "STATO:0000270",
@@ -15,17 +20,25 @@
       "selected": [
         {
           "name": "SubjectGroup_0",
-          "type": "Homo sapiens",
+          "type": {
+            "term": "Homo sapiens",
+            "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+          },
           "characteristics": []
         }
       ],
       "unselected": []
     },
     "treatmentPlan": {
+      "observationPeriod": {
+        "name": "observation period",
+        "duration": null,
+        "durationUnit": ""
+      },
       "screen": {
         "selected": true,
         "name": "screen",
-        "duration": 5,
+        "duration": 7,
         "durationUnit": "days"
       },
       "runIn": {
@@ -43,28 +56,24 @@
       "followUp": {
         "selected": true,
         "name": "follow-up",
-        "duration": 60,
+        "duration": 90,
         "durationUnit": "days"
       },
-      "treatments": [
-        {
-          "interventionType": null,
-          "agent": null,
-          "intensity": null,
-          "intensityUnit": "",
-          "duration": null,
-          "durationUnit": ""
-        },
-        {
-          "interventionType": null,
-          "agent": null,
-          "intensity": null,
-          "intensityUnit": "",
-          "duration": null,
-          "durationUnit": ""
-        }
-      ],
       "elementParams": {
+        "agents": [
+          "intravenous streptokinase",
+          "oral aspirin",
+          "intravenous streptokinase + oral aspirin",
+          "placebo"
+        ],
+        "intensities": [
+          5,
+          10
+        ],
+        "durations": [
+          30,
+          60
+        ],
         "interventionType": {
           "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
           "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
@@ -75,741 +84,629 @@
           "ontology_prefix": "ERO",
           "type": "class"
         },
-        "agents": [
-          "ibuprofen",
-          "paracetamol",
-          "hydroxychloroquine"
-        ],
-        "intensities": [
-          5,
-          10,
-          15
-        ],
         "intensityUnit": "mg/day",
-        "durations": [
-          20,
-          30
-        ],
         "durationUnit": "days"
-      }
+      },
+      "treatments": [
+        {
+          "_id": "60d8b601b832df0008a19a90",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        },
+        {
+          "_id": "60d8b601b832df0008a19a91",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        }
+      ]
     },
     "elements": [
       {
-        "id": "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980",
+        "_id": "60d8b601b832df0008a19a92",
+        "id": "a1ee2795-92fa-4c89-99e0-05b7c1159f33",
         "name": "screen",
-        "duration": 5,
+        "duration": 7,
         "durationUnit": "days"
       },
       {
-        "id": "#element/0",
+        "_id": "60d8b601b832df0008a19a93",
+        "id": "f6e66807-ac7b-49ef-93cc-1e250e94ed15",
         "name": "treatment_0",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 15,
+        "agent": "intravenous streptokinase",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "e5741b32-192e-47d4-931d-4f5e68a3ecce",
+        "_id": "60d8b601b832df0008a19a94",
+        "id": "39dc612f-9a40-4ca1-a798-cdb6cea5b59d",
         "name": "follow-up",
-        "duration": 60,
+        "duration": 90,
         "durationUnit": "days"
       },
       {
-        "id": "#element/1",
+        "_id": "60d8b601b832df0008a19a95",
+        "id": "1",
         "name": "treatment_1",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 15,
+        "agent": "intravenous streptokinase",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/2",
+        "_id": "60d8b601b832df0008a19a96",
+        "id": "2",
         "name": "treatment_2",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 10,
+        "agent": "intravenous streptokinase",
+        "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/3",
+        "_id": "60d8b601b832df0008a19a97",
+        "id": "3",
         "name": "treatment_3",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 10,
+        "agent": "intravenous streptokinase",
+        "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/4",
+        "_id": "60d8b601b832df0008a19a98",
+        "id": "4",
         "name": "treatment_4",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 5,
+        "agent": "oral aspirin",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/5",
+        "_id": "60d8b601b832df0008a19a99",
+        "id": "5",
         "name": "treatment_5",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "ibuprofen",
-        "intensity": 5,
+        "agent": "oral aspirin",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/6",
+        "_id": "60d8b601b832df0008a19a9a",
+        "id": "6",
         "name": "treatment_6",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "paracetamol",
-        "intensity": 15,
+        "agent": "oral aspirin",
+        "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/7",
+        "_id": "60d8b601b832df0008a19a9b",
+        "id": "7",
         "name": "treatment_7",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "paracetamol",
-        "intensity": 15,
+        "agent": "oral aspirin",
+        "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/8",
+        "_id": "60d8b601b832df0008a19a9c",
+        "id": "8",
         "name": "treatment_8",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "paracetamol",
+        "agent": "intravenous streptokinase + oral aspirin",
         "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/9",
+        "_id": "60d8b601b832df0008a19a9d",
+        "id": "9",
         "name": "treatment_9",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "paracetamol",
+        "agent": "intravenous streptokinase + oral aspirin",
         "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/10",
+        "_id": "60d8b601b832df0008a19a9e",
+        "id": "10",
         "name": "treatment_10",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "paracetamol",
+        "agent": "intravenous streptokinase + oral aspirin",
         "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/11",
+        "_id": "60d8b601b832df0008a19a9f",
+        "id": "11",
         "name": "treatment_11",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "paracetamol",
+        "agent": "intravenous streptokinase + oral aspirin",
         "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/12",
+        "_id": "60d8b601b832df0008a19aa0",
+        "id": "12",
         "name": "treatment_12",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
+        "duration": 30,
         "durationUnit": "days",
-        "agent": "hydroxychloroquine",
-        "intensity": 15,
+        "agent": "placebo",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/13",
+        "_id": "60d8b601b832df0008a19aa1",
+        "id": "13",
         "name": "treatment_13",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "hydroxychloroquine",
-        "intensity": 15,
+        "agent": "placebo",
+        "intensity": 10,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/14",
+        "_id": "60d8b601b832df0008a19aa2",
+        "id": "14",
         "name": "treatment_14",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
-        "durationUnit": "days",
-        "agent": "hydroxychloroquine",
-        "intensity": 10,
-        "intensityUnit": "mg/day"
-      },
-      {
-        "id": "#element/15",
-        "name": "treatment_15",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
         "duration": 30,
         "durationUnit": "days",
-        "agent": "hydroxychloroquine",
-        "intensity": 10,
-        "intensityUnit": "mg/day"
-      },
-      {
-        "id": "#element/16",
-        "name": "treatment_16",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 20,
-        "durationUnit": "days",
-        "agent": "hydroxychloroquine",
+        "agent": "placebo",
         "intensity": 5,
         "intensityUnit": "mg/day"
       },
       {
-        "id": "#element/17",
-        "name": "treatment_17",
-        "interventionType": {
-          "term": "drug intervention",
-          "iri": "http://purl.obolibrary.org/obo/ERO_0000600"
-        },
-        "duration": 30,
+        "_id": "60d8b601b832df0008a19aa3",
+        "id": "15",
+        "name": "treatment_15",
+        "duration": 60,
         "durationUnit": "days",
-        "agent": "hydroxychloroquine",
+        "agent": "placebo",
         "intensity": 5,
         "intensityUnit": "mg/day"
       }
     ],
     "arms": {
-      "selected": [
+      "unselected": [
         {
-          "id": "#arm/6",
-          "name": "Arm_6",
+          "id": 0,
+          "name": "Arm_0",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/6"
+                "f6e66807-ac7b-49ef-93cc-1e250e94ed15"
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/7",
-          "name": "Arm_7",
+          "id": 1,
+          "name": "Arm_1",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/7"
+                1
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/8",
-          "name": "Arm_8",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/8"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/9",
-          "name": "Arm_9",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/9"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/10",
-          "name": "Arm_10",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/10"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/11",
-          "name": "Arm_11",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/11"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/2",
-          "name": "Arm_2",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/2"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/3",
+          "id": 3,
           "name": "Arm_3",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/3"
+                3
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/4",
-          "name": "Arm_4",
+          "id": 6,
+          "name": "Arm_6",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/4"
+                6
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/5",
-          "name": "Arm_5",
+          "id": 7,
+          "name": "Arm_7",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/5"
+                7
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/16",
-          "name": "Arm_16",
+          "id": 8,
+          "name": "Arm_8",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/16"
+                8
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         },
         {
-          "id": "#arm/17",
-          "name": "Arm_17",
+          "id": 9,
+          "name": "Arm_9",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
               "events": []
             },
             {
               "elements": [
-                "#element/17"
+                9
               ],
               "events": []
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "Arm_11",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                11
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "Arm_14",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                14
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "Arm_15",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                15
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
               "events": []
             }
           ]
         }
       ],
-      "unselected": [
+      "selected": [
         {
-          "id": "#arm/0",
-          "name": "Arm_0",
+          "_id": "60d8b601b832df0008a19aa4",
+          "id": "2",
+          "name": "Arm_2",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aa5"
             },
             {
               "elements": [
-                "#element/0"
+                "2"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aa6"
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aa7"
             }
           ]
         },
         {
-          "id": "#arm/1",
-          "name": "Arm_1",
+          "_id": "60d8b601b832df0008a19aa8",
+          "id": "5",
+          "name": "Arm_5",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aa9"
             },
             {
               "elements": [
-                "#element/1"
+                "5"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aaa"
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aab"
             }
           ]
         },
         {
-          "id": "#arm/12",
+          "_id": "60d8b601b832df0008a19aac",
+          "id": "4",
+          "name": "Arm_4",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19aad"
+            },
+            {
+              "elements": [
+                "4"
+              ],
+              "_id": "60d8b601b832df0008a19aae"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19aaf"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19ab0",
+          "id": "10",
+          "name": "Arm_10",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19ab1"
+            },
+            {
+              "elements": [
+                "10"
+              ],
+              "_id": "60d8b601b832df0008a19ab2"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19ab3"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19ab4",
+          "id": "12",
           "name": "Arm_12",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19ab5"
             },
             {
               "elements": [
-                "#element/12"
+                "12"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19ab6"
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19ab7"
             }
           ]
         },
         {
-          "id": "#arm/13",
+          "_id": "60d8b601b832df0008a19ab8",
+          "id": "13",
           "name": "Arm_13",
           "observationalFactors": [],
-          "size": 5,
+          "size": 12,
           "epochs": [
             {
               "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19ab9"
             },
             {
               "elements": [
-                "#element/13"
+                "13"
               ],
-              "events": []
+              "_id": "60d8b601b832df0008a19aba"
             },
             {
               "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
               ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/14",
-          "name": "Arm_14",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/14"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
-            }
-          ]
-        },
-        {
-          "id": "#arm/15",
-          "name": "Arm_15",
-          "observationalFactors": [],
-          "size": 5,
-          "epochs": [
-            {
-              "elements": [
-                "aaeff8d2-70b8-4c6c-9d1c-41baa59ce980"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "#element/15"
-              ],
-              "events": []
-            },
-            {
-              "elements": [
-                "e5741b32-192e-47d4-931d-4f5e68a3ecce"
-              ],
-              "events": []
+              "_id": "60d8b601b832df0008a19abb"
             }
           ]
         }
@@ -817,256 +714,142 @@
     },
     "samplePlan": [
       {
-        "sampleType": "blood",
+        "sampleType": {
+          "term": "Blood Sample",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+        },
         "selectedCells": {
-          "Arm_6": [
-            false,
-            true,
-            true
-          ],
-          "Arm_7": [
-            false,
-            true,
-            true
-          ],
-          "Arm_8": [
-            false,
-            true,
-            true
-          ],
-          "Arm_9": [
-            false,
-            true,
-            true
-          ],
-          "Arm_10": [
-            false,
-            true,
-            true
-          ],
-          "Arm_11": [
-            false,
-            true,
-            true
-          ],
           "Arm_2": [
-            false,
             true,
-            true
-          ],
-          "Arm_3": [
-            false,
-            true,
-            true
-          ],
-          "Arm_4": [
-            false,
             true,
             true
           ],
           "Arm_5": [
-            false,
+            true,
             true,
             true
           ],
-          "Arm_16": [
-            false,
+          "Arm_4": [
+            true,
             true,
             true
           ],
-          "Arm_17": [
-            false,
+          "Arm_10": [
+            true,
+            true,
+            true
+          ],
+          "Arm_12": [
+            true,
+            true,
+            true
+          ],
+          "Arm_13": [
+            true,
             true,
             true
           ]
         },
         "sampleTypeSizes": {
-          "Arm_6": [
-            null,
-            1,
-            6
-          ],
-          "Arm_7": [
-            null,
-            1,
-            6
-          ],
-          "Arm_8": [
-            null,
-            1,
-            6
-          ],
-          "Arm_9": [
-            null,
-            1,
-            6
-          ],
-          "Arm_10": [
-            null,
-            1,
-            6
-          ],
-          "Arm_11": [
-            null,
-            1,
-            6
-          ],
           "Arm_2": [
-            null,
             1,
-            6
-          ],
-          "Arm_3": [
-            null,
             1,
-            6
-          ],
-          "Arm_4": [
-            null,
-            1,
-            6
+            3
           ],
           "Arm_5": [
-            null,
             1,
-            6
+            1,
+            3
           ],
-          "Arm_16": [
-            null,
+          "Arm_4": [
             1,
-            6
+            1,
+            3
           ],
-          "Arm_17": [
-            null,
+          "Arm_10": [
             1,
-            6
+            1,
+            3
+          ],
+          "Arm_12": [
+            1,
+            1,
+            3
+          ],
+          "Arm_13": [
+            1,
+            1,
+            3
           ]
         }
       },
       {
-        "sampleType": "saliva",
+        "sampleType": {
+          "term": "Unspecified Tissue",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+        },
         "selectedCells": {
-          "Arm_6": [
-            false,
-            false,
-            true
-          ],
-          "Arm_7": [
-            false,
-            false,
-            true
-          ],
-          "Arm_8": [
-            false,
-            false,
-            true
-          ],
-          "Arm_9": [
-            false,
-            false,
-            true
-          ],
-          "Arm_10": [
-            false,
-            false,
-            true
-          ],
-          "Arm_11": [
-            false,
-            false,
-            true
-          ],
           "Arm_2": [
             false,
-            false,
-            true
-          ],
-          "Arm_3": [
-            false,
-            false,
-            true
-          ],
-          "Arm_4": [
-            false,
-            false,
-            true
+            true,
+            false
           ],
           "Arm_5": [
             false,
-            false,
-            true
+            true,
+            false
           ],
-          "Arm_16": [
+          "Arm_4": [
             false,
-            false,
-            true
+            true,
+            false
           ],
-          "Arm_17": [
+          "Arm_10": [
             false,
+            true,
+            false
+          ],
+          "Arm_12": [
             false,
-            true
+            true,
+            false
+          ],
+          "Arm_13": [
+            false,
+            true,
+            false
           ]
         },
         "sampleTypeSizes": {
-          "Arm_6": [
-            null,
-            null,
-            3
-          ],
-          "Arm_7": [
-            null,
-            null,
-            3
-          ],
-          "Arm_8": [
-            null,
-            null,
-            3
-          ],
-          "Arm_9": [
-            null,
-            null,
-            3
-          ],
-          "Arm_10": [
-            null,
-            null,
-            3
-          ],
-          "Arm_11": [
-            null,
-            null,
-            3
-          ],
           "Arm_2": [
             null,
-            null,
-            3
-          ],
-          "Arm_3": [
-            null,
-            null,
-            3
-          ],
-          "Arm_4": [
-            null,
-            null,
-            3
+            1,
+            null
           ],
           "Arm_5": [
             null,
-            null,
-            3
+            1,
+            null
           ],
-          "Arm_16": [
+          "Arm_4": [
             null,
-            null,
-            3
+            1,
+            null
           ],
-          "Arm_17": [
+          "Arm_10": [
             null,
+            1,
+            null
+          ],
+          "Arm_12": [
             null,
-            3
+            1,
+            null
+          ],
+          "Arm_13": [
+            null,
+            1,
+            null
           ]
         }
       }
@@ -1096,7 +879,7 @@
             },
             {
               "#replicates": {
-                "value": 1
+                "value": 2
               }
             }
           ],
@@ -1207,8 +990,8 @@
                 ],
                 "values": [
                   {
-                    "term": "Agilent QTQF 6520A",
-                    "iri": "http://purl.obolibrary.org/obo/MS_1000677",
+                    "term": "Agilent QTQF 6510",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000676",
                     "source": null
                   }
                 ]
@@ -1279,185 +1062,167 @@
           "acquisition_mode": "http://purl.obolibrary.org/obo/MS_1000027"
         },
         "selectedCells": {
-          "Arm_6": [
-            false,
-            false,
-            true
-          ],
-          "Arm_7": [
-            false,
-            false,
-            true
-          ],
-          "Arm_8": [
-            false,
-            false,
-            true
-          ],
-          "Arm_9": [
-            false,
-            false,
-            true
-          ],
-          "Arm_10": [
-            false,
-            false,
-            true
-          ],
-          "Arm_11": [
-            false,
-            false,
-            true
-          ],
           "Arm_2": [
             false,
-            false,
-            true
-          ],
-          "Arm_3": [
-            false,
-            false,
-            true
-          ],
-          "Arm_4": [
-            false,
-            false,
-            true
+            true,
+            false
           ],
           "Arm_5": [
             false,
-            false,
-            true
+            true,
+            false
           ],
-          "Arm_16": [
+          "Arm_4": [
             false,
-            false,
-            true
+            true,
+            false
           ],
-          "Arm_17": [
+          "Arm_10": [
             false,
+            true,
+            false
+          ],
+          "Arm_12": [
             false,
-            true
+            true,
+            false
+          ],
+          "Arm_13": [
+            false,
+            true,
+            false
           ]
         },
         "selectedSampleTypes": {
-          "Arm_6": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
-          "Arm_7": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
-          "Arm_8": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
-          "Arm_9": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
-          "Arm_10": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
-          "Arm_11": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
-            ]
-          ],
           "Arm_2": [
-            [],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "saliva"
-            ]
-          ],
-          "Arm_3": [
-            [],
-            [
-              "blood"
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
             ],
             [
-              "saliva"
-            ]
-          ],
-          "Arm_4": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "saliva"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
           "Arm_5": [
-            [],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "saliva"
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
-          "Arm_16": [
-            [],
+          "Arm_4": [
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "saliva"
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
-          "Arm_17": [
-            [],
+          "Arm_10": [
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "saliva"
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_12": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_13": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ]
         }
       },
       {
-        "id": 8,
-        "name": "genome sequencing by nucleotide sequencing",
-        "icon": "fa fa-dna",
-        "color": "purple",
-        "measurement_type": "genome sequencing",
-        "technology_type": "nucleic acid sequencing",
+        "id": 2,
+        "name": "metabolite profiling using NMR spectroscopy",
+        "icon": "fas fa-atom",
+        "color": "orange",
+        "measurement_type": "metabolite profiling",
+        "technology_type": "NMR spectroscopy",
         "workflow": [
           [
             "extraction",
@@ -1474,11 +1239,12 @@
               "characteristics_category": "extract type",
               "characteristics_value": {
                 "options": [
-                  "gDNA",
-                  "DNA"
+                  "supernatant",
+                  "pellet"
                 ],
                 "values": [
-                  "DNA"
+                  "supernatant",
+                  "pellet"
                 ]
               },
               "is_input_to_next_protocols": {
@@ -1487,51 +1253,45 @@
             }
           ],
           [
-            "library_preparation",
+            "nmr_spectroscopy",
             {
               "#replicates": {
                 "value": 1
               },
               "instrument": {
                 "options": [
-                  "MinION",
-                  "GridION",
-                  "PromethION",
-                  "Illumina HiSeq 4000",
-                  "Illumina NovaSeq 6000",
-                  "AB 3730xL Genetic Analyzer"
+                  "Bruker Avance II 1 GHz"
                 ],
                 "values": [
-                  "Illumina HiSeq 4000",
-                  "GridION"
+                  "Bruker Avance II 1 GHz"
                 ]
               },
-              "library_orientation": {
+              "acquisition_mode": {
                 "options": [
-                  "single",
-                  "paired"
+                  "1D 13C NMR",
+                  "1D 1H NMR",
+                  "2D 13C-13C NMR"
                 ],
                 "values": [
-                  "paired"
+                  "2D 13C-13C NMR"
                 ]
               },
-              "library_strategy": {
+              "pulse_sequence": {
                 "options": [
-                  "AMPLICON",
-                  "CLONE",
-                  "WGA",
-                  "WGS",
-                  "WXS",
-                  "OTHER"
+                  "CPMG",
+                  "TOCSY",
+                  "HOESY",
+                  "watergate"
                 ],
                 "values": [
-                  "WGA"
+                  "TOCSY",
+                  "watergate"
                 ]
               }
             }
           ],
           [
-            "raw_data_file",
+            "raw_spectral_data_file",
             {
               "node_type": "data file",
               "size": 1,
@@ -1542,177 +1302,160 @@
           ]
         ],
         "selectedCells": {
-          "Arm_6": [
-            false,
-            true,
-            true
-          ],
-          "Arm_7": [
-            false,
-            true,
-            true
-          ],
-          "Arm_8": [
-            false,
-            true,
-            true
-          ],
-          "Arm_9": [
-            false,
-            true,
-            true
-          ],
-          "Arm_10": [
-            false,
-            true,
-            true
-          ],
-          "Arm_11": [
-            false,
-            true,
-            true
-          ],
           "Arm_2": [
-            false,
             true,
-            true
-          ],
-          "Arm_3": [
-            false,
-            true,
-            true
-          ],
-          "Arm_4": [
-            false,
             true,
             true
           ],
           "Arm_5": [
-            false,
+            true,
             true,
             true
           ],
-          "Arm_16": [
-            false,
+          "Arm_4": [
+            true,
             true,
             true
           ],
-          "Arm_17": [
-            false,
+          "Arm_10": [
+            true,
+            true,
+            true
+          ],
+          "Arm_12": [
+            true,
+            true,
+            true
+          ],
+          "Arm_13": [
+            true,
             true,
             true
           ]
         },
         "selectedSampleTypes": {
-          "Arm_6": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
-          "Arm_7": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
-          "Arm_8": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
-          "Arm_9": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
-          "Arm_10": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
-          "Arm_11": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
-            ]
-          ],
           "Arm_2": [
-            [],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "blood"
-            ]
-          ],
-          "Arm_3": [
-            [],
-            [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "blood"
-            ]
-          ],
-          "Arm_4": [
-            [],
-            [
-              "blood"
-            ],
-            [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
           "Arm_5": [
-            [],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
-          "Arm_16": [
-            [],
+          "Arm_4": [
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ],
-          "Arm_17": [
-            [],
+          "Arm_10": [
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ],
             [
-              "blood"
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_12": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_13": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
             ]
           ]
         }
       }
     ]
   }
+}

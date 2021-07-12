@@ -23,6 +23,12 @@
             "items" : {
                 "$ref": "source_schema.json#"
             }
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
         }
     },
     "additionalProperties": false

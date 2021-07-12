@@ -1,0 +1,940 @@
+{
+  "_id": "60d9a0f7f33d19000889527f",
+  "name": "2-way crossover study design",
+  "description": "This is a single-centre, randomized, double-blind (subject/investigator), 2-way crossover study design. Enrolled patients had high blood pressure being treated at a specialty clinic associated with a hospital in Springfield, IL. The study consisted of two treatment periods of 2 weeks separated by\na washout period of 2 weeks. The objective of the study is to determine whether Hypertena has an effect on reducing systolic and diastolic blood\npressure in participants diagnosed with high blood pressure.\nThe protocol and informed consent documents were reviewed and approved by a recognized ethics review board at the study facility. The study was performed in accordance with the Declaration of Helsinki.",
+  "design": {
+    "subjectType": {
+      "term": "Homo sapiens",
+      "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+    },
+    "subjectSize": 10,
+    "designType": {
+      "term": "crossover design",
+      "id": "OBI:0500003",
+      "iri": "http://purl.obolibrary.org/obo/OBI_0500003",
+      "label": "Study subjects receive repeated treatments",
+      "value": "crossover"
+    },
+    "observationalFactors": [
+      {
+        "name": "status",
+        "values": [
+          "healthy",
+          "diseased"
+        ],
+        "isQuantitative": false,
+        "unit": null
+      }
+    ],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": {
+            "term": "Homo sapiens",
+            "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+          },
+          "characteristics": [
+            {
+              "name": "status",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_1",
+          "type": {
+            "term": "Homo sapiens",
+            "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+          },
+          "characteristics": [
+            {
+              "name": "status",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ]
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "observationPeriod": {
+        "name": "observation period",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "screen": {
+        "selected": true,
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      "runIn": {
+        "selected": false,
+        "name": "run-in",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "washout": {
+        "selected": true,
+        "name": "washout",
+        "duration": 14,
+        "durationUnit": "days"
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 180,
+        "durationUnit": "days"
+      },
+      "elementParams": {
+        "agents": [],
+        "intensities": [],
+        "durations": [],
+        "interventionType": null,
+        "intensityUnit": "",
+        "durationUnit": ""
+      },
+      "treatments": [
+        {
+          "_id": "60d9a0f6f33d19000889525c",
+          "interventionType": {
+            "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+            "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+            "short_form": "ERO_0000600",
+            "obo_id": "ERO:0000600",
+            "label": "drug intervention",
+            "ontology_name": "ero",
+            "ontology_prefix": "ERO",
+            "type": "class"
+          },
+          "agent": "hypertena",
+          "intensity": 20,
+          "intensityUnit": "mg/day",
+          "duration": 14,
+          "durationUnit": "days"
+        },
+        {
+          "_id": "60d9a0f6f33d19000889525d",
+          "interventionType": {
+            "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+            "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+            "short_form": "ERO_0000600",
+            "obo_id": "ERO:0000600",
+            "label": "drug intervention",
+            "ontology_name": "ero",
+            "ontology_prefix": "ERO",
+            "type": "class"
+          },
+          "agent": "placebo",
+          "intensity": 20,
+          "intensityUnit": "mg/day",
+          "duration": 14,
+          "durationUnit": "days"
+        }
+      ]
+    },
+    "elements": [
+      {
+        "_id": "60d9a0f6f33d19000889525e",
+        "id": "e36815fb-1dd7-473f-8b9f-42c089db7d40",
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "60d9a0f6f33d19000889525f",
+        "id": "25cc422c-a53f-4633-835a-c59deb9f1905",
+        "name": "treatment_0",
+        "duration": 14,
+        "durationUnit": "days",
+        "agent": "hypertena",
+        "intensity": 20,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d9a0f6f33d190008895260",
+        "id": "cdbc71b2-8dc8-4152-96e7-635139731c8f",
+        "name": "washout",
+        "duration": 14,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "60d9a0f6f33d190008895261",
+        "id": "63c8669d-57b1-41d0-87a3-f96c10c203d3",
+        "name": "treatment_1",
+        "duration": 14,
+        "durationUnit": "days",
+        "agent": "placebo",
+        "intensity": 20,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d9a0f6f33d190008895262",
+        "id": "53f94b8b-8679-4bb6-925b-f3035118fe0e",
+        "name": "follow-up",
+        "duration": 180,
+        "durationUnit": "days"
+      }
+    ],
+    "arms": {
+      "unselected": [],
+      "selected": [
+        {
+          "_id": "60d9a0f6f33d190008895263",
+          "id": "0",
+          "name": "Arm_0",
+          "observationalFactors": [
+            {
+              "_id": "60d9a0f6f33d190008895264",
+              "name": "status",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "e36815fb-1dd7-473f-8b9f-42c089db7d40"
+              ],
+              "_id": "60d9a0f6f33d190008895265"
+            },
+            {
+              "elements": [
+                "25cc422c-a53f-4633-835a-c59deb9f1905"
+              ],
+              "_id": "60d9a0f6f33d190008895266"
+            },
+            {
+              "elements": [
+                "cdbc71b2-8dc8-4152-96e7-635139731c8f"
+              ],
+              "_id": "60d9a0f6f33d190008895267"
+            },
+            {
+              "elements": [
+                "63c8669d-57b1-41d0-87a3-f96c10c203d3"
+              ],
+              "_id": "60d9a0f6f33d190008895268"
+            },
+            {
+              "elements": [
+                "53f94b8b-8679-4bb6-925b-f3035118fe0e"
+              ],
+              "_id": "60d9a0f6f33d190008895269"
+            }
+          ]
+        },
+        {
+          "_id": "60d9a0f6f33d19000889526a",
+          "id": "1",
+          "name": "Arm_1",
+          "observationalFactors": [
+            {
+              "_id": "60d9a0f6f33d19000889526b",
+              "name": "status",
+              "value": "healthy",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "e36815fb-1dd7-473f-8b9f-42c089db7d40"
+              ],
+              "_id": "60d9a0f6f33d19000889526c"
+            },
+            {
+              "elements": [
+                "63c8669d-57b1-41d0-87a3-f96c10c203d3"
+              ],
+              "_id": "60d9a0f6f33d19000889526d"
+            },
+            {
+              "elements": [
+                "cdbc71b2-8dc8-4152-96e7-635139731c8f"
+              ],
+              "_id": "60d9a0f6f33d19000889526e"
+            },
+            {
+              "elements": [
+                "25cc422c-a53f-4633-835a-c59deb9f1905"
+              ],
+              "_id": "60d9a0f6f33d19000889526f"
+            },
+            {
+              "elements": [
+                "53f94b8b-8679-4bb6-925b-f3035118fe0e"
+              ],
+              "_id": "60d9a0f6f33d190008895270"
+            }
+          ]
+        },
+        {
+          "_id": "60d9a0f6f33d190008895271",
+          "id": "2",
+          "name": "Arm_2",
+          "observationalFactors": [
+            {
+              "_id": "60d9a0f6f33d190008895272",
+              "name": "status",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "e36815fb-1dd7-473f-8b9f-42c089db7d40"
+              ],
+              "_id": "60d9a0f6f33d190008895273"
+            },
+            {
+              "elements": [
+                "25cc422c-a53f-4633-835a-c59deb9f1905"
+              ],
+              "_id": "60d9a0f6f33d190008895274"
+            },
+            {
+              "elements": [
+                "cdbc71b2-8dc8-4152-96e7-635139731c8f"
+              ],
+              "_id": "60d9a0f6f33d190008895275"
+            },
+            {
+              "elements": [
+                "63c8669d-57b1-41d0-87a3-f96c10c203d3"
+              ],
+              "_id": "60d9a0f6f33d190008895276"
+            },
+            {
+              "elements": [
+                "53f94b8b-8679-4bb6-925b-f3035118fe0e"
+              ],
+              "_id": "60d9a0f6f33d190008895277"
+            }
+          ]
+        },
+        {
+          "_id": "60d9a0f6f33d190008895278",
+          "id": "3",
+          "name": "Arm_3",
+          "observationalFactors": [
+            {
+              "_id": "60d9a0f6f33d190008895279",
+              "name": "status",
+              "value": "diseased",
+              "unit": null,
+              "isQuantitative": false
+            }
+          ],
+          "size": 10,
+          "epochs": [
+            {
+              "elements": [
+                "e36815fb-1dd7-473f-8b9f-42c089db7d40"
+              ],
+              "_id": "60d9a0f6f33d19000889527a"
+            },
+            {
+              "elements": [
+                "63c8669d-57b1-41d0-87a3-f96c10c203d3"
+              ],
+              "_id": "60d9a0f6f33d19000889527b"
+            },
+            {
+              "elements": [
+                "cdbc71b2-8dc8-4152-96e7-635139731c8f"
+              ],
+              "_id": "60d9a0f6f33d19000889527c"
+            },
+            {
+              "elements": [
+                "25cc422c-a53f-4633-835a-c59deb9f1905"
+              ],
+              "_id": "60d9a0f6f33d19000889527d"
+            },
+            {
+              "elements": [
+                "53f94b8b-8679-4bb6-925b-f3035118fe0e"
+              ],
+              "_id": "60d9a0f6f33d19000889527e"
+            }
+          ]
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": {
+          "term": "Blood Sample",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+        },
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_1": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_3": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            null,
+            1,
+            null,
+            1,
+            3
+          ],
+          "Arm_1": [
+            null,
+            1,
+            null,
+            1,
+            3
+          ],
+          "Arm_2": [
+            null,
+            1,
+            null,
+            1,
+            3
+          ],
+          "Arm_3": [
+            null,
+            1,
+            null,
+            1,
+            3
+          ]
+        }
+      },
+      {
+        "sampleType": {
+          "term": "Saliva Sample",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+        },
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_1": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_2": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_3": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            null,
+            1,
+            null,
+            1,
+            null
+          ],
+          "Arm_1": [
+            null,
+            1,
+            null,
+            1,
+            null
+          ],
+          "Arm_2": [
+            null,
+            1,
+            null,
+            1,
+            null
+          ],
+          "Arm_3": [
+            null,
+            1,
+            null,
+            1,
+            null
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 11,
+        "name": "hematology by marker panel",
+        "icon": "fa fa-flask",
+        "color": "red",
+        "measurement_type": "clinical chemistry",
+        "technology_type": "marker panel",
+        "workflow": [
+          [
+            "sample preparation",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_1": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_2": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "Arm_3": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_1": [
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_3": [
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "name": "DNA methylation profiling  by nucleotide sequencing",
+        "icon": "fa fa-dna",
+        "color": "purple",
+        "measurement_type": "DNA methylation profiling",
+        "technology_type": "nucleic acid sequencing",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 1
+              },
+              "cross linking": {
+                "options": [
+                  "uv-light",
+                  "formaldehyde",
+                  "di-tert-butyl peroxide",
+                  "formaldehyde and di-tert-butyl peroxyde"
+                ],
+                "values": [
+                  "uv-light",
+                  "di-tert-butyl peroxide"
+                ]
+              },
+              "DNA fragmentation": {
+                "options": [
+                  "sonication",
+                  "nebulization",
+                  "micrococcal nuclease digestion",
+                  "deoxyribonuclease digestion"
+                ],
+                "values": [
+                  "nebulization"
+                ]
+              },
+              "DNA fragment size": {
+                "options": [
+                  "a",
+                  "b"
+                ],
+                "values": [
+                  "a"
+                ]
+              },
+              "immunoprecipitation antibody": {
+                "options": [
+                  "c",
+                  "d"
+                ],
+                "values": [
+                  "d"
+                ]
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "gDNA",
+                  "DNA"
+                ],
+                "values": [
+                  "gDNA",
+                  "DNA"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "library_preparation",
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  "MinION",
+                  "GridION",
+                  "PromethION",
+                  "Illumina HiSeq 4000",
+                  "Illumina NovaSeq 6000",
+                  "AB 3730xL Genetic Analyzer"
+                ],
+                "values": [
+                  "GridION"
+                ]
+              },
+              "library_orientation": {
+                "options": [
+                  "single",
+                  "paired"
+                ],
+                "values": [
+                  "single",
+                  "paired"
+                ]
+              },
+              "library_strategy": {
+                "options": [
+                  "Bisulfite-Seq",
+                  "MRE-Seq",
+                  "MeDIP-Seq",
+                  "MBD-Seq",
+                  "OTHER"
+                ],
+                "values": [
+                  "MBD-Seq"
+                ]
+              },
+              "library_selection": {
+                "options": [
+                  "PCR",
+                  "RANDOM-PCR",
+                  "HMPR",
+                  "MF",
+                  "MSLL",
+                  "5-methylcytidine antibody",
+                  "MBD2 protein methyl-CpG binding domain",
+                  "other",
+                  "unspecified"
+                ],
+                "values": [
+                  "MF"
+                ]
+              },
+              "multiplex identifier": {
+                "options": [
+                  "e",
+                  "f",
+                  "g"
+                ],
+                "values": [
+                  "f"
+                ]
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_1": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_2": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "Arm_3": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_1": [
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_2": [
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_3": [
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [],
+            [
+              {
+                "term": "Saliva Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C174119"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}
