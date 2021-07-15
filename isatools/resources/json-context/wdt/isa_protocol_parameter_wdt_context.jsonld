@@ -3,10 +3,10 @@
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "ProtocolParameter": ["wdt:Q3895225","wdt:Q7247312"],
+    "ProtocolParameter": "wdt:Q7247312",
     "type" :{
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q2356542","wdt:Q53617407","wdt:Q1172284"]
+        "@type" : ["wdt:Q2356542","wdt:Q53617407"]
     },
     "parameterName":    {
        "@id": "wdt:Property:P1448",

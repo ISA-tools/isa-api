@@ -27,7 +27,7 @@
     },
     "parameterValues": {
        "@id":"wdt:Property:P2283",
-        "@type" : ["wdt:Q2356542", "wdt:Q1183543"]
+        "@type" : "wdt:Q2356542"
     },
     "previousProcess" : { 
     "@id":"wdt:Property:P155",
@@ -39,16 +39,16 @@
       },
     "input" : {
       "@id":"wdt:Property:P2283",
-      "@type" : ["wdt:Q2356542","wdt:Q53617407","wdt:Q1172284"]
+      "@type" : "wdt:Q35120"
     },
     "output" :  {
       "@id":"wdt:Property:P1056",
-      "@type" : ["wdt:Q2356542","wdt:Q53617407","wdt:Q1172284"]
+      "@type" : "wdt:Q35120"
     },
     "performer" :
     {
       "@id" : "wdt:Property:P137",
-      "@type":["wdt:Q43229","wdt:Q215627"]
+      "@type": "wdt:Q215627"
     },
     "comments" : {
          "@id" : "wdt:Property:P6607",

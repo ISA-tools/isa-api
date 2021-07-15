@@ -3,10 +3,10 @@
      "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Study": "wdt:OBI_0000066",
+    "Study": "wdt:Q101965",
     "filename" : {
          "@id": "wdt:IAO_0000235",
-         "@type" : ["wdt:IAO:0000590","wdt:STATO_0000002","wdt:EFO_0004095"]
+         "@type" : "wdt:Q1144928"
     },
     "identifier" : {
       "@id": "wdt:Q853614",
@@ -62,7 +62,7 @@
     },
     "characteristicCategories": {
          "@id" : "wdt:Property:P1552",
-         "@type" : ["wdt:Q1207505", "wdt:Q3249551", "wdt:Q214609"]
+         "@type" : "wdt:Q937228"
     },
     "unitCategories": {
           "@id": "wdt:Property:P8111" ,

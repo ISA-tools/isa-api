@@ -6,7 +6,7 @@
     "OntologySourceReference": "wdt:Q324254",
     "type" :{
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q324254"]
+        "@type" : "wdt:Q324254"
     },
     "title" : {
         "@id": "wdt:Property:P1476",

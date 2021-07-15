@@ -26,7 +26,7 @@
         },
     "derivesFrom": {
       "@id" : "wdt:Property:P9072",
-      "@type" : ["wdt:Q7239","wdt:Q53617407"]
+      "@type" : "wdt:Q53617407"
     }
   }
 }

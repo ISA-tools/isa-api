@@ -34,23 +34,23 @@
     },     
     "materials" : {
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q214609", "wdt:Q96797376","wdt:Q2075980"]
+        "@type" : "wdt:Q53617407
      },
      "othermaterials" : {
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q1259977","wdt:OBI_0000924"]
+        "@type" : "wdt:Q1259977"
      },   
     "characteristicCategories" :{
          "@id" : "wdt:Property:P1552",
-         "@type" : ["wdt:Q1207505", "wdt:Q3249551", "wdt:Q214609"]
+         "@type" : Q937228
     },
     "dataFiles" : {
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q5227290"]
+        "@type" : "wdt:Q5227290"
     },
     "processSequences" : {
          "@id" : "wdt:Property:P527",
-         "@type" : ["wdt:Q104637332",""wdt:Q104637425", "wdt:Q4272815" , "wdt:Q1172399"]
+         "@type" : "wdt:Q3249551"
     },
     "unitCategories": {
           "@id": "wdt:Property:P8111" ,
