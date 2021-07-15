@@ -699,10 +699,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 assay.filename,
                 assay.measurement_type.term,
                 assay.measurement_type.term_accession,
-                assay.measurement_type.term_source.name if assay.measurement_type.term_source else '',
+                assay.measurement_type.term_source.name
+                if assay.measurement_type.term_source else '',
                 assay.technology_type.term,
                 assay.technology_type.term_accession,
-                assay.technology_type.term_source.name if assay.technology_type.term_source else '',
+                assay.technology_type.term_source.name
+                if assay.technology_type.term_source else '',
                 assay.technology_platform
             ]
 
