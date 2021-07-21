@@ -2402,7 +2402,12 @@ class StudyDesign(object):
         if isinstance(node, ProtocolNode):
             return Process(
                 name='{}-S{}-{}-Acquisition-R{}'.format(
-                    assay_file_prefix, start_node_index, urlify(node.name), counter[node.name]
+                    assay_file_prefix,
+                    start_node_index,
+                    # NB: if node.name has special characters (e.g. whitespace)
+                    # these are replaced with  dashes by urlify()
+                    urlify(node.name),
+                    counter[node.name]
                 ),
                 executes_protocol=node,
                 performer=performer,
