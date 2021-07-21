@@ -1101,7 +1101,8 @@ class AssayGraph(object):
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
                             ),
                             name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
-                            protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                            # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                            protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
@@ -1119,7 +1120,8 @@ class AssayGraph(object):
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                                 ),
                                 name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
-                                protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                                # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                                protocol_type=node_key,
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)
