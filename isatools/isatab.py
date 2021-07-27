@@ -2558,8 +2558,8 @@ def load_table(fp):
                 new_label = 'Factor Value[{val}]'.format(val=val)
             new_labels.append(new_label)
         elif label == "Material Type":
-            new_label = 'Characteristics[Material Type]'
-            new_labels.append(label)
+            new_label = 'Characteristics[Material Type]'    
+            new_labels.append(new_label)
         else:
             new_labels.append(label)
     df.columns = new_labels
