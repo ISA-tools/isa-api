@@ -18,6 +18,12 @@
         },
         "unit": {
             "$ref": "ontology_annotation_schema.json#"
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
         }
     },
     "additionalProperties": false

@@ -1,0 +1,64 @@
+﻿resolute_ID,internal_ID,Characteristics[barcode identifier],cellLine,cellosaurusID,Factor value [cellNumber],Factor value [replicate],"Factor value [extractionVolume, µl]",Protocol REF,rawDataFile,processedDataFile
+SM01Z6-1,102033,1024502762,LS180,cellosaurus:CVCL_0397,250000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z7-W,102034,1024502777,LS180,cellosaurus:CVCL_0397,250000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z8-E,102035,1024502781,LS180,cellosaurus:CVCL_0397,250000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z9-B,102036,1024502796,LS180,cellosaurus:CVCL_0397,500000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZA-7,102037,1024502807,LS180,cellosaurus:CVCL_0397,500000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZB-Q,102038,1024502811,LS180,cellosaurus:CVCL_0397,500000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZC-U,102039,1024502826,LS180,cellosaurus:CVCL_0397,1000000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZE-0,102040,1024502831,LS180,cellosaurus:CVCL_0397,1000000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZF-6,102041,1024502845,LS180,cellosaurus:CVCL_0397,1000000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XH-A,102042,1024502850,HCT-116,cellosaurus:CVCL_0291,250000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XK-X,102043,1024502864,HCT-116,cellosaurus:CVCL_0291,250000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XM-G,102044,1024502879,HCT-116,cellosaurus:CVCL_0291,250000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XN-Y,102045,1024502883,HCT-116,cellosaurus:CVCL_0291,500000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XP-3,102046,1024502898,HCT-116,cellosaurus:CVCL_0291,500000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XR-M,102047,1024502909,HCT-116,cellosaurus:CVCL_0291,500000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XS-T,102048,1024502913,HCT-116,cellosaurus:CVCL_0291,1000000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XT-F,102049,1024502928,HCT-116,cellosaurus:CVCL_0291,1000000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XV-S,102050,1024502932,HCT-116,cellosaurus:CVCL_0291,1000000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XW-9,102051,1024502947,Huh-7,cellosaurus:CVCL_0336,250000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XX-V,102052,1024502951,Huh-7,cellosaurus:CVCL_0336,250000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01XZ-N,102053,1024502966,Huh-7,cellosaurus:CVCL_0336,250000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z0-H,102054,1024502971,Huh-7,cellosaurus:CVCL_0336,500000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z1-Z,102055,1024502985,Huh-7,cellosaurus:CVCL_0336,500000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z2-P,102056,1024502990,Huh-7,cellosaurus:CVCL_0336,500000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z3-R,102057,1024503001,Huh-7,cellosaurus:CVCL_0336,1000000,1,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z4-C,102058,1024503016,Huh-7,cellosaurus:CVCL_0336,1000000,2,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01Z5-5,102059,1024503021,Huh-7,cellosaurus:CVCL_0336,1000000,3,750,Sample preparation protocol 1,,parentalCellLines_p180.tsv
+SM01ZG-2,102903,1024506478,JumpIn,NA,250000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZH-4,102904,1024506482,JumpIn,NA,250000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZK-K,102905,1024506497,JumpIn,NA,250000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZM-8,102906,1024506508,JumpIn,NA,500000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZN-A,102907,1024506512,JumpIn,NA,500000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZP-X,102908,1024506527,JumpIn,NA,500000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZR-G,102909,1024506531,JumpIn,NA,1000000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZS-Y,102910,1024506546,JumpIn,NA,1000000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZT-3,102911,1024506551,JumpIn,NA,1000000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZV-M,102912,1024506565,SK-MEL-28,cellosaurus:CVCL_0526,250000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZW-T,102913,1024506570,SK-MEL-28,cellosaurus:CVCL_0526,250000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZX-F,102914,1024506584,SK-MEL-28,cellosaurus:CVCL_0526,250000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM01ZZ-S,102915,1024506599,SK-MEL-28,cellosaurus:CVCL_0526,500000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0200-9,102916,1024506600,SK-MEL-28,cellosaurus:CVCL_0526,500000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0201-V,102917,1024506614,SK-MEL-28,cellosaurus:CVCL_0526,500000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0202-N,102918,1024506629,SK-MEL-28,cellosaurus:CVCL_0526,1000000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0203-H,102919,1024506633,SK-MEL-28,cellosaurus:CVCL_0526,1000000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0204-Z,102920,1024506648,SK-MEL-28,cellosaurus:CVCL_0526,1000000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0205-P,102921,1024506652,MDA-MB-468 ,cellosaurus:CVCL_0419,250000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0206-R,102922,1024506667,MDA-MB-468 ,cellosaurus:CVCL_0419,250000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0207-C,102923,1024506671,MDA-MB-468 ,cellosaurus:CVCL_0419,250000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0208-5,102924,1024506686,MDA-MB-468 ,cellosaurus:CVCL_0419,500000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM0209-1,102925,1024506691,MDA-MB-468 ,cellosaurus:CVCL_0419,500000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020A-W,102926,1024506701,MDA-MB-468 ,cellosaurus:CVCL_0419,500000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020B-E,102927,1024506716,MDA-MB-468 ,cellosaurus:CVCL_0419,1000000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020C-B,102928,1024506721,MDA-MB-468 ,cellosaurus:CVCL_0419,1000000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020E-7,102929,1024506735,MDA-MB-468 ,cellosaurus:CVCL_0419,1000000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020F-Q,102930,1024506740,1321N1 ,cellosaurus:CVCL_0110,250000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020G-U,102931,1024506754,1321N1 ,cellosaurus:CVCL_0110,250000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020H-0,102932,1024506769,1321N1 ,cellosaurus:CVCL_0110,250000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020K-6,102933,1024506773,1321N1 ,cellosaurus:CVCL_0110,500000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020M-2,102934,1024506788,1321N1 ,cellosaurus:CVCL_0110,500000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020N-4,102935,1024506792,1321N1 ,cellosaurus:CVCL_0110,500000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020P-K,102936,1024506803,1321N1 ,cellosaurus:CVCL_0110,1000000,1,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020R-8,102937,1024506818,1321N1 ,cellosaurus:CVCL_0110,1000000,2,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv
+SM020S-A,102938,1024506822,1321N1 ,cellosaurus:CVCL_0110,1000000,3,1500,Sample preparation protocol 2,,parentalCellLines_p180.tsv

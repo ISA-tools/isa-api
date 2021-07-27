@@ -1,0 +1,700 @@
+{
+  "_id": "606454b9d071027feb44ad9b",
+  "name": "Student's study",
+  "description": "In an observational study, the investigator simply records observations and analyzes data, without administration of an intervention or alteration of the care people receive. These studies may focus on risk factors, natural history, variations in disease progression or disease treatment without delivering an intervention. They often assess specific health characteristics of the enrolled human subjects by collecting medical/dental history, exposure, or clinical data; obtaining biospecimens (e.g., for biomarker or genomic analyses); or obtaining photographic, radiographic or other images from research subjects.",
+  "design": {
+    "isPending": false,
+    "subjectType": "Homo sapiens",
+    "subjectSize": 100,
+    "designType": {
+      "term": "observational design",
+      "id": "NCIT:C147138",
+      "iri": "http://purl.obolibrary.org/obo/NCIT_C147138",
+      "label": "Study subjects do not receive treatments",
+      "value": "observational"
+    },
+    "observationalFactors": [
+      {
+        "name": "sex",
+        "values": [
+          "M",
+          "F"
+        ],
+        "isQuantitative": false,
+        "unit": null
+      },
+      {
+        "name": "age group",
+        "values": [
+          "6-10",
+          "11-15",
+          "15-18"
+        ],
+        "isQuantitative": true,
+        "unit": "years"
+      }
+    ],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "15-18",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_1",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "11-15",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_2",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "M",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "6-10",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_3",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "15-18",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_4",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "11-15",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        },
+        {
+          "name": "SubjectGroup_5",
+          "type": "Homo sapiens",
+          "characteristics": [
+            {
+              "name": "sex",
+              "value": "F",
+              "unit": null,
+              "isQuantitative": false
+            },
+            {
+              "name": "age group",
+              "value": "6-10",
+              "unit": "years",
+              "isQuantitative": true
+            }
+          ]
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "observationPeriod": {
+        "name": "observation period",
+        "duration": 180,
+        "durationUnit": "days"
+      },
+      "screen": {
+        "selected": false,
+        "name": "screen",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "runIn": {
+        "selected": false,
+        "name": "run-in",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "washout": {
+        "selected": false,
+        "name": "washout",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 300,
+        "durationUnit": "days"
+      },
+      "elementParams": {
+        "agents": [],
+        "intensities": [],
+        "durations": [],
+        "interventionType": null,
+        "intensityUnit": "",
+        "durationUnit": ""
+      },
+      "treatments": [
+        {
+          "_id": "606454b9d071027feb44ad9c",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        },
+        {
+          "_id": "606454b9d071027feb44ad9d",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        }
+      ]
+    },
+    "elements": [
+      {
+        "_id": "606454b9d071027feb44ad9e",
+        "id": "608e698d-208d-415f-81f7-32d7cbf4b18b",
+        "name": "observation period",
+        "duration": 180,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "606454b9d071027feb44ad9f",
+        "id": "c43550b1-77ee-41f1-b54e-f22092cc6ded",
+        "name": "follow-up",
+        "duration": 300,
+        "durationUnit": "days"
+      }
+    ],
+    "arms": {
+      "unselected": [],
+      "selected": [
+        {
+          "_id": "606454b9d071027feb44ada0",
+          "id": "0",
+          "name": "Arm_0",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada1"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada2"
+            }
+          ],
+          "observationalFactors": []
+        },
+        {
+          "_id": "606454b9d071027feb44ada3",
+          "id": "1",
+          "name": "Arm_1",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada4"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada5"
+            }
+          ],
+          "observationalFactors": []
+        },
+        {
+          "_id": "606454b9d071027feb44ada6",
+          "id": "2",
+          "name": "Arm_2",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada7"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44ada8"
+            }
+          ],
+          "observationalFactors": []
+        },
+        {
+          "_id": "606454b9d071027feb44ada9",
+          "id": "3",
+          "name": "Arm_3",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adaa"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adab"
+            }
+          ],
+          "observationalFactors": []
+        },
+        {
+          "_id": "606454b9d071027feb44adac",
+          "id": "4",
+          "name": "Arm_4",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adad"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adae"
+            }
+          ],
+          "observationalFactors": []
+        },
+        {
+          "_id": "606454b9d071027feb44adaf",
+          "id": "5",
+          "name": "Arm_5",
+          "size": 100,
+          "epochs": [
+            {
+              "elements": [
+                "608e698d-208d-415f-81f7-32d7cbf4b18b"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adb0"
+            },
+            {
+              "elements": [
+                "c43550b1-77ee-41f1-b54e-f22092cc6ded"
+              ],
+              "events": [],
+              "_id": "606454b9d071027feb44adb1"
+            }
+          ],
+          "observationalFactors": []
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": "blood sample",
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            3,
+            1
+          ],
+          "Arm_1": [
+            3,
+            1
+          ],
+          "Arm_2": [
+            3,
+            1
+          ],
+          "Arm_3": [
+            3,
+            1
+          ],
+          "Arm_4": [
+            3,
+            1
+          ],
+          "Arm_5": [
+            3,
+            1
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 11,
+        "name": "hematology by marker panel",
+        "icon": "fa fa-flask",
+        "color": "red",
+        "measurement_type": "clinical chemistry",
+        "technology_type": "marker panel",
+        "workflow": [
+          [
+            "sample preparation",
+            {
+              "#replicates": {
+                "value": 2
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_1": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_2": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_3": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_4": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_5": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "name": "genome sequencing by nucleotide sequencing",
+        "icon": "fa fa-dna",
+        "color": "purple",
+        "measurement_type": "genome sequencing",
+        "technology_type": "nucleic acid sequencing",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "gDNA",
+                  "DNA"
+                ],
+                "values": [
+                  "DNA"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "library_preparation",
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  "MinION",
+                  "GridION",
+                  "PromethION",
+                  "Illumina HiSeq 4000",
+                  "Illumina NovaSeq 6000",
+                  "AB 3730xL Genetic Analyzer"
+                ],
+                "values": [
+                  "Illumina NovaSeq 6000"
+                ]
+              },
+              "library_orientation": {
+                "options": [
+                  "single",
+                  "paired"
+                ],
+                "values": [
+                  "single",
+                  "paired"
+                ]
+              },
+              "library_strategy": {
+                "options": [
+                  "AMPLICON",
+                  "CLONE",
+                  "WGA",
+                  "WGS",
+                  "WXS",
+                  "OTHER"
+                ],
+                "values": [
+                  "WGS"
+                ]
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            false,
+            false
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_1": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_2": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_3": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_4": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ],
+          "Arm_5": [
+            [
+              "blood sample"
+            ],
+            [
+              "blood sample"
+            ]
+          ]
+        }
+      }
+    ],
+    "events": []
+  }
+}

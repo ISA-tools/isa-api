@@ -11,7 +11,7 @@ Investigation Submission Date	""
 Investigation Public Release Date	""
 INVESTIGATION PUBLICATIONS
 Investigation PubMed ID	""	""	""	""
-Investigation Publication DOI	""	""	""	""
+Investigation Publication DOI	""	""	""	""s
 Investigation Publication Author List	""	""	""	""
 Investigation Publication Title	""	""	""	""
 Investigation Publication Status	""	""	""	""

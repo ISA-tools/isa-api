@@ -1,0 +1,9 @@
+Sample Name	Factor Value[compound]	Factor Value[dose]	Factor Value[collection time]	Protocol REF	Extract Name	Material Type	Protocol REF	Assay Name	Raw Data File	Comment[data_comment]
+GSM255770	atorvastatin	high dose	2 months	nucleic acid extraction						
+GSM255770	atorvastatin	high dose	2 months	nucleic acid extraction	extract-0	pellet	nucleic acid sequencing	assay-name-0	sequenced-data-0	data_value
+GSM255771	atorvastatin	low dose	2 months	nucleic acid extraction						
+GSM255771	atorvastatin	low dose	2 months	nucleic acid extraction	extract-1	pellet	nucleic acid sequencing	assay-name-1	sequenced-data-1	data_value
+GSM255772	atorvastatin	high dose	18 months	nucleic acid extraction						
+GSM255772	atorvastatin	high dose	18 months	nucleic acid extraction	extract-2	pellet	nucleic acid sequencing	assay-name-2	sequenced-data-2	data_value
+GSM255773	atorvastatin	low dose	18 months	nucleic acid extraction						
+GSM255773	atorvastatin	low dose	18 months	nucleic acid extraction	extract-3	pellet	nucleic acid sequencing	assay-name-3	sequenced-data-3	data_value

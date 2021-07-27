@@ -1,19 +1,23 @@
-"""Functions for reading and writing SRA-XML."""
+# -*- coding: utf-8 -*-
+"""Functions for reading and writing SRA-XML.
+
+Functions for reading and writing SRA-XML. SRA-XML content is loaded into
+an in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
+"""
 import datetime
 import hashlib
 import html
-import iso8601
-import jinja2
 import logging
 import os
 import xml.dom.minidom
 from functools import partial
+
+import iso8601
+import jinja2
 from lxml import etree
 
-
-from isatools.model import DataFile
-from isatools.model import OntologyAnnotation
-from isatools.model import Sample
+from isatools.model import DataFile, OntologyAnnotation, Sample
 
 
 log = logging.getLogger('isatools')
@@ -33,6 +37,18 @@ sra_center_prj_name = None
 
 
 def export(investigation, export_path, sra_settings=None, datafilehashes=None):
+    """Exports ISA Data model objects to SRA-XML files
+
+    The exporter uses the jinja2 templating engine. The SRA templates can be
+    found in isatools/resources/sra_templates
+
+    :param investigation: An Investigation object
+    :param export_path: Path to write SRA-XML files to
+    :param sra_settings: Some universal settings to apply to the SRA export
+    :param datafilehashes: A list of data file hashes to apply to the exported
+    files
+    :return: None
+    """
 
     def get_comment(assay, name):
         hits = [c for c in assay.comments if c.name.lower() == name.lower()]
@@ -59,7 +75,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 == name.lower().replace('_', ' ')]
         if len(hits) > 1:
             raise AttributeError(
-                "Multiple parameter values of category '{}' found".format(name))
+                "Multiple parameter values of category '{}' found".format(
+                    name))
         elif len(hits) < 1:
             return None
         else:
@@ -100,15 +117,16 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                     [r.term.lower() for r in contact.roles]:
                 contact.inform_on_status = True
                 has_sra_contact = True
-            if "sra inform on error" in [r.term.lower() for r in contact.roles]:
+            if "sra inform on error" in [r.term.lower()
+                                         for r in contact.roles]:
                 contact.inform_on_error = True
                 has_sra_contact = True
         if not has_sra_contact:
             raise ValueError(
-                "The study '{0}' has either no SRA contact or no email "
-                "specified for the contact. Please ensure you have one contact "
-                "with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
-                "export to SRA.".format(istudy.identifier)
+                "The study '{0}' has either no SRA contact or no "
+                "email specified for the contact. Please ensure you have one "
+                "contact with a 'Role' as 'SRA Inform On Status', otherwise "
+                "we cannot export to SRA.".format(istudy.identifier)
             )
 
         if istudy.submission_date is None or istudy.submission_date == '':
@@ -196,16 +214,18 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                             enumerate(datafile.filename) if
                                             x == '.']
                             file_ext = datafile.filename[dot_indicies[-1] + 1:]
-                            if file_ext in ('.gz'):  # if is compressed, look for the actual filetype
+                            if file_ext in ('.gz'):
+                                # if is compressed, look for the actual ftype
                                 try:
                                     filetype = datafile.filename[
-                                               dot_indicies[-2] + 1:dot_indicies[
-                                                   -1]]
+                                        dot_indicies[-2]
+                                        + 1:dot_indicies[-1]]
                                 except IndexError:
                                     log.warning(
-                                        "Could not infer SRA filetype for data "
-                                        "file {filename}; defaulting to 'other'"
-                                            .format(filename=datafile.filename))
+                                        "Could not infer SRA filetype for "
+                                        "data file {filename}; defaulting to "
+                                        "'other'".format(
+                                            filename=datafile.filename))
                                     filetype = 'other'
                             else:
                                 filetype = file_ext
@@ -226,18 +246,20 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             'name': source.name,
                             'characteristics': source.characteristics,
                         }
-                        organism_charac = [c for c in source.characteristics
-                                           if c.category.term == 'organism'][-1]
+                        organism_charac = [
+                            c for c in source.characteristics
+                            if c.category.term == 'organism'][-1]
                         assay_to_export['source']['taxon_id'] = \
                             organism_charac.value.term_accession[
-                            organism_charac.value.term_accession.index('_')+1:]
+                            organism_charac.value.term_accession.index(
+                                '_') + 1:]
                         assay_to_export['source']['scientific_name'] = \
                             organism_charac.value.term
                         curr_process = assay_seq_process
                         while curr_process.prev_process is not None:
                             assay_to_export[
                                 curr_process.executes_protocol.protocol_type
-                                    .term] = curr_process
+                                .term] = curr_process
                             try:
                                 curr_process = curr_process.prev_process
                             except AttributeError:
@@ -250,13 +272,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         assay_to_export['min_match'] = 0
                         # BEGIN genome seq library selection
                         if iassay.measurement_type.term in [
-                                'genome sequencing', 'whole genome sequencing']:
+                            'genome sequencing',
+                                'whole genome sequencing']:
                             library_source = get_pv(
                                 assay_to_export['library construction'],
                                 'library source')
                             if library_source.upper() not in [
                                 'GENOMIC', 'GENOMIC SINGLE CELL',
-                                'METAGENOMIC', 'OTHER']:
+                                    'METAGENOMIC', 'OTHER']:
                                 log.warning(
                                     'ERROR:value supplied is not compatible '
                                     'with SRA1.5 schema {}'.format(
@@ -266,7 +289,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_strategy = get_pv(
                                 assay_to_export['library construction'],
                                 'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
+                            if library_strategy.upper() not in ['WGS',
+                                                                'OTHER']:
                                 log.warning(
                                     'ERROR:value supplied is not compatible '
                                     'with SRA1.5 schema {}'.format(
@@ -327,7 +351,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
                             protocol = '\n protocol_description: '.format(
                                 assay_to_export['library construction']
-                                    .executes_protocol.description)
+                                .executes_protocol.description)
                             mid_pv = get_pv(
                                 assay_to_export['library construction'], 'mid')
                             if mid_pv is not None:
@@ -347,30 +371,30 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 protocol += '\n target_taxon: {}'.format(
                                     target_taxon)
                             target_gene = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'target_gene')
                             if target_gene is not None:
                                 protocol += '\n target_gene: {}'.format(
                                     target_gene)
                             target_subfragment = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'target_subfragment')
                             if target_subfragment is not None:
                                 protocol += '\n target_subfragment: {}'.format(
                                     target_subfragment)
                             pcr_primers = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'pcr_primers')
                             if pcr_primers is not None:
                                 protocol += '\n pcr_primers: {}'.format(
                                     pcr_primers)
                             pcr_cond = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'pcr_cond')
                             if pcr_cond is not None:
                                 protocol += '\n pcr_cond: {}'.format(pcr_cond)
-                            assay_to_export['library_construction_protocol'] = \
-                                protocol
+                            assay_to_export[
+                                'library_construction_protocol'] = protocol
 
                             if target_gene is not None:
                                 assay_to_export['targeted_loci'] = True
@@ -381,9 +405,10 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 ['metagenome sequencing']:
                             library_source = 'METAGENOMIC'
                             library_strategy = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
+                            if library_strategy.upper() not in [
+                                    'WGS', 'OTHER']:
                                 log.warning(
                                     'ERROR:value supplied is not compatible '
                                     'with SRA1.5 schema '.format(
@@ -391,7 +416,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'library selection')
                             if library_selection not in \
                                     ['RANDOM', 'UNSPECIFIED']:
@@ -403,7 +428,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
                             protocol = '\n protocol_description: {}'.format(
                                 assay_to_export['library construction']
-                                    .executes_protocol.description)
+                                .executes_protocol.description)
                             mid_pv = get_pv(
                                 assay_to_export['library construction'], 'mid')
                             if mid_pv is not None:
@@ -414,11 +439,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 library_strategy
                             assay_to_export['library_selection'] = \
                                 library_selection
-                            assay_to_export['library_construction_protocol'] = \
-                                protocol
+                            assay_to_export[
+                                'library_construction_protocol'] = protocol
 
                             library_layout = get_pv(
-                                assay_to_export['library construction'], 
+                                assay_to_export['library construction'],
                                 'library layout')
                             assay_to_export['library_layout'] = \
                                 library_layout.lower()
@@ -429,15 +454,15 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_source = get_pv(
                                 assay_to_export['library construction'],
                                 'library source')
-                            if library_source is None:  
-                                # if not specified, select TRANSCRIPTOMIC by 
+                            if library_source is None:
+                                # if not specified, select TRANSCRIPTOMIC by
                                 # default
                                 library_source = 'TRANSCRIPTOMIC'
 
                             if library_source.upper() not in \
-                                    ['TRANSCRIPTOMIC', 
+                                    ['TRANSCRIPTOMIC',
                                      'TRANSCRIPTOMIC SINGLE CELL',
-                                     'METATRANSCRIPTOMIC', 
+                                     'METATRANSCRIPTOMIC',
                                      'OTHER']:
                                 log.warning(
                                     'ERROR:value supplied is not compatible '
@@ -449,7 +474,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['library construction'],
                                 'library strategy')
                             if library_strategy not in \
-                                    ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 
+                                    ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq',
                                      'ncRNA-Seq', 'FL-cDNA', 'EST', 'OTHER']:
                                 log.warning(
                                     'ERROR:value supplied is not compatible '
@@ -461,8 +486,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['library construction'],
                                 'library selection')
                             if library_selection not in \
-                                    ['RT-PCR', 'cDNA', 'cDNA_randomPriming', 
-                                     'cDNA_oligo_dT', 'PolyA', 'Oligo-dT', 
+                                    ['RT-PCR', 'cDNA', 'cDNA_randomPriming',
+                                     'cDNA_oligo_dT', 'PolyA', 'Oligo-dT',
                                      'Inverse rRNA', 'Inverse rRNA selection',
                                      'CAGE', 'RACE', 'other']:
                                 log.warning(
@@ -473,14 +498,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
                             protocol = '\n protocol_description: {}'.format(
                                 assay_to_export['library construction']
-                                    .executes_protocol.description)
+                                .executes_protocol.description)
                             assay_to_export['library_source'] = library_source
                             assay_to_export['library_strategy'] = \
                                 library_strategy
                             assay_to_export['library_selection'] = \
                                 library_selection
-                            assay_to_export['library_construction_protocol'] = \
-                                protocol
+                            assay_to_export[
+                                'library_construction_protocol'] = protocol
 
                             library_layout = get_pv(
                                 assay_to_export['library construction'],
@@ -491,7 +516,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         else:
                             log.error(
                                 'ERROR:Unsupported measurement type: {}'
-                                    .format(iassay.measurement_type.term))
+                                .format(iassay.measurement_type.term))
                         mid_pv = get_pv(
                             assay_to_export['library construction'], 'mid')
                         assay_to_export['poolingstrategy'] = mid_pv
@@ -551,8 +576,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         except etree.DocumentInvalid as e:
                             log.error(
                                 'Schema validation failed on {}'
-                                    .format('{0}:\n{1}'.format(
-                                    docpath, str(e))))
+                                .format('{0}:\n{1}'.format(
+                                        docpath, str(e))))
                 except etree.XMLSchemaParseError as e:
                     log.error(e)
 
@@ -590,14 +615,18 @@ def create_datafile_hashes(fileroot, filenames):
     """
     Create md5 file dict for files in a directory with a particular extension
 
-    :param fileroot: Root to directory containing files (assumes all in same dir)
+    :param fileroot: Root to directory containing files (assumes all in
+    same dir)
     :param filenames: List of filenames of files to md5, assumed in fileroot
     :return: dict containing filenames and md5s
 
     Usage:
-    >>> filenames = [f for f in listdir('/path/to/my/files') if f.endswith('.fastq.gz')]
-    >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=filesnames)
-    { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+   / >>> filenames = [f for f in listdir('/path/') if f.endswith('.fastq.gz')]
+  /  >>> create_datafile_hashes(fileroot='/path/s', filenames=filesnames)
+    {
+        'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e',
+        'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e'
+    }
     """
     def md5sum(filename):
         with open(filename, mode='rb') as f:

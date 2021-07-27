@@ -7,12 +7,6 @@
     "type": "object",
     "properties": {
         "@id": { "type": "string", "format": "uri" },
-        "comments" : {
-            "type": "array",
-            "items": {
-                 "$ref": "comment_schema.json#"
-            }
-        },
         "name": {
             "type": "string"
         },
@@ -45,8 +39,20 @@
                     },
                     "componentType": {
                         "$ref": "ontology_annotation_schema.json#"
+                    },
+                    "comments" : {
+                        "type": "array",
+                        "items": {
+                             "$ref": "comment_schema.json#"
+                        }
                     }
                 }
+            }
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
             }
         }
     },

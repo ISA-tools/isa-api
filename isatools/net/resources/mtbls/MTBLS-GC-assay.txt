@@ -1,0 +1,54 @@
+Parameter Value[Chromatography Instrument]	Parameter Value[Column model]	Parameter Value[Column type]	
+Agilent 6890 GC	"BP-20 (0.25 µm, 0.25 mm x 60 m; SGE)"	high polarity	
+Agilent 6890N GC	"BPX-50 (0.1 µm, 0.1 mm x 1.5 m; SGE)"	medium polarity	
+Agilent 7890 GC	"BPX-50 (0.1 µm, 0.1 mm x 2 m; SGE)"	medium polarity	
+Agilent 7890A GC	"CP-Sil 8 CB Low Bleed/MS (0.25 µm, 0.25 mm x 30 m; Varian)"	low polarity	
+Agilent 7890B GC	"DB-23 GC (0.15 µm, 0.25 mm x 60 m; Agilent Technologies)"	high polarity	
+Agilent 8860 GC	"DB-5 GC (1 µm, 0.25 mm x 15 m; Agilent Technologies)"	low polarity	
+PerkinElmer AutoSystem XL GC	"DB-50 GC (0.25 µm, 0.25 mm x 30 m; Supelco)"	medium polarity	
+Shimadzu GCMS-QP2010 Ultra	"DB-5ms GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+Shimadzu GCMS-QP2020	"DB-5ms GC (0.1 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+Shimadzu GC-17A	"DB-35ms GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	medium polarity	
+Shimadzu GC-2010	"DB-5ms Ultra Inert GC (0.18 µm, 0.18 mm x 10 m; Agilent Technologies)"	low polarity	
+Thermo Electron FOCUS GC	"DB-5ms Ultra Inert GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+Thermo Electron TRACE GC	"DB-WAX (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	high polarity	
+Thermo Electron TRACE GC Ultra	"HP-5 GC (0.25 µm, 0.32 mm x 28 m; Agilent Technologies)"	low polarity	
+Thermo Scientific TRACE GC Ultra	"HP-5 GC (0.25 µm, 0.32 mm x 30 m; Agilent Technologies)"	low polarity	
+Thermo Scientific TRACE 1310 GC	"HP-5 GC (0.25 µm, 0.32 mm x 60 m; Agilent Technologies)"	low polarity	
+ThermoQuest GC 8000	"HP-5ms GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+Varian 4000 GC	"HP-5ms Ultra Inert GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+	"HP-FFAP GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	high polarity	
+	"HP-INNOWax GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	high polarity	
+	"HP-INNOWax GC (0.25 µm, 0.25 mm x 60 m; J&W Scientific)"	high polarity	
+	"Rtx-200 (0.25 µm, 0.25 mm x 1.75 m; Restek)"	medium polarity	
+	"Rtx-200 (0.25 µm, 0.25 mm x 2 m; Restek)"	medium polarity	
+	"Rtx-5 (0.20 µm, 0.18 mm x 10 m; Restek)"	low polarity	
+	"Rtx-5MS (0.25 µm, 0.25 mm x 30 m; Restek)"	low polarity	
+	"Rtx-5Sil MS (0.25 µm, 0.25 mm x 30 m; Restek)"	low polarity	
+	"Rxi-5ms (0.18 µm, 0.18 mm x 10 m; Restek)"	low polarity	
+	"Rxi-5Sil MS (0.18 µm, 0.18 mm x 10 m; Restek)"	low polarity	
+	"Rxi-5Sil MS (0.25 µm, 0.25 mm x 30 m; Restek)"	low polarity	
+	"Rxi-17Sil MS (0.15 µm, 0.15 mm x 1.5 m; Restek)"	medium polarity	
+	"SH-Rxi-5Sil MS (0.25 µm, 0.25 mm x 30 m; Shimadzu)"	low polarity	
+	"SPB-50 GC (0.25 µm, 0.25 mm x 30 m; Supelco)"	medium polarity	
+	"Stabilwax-DA (0.25 µm, 0.32 mm x 30 m; Restek)"	high polarity	
+	"Stabilwax-MS (0.25 µm, 0.32 mm x 30 m; Restek)"	high polarity	
+	"TraceGOLD TG-5SilMS (0.25 µm, 0.25 mm x 30 m; Thermo Scientific)"	low polarity	
+	"TRACE TR-5MS GC (0.25 µm, 0.25 mm x 30 m, Thermo Scientific)"	low polarity	
+	"TRACE TR-FAME GC (0.25 µm, 0.25 mm x 30 m, Thermo Scientific)"	high polarity	
+	"VF-17ms (0.25 µm, 0.25 mm x 30 m; Varian)"	low polarity	
+	"VF-1ms GC (0.25 µm, 0.25 mm x 30 m; J&W Scientific)"	low polarity	
+	"VF-5ms GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	low polarity	
+	"VF-5ms GC (0.25 µm, 0.25 mm x 30 m; Varian)"	low polarity	
+	"VF-5ms GC (0.25 µm, 0.25 mm x 30 m; Supelco)"	low polarity	
+	"VF-WAXms GC (0.25 µm, 0.25 mm x 30 m; Agilent Technologies)"	high polarity	
+	"Zebron ZB-1701 w/GUARDIAN GC (0.15 _m, 0.25mm x 30 m + 5 m; Phenomenex)"	medium polarity	
+	"Zebron ZB-1ms GC (0.25 µm, 0.25 mm x 30 m; Phenomenex)"	low polarity	
+	"Zebron ZB-5 GC (0.25 µm, 0.25 mm x 15 m; Phenomenex)"	low polarity	
+	"Zebron ZB-5 GC (0.25 µm, 0.25 mm x 30 m; Phenomenex)"	low polarity	
+	"Zebron ZB-5 w/GUARDIAN GC (0.25 µm, 0.25 mm x 30 + 10 m; Phenomenex)"	low polarity	
+	"Zebron ZB-5ms GC (0.25 µm, 0.25 mm x 30 m; Phenomenex)"	low polarity	
+	Zebron ZB-AAA GC (0.25 mm x 10 m; Phenomenex)	medium polarity	
+	"Zebron ZB-SemiVolatiles GC (0.25 µm, 0.25 mm x 30 m; Phenomenex)"	low polarity	
+	"Zebron ZB-WAX GC (0.25 µm, 0.25 mm x 30 m; Phenomenex)"	high polarity	
+	"5% phenyldimethyl silicone GC (0.18 µm, 20 m x 0.18 mm)"	low polarity	

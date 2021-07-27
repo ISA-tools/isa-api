@@ -874,7 +874,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     investigation = isa_obj
 
     # Write ONTOLOGY SOURCE REFERENCE section
-    ontology_source_references_df =_build_ontology_reference_section(ontologies=investigation.ontology_source_references)
+    ontology_source_references_df = _build_ontology_reference_section(ontologies=investigation.ontology_source_references)
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
     #  Need to set index_label as top left cell
     ontology_source_references_df.to_csv(
@@ -1078,7 +1078,7 @@ def _get_start_end_nodes(G):
     return start_nodes, end_nodes
 
 
-def _longest_path_and_attrs(paths):
+def _longest_path_and_attrs(paths, indexes):
     """Function to find the longest paths and attributes to determine the
     most appropriate ISA-Tab header. This is calculated by adding up the length
     of each path with the number of attributes needed to describe each node in
@@ -1088,9 +1088,11 @@ def _longest_path_and_attrs(paths):
     :return: The longest path and attributes
     """
     longest = (0, None)
+    log.info(paths)
     for path in paths:
         length = len(path)
-        for n in path:
+        for node in path:
+            n = indexes[node]
             if isinstance(n, Source):
                 length += len(n.characteristics)
             elif isinstance(n, Sample):
@@ -1126,34 +1128,37 @@ def _all_end_to_end_paths(G, start_nodes):
     num_start_nodes = len(start_nodes)
     message = 'Calculating for paths for {} start nodes: '.format(
         num_start_nodes)
-    if isinstance(start_nodes[0], Source):
+    log.info(start_nodes)
+    start_node = G.indexes[start_nodes[0]]
+    if isinstance(start_node, Source):
         message = 'Calculating for paths for {} sources: '.format(
             num_start_nodes)
-    elif isinstance(start_nodes[0], Sample):
+    elif isinstance(start_node, Sample):
         message = 'Calculating for paths for {} samples: '.format(
             num_start_nodes)
-    if isa_logging.show_pbars:
+    """if isa_logging.show_pbars:
         pbar = ProgressBar(
             min_value=0, max_value=num_start_nodes, widgets=[
                 message, SimpleProgress(), Bar(left=" |", right="| "),
                 ETA()]).start()
     else:
-        def pbar(x): return x
-    for start in pbar(start_nodes):
+        def pbar(x): return x"""
+    for start in start_nodes:
         # Find ends
-        if isinstance(start, Source):
+        node = G.indexes[start]
+        if isinstance(node, Source):
             # only look for Sample ends if start is a Source
             for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Sample) and len(G.out_edges(x)) == 0]:
+                        isinstance(G.indexes[x], Sample) and len(G.out_edges(x)) == 0]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-        elif isinstance(start, Sample):
+        elif isinstance(node, Sample):
             # only look for Process ends if start is a Sample
             for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Process) and x.next_process is None]:
+                        isinstance(G.indexes[x], Process) and G.indexes[x].next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
     # log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
-        log.debug([x.name for x in start_nodes])
+        log.debug([G.indexes[x].name for x in start_nodes])
     return paths
 
 
@@ -1185,9 +1190,12 @@ def write_study_table_files(inv_obj, output_dir):
         # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(
             study_obj.graph,
-            [x for x in study_obj.graph.nodes() if isinstance(x, Source)])
+            [x for x in study_obj.graph.nodes() if isinstance(study_obj.graph.indexes[x], Source)])
+        log.warning(study_obj.graph.nodes())
         sample_in_path_count = 0
-        for node in _longest_path_and_attrs(paths):
+        longest_path = _longest_path_and_attrs(paths, study_obj.graph.indexes)
+        for node_index in longest_path:
+            node = study_obj.graph.indexes[node_index]
             if isinstance(node, Source):
                 olabel = "Source Name"
                 columns.append(olabel)
@@ -1229,7 +1237,7 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-        if isa_logging.show_pbars:
+        """if isa_logging.show_pbars:
             pbar = ProgressBar(min_value=0, max_value=len(paths),
                                widgets=['Writing {} paths: '
                                         .format(len(paths)),
@@ -1237,13 +1245,14 @@ def write_study_table_files(inv_obj, output_dir):
                                         Bar(left=" |", right="| "),
                                         ETA()]).start()
         else:
-            def pbar(x): return x
-        for path in pbar(paths):
+            def pbar(x): return x"""
+        for path in paths:
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
 
             sample_in_path_count = 0
-            for node in path:
+            for node_index in path:
+                node = study_obj.graph.indexes[node_index]
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
@@ -1286,8 +1295,8 @@ def write_study_table_files(inv_obj, output_dir):
                         fvlabel = "{0}.Factor Value[{1}]".format(
                             olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
-        if isinstance(pbar, ProgressBar):
-            pbar.finish()
+        """if isinstance(pbar, ProgressBar):
+            pbar.finish()"""
 
         DF = pd.DataFrame(columns=columns)
         DF = DF.from_dict(data=df_dict)
@@ -1378,14 +1387,15 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(
                 assay_obj.graph, [x for x in assay_obj.graph.nodes()
-                                  if isinstance(x, Sample)])
+                                  if isinstance(assay_obj.graph.indexes[x], Sample)])
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
-            if _longest_path_and_attrs(paths) is None:
+            if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
-            for node in _longest_path_and_attrs(paths):
+            for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
+                node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
@@ -1463,8 +1473,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
 
-                for node in path:
-
+                for node_index in path:
+                    node = assay_obj.graph.indexes[node_index]
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
                             node.executes_protocol.name
@@ -2541,6 +2551,8 @@ def load_table(fp):
             if 'Comment' in label:
                 new_label = 'Comment[{val}]'.format(val=val)
             elif 'Characteristics' in label:
+                new_label = 'Characteristics[{val}]'.format(val=val)
+            elif 'Material Type' in label:
                 new_label = 'Characteristics[{val}]'.format(val=val)
             elif 'Parameter Value' in label:
                 new_label = 'Parameter Value[{val}]'.format(val=val)
@@ -4761,7 +4773,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
         if len(df_dict['investigation'].index) > 0:
             row = df_dict['investigation'].iloc[0]
-            investigation.identifier = row['Investigation Identifier']
+            investigation.identifier = str(row['Investigation Identifier'])
             investigation.title = row['Investigation Title']
             investigation.description = row['Investigation Description']
             investigation.submission_date = \
@@ -4776,7 +4788,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         for i in range(0, len(df_dict['studies'])):
             row = df_dict['studies'][i].iloc[0]
             study = Study()
-            study.identifier = row['Study Identifier']
+            study.identifier = str(row['Study Identifier'])
             study.title = row['Study Title']
             study.description = row['Study Description']
             study.submission_date = row['Study Submission Date']
@@ -5133,7 +5145,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _consutrctor(self):
+    def _constructor(self):
         return IsaTabSeries
 
 
@@ -5693,7 +5705,12 @@ class ProcessSequenceFactory:
                     output_node_index = find_gt(node_cols, object_label_index)
                     output_proc_index = find_gt(proc_cols, object_label_index)
 
-                    if output_proc_index < output_node_index > -1:
+                    post_chained_protocol = any(
+                        col_name for col_name in DF.columns[(object_label_index + 1): output_node_index].values
+                        if col_name.startswith('Protocol REF')
+                    )
+
+                    if (output_proc_index < output_node_index > -1 and not post_chained_protocol) or (output_proc_index > output_node_index):
 
                         output_node_label = DF.columns[output_node_index]
                         output_node_value = str(
@@ -5717,7 +5734,12 @@ class ProcessSequenceFactory:
                     input_node_index = find_lt(node_cols, object_label_index)
                     input_proc_index = find_lt(proc_cols, object_label_index)
 
-                    if input_proc_index < input_node_index > -1:
+                    previous_chained_protocol = any(
+                        col_name for col_name in DF.columns[input_node_index: (object_label_index - 1)].values
+                        if col_name.startswith('Protocol REF')
+                    )
+
+                    if input_proc_index < input_node_index > -1 and not previous_chained_protocol:
 
                         input_node_label = DF.columns[input_node_index]
                         input_node_value = str(object_series[input_node_label])

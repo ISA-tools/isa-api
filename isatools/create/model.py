@@ -1100,7 +1100,8 @@ class AssayGraph(object):
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
                             ),
-                            name=node_name, protocol_type=node_key,
+                            name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                            protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
@@ -1117,7 +1118,8 @@ class AssayGraph(object):
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                                 ),
-                                name=node_name, protocol_type=node_key,
+                                name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                                protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)
@@ -1968,6 +1970,7 @@ class StudyDesign(object):
 
     def __init__(
             self,
+            identifier=None,
             name='Study Design',
             design_type=None,
             description=None,
@@ -1975,10 +1978,13 @@ class StudyDesign(object):
             study_arms=None
     ):
         """
+        :param identifier: str
         :param name: str
+        :param description: str
         :param source_type: str or OntologyAnnotation
         :param study_arms: Iterable
         """
+        self.identifier = identifier
         self.__study_arms = set()
         self.__name = name if isinstance(name, str) else 'Study Design'
         self.__design_type = None
@@ -2455,12 +2461,14 @@ class StudyDesign(object):
                         )
                     )
                 except StopIteration:
+                    file_extension = '.{}'.format(node.extension) if node.extension else ''
                     return RawDataFile(
-                        filename='{}-S{}-{}-R{}'.format(
+                        filename='{}-S{}-{}-R{}-{}'.format(
                             assay_file_prefix,
                             start_node_index,
                             urlify(node.name),
-                            counter[node.name]
+                            counter[node.name],
+                            file_extension
                         )
                     )
 
@@ -2474,7 +2482,7 @@ class StudyDesign(object):
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         study = Study(
-            identifier=identifier or DEFAULT_STUDY_IDENTIFIER,
+            identifier=self.identifier or identifier or DEFAULT_STUDY_IDENTIFIER,
             title=self.name,
             filename=urlify(study_config['filename']),
             description=self.description,
@@ -2500,24 +2508,27 @@ class StudyDesign(object):
 
     def __repr__(self):
         return '{0}.{1}(' \
+               'identifier={identifier}, ' \
                'name={name}, ' \
                'design_type={design_type}, ' \
                'description={description} ' \
                'source_type={source_type}, ' \
                'study_arms={study_arms}' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
-                          name=self.name, design_type=self.design_type, description=self.description,
+                          identifier=self.identifier, name=self.name,
+                          design_type=self.design_type, description=self.description,
                           source_type=self.source_type)
 
     def __str__(self):
         return """{0}(
+               identifier={identifier}, 
                name={name},
                description={description},
                study_arms={study_arms}
                )""".format(self.__class__.__name__,
                            description=self.description,
                            study_arms=[arm.name for arm in sorted(self.study_arms)],
-                           name=self.name)
+                           identifier=self.identifier, name=self.name)
 
     def __hash__(self):
         return hash(repr(self))

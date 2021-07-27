@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA study design element schema",
+    "name": "ISA study design element schema",
+    "description": "JSON-schema representing a study design element in the ISA study design model",
+    "type": "object",
+    "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "name": {
+            "type": "string"
+        },
+        "_treatment": {
+            "type" :"boolean"
+        }, 
+        "factorValues": {
+            "type": "array",
+            "items": {
+                 "$ref": "isa_study_design_factor_schema.json#"
+            },
+        "type": {
+            "type" :"string",
+            "enum" : ["screen","washout","follow-up","biological intervention","chemical intervention","radiological intervention","surgical intervention"]
+        },        
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        }
+    },
+    "additionalProperties": false
+}

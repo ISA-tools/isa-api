@@ -1,0 +1,32 @@
+study:
+  filename: 's_study_01.txt'
+  ontology_source_references:
+    - name: 'OBI'
+      file: 'https://raw.githubusercontent.com/obi-ontology/obi/v2018-02-12/obi.owl'
+      version: 'v2018-02-12'
+      description: 'Ontology for Biomedical Investigations'
+    - name: 'NCIT'
+      file: 'http://purl.obolibrary.org/obo/ncit/releases/2019-03-02/ncit.owl'
+      version: '19.02d'
+      description: 'NCI Thesaurus OBO Edition'
+  protocols:
+    - name: 'sample collection'
+      protocol_type: 'sample_collection'
+      parameters: [ 'Sampling order', 'Study cell' ]
+  performers:
+    - name: 'Unknown'
+    - name: 'Bob'
+    - name: 'Alice'
+    - name: 'Carol'
+    - name: 'Dan'
+    - name: 'Erin'
+    - name: 'Frank'
+
+
+source_prototype:
+  characteristics:
+    - category: 'Material Type'
+    - value:
+        term: 'specimen'
+        term_source: 'OBI'
+        term_accession: '0100051'

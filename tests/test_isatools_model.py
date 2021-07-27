@@ -2,8 +2,16 @@
 from __future__ import absolute_import
 import datetime
 import unittest
+from unittest.mock import patch
 
-from isatools.model import *
+from isatools.model import (
+    Comment, Investigation, OntologySource, OntologyAnnotation, Publication, Person, Study, StudyFactor, Characteristic,
+    Assay, Protocol, ProtocolParameter, ParameterValue, ProtocolComponent, Source, Sample, Extract, LabeledExtract,
+    FactorValue, DataFile, RawDataFile, DerivedDataFile, RawSpectralDataFile, ArrayDataFile, DerivedSpectralDataFile,
+    ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
+    PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile, FreeInductionDecayDataFile,
+    load_protocol_types_info
+)
 
 
 class CommentTest(unittest.TestCase):
@@ -41,17 +49,17 @@ class CommentTest(unittest.TestCase):
         self.assertNotEqual(expected_other_comment, self.comment)
         self.assertNotEqual(hash(expected_other_comment), hash(self.comment))
 
-    def test_raises_ISAModelAttributeError(self):
+    def test_raises_AttributeError(self):
         try:
             self.comment_default.name = 0
-        except ISAModelAttributeError:
+        except AttributeError:
             pass
         except Exception:
             self.fail('ISAModelAttributeError not raised')
 
         try:
             self.comment_default.value = 0
-        except ISAModelAttributeError:
+        except AttributeError:
             pass
         except Exception:
             self.fail('ISAModelAttributeError not raised')
@@ -88,7 +96,7 @@ class InvestigationTest(unittest.TestCase):
     title=
     submission_date=
     public_release_date=
-    ontology_source_references=0 OntologySource objects
+    ontology_source_references=0 OntologySources
     publications=0 Publication objects
     contacts=0 Person objects
     studies=0 Study objects
@@ -101,7 +109,7 @@ class InvestigationTest(unittest.TestCase):
     title=T
     submission_date=2017-01-01 00:00:00
     public_release_date=2017-01-01 00:00:00
-    ontology_source_references=0 OntologySource objects
+    ontology_source_references=0 OntologySources
     publications=0 Publication objects
     contacts=0 Person objects
     studies=0 Study objects
@@ -395,7 +403,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study_default))
@@ -417,7 +425,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study))
@@ -501,12 +509,7 @@ class CharacteristicTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual("isatools.model.Characteristic("
-                         "category=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), "
-                         "value=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), unit=None, comments=[])",
+                         "category=None, value=None, unit=None, comments=[])",
                          repr(self.characteristic_default))
         self.assertEqual("isatools.model.Characteristic("
                          "category=isatools.model.OntologyAnnotation("
@@ -588,7 +591,7 @@ class AssayTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.assay_default))
@@ -602,7 +605,7 @@ class AssayTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 OntologyAnnotation objects
+    characteristic_categories=0 OntologyAnnots
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.assay))
@@ -630,6 +633,12 @@ class ProtocolTest(unittest.TestCase):
         self.protocol = Protocol(
             name='N', protocol_type=OntologyAnnotation(term='PT'), uri='U',
             version='1')
+
+    @patch('pprint.pprint')
+    def test_allowed_protocol_types(self, mock_pprint):
+        protocol_types_dict = load_protocol_types_info()
+        Protocol.show_allowed_protocol_types()
+        mock_pprint.assert_called_with(protocol_types_dict)
 
     def test_repr(self):
         self.assertEqual("isatools.model.Protocol(name='', "
@@ -690,9 +699,7 @@ class ProtocolParameterTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual("isatools.model.ProtocolParameter("
-                         "parameter_name=isatools.model.OntologyAnnotation("
-                         "term='', term_source=None, term_accession='', "
-                         "comments=[]), comments=[])",
+                         "parameter_name=None, comments=[])",
                          repr(self.parameter_default))
         self.assertEqual("isatools.model.ProtocolParameter("
                          "parameter_name=isatools.model.OntologyAnnotation("
@@ -898,13 +905,13 @@ class SampleTest(unittest.TestCase):
     def test_eq(self):
         expected_sample = Sample(name='S')
         self.assertEqual(expected_sample, self.sample)
-        self.assertEqual(hash(expected_sample),  hash(self.sample))
+        self.assertEqual(hash(expected_sample), hash(self.sample))
 
     def test_ne(self):
         expected_other_sample = Sample(name='S2')
         self.assertNotEqual(expected_other_sample, self.sample)
         self.assertNotEqual(hash(expected_other_sample), hash(self.sample))
-        
+
 
 class ExtractTest(unittest.TestCase):
 
@@ -1117,8 +1124,8 @@ class RawDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class DerivedDataFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1156,7 +1163,7 @@ class DerivedDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class RawSpectralDataFileTest(unittest.TestCase):
 
@@ -1195,7 +1202,7 @@ class RawSpectralDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class ArrayDataFileTest(unittest.TestCase):
 
@@ -1234,7 +1241,7 @@ class ArrayDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class DerivedSpectralDataFileTest(unittest.TestCase):
 
@@ -1273,8 +1280,8 @@ class DerivedSpectralDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class ProteinAssignmentFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1312,8 +1319,8 @@ class ProteinAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
-        
+
+
 class PeptideAssignmentFileTest(unittest.TestCase):
 
     def setUp(self):
@@ -1351,7 +1358,7 @@ class PeptideAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class DerivedArrayDataMatrixFileTest(unittest.TestCase):
 
@@ -1390,7 +1397,7 @@ class DerivedArrayDataMatrixFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class PostTranslationalModificationAssignmentFileTest(unittest.TestCase):
 
@@ -1434,7 +1441,7 @@ class PostTranslationalModificationAssignmentFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class AcquisitionParameterDataFileTest(unittest.TestCase):
 
@@ -1473,7 +1480,7 @@ class AcquisitionParameterDataFileTest(unittest.TestCase):
         self.assertNotEqual(expected_other_data_file, self.data_file)
         self.assertNotEqual(hash(expected_other_data_file),
                             hash(self.data_file))
-        
+
 
 class FreeInductionDecayDataFileTest(unittest.TestCase):
 
