@@ -2552,13 +2552,14 @@ def load_table(fp):
                 new_label = 'Comment[{val}]'.format(val=val)
             elif 'Characteristics' in label:
                 new_label = 'Characteristics[{val}]'.format(val=val)
-            elif 'Material Type' in label:
-                new_label = 'Characteristics[{val}]'.format(val=val)
             elif 'Parameter Value' in label:
                 new_label = 'Parameter Value[{val}]'.format(val=val)
             elif 'Factor Value' in label:
                 new_label = 'Factor Value[{val}]'.format(val=val)
             new_labels.append(new_label)
+        elif label == "Material Type":
+            new_label = 'Characteristics[Material Type]'
+            new_labels.appends(label)
         else:
             new_labels.append(label)
     df.columns = new_labels
@@ -5145,7 +5146,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _constructor(self):
+    def _consutrctor(self):
         return IsaTabSeries
 
 
