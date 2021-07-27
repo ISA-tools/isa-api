@@ -2559,7 +2559,7 @@ def load_table(fp):
             new_labels.append(new_label)
         elif label == "Material Type":
             new_label = 'Characteristics[Material Type]'
-            new_labels.appends(label)
+            new_labels.append(label)
         else:
             new_labels.append(label)
     df.columns = new_labels
