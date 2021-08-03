@@ -70,14 +70,19 @@ class ISALDSerializer:
         :param reference: string indicating a fake reference for building the context url
         :return: the output of the LD injection
         """
-        props = self.schemas[schema_name]
-        if 'properties' in self.schemas[schema_name].keys():
-            props = self.schemas[schema_name]['properties']
-        context_key = self._get_context_key(schema_name)
-        output["@context"] = self._get_context_url(schema_name)
+        props = self.schemas[schema_name] if schema_name in self.schemas else self.schemas["material_schema.json"]
+        if 'properties' in props.keys():
+            props = props['properties']
         if isinstance(reference, str):
-            context_key = schema_name.replace("_schema.json", "").replace("#", "")
             output["@context"] = self._get_context_url(reference)
+            context_key = schema_name.replace("_schema.json", "").replace("#", "")
+        else:
+            if 'schema.json' in schema_name:
+                context_key = self._get_context_key(schema_name)
+                output["@context"] = self._get_context_url(schema_name)
+            else:
+                context_key = "Material"
+                output["@context"] = self._get_context_url(schema_name)
         output["@type"] = context_key
         for field in instance:
             if field in props:
@@ -133,8 +138,14 @@ class ISALDSerializer:
         Return the corresponding schema reference or false
         :param input_val: value to evaluate
         :return: False or a the schema reference string
+        => #material/labeextract-xxx => labeextract
+        => #material/extract-xxx => extract
         """
-        return input_val.split("#")[1].split("/")[0] + "_schema.json"
+        output = input_val.split("#")[1].split("/")[0]
+        if output != "material":
+            return output + "_schema.json"
+        else:
+            return input_val.split("#")[1].split("/")[1].split("-")[0]
 
     @staticmethod
     def _get_context_key(name):

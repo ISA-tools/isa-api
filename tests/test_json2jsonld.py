@@ -7,7 +7,7 @@ from isatools.convert.json2jsonld import ISALDSerializer
 class TestJson2JsonLD(unittest.TestCase):
 
     def setUp(self):
-        output_path = os.path.join("./data/json/BII-S-3/", "BII-S-3.jsonld")
+        output_path = os.path.join("./data/json/BII-S-3/", "BII-S-3-ld.json")
         with open(output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
             output_file.close()
