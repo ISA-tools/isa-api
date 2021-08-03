@@ -1385,6 +1385,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             columns = []
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+
             paths = _all_end_to_end_paths(
                 assay_obj.graph, [x for x in assay_obj.graph.nodes()
                                   if isinstance(assay_obj.graph.indexes[x], Sample)])
@@ -1394,10 +1395,14 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
+
+            sample_in_path_count = 0
             for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
                 node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
-                    olabel = "Sample Name"
+                    # olabel = "Sample Name"
+                    olabel = "Sample Name.{}".format(sample_in_path_count)
+                    sample_in_path_count += 1
                     columns.append(olabel)
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -1515,7 +1520,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
-                        olabel = "Sample Name"
+                        # olabel = "Sample Name"
+                        olabel = "Sample Name.{}".format(sample_in_path_count)
+                        sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
@@ -2558,7 +2565,7 @@ def load_table(fp):
                 new_label = 'Factor Value[{val}]'.format(val=val)
             new_labels.append(new_label)
         elif label == "Material Type":
-            new_label = 'Characteristics[Material Type]'    
+            new_label = 'Characteristics[Material Type]'
             new_labels.append(new_label)
         else:
             new_labels.append(label)
@@ -2581,7 +2588,7 @@ def load_table_checks(fp):
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name','NMR Assay Name'
+                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name'
                            'Raw Spectral Data File', 'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',

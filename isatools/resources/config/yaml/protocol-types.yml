@@ -4,6 +4,7 @@ sample collection:
   synonyms:
     - sample collection
     - sampling
+    - aliquoting
 extraction:
   header: Extract Name
   iri: http://purl.obolibrary.org/obo/OBI_0302884
