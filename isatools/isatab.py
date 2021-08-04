@@ -1400,9 +1400,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
                 node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
-                    # olabel = "Sample Name"
-                    olabel = "Sample Name.{}".format(sample_in_path_count)
-                    sample_in_path_count += 1
+                    olabel = "Sample Name"
+                    # olabel = "Sample Name.{}".format(sample_in_path_count)
+                    # sample_in_path_count += 1
                     columns.append(olabel)
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -1520,9 +1520,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
-                        # olabel = "Sample Name"
-                        olabel = "Sample Name.{}".format(sample_in_path_count)
-                        sample_in_path_count += 1
+                        olabel = "Sample Name"
+                        # olabel = "Sample Name.{}".format(sample_in_path_count)
+                        # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(

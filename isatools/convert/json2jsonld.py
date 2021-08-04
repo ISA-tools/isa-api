@@ -20,6 +20,8 @@ class ISALDSerializer:
         self.schemas = {}
         self.contexts = {}
         self.ontology = ontology
+        self.context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
+                           "resources/json-context/%s/" % ontology
         self._resolve_network()
         self.set_instance(json_instance)
 
@@ -63,7 +65,7 @@ class ISALDSerializer:
 
     def _inject_ld(self, schema_name, output, instance, reference=False):
         """
-        Inject the LD properties at for the given instance or subinstance
+        Inject the LD properties at for the given instance or sub-instance
         :param schema_name: the name of the schema to get the properties from
         :param output: the output to add the properties to
         :param instance: the instance to get the values from
@@ -82,7 +84,7 @@ class ISALDSerializer:
                 output["@context"] = self._get_context_url(schema_name)
             else:
                 context_key = "Material"
-                output["@context"] = self._get_context_url(schema_name)
+                output["@context"] = self.context_url + "isa_material_" + schema_name + "_" + self.ontology + "_context.jsonld"
         output["@type"] = context_key
         for field in instance:
             if field in props:
@@ -127,10 +129,8 @@ class ISALDSerializer:
         :param raw_name: the schema name
         :return: the corresponding context url
         """
-        context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
-                      "resources/json-context/obo/"
         filename = "_%s_context.jsonld" % self.ontology
-        return context_url + "isa_" + raw_name.replace("_schema.json", filename)
+        return self.context_url + "isa_" + raw_name.replace("_schema.json", filename)
 
     @staticmethod
     def _get_any_of_ref(input_val):
@@ -138,7 +138,7 @@ class ISALDSerializer:
         Return the corresponding schema reference or false
         :param input_val: value to evaluate
         :return: False or a the schema reference string
-        => #material/labeextract-xxx => labeextract
+        => #material/labeledextract-xxx => labeledextract
         => #material/extract-xxx => extract
         """
         output = input_val.split("#")[1].split("/")[0]
