@@ -2066,6 +2066,8 @@ class Assay(Commentable, StudyAssayMixin, object):
             raise AttributeError(
                 'Assay.measurement_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
+        elif val is None:
+            self.__measurement_type = OntologyAnnotation()
         else:
             self.__measurement_type = val
 
@@ -2081,6 +2083,8 @@ class Assay(Commentable, StudyAssayMixin, object):
             raise AttributeError(
                 'Assay.technology_type must be a OntologyAnnotation or '
                 'None; got {0}:{1}'.format(val, type(val)))
+        elif val is None:
+            self.__technology_type = OntologyAnnotation()
         else:
             self.__technology_type = val
 

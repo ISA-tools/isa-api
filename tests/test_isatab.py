@@ -1622,6 +1622,17 @@ sample1\textraction\te2\tscanning\td2"""
             expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
             self.assertIn(expected_chained_protocol_snippet, dumps_out)
 
+    def test_isatab_load_and_dump_missing_technology_type(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3-missing-technology-type', 'i_gilbert.txt'),
+                  encoding='utf-8') as fp:
+            investigation = isatab.load(fp)
+            self.assertIsInstance(investigation, Investigation)
+            # FIXME characteristics are not loaded into the extract name
+            # self.assertTrue(extract.characteristics)
+            dumps_out = isatab.dumps(investigation)
+            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
+            self.assertIn(expected_chained_protocol_snippet, dumps_out)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
