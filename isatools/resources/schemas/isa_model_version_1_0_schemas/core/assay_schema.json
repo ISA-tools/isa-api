@@ -16,12 +16,7 @@
       "$ref": "ontology_annotation_schema.json#"
     },
     "technologyType" : {
-      "type" : "object",
-      "properties": {
-        "ontologyAnnotation" : {
           "$ref": "ontology_annotation_schema.json#"
-        }
-      }
     },
     "technologyPlatform" : { "type" : "string"},
     "dataFiles" : {

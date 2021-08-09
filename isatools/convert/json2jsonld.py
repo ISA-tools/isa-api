@@ -86,6 +86,7 @@ class ISALDSerializer:
                 context_key = "Material"
                 output["@context"] = self.context_url + "isa_material_" + schema_name + "_" + self.ontology + "_context.jsonld"
         output["@type"] = context_key
+
         for field in instance:
             if field in props:
                 field_props = props[field]
@@ -113,7 +114,8 @@ class ISALDSerializer:
                 elif 'type' in field_props.keys() and field_props['type'] == 'object':
                     ref = field + '_schema.json'
                     self.schemas[ref] = field_props
-                    instance[field] = self._inject_ld(ref, instance[field], instance[field], schema_name)
+                    instance[field] = self._inject_ld(ref, instance[field], instance[field])
+
                 elif '$ref' in field_props.keys():
                     ref = field_props['$ref'].replace("#", "")
                     instance[field] = self._inject_ld(ref, instance[field], instance[field])
