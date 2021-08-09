@@ -1,12 +1,14 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create ISA-API Investigation from Datascriptor Study Design configuration &#8212; The ISA cookbook</title>
     
-  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -18,14 +20,10 @@
 
     
       
-  <link rel="stylesheet"
-    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -34,13 +32,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
@@ -83,7 +80,7 @@ var addUtterances = () => {
 commentsRunWhenDOMLoaded(addUtterances);
 </script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -91,29 +88,18 @@ commentsRunWhenDOMLoaded(addUtterances);
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
-    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html" />
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/investigation-datascriptor-crossover-study-on-humans.html" />
     <link rel="shortcut icon" href="../../_static/isa.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Known Issue: unused ISA Source aren’t serialized to ISA-Tab" href="isa-tab-unused-sources-not-serialized-brapi.html" />
-    <link rel="prev" title="ISA Create Mode example" href="isa-metabolomics-study-design-create.html" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-
-
-<!-- Opengraph tags -->
-<meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html" />
-<meta property="og:type"        content="article" />
-<meta property="og:title"       content="Create ISA-API Investigation from Datascriptor Study Design configuration" />
-<meta property="og:description" content="Create ISA-API Investigation from Datascriptor Study Design configuration  In this notebook I will show you how you can use a study design configuration is JSON" />
-<meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
-
-<meta name="twitter:card" content="summary" />
-
-
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
     
 
     <div class="container-xl">
@@ -122,27 +108,27 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../../index.html">
-  
-  <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
-  
-  
-  <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
-  
-</a>
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+      <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
 </div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <ul class="nav sidenav_l1">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../index.html">
    ISA tools API
   </a>
  </li>
 </ul>
-<ul class="current nav sidenav_l1">
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../installation.html">
    ISA-API installation
@@ -196,11 +182,16 @@ commentsRunWhenDOMLoaded(addUtterances);
    Exporting data from ISA formats
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../examples.html">
    ISA API example programs
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
      createSimpleISAtab.py
@@ -222,8 +213,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../github.html">
@@ -235,14 +224,38 @@ commentsRunWhenDOMLoaded(addUtterances);
    Release Notes
   </a>
  </li>
- <li class="toctree-l1 current active collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../notebooks.html">
    Hands-on Practicals
   </a>
-  <ul class="current collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
      Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
     </a>
    </li>
    <li class="toctree-l2">
@@ -261,20 +274,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
-     ISA-API built-in semantic requirements for
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       protocol
-      </span>
-      <span class="pre">
-       type
-      </span>
-     </code>
-     values
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="light-sensitity-study-repeated-treatment-design.html">
      Light Sensitivity Experiment:
     </a>
@@ -284,22 +283,16 @@ commentsRunWhenDOMLoaded(addUtterances);
      ISA Create Mode example
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Create ISA-API Investigation from Datascriptor Study Design configuration
-    </a>
-   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
      Known Issue: unused ISA Source aren’t serialized to ISA-Tab
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
 </ul>
 
+    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -315,21 +308,21 @@ commentsRunWhenDOMLoaded(addUtterances);
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -338,7 +331,7 @@ commentsRunWhenDOMLoaded(addUtterances);
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/investigation-datascriptor-crossover-study-on-humans.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -347,7 +340,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -358,30 +351,30 @@ commentsRunWhenDOMLoaded(addUtterances);
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/investigation-datascriptor-crossover-study-on-humans.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/isa-cookbook/isa-cookbook/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb"><button
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/investigation-datascriptor-crossover-study-on-humans.ipynb"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
 </div>
 
+            <!-- Full screen (wrap in <a> to have style consistency -->
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/isa-cookbook?urlpath=lab/tree/isa-cookbook/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/investigation-datascriptor-crossover-study-on-humans.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../../_static/images/logo_binder.svg"
@@ -389,7 +382,7 @@ commentsRunWhenDOMLoaded(addUtterances);
         
         
         
-        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/isa-cookbook/isa-cookbook/content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/investigation-datascriptor-crossover-study-on-humans.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
                 title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
                     src="../../_static/images/logo_colab.png"
                     alt="Interact on Colab">Colab</button></a>
@@ -398,82 +391,101 @@ commentsRunWhenDOMLoaded(addUtterances);
     </div>
 </div>
 
-    </div>
-
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
         </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Create ISA-API Investigation from Datascriptor Study Design configuration
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cross-over-study-with-two-drug-treatments-on-humans">
+   Cross-over study with two drug treatments on humans
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#setup">
    1. Setup
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#load-the-study-design-json-configuration">
    2. Load the Study Design JSON configuration
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#generate-the-isa-study-design-from-the-json-configuration">
    3. Generate the ISA Study Design from the JSON configuration
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#generate-the-isa-study-from-the-studydesign-and-embed-it-into-an-isa-investigation">
    4. Generate the ISA Study from the StudyDesign and embed it into an ISA Investigation
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#serialize-and-save-the-json-representation-of-the-generated-isa-investigation">
    5. Serialize and save the JSON representation of the generated ISA Investigation
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#dump-the-isa-investigation-to-isa-tab">
    6. Dump the ISA Investigation to ISA-Tab
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#check-the-correctness-of-the-isa-tab-dataframes">
    7. Check the correctness of the ISA-Tab DataFrames
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
     <a class="reference internal nav-link" href="#count-of-subjects-and-samples">
      7.1 Count of subjects and samples
     </a>
    </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#overview-of-the-mass-spec-assay-table">
-     7.1 Overview of the Mass Spec assay table
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#study-table-overview">
+     7.2 Study Table Overview
     </a>
    </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#overview-of-the-nmr-assay-table">
-     Overview of the NMR assay table
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#first-assay-dna-methylation-profiling-using-nucleic-acid-sequencing">
+     7.3 First Assay: DNA Methylation Profiling using nucleic acid sequencing
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#nucleic-acid-sequencing-stats-stats">
+       7.3.1 Nucleic acid sequencing stats Stats
+      </a>
+     </li>
+    </ul>
    </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#overview-of-the-chip-seq-assay-table">
-     Overview of the Chip-Seq assay table
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#second-assay-clinical-chemistry-marker-panel">
+     7.4 Second Assay: Clinical Chemistry Marker Panel
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#marker-panel-stats">
+       7.4.1 Marker Panel Stats
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#about-this-notebook">
-   About this notebook
-  </a>
- </li>
 </ul>
 
-        </nav>
-        
+            </nav>
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -483,34 +495,32 @@ commentsRunWhenDOMLoaded(addUtterances);
                 
   <div class="section" id="create-isa-api-investigation-from-datascriptor-study-design-configuration">
 <h1>Create ISA-API Investigation from Datascriptor Study Design configuration<a class="headerlink" href="#create-isa-api-investigation-from-datascriptor-study-design-configuration" title="Permalink to this headline">¶</a></h1>
-<p>In this notebook I will show you how you can use a study design configuration is JSON format as produce by datascriptor (https://gitlab.com/datascriptor/datascriptor) to generate a single-study ISA investigation and how you can then serialise it in JSON and tabular (i.e. CSV) format.</p>
-<p>Or study design configuration consists of:</p>
+</div>
+<div class="section" id="cross-over-study-with-two-drug-treatments-on-humans">
+<h1>Cross-over study with two drug treatments on humans<a class="headerlink" href="#cross-over-study-with-two-drug-treatments-on-humans" title="Permalink to this headline">¶</a></h1>
+<p>In this notebook, we will show you how you can use a study design configuration is JSON format as produce by datascriptor (<a class="reference external" href="https://gitlab.com/datascriptor/datascriptor">https://gitlab.com/datascriptor/datascriptor</a>) to generate a single-study ISA investigation and how you can then serialise it in JSON and tabular (i.e. CSV) format.</p>
+<p>The study design configuration consists of:</p>
 <ul class="simple">
-<li><p>a 6-arm study design. Each arm has 10 subjects</p></li>
-<li><p>there is an observational factor with 3 values, which is age_group (young, middle-aged, elderly)</p></li>
-<li><p>a crossover of two treatments, a drug treatment and a biological treatment</p></li>
-<li><p>three non-treatment phases: screen, washout and follow-up</p></li>
-<li><p>two sample types colllected: blood and saliva</p></li>
+<li><p>a 4-arm study design. Each arm has 10 subjects</p></li>
+<li><p>Subjects are humans.</p>
+<ul>
+<li><p>There is an observational factor, named “status” with two values: “healthy” and “diseased”</p></li>
+</ul>
+</li>
+<li><p>a crossover of two drug treatments: a proper treatment (“hypertena” 20 mg/day for 14 days) and a control treatment (“placebo” 20 mg/day for 14 days)</p></li>
+<li><p>three non-treatment phases: screen (7 days), washout (14 days) and follow-up (180 days)</p></li>
+<li><p>two sample types collected: blood and saliva</p></li>
 <li><p>two assay types:</p>
 <ul>
-<li><p>metabolite profiling through mass spectrometry on the saliva sample. The mass spec will be run on a “Agilent QTQF 6510” instrument, testing both “FIA” and “LC” injection modes, and “positive” acquisition mode.</p></li>
-<li><p>metabolite profiling through  NMR spectroscopy on the blood samples.  The NMR will be run on a “Bruker Avance II 1 GHz” instrument, on “1D 1H NMR” acquisition mode, testing both “CPGM” amd “TOCSY” pulse sequences.</p></li>
+<li><p>DNA methylation profiling using nucleic acid sequencing on saliva samples</p></li>
+<li><p>clinical chemistry with marker on blood samples</p></li>
 </ul>
 </li>
 </ul>
+</div>
 <div class="section" id="setup">
-<h2>1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<h1>1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h1>
 <p>Let’s import all the required libraries</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
-<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
-
-<span class="c1"># !pip install -r requirements.txt</span>
-</pre></div>
-</div>
-</div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
@@ -554,23 +564,22 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="load-the-study-design-json-configuration">
-<h2>2. Load the Study Design JSON configuration<a class="headerlink" href="#load-the-study-design-json-configuration" title="Permalink to this headline">¶</a></h2>
+<h1>2. Load the Study Design JSON configuration<a class="headerlink" href="#load-the-study-design-json-configuration" title="Permalink to this headline">¶</a></h1>
 <p>First of all we load the study design configurator with all the specs defined above</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-    <span class="s2">&quot;isa-study-design-as-json/datascriptor&quot;</span><span class="p">,</span> <span class="s2">&quot;crossover-study-design-4-arms-blood-derma-nmr-ms-chipseq.json&quot;</span><span class="p">)),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+    <span class="s2">&quot;isa-study-design-as-json&quot;</span><span class="p">,</span> <span class="s2">&quot;datascriptor&quot;</span><span class="p">,</span> <span class="s2">&quot;crossover-study-human.json&quot;</span>
+<span class="p">)),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
     <span class="n">study_design_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-    
-<span class="n">study_design_config</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
 <div class="section" id="generate-the-isa-study-design-from-the-json-configuration">
-<h2>3. Generate the ISA Study Design from the JSON configuration<a class="headerlink" href="#generate-the-isa-study-design-from-the-json-configuration" title="Permalink to this headline">¶</a></h2>
-<p>To perform the conversion we just need to use the function <code class="docutils literal notranslate"><span class="pre">generate_isa_study_design_from_config</span></code> (name possibly subject to change, should we drop the “isa” and “datascriptor” qualifiers?)</p>
+<h1>3. Generate the ISA Study Design from the JSON configuration<a class="headerlink" href="#generate-the-isa-study-design-from-the-json-configuration" title="Permalink to this headline">¶</a></h1>
+<p>To perform the conversion we just need to use the function <code class="docutils literal notranslate"><span class="pre">generate_isa_study_design()</span></code> (name possibly subject to change, should we drop the “isa” and “datascriptor” qualifiers?)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study_design</span> <span class="o">=</span> <span class="n">generate_study_design</span><span class="p">(</span><span class="n">study_design_config</span><span class="p">)</span>
@@ -581,7 +590,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="generate-the-isa-study-from-the-studydesign-and-embed-it-into-an-isa-investigation">
-<h2>4. Generate the ISA Study from the StudyDesign and embed it into an ISA Investigation<a class="headerlink" href="#generate-the-isa-study-from-the-studydesign-and-embed-it-into-an-isa-investigation" title="Permalink to this headline">¶</a></h2>
+<h1>4. Generate the ISA Study from the StudyDesign and embed it into an ISA Investigation<a class="headerlink" href="#generate-the-isa-study-from-the-studydesign-and-embed-it-into-an-isa-investigation" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">StudyDesign.generate_isa_study()</span></code> method returns the complete ISA-API <code class="docutils literal notranslate"><span class="pre">Study</span></code> object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -590,14 +599,14 @@ commentsRunWhenDOMLoaded(addUtterances);
 <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The generation of the study design took </span><span class="si">{:.2f}</span><span class="s1"> s.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
 <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">study</span><span class="p">,</span> <span class="n">Study</span><span class="p">)</span>
-<span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">(</span><span class="n">studies</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="p">])</span>
+<span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="s1">&#39;inv01&#39;</span><span class="p">,</span> <span class="n">studies</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
 <div class="section" id="serialize-and-save-the-json-representation-of-the-generated-isa-investigation">
-<h2>5. Serialize and save the JSON representation of the generated ISA Investigation<a class="headerlink" href="#serialize-and-save-the-json-representation-of-the-generated-isa-investigation" title="Permalink to this headline">¶</a></h2>
+<h1>5. Serialize and save the JSON representation of the generated ISA Investigation<a class="headerlink" href="#serialize-and-save-the-json-representation-of-the-generated-isa-investigation" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
@@ -610,10 +619,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">))</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span><span class="s1">&#39;isa-investigation-2-arms-nmr-ms.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_fp</span><span class="p">:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;notebook-output/isa-study-from-design-config/&#39;</span><span class="p">,</span> <span class="s1">&#39;crossover-2-treatments-human&#39;</span><span class="p">))</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;isa-investigation-crossover-2-treatments-human.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_fp</span><span class="p">:</span>
     <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">inv_json</span><span class="p">),</span> <span class="n">out_fp</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -621,18 +629,21 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="dump-the-isa-investigation-to-isa-tab">
-<h2>6. Dump the ISA Investigation to ISA-Tab<a class="headerlink" href="#dump-the-isa-investigation-to-isa-tab" title="Permalink to this headline">¶</a></h2>
-<p>To use them on the notebook we can also dump the tables to pandas DataFrames, using the <code class="docutils literal notranslate"><span class="pre">dump_tables_to_dataframes</span></code> function rather than dump</p>
+<h1>6. Dump the ISA Investigation to ISA-Tab<a class="headerlink" href="#dump-the-isa-investigation-to-isa-tab" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-<span class="n">dataframes</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump_tables_to_dataframes</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+<span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
 <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The Tab serialisation of the ISA investigation took </span><span class="si">{:.2f}</span><span class="s1"> s.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
-
-<span class="c1"># alternatively, if you just want to write the isatab files to file, you can run</span>
-
-<span class="c1"># isatab.dump(investigation, os.path.abspath(os.path.join(&#39;notebook-output/isa-study-from-design-config&#39;)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To use them on the notebook we can also dump the tables to pandas DataFrames, using the <code class="docutils literal notranslate"><span class="pre">dump_tables_to_dataframes</span></code> function rather than dump</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump_tables_to_dataframes</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -646,7 +657,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="check-the-correctness-of-the-isa-tab-dataframes">
-<h2>7. Check the correctness of the ISA-Tab DataFrames<a class="headerlink" href="#check-the-correctness-of-the-isa-tab-dataframes" title="Permalink to this headline">¶</a></h2>
+<h1>7. Check the correctness of the ISA-Tab DataFrames<a class="headerlink" href="#check-the-correctness-of-the-isa-tab-dataframes" title="Permalink to this headline">¶</a></h1>
 <p>We have 1 study file and 2 assay files (one for MS and one for NMR). Let’s check the names:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -657,82 +668,84 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="count-of-subjects-and-samples">
-<h3>7.1 Count of subjects and samples<a class="headerlink" href="#count-of-subjects-and-samples" title="Permalink to this headline">¶</a></h3>
-<p>We have 10 subjects in the each of the six arms for a total of 60 subjects. 5 blood samples per subject are collected (1 in treatment 1 phase, 1 in treatment, and 3 in the follow-up phase) for a total of 300 blood samples. These will undergo the NMR assay. We have 4 saliva samples per subject (1 during screen and 3 during follow-up) for a total of 240 saliva samples. These will undergo the “mass spcetrometry” assay.</p>
+<h2>7.1 Count of subjects and samples<a class="headerlink" href="#count-of-subjects-and-samples" title="Permalink to this headline">¶</a></h2>
+<p>We have 10 subjects in the each of the 4 arms for a total of 40 subjects.</p>
+<p>We collect:</p>
+<ul class="simple">
+<li><p>5 blood samples per subject (50 samples * 4 arms = 200 total samples)</p></li>
+<li><p>2 saliva samples per subject (20 samples * 4 arms = 80 total samples)</p></li>
+</ul>
+<p>Across the 4 study arms a total of 280 samples are collected (70 samples per arm)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study_frame</span> <span class="o">=</span> <span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;s_study_01.txt&#39;</span><span class="p">]</span>
 <span class="n">count_arm0_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP0&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
-<span class="n">count_arm2_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP1&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
-<span class="n">count_arm3_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP2&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
-<span class="n">count_arm4_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP3&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
-<span class="n">count_arm3_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP4&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
-<span class="n">count_arm4_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP5&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
+<span class="n">count_arm1_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP1&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
+<span class="n">count_arm2_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP2&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
+<span class="n">count_arm3_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_frame</span><span class="p">[</span><span class="n">study_frame</span><span class="p">[</span><span class="s1">&#39;Source Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="s1">&#39;GRP3&#39;</span> <span class="ow">in</span> <span class="n">el</span><span class="p">)])</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> samples in the GRP0 arm (i.e. group)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count_arm0_samples</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> samples in the GRP1 arm (i.e. group)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count_arm1_samples</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> samples in the GRP2 arm (i.e. group)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count_arm2_samples</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> samples in the GRP3 arm (i.e. group)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count_arm3_samples</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> samples in the GRP4 arm (i.e. group)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count_arm4_samples</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="section" id="overview-of-the-mass-spec-assay-table">
-<h3>7.1 Overview of the Mass Spec assay table<a class="headerlink" href="#overview-of-the-mass-spec-assay-table" title="Permalink to this headline">¶</a></h3>
-<p>For the mass. spec. assay table, we have 240 (saliva) samples, 480 extracts (2 per  sample, “lipids” and “polar” fractions), 960 labeled extracts (2 per extract, as “#replicates” is  2) and 3840 mass spec protocols + 3840 output files (4 per labeled extract as we do 2 technical replicates with 2 protocol parameter combinations <code class="docutils literal notranslate"><span class="pre">[&quot;Agilent</span> <span class="pre">QTQF</span> <span class="pre">6510&quot;,</span> <span class="pre">&quot;FIA&quot;,</span> <span class="pre">&quot;positive</span> <span class="pre">mode&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">[&quot;Agilent</span> <span class="pre">QTQF</span> <span class="pre">6510&quot;,</span> <span class="pre">&quot;LC&quot;,</span> <span class="pre">&quot;positive</span> <span class="pre">mode&quot;]</span></code>).</p>
+<div class="section" id="study-table-overview">
+<h2>7.2 Study Table Overview<a class="headerlink" href="#study-table-overview" title="Permalink to this headline">¶</a></h2>
+<p>The study table provides an overview of the subjects (sources) and samples</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT0_metabolite-profiling_mass-spectrometry.txt&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study_frame</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="section" id="overview-of-the-nmr-assay-table">
-<h3>Overview of the NMR assay table<a class="headerlink" href="#overview-of-the-nmr-assay-table" title="Permalink to this headline">¶</a></h3>
-<p>For the NMR assay table, we have 300 (blood) samples, 1200 extracts (4 per  sample, 2 extraction replicates of the “supernatant” and “pellet” fractions) and 4800 NMR protocols + 4800 output files (4 per extract as we do 2 technical replicates with 2 protocol parameter combinations <code class="docutils literal notranslate"><span class="pre">[&quot;Bruker</span> <span class="pre">Avance</span> <span class="pre">II</span> <span class="pre">1</span> <span class="pre">GHz&quot;,</span> <span class="pre">&quot;1D</span> <span class="pre">1H</span> <span class="pre">NMR&quot;,</span> <span class="pre">&quot;CPGM&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">[&quot;Bruker</span> <span class="pre">Avance</span> <span class="pre">II</span> <span class="pre">1</span> <span class="pre">GHz&quot;,</span> <span class="pre">&quot;1D</span> <span class="pre">1H</span> <span class="pre">NMR&quot;,</span> <span class="pre">&quot;TOCSY&quot;]</span></code>).</p>
+<div class="section" id="first-assay-dna-methylation-profiling-using-nucleic-acid-sequencing">
+<h2>7.3 First Assay: DNA Methylation Profiling using nucleic acid sequencing<a class="headerlink" href="#first-assay-dna-methylation-profiling-using-nucleic-acid-sequencing" title="Permalink to this headline">¶</a></h2>
+<p>This assay takes urine samples as input</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT2_metabolite-profiling_NMR-spectroscopy.txt&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT5_DNA-methylation-profiling_nucleic-acid-sequencing.txt&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="overview-of-the-chip-seq-assay-table">
-<h3>Overview of the Chip-Seq assay table<a class="headerlink" href="#overview-of-the-chip-seq-assay-table" title="Permalink to this headline">¶</a></h3>
-<p>For the Chip-Seq assay table, we have 300 (blood) samples, 1200 extracts (4 per  sample, 2 extraction replicates of the “supernatant” and “pellet” fractions).</p>
+<div class="section" id="nucleic-acid-sequencing-stats-stats">
+<h3>7.3.1 Nucleic acid sequencing stats Stats<a class="headerlink" href="#nucleic-acid-sequencing-stats-stats" title="Permalink to this headline">¶</a></h3>
+<p>For this assay we have 280 samples. 280 DNA extracts are extracted from the samples. The 280 extracts are subsequently labeled. For each labeled extract, 4 mass.spec analyses are run (using Agilent QTQF 6510, positive acquisition mode, 2 replicates each for LC and FIA injection mode), for a total of 1120 mass. spec. processes and 1120 raw spectral data files</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT16_protein-DNA-binding-site-identification_nucleic-acid-sequencing.txt&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT5_DNA-methylation-profiling_nucleic-acid-sequencing.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="section" id="second-assay-clinical-chemistry-marker-panel">
+<h2>7.4 Second Assay: Clinical Chemistry Marker Panel<a class="headerlink" href="#second-assay-clinical-chemistry-marker-panel" title="Permalink to this headline">¶</a></h2>
+<p>This assay takes blood samples as input</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT0_metabolite-profiling_mass-spectrometry.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT11_clinical-chemistry_marker-panel.txt&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </div>
+<div class="section" id="marker-panel-stats">
+<h3>7.4.1 Marker Panel Stats<a class="headerlink" href="#marker-panel-stats" title="Permalink to this headline">¶</a></h3>
+<p>For this assay we use 320 blood samples. For each sample three chemical marker assays are run, producing a total of 960 sample preparation processes and 960 raw data files</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT2_metabolite-profiling_NMR-spectroscopy.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataframes</span><span class="p">[</span><span class="s1">&#39;a_AT11_clinical-chemistry_marker-panel.txt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="about-this-notebook">
-<h2>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>authors: philippe.rocca-serra&#64;oerc.ox.ac.uk, massimiliano.izzo&#64;oerc.ox.ac.uk</p></li>
-<li><p>license: CC-BY 4.0</p></li>
-<li><p>support: isatools&#64;googlegroups.com</p></li>
-<li><p>issue tracker: https://github.com/ISA-tools/isa-api/issues</p></li>
-</ul>
 </div>
 </div>
 
@@ -745,28 +758,26 @@ commentsRunWhenDOMLoaded(addUtterances);
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "python"
+            mode: "isa-api-py39"
         },
         kernelOptions: {
-            kernelName: "python3",
+            kernelName: "isa-api-py39",
             path: "./content/notebooks"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'python3'</script>
+    <script>kernelName = 'isa-api-py39'</script>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="isa-metabolomics-study-design-create.html" title="previous page">ISA Create Mode example</a>
-    <a class='right-next' id="next-link" href="isa-tab-unused-sources-not-serialized-brapi.html" title="next page">Known Issue: unused ISA Source aren’t serialized to ISA-Tab</a>
+        <div class='prev-next-bottom'>
+            
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">
@@ -787,11 +798,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 
       </div>
     </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-    
-  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  
   </body>
 </html>

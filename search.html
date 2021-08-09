@@ -1,12 +1,14 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Search &#8212; The ISA cookbook</title>
     
-  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -18,14 +20,10 @@
 
     
       
-  <link rel="stylesheet"
-    href="_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
@@ -34,14 +32,13 @@
     <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
-  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
 
     
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
@@ -84,7 +81,7 @@ var addUtterances = () => {
 commentsRunWhenDOMLoaded(addUtterances);
 </script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -93,30 +90,22 @@ commentsRunWhenDOMLoaded(addUtterances);
     </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/search.html" />
     <link rel="shortcut icon" href="_static/isa.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="#" />
   <script src="searchindex.js" defer></script>
   
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-
-
-<!-- Opengraph tags -->
-<meta property="og:url"         content="https://isa-tools.github.io/isa-cookbook/search.html" />
-<meta property="og:type"        content="article" />
-<meta property="og:title"       content="The ISA cookbook" />
-<meta property="og:description" content="" />
-<meta property="og:image"       content="https://isa-tools.github.io/isa-cookbook/_static/isa_footer_logo.svg" />
-
-<meta name="twitter:card" content="summary" />
-
-
+    
 
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
     
 
     <div class="container-xl">
@@ -125,27 +114,27 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="index.html">
-  
-  <img src="_static/isa_footer_logo.svg" class="logo" alt="logo">
-  
-  
-  <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
-  
-</a>
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      <img src="_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
 </div><form class="bd-search d-flex align-items-center" action="#" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <ul class="nav sidenav_l1">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="content/index.html">
    ISA tools API
   </a>
  </li>
 </ul>
-<ul class="nav sidenav_l1">
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="content/installation.html">
    ISA-API installation
@@ -199,11 +188,16 @@ commentsRunWhenDOMLoaded(addUtterances);
    Exporting data from ISA formats
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="content/examples.html">
    ISA API example programs
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="content/examples/example-createSimpleISAtab.html">
      createSimpleISAtab.py
@@ -225,8 +219,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="content/github.html">
@@ -238,14 +230,38 @@ commentsRunWhenDOMLoaded(addUtterances);
    Release Notes
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="content/notebooks.html">
    Hands-on Practicals
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.html">
      Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
     </a>
    </li>
    <li class="toctree-l2">
@@ -264,20 +280,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.html">
-     ISA-API built-in semantic requirements for
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       protocol
-      </span>
-      <span class="pre">
-       type
-      </span>
-     </code>
-     values
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="content/notebooks/light-sensitity-study-repeated-treatment-design.html">
      Light Sensitivity Experiment:
     </a>
@@ -288,21 +290,15 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
-     Create ISA-API Investigation from Datascriptor Study Design configuration
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="content/notebooks/isa-tab-unused-sources-not-serialized-brapi.html">
      Known Issue: unused ISA Source aren’t serialized to ISA-Tab
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
 </ul>
 
+    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -318,22 +314,22 @@ commentsRunWhenDOMLoaded(addUtterances);
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
-        <!-- Source interaction buttons -->
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -351,20 +347,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     </div>
 </div>
 
+            <!-- Full screen (wrap in <a> to have style consistency -->
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -381,10 +378,8 @@ commentsRunWhenDOMLoaded(addUtterances);
   </p>
   </div>
   <p>
-    From here you can search these documents. Enter your search
-    words into the box below and click "search". Note that the search
-    function will automatically search for all of the words. Pages
-    containing fewer words won't appear in the result list.
+    Searching for multiple words only shows matches that contain
+    all words.
   </p>
   <form action="" method="get">
     <input type="text" name="q" aria-labelledby="search-documentation" value="" />
@@ -398,13 +393,13 @@ commentsRunWhenDOMLoaded(addUtterances);
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">
@@ -425,11 +420,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 
       </div>
     </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-    
-  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  
   </body>
 </html>
