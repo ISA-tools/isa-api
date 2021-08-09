@@ -404,18 +404,66 @@ commentsRunWhenDOMLoaded(addUtterances);
             <nav id="bd-toc-nav">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#study-metadata">
-   Study metadata
+  <a class="reference internal nav-link" href="#let-s-get-ready-and-import-all-the-necessary-components">
+   Let’s get ready and import all the necessary components
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#writing-to-isa-tab">
-   Writing to ISA-Tab
+  <a class="reference internal nav-link" href="#declaring-key-isa-objects-investigation-study-protocols-ontologies-contacts-metadata">
+   1. Declaring key ISA objects: Investigation, Study, Protocols, Ontologies, Contacts  metadata
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#declaring-and-using-ontology-resources">
+     1.1 Declaring and using
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Ontology
+      </span>
+      <span class="pre">
+       Resources
+      </span>
+     </code>
+     :
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#declaring-contacts-and-publications">
+     1.2. Declaring Contacts and Publications
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#building-the-isa-biomaterial-creation-graph">
+   2. Building the ISA biomaterial creation graph
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#writing-to-isa-json">
-   Writing to ISA-JSON
+  <a class="reference internal nav-link" href="#creating-an-isa-assay-with-all-associated-objects">
+   3. Creating an ISA Assay with all associated objects
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-isa-tab-using-isatab-dumps-function">
+   4. Writing to ISA-Tab using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isatab.dumps()
+    </span>
+   </code>
+   function:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-isa-json-using-isajson-component">
+   5. Writing to ISA-JSON using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isajson
+    </span>
+   </code>
+   component
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -448,78 +496,248 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 </div>
+<div class="section" id="let-s-get-ready-and-import-all-the-necessary-components">
+<h2>Let’s get ready and import all the necessary components<a class="headerlink" href="#let-s-get-ready-and-import-all-the-necessary-components" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Investigation</span><span class="p">,</span>
-    <span class="n">Study</span><span class="p">,</span>
-    <span class="n">OntologyAnnotation</span><span class="p">,</span>
-    <span class="n">Sample</span><span class="p">,</span>
-    <span class="n">Source</span><span class="p">,</span>
-    <span class="n">Protocol</span><span class="p">,</span>
-    <span class="n">ProtocolParameter</span><span class="p">,</span>
-    <span class="n">Process</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="study-metadata">
-<h2>Study metadata<a class="headerlink" href="#study-metadata" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="declaring-key-isa-objects-investigation-study-protocols-ontologies-contacts-metadata">
+<h2>1. Declaring key ISA objects: Investigation, Study, Protocols, Ontologies, Contacts  metadata<a class="headerlink" href="#declaring-key-isa-objects-investigation-study-protocols-ontologies-contacts-metadata" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating the Investigation object </span>
+
+<span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;i1&quot;</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;My Simple ISA Investigation&quot;</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;We could alternatively use the class constructor&#39;s parameters to set some default &quot;</span> \
+                                <span class="s2">&quot;values at the time of creation, however we want to demonstrate how to use the &quot;</span> \
+                                <span class="s2">&quot;object&#39;s instance variables to set values.&quot;</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="s2">&quot;2016-11-03&quot;</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="s2">&quot;2016-11-03&quot;</span>
+
+
+<span class="c1"># Create an Study object and set some values. The Study must have a filename, otherwise when we serialize it</span>
+<span class="c1"># to ISA-Tab we would not know where to write it. We must also attach the study to the investigation by adding it</span>
+<span class="c1"># to the &#39;investigation&#39; object&#39;s list of studies.</span>
+
 <span class="n">study</span> <span class="o">=</span> <span class="n">Study</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;s_study.txt&quot;</span><span class="p">)</span>
-<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;S1&quot;</span>
-<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;My Simple ISA Study&quot;</span>
-<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;We could alternatively use the class constructor&#39;s parameters to set some default &quot;</span> \
-          <span class="s2">&quot;values at the time of creation, however we want to demonstrate how to use the &quot;</span> \
-          <span class="s2">&quot;object&#39;s instance variables to set values.&quot;</span>
-<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
-<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
-<span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source1&quot;</span><span class="p">)]</span>
-<span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample1&quot;</span><span class="p">)]</span>
-<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">),</span>
-    <span class="n">Protocol</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data analysis with Galaxy&quot;</span><span class="p">,</span>
-        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5464/workflow.cwl&quot;</span><span class="p">,</span>
-        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
-        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genome assembly&quot;</span><span class="p">)),</span>
-            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;cut-off value&quot;</span><span class="p">))</span>
-        <span class="p">]</span>
-    <span class="p">),</span>
-    <span class="n">Protocol</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data visualization with Intermine&quot;</span><span class="p">,</span>
-        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://intermine.org/10.5464/network.svg&quot;</span><span class="p">,</span>
-        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data visualization&quot;</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">]</span>
-<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Process</span><span class="p">(</span>
-        <span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
-        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="p">)</span>
-<span class="p">]</span>
-<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;s1&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;My ISA Study&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Like with the Investigation, we could use the class constructor to set some default values, &quot;</span> \
+                    <span class="s2">&quot;but have chosen to demonstrate in this example the use of instance variables to set initial &quot;</span> \
+                    <span class="s2">&quot;values.&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="s2">&quot;2016-11-03&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="s2">&quot;2016-11-03&quot;</span>
+
+<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="declaring-and-using-ontology-resources">
+<h3>1.1 Declaring and using <code class="docutils literal notranslate"><span class="pre">Ontology</span> <span class="pre">Resources</span></code>:<a class="headerlink" href="#declaring-and-using-ontology-resources" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Declaration of Ontology Resources used to annotation the ISA objects</span>
+
+<span class="n">obi</span> <span class="o">=</span> <span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;OBI&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Ontology for Biomedical Investigations&quot;</span><span class="p">)</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">ontology_source_references</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obi</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s see the object :</span>
-<span class="n">investigation</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some instance variables are typed with different objects and lists of objects. For example, a Study can have a</span>
+<span class="c1"># list of design descriptors. A design descriptor is an Ontology Annotation describing the kind of study at hand.</span>
+<span class="c1"># Ontology Annotations should typically reference an Ontology Source. We demonstrate a mix of using the class</span>
+<span class="c1"># constructors and setting values with instance variables. Note that the OntologyAnnotation object</span>
+<span class="c1"># &#39;intervention_design&#39; links its &#39;term_source&#39; directly to the &#39;obi&#39; object instance. To ensure the OntologySource</span>
+<span class="c1"># is encapsulated in the descriptor, it is added to a list of &#39;ontology_source_references&#39; in the Investigation</span>
+<span class="c1"># object. The &#39;intervention_design&#39; object is then added to the list of &#39;design_descriptors&#39; held by the Study</span>
+<span class="c1"># object.</span>
+
+
+<span class="n">intervention_design</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term_source</span><span class="o">=</span><span class="n">obi</span><span class="p">)</span>
+<span class="n">intervention_design</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="s2">&quot;intervention design&quot;</span>
+<span class="n">intervention_design</span><span class="o">.</span><span class="n">term_accession</span> <span class="o">=</span> <span class="s2">&quot;http://purl.obolibrary.org/obo/OBI_0000115&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">design_descriptors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intervention_design</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="section" id="writing-to-isa-tab">
-<h2>Writing to ISA-Tab<a class="headerlink" href="#writing-to-isa-tab" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="declaring-contacts-and-publications">
+<h3>1.2. Declaring Contacts and Publications<a class="headerlink" href="#declaring-contacts-and-publications" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Other instance variables common to both Investigation and Study objects include &#39;contacts&#39; and &#39;publications&#39;,</span>
+<span class="c1"># each with lists of corresponding Person and Publication objects.</span>
+
+<span class="n">contact</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;Robertson&quot;</span><span class="p">,</span> <span class="n">affiliation</span><span class="o">=</span><span class="s2">&quot;University of Life&quot;</span><span class="p">,</span> <span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s1">&#39;submitter&#39;</span><span class="p">)])</span>
+<span class="n">study</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">contact</span><span class="p">)</span>
+<span class="n">publication</span> <span class="o">=</span> <span class="n">Publication</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Experiments with Elephants&quot;</span><span class="p">,</span> <span class="n">author_list</span><span class="o">=</span><span class="s2">&quot;A. Robertson, B. Robertson&quot;</span><span class="p">)</span>
+<span class="n">publication</span><span class="o">.</span><span class="n">pubmed_id</span> <span class="o">=</span> <span class="s2">&quot;12345678&quot;</span>
+<span class="n">publication</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;published&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">publications</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="building-the-isa-biomaterial-creation-graph">
+<h2>2. Building the ISA biomaterial creation graph<a class="headerlink" href="#building-the-isa-biomaterial-creation-graph" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To create the study graph that corresponds to the contents of the study table file (the s_*.txt file), we need</span>
+<span class="c1"># to create a process sequence. To do this we use the Process class and attach it to the Study object&#39;s</span>
+<span class="c1"># &#39;process_sequence&#39; list instance variable. Each process must be linked with a Protocol object that is attached to</span>
+<span class="c1"># a Study object&#39;s &#39;protocols&#39; list instance variable. The sample collection Process object usually has as input</span>
+<span class="c1"># a Source material and as output a Sample material.</span>
+
+<span class="c1"># Here we create one Source material object and attach it to our study.</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;source_material&#39;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+<span class="c1"># Then we create three Sample objects, with organism as Homo Sapiens, and attach them to the study. We use the utility function</span>
+<span class="c1"># batch_create_material() to clone a prototype material object. The function automatiaclly appends</span>
+<span class="c1"># an index to the material name. In this case, three samples will be created, with the names</span>
+<span class="c1"># &#39;sample_material-0&#39;, &#39;sample_material-1&#39; and &#39;sample_material-2&#39;.</span>
+
+<span class="n">prototype_sample</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;sample_material&#39;</span><span class="p">,</span> <span class="n">derives_from</span><span class="o">=</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+
+<span class="n">ncbitaxon</span> <span class="o">=</span> <span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;NCBITaxon&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;NCBI Taxonomy&quot;</span><span class="p">)</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">ontology_source_references</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ncbitaxon</span><span class="p">)</span> <span class="c1"># remember to add the newly declared ontology source to the parent investigation</span>
+
+<span class="n">characteristic_organism</span> <span class="o">=</span> <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Organism&quot;</span><span class="p">),</span>
+                                 <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Homo Sapiens&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">ncbitaxon</span><span class="p">,</span>
+                                                          <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.bioontology.org/ontology/NCBITAXON/9606&quot;</span><span class="p">))</span>
+<span class="n">prototype_sample</span><span class="o">.</span><span class="n">characteristics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">characteristic_organism</span><span class="p">)</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">batch_create_materials</span><span class="p">(</span><span class="n">prototype_sample</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># creates a batch of 3 samples</span>
+
+<span class="c1"># Now we create a single Protocol object that represents our sample collection protocol, and attach it to the</span>
+<span class="c1"># study object. Protocols must be declared before we describe Processes, as a processing event of some sort</span>
+<span class="c1"># must execute some defined protocol. In the case of the class model, Protocols should therefore be declared</span>
+<span class="c1"># before Processes in order for the Process to be linked to one.</span>
+
+<span class="n">sample_collection_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">,</span>
+                                      <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_collection_protocol</span><span class="p">)</span>
+<span class="n">sample_collection_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">sample_collection_protocol</span><span class="p">)</span>
+
+<span class="c1"># Next, we link our materials to the Process. In this particular case, we are describing a sample collection</span>
+<span class="c1"># process that takes one source material, and produces three different samples.</span>
+<span class="c1">#</span>
+<span class="c1"># (source_material)-&gt;(sample collection)-&gt;[(sample_material-0), (sample_material-1), (sample_material-2)]</span>
+
+<span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+    <span class="n">sample_collection_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sam</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+    <span class="n">sample_collection_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sam</span><span class="p">)</span>
+
+<span class="c1"># Finally, attach the finished Process object to the study process_sequence. This can be done many times to</span>
+<span class="c1"># describe multiple sample collection events.</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_collection_process</span><span class="p">)</span>
+
+
+
+<span class="c1">#IMPORTANT: remember to list all Characteristics used in the study object: do as follows:</span>
+<span class="n">study</span><span class="o">.</span><span class="n">characteristic_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">characteristic_organism</span><span class="o">.</span><span class="n">category</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-an-isa-assay-with-all-associated-objects">
+<h2>3. Creating an ISA Assay with all associated objects<a class="headerlink" href="#creating-an-isa-assay-with-all-associated-objects" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Next, we build n Assay object and attach two protocols, extraction and sequencing.</span>
+
+<span class="n">assay</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_assay.txt&quot;</span><span class="p">)</span>
+
+
+<span class="n">extraction_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;extraction&#39;</span><span class="p">,</span> <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;material extraction&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_protocol</span><span class="p">)</span>
+<span class="n">sequencing_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;sequencing&#39;</span><span class="p">,</span> <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nucleic acid sequencing&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sequencing_protocol</span><span class="p">)</span>
+
+<span class="c1"># To build out assay graphs, we enumereate the samples from the study-level, and for each sample we create an</span>
+<span class="c1"># extraction process and a sequencing process. The extraction process takes as input a sample material, and produces</span>
+<span class="c1"># an extract material. The sequencing process takes the extract material and produces a data file. This will</span>
+<span class="c1"># produce three graphs, from sample material through to data, as follows:</span>
+<span class="c1">#</span>
+<span class="c1"># (sample_material-0)-&gt;(extraction)-&gt;(extract-0)-&gt;(sequencing)-&gt;(sequenced-data-0)</span>
+<span class="c1"># (sample_material-1)-&gt;(extraction)-&gt;(extract-1)-&gt;(sequencing)-&gt;(sequenced-data-1)</span>
+<span class="c1"># (sample_material-2)-&gt;(extraction)-&gt;(extract-2)-&gt;(sequencing)-&gt;(sequenced-data-2)</span>
+<span class="c1">#</span>
+<span class="c1"># Note that the extraction processes and sequencing processes are distinctly separate instances, where the three</span>
+<span class="c1"># graphs are NOT interconnected.</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+
+    <span class="c1"># create an extraction process that executes the extraction protocol</span>
+
+    <span class="n">extraction_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">extraction_protocol</span><span class="p">)</span>
+
+    <span class="c1"># extraction process takes as input a sample, and produces an extract material as output</span>
+
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">material</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+
+    <span class="c1"># create a sequencing process that executes the sequencing protocol</span>
+
+    <span class="n">sequencing_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">sequencing_protocol</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Sequencing process usually has an output data file</span>
+
+    <span class="n">datafile</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sequenced-data-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Raw Data File&quot;</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+
+    <span class="c1"># Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set</span>
+    <span class="c1"># these links for you. It is found in the isatools.model package</span>
+
+    <span class="n">plink</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">,</span> <span class="n">sequencing_process</span><span class="p">)</span>
+
+    <span class="c1"># make sure the extract, data file, and the processes are attached to the assay</span>
+
+    <span class="n">assay</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sequencing_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">measurement_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;gene sequencing&quot;</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">technology_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nucleotide sequencing&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we attach the assay to the study.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-to-isa-tab-using-isatab-dumps-function">
+<h2>4. Writing to ISA-Tab using <code class="docutils literal notranslate"><span class="pre">isatab.dumps()</span></code> function:<a class="headerlink" href="#writing-to-isa-tab-using-isatab-dumps-function" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
@@ -529,8 +747,8 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 </div>
-<div class="section" id="writing-to-isa-json">
-<h2>Writing to ISA-JSON<a class="headerlink" href="#writing-to-isa-json" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="writing-to-isa-json-using-isajson-component">
+<h2>5. Writing to ISA-JSON using <code class="docutils literal notranslate"><span class="pre">isajson</span></code> component<a class="headerlink" href="#writing-to-isa-json-using-isajson-component" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
