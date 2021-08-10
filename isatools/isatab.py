@@ -1179,8 +1179,7 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
-        s_graph = study_obj.graph
-        if s_graph is None:
+        if study_obj.graph is None:
             break
         protrefcount = 0
         protnames = dict()
@@ -1188,15 +1187,15 @@ def write_study_table_files(inv_obj, output_dir):
         def flatten(l): return [item for sublist in l for item in sublist]
         columns = []
 
-        # start_nodes, end_nodes = _get_start_end_nodes(s_graph)
+        # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(
-            s_graph,
-            [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
-        log.warning(s_graph.nodes())
+            study_obj.graph,
+            [x for x in study_obj.graph.nodes() if isinstance(study_obj.graph.indexes[x], Source)])
+        log.warning(study_obj.graph.nodes())
         sample_in_path_count = 0
-        longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
+        longest_path = _longest_path_and_attrs(paths, study_obj.graph.indexes)
         for node_index in longest_path:
-            node = s_graph.indexes[node_index]
+            node = study_obj.graph.indexes[node_index]
             if isinstance(node, Source):
                 olabel = "Source Name"
                 columns.append(olabel)
@@ -1253,7 +1252,7 @@ def write_study_table_files(inv_obj, output_dir):
 
             sample_in_path_count = 0
             for node_index in path:
-                node = s_graph.indexes[node_index]
+                node = study_obj.graph.indexes[node_index]
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
@@ -1377,8 +1376,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
     protocol_types_dict = load_protocol_types_info()
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
-            a_graph = assay_obj.graph
-            if a_graph is None:
+            if assay_obj.graph is None:
                 break
             protrefcount = 0
             protnames = dict()
@@ -1386,20 +1384,25 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             def flatten(l): return [item for sublist in l for item in sublist]
             columns = []
 
-            # start_nodes, end_nodes = _get_start_end_nodes(a_graph)
+            # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+
             paths = _all_end_to_end_paths(
-                a_graph, [x for x in a_graph.nodes()
-                                  if isinstance(a_graph.indexes[x], Sample)])
+                assay_obj.graph, [x for x in assay_obj.graph.nodes()
+                                  if isinstance(assay_obj.graph.indexes[x], Sample)])
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
-            if _longest_path_and_attrs(paths, a_graph.indexes) is None:
+            if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
-            for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
-                node = a_graph.indexes[node_index]
+
+            sample_in_path_count = 0
+            for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
+                node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
+                    # olabel = "Sample Name.{}".format(sample_in_path_count)
+                    # sample_in_path_count += 1
                     columns.append(olabel)
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -1416,10 +1419,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
-                    if node.date is not None:
-                        columns.append(olabel + ".Date")
-                    if node.performer is not None:
-                        columns.append(olabel + ".Performer")
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
                     if node.executes_protocol.protocol_type:
@@ -1434,6 +1433,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
+                    if node.date is not None:
+                        columns.append(olabel + ".Date")
+                    if node.performer is not None:
+                        columns.append(olabel + ".Performer")
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
@@ -1476,7 +1479,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     df_dict[k].extend([""])
 
                 for node_index in path:
-                    node = a_graph.indexes[node_index]
+                    node = assay_obj.graph.indexes[node_index]
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
                             node.executes_protocol.name
@@ -1518,6 +1521,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
+                        # olabel = "Sample Name.{}".format(sample_in_path_count)
+                        # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
@@ -2559,6 +2564,9 @@ def load_table(fp):
             elif 'Factor Value' in label:
                 new_label = 'Factor Value[{val}]'.format(val=val)
             new_labels.append(new_label)
+        elif label == "Material Type":
+            new_label = 'Characteristics[Material Type]'
+            new_labels.append(new_label)
         else:
             new_labels.append(label)
     df.columns = new_labels
@@ -2580,7 +2588,7 @@ def load_table_checks(fp):
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name','NMR Assay Name'
+                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name'
                            'Raw Spectral Data File', 'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',

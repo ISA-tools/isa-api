@@ -1,5 +1,4 @@
-format: jb-article
-root: content/index
+file: content/index
 sections:
 - file: content/installation
 - file: content/isamodel
@@ -12,22 +11,21 @@ sections:
 - file: content/exportdata
 - file: content/examples
   sections:
-  - file: content/examples/example-createSimpleISAtab
-  - file: content/examples/example-createSimpleISAJSON
-  - file: content/examples/example-validateISAtab
-  - file: content/examples/example-validateISAjson
+    - file: content/examples/example-createSimpleISAtab
+    - file: content/examples/example-createSimpleISAJSON
+    - file: content/examples/example-validateISAtab
+    - file: content/examples/example-validateISAjson
 - file: content/github
 - file: content/knownissues
 - file: content/notebooks
   sections:
-  - file: content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.ipynb
-  - file: content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.ipynb
-  - file: content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.ipynb
-  - file: content/notebooks/create-a-simple-ISA-descriptor.ipynb
-  - file: content/notebooks/create_2x2x2_factorial_design.ipynb
-  - file: content/notebooks/create-a-repeated-treatment-design-with-ISA-descriptor.ipynb
-  - file: content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb
-  - file: content/notebooks/isa-metabolomics-study-design-create.ipynb
-  - file: content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb
-  - file: content/notebooks/isa-tab-unused-sources-not-serialized-brapi.ipynb
+    - file: content/notebooks/reading-isa-tab-from-disk-exploring-and-validating.ipynb
+    - file: content/notebooks/create-a-simple-ISA-descriptor.ipynb
+    - file: content/notebooks/create_2x2x2_factorial_design.ipynb
+    - file: content/notebooks/create-a-repeated-treatment-design-with-ISA-descriptor.ipynb
+    - file: content/notebooks/isa-protocol-type-synonym-effect-on-assay-table.ipynb
+    - file: content/notebooks/light-sensitity-study-repeated-treatment-design.ipynb
+    - file: content/notebooks/isa-metabolomics-study-design-create.ipynb    
+    - file: content/notebooks/investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.ipynb
+    - file: content/notebooks/isa-tab-unused-sources-not-serialized-brapi.ipynb
 

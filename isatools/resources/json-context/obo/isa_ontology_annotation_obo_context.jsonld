@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "obo:BFO:0000001",	
+    	"annotationValue" : {
+    		"@id":"obo:STATO_0000129",
+    		"@type": ["xsd:string","xsd:float"]
+    	},
+    	"termSource" : {
+    		"@id":"obo:IAO_0000235",
+    		"@type": "obo:IAO_8000000"
+    	},
+    	"termAccession" : {
+    		"@id":"obo:IAO_0000235",
+    		"@type": "obo:IAO:0000578"
+    		},
+    	"comments": {
+      		"@id" : "obo:IAO_0000235	",
+      		"@type" : "obo:IAO_0000300"
+    	}
+    }
+}

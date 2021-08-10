@@ -1,0 +1,64 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "obo:OBI_0000070",
+    "identifier": {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    },
+    "name": {
+       "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
+    },
+    "description": {
+        "@id":"obo:IAO_0000235",
+        "@type":"obo:IAO_0000300"
+    },
+    "filename" :  {
+         "@id" : "obo:IAO_0000590",
+         "@type": ["obo:IAO:0000590","obo:STATO_0000002","obo:EFO_0004095"]
+    },
+    "measurementType" :  {
+        "@id" : "obo:IAO_0000235",
+        "@type" : "obo:OBI_0000751"
+    },  
+    "technologyType" :  {
+        "@id" : "obo:IAO_0000235",
+        "@type" : ["obo:EFO_0005521"]
+    }, 
+    "technologyPlatform" :  {
+        "@id" : "obo:IAO_0000235",
+        "@type" : "obo:OBI_0000968"
+    },     
+    "materials" : {
+          "@id" : "obo:OBI_0000047",
+        "@type" : ["obo:BFO_0000040", "obo:OBI_0100051"]
+     },
+     "othermaterials" : {
+        "@id" : "obo:OBI_0000047",
+        "@type" : ["obo:OBI_0000423","obo:OBI_0000924"]
+     },   
+    "characteristicCategories" :{
+         "@id" : "obo:IAO_0000235",
+         "@type" : ["obo:BFO_0000019", ""]
+    },
+    "dataFiles" : {
+        "@id" : "obo:EFO_0004095",
+        "@type" : ["obo:MS_1000577", ""]
+    },
+    "processSequences" : {
+         "@id" : "obo:RO_0002012",
+         "@type" : ["obo:OBI_0000011", "obo:OBI_0600013" , "obo:OBI_0200000"]
+    },
+    "unitCategories": {
+          "@id": "obo:IAO_0000235" ,
+          "@type" : "obo:UO_0000000"
+    },
+    "comments": {
+             "@id" : "obo:IAO_0000235",
+             "@type" : "obo:IAO_0000300"
+    }
+  }
+}

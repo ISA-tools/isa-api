@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Factor": "obo:OBI_0000750",
+    "identifier": {
+      "@id": "obo:IAO_0000577"
+    },
+    "factorName": {
+      "@id":"obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
+    },
+    "factorType" : {
+        "@id": "obo:OBI_0000750",
+        "@type": "obo:OBI_0000750"
+    }
+  },
+  "comments":{
+             "@id" : "obo:IAO_0000235",
+             "@type" : "obo:IAO_0000300"
+  }
+}
