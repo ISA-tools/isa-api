@@ -26,11 +26,11 @@
          },   
     "components" : {
                 "@id":"wdt:Property:P2283",
-                "@type":wdt:Q1183543"
+                "@type": "wdt:Q1183543"
     },
     "parameters" : {
                 "@id":"wdt:Property:P2283",
-                 "@type":Q7247312
+                 "@type": "wdt:Q7247312"
     },
     "uri" :{
        "@id": "wdt:Property:P2699",
