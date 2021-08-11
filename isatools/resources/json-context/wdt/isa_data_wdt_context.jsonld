@@ -5,12 +5,12 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Data": "wdt:Q5227290",
     "type" :{
-        "@id" : "",
+        "@id" : "wdt:Property:P527",
         "@type" : "wdt:Q5227290",
     },
     "identifier": {
-      "@id": "wdt:Q853614",
-      "@type": "@id"
+      "@id": "wdt:Property:P527",
+      "@type": "wdt:Q853614"
     },
     "name": {
             "@id": "wdt:Property:P527",
