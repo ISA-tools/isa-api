@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "swo" : "http://www.ebi.ac.uk/swo/",
+    "Publication": "wdt:Q732577",
+    "identifier": "wdt:Q853614",
+    "pubMedID" : "wdt:Q2082879",
+    "doi" :   "wdt:Q25670",
+    "name": "wdt:Q82799",
+    "status"  : "wdt:Q77422468",
+    "type": "wdt:Q39725049s",
+    "authorList": "wdt:Q57971547"
+  }
+}

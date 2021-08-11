@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ParameterValue": "wdt:Q107715",
+    "category": {
+        "@id":"wdt:",
+        "@type": "wdt:Q3707858"
+    },
+     "value": {
+      "@id": "wdt:Property:P111",
+      "@type" : "wdt:Q11563"
+    },
+     "unit": {
+        "@id": "wdt:Property:P8111" ,
+        "@type" : "wdt:Q47574"
+    }
+  }
+}

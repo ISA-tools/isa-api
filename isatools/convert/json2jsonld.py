@@ -84,7 +84,9 @@ class ISALDSerializer:
                 output["@context"] = self._get_context_url(schema_name)
             else:
                 context_key = "Material"
-                output["@context"] = self.context_url + "isa_material_" + schema_name + "_" + self.ontology + "_context.jsonld"
+                output["@context"] = "%sisa_material_%s_%s_context.jsonld" % (self.context_url,
+                                                                              schema_name,
+                                                                              self.ontology)
         output["@type"] = context_key
 
         for field in instance:
