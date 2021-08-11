@@ -34,7 +34,7 @@
     },     
     "materials" : {
         "@id" : "wdt:Property:P527",
-        "@type" : "wdt:Q53617407
+        "@type" : "wdt:Q53617407"
      },
      "othermaterials" : {
         "@id" : "wdt:Property:P527",
@@ -42,7 +42,7 @@
      },   
     "characteristicCategories" :{
          "@id" : "wdt:Property:P1552",
-         "@type" : Q937228
+         "@type" : "wdt:Q937228"
     },
     "dataFiles" : {
         "@id" : "wdt:Property:P527",
