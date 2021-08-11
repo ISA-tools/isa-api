@@ -1,7 +1,8 @@
 {
   "@context":{
-     "@language": "en",
+    "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Study": "wdt:Q101965",
     "filename" : {
@@ -13,63 +14,63 @@
       "@type": "@id"
     }, 
     "title" : {
-        "@id": "wdt:Property:P1476",
+        "@id": "wdtp:P1476",
         "@type":"wdt:Q783521"
     },
     "description" : {   
-        "@id":"wdt:Property:P1552",
+        "@id":"wdtp:P1552",
         "@type":"wdt:Q1200750"
     } ,
     "submissionDate" : {
-            "@id":"wdt:Property:P585",
+            "@id":"wdtp:P585",
             "@type": "xsd:date"
     } ,
     "publicReleaseDate" : {
-            "@id":"wdt:Property:P577",
+            "@id":"wdtp:P577",
             "@type": "xsd:date"
     } ,
     "publications" : {
-             "@id":"wdt:Property:P527",
+             "@id":"wdtp:P527",
              "@type":"wdt:Q591041"
     },
     "people" : {
-             "@id":"wdt:Property:P50",
+             "@id":"wdtp:P50",
              "@type":"wdt:Q215627"
     },
     "studyDesignDescriptors": {
-        "@id":"wdt:Property:P2283",
+        "@id":"wdtp:P2283",
         "@type":"wdt:Q2334061"
     },
     "protocols" : {
-        "@id":"wdt:Property:P2283",
+        "@id":"wdtp:P2283",
       "@type":"wdt:Q41689629"
     },
     "materials": {  
-        "@id":"wdt:Property:P2283",
+        "@id":"wdtp:P2283",
         "@type" : "wdt:Q53617407"
     },
     "processSequence": {
-        "@id":"wdt:Property:P527",
+        "@id":"wdtp:P527",
         "@type" : "wdt:Q627335"
     },
     "assays" : {
-        "@id":"wdt:Property:P527",
+        "@id":"wdtp:P527",
         "@type" : "wdt:Q739897"
     },
     "factors": {
-        "@id":"wdt:Property:P2283",
+        "@id":"wdtp:P2283",
         "@type":"wdt:Q2487752"
     },
     "characteristicCategories": {
-         "@id" : "wdt:Property:P1552",
+         "@id" : "wdtp:P1552",
          "@type" : "wdt:Q937228"
     },
     "unitCategories": {
-          "@id": "wdt:Property:P8111" ,
+          "@id": "wdtp:P8111" ,
           "@type" : "wdt:Q47574"
     },
     "comments" : {
-                 "@id" : "wdt:Property:P6607",
+                 "@id" : "wdtp:P6607",
              "@type" : "wdt:Q58897583"
     }
  }

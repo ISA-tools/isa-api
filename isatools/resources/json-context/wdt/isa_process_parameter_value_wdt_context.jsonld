@@ -2,6 +2,7 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "ParameterValue": "wdt:Q107715",
     "category": {
@@ -9,11 +10,11 @@
         "@type": "wdt:Q3707858"
     },
      "value": {
-      "@id": "wdt:Property:P257",
+      "@id": "wdtp:P257",
       "@type" : "xsd:string"
     },
      "unit": {
-        "@id": "wdt:Property:P8111" ,
+        "@id": "wdtp:P8111" ,
         "@type" : "wdt:Q47574"
     }
   }

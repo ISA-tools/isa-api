@@ -2,10 +2,11 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Data": "wdt:Q5227290",
     "type" :{
-        "@id" : "wdt:Property:P527",
+        "@id" : "wdtp:P527",
         "@type" : "wdt:Q848722"
     },
     "identifier": {
@@ -13,11 +14,11 @@
       "@type": "@id"
     },
     "name": {
-            "@id": "wdt:Property:P527",
+            "@id": "wdtp:P527",
             "@type":"wdt:Q82799"
     },
     "comments": {
-             "@id" : "wdt:Property:P6607",
+             "@id" : "wdtp:P6607",
              "@type" : "wdt:Q58897583"
     }
   }

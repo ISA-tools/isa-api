@@ -2,14 +2,15 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+        "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "ProtocolParameter": "wdt:Q7247312",
     "type" :{
-        "@id" : "wdt:Property:P527",
+        "@id" : "wdtp:P527",
         "@type" : "wdt:Q53617407"
     },
     "parameterName":    {
-       "@id": "wdt:Property:P1448",
+       "@id": "wdtp:P1448",
        "@type": "wdt:Q82799"
     } 
   }

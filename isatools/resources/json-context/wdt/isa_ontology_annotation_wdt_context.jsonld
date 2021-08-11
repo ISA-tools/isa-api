@@ -2,23 +2,24 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "enm": "http://purl.enanomapper.org/onto/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "OntologyAnnotation": "wdt:Q857525",
     	"annotationValue" : {
-    		"@id":"wdt:Property:P527",
+    		"@id":"wdtp:P527",
     		"@type": "xsd:string"
     	},
     	"termSource" : {
-    		"@id":"wdt:Property:P5967",
+    		"@id":"wdtp:P5967",
     		"@type": "wdt:Q324254"
     	},
     	"termAccession" : {
-    		"@id":"wdt:Property:P527",
+    		"@id":"wdtp:P527",
     		"@type": "wdt:Q1417099"
     		},
         "comments" : {
-             "@id" : "wdt:Property:P6607",
+             "@id" : "wdtp:P6607",
              "@type" : "wdt:Q58897583"
         }
     }

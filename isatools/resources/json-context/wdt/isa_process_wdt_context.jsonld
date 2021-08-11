@@ -1,8 +1,9 @@
 {
   "@context": {
-    "@version": 1.1,
+    "@version": "1.1",
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Process": "wdt:Q3249551",
     "identifier": {
@@ -10,48 +11,48 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "wdt:Property:P1448",
+      "@id": "wdtp:P1448",
       "@type": "wdt:Q82799"
     },
     "description": {
-        "@id":"wdt:Property:P1552",
+        "@id":"wdtp:P1552",
         "@type":"wdt:Q1200750"
     },
     "startDate" : {
-      "@id":"wdt:Property:P1390",
+      "@id":"wdtp:P1390",
       "@type": "xsd:date"
     },
     "executesProtocol" : {
-      "@id":"wdt:Property:P2283",
+      "@id":"wdtp:P2283",
       "@type" : "wdt:Q41689629"
     },
     "parameterValues": {
-       "@id":"wdt:Property:P2283",
+       "@id":"wdtp:P2283",
         "@type" : "wdt:Q2356542"
     },
     "previousProcess" : { 
-    "@id":"wdt:Property:P155",
+    "@id":"wdtp:P155",
       "@type" : "wdt:Q3249551"
       },
     "nextProcess" : {
-    "@id":"wdt:Property:P156",
+    "@id":"wdtp:P156",
       "@type" :  "wdt:Q3249551"
       },
     "input" : {
-      "@id":"wdt:Property:P2283",
+      "@id":"wdtp:P2283",
       "@type" : "wdt:Q35120"
     },
     "output" :  {
-      "@id":"wdt:Property:P1056",
+      "@id":"wdtp:P1056",
       "@type" : "wdt:Q35120"
     },
     "performer" :
     {
-      "@id" : "wdt:Property:P137",
+      "@id" : "wdtp:P137",
       "@type": "wdt:Q215627"
     },
     "comments" : {
-         "@id" : "wdt:Property:P6607",
+         "@id" : "wdtp:P6607",
          "@type" : "wdt:Q58897583"
     }
   }

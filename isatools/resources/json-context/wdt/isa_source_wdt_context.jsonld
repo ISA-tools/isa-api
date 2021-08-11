@@ -2,6 +2,7 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Source": "wdt:Q53617407",
     "identifier": {
@@ -9,16 +10,16 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "wdt:Property:P1448",
+      "@id": "wdtp:P1448",
       "@type": "wdt:Q82799"
     },
 
     "characteristics": {
-      "@id" : "wdt:Property:P1552",
+      "@id" : "wdtp:P1552",
       "@type" : "wdt:Q1207505"
     },
      "roles": {
-        "@id": "wdt:Property:P2868",
+        "@id": "wdtp:P2868",
         "@type" : "wdt:Q102293686"
         }
   }

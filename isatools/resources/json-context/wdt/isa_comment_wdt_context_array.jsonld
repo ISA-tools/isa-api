@@ -2,14 +2,15 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Comment": "wdt:Q58897583",
         "name": {
-            "@id": ["wdt:Property:P527","wdt:Property:P1448"],
+            "@id": ["wdtp:P527","wdtp:P1448"],
             "@type":"wdt:Q82799"
         },
         "value": {
-            "@id": "wdtProperty:P527",
+            "@id": "wdtp:P527",
             "@type" : "wdt:Q11968270"
         }
   }

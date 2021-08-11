@@ -2,10 +2,11 @@
   "@context":{
      "@language": "en",
      "wdt": "http://www.wikidata.org/wiki/",
+     "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Protocol": "wdt:Q41689629",
     "filename" : {
-         "@id": "wdt:Property:P7793",
+         "@id": "wdtp:P7793",
          "@type": "wdt:Q1144928"
     },
     "identifier" : {
@@ -13,35 +14,35 @@
       "@type": "@id"
     }, 
     "title" : {
-        "@id": "wdt:Property:P1476",
+        "@id": "wdtp:P1476",
         "@type":"wdt:Q783521"
     },
     "description" : {
-        "@id":"wdt:Property:P1552",
+        "@id":"wdtp:P1552",
         "@type":"wdt:Q1200750"
     },
     "version" : {
-         "@id": "wdt:Property:P348",
+         "@id": "wdtp:P348",
          "@type":"wdt:Q3331189"
          },   
     "components" : {
-                "@id":"wdt:Property:P2283",
+                "@id":"wdtp:P2283",
                 "@type": "wdt:Q1183543"
     },
     "parameters" : {
-                "@id":"wdt:Property:P2283",
+                "@id":"wdtp:P2283",
                  "@type": "wdt:Q7247312"
     },
     "uri" :{
-       "@id": "wdt:Property:P2699",
+       "@id": "wdtp:P2699",
       "@type": "wdt:Q42253"
     },  
     "publications" : {
-             "@id":"wdt:Property:P527",
+             "@id":"wdtp:P527",
              "@type":"wdt:Q591041"
     },
     "comments" : {
-         "@id" : "wdt:Property:P6607",
+         "@id" : "wdtp:P6607",
          "@type" : "wdt:Q58897583"
         
     }

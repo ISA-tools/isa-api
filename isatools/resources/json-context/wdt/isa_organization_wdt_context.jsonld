@@ -2,6 +2,7 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Organization": "wdt:Q43229",
     "identifier": {
@@ -9,19 +10,19 @@
       "@type": "@id"
     },
     "name": {
-      "@id": "wdt:Property:P1448",
+      "@id": "wdtp:P1448",
       "@type": "wdt:Q82799"
     },
     "description": {
-        "@id":"wdt:Property:P1552",
+        "@id":"wdtp:P1552",
         "@type":"wdt:Q1200750"
     },
     "postalAddress": {
-        "@id":"wdt:Property:P6375",
+        "@id":"wdtp:P6375",
         "@type":"wdt:Q319608"
     },
      "roles": {
-        "@id": "wdt:Property:P2868",
+        "@id": "wdtp:P2868",
         "@type" : "wdt:Q102293686"
         }
     }

@@ -2,6 +2,7 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Factor": "wdt:Q2487752",
     "identifier": {
@@ -9,16 +10,16 @@
       "@type": "@id"
     },
     "factorName": {
-        "@id": "wdt:Property:P527",
+        "@id": "wdtp:P527",
         "@type":"wdt:Q82799"
     },
     "factorType" : {
-        "@id": "wdt:Property:P527",
+        "@id": "wdtp:P527",
         "@type": "wdt:Q3707858"
     }
   },
     "comments": {
-             "@id" : "wdt:Property:P6607",
+             "@id" : "wdtp:P6607",
              "@type" : "wdt:Q58897583"
     }
 }
