@@ -6,7 +6,7 @@
     "Material": "wdt:Q1259977",
     "type" :{
         "@id" : "wdt:Property:P527",
-        "@type" : "wdt:Q1259977",
+        "@type" : "wdt:Q1259977"
     },
     "identifier": {
       "@id": "wdt:Q853614",

@@ -10,7 +10,7 @@
     },
      "value": {
       "@id": "wdt:Property:P111",
-      "@type" : "wdt:Q184754",
+      "@type" : "wdt:Q184754"
     },
      "unit": {
           "@id": "wdt:Property:P8111" ,

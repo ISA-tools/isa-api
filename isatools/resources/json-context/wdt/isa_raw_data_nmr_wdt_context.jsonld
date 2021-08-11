@@ -5,8 +5,8 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Data": "wdt:Q5227290",
     "type" :{
-        "@id" : "",
-        "@type" : "wdt:Q848722",
+        "@id" : "wdt:Property:P527",
+        "@type" : "wdt:Q848722"
     },
     "identifier": {
       "@id": "wdt:Q853614",
