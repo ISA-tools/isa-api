@@ -26,7 +26,7 @@
         "@type" : "wdt:Q12453"
     },  
     "technologyType" :  {
-        "@id" : "Property:P2283",
+        "@id" : "wdtp:P2283",
         "@type" : "wdt:Q11016"
     }, 
     "technologyPlatform" :  {

@@ -2,7 +2,7 @@
   "@context": {
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
-    "wdtp": "https://www.wikidata.org/wiki/Property/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "swo" : "http://www.ebi.ac.uk/swo/",
     "Publication": "wdt:Q732577",

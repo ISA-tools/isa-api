@@ -3,7 +3,7 @@
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "wdtp": "https://www.wikidata.org/wiki/Property/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
     "OntologySourceReference": "wdt:Q324254",
     "type" :{
         "@id" : "wdtp:P527",

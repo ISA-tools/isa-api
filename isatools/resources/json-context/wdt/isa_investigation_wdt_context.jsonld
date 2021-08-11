@@ -2,7 +2,7 @@
   "@context":{
     "@language": "en",
     "wdt": "http://www.wikidata.org/wiki/",
-    "wdtp": "https://www.wikidata.org/wiki/Property/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Investigation": "wdt:Q170584",
     "identifier" : {
