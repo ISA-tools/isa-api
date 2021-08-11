@@ -4,22 +4,22 @@
     "wdt": "http://www.wikidata.org/wiki/",
     "enm": "http://purl.enanomapper.org/onto/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "OntologyAnnotation": "wdt:BFO:0000001",	
+    "OntologyAnnotation": "wdt:Q857525",
     	"annotationValue" : {
-    		"@id":"wdt:STATO_0000129",
-    		"@type": ["xsd:string","xsd:float"]
+    		"@id":"wdt:Property:P527",
+    		"@type": "xsd:string"
     	},
     	"termSource" : {
-    		"@id":"wdt:IAO_0000235",
-    		"@type": "enm:ENM_8000073"
+    		"@id":"wdt:Property:P5967",
+    		"@type": "wdt:Q324254"
     	},
     	"termAccession" : {
-    		"@id":"wdt:IAO_0000235",
-    		"@type": "wdt:IAO:0000578"
+    		"@id":"wdt:Property:P527",
+    		"@type": "wdt:Q1417099"
     		},
-    	"comments": {
-      		"@id" : "wdt:IAO_0000235	",
-      		"@type" : "wdt:IAO_0000300"
-    	}
+        "comments" : {
+             "@id" : "wdt:Property:P6607",
+             "@type" : "wdt:Q58897583"
+        }
     }
 }

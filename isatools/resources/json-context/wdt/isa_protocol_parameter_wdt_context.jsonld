@@ -6,7 +6,7 @@
     "ProtocolParameter": "wdt:Q7247312",
     "type" :{
         "@id" : "wdt:Property:P527",
-        "@type" : ["wdt:Q2356542","wdt:Q53617407"]
+        "@type" : "wdt:Q53617407"
     },
     "parameterName":    {
        "@id": "wdt:Property:P1448",
