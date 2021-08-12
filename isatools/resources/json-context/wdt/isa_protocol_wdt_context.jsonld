@@ -29,10 +29,7 @@
                 "@id":"wdtp:P2283",
                 "@type": "wdt:Q1183543"
     },
-    "parameters" : {
-                "@id":"wdtp:P2283",
-                 "@type": "wdt:Q7247312"
-    },
+    "parameters" :  "wdt:Q7247312",
     "uri" :{
        "@id": "wdtp:P2699",
       "@type": "wdt:Q42253"
