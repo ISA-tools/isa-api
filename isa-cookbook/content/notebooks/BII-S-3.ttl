@@ -1,0 +1,1430 @@
+@prefix wdt: <http://www.wikidata.org/wiki/> .
+@prefix wdtp: <https://www.wikidata.org/wiki/Property:> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree> a wdt:Q857525 ;
+    wdtp:P527 "degree"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree_celsius> a wdt:Q857525 ;
+    wdtp:P527 "degree celsius"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/mg/m2/d> a wdt:Q857525 ;
+    wdtp:P527 "mg/m2/d"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/number/ml> a wdt:Q857525 ;
+    wdtp:P527 "number/ml"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/psu> a wdt:Q857525 ;
+    wdtp:P527 "psu"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/ug/l> a wdt:Q857525 ;
+    wdtp:P527 "ug/l"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/umol/l> a wdt:Q857525 ;
+    wdtp:P527 "umol/l"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Gx.txt> a wdt:Q739897 ;
+    wdtp:P1552 [ a wdt:Q857525 ;
+            wdtp:P527 "metagenome sequencing"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 "OBI"^^wdt:Q324254 ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/Material_Type> ;
+    wdtp:P2283 [ a wdtp:P2283 ],
+        "454 GS FLX"^^wdt:Q11016 ;
+    wdtp:P527 [ a wdtp:P527 ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EWOEPZA01.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EWOEPZA02.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EX398L101.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EX398L102.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EXHS9OF01.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EXHS9OF02.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay4.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay4.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_41>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_42>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_43>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_44>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_21>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_22>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_23>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_24> ;
+    wdtp:P7793 "a_gilbert-assay-Gx.txt"^^wdt:Q1144928 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Tx.txt> a wdt:Q739897 ;
+    wdtp:P1552 [ a wdt:Q857525 ;
+            wdtp:P527 "transcription profiling"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 "OBI"^^wdt:Q324254 ] ;
+    wdtp:P2283 [ a wdtp:P2283 ],
+        "454 GS FLX"^^wdt:Q11016 ;
+    wdtp:P527 [ a wdtp:P527 ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN101.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN102.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN103.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN104.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN105.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN106.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN107.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN108.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN109.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN110.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN111.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN112.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN113.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN114.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN115.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN116.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH01.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH02.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH03.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH04.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ01.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ02.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ03.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ04.sff>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.5>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.6>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.5>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.6>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.5>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.6>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.5>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.6>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_31>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_32>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_33>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_34>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_21>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_22>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_23>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_24> ;
+    wdtp:P7793 "a_gilbert-assay-Tx.txt"^^wdt:Q1144928 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/BB_carotene_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "BB carotene concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/Material_Type> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "Material Type"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/alloxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "alloxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/bacteria_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "bacteria count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/butfucoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "butfucoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-a_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "chl-a concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-b_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "chl-b concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-c2_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "chl-c2 concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-c3_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "chl-c3 concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chlorophyll_a_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "chlorophyll a concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/cryptophytes_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "cryptophytes count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/diadinoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "diadinoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/diatoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "diatoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/divinyl-chl-a_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "divinyl-chl-a concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/divinyl-chl-b_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "divinyl-chl-b concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/fluorescence> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "fluorescence"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/fucoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "fucoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(country_and/or_sea,region)> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "geographic location (country and/or sea,region)"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(latitude)> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "geographic location (latitude)"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(longitude)> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "geographic location (longitude)"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/hexfucoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "hexfucoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/large_picoeukaryotes_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "large picoeukaryotes count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/lutein_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "lutein concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/nanoflagellates_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "nanoflagellates count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/neoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "neoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/nitrate_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "nitrate concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/organism> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "organism"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/particulate_organic_carbon_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "particulate organic carbon concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/particulate_organic_nitrogen_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "particulate organic nitrogen concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/peridinin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "peridinin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/phosphate_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "phosphate concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/prasinoxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "prasinoxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/small_picoeukaryotes_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "small picoeukaryotes count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/synechococcus_count> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "synechococcus count"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/violaxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "violaxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/water_salinity> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "water salinity"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/water_temperature_at_3_meter_depth> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "water temperature at 3 meter depth"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/zeaxanthin_concentration> a wdt:Q3523867 ;
+    wdt:Q3707858 [ a wdt:Q857525 ;
+            wdtp:P527 "zeaxanthin concentration"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN101.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN101.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN102.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN102.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN103.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN103.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN104.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN104.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN105.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN105.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN106.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN106.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN107.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN107.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN108.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN108.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN109.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN109.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN110.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN110.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN111.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN111.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN112.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN112.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN113.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN113.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN114.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN114.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN115.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN115.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVHINN116.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVHINN116.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH01.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVNG8PH01.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH02.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVNG8PH02.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH03.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVNG8PH03.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVNG8PH04.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVNG8PH04.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ01.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVUSNDQ01.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ02.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVUSNDQ02.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ03.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVUSNDQ03.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EVUSNDQ04.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EVUSNDQ04.sff"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EWOEPZA01.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EWOEPZA01.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EWOEPZA02.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EWOEPZA02.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EX398L101.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EX398L101.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EX398L102.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EX398L102.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EXHS9OF01.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EXHS9OF01.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF01.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#data/rawdatafile-EXHS9OF02.sff> a wdt:Q5227290 ;
+    wdtp:P527 "Raw Data File"^^wdt:Q5227290,
+        "EXHS9OF02.sff"^^wdt:Q82799 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF02.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/collection_time> a wdt:Q2487752 ;
+    wdtp:P527 [ a wdt:Q857525 ;
+            wdtp:P527 "time"@en,
+                "http://purl.obolibrary.org/wdt/PATO_0000165"^^wdt:Q1417099 ;
+            wdtp:P5967 "PATO"^^wdt:Q324254 ],
+        "collection time"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/compound> a wdt:Q2487752 ;
+    wdtp:P527 [ a wdt:Q857525 ;
+            wdtp:P527 "chemical substance"@en,
+                "http://purl.obolibrary.org/wdt/CHEBI_59999"^^wdt:Q1417099 ;
+            wdtp:P5967 "CHEBI"^^wdt:Q324254 ],
+        "compound"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/dose> a wdt:Q2487752 ;
+    wdtp:P527 [ a wdt:Q857525 ;
+            wdtp:P527 "dose"@en,
+                "http://www.ebi.ac.uk/efo/EFO_0000428"^^wdt:Q1417099 ;
+            wdtp:P5967 "EFO"^^wdt:Q324254 ],
+        "dose"^^wdt:Q82799 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Edwards> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "Department of Computer Science, Mathematics and Computer Science Division,"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Edwards"^^wdt:Q101352 ;
+    wdtp:P735 "Rob"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Field> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "NERC Centre for Ecology and Hydrology"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Field"^^wdt:Q101352 ;
+    wdtp:P735 "Dawn"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Gilbert> a wdt:Q215627 ;
+    wdt:IAO_0000235 "A"^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "SRA Inform On Error"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ],
+        [ a wdt:Q857525 ;
+            wdtp:P527 "SRA Inform On Status"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ],
+        [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "Plymouth Marine Laboratory"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Gilbert"^^wdt:Q101352 ;
+    wdtp:P735 "Jack"^^wdt:Q202444 ;
+    wdtp:P968 "jagi@pml.ac.uk"^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Gilna> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "California Institute for Telecommunications and Information Technology"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Gilna"^^wdt:Q101352 ;
+    wdtp:P735 "Paul"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Huang> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "California Institute for Telecommunications and Information Technology"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Huang"^^wdt:Q101352 ;
+    wdtp:P735 "Ying"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Joint> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "Plymouth Marine Laboratory"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Joint"^^wdt:Q101352 ;
+    wdtp:P735 "Ian"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Li> a wdt:Q215627 ;
+    wdt:IAO_0000235 ""^^wdt:Q105844397 ;
+    wdtp:P1329 ""^^wdt:Q7696507 ;
+    wdtp:P2868 [ a wdt:Q857525 ;
+            wdtp:P527 "principal investigator role"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] ;
+    wdtp:P2900 ""^^wdt:Q7696507 ;
+    wdtp:P361 "California Institute for Telecommunications and Information Technology"^^wdt:Q43229 ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Person REF"^^wdt:Q82799 ] ;
+    wdtp:P734 "Li"^^wdt:Q101352 ;
+    wdtp:P735 "Weizhong"^^wdt:Q202444 ;
+    wdtp:P968 ""^^wdt:Q1273217 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay3.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF01.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay4.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay4.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF02.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.3> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.3"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.4> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.4"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.5> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.5"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.3> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.3"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.4> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.4"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.5> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.5"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.3> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.3"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.4> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.4"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.5> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.5"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.3> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.3"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.4> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.4"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.5> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.5"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_11> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
+            wdtp:P257 "0.22"^^xsd:string ;
+            wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer> ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_12> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
+            wdtp:P257 "0.22"^^xsd:string ;
+            wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer> ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_13> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
+            wdtp:P257 "0.22"^^xsd:string ;
+            wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer> ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_14> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
+            wdtp:P257 "0.22"^^xsd:string ;
+            wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer> ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/reverse_transcription_-_standard_procedure_5> a wdt:Q41689629 ;
+    wdtp:P1552 "superscript+random hexamer primer"^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/sequence_analysis_-_standard_procedure_7> a wdt:Q41689629 ;
+    wdtp:P1552 ""^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#study/BII-S-3> a wdt:Q101965 ;
+    wdt:IAO_0000235 "s_BII-S-3.txt"^^wdt:Q1144928 ;
+    wdt:Q853614 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3> ;
+    wdtp:P1476 "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment"^^wdt:Q783521 ;
+    wdtp:P1552 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/BB_carotene_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/alloxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/bacteria_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/butfucoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-a_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-b_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-c2_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chl-c3_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/chlorophyll_a_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/cryptophytes_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/diadinoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/diatoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/divinyl-chl-a_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/divinyl-chl-b_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/fluorescence>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/fucoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(country_and/or_sea,region)>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(latitude)>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/geographic_location_(longitude)>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/hexfucoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/large_picoeukaryotes_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/lutein_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/nanoflagellates_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/neoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/nitrate_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/organism>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/particulate_organic_carbon_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/particulate_organic_nitrogen_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/peridinin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/phosphate_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/prasinoxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/small_picoeukaryotes_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/synechococcus_count>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/violaxanthin_concentration>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/water_salinity>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/water_temperature_at_3_meter_depth>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#characteristic_category/zeaxanthin_concentration>,
+        "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples."^^wdt:Q1200750 ;
+    wdtp:P2283 [ a wdtp:P2283 ],
+        [ a wdt:Q857525 ;
+            wdtp:P527 "time series design"@en,
+                "http://purl.obolibrary.org/wdt/OBI_0500020"^^wdt:Q1417099 ;
+            wdtp:P5967 "OBI"^^wdt:Q324254 ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/collection_time>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/compound>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#factor/dose>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/reverse_transcription_-_standard_procedure_5>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/sequence_analysis_-_standard_procedure_7> ;
+    wdtp:P50 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Edwards>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Field>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Gilbert>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Gilna>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Huang>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Joint>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Li> ;
+    wdtp:P527 [ a wdt:Q732577 ;
+            wdt:Q2082879 "18783384"@en ;
+            wdt:Q25670 "10.1111/j.1462-2920.2008.01745.x"@en ;
+            wdt:Q57971547 "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."@en ;
+            wdt:Q77422468 [ a wdt:Q857525 ;
+                    wdtp:P527 "indexed in PubMed"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ;
+            wdtp:P1476 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters."^^wdt:Q783521 ],
+        [ a wdt:Q732577 ;
+            wdt:Q2082879 "18725995"@en ;
+            wdt:Q25670 "10.1371/journal.pone.0003042"@en ;
+            wdt:Q57971547 "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."@en ;
+            wdt:Q77422468 [ a wdt:Q857525 ;
+                    wdtp:P527 "indexed in PubMed"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ;
+            wdtp:P1476 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."^^wdt:Q783521 ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Gx.txt>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Tx.txt>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_11>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_12>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_13>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_14> ;
+    wdtp:P577 "2008-08-15"^^xsd:date ;
+    wdtp:P585 "2008-08-15"^^xsd:date ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "Oxford e-Research Centre"^^wdt:Q11968270,
+                "SRA Lab Name"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Funding Agency"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "OXFORD"^^wdt:Q11968270,
+                "SRA Center Project Name"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "OXFORD"^^wdt:Q11968270,
+                "SRA Center Name"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "ADD"^^wdt:Q11968270,
+                "SRA Submission Action"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "OXFORD"^^wdt:Q11968270,
+                "SRA Broker Name"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Grant Number"^^wdt:Q82799 ] ;
+    wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree_celsius>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/mg/m2/d>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/number/ml>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/psu>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/ug/l>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/umol/l> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay1"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay3.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay4.2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay4.2"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.6> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay5.6"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.6> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay6.6"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.6> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay7.6"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.6> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P1448 "assay8.6"^^wdt:Q82799 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+            wdtp:P257 "454 GS FLX"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_41> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_21> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_42> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_22> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_43> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_23> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_44> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_24> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_31> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_21> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_32> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_22> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_33> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_23> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_34> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_24> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_21> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_41>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_31> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_22> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_42>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_32> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_23> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_43>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_33> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/nucleic_acid_extraction_-_standard_procedure_24> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_44>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_34> ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2> .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/micrometer> a wdt:Q857525 ;
+    wdtp:P527 "micrometer"@en,
+        ""^^wdt:Q1417099 ;
+    wdtp:P5967 ""^^wdt:Q324254 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> a wdt:Q7247312 ;
+    wdtp:P1448 [ a wdt:Q857525 ;
+            wdtp:P527 "filter pore size"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> a wdt:Q41689629 ;
+    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
+    wdtp:P1552 "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom."^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/genomic_DNA_extraction_-_standard_procedure_4> a wdt:Q41689629 ;
+    wdtp:P1552 ""^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> a wdt:Q41689629 ;
+    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+    wdtp:P1552 ""^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/mRNA_extraction_-_standard_procedure_3> a wdt:Q41689629 ;
+    wdtp:P1552 "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006."^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/nucleic_acid_extraction_-_standard_procedure_2> a wdt:Q41689629 ;
+    wdtp:P1552 "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007."^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> a wdt:Q7247312 ;
+    wdtp:P1448 [ a wdt:Q857525 ;
+            wdtp:P527 "library layout"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> a wdt:Q7247312 ;
+    wdtp:P1448 [ a wdt:Q857525 ;
+            wdtp:P527 "library selection"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> a wdt:Q7247312 ;
+    wdtp:P1448 [ a wdt:Q857525 ;
+            wdtp:P527 "library strategy"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction1> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_41>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_31> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay1>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.6> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RANDOM"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction2> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_42>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_32> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay6.6> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RANDOM"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction3> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_43>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_33> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.6> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RANDOM"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/library_construction4> a wdt:Q3249551 ;
+    wdtp:P137 ""^^wdt:Q215627 ;
+    wdtp:P155 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/genomic_DNA_extraction_-_standard_procedure_44>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/mRNA_extraction_-_standard_procedure_34> ;
+    wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay4.2>,
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.6> ;
+    wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RANDOM"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"^^wdt:Q11968270,
+                "TraceDB"^^wdt:Q82799 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> a wdt:Q7247312 ;
+    wdtp:P1448 [ a wdt:Q857525 ;
+            wdtp:P527 "sequencing instrument"@en,
+                ""^^wdt:Q1417099 ;
+            wdtp:P5967 ""^^wdt:Q324254 ] .
+
+<file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> a wdt:Q41689629 ;
+    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
+    wdtp:P1552 "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below."^^wdt:Q1200750 ;
+    wdtp:P2699 ""^^wdt:Q42253 ;
+    wdtp:P348 ""^^wdt:Q3331189 .
+
+[] a wdt:Q170584 ;
+    wdt:Q853614 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3> ;
+    wdtp:P1476 ""^^wdt:Q783521 ;
+    wdtp:P1552 ""^^wdt:Q1200750 ;
+    wdtp:P2283 [ a wdt:Q324254 ;
+            wdtp:P1448 "CHEBI"^^wdt:Q82799 ;
+            wdtp:P1552 "Chemical Entities of Biological Interest Ontology"^^wdt:Q1200750 ;
+            wdtp:P348 "78"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/CHEBI"^^wdt:Q1144928 ],
+        [ a wdt:Q324254 ;
+            wdtp:P1448 "NCBITAXON"^^wdt:Q82799 ;
+            wdtp:P1552 "National Center for Biotechnology Information (NCBI) Organismal Classification"^^wdt:Q1200750 ;
+            wdtp:P348 "2"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/NCBITAXON"^^wdt:Q1144928 ],
+        [ a wdt:Q324254 ;
+            wdtp:P1448 "OBI"^^wdt:Q82799 ;
+            wdtp:P1552 "Ontology for Biomedical Investigations"^^wdt:Q1200750 ;
+            wdtp:P348 "21"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/OBI"^^wdt:Q1144928 ],
+        [ a wdt:Q324254 ;
+            wdtp:P1448 "EFO"^^wdt:Q82799 ;
+            wdtp:P1552 "Experimental Factor Ontology"^^wdt:Q1200750 ;
+            wdtp:P348 "111"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/EFO"^^wdt:Q1144928 ],
+        [ a wdt:Q324254 ;
+            wdtp:P1448 "PATO"^^wdt:Q82799 ;
+            wdtp:P1552 "Phenotypic Quality Ontology"^^wdt:Q1200750 ;
+            wdtp:P348 "160"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/PATO"^^wdt:Q1144928 ] ;
+    wdtp:P527 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#study/BII-S-3> ;
+    wdtp:P577 ""^^xsd:date ;
+    wdtp:P585 ""^^xsd:date ;
+    wdtp:P6607 [ a wdt:Q58897583 ;
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Created With Configuration"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "GSC MIxS human gut"^^wdt:Q11968270,
+                "Last Opened With Configuration"^^wdt:Q82799 ] .
+
