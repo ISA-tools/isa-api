@@ -5,16 +5,16 @@
         "wdtp": "https://www.wikidata.org/wiki/Property:",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "Protocol": "wdt:Q41689629",
-        "filename" : {
+        "protocolType" : {
              "@id": "wdtp:P7793",
-             "@type": "wdt:Q1144928"
+             "@type": "wdt:Q857525"
         },
         "identifier" : {
           "@id": "wdt:Q853614",
           "@type": "@id"
         },
-        "title" : {
-            "@id": "wdtp:P1476",
+        "name" : {
+            "@id": "wdtp:P1448",
             "@type":"wdt:Q783521"
         },
         "description" : {
@@ -32,14 +32,10 @@
         "parameters" : {
                 "@id":"wdtp:P2283",
                  "@type": "wdt:Q7247312"
-    },
+        },
         "uri" :{
              "@id": "wdtp:P2699",
              "@type": "wdt:Q42253"
-        },
-        "publications" : {
-             "@id":"wdtp:P527",
-             "@type":"wdt:Q591041"
         },
         "comments" : {
              "@id" : "wdtp:P6607",

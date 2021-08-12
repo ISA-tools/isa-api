@@ -575,11 +575,11 @@
                 ""^^wdt:Q1417099 ;
             wdtp:P5967 ""^^wdt:Q324254 ],
         [ a wdt:Q857525 ;
-            wdtp:P527 "SRA Inform On Status"@en,
+            wdtp:P527 "principal investigator role"@en,
                 ""^^wdt:Q1417099 ;
             wdtp:P5967 ""^^wdt:Q324254 ],
         [ a wdt:Q857525 ;
-            wdtp:P527 "principal investigator role"@en,
+            wdtp:P527 "SRA Inform On Status"@en,
                 ""^^wdt:Q1417099 ;
             wdtp:P5967 ""^^wdt:Q324254 ] ;
     wdtp:P2900 ""^^wdt:Q7696507 ;
@@ -967,16 +967,7 @@
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Huang>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Joint>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#person/Li> ;
-    wdtp:P527 [ a wdt:Q732577 ;
-            wdt:Q2082879 "18783384"@en ;
-            wdt:Q25670 "10.1111/j.1462-2920.2008.01745.x"@en ;
-            wdt:Q57971547 "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."@en ;
-            wdt:Q77422468 [ a wdt:Q857525 ;
-                    wdtp:P527 "indexed in PubMed"@en,
-                        ""^^wdt:Q1417099 ;
-                    wdtp:P5967 ""^^wdt:Q324254 ] ;
-            wdtp:P1476 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters."^^wdt:Q783521 ],
-        [ a wdt:Q732577 ;
+    wdtp:P527 [ a wdt:Q591041 ;
             wdt:Q2082879 "18725995"@en ;
             wdt:Q25670 "10.1371/journal.pone.0003042"@en ;
             wdt:Q57971547 "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."@en ;
@@ -984,7 +975,16 @@
                     wdtp:P527 "indexed in PubMed"@en,
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ;
-            wdtp:P1476 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."^^wdt:Q783521 ],
+            wdt:Q82799 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."@en ],
+        [ a wdt:Q591041 ;
+            wdt:Q2082879 "18783384"@en ;
+            wdt:Q25670 "10.1111/j.1462-2920.2008.01745.x"@en ;
+            wdt:Q57971547 "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."@en ;
+            wdt:Q77422468 [ a wdt:Q857525 ;
+                    wdtp:P527 "indexed in PubMed"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ;
+            wdt:Q82799 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters."@en ],
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Gx.txt>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#assay/a_gilbert-assay-Tx.txt>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/environmental_material_collection_-_standard_procedure_11>,
@@ -994,8 +994,8 @@
     wdtp:P577 "2008-08-15"^^xsd:date ;
     wdtp:P585 "2008-08-15"^^xsd:date ;
     wdtp:P6607 [ a wdt:Q58897583 ;
-            wdtp:P527 "Oxford e-Research Centre"^^wdt:Q11968270,
-                "SRA Lab Name"^^wdt:Q82799 ],
+            wdtp:P527 ""^^wdt:Q11968270,
+                "Study Grant Number"^^wdt:Q82799 ],
         [ a wdt:Q58897583 ;
             wdtp:P527 ""^^wdt:Q11968270,
                 "Study Funding Agency"^^wdt:Q82799 ],
@@ -1003,17 +1003,17 @@
             wdtp:P527 "OXFORD"^^wdt:Q11968270,
                 "SRA Center Project Name"^^wdt:Q82799 ],
         [ a wdt:Q58897583 ;
-            wdtp:P527 "OXFORD"^^wdt:Q11968270,
-                "SRA Center Name"^^wdt:Q82799 ],
-        [ a wdt:Q58897583 ;
-            wdtp:P527 "ADD"^^wdt:Q11968270,
-                "SRA Submission Action"^^wdt:Q82799 ],
+            wdtp:P527 "Oxford e-Research Centre"^^wdt:Q11968270,
+                "SRA Lab Name"^^wdt:Q82799 ],
         [ a wdt:Q58897583 ;
             wdtp:P527 "OXFORD"^^wdt:Q11968270,
                 "SRA Broker Name"^^wdt:Q82799 ],
         [ a wdt:Q58897583 ;
-            wdtp:P527 ""^^wdt:Q11968270,
-                "Study Grant Number"^^wdt:Q82799 ] ;
+            wdtp:P527 "OXFORD"^^wdt:Q11968270,
+                "SRA Center Name"^^wdt:Q82799 ],
+        [ a wdt:Q58897583 ;
+            wdtp:P527 "ADD"^^wdt:Q11968270,
+                "SRA Submission Action"^^wdt:Q82799 ] ;
     wdtp:P8111 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/degree_celsius>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#Unit/mg/m2/d>,
@@ -1191,8 +1191,8 @@
             wdtp:P5967 ""^^wdt:Q324254 ] .
 
 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/environmental_material_collection_-_standard_procedure_1> a wdt:Q41689629 ;
-    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
     wdtp:P1552 "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom."^^wdt:Q1200750 ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/filter_pore_size> ;
     wdtp:P2699 ""^^wdt:Q42253 ;
     wdtp:P348 ""^^wdt:Q3331189 .
 
@@ -1202,10 +1202,10 @@
     wdtp:P348 ""^^wdt:Q3331189 .
 
 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> a wdt:Q41689629 ;
-    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout>,
+    wdtp:P1552 ""^^wdt:Q1200750 ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
-    wdtp:P1552 ""^^wdt:Q1200750 ;
     wdtp:P2699 ""^^wdt:Q42253 ;
     wdtp:P348 ""^^wdt:Q3331189 .
 
@@ -1244,17 +1244,14 @@
     wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay1>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay5.6> ;
     wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
-            wdtp:P257 "RANDOM"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
-            wdtp:P257 [ a wdt:Q857525 ;
-                    wdtp:P527 "RNA-Seq"@en,
-                        ""^^wdt:Q1417099 ;
-                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
             wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
             wdtp:P257 "SINGLE"^^xsd:string ],
@@ -1265,8 +1262,11 @@
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
-            wdtp:P257 "SINGLE"^^xsd:string ],
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
     wdtp:P6607 [ a wdt:Q58897583 ;
             wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"^^wdt:Q11968270,
@@ -1282,6 +1282,12 @@
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
             wdtp:P257 "WGS"^^xsd:string ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
             wdtp:P257 [ a wdt:Q857525 ;
                     wdtp:P527 "RNA-Seq"@en,
@@ -1296,12 +1302,6 @@
                     wdtp:P527 "RANDOM"@en,
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
-            wdtp:P257 "RANDOM"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
-            wdtp:P257 "SINGLE"^^xsd:string ],
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
     wdtp:P6607 [ a wdt:Q58897583 ;
             wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"^^wdt:Q11968270,
@@ -1314,14 +1314,14 @@
     wdtp:P156 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay3.2>,
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay7.6> ;
     wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
-            wdtp:P257 [ a wdt:Q857525 ;
-                    wdtp:P527 "RNA-Seq"@en,
-                        ""^^wdt:Q1417099 ;
-                    wdtp:P5967 ""^^wdt:Q324254 ] ],
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
             wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
             wdtp:P257 [ a wdt:Q857525 ;
@@ -1329,11 +1329,11 @@
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
-            wdtp:P257 "RANDOM"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
-            wdtp:P257 "SINGLE"^^xsd:string ],
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 [ a wdt:Q857525 ;
+                    wdtp:P527 "RNA-Seq"@en,
+                        ""^^wdt:Q1417099 ;
+                    wdtp:P5967 ""^^wdt:Q324254 ] ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
             wdtp:P257 "SINGLE"^^xsd:string ],
@@ -1350,28 +1350,28 @@
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#process/assay8.6> ;
     wdtp:P2283 [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
+            wdtp:P257 "WGS"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
+            wdtp:P257 "SINGLE"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
             wdtp:P257 [ a wdt:Q857525 ;
                     wdtp:P527 "RNA-Seq"@en,
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ],
         [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
             wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
+            wdtp:P257 "RANDOM"^^xsd:string ],
+        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
+            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
             wdtp:P257 [ a wdt:Q857525 ;
                     wdtp:P527 "RANDOM"@en,
                         ""^^wdt:Q1417099 ;
                     wdtp:P5967 ""^^wdt:Q324254 ] ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
-            wdtp:P257 "SINGLE"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_strategy> ;
-            wdtp:P257 "WGS"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_selection> ;
-            wdtp:P257 "RANDOM"^^xsd:string ],
-        [ a <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/ProcessParameterValue> ;
-            wdt: <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/library_layout> ;
-            wdtp:P257 "SINGLE"^^xsd:string ],
         <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/library_construction> ;
     wdtp:P6607 [ a wdt:Q58897583 ;
             wdtp:P527 "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"^^wdt:Q11968270,
@@ -1384,8 +1384,8 @@
             wdtp:P5967 ""^^wdt:Q324254 ] .
 
 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#protocol/pyrosequencing_-_standard_procedure_6> a wdt:Q41689629 ;
-    wdt:Q7247312 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
     wdtp:P1552 "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below."^^wdt:Q1200750 ;
+    wdtp:P2283 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#parameter/sequencing_instrument> ;
     wdtp:P2699 ""^^wdt:Q42253 ;
     wdtp:P348 ""^^wdt:Q3331189 .
 
@@ -1394,30 +1394,30 @@
     wdtp:P1476 ""^^wdt:Q783521 ;
     wdtp:P1552 ""^^wdt:Q1200750 ;
     wdtp:P2283 [ a wdt:Q324254 ;
-            wdtp:P1448 "CHEBI"^^wdt:Q82799 ;
-            wdtp:P1552 "Chemical Entities of Biological Interest Ontology"^^wdt:Q1200750 ;
-            wdtp:P348 "78"^^wdt:Q3331189 ;
-            wdtp:P7793 "http://data.bioontology.org/ontologies/CHEBI"^^wdt:Q1144928 ],
+            wdtp:P1448 "OBI"^^wdt:Q82799 ;
+            wdtp:P1552 "Ontology for Biomedical Investigations"^^wdt:Q1200750 ;
+            wdtp:P348 "21"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/OBI"^^wdt:Q1144928 ],
         [ a wdt:Q324254 ;
             wdtp:P1448 "NCBITAXON"^^wdt:Q82799 ;
             wdtp:P1552 "National Center for Biotechnology Information (NCBI) Organismal Classification"^^wdt:Q1200750 ;
             wdtp:P348 "2"^^wdt:Q3331189 ;
             wdtp:P7793 "http://data.bioontology.org/ontologies/NCBITAXON"^^wdt:Q1144928 ],
         [ a wdt:Q324254 ;
-            wdtp:P1448 "OBI"^^wdt:Q82799 ;
-            wdtp:P1552 "Ontology for Biomedical Investigations"^^wdt:Q1200750 ;
-            wdtp:P348 "21"^^wdt:Q3331189 ;
-            wdtp:P7793 "http://data.bioontology.org/ontologies/OBI"^^wdt:Q1144928 ],
+            wdtp:P1448 "PATO"^^wdt:Q82799 ;
+            wdtp:P1552 "Phenotypic Quality Ontology"^^wdt:Q1200750 ;
+            wdtp:P348 "160"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/PATO"^^wdt:Q1144928 ],
+        [ a wdt:Q324254 ;
+            wdtp:P1448 "CHEBI"^^wdt:Q82799 ;
+            wdtp:P1552 "Chemical Entities of Biological Interest Ontology"^^wdt:Q1200750 ;
+            wdtp:P348 "78"^^wdt:Q3331189 ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/CHEBI"^^wdt:Q1144928 ],
         [ a wdt:Q324254 ;
             wdtp:P1448 "EFO"^^wdt:Q82799 ;
             wdtp:P1552 "Experimental Factor Ontology"^^wdt:Q1200750 ;
             wdtp:P348 "111"^^wdt:Q3331189 ;
-            wdtp:P7793 "http://data.bioontology.org/ontologies/EFO"^^wdt:Q1144928 ],
-        [ a wdt:Q324254 ;
-            wdtp:P1448 "PATO"^^wdt:Q82799 ;
-            wdtp:P1552 "Phenotypic Quality Ontology"^^wdt:Q1200750 ;
-            wdtp:P348 "160"^^wdt:Q3331189 ;
-            wdtp:P7793 "http://data.bioontology.org/ontologies/PATO"^^wdt:Q1144928 ] ;
+            wdtp:P7793 "http://data.bioontology.org/ontologies/EFO"^^wdt:Q1144928 ] ;
     wdtp:P527 <file:///Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/BII-S-3.jsonld#study/BII-S-3> ;
     wdtp:P577 ""^^xsd:date ;
     wdtp:P585 ""^^xsd:date ;
