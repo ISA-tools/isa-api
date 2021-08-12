@@ -32,7 +32,7 @@
         "@id": "wdt:Property:P2900",
         "@type": "wdt:Q7696507"
         },
-    "affiliations":
+    "affiliation":
     {
       "@id":"wdt:Property:P361",
       "@type":"wdt:Q43229"
