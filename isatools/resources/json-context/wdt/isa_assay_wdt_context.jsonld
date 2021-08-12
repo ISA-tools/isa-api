@@ -35,12 +35,12 @@
     },     
     "materials" : {
         "@id" : "wdtp:P527",
-        "@type" : "wdt:Q53617407"
+        "@type" : "wdt:Q53617407",
+        "othermaterials" : {
+                "@id" : "wdtp:P527",
+                "@type" : "wdt:Q1259977"
+             }
      },
-     "othermaterials" : {
-        "@id" : "wdtp:P527",
-        "@type" : "wdt:Q1259977"
-     },   
     "characteristicCategories" :{
          "@id" : "wdtp:P1552",
          "@type" : "wdt:Q937228"

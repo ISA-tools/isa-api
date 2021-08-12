@@ -49,7 +49,8 @@
         "@id":"wdtp:P2283",
         "@type" : "wdt:Q53617407",
         "sources": "wdt:Q53617407",
-        "samples": "wdt:Q96797376"
+        "samples": "wdt:Q96797376",
+        "otherMaterials" : "wdt:Q53617407"
     },
     "processSequence": {
         "@id":"wdtp:P527",
