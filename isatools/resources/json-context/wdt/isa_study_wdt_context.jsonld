@@ -47,7 +47,9 @@
     },
     "materials": {  
         "@id":"wdtp:P2283",
-        "@type" : "wdt:Q53617407"
+        "@type" : "wdt:Q53617407",
+        "sources": "wdt:Q53617407",
+        "samples": "wdt:Q96797376"
     },
     "processSequence": {
         "@id":"wdtp:P527",
