@@ -9,10 +9,7 @@
          "@id": "wdt:IAO_0000235",
          "@type" : "wdt:Q1144928"
     },
-    "identifier" : {
-      "@id": "wdt:Q853614",
-      "@type": "@id"
-    }, 
+    "identifier" : "wdt:Q853614",
     "title" : {
         "@id": "wdtp:P1476",
         "@type":"wdt:Q783521"
@@ -38,7 +35,7 @@
              "@type":"wdt:Q215627"
     },
     "studyDesignDescriptors": {
-        "@id":"wdtp:P2283",
+        "@id":"wdtp:P5422",
         "@type":"wdt:Q2334061"
     },
     "protocols" : {
@@ -65,7 +62,7 @@
         "@type":"wdt:Q2487752"
     },
     "characteristicCategories": {
-         "@id" : "wdtp:P1552",
+         "@id" : "wdtp:P632",
          "@type" : "wdt:Q937228"
     },
     "unitCategories": {
