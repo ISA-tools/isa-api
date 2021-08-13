@@ -37,14 +37,8 @@
     "@id":"wdtp:P156",
       "@type" :  "wdt:Q3249551"
       },
-    "input" : {
-      "@id":"wdtp:P2283",
-      "@type" : "wdt:Q35120"
-    },
-    "output" :  {
-      "@id":"wdtp:P1056",
-      "@type" : "wdt:Q35120"
-    },
+    "input" : "wdtp:P2283",
+    "output" :  "wdtp:P1056",
     "performer" :
     {
       "@id" : "wdtp:P137",
