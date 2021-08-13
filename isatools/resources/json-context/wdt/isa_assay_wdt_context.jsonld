@@ -42,7 +42,8 @@
                 "@type" : "wdt:Q1259977"
              }
      },
-     "samples" : "wdt":"",
+    "samples" : "wdt:Q53617407",
+    "otherMaterials": "wdt:Q53617407",
     "characteristicCategories" :{
          "@id" : "wdtp:P1552",
          "@type" : "wdt:Q937228"
