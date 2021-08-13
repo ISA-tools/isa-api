@@ -1,6 +1,7 @@
 {
   "@context":{
     "@language": "en",
+    "materials": "@nest",
     "wdt": "http://www.wikidata.org/wiki/",
     "wdtp": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
@@ -40,14 +41,11 @@
     },
     "protocols" : {
         "@id":"wdtp:P2283",
-      "@type":"wdt:Q41689629"
+        "@type":"wdt:Q41689629"
     },
-    "materials": {  
-        "@id":"wdtp:P2283",
-        "@type" : "wdt:Q53617407",
-        "sources": "wdt:Q53617407",
-        "samples": "wdt:Q53617407",
-        "otherMaterials" : "wdt:Q53617407"
+     "sources": "wdt:Q53617407",
+     "samples": "wdt:Q53617407",
+     "otherMaterials" : "wdt:Q53617407"
     },
     "processSequence": {
         "@id":"wdtp:P527",

@@ -1,6 +1,7 @@
 {
   "@context": {
     "@language": "en",
+    "materials": "@nest",
     "wdt": "http://www.wikidata.org/wiki/",
     "wdtp": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
@@ -41,6 +42,7 @@
                 "@type" : "wdt:Q1259977"
              }
      },
+     "samples" : "wdt":"",
     "characteristicCategories" :{
          "@id" : "wdtp:P1552",
          "@type" : "wdt:Q937228"
