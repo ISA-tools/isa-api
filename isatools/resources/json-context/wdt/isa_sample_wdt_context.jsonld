@@ -4,7 +4,7 @@
     "wdt": "http://www.wikidata.org/wiki/",
     "wdtp": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Sample": "wdt:Q96797376",
+    "Sample": "wdt:Q53617407",
     "identifier": {
       "@id": "wdt:Q853614",
       "@type": "@id"
