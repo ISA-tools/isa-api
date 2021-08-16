@@ -171,10 +171,9 @@ class Process(ObjectType):
                 if False not in list(set(found)) or found == []:
                     outputs.append(input_data)
             if input_classname == filters['target'] \
-                    and input_classname in ["Sample", "Source", "Material"] \
                     and 'characteristics' in filters:
                 # TODO: filter by characteristics
-                print("NEED TO PROCESS CHARACTERISTICS")
+                print(input_data.characteristics)
 
         return outputs
 

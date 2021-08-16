@@ -60,6 +60,7 @@ class InputsParameters(InputObjectType):
                               name="treatmentGroup",
                               description="List describing the sample exposure")
     # characteristics = Argument(List(??), description="List of sample characteristics to filter on")
+    characteristics = String()
     # TODO: implement characteristics input object when characteristics will be correctly deserialized.
 
     @property

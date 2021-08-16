@@ -8,7 +8,7 @@ class TestGraphQLQueries(unittest.TestCase):
     def setUp(self):
         self.here_path = os.path.dirname(os.path.realpath(__file__))
         graph_filepath = os.path.join(self.here_path, "data/graphQL/example.graphql")
-        investigation_filepath = os.path.join(self.here_path, "data/tab/BII-S-3/i_gilbert.txt")
+        investigation_filepath = os.path.join(self.here_path, "data/tab/BII-S-TEST/i_test.txt")
         with open(graph_filepath, 'r') as graph_file:
             self.query = graph_file.read()
             graph_file.close()
