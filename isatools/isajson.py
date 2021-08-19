@@ -1619,7 +1619,7 @@ class ISAJSONEncoder(JSONEncoder):
             if obj is not None:
                 return clean_nulls(
                     {
-                        # "@id": id_gen(obj),
+                        "id": id_gen(obj),
                         "annotationValue": obj.term,
                         "termAccession": obj.term_accession,
                         "termSource": obj.term_source.name if obj.term_source else None,
@@ -1785,10 +1785,10 @@ class ISAJSONEncoder(JSONEncoder):
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
                 elif isinstance(obj, OntologySource):
                     return '#ontology/' + o_id
-                elif isinstance(obj, StudyFactor):
-                    return '#studyfactor/' + o_id
-                elif isinstance(obj, FactorValue):
-                    return '#factorvalue/' + o_id
+                # elif isinstance(obj, StudyFactor):
+                #     return '#studyfactor/' + o_id
+                # elif isinstance(obj, FactorValue):
+                #     return '#factorvalue/' + o_id
                 elif isinstance(obj, Publication):
                     return '#publication/' + o_id
                 elif isinstance(obj, Person):
