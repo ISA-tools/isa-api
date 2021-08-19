@@ -104,6 +104,7 @@ def load(fp):
     term_source_dict = {"": None}
     for ontologySourceReference_json in investigation_json["ontologySourceReferences"]:
         ontology_source_reference = OntologySource(
+            #id_=ontologySourceReferences["@id"],
             name=ontologySourceReference_json["name"],
             file=ontologySourceReference_json["file"],
             version=ontologySourceReference_json["version"],
@@ -114,6 +115,7 @@ def load(fp):
         investigation.ontology_source_references.append(ontology_source_reference)
     for publication_json in investigation_json["publications"]:
         publication = Publication(
+            #id_=publication["@id"],
             pubmed_id=publication_json["pubMedID"],
             doi=publication_json["doi"],
             author_list=publication_json["authorList"],
@@ -131,6 +133,7 @@ def load(fp):
         investigation.publications.append(publication)
     for person_json in investigation_json["people"]:
         person = Person(
+            #id_=person_json["@id"],
             last_name=person_json["lastName"],
             first_name=person_json["firstName"],
             mid_initials=person_json["midInitials"],
@@ -193,6 +196,7 @@ def load(fp):
             study.units.append(unit)
         for study_publication_json in study_json["publications"]:
             study_publication = Publication(
+                # id_=study_publication_json["@id"],
                 pubmed_id=study_publication_json["pubMedID"],
                 doi=study_publication_json["doi"],
                 author_list=study_publication_json["authorList"],
@@ -210,6 +214,7 @@ def load(fp):
             study.publications.append(study_publication)
         for study_person_json in study_json["people"]:
             study_person = Person(
+                # id_=study_person_json["@id"],
                 last_name=study_person_json["lastName"],
                 first_name=study_person_json["firstName"],
                 mid_initials=study_person_json["midInitials"],
@@ -359,6 +364,7 @@ def load(fp):
                 value = factor_value_json["value"]
                 unit = None
                 factor_value = FactorValue(
+                    #id_=factor_value_json["@id"],
                     factor_name=factors_dict[factor_value_json["category"]["@id"]],
                     comments=get_comments(factor_value_json)
                 )
@@ -449,6 +455,7 @@ def load(fp):
                 process.outputs.append(output)
             study.process_sequence.append(process)
             process_dict[process.id] = process
+
         for study_process_json in study_json["processSequence"]:  # 2nd pass
             try:
                 prev_proc = study_process_json["previousProcess"]["@id"]
@@ -1599,6 +1606,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_ontology_source(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "name": obj.name,
                     "description": obj.description,
                     "file": obj.file,
@@ -1627,6 +1635,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_person(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "address": obj.address,
                     "affiliation": obj.affiliation,
                     "comments": get_comments(obj.comments),
@@ -1646,6 +1655,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_publication(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "authorList": obj.author_list,
                     "doi": obj.doi,
                     "pubMedID": obj.pubmed_id,
@@ -1770,9 +1780,17 @@ class ISAJSONEncoder(JSONEncoder):
                     if obj.type == 'Extract Name':
                         return '#material/extract-' + o_id
                     elif obj.type == 'Labeled Extract Name':
-                        return '#material/labledextract-' + o_id
+                        return '#material/labeledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
+                elif isinstance(obj, OntologySource):
+                    return '#ontology/' + o_id
+                elif isinstance(obj, FactorValue):
+                    return '#factorvalue/' + o_id
+                elif isinstance(obj, Publication):
+                    return '#publication/' + o_id
+                elif isinstance(obj, Person):
+                    return '#person/' + o_id
                 elif isinstance(obj, DataFile):
                         return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
                 elif isinstance(obj, Process):

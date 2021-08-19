@@ -1,6 +1,7 @@
 {
   "@context": {
     "@language": "en",
+    "@version" : 1.1,
     "materials": "@nest",
     "wdt": "http://www.wikidata.org/wiki/",
     "wdtp": "https://www.wikidata.org/wiki/Property:",
@@ -44,7 +45,7 @@
         "@id" : "wdtp:P527",
         "@type" : "wdt:Q5227290"
     },
-    "processSequences" : {
+    "processSequence" : {
          "@id" : "wdtp:P527",
          "@type" : "wdt:Q3249551"
     },

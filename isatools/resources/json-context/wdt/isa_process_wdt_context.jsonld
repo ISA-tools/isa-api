@@ -17,7 +17,7 @@
         "@id":"wdtp:P1552",
         "@type":"wdt:Q1200750"
     },
-    "startDate" : {
+    "date" : {
       "@id":"wdtp:P1390",
       "@type": "xsd:date"
     },
@@ -37,8 +37,8 @@
     "@id":"wdtp:P156",
       "@type" :  "wdt:Q3249551"
       },
-    "input" : "wdtp:P2283",
-    "output" :  "wdtp:P1056",
+    "inputs" : "wdtp:P2283",
+    "outputs" :  "wdtp:P1056",
     "performer" :
     {
       "@id" : "wdtp:P137",

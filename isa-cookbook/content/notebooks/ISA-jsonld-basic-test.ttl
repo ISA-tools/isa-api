@@ -1,0 +1,170 @@
+@prefix ns0: <http://www.wikidata.org/wiki/Property:> .
+@prefix ns1: <http://www.wikidata.org/wiki/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://json-ld.org/playground/BII-S-3>
+  a <https://json-ld.org/playground/Q170584-Investigation>, <http://www.wikidata.org/wiki/Q101965-Study> ;
+  ns0:P1476 "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment"^^ns1:Q783521 ;
+  ns0:P1552-charCat [ ] ;
+  ns0:P2283 <https://json-ld.org/playground/#onto/CHEBI>, <https://json-ld.org/playground/#onto/EFO>, <https://json-ld.org/playground/#factor/dose>, <https://json-ld.org/playground/#factor/compound>, <https://json-ld.org/playground/#factor/collection_time>, <https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1>, <https://json-ld.org/playground/#protocol/nucleic_acid_extraction_-_standard_procedure_2> ;
+  ns0:P257 <https://json-ld.org/playground/#assay/a_gilbert-assay-Gx.txt> ;
+  ns0:P50 <https://json-ld.org/playground/#person/Gilbert> ;
+  ns0:P527 <https://json-ld.org/playground/#publication/18725995>, <https://json-ld.org/playground/#publication/18783384> ;
+  ns0:P527-Process-Sequence <https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_13>, <https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_14>, <https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_12>, <https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_11> ;
+  ns0:P5422-SDD [ ] ;
+  ns0:P585 "2008-08-15"^^xsd:date ;
+  ns0:P8111_unitCat <https://json-ld.org/playground/#Unit/number/ml>, <https://json-ld.org/playground/#Unit/ug/l>, <https://json-ld.org/playground/#Unit/psu>, <https://json-ld.org/playground/#Unit/umol/l>, <https://json-ld.org/playground/#Unit/micrometer>, <https://json-ld.org/playground/#Unit/mg/m2/d>, <https://json-ld.org/playground/#Unit/degree_celsius>, <https://json-ld.org/playground/#Unit/degree> ;
+  ns0:uses <https://json-ld.org/playground/#sample/sample-GSM255770>, <https://json-ld.org/playground/#sample/sample-GSM255771>, <https://json-ld.org/playground/#source/source-GSM255771>, <https://json-ld.org/playground/#source/source-GSM255770> .
+
+<https://json-ld.org/playground/#onto/CHEBI>
+  a ns1:Q324254-Ontology ;
+  ns0:P1552 "Chemical Entities of Biological Interest Ontology"^^ns1:Q1200750 ;
+  ns0:P348 "78"^^ns1:Q3331189 ;
+  ns0:has_name "CHEBI"^^rdfs:label .
+
+<https://json-ld.org/playground/#onto/EFO>
+  a ns1:Q324254-Ontology ;
+  ns0:P1552 "Experimental Factor Ontology"^^ns1:Q1200750 ;
+  ns0:P348 "111"^^ns1:Q3331189 ;
+  ns0:has_name "EFO"^^rdfs:label .
+
+<https://json-ld.org/playground/#factor/dose> a ns1:Q2487752-Factor .
+<https://json-ld.org/playground/#factor/compound> a ns1:Q2487752-Factor .
+<https://json-ld.org/playground/#factor/collection_time> a ns1:Q2487752-Factor .
+<https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1>
+  a ns1:Q41689629-Protocol ;
+  ns0:P1552 "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom."^^ns1:Q1200750, ""^^ns1:Q1200750 ;
+  ns0:P2283 <https://json-ld.org/playground/#parameter/filter_pore_size> ;
+  ns0:P348 ""^^ns1:Q3331189 ;
+  ns0:P7793 [ ] ;
+  ns0:has_name "environmental material collection - standard procedure 1"^^rdfs:label .
+
+<https://json-ld.org/playground/#parameter/filter_pore_size>
+  a ns1:Q7247312-ProtocolParameter ;
+  ns0:P1448-PARAMNAME [ ] .
+
+<https://json-ld.org/playground/#protocol/nucleic_acid_extraction_-_standard_procedure_2>
+  a ns1:Q41689629-Protocol ;
+  ns0:P1552 "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007."^^ns1:Q1200750, ""^^ns1:Q1200750 ;
+  ns0:P348 ""^^ns1:Q3331189 ;
+  ns0:P7793 [ ] ;
+  ns0:has_name "nucleic acid extraction - standard procedure 2"^^rdfs:label .
+
+<https://json-ld.org/playground/#assay/a_gilbert-assay-Gx.txt>
+  a ns1:Q739897-Assay ;
+  ns0:P1552-charCat <https://json-ld.org/playground/#characteristic_category/Material_Type> ;
+  ns0:P2283 [ ], "454 GS FLX"^^ns1:Q11016, [ ] ;
+  ns0:P527 <https://json-ld.org/playground/#data/rawdatafile-EWOEPZA02.sff>, "a_gilbert-assay-Gx.txt"^^ns1:Q5227290 ;
+  ns0:P527-Process-Sequence <https://json-ld.org/playground/#process/mRNA_extraction_-_standard_procedure_32> ;
+  ns0:uses <https://json-ld.org/playground/#sample/sample-GSM255770>, <https://json-ld.org/playground/#sample/sample-GSM255771> .
+
+<https://json-ld.org/playground/#data/rawdatafile-EWOEPZA02.sff>
+  a ns1:Q5227290-DataFile ;
+  ns0:P234 "Raw Data File"^^ns1:ISA-Field-Type ;
+  ns0:has_name "EWOEPZA02.sff"^^rdfs:label .
+
+<https://json-ld.org/playground/#process/mRNA_extraction_-_standard_procedure_32>
+  a ns1:Q3249551-Process ;
+  ns0:P1056-OUTPUT <https://json-ld.org/playground/#data/rawdatafile-EWOEPZA02.sff> ;
+  ns0:P137-PERF ""^^ns1:Q215627 ;
+  ns0:P1390-Date ""^^xsd:date ;
+  ns0:P155-PREV <https://json-ld.org/playground/#process/nucleic_acid_extraction_-_standard_procedure_22> ;
+  ns0:P156-NEXT <https://json-ld.org/playground/#process/library_construction2> ;
+  ns0:P2283-INPUT <https://json-ld.org/playground/#material/extract-GSM255771.e2> ;
+  ns0:executes <https://json-ld.org/playground/#protocol/mRNA_extraction_-_standard_procedure_3> .
+
+<https://json-ld.org/playground/#process/nucleic_acid_extraction_-_standard_procedure_22> a ns1:Q3249551-Process .
+<https://json-ld.org/playground/#process/library_construction2> a ns1:Q3249551-Process .
+<https://json-ld.org/playground/#material/extract-GSM255771.e2> a ns1:Q53617407-Sample .
+<https://json-ld.org/playground/#protocol/mRNA_extraction_-_standard_procedure_3> a ns1:Q41689629-Protocol .
+<https://json-ld.org/playground/#sample/sample-GSM255770>
+  a ns1:Q53617407-Sample ;
+  ns0:has_name "sample-GSM255770"^^rdfs:label .
+
+<https://json-ld.org/playground/#sample/sample-GSM255771>
+  a ns1:Q53617407-Sample ;
+  ns0:has_name "sample-GSM255771"^^rdfs:label .
+
+<https://json-ld.org/playground/#person/Gilbert>
+  a ns1:Q215627-Person ;
+  ns0:P1329 ""^^ns1:Q7696507 ;
+  ns0:P2900 ""^^ns1:Q7696507 ;
+  ns0:P361 "Plymouth Marine Laboratory"^^ns1:Q43229 ;
+  ns0:P734 "Gilbert"^^ns1:Q101352 ;
+  ns0:P735 "Jack"^^ns1:Q202444 ;
+  ns0:P968 "jagi@pml.ac.uk"^^ns1:Q1273217 ;
+  ns1:middle_initial "A"^^ns1:Q105844397 .
+
+<https://json-ld.org/playground/#publication/18725995>
+  a ns1:Q591041-Publication ;
+  ns0:P1476 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."^^ns1:Q783521 ;
+  ns0:P527-Authors "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."^^ns1:Q57971547 ;
+  ns0:P527-DOI "10.1371/journal.pone.0003042"^^ns1:Q25670 ;
+  ns0:P527-PMID "18725995"^^ns1:Q2082879 .
+
+<https://json-ld.org/playground/#publication/18783384>
+  a ns1:Q591041-Publication ;
+  ns0:P1476 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters."^^ns1:Q783521 ;
+  ns0:P527-Authors "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."^^ns1:Q57971547 ;
+  ns0:P527-DOI "10.1111/j.1462-2920.2008.01745.x"^^ns1:Q25670 ;
+  ns0:P527-PMID "18783384"^^ns1:Q2082879 .
+
+<https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_13>
+  a ns1:Q3249551-Process ;
+  ns0:P1056-OUTPUT <https://json-ld.org/playground/#sample/sample-GSM255772> ;
+  ns0:P137-PERF ""^^ns1:Q215627 ;
+  ns0:P1390-Date ""^^xsd:date ;
+  ns0:P2283 [ ] ;
+  ns0:P2283-INPUT <https://json-ld.org/playground/#source/source-GSM255772> ;
+  ns0:executes <https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<https://json-ld.org/playground/#sample/sample-GSM255772> a ns1:Q53617407-Sample .
+<https://json-ld.org/playground/#source/source-GSM255772> a ns1:Q53617407-Source .
+<https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_14>
+  a ns1:Q3249551-Process ;
+  ns0:P1056-OUTPUT <https://json-ld.org/playground/#sample/sample-GSM255773> ;
+  ns0:P137-PERF ""^^ns1:Q215627 ;
+  ns0:P1390-Date ""^^xsd:date ;
+  ns0:P2283 [ ] ;
+  ns0:P2283-INPUT <https://json-ld.org/playground/#source/source-GSM255773> ;
+  ns0:executes <https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<https://json-ld.org/playground/#sample/sample-GSM255773> a ns1:Q53617407-Sample .
+<https://json-ld.org/playground/#source/source-GSM255773> a ns1:Q53617407-Source .
+<https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_12>
+  a ns1:Q41689629-Protocol ;
+  ns0:P1056-OUTPUT <https://json-ld.org/playground/#sample/sample-GSM255771> ;
+  ns0:P137-PERF ""^^ns1:Q215627 ;
+  ns0:P1390-Date ""^^xsd:date ;
+  ns0:P2283 [ ] ;
+  ns0:P2283-INPUT <https://json-ld.org/playground/#source/source-GSM255771> ;
+  ns0:executes <https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<https://json-ld.org/playground/#source/source-GSM255771>
+  a ns1:Q53617407-Source ;
+  ns0:P1552-CHARAX [ ] ;
+  ns0:has_name "source-GSM255771"^^rdfs:label .
+
+<https://json-ld.org/playground/#process/environmental_material_collection_-_standard_procedure_11>
+  a ns1:Q3249551-Process ;
+  ns0:P1056-OUTPUT <https://json-ld.org/playground/#sample/sample-GSM255770> ;
+  ns0:P137-PERF <https://json-ld.org/playground/#person/Gilbert> ;
+  ns0:P1390-Date ""^^xsd:date ;
+  ns0:P2283 [ ] ;
+  ns0:P2283-INPUT <https://json-ld.org/playground/#source/source-GSM255770> ;
+  ns0:executes <https://json-ld.org/playground/#protocol/environmental_material_collection_-_standard_procedure_1> .
+
+<https://json-ld.org/playground/#source/source-GSM255770>
+  a ns1:Q53617407-Source ;
+  ns0:P1552-CHARAX [ ] ;
+  ns0:has_name "source-GSM255770"^^rdfs:label .
+
+<https://json-ld.org/playground/#Unit/number/ml> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/ug/l> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/psu> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/umol/l> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/micrometer> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/mg/m2/d> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/degree_celsius> a ns1:Q857525-OntologyAnnotation .
+<https://json-ld.org/playground/#Unit/degree> a ns1:Q857525-OntologyAnnotation .
