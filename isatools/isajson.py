@@ -1619,7 +1619,7 @@ class ISAJSONEncoder(JSONEncoder):
             if obj is not None:
                 return clean_nulls(
                     {
-                        "id": id_gen(obj),
+                        "@id": id_gen(obj),
                         "annotationValue": obj.term,
                         "termAccession": obj.term_accession,
                         "termSource": obj.term_source.name if obj.term_source else None,
