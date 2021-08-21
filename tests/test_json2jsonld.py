@@ -8,7 +8,7 @@ from isatools.convert.json2jsonld import ISALDSerializer
 class TestJson2JsonLD(unittest.TestCase):
 
     def setUp(self):
-        output_path = os.path.join("./data/json/BII-S-3/", "BII-S-3-ld.json")
+        output_path = os.path.join("./data/json/BII-S-3/", "BII-S-3-ld-v0.json")
         with open(output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
             output_file.close()
@@ -35,7 +35,7 @@ class TestJson2JsonLD(unittest.TestCase):
             # self.assertEqual(self.serializer.output, self.expected_markup)
             jsonldcontent = self.serializer.output
         try:
-            with open(os.path.join("./data/json/BII-S-3/", "BII-S-3-ld-new.json"), 'w') as outfile:
+            with open(os.path.join("./data/json/BII-S-3/", "BII-S-3-ld-new-v1.json"), 'w') as outfile:
                 # outfile.write(str(jsonldcontent))
                 json.dump(jsonldcontent,  outfile, ensure_ascii=False, indent=4)
         except IOError as ioe:

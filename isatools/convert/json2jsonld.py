@@ -1,13 +1,18 @@
 import os
 import json
+import logging
 from requests import get
+
+log = logging.getLogger('isatools')
 
 
 class ISALDSerializer:
 
     _instance = None
 
-    def __init__(self, json_instance, ontology="obo"):
+    # TODO: finish "all in one context" for sdo  domains similar to the wikidata and obo ones (a placeholder exists)
+
+    def __init__(self, json_instance, ontology="wdt"):
         """
         Given an instance url, serializes it into a JSON-LD. You can find the output of the serializer in self.output.
         This is a soft singleton.
@@ -22,6 +27,8 @@ class ISALDSerializer:
         self.ontology = ontology
         self.context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
                            "resources/json-context/%s/" % ontology
+        self.context_allineone = "https://raw.githubusercontent.com/ISA-tools/isa-api/DomISALD/isatools/" \
+                                 "resources/json-context/%s/" % ontology + "isa-wdt-allinone-context.jsonld"
         self._resolve_network()
         self.set_instance(json_instance)
 
@@ -63,28 +70,51 @@ class ISALDSerializer:
         """
         self.ontology = ontology
 
-    def _inject_ld(self, schema_name, output, instance, reference=False):
+    def _inject_ld(self, schema_name, output, instance, reference=False, remote_context=True, ontology="obo"):
         """
         Inject the LD properties at for the given instance or sub-instance
         :param schema_name: the name of the schema to get the properties from
         :param output: the output to add the properties to
         :param instance: the instance to get the values from
         :param reference: string indicating a fake reference for building the context url
+        :param remote_context: a boolean to indicate use of remote context files(True) or embedded context (False)
+        :param {String} ontology: an ontology name (e.g.: "sdo")
         :return: the output of the LD injection
         """
         props = self.schemas[schema_name] if schema_name in self.schemas else self.schemas["material_schema.json"]
-        if 'properties' in props.keys():
-            props = props['properties']
-        if isinstance(reference, str):
-            output["@context"] = self._get_context_url(reference)
-            context_key = schema_name.replace("_schema.json", "").replace("#", "")
-        else:
-            if 'schema.json' in schema_name:
-                context_key = self._get_context_key(schema_name)
-                output["@context"] = self._get_context_url(schema_name)
+        if remote_context:
+            if 'properties' in props.keys():
+                props = props['properties']
+            if isinstance(reference, str):
+                output["@context"] = self._get_context_url(reference)
+                context_key = schema_name.replace("_schema.json", "").replace("#", "")
             else:
-                context_key = "Material"
-                output["@context"] = self.context_url + "isa_material_" + schema_name + "_" + self.ontology + "_context.jsonld"
+                if 'schema.json' in schema_name:
+                    context_key = self._get_context_key(schema_name)
+                    output["@context"] = self._get_context_url(schema_name)
+                else:
+                    context_key = "Material"
+                    output["@context"] = self.context_url + "isa_material_" + schema_name + "_" + self.ontology + "_context.jsonld"
+        else:
+            if 'properties' in props.keys():
+                props = props['properties']
+            if isinstance(reference, str):
+                context_key = schema_name.replace("_schema.json", "").replace("#", "")
+            else:
+                if "investigation" in schema_name and remote_context is False:
+                    try:
+                        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                               "../resources/json-context/", ontology,
+                                               "isa-" + ontology + "-allinone-context.jsonld")) as single_context:
+                            this_json_context = json.load(single_context)
+                            output["@context"] = this_json_context["@context"]
+                    except IOError as ioe:
+                        log.error(ioe)
+                if 'schema.json' in schema_name:
+                    context_key = self._get_context_key(schema_name)
+                else:
+                    context_key = "Material"
+
         output["@type"] = context_key
 
         for field in instance:
@@ -123,6 +153,7 @@ class ISALDSerializer:
                     ref = [n for n in field_props['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
                     instance[field] = self._inject_ld(ref, instance[field], instance[field])
             output[field] = instance[field]
+
         return output
 
     def _get_context_url(self, raw_name):
