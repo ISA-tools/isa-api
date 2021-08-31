@@ -3,6 +3,7 @@
     "@version": 1.1,
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "studies" : "@nest",
     "materials": "@nest",
@@ -62,6 +63,6 @@
     "authorList":{"@id":"obo:BFO_0000051","@type":"obo:IAO_0000321"},
     "performer" : { "@id" : "obo:NCIT_C48206", "@type": "obo:AGRO_00000380"},
     "parameterName":{ "@id" : "obo:IAO_0000235", "@type": "obo:IAO_0000590"},
-    "ontologySourceReferences": {"@id":"obo:P2283", "@type":"obo:IAO_8000000"}
+    "ontologySourceReferences": {"@id":"obo:BFO_0000051", "@type":"obo:IAO_8000000"}
   }
 }

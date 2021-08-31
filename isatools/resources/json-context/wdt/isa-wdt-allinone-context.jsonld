@@ -3,6 +3,8 @@
              "@version": 1.1,
              "wdt1": "https://www.wikidata.org/wiki/",
              "wdtp": "https://www.wikidata.org/wiki/Property:",
+             "xsd": "http://www.w3.org/2001/XMLSchema#",
+             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
              "studies": "@nest",
              "materials": "@nest",
              "roles": {"@id": "wdtp:P257", "@type": "wdt:Q857525"},

@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "OntologyAnnotation": "obo:BFO:0000001",	
+    "OntologyAnnotation": "obo:OBI_0001933",
     	"annotationValue" : {
     		"@id":"obo:STATO_0000129",
     		"@type": ["xsd:string","xsd:float"]

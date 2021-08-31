@@ -3,26 +3,26 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Sample": "sdo:OBI_0100051",
+    "Sample": "sdo:Product",
     "identifier": {
-      "@id": "sdo:IAO_0000577",
+      "@id": "sdo:identifier",
       "@type": "@id"
     },
     "name": {
-        "@id": "sdo:IAO_0000235",
-        "@type": "sdo:IAO_0000590"
+        "@id": "sdo:name",
+        "@type": "sdo:Text"
     },
     "characteristics": {
-      "@id" : "sdo:RO_0000086",
-      "@type" : "sdo:BFO_0000019"
+      "@id" : "sdo:Property",
+      "@type" : "sdo:PropertyValue"
     },
      "roles": {
-        "@id": "sdo:RO_0000087",
-        "@type" : "sdo:OBI_0000740"
+        "@id": "sdo:potentialAction",
+        "@type" : "sdo:Action"
         },
     "derivesFrom": {
-      "@id" : "sdo:RO_0001000",
-      "@type" : "sdo:OBI_0100026"
+      "@id" : "sdo:isRelatedTo",
+      "@type" : "sdo:Product"
     }
   }
 }

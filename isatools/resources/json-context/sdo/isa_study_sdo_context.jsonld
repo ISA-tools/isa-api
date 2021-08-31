@@ -3,66 +3,66 @@
      "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Study": "sdo:OBI_0000066",
+    "Study": "sdo:MedicalStudy",
     "filename" : {
-         "@id": "sdo:IAO_0000235",
-         "@type" : ["sdo:IAO:0000590","sdo:STATO_0000002","sdo:EFO_0004095"]
+         "@id": "sdo:hasPart",
+         "@type" : "sdo:DataDownload"
     },
     "identifier" : {
-      "@id": "sdo:IAO_0000577",
+      "@id": "sdo:identifier",
       "@type": "@id"
     }, 
     "title" : {
-        "@id": "sdo:IAO_0000235",
-        "@type": "sdo:OBI_0001622"
+        "@id": "sdo:title",
+        "@type": "sdo:Text"
     },
     "description" : {   
-         "@id": "sdo:IAO_0000235",
-         "@type":"sdo:IAO_0000300"
+         "@id": "sdo:description",
+         "@type":"sdo:Text"
     } ,
     "submissionDate" : {
-      "@id":"sdo:RO_0002537",
+      "@id":"sdo:dateCreated",
       "@type": "xsd:date"
     } ,
     "publicReleaseDate" : {
-      "@id":"sdo:RO_0002537",
+      "@id":"sdo:datePublished",
       "@type": "xsd:date"
     } ,
     "publications" : {
-                "@id":"sdo:IAO_0000235",
-                "@type":"sdo:IAO_0000013"
+                "@id":"sdo:citation",
+                "@type":"sdo:ScholarlyArticle"
     },
     "people" : {
-                "@id":"sdo:NCIT_C48206",
-      "@type":"sdo:AGRO_00000380"
+                "@id":"sdo:author",
+                "@type":"sdo:Person"
     },
     "studyDesignDescriptors": {
-        "@id":"sdo:STATO_0000001",
-        "@type":"sdo:OBI_0500000"
+        "@id":"sdo:trialDesign",
+        "@type":"sdo:MedicalTrialDesign"
     },
     "protocols" : {
-        "@id":"sdo:BFO_0000055",
-      "@type":"sdo:OBI_0000272"
+        "@id":"sdo:hasPart",
+      "@type":"sdo:HowTo"
     },
     "materials": {  
-        "@id":"sdo:RO_0000057",
-        "@type" : "sdo:BFO_0000040"
+        "@id":"sdo:participant",
+        "@type" : "sdo:Product"
     },
     "processSequence": {
-        "@id":"sdo:RO_0002012",
-        "@type" : "sdo:OBI_0000011"
+        "@id":"sdo:hasPart",
+        "@type" : "sdo:Action"
     },
     "assays" : {
-        "@id":"sdo:RO_0002012",
-        "@type" : "sdo:OBI_0000070"
+        "@id":"sdo:hasPart",
+        "@type" : "sdo:MedicalTest"
     },
     "factors": {
-        "@id":"sdo:STATO_0000001",
-      "@type":"sdo:OBI_0000750"
+        "@id":"sdo:hasPart",
+      "@type":"sdo:variableMeasured"
     },
     "characteristicCategories": {
-        "@id":"sdo:RO_0000086",
-      "@type":"sdo:OBI_0000245"
+        "@id":"sdo:hasPart",
+      "@type":"sdo:PropertyValue"
     },
     "unitCategories": {},
     "comments" : {}

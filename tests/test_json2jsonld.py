@@ -2,6 +2,8 @@ import unittest
 import os
 import json
 from json import load
+
+
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
@@ -28,14 +30,14 @@ class TestJson2JsonLD(unittest.TestCase):
             instance = load(instance_file)
             instance_file.close()
         # for ontology in ontologies:
-            ontology = "obo"
+            ontology = "wdt"
             self.serializer.set_ontology(ontology)
             self.serializer.set_instance(instance)
             # self.maxDiff = None
             # self.assertEqual(self.serializer.output, self.expected_markup)
             jsonldcontent = self.serializer.output
         try:
-            with open(os.path.join("./data/json/BII-S-3/", "BII-S-3-ld-new-v1.json"), 'w') as outfile:
+            with open(os.path.join("./data/json/BII-S-3/", "BII-S-3-ld-new-" + ontology + "-v1.json"), 'w') as outfile:
                 # outfile.write(str(jsonldcontent))
                 json.dump(jsonldcontent,  outfile, ensure_ascii=False, indent=4)
         except IOError as ioe:

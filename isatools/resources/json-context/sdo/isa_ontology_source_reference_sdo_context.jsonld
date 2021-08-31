@@ -6,7 +6,7 @@
     "OntologySourceReference": "sdo:DefinedTermSet",
     "type" :{
         "@id" : "sdo:",
-        "@type" : ["sdo:"]
+        "@type" : "sdo:DefinedTermSet"
     },
     "title" : {
         "@id": "sdo:headline",
@@ -26,7 +26,7 @@
     },  
     "version" : {
          "@id": "sdo:version",
-         "@type": ["sdo:Text","sdo:Number"]
+         "@type": "sdo:Text"
          },
     "comments": {
       "@id" : "sdo:comment",

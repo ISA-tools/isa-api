@@ -2,6 +2,7 @@ import os
 import json
 import logging
 from requests import get
+import pandas as pd
 
 log = logging.getLogger('isatools')
 
@@ -28,11 +29,15 @@ class ISALDSerializer:
         self.context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
                            "resources/json-context/%s/" % ontology
         self.context_allineone = "https://raw.githubusercontent.com/ISA-tools/isa-api/DomISALD/isatools/" \
-                                 "resources/json-context/%s/" % ontology + "isa-wdt-allinone-context.jsonld"
+                                 "resources/json-context/%s/" % ontology + "isa-" + ontology + "-allinone-context.jsonld"
         self._resolve_network()
         self.set_instance(json_instance)
+        # self.load_core_mapping(mapping_file="/Users/philippe/Documents/git/isa-api2/isa-api/isatools/resources/json-context/mapping_file.xlsx")
 
-    def __new__(cls, json_instance, ontology="obo"):
+        current_mappings = ISALDSerializer.load_core_mapping()
+        print("CURRENT:", current_mappings)
+
+    def __new__(cls, json_instance, ontology="wdt"):
         if cls._instance is None:
             cls._instance = super(ISALDSerializer, cls).__new__(cls)
         return cls._instance
@@ -70,7 +75,15 @@ class ISALDSerializer:
         """
         self.ontology = ontology
 
-    def _inject_ld(self, schema_name, output, instance, reference=False, remote_context=True, ontology="obo"):
+    def load_core_mapping(mapping_file="/Users/philippe/Documents/git/isa-api2/isa-api/isatools/resources/json-context/mapping_file.xlsx"):
+        try:
+            df = pd.read_excel(mapping_file)
+            current_mappings = df.set_index('isa').to_dict('index')
+            return current_mappings
+        except IOError as ioe:
+            print("ERROR", ioe)
+
+    def _inject_ld(self, schema_name, output, instance, reference=False, remote_context=False, ontology="sdo", mappings=load_core_mapping()):
         """
         Inject the LD properties at for the given instance or sub-instance
         :param schema_name: the name of the schema to get the properties from
@@ -79,8 +92,10 @@ class ISALDSerializer:
         :param reference: string indicating a fake reference for building the context url
         :param remote_context: a boolean to indicate use of remote context files(True) or embedded context (False)
         :param {String} ontology: an ontology name (e.g.: "sdo")
+        :param mappings dictionary from resources file
         :return: the output of the LD injection
         """
+
         props = self.schemas[schema_name] if schema_name in self.schemas else self.schemas["material_schema.json"]
         if remote_context:
             if 'properties' in props.keys():
@@ -115,7 +130,16 @@ class ISALDSerializer:
                 else:
                     context_key = "Material"
 
-        output["@type"] = context_key
+        # Postprossing of the actual Node Type:
+
+        if context_key in mappings.keys() and context_key != "Materials":
+            # print("KEY: ",context_key)
+            output["@type"] = ontology + ":" + mappings[context_key][ontology]
+            # print(context_key,  output["@type"])
+            # print("HERE:", mappings)
+        else:
+            context_key
+            # print(context_key)
 
         for field in instance:
             if field in props:

@@ -3,18 +3,18 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "MaterialAttributeValue": "sdo:OBI_0001933",
+    "MaterialAttributeValue": "sdo:PropertyValue",
     "category": {
-        "@id":"sdo:IAO_0000235",
-        "@type": "sdo:IAO_0000590"
+        "@id":"sdo:name",
+        "@type": "sdo:Text",
     },
      "value": {
-      "@id": "sdo:IAO_0000235",
-      "@type" : ["sdo:IAO_0000300", "sdo:IAO_0000590","sdo:"]
+      "@id": "sdo:value",
+      "@type" : "sdo:Text"
     },
      "unit": {
-          "@id": "sdo:IAO_0000235" ,
-          "@type" : "sdo:UO_0000000"
+          "@id": "sdo:unitCode" ,
+          "@type" : "sdo:Unit"
     }
     
   }

@@ -3,30 +3,30 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Material": "sdo:OBI_0000047",
+    "Material": "sdo:Product",
     "type" :{
-        "@id" : "sdo:RO_0000086",
-        "@type" : ["sdo:OBI_0000423","sdo:OBI_0000924"]
+        "@id" : "sdo:type",
+        "@type" : "sdo:Product"
     },
     "identifier": {
-      "@id": "sdo:IAO_0000577",
+      "@id": "sdo:identifier",
       "@type": "@id"
     },
     "name": {
-        "@id": "sdo:IAO_0000235",
-        "@type": "sdo:IAO_0000590"
+        "@id": "sdo:name",
+        "@type": "sdo:Text"
     },
     "characteristics": {
-      "@id" : "sdo:RO_0000086",
-      "@type" : "sdo:BFO_0000019"
+      "@id" : "sdo:Property",
+      "@type" : "sdo:Property"
     },
      "roles": {
-        "@id": "sdo:RO_0000087",
-        "@type" : "sdo:OBI_0000740"
+        "@id": "sdo:potentialAction",
+        "@type" : "sdo:Action"
         },
     "derivesFrom": {
-      "@id" : "sdo:RO_0001000",
-      "@type" : ["sdo:OBI_0100026","sdo:BFO_0000040"]
+      "@id" : "sdo:isRelatedTo",
+      "@type" : "sdo:Product"
     }
   }
 }

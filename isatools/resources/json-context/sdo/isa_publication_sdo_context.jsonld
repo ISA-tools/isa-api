@@ -3,14 +3,13 @@
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "swo" : "http://www.ebi.ac.uk/swo/",
-    "Publication": "sdo:IAO_0000311",
-    "identifier": "sdo:IAO_0000577",
-    "pubMedID" : "sdo:OBI_0001617",
-    "doi" :   "sdo:OBI_0002110",
-    "name": "sdo:IAO_0000590",
-    "status"  : "sdo:EFO_0001742",
-    "type": "sdo:IAO_0000310",
-    "authorList": "sdo:IAO_0000321"
+    "Publication": "sdo:ScholarlyArticle",
+    "identifier": "sdo:identifier",
+    "pubMedID" : "sdo:url",
+    "doi" :   "sdo:sameAs",
+    "title": "sdo:Periodical",
+    "status"  : "sdo:creativeWorkStatus",
+    "authorList": "sdo:author",
+    "comments": "sdo:Comment",
   }
 }

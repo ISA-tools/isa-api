@@ -21,33 +21,33 @@
       "@type": "sdo:Date"
     },
     "executesProtocol" : {
-        "@id":"sdo:",
+        "@id":"sdo:TERM_REQUEST-executesProtocol",
         "@type" : "sdo:HowTo"
     },
     "parameterValues": {
-       "@id":"sdo:",
-        "@type" : ["sdo:MedicalDevice", "sdo:SoftwareApplication", "sdo:"]
+       "@id":"sdo:value",
+        "@type" : ["sdo:PropertyValue"]
     },
     "previousProcess" : { 
-    "@id":"sdo:",
+    "@id":"sdo:TERM_REQUEST-PREVIOUS",
       "@type" : "sdo:Action" 
       },
     "nextProcess" : {
-        "@id":"sdo:",
+        "@id":"sdo:TERM_REQUEST-NEXT",
       "@type" :  "sdo:Action" 
       },
     "input" : {
       "@id":"sdo:participant",
-      "@type" : ["sdo:Patient","sdo:BioSample","sdo:DataSet"]
+      "@type" : ["sdo:Product","sdo:DataDownload"]
     },
     "output" :  {
       "@id":"sdo:result",
-      "@type" : ["sdo:Subject","sdo:BioSample","sdo:DataSet"]
+      "@type" : ["sdo:Product","sdo:DataDownload"]
     },
     "performer" :
     {
       "@id" : "sdo:performer",
-      "@type":["sdo:Organization","sdo:Person"]
+      "@type": "sdo:Person"
     },
     "comments" : {
       "@id" : "sdo:comment",

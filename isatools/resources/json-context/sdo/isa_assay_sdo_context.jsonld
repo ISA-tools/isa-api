@@ -18,7 +18,7 @@
     },
     "filename" :  {
          "@id" : "sdo:url",
-         "@type": ["sdo:Text","sdo:DataDownload"]
+         "@type": "sdo:DataDownload"
     },
     "measurementType" :  {
         "@id" : "sdo:variableMeasured",
@@ -26,7 +26,7 @@
     },  
     "technologyType" :  {
         "@id" : "sdo:measurementTechnique",
-        "@type" : ["sdo:Text"]
+        "@type" : "sdo:Text"
     }, 
     "technologyPlatform" :  {
         "@id" : "sdo:instrument",
@@ -34,23 +34,23 @@
     },     
     "materials" : {
           "@id" : "sdo:participant",
-        "@type" : ["sdo:Patient", "sdo:BioSample"]
+        "@type" : "sdo:Product"
      },
      "othermaterials" : {
         "@id" : "sdo:participant",
-        "@type" : ["sdo:","sdo:"]
+        "@type" : "sdo:Product"
      },   
     "characteristicCategories" :{
          "@id" : "sdo:measuredProperty",
-         "@type" : ["sdo:StructuredValue"]
+         "@type" : "sdo:StructuredValue"
     },
     "dataFiles" : {
         "@id" : "sdo:url",
-        "@type" : ["sdo:DataDownload"]
+        "@type" : "sdo:DataDownload"
     },
     "processSequences" : {
          "@id" : "sdo:hasPart",
-         "@type" : ["sdo:Action", "sdo:CreationAction"]
+         "@type" : "sdo:Action"
     },
     "unitCategories": {
           "@id": "sdo:unit" ,
