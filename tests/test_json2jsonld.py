@@ -30,7 +30,7 @@ class TestJson2JsonLD(unittest.TestCase):
             instance = load(instance_file)
             instance_file.close()
         # for ontology in ontologies:
-            ontology = "wdt"
+            ontology = "obo"
             self.serializer.set_ontology(ontology)
             self.serializer.set_instance(instance)
             # self.maxDiff = None

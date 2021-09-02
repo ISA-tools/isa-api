@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Data": "obo:IAO_0000100",
+    "Data":  {"@id": "obo:IAO_0000100"},
     "type" :{
         "@id" : "",
         "@type" : ["obo:IAO_0000101","obo:NMR:1400119", "obo:NMR:1002006", "obo:MS_1000577", "obo:EFO_0004098", "obo:EFO_0004097", "obo:EFO_0004099", "obo:EFO_0004096"]

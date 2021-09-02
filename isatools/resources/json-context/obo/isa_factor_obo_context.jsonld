@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Factor": "obo:OBI_0000750",
+    "Factor":  {"@id": "obo:OBI_0000750"},
     "identifier": {
       "@id": "obo:IAO_0000577"
     },

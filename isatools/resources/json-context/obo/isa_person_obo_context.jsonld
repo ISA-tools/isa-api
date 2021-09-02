@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Person":  "obo:NCBITaxon_9606",
+    "Person":   {"@id": "obo:NCBITaxon_9606"},
     "identifier": {"@id": "obo:IAO_0000577"},
     "firstName": {
         "@id": "obo:IAO_0000235",

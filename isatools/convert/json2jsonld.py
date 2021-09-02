@@ -32,10 +32,8 @@ class ISALDSerializer:
                                  "resources/json-context/%s/" % ontology + "isa-" + ontology + "-allinone-context.jsonld"
         self._resolve_network()
         self.set_instance(json_instance)
-        # self.load_core_mapping(mapping_file="/Users/philippe/Documents/git/isa-api2/isa-api/isatools/resources/json-context/mapping_file.xlsx")
 
-        current_mappings = ISALDSerializer.load_core_mapping()
-        print("CURRENT:", current_mappings)
+        self.current_mappings = self._load_core_mapping()
 
     def __new__(cls, json_instance, ontology="wdt"):
         if cls._instance is None:
@@ -75,15 +73,15 @@ class ISALDSerializer:
         """
         self.ontology = ontology
 
-    def load_core_mapping(mapping_file="/Users/philippe/Documents/git/isa-api2/isa-api/isatools/resources/json-context/mapping_file.xlsx"):
-        try:
-            df = pd.read_excel(mapping_file)
-            current_mappings = df.set_index('isa').to_dict('index')
-            return current_mappings
-        except IOError as ioe:
-            print("ERROR", ioe)
+    def _load_core_mapping(self):
+        """
+        :return: mapping dictionary from isa type terms to rdftype
+        """
+        dir_path = os.path.dirname(os.path.abspath(__file__))
+        df = pd.read_excel(os.path.join(dir_path, "../resources/json-context/mapping_file.xlsx"))
+        return df.set_index('isa').to_dict('index')
 
-    def _inject_ld(self, schema_name, output, instance, reference=False, remote_context=False, ontology="sdo", mappings=load_core_mapping()):
+    def _inject_ld(self, schema_name, output, instance, reference=False, remote_context=False):
         """
         Inject the LD properties at for the given instance or sub-instance
         :param schema_name: the name of the schema to get the properties from
@@ -91,8 +89,6 @@ class ISALDSerializer:
         :param instance: the instance to get the values from
         :param reference: string indicating a fake reference for building the context url
         :param remote_context: a boolean to indicate use of remote context files(True) or embedded context (False)
-        :param {String} ontology: an ontology name (e.g.: "sdo")
-        :param mappings dictionary from resources file
         :return: the output of the LD injection
         """
 
@@ -119,8 +115,8 @@ class ISALDSerializer:
                 if "investigation" in schema_name and remote_context is False:
                     try:
                         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                               "../resources/json-context/", ontology,
-                                               "isa-" + ontology + "-allinone-context.jsonld")) as single_context:
+                                               "../resources/json-context/", self.ontology,
+                                               "isa-" + self.ontology + "-allinone-context.jsonld")) as single_context:
                             this_json_context = json.load(single_context)
                             output["@context"] = this_json_context["@context"]
                     except IOError as ioe:
@@ -131,15 +127,15 @@ class ISALDSerializer:
                     context_key = "Material"
 
         # Postprossing of the actual Node Type:
-
-        if context_key in mappings.keys() and context_key != "Materials":
+        # TODO: remove all this
+        # mappings = self.current_mappings
+        # if context_key in mappings.keys() and context_key != "Materials":
+        if context_key != "Materials":
             # print("KEY: ",context_key)
-            output["@type"] = ontology + ":" + mappings[context_key][ontology]
-            # print(context_key,  output["@type"])
-            # print("HERE:", mappings)
+            # output["@type"] = self.ontology + ":" + mappings[context_key][self.ontology]
+            output["@type"] = context_key
         else:
             context_key
-            # print(context_key)
 
         for field in instance:
             if field in props:

@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Publication": "obo:IAO_0000311",
+    "Publication":  {"@id": "obo:IAO_0000311"},
     "identifier": "obo:IAO_0000577",
     "pubMedID" : "obo:OBI_0001617",
     "doi" :   "obo:OBI_0002110",

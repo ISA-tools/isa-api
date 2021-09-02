@@ -3,7 +3,7 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Material": "obo:OBI_0000047",
+    "Material":  {"@id": "obo:OBI_0000047"},
     "type" :{
         "@id" : "obo:RO_0000086",
         "@type" : ["obo:OBI_0000423","obo:OBI_0000924"]
