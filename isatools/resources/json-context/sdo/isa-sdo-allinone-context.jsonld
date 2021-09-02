@@ -68,6 +68,7 @@
              "protocols": {"@id": "sdo:hasPart", "@type": "sdo:HowTo"},
              "factors": {"@id": "sdo:hasPart", "@type": "sdo:PropertyValue"},
              "factorName": {"@id": "sdo:name", "@type": "sdo:Text"},
+             "factorType" : { "@id": "sdo:hasCategoryCode", "@type": "sdo:DefinedTerm" },
              "file":  {"@id": "sdo:result", "@type": "sdo:DataDownload"},
              "identifier": {"@id": "sdo:identifier", "@type": "sdo:Uri"},
              "derivesFrom": {"@id": "sdo:isRelatedTo", "@type": "sdo:Product"},
@@ -81,6 +82,8 @@
              "authorList": {"@id": "sdo:author", "@type": "sdo:Person"},
              "performer": {"@id": "sdo:agent", "@type": "sdo:Person"},
              "parameterName": {"@id": "sdo:name", "@type": "sdo:Text"},
+             "parameters" : { "@id":"sdo:", "@type":["sdo:","sdo:","sdo:"] },
+             "uri" :{ "@id": "sdo:url", "@type": "sdo:URL" },
              "ontologySourceReferences": {"@id": "sdo:hasPart", "@type": "sdo:DefinedTermSet"}
          }
 }
