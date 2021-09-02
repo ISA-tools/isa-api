@@ -80,9 +80,9 @@
              "outputs": {"@id": "wdtp:P1056-OUTPUT", "@type": "wdt:Q53617407"},
              "nextProcess": {"@id": "wdtp:P156-NEXT", "@type": "wdt:Q3249551"},
              "previousProcess": {"@id": "wdtp:P155-PREV", "@type": "wdt:Q3249551"},
-             "doi": {"@id": "wdtp:P1056-OUTPUT", "@type": "wdt:Q25670"},
-             "pubMedID": {"@id": "wdtp:P1056-OUTPUT", "@type": "wdt:Q2082879"},
-             "authorList": {"@id": "wdtp:P1056-OUTPUT", "@type": "wdt:Q57971547"},
+             "doi": {"@id": "wdtp:P527", "@type": "wdt:Q25670"},
+             "pubMedID": {"@id": "wdtp:P527", "@type": "wdt:Q2082879"},
+             "authorList": {"@id": "wdtp:P527", "@type": "wdt:Q57971547"},
              "performer": {"@id": "wdtp:P137-PERF", "@type": "wdt:Q215627"},
              "parameterName": {"@id": "wdtp:P1448-PARAMNAME", "@type": "wdt:Q857525"},
              "ontologySourceReferences": {"@id": "wdtp:P2283", "@type": "wdt:Q324254"}

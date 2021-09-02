@@ -6,7 +6,7 @@
     "enm": "http://purl.enanomapper.org/onto/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "OntologyAnnotation": "wdt:Q857525",
-    	"annotationValue" : "wdtp:P527",
+    	"annotationValue" : {"@id":"wdtp:P527","@type":"rdfs:label"},
     	"termSource" : {
     		"@id":"wdtp:P5967",
     		"@type": "wdt:Q324254"
