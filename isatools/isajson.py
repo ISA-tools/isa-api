@@ -104,7 +104,7 @@ def load(fp):
     term_source_dict = {"": None}
     for ontologySourceReference_json in investigation_json["ontologySourceReferences"]:
         ontology_source_reference = OntologySource(
-            #id_=ontologySourceReferences["@id"],
+            #id_= ontologySourceReferences["@id"],
             name=ontologySourceReference_json["name"],
             file=ontologySourceReference_json["file"],
             version=ontologySourceReference_json["version"],
@@ -115,7 +115,7 @@ def load(fp):
         investigation.ontology_source_references.append(ontology_source_reference)
     for publication_json in investigation_json["publications"]:
         publication = Publication(
-            #id_=publication["@id"],
+            #id_= publication["@id"],
             pubmed_id=publication_json["pubMedID"],
             doi=publication_json["doi"],
             author_list=publication_json["authorList"],
@@ -133,7 +133,7 @@ def load(fp):
         investigation.publications.append(publication)
     for person_json in investigation_json["people"]:
         person = Person(
-            #id_=person_json["@id"],
+            #id_= person_json["@id"],
             last_name=person_json["lastName"],
             first_name=person_json["firstName"],
             mid_initials=person_json["midInitials"],
@@ -847,7 +847,7 @@ def get_characteristic_category_ids_in_study_materials(study_json):
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in [[characteristic["category"]["@id"]  for characteristic in material["characteristics"]]
+    return [elem for iterabl in [[characteristic["category"]["@id"] for characteristic in material["characteristics"]]
                                  if "characteristics" in material.keys() else [] for material in
               assay_json["materials"]["samples"] + assay_json["materials"]["otherMaterials"]] for elem in iterabl]
 
