@@ -1,0 +1,281 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="studySample">
+        <measurement term-label="[Sample]" term-accession="" source-abbreviation=""/>
+        <technology term-label="" term-accession="" source-abbreviation=""/>
+        <field header="Source Name" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="true" is-hidden="false" is-forced-ontology="false">
+            <description><![CDATA[Provide human readable subject identifiers or labels.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Material Type" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[To indicate if the material is a study subject or a calibration material used for quality control purpose.]]></description>
+            <default-value><![CDATA[specimen]]></default-value>
+            <list-values>study subject,specimen,negative control reference (blank),positive control reference (standard)</list-values>
+        </field>
+        <field header="Characteristics[reference descriptor]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Use this field to provide any additional information about the reference material used as negative or positive control and which is not a study subject.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Characteristics[organism]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Provide taxonomic information associated to the Source Biological material (for example, Species, genus, strain,....). Ideally, provide NCBI TaxID or NEWT identifier (Mapping to Metabolomics WB:Subject Species)]]></description>
+            <default-value/>
+        </field>
+        <field header="Characteristics[cell]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the cell type, ideally by selecting a term from Cell Ontology (Mapping to Metabolomics WB:CELL:Strain Details).]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1006" abbreviation="CL" name="Cell type" version="50055">
+                    <branch id="CL:0000000" name="cell"/>
+                </ontology>
+            </recommended-ontologies>
+        </field>
+        <field header="Characteristics[cell provider]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the provider, supplier or vendor of the cell/cell line (Mapping to Metabolomics WB:CELL:Biosource or Supplier).]]></description>
+            <default-value><![CDATA[ATCC]]></default-value>
+        </field>
+        <field header="Characteristics[cellular component]" data-type="Ontology term"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate cellular component information, if applicable, ideally by selecting a term from GO (Mapping to Metabolomics WB:CELL:Strain Details).]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1070" abbreviation="GO" name="Gene Ontology" version="50101">
+                    <branch id="GO:0005575" name="cellular_component"/>
+                </ontology>
+            </recommended-ontologies>
+        </field>
+        <field header="Characteristics[life cycle stage]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the life cycle stage, ideally by selecting a term from uberon (Mapping to Metabolomics WB:CELL:Primary or immortalized).]]></description>
+            <default-value><![CDATA[immortalized cell]]></default-value>
+            <list-values>primary cell,immortalized cell</list-values>
+        </field>
+        <field header="Characteristics[genotype]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the cell genotype (Mapping to Metabolomics WB:CELL:Strain Details).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <protocol-field protocol-type="cell growth"/>
+        <field header="Parameter Value[tracer molecule]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Report the natural stable isotope enriched compound added to the cell culture reporting the UIPAC naming convention.]]></description>
+            <default-value><![CDATA[[U-13C6]-D-glucose]]></default-value>
+            <list-values>,[U-13C6]-D-glucose,[U-13C5]-L-glutamine,[1,2-13C2]-D-glucose,[6-13C]-D-glucose,[15N]-L-glutamine,[U-13C6-6,7,7-D3]-D-glucose,other</list-values>
+        </field>
+        <field header="Parameter Value[cell culture vessel]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[indicate the nature and size of hardware used to grow the cell (Mapping to Metabolomics WB:CELL:Growth Container).]]></description>
+            <default-value><![CDATA[p6 well plate]]></default-value>
+            <list-values>,fermenter,fermentation reactor,6-well plate (9.61cm2),12-well plate (3.7cm2),24-well plate (2.0cm2),96-well plate (1.04cm2),25 cm2 flask,75 cm2 flask,175 cm2 flask,300 cm2 flask,500 cm2 flask,other</list-values>
+        </field>
+        <field header="Parameter Value[cell culture configuration]" data-type="List"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate cell culture mode/layout/configuration (Mapping to Metabolomics WB:CELL:Growth Configuration).]]></description>
+            <default-value><![CDATA[monolayer]]></default-value>
+            <list-values>,monolayer,double layer,sandwich,spheroids,batch,fed-batch,perfusion,continuous fermentation</list-values>
+        </field>
+        <field header="Parameter Value[cell seeding density]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate seeding cell density (Mapping to Metabolomics WB:CELL:Inoculation Procedure & CELL:Cell counts).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <unit-field data-type="List" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description><![CDATA[a unit field to qualify the seeding cell density.]]></description>
+            <list-values>,cells per liter,cells per cm2</list-values>
+        </unit-field>
+        <field header="Parameter Value[cell culture medium composition]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate cell culture medium composition, please provide as much details (Mapping to Metabolomics WB: Treatment:CELL:Media).]]></description>
+            <default-value><![CDATA[RPMI, final glucose concentration 24mM, final glutamine concentration 10 nM,ph 7.2]]></default-value>
+        </field>
+        <field header="Parameter Value[cell culture serum]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate serum type and percentage used for culture (Mapping to Metabolomics WB: Treatment:CELL:Media) and percentage]]></description>
+            <default-value><![CDATA[fetal calf serum]]></default-value>
+            <list-values>,bovine calf serum,fetal calf serum</list-values>
+        </field>
+        <field header="Parameter Value[cell culture antibiotics]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[List antibiotic compounds (from CHEBI) used in the culture (Mapping to Metabolomics WB: Treatment:CELL:Media).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[cell culture temperature]" data-type="Double"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate cell culture incubation temperature (Mapping to Metabolomics WB: Treatment:CELL:Environmental Conditions).]]></description>
+            <default-value><![CDATA[37]]></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description>A unit which is a standard measure of the average kinetic energy of the particles in a sample of matter.</description>
+            <recommended-ontologies>
+                <ontology id="1112" abbreviation="UO" name="Units of measurement" version="49941">
+                    <branch id="UO:0000005" name="temperature unit"/>
+                </ontology>
+            </recommended-ontologies>
+        </unit-field>
+        <field header="Parameter Value[cell culture CO2 partial pressure]" data-type="Double"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the carbon dioxyde partial pressure used during the cell culture step (Mapping to Metabolomics WB: Treatment:CELL:Environmental Conditions).]]></description>
+            <default-value><![CDATA[5%]]></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description>A unit which is a standard measure of the force applied to a given area.</description>
+            <recommended-ontologies>
+                <ontology id="1112" abbreviation="UO" name="Units of measurement" version="49941">
+                    <branch id="UO:0000109" name="pressure unit"/>
+                </ontology>
+            </recommended-ontologies>
+        </unit-field>
+        <field header="Parameter Value[cell confluence level]" data-type="Double"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the level of cell confluence in percentage (Mapping to Metabolomics WB: Treatment:CELL:Percent confluence)]]></description>
+            <default-value><![CDATA[50%]]></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description>A dimensionless percent unit which denotes the density of an attached or monolayer culture (e.g., cell culture).</description>
+            <recommended-ontologies>
+                <ontology id="1112" abbreviation="UO" name="Units of measurement" version="49941">
+                    <branch id="UO:0000194" name="confluence percentage"/>
+                </ontology>
+            </recommended-ontologies>
+        </unit-field>
+        <field header="Parameter Value[harvesting condition]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the biotic characteristics of moment of harvesting (growth phase/stage (Mapping to Metabolomics WB: Treatment:CELL:Harvesting)]]></description>
+            <default-value><![CDATA[stationary growth phase]]></default-value>
+            <list-values>,exponential growth phase,stationary growth phase,steady state,cytostatic phase,cell cycle phase,stabilization time/phase before experiment,number of culture passages</list-values>
+        </field>
+        <field header="Parameter Value[harvesting cell density]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the cell density at harvesting time (Mapping to Metabolomics WB:CELL:Inoculation Procedure & CELL:Cell counts).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <unit-field data-type="List" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description><![CDATA[a unit field to qualify the seeding cell density.]]></description>
+            <list-values>,cells per liter,cells per cm2</list-values>
+        </unit-field>        
+        <!--<field header="Parameter Value[washing]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate metabolism quenching procedure (Mapping to Metabolomics WB: Treatment:PLANT:Metabolism Quenching Method).]]></description>
+            <default-value><![CDATA[precooled 60% methanol HEPES buffer]]></default-value>
+            <list-values>,precooled PBS buffer,precooled 60% methanol HEPES buffer,precooled 60% methanol ammonium bicarbonate buffer,none</list-values>
+        </field>-->       
+        <field header="Parameter Value[metabolism quenching]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate metabolism quenching procedure (Mapping to Metabolomics WB: Treatment:PLANT:Metabolism Quenching Method ).]]></description>
+            <default-value><![CDATA[snap freezing in liquid nitrogen]]></default-value>
+            <list-values>,none,metabolism quenching by snap freezing in liquid nitrogen,metabolism quenching by 13 CD3-QDA in cold CH3CN,metabolism quenching using precooled 60 percent methanol ammonium bicarbonate buffer,metabolism quenching using precooled 60 percent methanol HEPES buffer,metabolism quenching using precooled PBS bufferother</list-values>
+        </field>
+        <field header="Parameter Value[storage]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the storage procedure used to ensure specimen preservation until analysis (Mapping to Metabolomics WB: Treatment:CELL:Storage).]]></description>
+            <default-value><![CDATA[liquid nitrogen (-80C)]]></default-value>
+        </field>
+        <field header="Sample Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Provide human readable label for samples collected in the study.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Characteristics[specimen mass]" data-type="Integer" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the mass measured for the collected tissue specimen (Mapping to Metabolomics WB: Collection:TISSUE/CELL Quantity Taken).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description>Indicate mass unit associated with specimen mass value.</description>
+            <recommended-ontologies>
+                <ontology id="1112" abbreviation="UO" name="Units of measurement" version="49941">
+                    <branch id="UO:0000002" name="mass unit"/>
+                </ontology>
+            </recommended-ontologies>
+        </unit-field>
+        <field header="Characteristics[specimen preservation]" data-type="Ontology term"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate specimen preservation method (Mapping to Metabolomics WB: Collection:Storage Conditions).]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1123" abbreviation="OBI" name="Ontology for Biomedical Investigations"
+                    version="47893">
+                    <branch id="obo:OBI_0302893" name="storage"/>
+                </ontology>
+            </recommended-ontologies>
+        </field>
+        <field header="Factor Value[compound]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the chemical compound used as perturbing agent (using CHEBI) (Mapping to Metabolomics WB:Treatment Compound).]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1007" abbreviation="CHEBI"
+                    name="Chemical entities of biological interest" version="50031">
+                    <branch id="CHEBI:23367" name="molecular entity"/>
+                </ontology>
+            </recommended-ontologies>
+        </field>
+        <field header="Factor Value[dose]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the qualitative dose for the perturbagen (Mapping to Metabolomics WB:Treatment Dose).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Factor Value[time post exposure]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicate the time indicating the duration of the exposure or the time elapsed post exposure in the case of a single dose administration study (Mapping to Metabolomics WB:Treatment Duration).]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <unit-field data-type="Ontology term" is-multiple-value="false" is-required="false"
+            is-forced-ontology="false">
+            <default-value/>
+            <description>A unit which is a standard measure of the average kinetic energy of the particles in a sample of matter.</description>
+            <recommended-ontologies>
+                <ontology id="1112" abbreviation="UO" name="Units of measurement" version="49941">
+                    <branch id="UO:0000003" name="time unit"/>
+                </ontology>
+            </recommended-ontologies>
+        </unit-field>
+        <structured-field name="characteristics"/>
+        <structured-field name="factors"/>
+    </isatab-configuration>
+</isatab-config-file>

@@ -1,0 +1,123 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="targetedmetaboliteprofiling_hplc"
+        isatab-assay-type="generic_assay" isatab-conversion-target="generic">
+        <measurement term-label="targeted metabolite profiling" term-accession="obo:OBI_0000366"
+            source-abbreviation="OBI"/>
+        <technology term-label="high performance liquid chromatography" term-accession=""
+            source-abbreviation=""/>
+        <field header="Sample Name" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="true" is-hidden="false" is-forced-ontology="false">
+            <description><![CDATA[Samples represent major outputs resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="extraction"/>
+        <field header="Extract Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined names for each portion of extracted material.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="analytical chromatography"/>
+        <field header="Parameter Value[chromatography instrument]" data-type="Ontology term"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the name of the high performance liquid chromatography instrument]]></description>
+            <default-value/>
+        </field>
+        <field header="Parameter Value[chromatography column]" data-type="Ontology term"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the name,type and manufacturer of the hplc columns used]]></description>
+            <default-value/>
+        </field>
+        <field header="Parameter Value[chomatography column temperature]" data-type="Double"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[report the temperature in degree celsius of the chromatography column]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[elution buffer]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the composition of the elution buffer using the following scheme: solvent A=water/formic acid (99.9/0.1 v/v); solvent B= acetonitrile/formic acid (99.9/0.1 v/v)]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[elution program]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[please supply a pointer to a table detailing the modality of the solvent gradient during the elution process]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[detector]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the detector used by hplc instrument, use PSI-MS cv or OBI]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="" abbreviation="MS" name="PSI Mass Spectrometry Ontology"
+                    version="Jun 2010">
+                    <branch id="MS:1000026" name="detector type"/>
+                </ontology>
+            </recommended-ontologies>
+        </field>
+        <field header="Assay Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for a MS assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT].LE-[LABEL_COUNT].MSASSAY-[HYB_COUNT]</generated-value-template>
+        </field>
+        <field header="Raw Data File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the raw spectral data file generated by an assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[file checksum]" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a checksum associated with the Raw Spectral Data File]]></description>
+            <default-value><![CDATA[not available]]></default-value>
+        </field>
+        <field header="Comment[native format file]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a compressed file (e.g tar.gz) corresponding to the raw output of the instrument as generated by vendors' systems.]]></description>
+            <default-value><![CDATA[not available]]></default-value>
+        </field>         
+        <field header="Comment[file checksum]" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a checksum associated with the Raw Spectral Data File]]></description>
+            <default-value><![CDATA[not available]]></default-value>
+        </field>        
+        <protocol-field protocol-type="data transformation"/>
+        <field header="Normalization Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for each normalization applied]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for each data transformation applied]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Derived Data File" data-type="String" is-file-field="true"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the derived data file generated from spectral data by an assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Metabolite Assignment File]" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the metabolite assignment file gathered for this assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <structured-field name="factors"/>
+    </isatab-configuration>
+</isatab-config-file>

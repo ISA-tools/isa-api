@@ -1,0 +1,205 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="globalmetaboliteprofiling_lcms"
+        isatab-assay-type="ms_spec_assay" isatab-conversion-target="meda">
+        <measurement term-label="global metabolite profiling" term-accession="obo:OBI_0000366"
+            source-abbreviation="OBI"/>
+        <technology term-label="liquid chromatography mass spectrometry" term-accession=""
+            source-abbreviation=""/>
+        <field header="Sample Name" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="true" is-hidden="false" is-forced-ontology="false">
+            <description><![CDATA[Samples represent major outputs resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="extraction"/>
+        <field header="Extract Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined names for each portion of extracted material.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="labeling"/>
+        <field header="Labeled Extract Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Identifier for the labeled extract.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT].LE-[LABEL_COUNT]</generated-value-template>
+        </field>
+        <field header="Label" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Indicates a chemical or biological marker, such as a radioactive isotope or a fluorescent dye which is bound to a material in order to make it detectable by some assay technology (e.g. P33, biotin, GFP).]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1007" abbreviation="CHEBI"
+                    name="Chemical entities of biological interest" version="49736"/>
+            </recommended-ontologies>
+        </field>
+        <protocol-field protocol-type="mass spectrometry"/>
+        <field header="Parameter Value[internal standard]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[indicate the name of the chemical compound used as internal standard during the chromatography]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[calibration standard]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[indicate the name of the chemical compound used as calibration standard]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[chromatography instrument]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the name of the chromatograph used]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[chromatography column]" data-type="String"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the name of the chromatography column]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[elution buffer]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the composition of the elution buffer using the following scheme: solvent A=water/formic acid (99.9/0.1 v/v); solvent B= acetonitrile/formic acid (99.9/0.1 v/v)]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[elution program]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[description of the elution program using the following scheme: ramping from 90 % solvent A, 10 % solvent B to 100% solvant B in 30 min;100% solvent B, isocratic for 10 min]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[flow rate]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[report the flow rate of the elution buffer through column in amount per minute]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Parameter Value[instrument]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the name of the mass spectrometry instrument]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1105" abbreviation="MS" name="Mass spectrometry" version="49685"/>
+            </recommended-ontologies>
+        </field>
+        <field header="Parameter Value[ion source]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the ion source used by the mass spectrometer, use PSI-MS cv]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1105" abbreviation="MS" name="Mass spectrometry" version="49685"/>
+            </recommended-ontologies>
+        </field>
+        <field header="Parameter Value[detector]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the detector used by the mass spectrometer, use PSI-MS cv]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1105" abbreviation="MS" name="Mass spectrometry" version="49685"/>
+            </recommended-ontologies>
+        </field>
+        <field header="Parameter Value[analyzer]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[the analyzer(s) used by the mass spectrometer, use PSI-MS cv]]></description>
+            <default-value/>
+            <recommended-ontologies>
+                <ontology id="1105" abbreviation="MS" name="Mass spectrometry" version="49685"/>
+            </recommended-ontologies>
+        </field>
+        <field header="MS Assay Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for a MS assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT].LE-[LABEL_COUNT].MSASSAY-[HYB_COUNT]</generated-value-template>
+        </field>
+        <field header="Raw Spectral Data File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the raw spectral data file generated by an assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[file format]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a compressed file (e.g tar.gz) corresponding to the raw output of the instrument as generated by vendors' systems.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>vendor file format,MSI standard format</list-values>
+        </field>         
+        <field header="Comment[file checksum]" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a checksum associated with the Raw Spectral Data File]]></description>
+            <default-value><![CDATA[none reported]]></default-value>
+        </field>
+        <field header="Comment[file checksum type]" data-type="List" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a compressed file (e.g tar.gz) corresponding to the raw output of the instrument as generated by vendors' systems.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>MD5,SHA-1,SHA-256,not reported</list-values>
+        </field>                   
+        <protocol-field protocol-type="data transformation"/>
+        <field header="Normalization Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for each normalization applied]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for each data transformation applied]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Derived Spectral Data File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the derived data file generated from spectral data by an assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[file checksum]" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a checksum associated with the Raw Spectral Data File]]></description>
+            <default-value><![CDATA[none reported]]></default-value>
+        </field>
+        <field header="Comment[file checksum type]" data-type="List" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a compressed file (e.g tar.gz) corresponding to the raw output of the instrument as generated by vendors' systems.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>MD5,SHA-1,SHA-256</list-values>
+        </field>         
+        <field header="Metabolite Assignment File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Name (or URI) of the metabolite assignment file gathered for this assay.]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[file checksum]" data-type="String" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a checksum associated with the Raw Spectral Data File]]></description>
+            <default-value><![CDATA[none reported]]></default-value>
+        </field>
+        <field header="Comment[file checksum type]" data-type="List" is-file-field="false"
+            is-multiple-value="true" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a compressed file (e.g tar.gz) corresponding to the raw output of the instrument as generated by vendors' systems.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>MD5,SHA-1,SHA-256</list-values>
+        </field>        
+        <structured-field name="factors"/>
+    </isatab-configuration>
+</isatab-config-file>
