@@ -4,19 +4,24 @@ from graphene import (
     Schema as Sc,
     List,
     Field,
-    Argument)
+    Argument
+)
 from isatools.graphQL.custom_scalars import DateTime, StringOrInt
-from isatools.graphQL.utils import (
-    find_exposure_value,
-    compare_values,
-    build_assays_filters,
-    search_assays)
 from isatools.graphQL.inputs import (
     AssayParameters,
     ProcessSequenceParameters,
     OutputsParameters,
     InputsParameters,
-    StringComparator)
+    StringComparator
+)
+from isatools.graphQL.utils.search import (
+    search_assays,
+    search_process_sequence,
+    search_inputs,
+    search_outputs,
+    search_data_files,
+    search_parameter_values
+)
 
 
 class Comment(ObjectType):
@@ -126,7 +131,7 @@ class ProtocolParameter(ObjectType):
 class ProtocolParameterValue(ObjectType):
     category = Field(ProtocolParameter, name="characteristicType")
     unit = Field(OntologyAnnotation)
-    value = Field(OntologyAnnotation)
+    value = String()  # This is a real problem as it's not supposed to be both a scalar and non scalar.
 
 
 class Protocol(ObjectType):
@@ -144,59 +149,27 @@ class Process(ObjectType):
 
     name = String(name="name")
     executes_protocol = Field(Protocol, name="executesProtocol")
-    parameter_values = List(ProtocolParameterValue, name="parameterValues")
+    parameter_values = List(ProtocolParameterValue,
+                            name="parameterValues",
+                            filters=Argument(ProcessSequenceParameters, required=False))
     performer = String()
     date = DateTime()
     previous_process = Field(lambda: Process, name="previousProcess")
     next_process = Field(lambda: Process, name="nextProcess")
-    inputs = List(ProcessInputs, filters=Argument(InputsParameters, required=False))
+    inputs = List(ProcessInputs, filters=Argument(InputsParameters, required=False), operator=String())
     outputs = List(ProcessOutputs, filters=Argument(OutputsParameters, required=False))
 
     @staticmethod
-    def resolve_inputs(parent, info, filters=None):
-        """
-        Can be Source, Sample, Material and DataFile
-        => should be filterable by characteristics on Source/Sample/Material only
-        => however, exposure can only filter Sample
-        """
-        if not filters:
-            return parent.inputs
-        outputs = []
-        for input_data in parent.inputs:
-            input_classname = type(input_data).__name__
-            if input_classname == filters['target'] == "Sample" and 'treatmentGroup' in filters:
-                found = []
-                for factor in filters['treatmentGroup']:
-                    found.append(find_exposure_value(input_data, factor, factor['name']))
-                if False not in list(set(found)) or found == []:
-                    outputs.append(input_data)
-            if input_classname == filters['target'] \
-                    and 'characteristics' in filters:
-                # TODO: filter by characteristics
-                print(input_data.characteristics)
-
-        return outputs
+    def resolve_inputs(parent, info, filters=None, operator="AND"):
+        return search_inputs(parent.inputs, filters, operator)
 
     @staticmethod
     def resolve_outputs(parent, info, filters=None):
-        if not filters:
-            return parent.outputs
+        return search_outputs(parent.outputs, filters)
 
-        if filters.is_valid:
-            outputs = []
-            for output in parent.outputs:
-                if type(output).__name__ == filters['target'] == "DataFile":
-                    operator = list(filters['label'].keys())[0]
-                    if compare_values(output.label, filters['label'][operator], operator):
-                        outputs.append(output)
-                elif filters['target'] == type(output).__name__ == "Material":
-                    operator = list(filters['label'].keys())[0]
-                    if compare_values(output.type, filters['label'][operator], operator):
-                        outputs.append(output)
-                elif filters['target'] == type(output).__name__ == "Sample":
-                    # TODO: Filter samples on exposure FV, needs a valid input (no samples in current assays outputs)
-                    print("SAMPLE HERE, NOT DONE YET")
-            return outputs
+    @staticmethod
+    def resolve_parameter_values(parent, info, filters=None):
+        return search_parameter_values(parent, filters)
 
 
 class Assay(ObjectType):
@@ -216,54 +189,11 @@ class Assay(ObjectType):
 
     @staticmethod
     def resolve_data_files(parent, info, label=None):
-        if label:
-            operator = list(label.keys())[0]
-            return [x for x in parent.data_files if compare_values(x.label, label[operator], operator)]
-        return parent.data_files
+        return search_data_files(parent.data_files, label)
 
     @staticmethod
     def resolve_process_sequence(parent, info, filters=None, operator="AND"):
-
-        if operator not in ['AND', 'OR']:
-            return Exception("Operator should be AND or OR")
-
-        if not filters:
-            return parent.process_sequence
-
-        exposition_factors = filters['treatmentGroup'] if 'treatmentGroup' in filters else None
-        protocol = filters['executesProtocol'] if 'executesProtocol' in filters else None
-
-        if not protocol and not exposition_factors:
-            return parent.process_sequence
-
-        process_sequence = []
-        for process in parent.process_sequence:
-            append_process = []
-            match_exposure = []
-            if not exposition_factors:
-                match_exposure = [True]
-            else:
-                for input_data in process.inputs:
-                    if type(input_data).__name__ == "Sample":
-                        for factor in exposition_factors:
-                            match_exposure.append(find_exposure_value(input_data, factor, factor['name']))
-            if list(set(match_exposure)) == [True]:
-                append_process.append(True)
-
-            if not protocol:
-                append_process.append(True)
-            else:
-                comparator = list(protocol.keys())[0]
-                append_process.append(compare_values(process.executes_protocol.protocol_type.term,
-                                                     protocol[comparator],
-                                                     comparator))
-
-            if operator == 'AND' and append_process == [True, True]:
-                process_sequence.append(process)
-            elif operator == 'OR' and True in append_process:
-                process_sequence.append(process)
-
-        return process_sequence
+        return search_process_sequence(parent.process_sequence, filters, operator)
 
 
 class Study(ObjectType):
@@ -286,12 +216,7 @@ class Study(ObjectType):
 
     @staticmethod
     def resolve_assays(parent, info, filters=None, operator="AND"):
-        if operator not in ['AND', 'OR']:
-            return Exception("Operator should be AND or OR")
-        if not filters:
-            return parent.assays
-        filters = build_assays_filters(filters)
-        return search_assays(parent.assays, filters, operator)
+        return search_assays(parent.assays, filters, operator) if filters else parent.assays
 
 
 class Investigation(ObjectType):
@@ -326,9 +251,6 @@ class IsaQuery(ObjectType):
 
     @staticmethod
     def resolve_assays(parent, info, filters=None, operator="AND"):
-        if operator not in ['AND', 'OR']:
-            return Exception("Operator should be AND or OR")
-        filters = build_assays_filters(filters)
         investigation_object = IsaQuery.investigation_instance
         output = []
         for study in investigation_object.studies:
