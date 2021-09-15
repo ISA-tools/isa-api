@@ -122,17 +122,17 @@ elif response.errors:
 
 ### Assays:
 #### Queryable fields:
-| Field name                  |             Description                                  |            Type          |
-|-----------------------------|----------------------------------------------------------|--------------------------|
-| filename                    | Name of the assay file                                   | String                   |
-| technologyPlatform          | Technology platform used in this assay                   | String                   |
-| technologyType              | Type of technology used in this assay                    | [OntologyAnnotation](#OntologyAnnotation)       |
-| measurementType             | Type of measurement used in this assay                   | [OntologyAnnotation](#OntologyAnnotation)       |
-| dataFiles                   | List of files used or produced in this assay             | [DataFile](#DataFile)                 |
-| materials                   | Materials used in this assay                             | [Material](#Material)                |
-| characteristicCategories    | Categories of characteristics associated with this assay | [OntologyAnnotation](#OntologyAnnotation)       |
-| unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)       |
-| processSequence             | Processes associated with this assay                     | [Process](#Process)                  |
+| Field name                  |             Description                                  |                      Type                        |
+|-----------------------------|----------------------------------------------------------|--------------------------------------------------|
+| filename                    | Name of the assay file                                   | String                                           |
+| technologyPlatform          | Technology platform used in this assay                   | String                                           |
+| technologyType              | Type of technology used in this assay                    | [OntologyAnnotation](#OntologyAnnotation)        |
+| measurementType             | Type of measurement used in this assay                   | [OntologyAnnotation](#OntologyAnnotation)        |
+| dataFiles                   | List of files used or produced in this assay             | [DataFile](#DataFile)                            |
+| materials                   | Materials used in this assay                             | [Material](#Material)                            |
+| characteristicCategories    | Categories of characteristics associated with this assay | [OntologyAnnotation](#OntologyAnnotation)        |
+| unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)        |
+| processSequence             | Processes associated with this assay                     | [Process](#Process)                              |
 
 The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
 output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
@@ -350,33 +350,33 @@ elif response.errors:
 
 ### ProtocolParameterValue:
 
-| Field name   |             Description                       |            Type         | Inputs |
-|--------------|-----------------------------------------------|-------------------------|--------|
-| characteristicType     | category of parameter               | ProtocolParameter       | None   |
-| unit                   | unit of the parameter               | OntologyAnnotation      | None   |
-| value                  | value of the parameter              | String                  | None   |
+| Field name   |             Description                       |            Type         |
+|--------------|-----------------------------------------------|-------------------------|
+| characteristicType     | category of parameter               | ProtocolParameter       |
+| unit                   | unit of the parameter               | OntologyAnnotation      |
+| value                  | value of the parameter              | String                  |
 
 
 ### ProtocolParameter:
 A protocol parameter described as an ontology annotation.
 
-| Field name                           | Description           |            Type          | Inputs |
-|--------------------------------------|-----------------------|--------------------------|--------|
+| Field name                            | Description              |            Type          |
+|---------------------------------------|--------------------------|--------------------------|
 | parameterName | name of the parameter | OntologyAnnotation       | None   |
 
 ### Protocol:
 A list of protocols.
 The `Protocol` object is described as following:
 
-| Field name   |             Description             |            Type         | Inputs |
-|--------------|-------------------------------------|-------------------------|--------|
-| name         | name of the protocol                | String                  | None   |
-| protocolType | type of protocol                    | OntologyAnnotation      | None   |
-| description  | textual description of the protocol | String                  | None   |
-| uri          | URI of the protocol                 | String                  | None   |
-| version      | version of the protocol             | String                  | None   |
-| parameters   | parameters used by this protocol    | List(ProtocolParameter) | None   |
-| components   | components used by this protocol    | List((Component)        | None   |
+| Field name   |             Description             |            Type         |
+|--------------|-------------------------------------|-------------------------|
+| name         | name of the protocol                | String                  |
+| protocolType | type of protocol                    | OntologyAnnotation      |
+| description  | textual description of the protocol | String                  |
+| uri          | URI of the protocol                 | String                  |
+| version      | version of the protocol             | String                  |
+| parameters   | parameters used by this protocol    | List(ProtocolParameter) |
+| components   | components used by this protocol    | List((Component)        |
 
 ### Publication:
 
