@@ -315,7 +315,12 @@ elif response.errors:
   print(response.errors)
 ```
 
-## References:
+---
+
+## Fields References:
+
+### Characteristic:
+
 
 ### Component:
 | Field name       |   Description          | Type                    |
@@ -331,7 +336,14 @@ elif response.errors:
 
 ### Factor:
 
+
 ### Material:
+| Field name         |        Description                |   Type                            |
+|--------------------|-----------------------------------|-----------------------------------|
+| name               | Name of the material              | String                            |
+| characteristics    | Characteristics of the material   | [Characteristic](#Characteristic) |
+| type               | Type of material                  | String                            |
+| derivesFrom        | Source the material derives from  | [Source](#Source)                 |
 
 ### OntologyAnnotation:
 | Field name      |        Description       |            Type                                     |
@@ -363,7 +375,6 @@ elif response.errors:
 | characteristicType     | Category of parameter               | [ProtocolParameter](#ProtocolParameter)       |
 | unit                   | Unit of the parameter               | [OntologyAnnotation](#OntologyAnnotation)     |
 | value                  | Value of the parameter              | String                                        |
-
 
 ### ProtocolParameter:
 | Field name               | Description              |                      Type                       |
