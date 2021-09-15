@@ -326,6 +326,15 @@ elif response.errors:
 ### processSequence:
 
 ### protocols:
+| Field name   |             Description             |            Type         |
+|--------------|-------------------------------------|-------------------------|
+| name         | name of the protocol                | String                  |
+| protocolType | type of protocol                    | OntologyAnnotation      |
+| description  | textual description of the protocol | String                  |
+| uri          | URI of the protocol                 | String                  |
+| version      | version of the protocol             | String                  |
+| parameters   | parameters used by this protocol    | List(ProtocolParameter) |
+| components   | components used by this protocol    | List((Component)        |
 
 ### publications:
 
