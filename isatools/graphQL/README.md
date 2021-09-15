@@ -426,6 +426,12 @@ elif response.errors:
 | status         | Status of the publication | [OntologyAnnotation](#OntologyAnnotation)  |
 
 ### Sample:
+| Field name       |   Description                             |           Type                    |
+|------------------|-------------------------------------------|-----------------------------------|
+| name             | Name of the sample                        | String                            |
+| characteristics  | Characteristic of the sample              | [Characteristic](#Characteristic) |
+| derivesFrom      | Source the sample derives from            | [Source](#Source)                 |
+| factorValues     | Factor value assocaited with the sample   | [FactorValue](#FactorValue)       |
 
 ### Source:
 | Field name       |   Description                  |           Type                    |
