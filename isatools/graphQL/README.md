@@ -317,6 +317,8 @@ elif response.errors:
 
 ## References:
 
+## Component:
+
 ### DataFile:
 
 ### Factor:
@@ -350,33 +352,31 @@ elif response.errors:
 
 ### ProtocolParameterValue:
 
-| Field name   |             Description                       |            Type         |
-|--------------|-----------------------------------------------|-------------------------|
-| characteristicType     | category of parameter               | ProtocolParameter       |
-| unit                   | unit of the parameter               | OntologyAnnotation      |
-| value                  | value of the parameter              | String                  |
+| Field name   |             Description                       |                        Type                   |
+|--------------|-----------------------------------------------|-----------------------------------------------|
+| characteristicType     | category of parameter               | [ProtocolParameter](#ProtocolParameter)       |
+| unit                   | unit of the parameter               | [OntologyAnnotation](#OntologyAnnotation)     |
+| value                  | value of the parameter              | String                                        |
 
 
 ### ProtocolParameter:
-A protocol parameter described as an ontology annotation.
-
-| Field name                            | Description              |            Type          |
-|---------------------------------------|--------------------------|--------------------------|
-| parameterName | name of the parameter | OntologyAnnotation       | None   |
+| Field name               | Description              |                      Type                       |
+|--------------------------|--------------------------|-------------------------------------------------|
+| parameterName            | name of the parameter    | [OntologyAnnotation](#OntologyAnnotation)       |
 
 ### Protocol:
 A list of protocols.
 The `Protocol` object is described as following:
 
-| Field name   |             Description             |            Type         |
-|--------------|-------------------------------------|-------------------------|
-| name         | name of the protocol                | String                  |
-| protocolType | type of protocol                    | OntologyAnnotation      |
-| description  | textual description of the protocol | String                  |
-| uri          | URI of the protocol                 | String                  |
-| version      | version of the protocol             | String                  |
-| parameters   | parameters used by this protocol    | List(ProtocolParameter) |
-| components   | components used by this protocol    | List((Component)        |
+| Field name   |             Description             |                    Type                    |
+|--------------|-------------------------------------|--------------------------------------------|
+| name         | name of the protocol                | String                                     |
+| protocolType | type of protocol                    | [OntologyAnnotation](#OntologyAnnotation)  |
+| description  | textual description of the protocol | String                                     |
+| uri          | URI of the protocol                 | String                                     |
+| version      | version of the protocol             | String                                     |
+| parameters   | parameters used by this protocol    | [ProtocolParameter](#ProtocolParameter)    |
+| components   | components used by this protocol    | [Component](#Component)                    |
 
 ### Publication:
 
