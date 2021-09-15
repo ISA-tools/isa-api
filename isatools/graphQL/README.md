@@ -328,21 +328,24 @@ elif response.errors:
 
 ### processSequence:
 A list of processes organized to form sequences.
+The `Process` object is described as following:
 
 | Field name       |             Description                             |            Type              |       Inputs              |
 |------------------|-----------------------------------------------------|------------------------------|---------------------------|
 | name                                         | name of the process                                    | String                       | None                      |
-| executesProtocol                             | protocol executed by the process                       | Protocol                     | None                      | 
+| [executesProtocol](#protocols)               | protocol executed by the process                       | Protocol                     | None                      | 
 | [parameterValues](#ProtocolParameterValues)  | parameters used by the protocol of this process        | List(ProtocolParameterValue) | ProcessSequenceParameters |
 | performer                                    | name of the person who executed the protocol           | String                       | None                      |
 | date                                         | ?                                                      | DateTime                     | None                      |
-| previousProcess                              | pointer to the previous process in the sequence        | Process                      | None                      |
-| nextProcess                                  | pointer to the next process in the sequence            | Process                      | None                      |
+| [previousProcess](#processSequence)          | pointer to the previous process in the sequence        | Process                      | None                      |
+| [nextProcess](#processSequence)              | pointer to the next process in the sequence            | Process                      | None                      |
 | inputs                                       | input data used by this process                        | List(ProcessInputs)          | InputsParameters          |
 | outputs                                      | output data produced by this process                   | List(ProcessOutputs)         | OutputsParameters         |
 
 ### ProtocolParameterValues:
 A list of protocol parameter values.
+The `ProtocolParameterValues` object (used by the parameterValues field) is described as following:
+
 
 | Field name   |             Description                       |            Type         | Inputs |
 |--------------|-----------------------------------------------|-------------------------|--------|
@@ -352,12 +355,15 @@ A list of protocol parameter values.
 
 
 ### ProtocolParameter:
+A protocol parameter described as an ontology annotation.
+
 | Field name                           | Description           |            Type          | Inputs |
 |--------------------------------------|-----------------------|--------------------------|--------|
 | [parameterName](#OntologyAnnotation) | name of the parameter | OntologyAnnotation       | None   |
 
 ### protocols:
 A list of protocols.
+The `Protocol` object is described as following:
 
 | Field name   |             Description             |            Type         | Inputs |
 |--------------|-------------------------------------|-------------------------|--------|
