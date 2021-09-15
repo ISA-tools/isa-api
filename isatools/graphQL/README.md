@@ -342,7 +342,7 @@ elif response.errors:
 |------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------|
 | name             | name of the process                                    | String                                                                               |
 | executesProtocol | protocol executed by the process                       | Protocol                                                                             | 
-| parameterValues  | parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValues)                                   |
+| parameterValues  | parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValue)                                   |
 | performer        | name of the person who executed the protocol           | String                                                                               |
 | date             | ?                                                      | DateTime                                                                             |
 | previousProcess  | pointer to the previous process in the sequence        | [Process](#Process)                                                                  |
