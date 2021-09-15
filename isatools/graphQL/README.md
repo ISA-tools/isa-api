@@ -46,18 +46,18 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax: the [inves
 ### Investigation:
 
 #### Queryable fields:
-| Field name                          |             Description                              |            Type         |
-|-------------------------------------|------------------------------------------------------|-------------------------|
-| filename                            | Name of the investigation file                       | String                  |
-| identifier                          | Identifier of the investigation                      | String                  |
-| title                               | Title of the investigation                           | String                  |
-| description                         | Description of the investigation                     | String                  |
-| submissionDate                      | Submission date of the investigation                 | DateTime                |
-| publicReleaseDate                   | Public release date of the investigation             | DateTime                |
-| ontologySourceReferences            | Ontology source references used by the investigation | OntologySourceReference |
-| [publications](#publications)       | Publications associated with the investigation       | Publication             |  
-| [people](#people)                   | People to contact for the investigation              | Person                  |
-| [studies](#studies)                 | Studies associated with the investigation            | Study                   |
+| Field name                  |             Description                              |                   Type                                  |
+|-----------------------------|------------------------------------------------------|---------------------------------------------------------|
+| filename                    | Name of the investigation file                       | String                                                  |
+| identifier                  | Identifier of the investigation                      | String                                                  |
+| title                       | Title of the investigation                           | String                                                  |
+| description                 | Description of the investigation                     | String                                                  |
+| submissionDate              | Submission date of the investigation                 | DateTime                                                |
+| publicReleaseDate           | Public release date of the investigation             | DateTime                                                |
+| ontologySourceReferences    | Ontology source references used by the investigation | [OntologySourceReference](#OntologySourceReference)     |
+| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |  
+| people                      | People to contact for the investigation              | [Person](#Person)                                       |
+| studies                     | Studies associated with the investigation            | [Study](#Studies)                                       |
 
 Below is a simple example on how to get an investigation title, description and identifier, in that order.
 
@@ -315,30 +315,26 @@ elif response.errors:
   print(response.errors)
 ```
 
-## Queryable fields:
+## References:
 
-### characteristicCategories:
+### DataFile:
 
-### dataFiles:
+### Factor:
 
-### factor:
-
-### materials:
-
-### measurementType:
+### Material:
 
 ### OntologyAnnotation:
-| Field name   |             Description                       |            Type         | Inputs |
-|--------------|-----------------------------------------------|-------------------------|--------|
-| term                                      | value of the annotation             | String or Int           | None   |
-| [term_source](#ontologySourceReferences)  | ?               | OntologySourceReference | None   |
-| term_accession                            | ?               | String                  | None   |
+| Field name   |             Description                               |            Type         | Inputs |
+|--------------|-------------------------------------------------------|-------------------------|--------|
+| term                                      | value of the annotation  | String or Int           | None   |
+| [term_source](#ontologySourceReferences)  | ?                        | OntologySourceReference | None   |
+| term_accession                            | ?                        | String                  | None   |
 
-### ontologySourceReferences:
+### OntologySourceReference:
 
-### people:
+### Person:
 
-### processSequence:
+### Process:
 A list of processes organized to form sequences.
 The `Process` object is described as following:
 
@@ -373,7 +369,7 @@ A protocol parameter described as an ontology annotation.
 |--------------------------------------|-----------------------|--------------------------|--------|
 | [parameterName](#OntologyAnnotation) | name of the parameter | OntologyAnnotation       | None   |
 
-### protocols:
+### Protocol:
 A list of protocols.
 The `Protocol` object is described as following:
 
@@ -387,7 +383,7 @@ The `Protocol` object is described as following:
 | parameters   | parameters used by this protocol    | List(ProtocolParameter) | None   |
 | components   | components used by this protocol    | List((Component)        | None   |
 
-### publications:
+### Publication:
 
 ### studyDesignDescriptors:
 
