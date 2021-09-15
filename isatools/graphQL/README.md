@@ -10,7 +10,7 @@ It is bundled with the ISA-api python library and directly integrated as a metho
 
 ## Getting Started
 To use the ISA-QL queries, you just need to load an ISA investigation. The example below shows how to load the
-INVESTIGATION.txt file from the "/DIRNAME/" directory as an ISA investigation using the ``load()`` function.
+INVESTIGATION.txt file from the `/DIRNAME/` directory as an ISA investigation using the ``load()`` function.
 
 ```python
 from os import path
@@ -46,16 +46,18 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax: the [inves
 ### Investigation:
 
 #### Queryable fields:
-- **filename**: a string representing the name of the investigation file.
-- **identifier**: a string representing an identifier for this investigation.
-- **title**: a string representing a title for this investigation.
-- **description**: a string representing a description for this investigation.
-- **submissionDate**: a datetime representing the submission date of the investigation.
-- **publicReleaseDate**: a datetime representing the public release date of the investigation.
-- **[ontologySourceReferences](#ontologySourceReferences)**: a list of ontology source references used by this investigation.
-- **[publications](#publications)**: a list of publications associated with the investigation.
-- **[people](#people)**: a list of people to be contacted.
-- **[studies](#studies)**: the list of queryable and filterable studies bound to this investigation.
+| Field name                          |             Description                              |            Type         |
+|-------------------------------------|------------------------------------------------------|-------------------------|
+| filename                            | Name of the investigation file                       | String                  |
+| identifier                          | Identifier of the investigation                      | String                  |
+| title                               | Title of the investigation                           | String                  |
+| description                         | Description of the investigation                     | String                  |
+| submissionDate                      | Submission date of the investigation                 | DateTime                |
+| publicReleaseDate                   | Public release date of the investigation             | DateTime                |
+| ontologySourceReferences            | Ontology source references used by the investigation | OntologySourceReference |
+| [publications](#publications)       | Publications associated with the investigation       | Publication             |  
+| [people](#people)                   | People to contact for the investigation              | Person                  |
+| [studies](#studies)                 | Studies associated with the investigation            | Study                   |
 
 Below is a simple example on how to get an investigation title, description and identifier, in that order.
 
@@ -76,23 +78,24 @@ also have their own queryable fields.
 ### Studies:
 
 #### Queryable fields:
-- **filename**: a string representing the name of the study file.
-- **identifier**: a string representing an identifier for this study.
-- **title**: a string representing a study for this study.
-- **description**: a string representing a study for this study.
-- **submissionDate**: a datetime representing the submission date of the study.
-- **publicReleaseDate**: a datetime representing the public release date of the study.
-- **[publications](#publications)**: a list of publications associated with the study.
-- **[people](#people)**: a list of people to be contacted.
-- **[studyDesignDescriptors](#studyDesignDescriptors)**: a list of ontology annotation representing the design descriptors of this study.
-- **[protocols](#protocols)**: a list of protocols associated with this study.
-- **[materials](#materials)**: a list of materials associated with this study.
-- **[processSequence](#processSequence)**: a list of processes (represented as a sequences) associated with this study.
-- **[assay](#assays)**: a list of assay types associated with this study.
-- **[factor](#factor)**: a list of factors associated with this study.
-- **[characteristicCategories](#characteristicCategories)**: a list of ontology annotations representing the categories of characteristics associated 
-  with this study.
-- **[unitCategories](#unitCategories)**: a list of ontology annotations representing the categories of units associated with this study.
+| Field name                          |             Description                                                      |            Type         |
+|-------------------------------------|------------------------------------------------------------------------------|-------------------------|
+| filename                                               | Name of the study file                                    | String                  |
+| identifier                                             | Identifier of the study                                   | String                  |
+| title                                                  | Title of the study file                                   | String                  |
+| description                                            | Description of the study file                             | String                  |
+| submissionDate                                         | Date at which the study was submitted                     | DateTime                |
+| publicReleaseDate                                      | Date at which the study was publicly released             | DateTime                |
+| [publications](#publications)                          | Publications associated with the study                    | Publication             |
+| [people](#people)                                      | People to contact for the study                           | Person                  |
+| [studyDesignDescriptors](#studyDesignDescriptors)      | Design descriptors of this study                          | OntologyAnnotation      |
+| [protocols](#protocols)                                | Protocols associated with the study                       | Protocol                |
+| [materials](#materials)                                | Materials associated with the study                       | Material                |
+| [processSequence](#processSequence)                    | Processes associated with the study                       | Process                 |
+| [assay](#assays)                                       | Assays associated with the study                          | Assay                   |
+| [factor](#factor)                                      | Factors associated with the study                         | Factor                  |
+| [characteristicCategories](#characteristicCategories)  | Categories of characteristics associated with this study  | OntologyAnnotation      |
+| [unitCategories](#unitCategories)                      | Categories of units associated with the study             | OntologyAnnotation      |
 
 We could rewrite the previous example's query to request the same fields but for studies. 
 
@@ -119,21 +122,17 @@ elif response.errors:
 
 ### Assays:
 #### Queryable fields:
-- **filename**: a string representing the name of the assay file.
-- **technologyPlatform**: a string representing the technology platform used in this assay.
-- **[technologyType](#technologyType)**: an ontology annotation representing the type of technology used in this assay.
-- **[measurementType](#measurementType)**: an ontology annotation representing the type of measurement done in this 
-  assay.
-- **[dataFiles](#dataFiles)**: a list of data files produced and/or used by this assay.
-- **[materials](#materials)**: an object representing the different materials used in this assay.
-- **[characteristicCategories](#characteristicCategories)**: a list of ontology annotations representing the categories 
-  of characteristics associated with this assay. Always used in combinaison with the `on` field (see below).
-- **[unitCategories](#unitCategories)**: a list of ontology annotations representing the categories of units associated 
-  with this assay.
-- **[processSequence](#processSequence)**: a list of processes associated with this assay.
-- **on**: target the type of materials or inputs/outputs to apply the filter to. For instance, `characteristics` can 
-  only be applied to`Samples`, `Sources` and `Material` but not `DataFile` and `treatmentGroup` can only be applied to 
-  `Samples`
+| Field name                                            |             Description                                  |            Type          |
+|-------------------------------------------------------|----------------------------------------------------------|--------------------------|
+| filename                                              | Name of the assay file                                   | String                   |
+| technologyPlatform                                    | Technology platform used in this assay                   | String                   |
+| [technologyType](#technologyType)                     | Type of technology used in this assay                    | OntologyAnnotation       |
+| [measurementType](#measurementType)                   | Type of measurement used in this assay                   | OntologyAnnotation       |
+| [dataFiles](#dataFiles)                               | List of files used or produced in this assay             | DataFile                 |
+| [materials](#materials)                               | Materials used in this assay                             | Materials                |
+| [characteristicCategories](#characteristicCategories) | Categories of characteristics associated with this assay | OntologyAnnotation       |
+| [unitCategories](#unitCategories)                     | Categories of units associated with this assay           | OntologyAnnotation       |
+| [processSequence](#processSequence)                   | Processes associated with this assay                     | Process                  |
 
 The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
 output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
@@ -159,6 +158,9 @@ The assays query takes two inputs:
 - a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied 
   and an expression in the form of an object. This expression contains a key that indicates the operation to run and a 
   value to compare with. Typically, this is how a filter would look like:
+- **on**: target the type of materials or inputs/outputs to apply the filter to. For instance, `characteristics` can
+  only be applied to`Samples`, `Sources` and `Material` but not `DataFile` and `treatmentGroup` can only be applied to
+  `Samples`
   
 ```
 filters: {
@@ -208,6 +210,7 @@ Let's create a `my_query.gql` file to store our query:
     operator: "AND"
     filters: {
       technologyType: { eq: "nucleotide sequencing" }
+      on: "Sample"
       treatmentGroup: [
         {
           name: { eq: "compound" }
@@ -218,7 +221,6 @@ Let's create a `my_query.gql` file to store our query:
           value: { eq: "low" }
         }
       ]
-      on: "Sample"
       characteristics: [
           {
               name: { eq: "category" }
@@ -268,6 +270,7 @@ query assaysFilenames(
     operator: "AND"
     filters: {
       technologyType: { eq: $technologyType }
+      on: "Sample"
       treatmentGroup: [
         {
           name: { eq: "compound" }
@@ -278,7 +281,6 @@ query assaysFilenames(
           value: { eq: $dose }
         }
       ]
-      on: "Sample"
       characteristics: [
           {
               name: { eq: "category" }
@@ -325,7 +327,12 @@ elif response.errors:
 
 ### measurementType:
 
-### OntologyAnnotation
+### OntologyAnnotation:
+| Field name   |             Description                       |            Type         | Inputs |
+|--------------|-----------------------------------------------|-------------------------|--------|
+| term                                      | value of the annotation             | String or Int           | None   |
+| [term_source](#ontologySourceReferences)  | ?               | OntologySourceReference | None   |
+| term_accession                            | ?               | String                  | None   |
 
 ### ontologySourceReferences:
 
