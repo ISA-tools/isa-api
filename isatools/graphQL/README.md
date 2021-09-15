@@ -344,6 +344,13 @@ elif response.errors:
 | factorName             | Name of the factor     | String                                    |
 | factorType             | Type of factor         | [OntologyAnnotation](#OntologyAnnotation) |
 
+### FactorValue:
+| Field name       |   Description                  |           Type                            |
+|------------------|--------------------------------|-------------------------------------------|
+| category         | Category of the factor value   | [Factor](#Factor)                         |
+| value            | Value of the factor value      | [OntologyAnnotation](#OntologyAnnotation) |
+| unit             | Unit of the factor value       | [OntologyAnnotation](#OntologyAnnotation) |
+
 ### Material:
 | Field name         |        Description                |   Type                            |
 |--------------------|-----------------------------------|-----------------------------------|
