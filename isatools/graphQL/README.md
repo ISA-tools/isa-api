@@ -326,7 +326,6 @@ elif response.errors:
 | unit             | Unit of the characteristic   | [OntologyAnnotation](#OntologyAnnotation) |
 | value            | Value of the characteristic  | [OntologyAnnotation](#OntologyAnnotation) |
 
-
 ### Component:
 | Field name       |   Description          | Type                    |
 |------------------|------------------------|-------------------------|
@@ -340,7 +339,10 @@ elif response.errors:
 | generatedFrom   | Sample from which this data file was generated  | [Sample](#Sample)         |
 
 ### Factor:
-
+| Field name             |   Description          | Type                                      |
+|------------------------|------------------------|-------------------------------------------|
+| factorName             | Name of the factor     | String                                    |
+| factorType             | Type of factor         | [OntologyAnnotation](#OntologyAnnotation) |
 
 ### Material:
 | Field name         |        Description                |   Type                            |
