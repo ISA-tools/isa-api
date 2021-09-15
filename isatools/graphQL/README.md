@@ -1,6 +1,6 @@
 # ISA-QL:
 
-ISA-QL is a syntax querying language for ISA Assay and Process objects based on [GraphQL](https://graphql.org/) and 
+ISA-QL is a syntax querying language build for the ISA model and based on [GraphQL](https://graphql.org/) and 
 [Graphene](https://github.com/graphql-python/graphene).
 It provides a fast and easy programmatic access to the very complex and nested fields within an ISA Investigation as 
 well as the ability to filter attributes based on user inputs.
@@ -40,7 +40,8 @@ outputs before writing your own.
 ---
 
 ## Queryable Objects:
-There are 3 mains queryable objects at the root of the ISA-QL syntax: the investigation, the studies and the assays.
+There are 3 mains queryable objects at the root of the ISA-QL syntax: the [investigation](#investigation), the 
+[studies](#studies) and the [assays](#assays).
 
 ### Investigation:
 
@@ -319,22 +320,54 @@ elif response.errors:
 
 ### measurementType:
 
+### OntologyAnnotation
+
 ### ontologySourceReferences:
 
 ### people:
 
 ### processSequence:
+A list of processes organized to form sequences.
+
+| Field name       |             Description                             |            Type              |       Inputs              |
+|------------------|-----------------------------------------------------|------------------------------|---------------------------|
+| name                                         | name of the process                                    | String                       | None                      |
+| executesProtocol                             | protocol executed by the process                       | Protocol                     | None                      | 
+| [parameterValues](#ProtocolParameterValues)  | parameters used by the protocol of this process        | List(ProtocolParameterValue) | ProcessSequenceParameters |
+| performer                                    | name of the person who executed the protocol           | String                       | None                      |
+| date                                         | ?                                                      | DateTime                     | None                      |
+| previousProcess                              | pointer to the previous process in the sequence        | Process                      | None                      |
+| nextProcess                                  | pointer to the next process in the sequence            | Process                      | None                      |
+| inputs                                       | input data used by this process                        | List(ProcessInputs)          | InputsParameters          |
+| outputs                                      | output data produced by this process                   | List(ProcessOutputs)         | OutputsParameters         |
+
+### ProtocolParameterValues:
+A list of protocol parameter values.
+
+| Field name   |             Description                       |            Type         | Inputs |
+|--------------|-----------------------------------------------|-------------------------|--------|
+| [characteristicType](#ProtocolParameter)     | category of parameter               | ProtocolParameter       | None   |
+| [unit](#OntologyAnnotation)                  | unit of the parameter               | OntologyAnnotation      | None   |
+| value                                        | value of the parameter              | String                  | None   |
+
+
+### ProtocolParameter:
+| Field name                           | Description           |            Type          | Inputs |
+|--------------------------------------|-----------------------|--------------------------|--------|
+| [parameterName](#OntologyAnnotation) | name of the parameter | OntologyAnnotation       | None   |
 
 ### protocols:
-| Field name   |             Description             |            Type         |
-|--------------|-------------------------------------|-------------------------|
-| name         | name of the protocol                | String                  |
-| protocolType | type of protocol                    | OntologyAnnotation      |
-| description  | textual description of the protocol | String                  |
-| uri          | URI of the protocol                 | String                  |
-| version      | version of the protocol             | String                  |
-| parameters   | parameters used by this protocol    | List(ProtocolParameter) |
-| components   | components used by this protocol    | List((Component)        |
+A list of protocols.
+
+| Field name   |             Description             |            Type         | Inputs |
+|--------------|-------------------------------------|-------------------------|--------|
+| name         | name of the protocol                | String                  | None   |
+| protocolType | type of protocol                    | OntologyAnnotation      | None   |
+| description  | textual description of the protocol | String                  | None   |
+| uri          | URI of the protocol                 | String                  | None   |
+| version      | version of the protocol             | String                  | None   |
+| parameters   | parameters used by this protocol    | List(ProtocolParameter) | None   |
+| components   | components used by this protocol    | List((Component)        | None   |
 
 ### publications:
 
