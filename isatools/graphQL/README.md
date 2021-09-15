@@ -368,6 +368,17 @@ elif response.errors:
 | version         | Version of the ontology source reference           | String |
 
 ### Person:
+| Field name     |   Description             | Type                                       |
+|----------------|---------------------------|--------------------------------------------|
+| lastName       | Person's last name        | String                                     |
+| firstName      | Person's first name       | String                                     |
+| midInitials    | Person's middle initials  | String                                     |
+| email          | Person's email            | String                                     |
+| phone          | Person's phone number     | String                                     |
+| fax            | Person's fax number       | String                                     |
+| address        | Person's full address     | String                                     |
+| affiliation    | Person's affiliation      | String                                     |
+| roles          | Roles this person has     | [OntologyAnnotation](#OntologyAnnotation)  |
 
 ### Process:
 | Field name       |             Description                                |                                Type                                                  |
