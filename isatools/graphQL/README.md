@@ -317,9 +317,17 @@ elif response.errors:
 
 ## References:
 
-## Component:
+### Component:
+| Field name       |   Description          | Type                    |
+|------------------|------------------------|-------------------------|
+| componentName    | Name of the component  | String                  |
 
 ### DataFile:
+| Field name      |        Description                              |   Type                    |
+|-----------------|-------------------------------------------------|---------------------------|
+| name            | name of the file                                | String                    |
+| type            | label of the file                               | String                    |
+| generatedFrom   | Sample from which this data file was generated  | [Sample](#Sample)         |
 
 ### Factor:
 
@@ -328,55 +336,50 @@ elif response.errors:
 ### OntologyAnnotation:
 | Field name      |        Description       |            Type                                     |
 |-----------------|--------------------------|-----------------------------------------------------|
-| term            | value of the annotation  | String or Int                                       |
-| term_source     | ?                        | [OntologySourceReference](#OntologySourceReference) |
-| term_accession  | ?                        | String                                              |
+| annotationValue | Value of the annotation  | String or Int                                       |
+| termSource      | ?                        | [OntologySourceReference](#OntologySourceReference) |
+| termAccession   | ?                        | String                                              |
 
 ### OntologySourceReference:
 
 ### Person:
 
 ### Process:
-
 | Field name       |             Description                                |                                Type                                                  |
 |------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------|
-| name             | name of the process                                    | String                                                                               |
-| executesProtocol | protocol executed by the process                       | Protocol                                                                             | 
-| parameterValues  | parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValue)                                   |
-| performer        | name of the person who executed the protocol           | String                                                                               |
+| name             | Name of the process                                    | String                                                                               |
+| executesProtocol | Protocol executed by the process                       | [Protocol](#Protocol)                                                                | 
+| parameterValues  | Parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValue)                                    |
+| performer        | Name of the person who executed the protocol           | String                                                                               |
 | date             | ?                                                      | DateTime                                                                             |
-| previousProcess  | pointer to the previous process in the sequence        | [Process](#Process)                                                                  |
-| nextProcess      | pointer to the next process in the sequence            | [Process](#Process)                                                                  |
-| inputs           | input data used by this process                        | [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile)                    |
-| outputs          | output data produced by this process                   | [Source](#Source), [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile) |
+| previousProcess  | Pointer to the previous process in the sequence        | [Process](#Process)                                                                  |
+| nextProcess      | Pointer to the next process in the sequence            | [Process](#Process)                                                                  |
+| inputs           | Input data used by this process                        | [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile)                    |
+| outputs          | Output data produced by this process                   | [Source](#Source), [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile) |
 
 ### ProtocolParameterValue:
-
 | Field name   |             Description                       |                        Type                   |
 |--------------|-----------------------------------------------|-----------------------------------------------|
-| characteristicType     | category of parameter               | [ProtocolParameter](#ProtocolParameter)       |
-| unit                   | unit of the parameter               | [OntologyAnnotation](#OntologyAnnotation)     |
-| value                  | value of the parameter              | String                                        |
+| characteristicType     | Category of parameter               | [ProtocolParameter](#ProtocolParameter)       |
+| unit                   | Unit of the parameter               | [OntologyAnnotation](#OntologyAnnotation)     |
+| value                  | Value of the parameter              | String                                        |
 
 
 ### ProtocolParameter:
 | Field name               | Description              |                      Type                       |
 |--------------------------|--------------------------|-------------------------------------------------|
-| parameterName            | name of the parameter    | [OntologyAnnotation](#OntologyAnnotation)       |
+| parameterName            | Name of the parameter    | [OntologyAnnotation](#OntologyAnnotation)       |
 
 ### Protocol:
-A list of protocols.
-The `Protocol` object is described as following:
-
 | Field name   |             Description             |                    Type                    |
 |--------------|-------------------------------------|--------------------------------------------|
-| name         | name of the protocol                | String                                     |
-| protocolType | type of protocol                    | [OntologyAnnotation](#OntologyAnnotation)  |
-| description  | textual description of the protocol | String                                     |
+| name         | Name of the protocol                | String                                     |
+| protocolType | Type of protocol                    | [OntologyAnnotation](#OntologyAnnotation)  |
+| description  | Textual description of the protocol | String                                     |
 | uri          | URI of the protocol                 | String                                     |
-| version      | version of the protocol             | String                                     |
-| parameters   | parameters used by this protocol    | [ProtocolParameter](#ProtocolParameter)    |
-| components   | components used by this protocol    | [Component](#Component)                    |
+| version      | Version of the protocol             | String                                     |
+| parameters   | Parameters used by this protocol    | [ProtocolParameter](#ProtocolParameter)    |
+| components   | Components used by this protocol    | [Component](#Component)                    |
 
 ### Publication:
 
