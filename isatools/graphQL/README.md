@@ -324,42 +324,37 @@ elif response.errors:
 ### Material:
 
 ### OntologyAnnotation:
-| Field name   |             Description                               |            Type         | Inputs |
-|--------------|-------------------------------------------------------|-------------------------|--------|
-| term                                      | value of the annotation  | String or Int           | None   |
-| term_source   | ?                        | [OntologySourceReference](#OntologySourceReference) | None   |
-| term_accession                            | ?                        | String                  | None   |
+| Field name      |        Description       |            Type                                     |
+|-----------------|--------------------------|-----------------------------------------------------|
+| term            | value of the annotation  | String or Int                                       |
+| term_source     | ?                        | [OntologySourceReference](#OntologySourceReference) |
+| term_accession  | ?                        | String                                              |
 
 ### OntologySourceReference:
 
 ### Person:
 
 ### Process:
-A list of processes organized to form sequences.
-The `Process` object is described as following:
 
-| Field name       |             Description                             |            Type              |       Inputs              |
-|------------------|-----------------------------------------------------|------------------------------|---------------------------|
-| name                                         | name of the process                                    | String                       | None                      |
-| [executesProtocol](#protocols)               | protocol executed by the process                       | Protocol                     | None                      | 
-| [parameterValues](#ProtocolParameterValues)  | parameters used by the protocol of this process        | List(ProtocolParameterValue) | ProcessSequenceParameters |
-| performer                                    | name of the person who executed the protocol           | String                       | None                      |
-| date                                         | ?                                                      | DateTime                     | None                      |
-| [previousProcess](#processSequence)          | pointer to the previous process in the sequence        | Process                      | None                      |
-| [nextProcess](#processSequence)              | pointer to the next process in the sequence            | Process                      | None                      |
-| inputs                                       | input data used by this process                        | List(ProcessInputs)          | InputsParameters          |
-| outputs                                      | output data produced by this process                   | List(ProcessOutputs)         | OutputsParameters         |
+| Field name       |             Description                                |                                Type                                                  |
+|------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------|
+| name             | name of the process                                    | String                                                                               |
+| executesProtocol | protocol executed by the process                       | Protocol                                                                             | 
+| parameterValues  | parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValues)                                   |
+| performer        | name of the person who executed the protocol           | String                                                                               |
+| date             | ?                                                      | DateTime                                                                             |
+| previousProcess  | pointer to the previous process in the sequence        | [Process](#Process)                                                                  |
+| nextProcess      | pointer to the next process in the sequence            | [Process](#Process)                                                                  |
+| inputs           | input data used by this process                        | [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile)                    |
+| outputs          | output data produced by this process                   | [Source](#Source), [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile) |
 
-### ProtocolParameterValues:
-A list of protocol parameter values.
-The `ProtocolParameterValues` object (used by the parameterValues field) is described as following:
-
+### ProtocolParameterValue:
 
 | Field name   |             Description                       |            Type         | Inputs |
 |--------------|-----------------------------------------------|-------------------------|--------|
-| [characteristicType](#ProtocolParameter)     | category of parameter               | ProtocolParameter       | None   |
-| [unit](#OntologyAnnotation)                  | unit of the parameter               | OntologyAnnotation      | None   |
-| value                                        | value of the parameter              | String                  | None   |
+| characteristicType     | category of parameter               | ProtocolParameter       | None   |
+| unit                   | unit of the parameter               | OntologyAnnotation      | None   |
+| value                  | value of the parameter              | String                  | None   |
 
 
 ### ProtocolParameter:
@@ -367,7 +362,7 @@ A protocol parameter described as an ontology annotation.
 
 | Field name                           | Description           |            Type          | Inputs |
 |--------------------------------------|-----------------------|--------------------------|--------|
-| [parameterName](#OntologyAnnotation) | name of the parameter | OntologyAnnotation       | None   |
+| parameterName | name of the parameter | OntologyAnnotation       | None   |
 
 ### Protocol:
 A list of protocols.
@@ -385,8 +380,6 @@ The `Protocol` object is described as following:
 
 ### Publication:
 
-### studyDesignDescriptors:
+### Sample:
 
-### technologyType:
-
-### unitCategories:
+### Source:
