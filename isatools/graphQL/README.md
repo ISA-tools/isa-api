@@ -78,24 +78,24 @@ also have their own queryable fields.
 ### Studies:
 
 #### Queryable fields:
-| Field name                          |             Description                                                      |            Type         |
-|-------------------------------------|------------------------------------------------------------------------------|-------------------------|
-| filename                                               | Name of the study file                                    | String                  |
-| identifier                                             | Identifier of the study                                   | String                  |
-| title                                                  | Title of the study file                                   | String                  |
-| description                                            | Description of the study file                             | String                  |
-| submissionDate                                         | Date at which the study was submitted                     | DateTime                |
-| publicReleaseDate                                      | Date at which the study was publicly released             | DateTime                |
-| [publications](#publications)                          | Publications associated with the study                    | Publication             |
-| [people](#people)                                      | People to contact for the study                           | Person                  |
-| [studyDesignDescriptors](#studyDesignDescriptors)      | Design descriptors of this study                          | OntologyAnnotation      |
-| [protocols](#protocols)                                | Protocols associated with the study                       | Protocol                |
-| [materials](#materials)                                | Materials associated with the study                       | Material                |
-| [processSequence](#processSequence)                    | Processes associated with the study                       | Process                 |
-| [assay](#assays)                                       | Assays associated with the study                          | Assay                   |
-| [factor](#factor)                                      | Factors associated with the study                         | Factor                  |
-| [characteristicCategories](#characteristicCategories)  | Categories of characteristics associated with this study  | OntologyAnnotation      |
-| [unitCategories](#unitCategories)                      | Categories of units associated with the study             | OntologyAnnotation      |
+| Field name                |             Description                                   |                  Type                      |
+|---------------------------|-----------------------------------------------------------|--------------------------------------------|
+| filename                  | Name of the study file                                    | String                                     |
+| identifier                | Identifier of the study                                   | String                                     |
+| title                     | Title of the study file                                   | String                                     |
+| description               | Description of the study file                             | String                                     |
+| submissionDate            | Date at which the study was submitted                     | DateTime                                   |
+| publicReleaseDate         | Date at which the study was publicly released             | DateTime                                   |
+| publications              | Publications associated with the study                    | [Publication](#Publication)                |
+| people                    | People to contact for the study                           | [Person](#Person)                          |
+| studyDesignDescriptors    | Design descriptors of this study                          | [OntologyAnnotation](#OntologyAnnotation)  |
+| protocols                 | Protocols associated with the study                       | [Protocol](#Protocol)                      |
+| materials                 | Materials associated with the study                       | [Material](#Material)                      |
+| processSequence           | Processes associated with the study                       | [Process](#Process)                        |
+| assay                     | Assays associated with the study                          | [Assay](#Assays)                           |
+| factor                    | Factors associated with the study                         | [Factor](#Factor)                          |
+| characteristicCategories  | Categories of characteristics associated with this study  | [OntologyAnnotation](#OntologyAnnotation)  |
+| unitCategories            | Categories of units associated with the study             | [OntologyAnnotation](#OntologyAnnotation)  |
 
 We could rewrite the previous example's query to request the same fields but for studies. 
 
@@ -122,17 +122,17 @@ elif response.errors:
 
 ### Assays:
 #### Queryable fields:
-| Field name                                            |             Description                                  |            Type          |
-|-------------------------------------------------------|----------------------------------------------------------|--------------------------|
-| filename                                              | Name of the assay file                                   | String                   |
-| technologyPlatform                                    | Technology platform used in this assay                   | String                   |
-| [technologyType](#technologyType)                     | Type of technology used in this assay                    | OntologyAnnotation       |
-| [measurementType](#measurementType)                   | Type of measurement used in this assay                   | OntologyAnnotation       |
-| [dataFiles](#dataFiles)                               | List of files used or produced in this assay             | DataFile                 |
-| [materials](#materials)                               | Materials used in this assay                             | Materials                |
-| [characteristicCategories](#characteristicCategories) | Categories of characteristics associated with this assay | OntologyAnnotation       |
-| [unitCategories](#unitCategories)                     | Categories of units associated with this assay           | OntologyAnnotation       |
-| [processSequence](#processSequence)                   | Processes associated with this assay                     | Process                  |
+| Field name                  |             Description                                  |            Type          |
+|-----------------------------|----------------------------------------------------------|--------------------------|
+| filename                    | Name of the assay file                                   | String                   |
+| technologyPlatform          | Technology platform used in this assay                   | String                   |
+| technologyType              | Type of technology used in this assay                    | [OntologyAnnotation](#OntologyAnnotation)       |
+| measurementType             | Type of measurement used in this assay                   | [OntologyAnnotation](#OntologyAnnotation)       |
+| dataFiles                   | List of files used or produced in this assay             | [DataFile](#DataFile)                 |
+| materials                   | Materials used in this assay                             | [Material](#Material)                |
+| characteristicCategories    | Categories of characteristics associated with this assay | [OntologyAnnotation](#OntologyAnnotation)       |
+| unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)       |
+| processSequence             | Processes associated with this assay                     | [Process](#Process)                  |
 
 The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
 output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
@@ -327,7 +327,7 @@ elif response.errors:
 | Field name   |             Description                               |            Type         | Inputs |
 |--------------|-------------------------------------------------------|-------------------------|--------|
 | term                                      | value of the annotation  | String or Int           | None   |
-| [term_source](#ontologySourceReferences)  | ?                        | OntologySourceReference | None   |
+| term_source   | ?                        | [OntologySourceReference](#OntologySourceReference) | None   |
 | term_accession                            | ?                        | String                  | None   |
 
 ### OntologySourceReference:
