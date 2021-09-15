@@ -228,7 +228,7 @@ def search_data_files(data_files, label):
 
 def search_parameter_values(process, filters):
     """
-    Search the processes for parameter values that match the given input filters
+    Search the processes for parameter values that match the given filters
     :param process: the process to search
     :param filters: the filters to apply
     :return: a list a processes that match
