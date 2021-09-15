@@ -118,12 +118,191 @@ elif response.errors:
 
 ### Assays:
 #### Queryable fields:
-- filename = String()
-- measurement_type = Field(OntologyAnnotation, name="measurementType")
-- technology_type = Field(OntologyAnnotation, name="technologyType")
-- technology_platform = String(name="technologyPlatform")
-- data_files = List(DataFile, name="dataFiles", label=Argument(StringComparator, required=False))
-- materials = Field(Materials)
-- characteristic_categories = List(MaterialAttribute, name="characteristicCategories")
-- unit_categories = List(OntologyAnnotation, name="unitCategories")
-- process_sequence
+- filename: a string representing the name of the assay file.
+- measurementType: an ontology annotation representing the type of measurement done in this assay.
+- technologyType: an ontology annotation representing the type of technology used in this assay.
+- technologyPlatform: a string representing the technology platform used in this assay.
+- dataFiles: a list of data files produced and/or used by this assay.
+- materials: an object representing the different materials used in this assay.
+- characteristicCategories: a list of ontology annotations representing the categories of characteristics associated
+  with this assay.
+- unitCategories: a list of ontology annotations representing the categories of units associated with this assay.
+- process_sequence: a list of processes associated with this assay.
+
+The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
+output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
+investigation, with each study in that investigation and with each assay in each study.
+
+```python
+query = "{ investigation { filename studies { filename assays { filename }}}}"
+response = investigation.execute_query(query)
+if response.data:
+  print(dumps(response.data, indent=1))
+elif response.errors:
+  print(response.errors)
+```
+
+#### Filter parameters:
+
+###### Introduction to filters:
+The assay query is different from investigations and studies because it accepts parameters that will allow to
+filter them based on specific inputs. For instance, a user may want to retrieve only the assays that contain
+nucleotide sequencing.
+The assays query takes two inputs:
+- an operator: 'AND' or 'OR', it indicates how filters should be assembled. Its default value is always 'AND'.
+- a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied 
+  and an expression in the form of an object. This expression contains a key that indicates the operation to run and a 
+  value to compare with. Typically, this is how a filter would look like:
+  
+```
+filters: {
+  technologyType: { eq: "nucleotide sequencing" }
+}
+```
+
+The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison 
+operation should be executed. For string, it can take the `eq` (equal) or `in` (includes) values. For integer, it can 
+also take `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal)
+values. Finally, the string indicates the filter value is "nucleotide sequencing".
+
+We can now apply this filter to a real query:
+
+```python
+query = '{ assays(filters: technologyType: { in: "nucleotide seq" }){ filename }}'
+response = investigation.execute_query(query)
+if response.data:
+  print(dumps(response.data, indent=1))
+elif response.errors:
+  print(response.errors)
+```
+
+This query retrieves filename of assays for which the technology type includes the string "nucleotide seq".
+
+
+##### Filters:
+- measurementType: A string to represent the type of measurement to filter on.
+- executesProtocol = A string to represent the protocol that should be executed by the processes of the assays.
+- technologyType = a string to represent a type of technology the assay should contain.
+- treatmentGroup = A list of exposure parameters that represent the conditions for this group.
+- characteristics = A list of characteristics that the assays samples should comply with.
+- parameterValues = A list of parameters with which the parameter values of the assays processes should comply with.
+
+Using the `operator` key we can assemble multiple filters in a single query. However, at this point the code will
+become hard to maintain, and we suggest creating dedicated query files in the .gql format. We now want to retrieve assays
+filename given the following constraints:
+- the technology used is 'nucleotide sequencing' (exact match)
+- the subjects must have been exposed to a low dose of carbon dioxide.
+- the samples were obtained from subjects livers.
+
+Let's create a `my_query.gql` file to store our query:
+
+```
+{
+  assays(
+    operator: "AND"
+    filters: {
+      technologyType: { eq: "nucleotide sequencing" }
+      treatmentGroup: [
+        {
+          name: { eq: "compound" }
+          value: { eq: "carbon dioxide" }
+        }
+        {
+          name: { eq: "dose" }
+          value: { eq: "low" }
+        }
+      ]
+      on: "Sample"
+      characteristics: [
+          {
+              name: { eq: "category" }
+              value: { eq: "anatomical part" }
+          }
+          {
+              name: { eq: "value" }
+              value: { eq: "liver" }
+          }
+      ]
+    }
+  ) {
+    filename
+  }
+}
+```
+
+We can now read the query file as a text stream and execute it the same way we previously did.
+
+```python
+query_filepath = path.join(here_path, "my_query.gql")
+with open(query_filepath, "r") as query_file:
+    query = query_file.read()
+    query_file.close()
+response = investigation.execute_query(query)
+if response.data:
+  print(dumps(response.data, indent=1))
+elif response.errors:
+  print(response.errors)
+```
+
+We now want to be able to harvest user inputs and dynamically passed values to the query instead of plain string.
+This can be done by modifying the query and passing the values though python variables. <br>
+Let's go back to our query and add the variables. To do that, we first need to alias the query, so let's name it
+`assaysFilenames`. We can then pass our variable using the `$` prefix and the `ID` keyword type.
+Variables can be passed to the `execute_query()` method as an optional parameter in the form of a python dictionary.
+Keys match the graphQL variables but are stripped from the `$` prefix.
+
+```
+query assaysFilenames(
+  $technologyType: ID
+  $compound: ID
+  $dose: ID
+  $source: ID
+){
+  assays(
+    operator: "AND"
+    filters: {
+      technologyType: { eq: $technologyType }
+      treatmentGroup: [
+        {
+          name: { eq: "compound" }
+          value: { eq: $compound }
+        }
+        {
+          name: { eq: "dose" }
+          value: { eq: $dose }
+        }
+      ]
+      on: "Sample"
+      characteristics: [
+          {
+              name: { eq: "category" }
+              value: { eq: "anatomical part" }
+          }
+          {
+              name: { eq: "value" }
+              value: { eq: $source }
+          }
+      ]
+    }
+  ) {
+    filename
+  }
+}
+```
+```python
+query_filepath = path.join(here_path, "my_query.gql")
+with open(query_filepath, "r") as query_file:
+    query = query_file.read()
+    query_file.close()
+variables = {
+  "technologyType": "nucleotide sequencing",
+  "compound": "carbon dioxide",
+  "dose": "low",
+  "source": "liver"
+}
+response = investigation.execute_query(query, variables)
+if response.data:
+  print(dumps(response.data, indent=1))
+elif response.errors:
+  print(response.errors)
+```

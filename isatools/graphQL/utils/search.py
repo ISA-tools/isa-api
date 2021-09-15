@@ -21,6 +21,7 @@ def search_assays(assays, filters, operator):
     """
     if operator not in ['AND', 'OR']:
         raise Exception("Operator should be AND or OR")
+    target = filters['target'] or None
     filters = build_assays_filters(filters)
     measurement_value, measurement_operator = filters['measurementType']
     technology_value, technology_operator = filters['technologyType']
@@ -39,7 +40,7 @@ def search_assays(assays, filters, operator):
             for process in assay_type.process_sequence:
                 for input_value in process.inputs:
                     input_classname = type(input_value).__name__
-                    if input_classname == filters['target']:
+                    if input_classname == target:
                         local_found = []
                         for characteristic in filters['characteristics']:
                             local_found.append(find_characteristics(input_value, characteristic))
