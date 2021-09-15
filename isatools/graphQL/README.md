@@ -75,23 +75,23 @@ also have their own queryable fields.
 ### Studies:
 
 #### Queryable fields:
-- filename: a string representing the name of the study file.
-- identifier: a string representing an identifier for this study.
-- title: a string representing a study for this study.
-- description: a string representing a study for this study.
-- submissionDate: a datetime representing the submission date of the study.
-- publicReleaseDate: a datetime representing the public release date of the study.
-- publications: a list of publications associated with the study.
-- people: a list of people to be contacted.
-- studyDesignDescriptors: a list of ontology annotation representing the design descriptors of this study.
-- protocols: a list of protocols associated with this study.
-- materials: a list of materials associated with this study.
-- processSequence: a list of processes (represented as a sequences) associated with this study.
-- [assay](#assays): a list of assay types associated with this study.
-- factor: a list of factors associated with this study.
-- characteristicCategories: a list of ontology annotations representing the categories of characteristics associated 
+- **filename**: a string representing the name of the study file.
+- **identifier**: a string representing an identifier for this study.
+- **title**: a string representing a study for this study.
+- **description**: a string representing a study for this study.
+- **submissionDate**: a datetime representing the submission date of the study.
+- **publicReleaseDate**: a datetime representing the public release date of the study.
+- **[publications](#publications)**: a list of publications associated with the study.
+- **[people](#people)**: a list of people to be contacted.
+- **[studyDesignDescriptors](#studyDesignDescriptors)**: a list of ontology annotation representing the design descriptors of this study.
+- **[protocols](#protocols)**: a list of protocols associated with this study.
+- **[materials](#materials)**: a list of materials associated with this study.
+- **[processSequence](#processSequence)**: a list of processes (represented as a sequences) associated with this study.
+- **[assay](#assays)**: a list of assay types associated with this study.
+- **[factor](#factor)**: a list of factors associated with this study.
+- **[characteristicCategories](#characteristicCategories)**: a list of ontology annotations representing the categories of characteristics associated 
   with this study.
-- unitCategories: a list of ontology annotations representing the categories of units associated with this study.
+- **[unitCategories](#unitCategories)**: a list of ontology annotations representing the categories of units associated with this study.
 
 We could rewrite the previous example's query to request the same fields but for studies. 
 
@@ -127,7 +127,7 @@ elif response.errors:
 - characteristicCategories: a list of ontology annotations representing the categories of characteristics associated
   with this assay.
 - unitCategories: a list of ontology annotations representing the categories of units associated with this assay.
-- process_sequence: a list of processes associated with this assay.
+- processSequence: a list of processes associated with this assay.
 
 The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
 output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
@@ -309,8 +309,28 @@ elif response.errors:
 
 ## Queryable fields:
 
+### characteristicCategories:
+
+### dataFiles:
+
+### factor:
+
+### materials:
+
+### measurementType:
+
 ### ontologySourceReferences:
 
 ### people:
 
+### processSequence:
+
+### protocols:
+
 ### publications:
+
+### studyDesignDescriptors:
+
+### technologyType:
+
+### unitCategories:
