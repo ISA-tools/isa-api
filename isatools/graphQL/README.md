@@ -417,6 +417,13 @@ elif response.errors:
 | components   | Components used by this protocol    | [Component](#Component)                    |
 
 ### Publication:
+| Field name     |   Description             | Type                                       |
+|----------------|---------------------------|--------------------------------------------|
+| pubMedID       | PubMed Identifier         | String                                     |
+| doi            | Digital Object Identifier | String                                     |
+| authorList     | List of authors           | String                                     |
+| title          | Title of the publication  | String                                     |
+| status         | Status of the publication | [OntologyAnnotation](#OntologyAnnotation)  |
 
 ### Sample:
 
