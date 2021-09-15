@@ -320,6 +320,11 @@ elif response.errors:
 ## Fields References:
 
 ### Characteristic:
+| Field name       |   Description                | Type                                      |
+|------------------|------------------------------|-------------------------------------------|
+| category         | Type of characteristic       | [OntologyAnnotation](#OntologyAnnotation) |
+| unit             | Unit of the characteristic   | [OntologyAnnotation](#OntologyAnnotation) |
+| value            | Value of the characteristic  | [OntologyAnnotation](#OntologyAnnotation) |
 
 
 ### Component:
