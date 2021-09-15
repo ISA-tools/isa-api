@@ -118,16 +118,16 @@ elif response.errors:
 
 ### Assays:
 #### Queryable fields:
-- filename: a string representing the name of the assay file.
-- measurementType: an ontology annotation representing the type of measurement done in this assay.
-- technologyType: an ontology annotation representing the type of technology used in this assay.
-- technologyPlatform: a string representing the technology platform used in this assay.
-- dataFiles: a list of data files produced and/or used by this assay.
-- materials: an object representing the different materials used in this assay.
-- characteristicCategories: a list of ontology annotations representing the categories of characteristics associated
+- **filename**: a string representing the name of the assay file.
+- **technologyPlatform**: a string representing the technology platform used in this assay.
+- **[technologyType](#technologyType)**: an ontology annotation representing the type of technology used in this assay.
+- **[measurementType](#measurementType)**: an ontology annotation representing the type of measurement done in this assay.
+- **[dataFiles](#dataFiles)**: a list of data files produced and/or used by this assay.
+- **[materials](#materials)**: an object representing the different materials used in this assay.
+- **[characteristicCategories](#characteristicCategories)**: a list of ontology annotations representing the categories of characteristics associated
   with this assay.
-- unitCategories: a list of ontology annotations representing the categories of units associated with this assay.
-- processSequence: a list of processes associated with this assay.
+- **[unitCategories](#unitCategories)**: a list of ontology annotations representing the categories of units associated with this assay.
+- **[processSequence](#processSequence)**: a list of processes associated with this assay.
 
 The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
 output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
