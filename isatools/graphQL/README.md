@@ -360,6 +360,12 @@ elif response.errors:
 | termAccession   | ?                        | String                                              |
 
 ### OntologySourceReference:
+| Field name       |   Description                                     | Type   |
+|-----------------|----------------------------------------------------|--------|
+| description     | Description of the ontology source reference       | String |
+| file            | file associated with the ontology source reference | String |
+| name            | Name of the ontology source reference              | String |
+| version         | Version of the ontology source reference           | String |
 
 ### Person:
 
