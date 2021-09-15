@@ -45,16 +45,16 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax: the invest
 ### Investigation:
 
 #### Queryable fields:
-- filename: a string representing the name of the investigation file.
-- identifier: a string representing an identifier for this investigation.
-- title: a string representing a title for this investigation.
-- description: a string representing a description for this investigation.
-- submissionDate: a datetime representing the submission date of the investigation.
-- publicReleaseDate: a datetime representing the public release date of the investigation.
-- ontologySourceReferences: a list of ontology source references used by this investigation.
-- publications: a list of publications associated with the investigation.
-- people: a list of people to be contacted.
-- [studies](#studies): the list of queryable and filterable studies bound to this investigation.
+- **filename**: a string representing the name of the investigation file.
+- **identifier**: a string representing an identifier for this investigation.
+- **title**: a string representing a title for this investigation.
+- **description**: a string representing a description for this investigation.
+- **submissionDate**: a datetime representing the submission date of the investigation.
+- **publicReleaseDate**: a datetime representing the public release date of the investigation.
+- **[ontologySourceReferences](#ontologySourceReferences)**: a list of ontology source references used by this investigation.
+- **[publications](#publications)**: a list of publications associated with the investigation.
+- **[people](#people)**: a list of people to be contacted.
+- **[studies](#studies)**: the list of queryable and filterable studies bound to this investigation.
 
 Below is a simple example on how to get an investigation title, description and identifier, in that order.
 
@@ -179,16 +179,16 @@ elif response.errors:
 This query retrieves filename of assays for which the technology type includes the string "nucleotide seq".
 
 
-##### Filters:
-- measurementType: A string to represent the type of measurement to filter on.
-- executesProtocol = A string to represent the protocol that should be executed by the processes of the assays.
-- technologyType = a string to represent a type of technology the assay should contain.
-- treatmentGroup = A list of exposure parameters that represent the conditions for this group.
-- characteristics = A list of characteristics that the assays samples should comply with.
-- parameterValues = A list of parameters with which the parameter values of the assays processes should comply with.
+###### Filters:
+- measurementType: a string to represent the type of measurement to filter on.
+- executesProtocol: a string to represent the protocol that should be executed by the processes of the assays.
+- technologyType: a string to represent a type of technology the assay should contain.
+- treatmentGroup: a list of exposure parameters that represent the conditions for this group.
+- characteristics: a list of characteristics that the assays samples should comply with.
+- parameterValues: a list of parameters with which the parameter values of the assays processes should comply with.
 
 Using the `operator` key we can assemble multiple filters in a single query. However, at this point the code will
-become hard to maintain, and we suggest creating dedicated query files in the .gql format. We now want to retrieve assays
+become hard to maintain, and we suggest creating dedicated query files in the `.gql `format. We now want to retrieve assays
 filename given the following constraints:
 - the technology used is 'nucleotide sequencing' (exact match)
 - the subjects must have been exposed to a low dose of carbon dioxide.
@@ -244,7 +244,7 @@ elif response.errors:
   print(response.errors)
 ```
 
-We now want to be able to harvest user inputs and dynamically passed values to the query instead of plain string.
+We now want to be able to harvest user inputs and dynamically pass values to the query instead of using plain strings.
 This can be done by modifying the query and passing the values though python variables. <br>
 Let's go back to our query and add the variables. To do that, we first need to alias the query, so let's name it
 `assaysFilenames`. We can then pass our variable using the `$` prefix and the `ID` keyword type.
@@ -306,3 +306,11 @@ if response.data:
 elif response.errors:
   print(response.errors)
 ```
+
+## Queryable fields:
+
+### ontologySourceReferences:
+
+### people:
+
+### publications:
