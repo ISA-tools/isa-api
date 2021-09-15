@@ -428,3 +428,7 @@ elif response.errors:
 ### Sample:
 
 ### Source:
+| Field name       |   Description                  |           Type                    |
+|------------------|--------------------------------|-----------------------------------|
+| name             | Name of the source             | String                            |
+| characteristics  | Characteristic of the source   | [Characteristic](#Characteristic) |
