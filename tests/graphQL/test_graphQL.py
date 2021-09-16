@@ -7,7 +7,15 @@ from isatools.graphQL.utils.search import (
     search_process_sequence,
     search_inputs,
     search_outputs,
-    search_data_files
+    search_data_files,
+    search_parameter_values
+)
+from isatools.graphQL.utils.find import (
+    find_technology_type,
+    find_measurement,
+    find_exposure_value,
+    find_characteristics,
+    find_protocol
 )
 
 here_path = os.path.dirname(os.path.realpath(__file__))
@@ -121,6 +129,15 @@ class TestSearch(unittest.TestCase):
         assays = search_assays(investigation.studies[0].assays, filters, "OR")
         self.assertTrue(len(assays) == 2)
 
+        filters = {
+            "parameterValues": {
+                "category": {"eq": "library strategy"},
+                "value": {"eq": "WGS"}
+            }
+        }
+        assays = search_assays(investigation.studies[0].assays, filters, "AND")
+        self.assertTrue(len(assays) == 1)
+
         with self.assertRaises(Exception) as context:
             search_assays(investigation.studies[0].assays, filters, "TEST")
         self.assertTrue("Operator should be AND or OR" == str(context.exception))
@@ -128,6 +145,12 @@ class TestSearch(unittest.TestCase):
     def test_search_process_sequence(self):
         process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {}, 'AND')
         self.assertTrue(len(process_sequence) == 18)
+
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {
+            "target": "Sample"
+        }, 'AND')
+        self.assertTrue(len(process_sequence) == 18)
+
         filters = {
             "executesProtocol": {"includes": "nucleic acid ext"},
             "treatmentGroup": [
@@ -162,6 +185,10 @@ class TestSearch(unittest.TestCase):
         process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
         self.assertTrue(len(process_sequence) == 4)
 
+        with self.assertRaises(Exception) as context:
+            search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'TEST')
+        self.assertTrue("Operator should be AND or OR" == str(context.exception))
+
     def test_search_inputs(self):
         filters = {}
         inputs = search_inputs(investigation.studies[0].assays[0].process_sequence[0].inputs, filters, "AND")
@@ -183,8 +210,16 @@ class TestSearch(unittest.TestCase):
                 found += 1
                 self.assertTrue(type(inputs[0]).__name__ == "Sample")
         self.assertTrue(found == 4)
-        found = 0
 
+        found = 0
+        filters['treatmentGroup'][0]['value'] = {"eq": "test"}
+        for process in investigation.studies[0].assays[0].process_sequence:
+            inputs = search_inputs(process.inputs, filters, "AND")
+            if len(inputs) > 0:
+                found += 1
+        self.assertTrue(found == 0)
+
+        filters['treatmentGroup'][0]['value'] = {"includes": "carb"}
         filters['characteristics'] = [
             {
                 "name": {"eq": "category"},
@@ -257,9 +292,90 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 0)
 
     def test_search_data_files(self):
-        files_data = investigation.studies[0].assays[0].data_files
-        files_found = search_data_files(files_data, {"eq": "Raw Data File"})
-        self.assertTrue(len(files_found) == 6)
+        files = search_data_files(investigation.studies[0].assays[0].data_files, {"eq": "Raw Data File"})
+        self.assertTrue(len(files) == 6)
 
     def test_search_parameter_values(self):
-        print("TODO")
+        found = 0
+        for process in investigation.studies[0].assays[0].process_sequence:
+            if len(process.parameter_values) > 0:
+                parameter_values = search_parameter_values(process, {})
+                if len(parameter_values) > 0:
+                    found += 1
+        self.assertTrue(found == 10)
+
+        found = 0
+        filters = {
+            "parameterValues": {
+                "category": {"eq": "library strategy"},
+                "value": {"includes": "WG"}
+            }
+        }
+        for process in investigation.studies[0].assays[0].process_sequence:
+            if len(process.parameter_values) > 0:
+                parameter_values = search_parameter_values(process, filters)
+                if len(parameter_values) > 0:
+                    found += 1
+        self.assertTrue(found == 4)
+
+
+class TestFind(unittest.TestCase):
+
+    def setUp(self):
+        class FindObject:
+            def __init__(self, term):
+                self.term = term
+        self.template = FindObject("test")
+        self.sample = investigation.studies[0].assays[0].process_sequence[0].inputs[0]
+
+    def test_find_technology_type(self):
+        found = find_technology_type(self.template, "test", "eq")
+        self.assertTrue(found)
+        found = find_technology_type(self.template, "anotherTest", "eq")
+        self.assertFalse(found)
+
+    def test_find_measurement(self):
+        found = find_measurement(self.template, "test", "eq")
+        self.assertTrue(found)
+        found = find_measurement(self.template, "anotherTest", "eq")
+        self.assertFalse(found)
+
+    def test_find_exposure_value(self):
+        found = find_exposure_value(self.sample, None, None)
+        self.assertTrue(found)
+        found = find_exposure_value(self.sample, {"value": {"includes": "carb"}}, {"eq": "compound"})
+        self.assertTrue(found)
+        found = find_exposure_value(self.sample, {"value": {"eq": "carb"}}, {"eq": "compound"})
+        self.assertFalse(found)
+
+    def test_find_characteristics(self):
+        found = find_characteristics(self.sample, None)
+        self.assertTrue(found)
+        found = find_characteristics(self.sample, {
+            "value": {"eq": "anatomical part"},
+            "name": {"eq": "category"}
+        })
+        self.assertTrue(found)
+        found = find_characteristics(self.sample, {
+            "value": {"eq": "anatomical part"},
+            "name": {"eq": "cat"}
+        })
+        self.assertFalse(found)
+
+        from copy import copy
+        another_sample = copy(self.sample)
+        another_sample.characteristics = []
+        found = find_characteristics(another_sample, {
+            "value": {"eq": "anatomical part"},
+            "name": {"eq": "category"}
+        })
+        self.assertFalse(found)
+
+    def test_find_protocol(self):
+        found = find_protocol(None, None, None)
+        self.assertTrue(found)
+        found = find_protocol(investigation.studies[0].assays[0].process_sequence, "nucleic acid extraction", "eq")
+        self.assertTrue(found)
+        found = find_protocol(investigation.studies[0].assays[0].process_sequence, "nucleic acid", "eq")
+        self.assertFalse(found)
+
