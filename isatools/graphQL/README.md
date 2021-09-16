@@ -158,9 +158,6 @@ The assays query takes two inputs:
 - a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied 
   and an expression in the form of an object. This expression contains a key that indicates the operation to run and a 
   value to compare with. Typically, this is how a filter would look like:
-- **on**: target the type of materials or inputs/outputs to apply the filter to. For instance, `characteristics` can
-  only be applied to`Samples`, `Sources` and `Material` but not `DataFile` and `treatmentGroup` can only be applied to
-  `Samples`
   
 ```
 filters: {
@@ -169,9 +166,9 @@ filters: {
 ```
 
 The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison 
-operation should be executed. For string, it can take the `eq` (equal) or `in` (includes) values. For integer, it can 
-also take `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal)
-values. Finally, the string indicates the filter value is "nucleotide sequencing".
+operation should be executed. For strings, it can take the `eq` (equal) or `in` (includes) values. For integers, it can 
+be `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal). Finally, 
+the string indicates the filter value is "nucleotide sequencing".
 
 We can now apply this filter to a real query:
 
@@ -188,12 +185,16 @@ This query retrieves filename of assays for which the technology type includes t
 
 
 ###### Filters:
-- measurementType: a string to represent the type of measurement to filter on.
-- executesProtocol: a string to represent the protocol that should be executed by the processes of the assays.
-- technologyType: a string to represent a type of technology the assay should contain.
-- treatmentGroup: a list of exposure parameters that represent the conditions for this group.
-- characteristics: a list of characteristics that the assays samples should comply with.
-- parameterValues: a list of parameters with which the parameter values of the assays processes should comply with.
+| Field name       |   Description                                                                                    | Type               |    Target                 |                  Controlled values        |
+|------------------|--------------------------------------------------------------------------------------------------|--------------------|---------------------------|-------------------------------------------|
+| measurementType  | Type of measurement realised in the assay                                                        | String             | measurementType           | X                                         |
+| executesProtocol | Protocol executed by a process                                                                   | String             | process.executesProtocol  | X                                         |
+| technologyType   | Type of technology used in the assay                                                             | String             | technologyType            | X                                         |   
+| treatmentGroup   | Conditions the group was exposed to                                                              | ExposureParameters | process.inputs            | X                                         |
+| characteristics  | Characteristics the material should comply with                                                  | Characteristics    | process.inputs            | X                                         |
+| parameterValues  | Parameters values a process should comply with                                                   | ParameterValues    | process.parameterValues   | X                                         |
+| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String             | see values                | "Sample", "Source, "DataFile", "Material" |
+
 
 Using the `operator` key we can assemble multiple filters in a single query. However, at this point the code will
 become hard to maintain, and we suggest creating dedicated query files in the `.gql `format. We now want to retrieve assays
@@ -237,7 +238,6 @@ Let's create a `my_query.gql` file to store our query:
   }
 }
 ```
-
 We can now read the query file as a text stream and execute it the same way we previously did.
 
 ```python
@@ -445,3 +445,12 @@ elif response.errors:
 |------------------|--------------------------------|-----------------------------------|
 | name             | Name of the source             | String                            |
 | characteristics  | Characteristic of the source   | [Characteristic](#Characteristic) |
+
+
+## Filters References:
+
+### ExposureParameters:
+
+## Characteristics:
+
+## ParameterValues:
