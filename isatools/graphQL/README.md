@@ -448,9 +448,28 @@ elif response.errors:
 
 
 ## Filters References:
+All string and integer types should be wrapper in a comparison expression. This takes the form of a dictionary where
+the main key represents the comparator. For example: `measurementType: {eq: "transcription profiling"}"`. <br>
+
+### Operator based on input type:
+| Type      |   Operator  | Description             |
+|-----------|-------------|-------------------------|
+| String    | eq          | Equal                   |
+| String    | in          | Include                 |
+| Integer   | eq          | Equal                   |
+| Integer   | lt          | Lower than              |
+| Integer   | lte         | Lower than or equal     |
+| Integer   | gt          | Greater than            |
+| Integer   | gte         | Greater than or equal   |
+
 
 ### ExposureParameters:
+| Field name       |   Description                        | Type     |
+|------------------|--------------------------------------|----------|
+| name             | Name of the exposure parameter       | String   |
+| unit             | Unit of the exposure parameter       | String   |
+| value            | Value of the exposure parameter      | String   |
 
-## Characteristics:
+### Characteristics:
 
-## ParameterValues:
+### ParameterValues:
