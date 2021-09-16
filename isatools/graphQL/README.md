@@ -400,17 +400,6 @@ elif response.errors:
 | inputs           | Input data used by this process                        | [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile)                    |
 | outputs          | Output data produced by this process                   | [Source](#Source), [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile) |
 
-Processes are located at several levels of the investigation, inside the processSequence arrays. They are filterable based
-on the following inputs:
-
-| Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values        |
-|------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
-| executesProtocol | Protocol executed by the process                                                                 | String                                    | process.executesProtocol  | X                                         |
-| treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
-| characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
-| parameterValues  | Parameters values the process should comply with                                                 | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |
-| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
-
 ### ProtocolParameterValue:
 | Field name   |             Description                       |                        Type                   |
 |--------------|-----------------------------------------------|-----------------------------------------------|
@@ -487,3 +476,26 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 | category         | Category of the parameter value | String   |
 | unit             | Unit of the parameter value     | String   |
 | value            | Value of the parameter value    | String   |
+
+### Process:
+| Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values          |
+|------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|---------------------------------------------|
+| executesProtocol | Protocol executed by the process                                                                 | String                                    | process.executesProtocol  | X                                           |
+| treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
+| characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
+| parameterValues  | Parameters values the process should comply with                                                 | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                           |
+| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile" or "Material" |
+
+### Process Inputs:
+| Field name       |   Description                                     | Type                                      |    Target                 |                  Controlled values          |
+|------------------|---------------------------------------------------|-------------------------------------------|---------------------------|---------------------------------------------|
+| treatmentGroup   | Conditions the group was exposed to               | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
+| characteristics  | Characteristics the input should comply with      | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
+| on               | Control the input to apply the filter to          | String                                    | see controlled values     | "Sample", "Source, "DataFile" or "Material" |
+
+### Process Outputs:
+| Field name       |   Description                                     | Type                                      |    Target                 |                  Controlled values        |
+|------------------|---------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
+| treatmentGroup   | Conditions the group was exposed to               | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| type             | Name of the output to filter on                   | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| on               | Control the output to apply the filter to         | String                                    | see controlled values     | "Sample", "DataFile" or "Material"        |
