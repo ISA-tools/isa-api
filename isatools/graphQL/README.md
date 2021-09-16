@@ -185,15 +185,15 @@ This query retrieves filename of assays for which the technology type includes t
 
 
 ###### Filters:
-| Field name       |   Description                                                                                    | Type               |    Target                 |                  Controlled values        |
-|------------------|--------------------------------------------------------------------------------------------------|--------------------|---------------------------|-------------------------------------------|
-| measurementType  | Type of measurement realised in the assay                                                        | String             | measurementType           | X                                         |
-| executesProtocol | Protocol executed by a process                                                                   | String             | process.executesProtocol  | X                                         |
-| technologyType   | Type of technology used in the assay                                                             | String             | technologyType            | X                                         |   
-| treatmentGroup   | Conditions the group was exposed to                                                              | ExposureParameters | process.inputs            | X                                         |
-| characteristics  | Characteristics the material should comply with                                                  | Characteristics    | process.inputs            | X                                         |
-| parameterValues  | Parameters values a process should comply with                                                   | ParameterValues    | process.parameterValues   | X                                         |
-| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String             | see values                | "Sample", "Source, "DataFile", "Material" |
+| Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values        |
+|------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
+| measurementType  | Type of measurement realised in the assay                                                        | String                                    | measurementType           | X                                         |
+| executesProtocol | Protocol executed by a process                                                                   | String                                    | process.executesProtocol  | X                                         |
+| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |   
+| treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| parameterValues  | Parameters values a process should comply with                                                   | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |
+| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
 
 
 Using the `operator` key we can assemble multiple filters in a single query. However, at this point the code will
@@ -446,6 +446,7 @@ elif response.errors:
 | name             | Name of the source             | String                            |
 | characteristics  | Characteristic of the source   | [Characteristic](#Characteristic) |
 
+---
 
 ## Filters References:
 All string and integer types should be wrapper in a comparison expression. This takes the form of a dictionary where
@@ -462,14 +463,16 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 | Integer   | gt          | Greater than            |
 | Integer   | gte         | Greater than or equal   |
 
-
 ### ExposureParameters:
-| Field name       |   Description                        | Type     |
-|------------------|--------------------------------------|----------|
-| name             | Name of the exposure parameter       | String   |
-| unit             | Unit of the exposure parameter       | String   |
-| value            | Value of the exposure parameter      | String   |
-
-### Characteristics:
+| Field name       |   Description               | Type     |
+|------------------|-----------------------------|----------|
+| name             | Name of the parameter       | String   |
+| unit             | Unit of the parameter       | String   |
+| value            | Value of the parameter      | String   |
 
 ### ParameterValues:
+| Field name       |   Description                   | Type     |
+|------------------|---------------------------------|----------|
+| category         | Category of the parameter value | String   |
+| unit             | Unit of the parameter value     | String   |
+| value            | Value of the parameter value    | String   |
