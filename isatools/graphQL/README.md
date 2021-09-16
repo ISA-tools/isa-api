@@ -41,9 +41,9 @@ outputs before writing your own.
 
 ## Queryable Objects:
 There are 3 mains queryable objects at the root of the ISA-QL syntax: the [investigation](#investigation), the 
-[studies](#studies) and the [assays](#assays).
+[studies](#study) and the [assays](#assay).
 
-### Investigation:
+### The Investigation query:
 
 #### Queryable fields:
 | Field name                  |             Description                              |                   Type                                  |
@@ -57,7 +57,7 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax: the [inves
 | ontologySourceReferences    | Ontology source references used by the investigation | [OntologySourceReference](#OntologySourceReference)     |
 | publications                | Publications associated with the investigation       | [Publication](#Publication)                             |  
 | people                      | People to contact for the investigation              | [Person](#Person)                                       |
-| studies                     | Studies associated with the investigation            | [Study](#Studies)                                       |
+| studies                     | Studies associated with the investigation            | [Study](#Study)                                       |
 
 Below is a simple example on how to get an investigation title, description and identifier, in that order.
 
@@ -75,7 +75,7 @@ query (in this case an `investigation`). The second one, located between the sec
 fields we want to retrieve. Queryable fields can be simple, as shown in the example, or represent complex objects which 
 also have their own queryable fields.
 
-### Studies:
+### The Studies query:
 
 #### Queryable fields:
 | Field name                |             Description                                   |                  Type                      |
@@ -92,7 +92,7 @@ also have their own queryable fields.
 | protocols                 | Protocols associated with the study                       | [Protocol](#Protocol)                      |
 | materials                 | Materials associated with the study                       | [Material](#Material)                      |
 | processSequence           | Processes associated with the study                       | [Process](#Process)                        |
-| assay                     | Assays associated with the study                          | [Assay](#Assays)                           |
+| assay                     | Assays associated with the study                          | [Assay](#Assay)                           |
 | factor                    | Factors associated with the study                         | [Factor](#Factor)                          |
 | characteristicCategories  | Categories of characteristics associated with this study  | [OntologyAnnotation](#OntologyAnnotation)  |
 | unitCategories            | Categories of units associated with the study             | [OntologyAnnotation](#OntologyAnnotation)  |
@@ -120,7 +120,7 @@ elif response.errors:
   print(response.errors)
 ```
 
-### Assays:
+### The Assays query:
 #### Queryable fields:
 | Field name                  |             Description                                  |                      Type                        |
 |-----------------------------|----------------------------------------------------------|--------------------------------------------------|
@@ -319,6 +319,19 @@ elif response.errors:
 
 ## Fields References:
 
+### Assay:
+| Field name                  |             Description                                  |                      Type                        |
+|-----------------------------|----------------------------------------------------------|--------------------------------------------------|
+| filename                    | Name of the assay file                                   | String                                           |
+| technologyPlatform          | Technology platform used in this assay                   | String                                           |
+| technologyType              | Type of technology used in this assay                    | [OntologyAnnotation](#OntologyAnnotation)        |
+| measurementType             | Type of measurement used in this assay                   | [OntologyAnnotation](#OntologyAnnotation)        |
+| dataFiles                   | List of files used or produced in this assay             | [DataFile](#DataFile)                            |
+| materials                   | Materials used in this assay                             | [Material](#Material)                            |
+| characteristicCategories    | Categories of characteristics associated with this assay | [OntologyAnnotation](#OntologyAnnotation)        |
+| unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)        |
+| processSequence             | Processes associated with this assay                     | [Process](#Process)                              |
+
 ### Characteristic:
 | Field name       |   Description                | Type                                      |
 |------------------|------------------------------|-------------------------------------------|
@@ -350,6 +363,20 @@ elif response.errors:
 | category         | Category of the factor value   | [Factor](#Factor)                         |
 | value            | Value of the factor value      | [OntologyAnnotation](#OntologyAnnotation) |
 | unit             | Unit of the factor value       | [OntologyAnnotation](#OntologyAnnotation) |
+
+### Investigation:
+| Field name                  |             Description                              |                   Type                                  |
+|-----------------------------|------------------------------------------------------|---------------------------------------------------------|
+| filename                    | Name of the investigation file                       | String                                                  |
+| identifier                  | Identifier of the investigation                      | String                                                  |
+| title                       | Title of the investigation                           | String                                                  |
+| description                 | Description of the investigation                     | String                                                  |
+| submissionDate              | Submission date of the investigation                 | DateTime                                                |
+| publicReleaseDate           | Public release date of the investigation             | DateTime                                                |
+| ontologySourceReferences    | Ontology source references used by the investigation | [OntologySourceReference](#OntologySourceReference)     |
+| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |  
+| people                      | People to contact for the investigation              | [Person](#Person)                                       |
+| studies                     | Studies associated with the investigation            | [Study](#Studies)                                       |
 
 ### Material:
 | Field name         |        Description                |   Type                            |
@@ -446,6 +473,26 @@ elif response.errors:
 | name             | Name of the source             | String                            |
 | characteristics  | Characteristic of the source   | [Characteristic](#Characteristic) |
 
+### Study:
+| Field name                |             Description                                   |                  Type                      |
+|---------------------------|-----------------------------------------------------------|--------------------------------------------|
+| filename                  | Name of the study file                                    | String                                     |
+| identifier                | Identifier of the study                                   | String                                     |
+| title                     | Title of the study file                                   | String                                     |
+| description               | Description of the study file                             | String                                     |
+| submissionDate            | Date at which the study was submitted                     | DateTime                                   |
+| publicReleaseDate         | Date at which the study was publicly released             | DateTime                                   |
+| publications              | Publications associated with the study                    | [Publication](#Publication)                |
+| people                    | People to contact for the study                           | [Person](#Person)                          |
+| studyDesignDescriptors    | Design descriptors of this study                          | [OntologyAnnotation](#OntologyAnnotation)  |
+| protocols                 | Protocols associated with the study                       | [Protocol](#Protocol)                      |
+| materials                 | Materials associated with the study                       | [Material](#Material)                      |
+| processSequence           | Processes associated with the study                       | [Process](#Process)                        |
+| assay                     | Assays associated with the study                          | [Assay](#Assays)                           |
+| factor                    | Factors associated with the study                         | [Factor](#Factor)                          |
+| characteristicCategories  | Categories of characteristics associated with this study  | [OntologyAnnotation](#OntologyAnnotation)  |
+| unitCategories            | Categories of units associated with the study             | [OntologyAnnotation](#OntologyAnnotation)  |
+
 ---
 
 ## Filters References:
@@ -463,6 +510,19 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 | Integer   | gt          | Greater than            |
 | Integer   | gte         | Greater than or equal   |
 
+
+### Assay filters:
+| Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values        |
+|------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
+| measurementType  | Type of measurement realised in the assay                                                        | String                                    | measurementType           | X                                         |
+| executesProtocol | Protocol executed by a process                                                                   | String                                    | process.executesProtocol  | X                                         |
+| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |   
+| treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| parameterValues  | Parameters values a process should comply with                                                   | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |
+| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
+
+
 ### ExposureParameters:
 | Field name       |   Description               | Type     |
 |------------------|-----------------------------|----------|
@@ -477,7 +537,7 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 | unit             | Unit of the parameter value     | String   |
 | value            | Value of the parameter value    | String   |
 
-### Process:
+### Process filters:
 | Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values          |
 |------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|---------------------------------------------|
 | executesProtocol | Protocol executed by the process                                                                 | String                                    | process.executesProtocol  | X                                           |
@@ -486,14 +546,14 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 | parameterValues  | Parameters values the process should comply with                                                 | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                           |
 | on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile" or "Material" |
 
-### Process Inputs:
+### Process Inputs filters:
 | Field name       |   Description                                     | Type                                      |    Target                 |                  Controlled values          |
 |------------------|---------------------------------------------------|-------------------------------------------|---------------------------|---------------------------------------------|
 | treatmentGroup   | Conditions the group was exposed to               | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
 | characteristics  | Characteristics the input should comply with      | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                           |
 | on               | Control the input to apply the filter to          | String                                    | see controlled values     | "Sample", "Source, "DataFile" or "Material" |
 
-### Process Outputs:
+### Process Outputs filters:
 | Field name       |   Description                                     | Type                                      |    Target                 |                  Controlled values        |
 |------------------|---------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
 | treatmentGroup   | Conditions the group was exposed to               | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
