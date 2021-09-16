@@ -298,6 +298,15 @@ query assaysFilenames(
 }
 ```
 ```python
+from os import path
+from json import dumps
+from isatools.isatab import load
+
+here_path = path.dirname(path.realpath(__file__))
+investigation_filepath = path.join(here_path, path.join("DIRNAME", "INVESTIGATION.txt"))
+with open(investigation_filepath, "r") as investigation_file:
+  investigation = load(investigation_file)
+  investigation_file.close()
 query_filepath = path.join(here_path, "my_query.gql")
 with open(query_filepath, "r") as query_file:
     query = query_file.read()
