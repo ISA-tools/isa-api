@@ -400,6 +400,17 @@ elif response.errors:
 | inputs           | Input data used by this process                        | [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile)                    |
 | outputs          | Output data produced by this process                   | [Source](#Source), [Sample](#Sample), [Material](#Material) or [DataFile](#DataFile) |
 
+Processes are located at several levels of the investigation, inside the processSequence arrays. They are filterable based
+on the following inputs:
+
+| Field name       |   Description                                                                                    | Type                                      |    Target                 |                  Controlled values        |
+|------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
+| executesProtocol | Protocol executed by the process                                                                 | String                                    | process.executesProtocol  | X                                         |
+| treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
+| parameterValues  | Parameters values the process should comply with                                                 | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |
+| on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
+
 ### ProtocolParameterValue:
 | Field name   |             Description                       |                        Type                   |
 |--------------|-----------------------------------------------|-----------------------------------------------|
@@ -449,8 +460,8 @@ elif response.errors:
 ---
 
 ## Filters References:
-All string and integer types should be wrapper in a comparison expression. This takes the form of a dictionary where
-the main key represents the comparator. For example: `measurementType: {eq: "transcription profiling"}"`. <br>
+All string and integer types should be wrapped in a comparison expression. This takes the form of a dictionary where
+the main key represents the comparator. For example: `measurementType: {eq: "transcription profiling"}`. <br>
 
 ### Operator based on input type:
 | Type      |   Operator  | Description             |
