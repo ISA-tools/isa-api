@@ -29,10 +29,13 @@ def validate_target(inputs, input_type):
     :param input_type: 'input' or 'output'
     :return: True or raise Exception
     """
+    if not hasattr(inputs, 'target') or not inputs.target:
+        return True
     if input_type == "input" and inputs.target not in ["Material", "DataFile", "Sample", "Source"]:
         raise Exception("Inputs 'on' argument should be Material, DataFile, Sample or Source")
     if input_type == "outputs" and inputs.target not in ["Material", "DataFile", "Sample"]:
         raise Exception("Outputs 'on' argument should be Material, DataFile or Sample")
+    return True
 
 
 def validate_treatment_group(inputs):
@@ -41,8 +44,11 @@ def validate_treatment_group(inputs):
     :param inputs: the value to validate
     :return: True or raise Exception
     """
+    if not hasattr(inputs, 'treatmentGroup') or not inputs.treatmentGroup:
+        return True
     if inputs.treatmentGroup and inputs.target != "Sample":
         raise Exception("Inputs 'treatmentGroup' argument can only be applied to Sample")
+    return True
 
 
 def validate_characteristics(inputs):
