@@ -2,6 +2,19 @@ import os
 import unittest
 from isatools.isatab import load
 from isatools.graphQL.utils.validate import validate_input, validate_outputs
+from isatools.graphQL.utils.search import (
+    search_assays,
+    search_process_sequence,
+    search_inputs,
+    search_outputs,
+    search_data_files
+)
+
+here_path = os.path.dirname(os.path.realpath(__file__))
+investigation_filepath = os.path.join(here_path, "../data/tab/BII-S-TEST/i_test.txt")
+with open(investigation_filepath, 'r') as investigation_file:
+    investigation = load(investigation_file)
+    investigation_file.close()
 
 
 class I0Data:
@@ -14,32 +27,25 @@ class I0Data:
 class TestGraphQLQueries(unittest.TestCase):
 
     def setUp(self):
-        self.here_path = os.path.dirname(os.path.realpath(__file__))
-        graph_filepath = os.path.join(self.here_path, "../data/graphQL/example.graphql")
-        investigation_filepath = os.path.join(self.here_path, "../data/tab/BII-S-TEST/i_test.txt")
+        graph_filepath = os.path.join(here_path, "../data/graphQL/example.gql")
         with open(graph_filepath, 'r') as graph_file:
             self.query = graph_file.read()
             graph_file.close()
-        with open(investigation_filepath, 'r') as investigation_file:
-            self.investigation = load(investigation_file)
-            investigation_file.close()
 
     def test_full_query(self):
         variables = {
-            "measurement": "metagenome sequencing",
-            "executes": "nucleic acid extraction",
-            "fileType": "Raw Data File",
-            "compound": "carbon dioxide",
-            "dose1": "normal",
             "technologyType": "nucleotide sequencing",
-            "dose2": "high",
-            "material": "Extract Name"
+            "measurementType": "transcription profiling",
+            "fileType": "Raw Data F",
+            "protocol": "nucleic acid ext",
+            "compound": "carbon diox",
+            "dose": "high"
         }
-        response = self.investigation.execute_query(self.query, variables)
-        self.assertTrue(response.errors)
+        response = investigation.execute_query(self.query, variables)
+        self.assertTrue(not response.errors)
 
     def test_introspection(self):
-        response = self.investigation.introspect()
+        response = investigation.introspect()
         self.assertTrue(not response.errors)
 
 
@@ -78,3 +84,182 @@ class TestValidation(unittest.TestCase):
             validate_input(self.input_data)
         self.assertTrue("Inputs 'characteristics' argument can only be applied to Sample, Material or Source"
                         == str(context.exception))
+
+
+class TestSearch(unittest.TestCase):
+
+    def test_search_assays(self):
+        assays = search_assays(investigation.studies[0].assays, {}, "AND")
+        self.assertTrue(len(assays) == 2)
+
+        filters = {
+            "target": "Sample",
+            "technologyType": {"eq": "nucleotide sequencing"},
+            "measurementType": {"eq": "transcription profiling"},
+            "executesProtocol": {"includes": "nucleic acid ext"},
+            "characteristics": [
+                {
+                    "name": {"eq": "category"},
+                    "value": {"eq": "anatomical part"}
+                },
+                {
+                    "name": {"eq": "value"},
+                    "value": {"eq": "liver"}
+                }
+            ],
+            "treatmentGroup": [
+                {
+                    "name": {"eq": "compound"},
+                    "value": {"includes": "carb"}
+                }
+            ]
+        }
+        assays = search_assays(investigation.studies[0].assays, filters, "AND")
+        self.assertTrue(len(assays) == 1)
+        self.assertTrue(assays[0].filename == "a_test-assay-Tx.txt")
+
+        assays = search_assays(investigation.studies[0].assays, filters, "OR")
+        self.assertTrue(len(assays) == 2)
+
+        with self.assertRaises(Exception) as context:
+            search_assays(investigation.studies[0].assays, filters, "TEST")
+        self.assertTrue("Operator should be AND or OR" == str(context.exception))
+
+    def test_search_process_sequence(self):
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {}, 'AND')
+        self.assertTrue(len(process_sequence) == 18)
+        filters = {
+            "executesProtocol": {"includes": "nucleic acid ext"},
+            "treatmentGroup": [
+                {
+                    "name": {"eq": "compound"},
+                    "value": {"includes": "carb"}
+                }
+            ]
+        }
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        self.assertTrue(len(process_sequence) == 8)
+        filters['target'] = "Sample"
+        filters['characteristics'] = [
+            {
+                "name": {"eq": "category"},
+                "value": {"eq": "anatomical part"}
+            },
+            {
+                "name": {"eq": "value"},
+                "value": {"eq": "liver"}
+            }
+        ]
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        self.assertTrue(len(process_sequence) == 3)
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'OR')
+        self.assertTrue(len(process_sequence) == 8)
+
+        filters = {"parameterValues": {
+            "category": {"eq": "library strategy"},
+            "value": {"includes": "WG"}
+        }}
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        self.assertTrue(len(process_sequence) == 4)
+
+    def test_search_inputs(self):
+        filters = {}
+        inputs = search_inputs(investigation.studies[0].assays[0].process_sequence[0].inputs, filters, "AND")
+        self.assertTrue(inputs[0].name == "GSM255770")
+
+        filters = {
+            "treatmentGroup": [
+                {
+                    "name": {"eq": "compound"},
+                    "value": {"includes": "carb"}
+                }
+            ],
+            "target": "Sample"
+        }
+        found = 0
+        for process in investigation.studies[0].assays[0].process_sequence:
+            inputs = search_inputs(process.inputs, filters, "AND")
+            if len(inputs) > 0:
+                found += 1
+                self.assertTrue(type(inputs[0]).__name__ == "Sample")
+        self.assertTrue(found == 4)
+        found = 0
+
+        filters['characteristics'] = [
+            {
+                "name": {"eq": "category"},
+                "value": {"eq": "anatomical part"}
+            },
+            {
+                "name": {"eq": "value"},
+                "value": {"eq": "liver"}
+            }
+        ]
+        for process in investigation.studies[0].assays[0].process_sequence:
+            inputs = search_inputs(process.inputs, filters, "AND")
+            if len(inputs) > 0:
+                found += 1
+                self.assertTrue(type(inputs[0]).__name__ == "Sample")
+        self.assertTrue(found == 3)
+        found = 0
+
+        for process in investigation.studies[0].assays[0].process_sequence:
+            inputs = search_inputs(process.inputs, filters, "OR")
+            if len(inputs) > 0:
+                found += 1
+                self.assertTrue(type(inputs[0]).__name__ == "Sample")
+        self.assertTrue(found == 4)
+
+    def test_search_outputs(self):
+        filters = {}
+        found = 0
+        for process in investigation.studies[0].assays[0].process_sequence:
+            outputs = search_outputs(process.outputs, filters)
+            if len(outputs) > 0:
+                found += 1
+                self.assertTrue(type(outputs[0]).__name__ in ["Material", "DataFile"])
+        self.assertTrue(found == 14)
+
+        found = 0
+        filters = {
+            "target": "DataFile",
+            "label": {"eq": "Raw Data File"}
+        }
+        for process in investigation.studies[0].assays[0].process_sequence:
+            outputs = search_outputs(process.outputs, filters)
+            if len(outputs) > 0:
+                found += 1
+                self.assertTrue(type(outputs[0]).__name__ == "DataFile")
+        self.assertTrue(found == 6)
+
+        found = 0
+        filters = {
+            "target": "Material",
+            "label": {"includes": "Extract Name"}
+        }
+        for process in investigation.studies[0].assays[0].process_sequence:
+            outputs = search_outputs(process.outputs, filters)
+            if len(outputs) > 0:
+                found += 1
+                self.assertTrue(type(outputs[0]).__name__ == "Material")
+                self.assertTrue(outputs[0].type in ["Extract Name", "Labeled Extract Name"])
+        self.assertTrue(found == 8)
+
+        found = 0
+        filters = {
+            "target": "Sample",
+            "label": {"includes": "123"}
+        }
+        for process in investigation.studies[0].assays[0].process_sequence:
+            outputs = search_outputs(process.outputs, filters)
+            if len(outputs) > 0:
+                found += 1
+        self.assertTrue(found == 0)
+
+    def test_search_data_files(self):
+        files_data = investigation.studies[0].assays[0].data_files
+        files_found = search_data_files(files_data, {"eq": "Raw Data File"})
+        self.assertTrue(len(files_found) == 6)
+
+    def test_search_parameter_values(self):
+        print("TODO")

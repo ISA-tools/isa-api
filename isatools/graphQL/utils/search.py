@@ -21,7 +21,7 @@ def search_assays(assays, filters, operator):
     """
     if operator not in ['AND', 'OR']:
         raise Exception("Operator should be AND or OR")
-    target = filters['target'] or None
+    target = filters['target'] if filters and 'target' in filters else None
     filters = build_assays_filters(filters)
     measurement_value, measurement_operator = filters['measurementType']
     technology_value, technology_operator = filters['technologyType']
@@ -160,31 +160,30 @@ def search_inputs(process_inputs, filters, operator):
     if not filters:
         return process_inputs
     outputs = []
-    if filters.is_valid:
-        for input_data in process_inputs:
-            found = []
-            input_classname = type(input_data).__name__
-            if input_classname == filters['target'] == "Sample" and 'treatmentGroup' in filters:
-                local_found = []
-                for factor in filters['treatmentGroup']:
-                    local_found.append(find_exposure_value(input_data, factor, factor['name']))
-                if False not in list(set(local_found)) or local_found == []:
-                    found.append(True)
-                else:
-                    found.append(False)
-            if input_classname == filters['target'] and 'characteristics' in filters:
-                local_found = []
-                for characteristic in filters['characteristics']:
-                    local_found.append(find_characteristics(input_data, characteristic))
-                if False not in list(set(local_found)) or local_found == []:
-                    found.append(True)
-                else:
-                    found.append(False)
-            if operator == "AND" and False not in found:
-                outputs.append(input_data)
-            elif operator == "OR" and True in found:
-                outputs.append(input_data)
-        return outputs
+    for input_data in process_inputs:
+        found = []
+        input_classname = type(input_data).__name__
+        if input_classname == filters['target'] == "Sample" and 'treatmentGroup' in filters:
+            local_found = []
+            for factor in filters['treatmentGroup']:
+                local_found.append(find_exposure_value(input_data, factor, factor['name']))
+            if False not in list(set(local_found)) or local_found == []:
+                found.append(True)
+            else:
+                found.append(False)
+        if input_classname == filters['target'] and 'characteristics' in filters:
+            local_found = []
+            for characteristic in filters['characteristics']:
+                local_found.append(find_characteristics(input_data, characteristic))
+            if False not in list(set(local_found)) or local_found == []:
+                found.append(True)
+            else:
+                found.append(False)
+        if operator == "AND" and False not in found and len(found) > 0:
+            outputs.append(input_data)
+        elif operator == "OR" and True in found:
+            outputs.append(input_data)
+    return outputs
 
 
 def search_outputs(process_outputs, filters):
@@ -197,21 +196,20 @@ def search_outputs(process_outputs, filters):
     if not filters:
         return process_outputs
 
-    if filters.is_valid:
-        outputs = []
-        for output_data in process_outputs:
-            if type(output_data).__name__ == filters['target'] == "DataFile":
-                operator = list(filters['label'].keys())[0]
-                if compare_values(output_data.label, filters['label'][operator], operator):
-                    outputs.append(output_data)
-            elif filters['target'] == type(output_data).__name__ == "Material":
-                operator = list(filters['label'].keys())[0]
-                if compare_values(output_data.type, filters['label'][operator], operator):
-                    outputs.append(output_data)
-            elif filters['target'] == type(output_data).__name__ == "Sample":
-                # TODO: Filter samples on exposure FV, needs a valid input (no samples in current assays outputs)
-                print("SAMPLE HERE, NOT DONE YET")
-        return outputs
+    outputs = []
+    for output_data in process_outputs:
+        if type(output_data).__name__ == filters['target'] == "DataFile":
+            operator = list(filters['label'].keys())[0]
+            if compare_values(output_data.label, filters['label'][operator], operator):
+                outputs.append(output_data)
+        elif filters['target'] == type(output_data).__name__ == "Material":
+            operator = list(filters['label'].keys())[0]
+            if compare_values(output_data.type, filters['label'][operator], operator):
+                outputs.append(output_data)
+        elif filters['target'] == type(output_data).__name__ == "Sample":
+            # TODO: Filter samples on exposure FV, needs a valid input (no samples in current assays outputs)
+            print("SAMPLE HERE, NOT DONE YET")
+    return outputs
 
 
 def search_data_files(data_files, label):
