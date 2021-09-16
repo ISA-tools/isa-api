@@ -151,7 +151,7 @@ def compare_values(reference, target, operator):
                 return target > reference
             elif operator == 'gte':
                 return target >= reference
-            elif operator == 'le':
+            elif operator == 'lt':
                 return target < reference
             elif operator == 'lte':
                 return target <= reference

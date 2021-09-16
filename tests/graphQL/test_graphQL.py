@@ -15,7 +15,8 @@ from isatools.graphQL.utils.find import (
     find_measurement,
     find_exposure_value,
     find_characteristics,
-    find_protocol
+    find_protocol,
+    compare_values
 )
 
 here_path = os.path.dirname(os.path.realpath(__file__))
@@ -379,3 +380,25 @@ class TestFind(unittest.TestCase):
         found = find_protocol(investigation.studies[0].assays[0].process_sequence, "nucleic acid", "eq")
         self.assertFalse(found)
 
+    def test_compare_values(self):
+        self.assertTrue(compare_values("test", "test", "eq"))
+        self.assertFalse(compare_values("test1", "test", "eq"))
+        self.assertTrue(compare_values("test", "te", "includes"))
+        self.assertFalse(compare_values("test", "123", "includes"))
+
+        self.assertTrue(compare_values(100, 90, "lt"))
+        self.assertTrue(compare_values(100, 90, "lte"))
+        self.assertFalse(compare_values(90, 100, "lt"))
+        self.assertFalse(compare_values(90, 100, "lte"))
+
+        self.assertTrue(compare_values(90, 100, "gt"))
+        self.assertTrue(compare_values(90, 100, "gte"))
+        self.assertFalse(compare_values(100, 90, "gt"))
+        self.assertFalse(compare_values(100, 90, "gte"))
+
+        with self.assertRaises(Exception) as context:
+            compare_values(100, "test", "gte")
+        error = "Both value and target should be integers when using lt, gt, lte or gte got value: '100' " \
+                "and target: 'test'"
+        self.assertTrue(error == str(context.exception))
+        self.assertFalse(compare_values("100", 90, "gte"))
