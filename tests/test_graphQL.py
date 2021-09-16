@@ -20,7 +20,8 @@ from isatools.graphQL.utils.find import (
 )
 
 here_path = os.path.dirname(os.path.realpath(__file__))
-investigation_filepath = os.path.join(here_path, "../data/tab/BII-S-TEST/i_test.txt")
+print(here_path)
+investigation_filepath = os.path.join(here_path, "data/tab/BII-S-TEST/i_test.txt")
 with open(investigation_filepath, 'r') as investigation_file:
     investigation = load(investigation_file)
     investigation_file.close()
@@ -36,7 +37,7 @@ class I0Data:
 class TestGraphQLQueries(unittest.TestCase):
 
     def setUp(self):
-        graph_filepath = os.path.join(here_path, "../data/graphQL/example.gql")
+        graph_filepath = os.path.join(here_path, "data/graphQL/example.gql")
         with open(graph_filepath, 'r') as graph_file:
             self.query = graph_file.read()
             graph_file.close()
