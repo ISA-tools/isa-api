@@ -20,7 +20,6 @@ from isatools.graphQL.utils.find import (
 )
 
 here_path = os.path.dirname(os.path.realpath(__file__))
-print(here_path)
 investigation_filepath = os.path.join(here_path, "data/tab/BII-S-TEST/i_test.txt")
 with open(investigation_filepath, 'r') as investigation_file:
     investigation = load(investigation_file)
