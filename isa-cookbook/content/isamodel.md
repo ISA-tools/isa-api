@@ -27,7 +27,7 @@ folder
 [isatools/resources/schemas/isa\_model\_version\_1\_0\_schemas/core](https://github.com/ISA-tools/isa-api/tree/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core).
 
 The main object is the
-`[Investigation](https://github.com/ISA-tools/isa-api/tree/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json)`,
+[Investigation](https://github.com/ISA-tools/isa-api/tree/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json),
 which groups a set of `Studies` and maintains associated information such
 as `Publications`, `People` involved and the `Ontologies` used for annotating
 the dataset made up of `Raw or Derived Data File` and metadata about `Materials` and`Protocols` acting on those.	
