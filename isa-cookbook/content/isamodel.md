@@ -20,7 +20,7 @@ an overview of the ISA model
 
 The objective of designing and developing JSON schemas is to support a
 **new serialization of the ISA model in JSON format**, in addition to
-existing serializations in *tabular format*and RDF format.
+existing serializations in *tabular format* and RDF format.
 
 The core set of schemas for ISA model version 1.0 can be found in the
 folder
