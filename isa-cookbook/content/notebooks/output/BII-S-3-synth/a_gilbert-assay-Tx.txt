@@ -1,0 +1,5 @@
+Sample Name	Factor Value[compound]	Factor Value[dose]	Factor Value[collection time]	Protocol REF	Protocol REF	Parameter Value[library layout]	Raw Data File
+GSM255770	carbon dioxide	high	may 13th, 2006	nucleic acid extraction	library construction	SINGLE	sequenced-data-tx-0
+GSM255771	carbon dioxide	normal	may 13th, 2006	nucleic acid extraction	library construction	SINGLE	sequenced-data-tx-1
+GSM255772	carbon dioxide	high	may 19th, 2006	nucleic acid extraction	library construction	SINGLE	sequenced-data-tx-2
+GSM255773	carbon dioxide	normal	may 19th, 2006	nucleic acid extraction	library construction	SINGLE	sequenced-data-tx-3

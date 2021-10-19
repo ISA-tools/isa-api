@@ -191,6 +191,8 @@ class TestMappings(unittest.TestCase):
         isatab_txt = isatab.dumps(investigation)
         print(isatab_txt)
         self.assertTrue(isatab_txt)
+        expected_snippet = 'Assay Name'
+        self.assertIn(expected_snippet, isatab_txt)
         if SLOW_TESTS:
             data_frames = isatab.dump_tables_to_dataframes(investigation)
             self.assertIsInstance(data_frames, dict)
