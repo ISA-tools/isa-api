@@ -103,7 +103,7 @@
     raw data file: Raw Data File
     derived data file: Derived Array Data File
 -
-    measurement type: epigenome profling
+    measurement type: epigenome profiling
     technology type: DNA microarray
     protocol type: nucleic acid hybridization
     parameter-like file: Array Design REF
@@ -130,7 +130,7 @@
     raw data file: Raw Data File
     derived data file: Derived Array Data File
 -
-    measurement type: copy number variation profling
+    measurement type: copy number variation profiling
     technology type: DNA microarray
     protocol type: nucleic acid hybridization
     parameter-like file: Array Design REF
