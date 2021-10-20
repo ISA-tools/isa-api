@@ -986,7 +986,7 @@ def check_utf8(fp):
     import chardet
     with open(fp.name, "rb") as fp:
         charset = chardet.detect(fp.read())
-        if charset["encoding"] != "UTF-8" and charset["encoding"] != "ascii":
+        if charset["encoding"].upper() != "UTF-8" and charset["encoding"].lower() != "ascii":
             warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"], charset["confidence"]),
