@@ -1,0 +1,1461 @@
+{
+  "_id": "60d8b601b832df0008a19abc",
+  "name": "4-treatments factorial study",
+  "description": "Patients were randomised to one of 4 groups – intravenous streptokinase, oral aspirin, both or neither – and mortality was measured. (Lancet 1988;ii:349-60 )",
+  "design": {
+    "subjectType": {
+      "term": "Homo sapiens",
+      "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+    },
+    "subjectSize": 12,
+    "designType": {
+      "term": "full factorial design",
+      "id": "STATO:0000270",
+      "iri": "http://purl.obolibrary.org/obo/STATO_0000270",
+      "label": "Study subjects receive a single treatment",
+      "value": "fullFactorial"
+    },
+    "observationalFactors": [],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": {
+            "term": "Homo sapiens",
+            "iri": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+          },
+          "characteristics": []
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "observationPeriod": {
+        "name": "observation period",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "screen": {
+        "selected": true,
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      "runIn": {
+        "selected": false,
+        "name": "run-in",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "washout": {
+        "selected": false,
+        "name": "washout",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      },
+      "elementParams": {
+        "agents": [
+          "intravenous streptokinase",
+          "oral aspirin",
+          "intravenous streptokinase + oral aspirin",
+          "placebo"
+        ],
+        "intensities": [
+          5,
+          10
+        ],
+        "durations": [
+          30,
+          60
+        ],
+        "interventionType": {
+          "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+          "short_form": "ERO_0000600",
+          "obo_id": "ERO:0000600",
+          "label": "drug intervention",
+          "ontology_name": "ero",
+          "ontology_prefix": "ERO",
+          "type": "class"
+        },
+        "intensityUnit": "mg/day",
+        "durationUnit": "days"
+      },
+      "treatments": [
+        {
+          "_id": "60d8b601b832df0008a19a90",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        },
+        {
+          "_id": "60d8b601b832df0008a19a91",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        }
+      ]
+    },
+    "elements": [
+      {
+        "_id": "60d8b601b832df0008a19a92",
+        "id": "a1ee2795-92fa-4c89-99e0-05b7c1159f33",
+        "name": "screen",
+        "duration": 7,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a93",
+        "id": "f6e66807-ac7b-49ef-93cc-1e250e94ed15",
+        "name": "treatment_0",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a94",
+        "id": "39dc612f-9a40-4ca1-a798-cdb6cea5b59d",
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a95",
+        "id": "1",
+        "name": "treatment_1",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a96",
+        "id": "2",
+        "name": "treatment_2",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a97",
+        "id": "3",
+        "name": "treatment_3",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a98",
+        "id": "4",
+        "name": "treatment_4",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "oral aspirin",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a99",
+        "id": "5",
+        "name": "treatment_5",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "oral aspirin",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9a",
+        "id": "6",
+        "name": "treatment_6",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "oral aspirin",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9b",
+        "id": "7",
+        "name": "treatment_7",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "oral aspirin",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9c",
+        "id": "8",
+        "name": "treatment_8",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase + oral aspirin",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9d",
+        "id": "9",
+        "name": "treatment_9",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase + oral aspirin",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9e",
+        "id": "10",
+        "name": "treatment_10",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase + oral aspirin",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19a9f",
+        "id": "11",
+        "name": "treatment_11",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "intravenous streptokinase + oral aspirin",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19aa0",
+        "id": "12",
+        "name": "treatment_12",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "placebo",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19aa1",
+        "id": "13",
+        "name": "treatment_13",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "placebo",
+        "intensity": 10,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19aa2",
+        "id": "14",
+        "name": "treatment_14",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "placebo",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      },
+      {
+        "_id": "60d8b601b832df0008a19aa3",
+        "id": "15",
+        "name": "treatment_15",
+        "duration": 60,
+        "durationUnit": "days",
+        "agent": "placebo",
+        "intensity": 5,
+        "intensityUnit": "mg/day"
+      }
+    ],
+    "arms": {
+      "unselected": [
+        {
+          "id": 0,
+          "name": "Arm_0",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "f6e66807-ac7b-49ef-93cc-1e250e94ed15"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "name": "Arm_1",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                1
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Arm_3",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                3
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "Arm_6",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                6
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "Arm_7",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                7
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "Arm_8",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                8
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "Arm_9",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                9
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "Arm_11",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                11
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "Arm_14",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                14
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "Arm_15",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                15
+              ],
+              "events": []
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "events": []
+            }
+          ]
+        }
+      ],
+      "selected": [
+        {
+          "_id": "60d8b601b832df0008a19aa4",
+          "id": "2",
+          "name": "Arm_2",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19aa5"
+            },
+            {
+              "elements": [
+                "2"
+              ],
+              "_id": "60d8b601b832df0008a19aa6"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19aa7"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19aa8",
+          "id": "5",
+          "name": "Arm_5",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19aa9"
+            },
+            {
+              "elements": [
+                "5"
+              ],
+              "_id": "60d8b601b832df0008a19aaa"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19aab"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19aac",
+          "id": "4",
+          "name": "Arm_4",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19aad"
+            },
+            {
+              "elements": [
+                "4"
+              ],
+              "_id": "60d8b601b832df0008a19aae"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19aaf"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19ab0",
+          "id": "10",
+          "name": "Arm_10",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19ab1"
+            },
+            {
+              "elements": [
+                "10"
+              ],
+              "_id": "60d8b601b832df0008a19ab2"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19ab3"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19ab4",
+          "id": "12",
+          "name": "Arm_12",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19ab5"
+            },
+            {
+              "elements": [
+                "12"
+              ],
+              "_id": "60d8b601b832df0008a19ab6"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19ab7"
+            }
+          ]
+        },
+        {
+          "_id": "60d8b601b832df0008a19ab8",
+          "id": "13",
+          "name": "Arm_13",
+          "observationalFactors": [],
+          "size": 12,
+          "epochs": [
+            {
+              "elements": [
+                "a1ee2795-92fa-4c89-99e0-05b7c1159f33"
+              ],
+              "_id": "60d8b601b832df0008a19ab9"
+            },
+            {
+              "elements": [
+                "13"
+              ],
+              "_id": "60d8b601b832df0008a19aba"
+            },
+            {
+              "elements": [
+                "39dc612f-9a40-4ca1-a798-cdb6cea5b59d"
+              ],
+              "_id": "60d8b601b832df0008a19abb"
+            }
+          ]
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": {
+          "term": "Blood Sample",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+        },
+        "selectedCells": {
+          "Arm_2": [
+            true,
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true,
+            true
+          ],
+          "Arm_12": [
+            true,
+            true,
+            true
+          ],
+          "Arm_13": [
+            true,
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_2": [
+            1,
+            1,
+            3
+          ],
+          "Arm_5": [
+            1,
+            1,
+            3
+          ],
+          "Arm_4": [
+            1,
+            1,
+            3
+          ],
+          "Arm_10": [
+            1,
+            1,
+            3
+          ],
+          "Arm_12": [
+            1,
+            1,
+            3
+          ],
+          "Arm_13": [
+            1,
+            1,
+            3
+          ]
+        }
+      },
+      {
+        "sampleType": {
+          "term": "Unspecified Tissue",
+          "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+        },
+        "selectedCells": {
+          "Arm_2": [
+            false,
+            true,
+            false
+          ],
+          "Arm_5": [
+            false,
+            true,
+            false
+          ],
+          "Arm_4": [
+            false,
+            true,
+            false
+          ],
+          "Arm_10": [
+            false,
+            true,
+            false
+          ],
+          "Arm_12": [
+            false,
+            true,
+            false
+          ],
+          "Arm_13": [
+            false,
+            true,
+            false
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_2": [
+            null,
+            1,
+            null
+          ],
+          "Arm_5": [
+            null,
+            1,
+            null
+          ],
+          "Arm_4": [
+            null,
+            1,
+            null
+          ],
+          "Arm_10": [
+            null,
+            1,
+            null
+          ],
+          "Arm_12": [
+            null,
+            1,
+            null
+          ],
+          "Arm_13": [
+            null,
+            1,
+            null
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 1,
+        "name": "metabolite profiling - mass spectrometry (ontology annotated)",
+        "icon": "fas fa-chart-bar",
+        "color": "blue",
+        "measurement_type": {
+          "term": "metabolite profiling",
+          "iri": "http://purl.obolibrary.org/obo/OBI_0000366",
+          "source": null
+        },
+        "technology_type": {
+          "term": "mass spectrometry",
+          "iri": "http://purl.obolibrary.org/obo/OBI_0000470",
+          "source": null
+        },
+        "workflow": [
+          [
+            {
+              "term": "extraction",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0302884",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 2
+              }
+            }
+          ],
+          [
+            {
+              "term": "extract",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0000423"
+            },
+            {
+              "node_type": "extract",
+              "characteristics_category": {
+                "term": "extract type",
+                "iri": "http://purl.obolibrary.org/obo/OBI_0000423",
+                "source": "OBI"
+              },
+              "characteristics_value": {
+                "options": [
+                  {
+                    "term": "polar fraction",
+                    "iri": "polar fraction",
+                    "source": null
+                  },
+                  {
+                    "term": "lipids",
+                    "iri": "lipids",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "polar fraction",
+                    "iri": "polar fraction",
+                    "source": null
+                  },
+                  {
+                    "term": "lipids",
+                    "iri": "lipids",
+                    "source": null
+                  }
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            {
+              "term": "labeling",
+              "iri": "http://purl.obolibrary.org/obo/CHMO_0001675",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            {
+              "term": "labeled extract",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0000924",
+              "source": null
+            },
+            {
+              "node_type": "labeled extract",
+              "characteristics_category": {
+                "term": "labeled extract type",
+                "iri": "http://purl.obolibrary.org/obo/OBI_0000924",
+                "source": null
+              },
+              "characteristics_value": {
+                "options": [
+                  "label_0",
+                  "label_1"
+                ],
+                "values": [
+                  "label_0"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            {
+              "term": "mass spectrometry",
+              "iri": "http://purl.obolibrary.org/obo/OBI_0200085",
+              "source": null
+            },
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  {
+                    "term": "Agilent QTQF 6510",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000676",
+                    "source": null
+                  },
+                  {
+                    "term": "Agilent QTQF 6520A",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000677",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "Agilent QTQF 6510",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000676",
+                    "source": null
+                  }
+                ]
+              },
+              "injection_mode": {
+                "options": [
+                  {
+                    "term": "FIA",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000058",
+                    "source": null
+                  },
+                  {
+                    "term": "LC",
+                    "iri": null,
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "FIA",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1000058",
+                    "source": null
+                  },
+                  {
+                    "term": "LC",
+                    "iri": null,
+                    "source": null
+                  }
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  {
+                    "term": "positive mode",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1002807",
+                    "source": null
+                  }
+                ],
+                "values": [
+                  {
+                    "term": "positive mode",
+                    "iri": "http://purl.obolibrary.org/obo/MS_1002807",
+                    "source": null
+                  }
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "term": "raw spectral data file",
+              "iri": "http://purl.obolibrary.org/obo/MS_1003083",
+              "source": null
+            },
+            {
+              "node_type": "data file",
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ]
+        ],
+        "@context": {
+          "measurement_type": "http://purl.obolibrary.org/obo/NCIT_C25209",
+          "technology_type": "http://www.ebi.ac.uk/efo/EFO_0005521",
+          "instrument": "http://purl.obolibrary.org/obo/MS_1000463",
+          "injection_mode": "http://purl.obolibrary.org/obo/MS_1000007",
+          "acquisition_mode": "http://purl.obolibrary.org/obo/MS_1000027"
+        },
+        "selectedCells": {
+          "Arm_2": [
+            false,
+            true,
+            false
+          ],
+          "Arm_5": [
+            false,
+            true,
+            false
+          ],
+          "Arm_4": [
+            false,
+            true,
+            false
+          ],
+          "Arm_10": [
+            false,
+            true,
+            false
+          ],
+          "Arm_12": [
+            false,
+            true,
+            false
+          ],
+          "Arm_13": [
+            false,
+            true,
+            false
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_2": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_5": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_4": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_10": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_12": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_13": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Unspecified Tissue",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C132256"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "name": "metabolite profiling using NMR spectroscopy",
+        "icon": "fas fa-atom",
+        "color": "orange",
+        "measurement_type": "metabolite profiling",
+        "technology_type": "NMR spectroscopy",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 2
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "supernatant",
+                  "pellet"
+                ],
+                "values": [
+                  "supernatant",
+                  "pellet"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "nmr_spectroscopy",
+            {
+              "#replicates": {
+                "value": 1
+              },
+              "instrument": {
+                "options": [
+                  "Bruker Avance II 1 GHz"
+                ],
+                "values": [
+                  "Bruker Avance II 1 GHz"
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  "1D 13C NMR",
+                  "1D 1H NMR",
+                  "2D 13C-13C NMR"
+                ],
+                "values": [
+                  "2D 13C-13C NMR"
+                ]
+              },
+              "pulse_sequence": {
+                "options": [
+                  "CPMG",
+                  "TOCSY",
+                  "HOESY",
+                  "watergate"
+                ],
+                "values": [
+                  "TOCSY",
+                  "watergate"
+                ]
+              }
+            }
+          ],
+          [
+            "raw_spectral_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_2": [
+            true,
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true,
+            true
+          ],
+          "Arm_12": [
+            true,
+            true,
+            true
+          ],
+          "Arm_13": [
+            true,
+            true,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_2": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_5": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_4": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_10": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_12": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ],
+          "Arm_13": [
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ],
+            [
+              {
+                "term": "Blood Sample",
+                "iri": "http://purl.obolibrary.org/obo/NCIT_C17610"
+              }
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

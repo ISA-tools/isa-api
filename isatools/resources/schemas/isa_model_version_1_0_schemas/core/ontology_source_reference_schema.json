@@ -5,16 +5,16 @@
     "description" : "JSON-schema representing an ontology reference in the ISA model",
     "type" : "object",
     "properties" : {
+        "description" : { "type" : "string" },
+        "file" : { "type" : "string" },
+        "name": {"type": "string"},
+        "version": { "type": "string"},
         "comments" : {
             "type": "array",
             "items": {
                  "$ref": "comment_schema.json#"
             }
-        },
-        "description" : { "type" : "string" },
-        "file" : { "type" : "string" },
-        "name": {"type": "string"},
-        "version": { "type": "string"}
+        }
     },
     "additionalProperties": false
 }

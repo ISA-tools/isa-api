@@ -20,7 +20,7 @@ import uuid
 import networkx as nx
 from isatools.create import errors
 from isatools.create.constants import (
-    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS,
+    SCREEN, RUN_IN, WASHOUT, FOLLOW_UP, ELEMENT_TYPES, INTERVENTIONS, OBSERVATION_PERIOD,
     DURATION_FACTOR, BASE_FACTORS, SOURCE, SAMPLE, EXTRACT, LABELED_EXTRACT,
     DATA_FILE, GROUP_PREFIX, SUBJECT_PREFIX, SAMPLE_PREFIX,
     ASSAY_GRAPH_PREFIX,
@@ -28,7 +28,7 @@ from isatools.create.constants import (
     DEFAULT_SOURCE_TYPE, SOURCE_QC_SOURCE_NAME, QC_SAMPLE_NAME,
     QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_POST_RUN,
     QC_SAMPLE_TYPE_INTERSPERSED, ZFILL_WIDTH, DEFAULT_PERFORMER,
-    DEFAULT_STUDY_IDENTIFIER
+    DEFAULT_STUDY_IDENTIFIER, IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR
 )
 from isatools.model import (
     StudyFactor,
@@ -38,6 +38,7 @@ from isatools.model import (
     Characteristic,
     Study,
     Sample,
+    Comment,
     Assay,
     Protocol,
     Process,
@@ -350,6 +351,9 @@ class StudyCell(object):
         if insertion_index is None:
             insertion_index = len(previous_elements)
 
+        def check_observation_period():
+            return True
+
         def check_screen():
             if len(previous_elements) > 1:
                 return False
@@ -381,6 +385,7 @@ class StudyCell(object):
             return not bool(len(previous_elements))
 
         switcher = {
+            OBSERVATION_PERIOD: check_observation_period,
             SCREEN: check_screen,
             RUN_IN: check_run_in,
             WASHOUT: check_washout,
@@ -456,6 +461,10 @@ class StudyCell(object):
                 for concomitant_el in el:
                     all_elements.append(concomitant_el)
         return all_elements
+
+    @property
+    def has_treatments(self):
+        return any(isinstance(el, Treatment) for el in self.get_all_elements())
 
     @property
     def duration(self):
@@ -1091,7 +1100,9 @@ class AssayGraph(object):
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
                             ),
-                            name=node_name, protocol_type=node_key,
+                            name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                            # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                            protocol_type=node_key,
                             parameter_values=[
                                 ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                value=pv)
@@ -1108,7 +1119,9 @@ class AssayGraph(object):
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
                                 ),
-                                name=node_name, protocol_type=node_key,
+                                name='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_name),
+                                # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
+                                protocol_type=node_key,
                                 parameter_values=[
                                     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
                                                    value=pv)
@@ -1593,8 +1606,15 @@ class SampleAndAssayPlanDecoder(object):
 
     @staticmethod
     def loads_parameter_value(pv_dict):
-        return ParameterValue(category=ProtocolParameter(parameter_name=pv_dict["name"]), value=pv_dict["value"],
-                              unit=pv_dict.get('unit', None))
+        pv_name = pv_dict["name"]
+        return ParameterValue(
+            category=ProtocolParameter(
+                parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
+                if isinstance(pv_name, dict) else pv_name
+            ),
+            value=pv_dict["value"],
+            unit=pv_dict.get('unit', None)
+        )
 
     @staticmethod
     def loads_protocol_type(pt_dict):
@@ -1952,6 +1972,7 @@ class StudyDesign(object):
 
     def __init__(
             self,
+            identifier=None,
             name='Study Design',
             design_type=None,
             description=None,
@@ -1959,10 +1980,13 @@ class StudyDesign(object):
             study_arms=None
     ):
         """
+        :param identifier: str
         :param name: str
+        :param description: str
         :param source_type: str or OntologyAnnotation
         :param study_arms: Iterable
         """
+        self.identifier = identifier
         self.__study_arms = set()
         self.__name = name if isinstance(name, str) else 'Study Design'
         self.__design_type = None
@@ -2062,8 +2086,8 @@ class StudyDesign(object):
     def _idgen_sources(group_id, subject_number):
         """
         Identifiers generator
-        :param gid: group ID
-        :param subn: subject ID
+        :param group_id: group ID
+        :param subject_number: subject ID
         :return: str
         """
         idarr = []
@@ -2135,7 +2159,7 @@ class StudyDesign(object):
         :param performer: str
         :return: 
         """
-        factors = set()
+        factors = {SEQUENCE_ORDER_FACTOR}
         ontology_sources = set()
         samples = []
         sample_count = 0
@@ -2153,44 +2177,59 @@ class StudyDesign(object):
 
         # generate samples
         for arm in self.study_arms:
+            epoch_nb = 0
             for cell, sample_assay_plan in arm.arm_map.items():
+                is_treatment_comment = Comment(
+                    name=IS_TREATMENT_EPOCH,
+                    value='YES' if cell.has_treatments else 'NO'
+                )
+                seq_order_fv = FactorValue(
+                    factor_name=SEQUENCE_ORDER_FACTOR,
+                    value=epoch_nb
+                )
                 if not sample_assay_plan:
                     continue
-                factor_values = []      # TODO implement the right list of factor values
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
+                factor_values = [seq_order_fv]
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
-                    for sample_node in sample_assay_plan.sample_plan:
-                        for source in sources_map[arm.name]:
-                            sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
-                            sample_term_source = sample_type.value.term_source if \
-                                hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
-                            if sample_term_source:
-                                ontology_sources.add(sample_term_source)
-                            sample_term = sample_type.value.term if \
-                                isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
-                            for samp_idx in range(0, sampling_size):
-                                sample = Sample(
-                                    name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
-                                    factor_values=factor_values, characteristics=[sample_type], derives_from=[source]
-                                )
-                                sample_batches[sample_node].append(sample)
-                                sample_count += 1
-                                process = Process(
-                                    executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
-                                    performer=performer,
-                                    date_=datetime.date.isoformat(datetime.date.today()),
-                                    parameter_values=[
-                                        ParameterValue(
-                                            category=sampling_protocol.get_param(RUN_ORDER),
-                                            value=str(sample_count).zfill(3)
-                                        ), ParameterValue(
-                                            category=sampling_protocol.get_param(STUDY_CELL),
-                                            value=str(cell.name)
-                                        )
-                                    ]
-                                )
-                                process_sequence.append(process)
+                    # all the factor values up to the current element in the cell are actually serialised
+                    # FIXME could this be an issue for concomitant treatments?
+                    factor_values.extend([f_val for f_val in element.factor_values])
+                for sample_node in sample_assay_plan.sample_plan:
+                    for source in sources_map[arm.name]:
+                        sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
+                        sample_term_source = sample_type.value.term_source if \
+                            hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
+                        if sample_term_source:
+                            ontology_sources.add(sample_term_source)
+                        sample_term = sample_type.value.term if \
+                            isinstance(sample_type.value, OntologyAnnotation) else sample_type.value
+                        for samp_idx in range(0, sampling_size):
+                            sample = Sample(
+                                name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
+                                factor_values=factor_values,
+                                characteristics=[sample_type],
+                                derives_from=[source],
+                                comments=[is_treatment_comment]
+                            )
+                            sample_batches[sample_node].append(sample)
+                            sample_count += 1
+                            process = Process(
+                                executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
+                                performer=performer,
+                                date_=datetime.date.isoformat(datetime.date.today()),
+                                parameter_values=[
+                                    ParameterValue(
+                                        category=sampling_protocol.get_param(RUN_ORDER),
+                                        value=str(sample_count).zfill(3)
+                                    ), ParameterValue(
+                                        category=sampling_protocol.get_param(STUDY_CELL),
+                                        value=str(cell.name)
+                                    )
+                                ]
+                            )
+                            process_sequence.append(process)
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
 
@@ -2205,7 +2244,7 @@ class StudyDesign(object):
                                 log.error('Sample bach for assay graph is: {}'.format(
                                     problematic_sample_group
                                 ))
-
+                epoch_nb += 1
         # generate assays
         for assay_graph in unique_assay_types:
             protocols.update({node for node in assay_graph.nodes if isinstance(node, Protocol)})
@@ -2363,7 +2402,12 @@ class StudyDesign(object):
         if isinstance(node, ProtocolNode):
             return Process(
                 name='{}-S{}-{}-Acquisition-R{}'.format(
-                    assay_file_prefix, start_node_index, urlify(node.name), counter[node.name]
+                    assay_file_prefix,
+                    start_node_index,
+                    # NB: if node.name has special characters (e.g. whitespace)
+                    # these are replaced with  dashes by urlify()
+                    urlify(node.name),
+                    counter[node.name]
                 ),
                 executes_protocol=node,
                 performer=performer,
@@ -2424,12 +2468,14 @@ class StudyDesign(object):
                         )
                     )
                 except StopIteration:
+                    file_extension = '.{}'.format(node.extension) if node.extension else ''
                     return RawDataFile(
-                        filename='{}-S{}-{}-R{}'.format(
+                        filename='{}-S{}-{}-R{}-{}'.format(
                             assay_file_prefix,
                             start_node_index,
                             urlify(node.name),
-                            counter[node.name]
+                            counter[node.name],
+                            file_extension
                         )
                     )
 
@@ -2439,11 +2485,11 @@ class StudyDesign(object):
         :return: isatools.model.Study
         """
         with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
-                               'study-creator-config.yaml')) as yaml_file:
+                               'study-creator-config.yml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']
         study = Study(
-            identifier=identifier or DEFAULT_STUDY_IDENTIFIER,
+            identifier=self.identifier or identifier or DEFAULT_STUDY_IDENTIFIER,
             title=self.name,
             filename=urlify(study_config['filename']),
             description=self.description,
@@ -2469,24 +2515,27 @@ class StudyDesign(object):
 
     def __repr__(self):
         return '{0}.{1}(' \
+               'identifier={identifier}, ' \
                'name={name}, ' \
                'design_type={design_type}, ' \
                'description={description} ' \
                'source_type={source_type}, ' \
                'study_arms={study_arms}' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
-                          name=self.name, design_type=self.design_type, description=self.description,
+                          identifier=self.identifier, name=self.name,
+                          design_type=self.design_type, description=self.description,
                           source_type=self.source_type)
 
     def __str__(self):
         return """{0}(
+               identifier={identifier}, 
                name={name},
                description={description},
                study_arms={study_arms}
                )""".format(self.__class__.__name__,
                            description=self.description,
                            study_arms=[arm.name for arm in sorted(self.study_arms)],
-                           name=self.name)
+                           identifier=self.identifier, name=self.name)
 
     def __hash__(self):
         return hash(repr(self))

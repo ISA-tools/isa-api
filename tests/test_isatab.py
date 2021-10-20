@@ -120,7 +120,6 @@ class TestIsaTabDump(unittest.TestCase):
         s.design_descriptors.append(OntologyAnnotation(term="factorial design"))
         s.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
 
-
         # testing if study factors can receive comments[]
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
         f.comments.append(Comment(name="Study Start Date", value="Moon"))
@@ -175,6 +174,10 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
         i.studies = [s]
+
+        # from isatools.model import _build_assay_graph
+        # graph =_build_assay_graph(s.process_sequence)
+
         isatab.dump(i, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
@@ -349,7 +352,7 @@ class TestIsaTabDump(unittest.TestCase):
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
             self.assertIsInstance(isatab.dumps(i), str)
 
-    def test_isatab_dump_investigation_multiple_comments(self):
+    def test_isatab_dump_investigation_with_assay(self):
         # Create an empty Investigation object and set some values to the
         # instance variables.
 
@@ -730,6 +733,11 @@ class TestIsaTabDump(unittest.TestCase):
         study.assays.append(assay2)
 
         investigation.studies.append(study)
+
+        from isatools.model import _build_assay_graph
+        graph = _build_assay_graph(study.process_sequence)
+        graph1 = _build_assay_graph(assay1.process_sequence)
+        graph2 = _build_assay_graph(assay2.process_sequence)
 
         try:
             isatab.dump(investigation, self._tmp_dir)
@@ -1311,9 +1319,15 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         i = Investigation()
         s = Study(
             filename='s_test.txt',
-            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning'), Protocol(name="sampling")]
         )
+
+        source = Source(name="source1")
         sample1 = Sample(name='sample1')
+        sampling_process = Process(executes_protocol=s.protocols[2])
+        sampling_process.inputs = [source]
+        sampling_process.outputs = [sample1]
+        s.process_sequence = [sampling_process]
         extract1 = Material(name='extract1', type_='Extract Name')
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
@@ -1575,6 +1589,50 @@ sample1\textraction\te2\tscanning\td2"""
             for sample in s.samples:
                 self.assertGreater(len(sample.factor_values), 0)
 
+    def test_isatab_protocol_chain_parsing(self):
+        logging.info("Testing")
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'),
+                  encoding='utf-8') as fp:
+            investigation = isatab.load(fp)
+            self.assertIsInstance(investigation, Investigation)
+            study = investigation.studies[0]
+            nucleotide_sequencing_assay = next(
+                assay for assay in study.assays if assay.technology_type.term == 'nucleotide sequencing'
+            )
+            nucl_ac_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'nucleic acid extraction - standard procedure 2'
+            )
+            gen_dna_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'genomic DNA extraction - standard procedure 4'
+            )
+            extract = next(
+                mat for mat in nucleotide_sequencing_assay.materials['other_material'] if mat.name == 'GSM255770.e1'
+            )
+            self.assertTrue(nucl_ac_extraction_process.next_process is gen_dna_extraction_process)
+            self.assertEqual(len(gen_dna_extraction_process.outputs), 1)
+            self.assertFalse(nucl_ac_extraction_process.outputs)
+            self.assertTrue(gen_dna_extraction_process.outputs[0] is extract)
+            self.assertTrue(nucl_ac_extraction_process.inputs)
+            self.assertFalse(gen_dna_extraction_process.inputs)
+            # FIXME characteristics are not loaded into the extract name
+            # self.assertTrue(extract.characteristics)
+            dumps_out = isatab.dumps(investigation)
+            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
+            self.assertIn(expected_chained_protocol_snippet, dumps_out)
+
+    def test_isatab_load_and_dump_missing_technology_type(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3-missing-technology-type', 'i_gilbert.txt'),
+                  encoding='utf-8') as fp:
+            investigation = isatab.load(fp)
+            self.assertIsInstance(investigation, Investigation)
+            # FIXME characteristics are not loaded into the extract name
+            # self.assertTrue(extract.characteristics)
+            dumps_out = isatab.dumps(investigation)
+            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
+            self.assertIn(expected_chained_protocol_snippet, dumps_out)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
@@ -1601,30 +1659,3 @@ label2\trow2_value1\trow2_value2\n"""
             'header': ['label1', 'label2']
         }
         self.assertEqual(ttable_dict, expected_ttable)
-
-
-class UnitTestIsaStudyGroups():
-
-    def setUp(self):
-        self.fp = open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8')
-        self.i_df = isatab.load_investigation(fp=self.fp)
-        for i, study_df in enumerate(self.i_df['studies']):
-            study_filename = study_df.iloc[0]['Study File Name']
-            self.s_fp = open(os.path.join(os.path.dirname(self.fp.name), study_filename), encoding='utf-8')
-            self.study_sample_table = isatab.load_table(self.s_fp)
-            self.study_sample_table.filename = study_filename
-
-    def tearDown(self):
-        self.fp.close()
-        self.s_fp.close()
-
-    def test_get_num_study_groups(self):
-        num_study_groups = isatab.get_num_study_groups(self.study_sample_table, self.study_filename)
-        self.assertEqual(num_study_groups, 1)
-
-    def test_check_study_groups(self):
-        self.assertTrue(isatab.NUMBER_OF_STUDY_GROUPS in self.study_df.columns)
-        study_group_sizes = self.study_df[isatab.NUMBER_OF_STUDY_GROUPS]
-        study_group_size_in_comment = next(iter(study_group_sizes))
-        self.assertTrue(isatab.check_study_groups(self.study_sample_table, self.study_filename, study_group_size_in_comment))
-
