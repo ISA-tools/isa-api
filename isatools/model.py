@@ -1379,13 +1379,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     def yield_samples(self, name=None):
         """Gets an iterator of matching samples for a given name.
-
-        Args:
-            name: Sample name
-
-        Returns:
-            :obj:`filter` of :obj:`Source` that can be iterated on.  If name is
-                None, yields all samples.
+        :param string name: Sample name
+        :return: object:`filter` of object:`Source` that can be iterated on.  If name is None, yields all samples.
         """
         if name is None:
             return filter(True, self.samples)

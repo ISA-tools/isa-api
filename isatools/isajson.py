@@ -1740,6 +1740,7 @@ class ISAJSONEncoder(JSONEncoder):
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
+                    "derivesFrom": list(map(lambda x: {"@id": id_gen(x)}, obj.derives_from)) if obj.derives_from else [],
                     "comments": get_comments(obj.comments) if obj.comments else []
             })
 
