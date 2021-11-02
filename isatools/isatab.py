@@ -5145,7 +5145,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _consutrctor(self):
+    def _constructor(self):
         return IsaTabSeries
 
 
