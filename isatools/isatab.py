@@ -25,7 +25,7 @@ import iso8601
 import networkx as nx
 import numpy as np
 import pandas as pd
-from pandas.io.parsers import ParserError
+from pandas.error import ParserError
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
 from isatools import logging as isa_logging
