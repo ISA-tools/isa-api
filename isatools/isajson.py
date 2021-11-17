@@ -16,7 +16,7 @@ from jsonschema import Draft4Validator, RefResolver, ValidationError
 from isatools.model import (
     Investigation, OntologyAnnotation, Comment, OntologySource, Publication, Person, Study, Protocol, ProtocolParameter,
     ProtocolComponent, StudyFactor, Source, Characteristic, Sample, FactorValue, Process, ParameterValue, Assay,
-    DataFile, Material,
+    DataFile, Material
 )
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
@@ -1737,6 +1737,7 @@ class ISAJSONEncoder(JSONEncoder):
                         {
                             "category": {"@id": id_gen(x.factor_name)} if x.factor_name else None,
                             "value": get_value(x.value),
+                            "@id": id_gen(x),
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
@@ -1783,17 +1784,33 @@ class ISAJSONEncoder(JSONEncoder):
                         return '#material/labeledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
+
                 elif isinstance(obj, OntologySource):
                     return '#ontology/' + o_id
-                # elif isinstance(obj, StudyFactor):
-                #     return '#studyfactor/' + o_id
-                # elif isinstance(obj, FactorValue):
-                #     return '#factorvalue/' + o_id
+                elif isinstance(obj, OntologyAnnotation):
+                    return '#annotation_value/' + o_id
+                elif isinstance(obj, StudyFactor):
+                    return '#studyfactor/' + o_id
+                elif isinstance(obj, FactorValue):
+                    return '#factor_value/' + o_id
+                elif isinstance(obj, ParameterValue):
+                    return '#parameter_value/' + o_id
+                elif isinstance(obj, ProtocolParameter):
+                    return '#parameter/' + o_id
+                elif isinstance(obj, Protocol):
+                    return '#protocol/' + o_id
                 elif isinstance(obj, Publication):
                     return '#publication/' + o_id
                 elif isinstance(obj, Person):
                     return '#person/' + o_id
+                elif isinstance(obj, Investigation):
+                    return '#investigation/' + o_id
+                elif isinstance(obj, Study):
+                    return '#study/' + o_id
                 elif isinstance(obj, DataFile):
+                    if obj.label == 'Raw Data File':
+                        return '#data/rawdata-' + o_id
+                    else:
                         return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
                 elif isinstance(obj, Process):
                     return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
@@ -1822,6 +1839,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_parameter_value(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     "value": get_value(obj.value),
                     "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
@@ -1830,6 +1848,7 @@ class ISAJSONEncoder(JSONEncoder):
 
         def get_study(obj): return clean_nulls(
             {
+                "@id": id_gen(obj),
                 "filename": obj.filename,
                 "identifier": obj.identifier,
                 "title": obj.title,
@@ -1869,6 +1888,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_assay(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "measurementType": get_ontology_annotation(obj.measurement_type),
                     "technologyType": get_ontology_annotation(obj.technology_type),
                     "technologyPlatform": obj.technology_platform,
@@ -1898,6 +1918,7 @@ class ISAJSONEncoder(JSONEncoder):
         if isinstance(o, Investigation):
             return clean_nulls(
                 {
+                    "@id": id_gen(o),
                     "identifier": o.identifier,
                     "title": o.title,
                     "description": o.description,

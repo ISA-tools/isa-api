@@ -6,7 +6,7 @@
     "MaterialAttributeValue": "sdo:PropertyValue",
     "category": {
         "@id":"sdo:name",
-        "@type": "sdo:Text",
+        "@type": "sdo:Text"
     },
      "value": {
       "@id": "sdo:value",

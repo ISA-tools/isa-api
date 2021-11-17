@@ -23,8 +23,8 @@ class TestIsaTab2Json(unittest.TestCase):
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-    def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+    # def tearDown(self):
+    #     shutil.rmtree(self._tmp_dir)
 
     def test_isatab2json_convert_bii_i_1(self):
         test_case = 'BII-I-1'

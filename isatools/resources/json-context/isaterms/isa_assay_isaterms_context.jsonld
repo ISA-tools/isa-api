@@ -1,0 +1,64 @@
+{
+  "@context": {
+    "@language": "en",
+    "isa": "http://purl.org/isaterms",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "isa:assay",
+    "identifier": {
+      "@id": "isa:identified_by",
+      "@type": "@id"
+    },
+    "name": {
+       "@id": "isa:is_described_by",
+      "@type": "isa:name"
+    },
+    "description": {
+        "@id":"isa:is_described_by",
+        "@type":"isa:description"
+    },
+    "filename" :  {
+         "@id" : "isa:points_to",
+         "@type": "isa:assay_file"
+    },
+    "measurementType" :  {
+        "@id" : "isa:has_measurement",
+        "@type" : "isa:measurement"
+    },  
+    "technologyType" :  {
+        "@id" : "isa:has_technology",
+        "@type" : "isa:technology"
+    }, 
+    "technologyPlatform" :  {
+        "@id" : "isa:is_described_by",
+        "@type" : "isa:technology_platform"
+    },     
+    "materials" : {
+          "@id" : "isa:has_part",
+        "@type" : "isa:material_entity"
+     },
+     "othermaterials" : {
+        "@id" : "isa:has_part",
+        "@type" : "isa:material_entity"
+     },   
+    "characteristicCategories" :{
+         "@id" : "isa:qualified_by",
+         "@type" : "isa:characteristic"
+    },
+    "dataFiles" : {
+        "@id" : "isa:has_output",
+        "@type" : "isa:file"
+    },
+    "processSequences" : {
+         "@id" : "isa:has_part",
+         "@type" : "isa:process"
+    },
+    "unitCategories": {
+          "@id": "isa:qualified_by" ,
+          "@type" : "isa:unit"
+    },
+    "comments": {
+      "@id" : "isa:qualified_by",
+      "@type" : "isa:comment"
+    }
+  }
+}

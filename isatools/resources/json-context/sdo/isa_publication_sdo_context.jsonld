@@ -10,6 +10,6 @@
     "title": "sdo:Periodical",
     "status"  : "sdo:creativeWorkStatus",
     "authorList": "sdo:author",
-    "comments": "sdo:Comment",
+    "comments": "sdo:Comment"
   }
 }

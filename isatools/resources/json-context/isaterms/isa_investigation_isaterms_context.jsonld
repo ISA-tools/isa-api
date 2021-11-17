@@ -1,0 +1,48 @@
+{
+  "@context":{
+    "@language": "en",
+    "isa": "http://purl.org/isaterms",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Investigation": "isa:investigation",
+    "identifier" : {
+      "@id": "isa:identified_by",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "isa:is_described_by",
+        "@type":"isa:title"
+    },
+    "description" : {
+         "@id": "isa:is_described_by",
+         "@type":"isa:description"
+    } ,
+    "submissionDate" : {
+            "@id":"isa:performed_on",
+            "@type": "isa:submission_date"
+    } ,
+    "publicReleaseDate" : {
+            "@id":"isa:performed_on",
+            "@type": "isa:publication_date"
+    } ,
+    "publications" : {
+                "@id":"isa:is_described_by",
+                "@type":"isa:publication"
+    },
+    "people" : {
+                "@id":"isa:performed_by",
+                "@type":"isa:person"
+    },
+    "ontologySourceReferences": {
+        "@id":"isa:TODO",
+        "@type":"isa:TODO"
+    },
+    "studies": { 
+            "@id":"isa:has_part",
+            "@type":"isa:study"
+    },
+    "comments" : {
+             "@id" : "isa:is_described_by",
+             "@type" : "isa:comment"
+    }
+  }
+}
