@@ -1,13 +1,14 @@
 import unittest
 import os
-from json import load
+from json import load, dump
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
 class TestJson2JsonLD(unittest.TestCase):
 
     def setUp(self):
-        output_path = os.path.join("./data/json/BII-S-3/", "BII-S-3.jsonld")
+        self.test_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/json/BII-S-3/')
+        output_path = os.path.join(self.test_path, "BII-S-3-ld.json")
         with open(output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
             output_file.close()
@@ -18,7 +19,7 @@ class TestJson2JsonLD(unittest.TestCase):
         self.assertEqual(self.serializer.output, self.expected_markup)
 
     def test_BII_s_3_convert_local(self):
-        instance_path = os.path.join("./data/json/BII-S-3/", "BII-S-3-2.json")
+        instance_path = os.path.join(self.test_path, "BII-S-3-2.json")
         with open(instance_path, 'r') as instance_file:
             instance = load(instance_file)
             instance_file.close()
@@ -31,3 +32,6 @@ class TestJson2JsonLD(unittest.TestCase):
         serializer = ISALDSerializer(instance_url)
         self.assertTrue(self.serializer is serializer)
         self.assertTrue(id(self.serializer) == id(serializer))
+
+    def test_inject_combined_contexts(self):
+        print(123)
