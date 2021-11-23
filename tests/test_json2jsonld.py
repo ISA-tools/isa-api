@@ -1,6 +1,6 @@
 import unittest
 import os
-from json import load, dump
+from json import load, dumps
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
@@ -34,4 +34,9 @@ class TestJson2JsonLD(unittest.TestCase):
         self.assertTrue(id(self.serializer) == id(serializer))
 
     def test_inject_combined_contexts(self):
-        print(123)
+        self.serializer.set_ontology('isaterms')
+        self.serializer.set_contexts_method(True)
+        self.serializer.set_instance(
+            "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/master/json/BII-S-3/BII-S-3.json"
+        )
+        print(dumps(self.serializer.output, indent=4))

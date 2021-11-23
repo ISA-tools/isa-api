@@ -5,6 +5,8 @@ from requests import get
 
 class ISALDSerializer:
 
+    # TODO : use kwargs instead of default values;
+
     _instance = None
 
     def __init__(self, json_instance, ontology="obo", combined=False):
@@ -21,14 +23,30 @@ class ISALDSerializer:
         self.output = {}
         self.schemas = {}
         self.contexts = {}
+        self.combined = combined
         self.ontology = ontology
         self._resolve_network()
-        self.set_instance(json_instance, combined)
+        self.set_instance(json_instance)
 
     def __new__(cls, json_instance, ontology="obo"):
         if cls._instance is None:
             cls._instance = super(ISALDSerializer, cls).__new__(cls)
         return cls._instance
+
+    def set_contexts_method(self, combined):
+        """
+        Set the method to inject the LD context: single or multiple contexts.
+        :param {Boolean} combined: should the contexts be combined or not.
+        :return:
+        """
+        self.combined = combined
+
+    def set_format(self, output_format):
+        """
+        Sets the format of the output. Must be jsonld or ttl.
+        :param {String} output_format: the name of the output format.
+        """
+        self.format = output_format
 
     def _resolve_network(self):
         """
@@ -45,17 +63,16 @@ class ISALDSerializer:
                 self.contexts[schema_name] = self._get_context_url(schema_name)
                 schema.close()
 
-    def set_instance(self, instance, combined=False):
+    def set_instance(self, instance):
         """
         Changes the instance without reloading the schemas and restart the injection process
         :param instance: ISA JSON instance or url of the instance to load
-        :param {Boolean} combined: a boolean to indicate whether to inject context as a single all-in-one file or not.
         Defaults to False.
         """
         self.instance = instance
         if isinstance(instance, str) and (instance.startswith('http://') or instance.startswith('https://')):
             self.instance = json.loads(get(instance).text)
-        self.output = self._inject_ld(self.main_schema, {}, self.instance, combined)
+        self.output = self._inject_ld(self.main_schema, {}, self.instance)
 
     def set_ontology(self, ontology):
         """
@@ -64,18 +81,20 @@ class ISALDSerializer:
         """
         self.ontology = ontology
 
-    def _inject_ld(self, schema_name, output, instance, combined=False):
+    def _inject_ld(self, schema_name, output, instance):
         """
-        TODO: Replace multiple defaulted params to kwargs
         :param schema_name: name of the schema
         :param output: the output to inject the ld attributes into
         :param instance: the json instance to get the fields
-        :param combined: a boolean to indicate whether to inject context as a single all-in-one file or not
         :return:
         """
-        if not combined:
+        if not self.combined:
             return self._inject_ld_split(schema_name, output, instance)
         else:
+            filename = '../resources/json-context/%s/%s_allinone_context.jsonld' % (self.ontology, self.ontology)
+            context_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+            with open(context_path) as f:
+                output = json.load(f)
             return self._inject_ld_collapsed(schema_name, output, instance)
 
     def _inject_ld_split(self, schema_name, output, instance, reference=False):
@@ -141,8 +160,44 @@ class ISALDSerializer:
         :param instance: the instance to get the values from
         :return: the output of the LD injection
         """
-        print("WE WILL DO THE SECOND INJECTION HERE")
-        output = []
+        output["@type"] = self._get_context_key(schema_name)
+        props = self.schemas[schema_name]['properties'] if 'properties' in self.schemas[schema_name].keys() \
+            else self.schemas[schema_name]
+        for field in instance:
+            if field in props:
+                field_props = props[field]
+                if 'type' in field_props.keys() and field_props['type'] == 'array':
+                    if 'items' in field_props.keys() and '$ref' in field_props['items']:
+                        ref = field_props['items']['$ref'].replace("#", "")
+                        for value in instance[field]:
+                            value = self._inject_ld_collapsed(ref, value, value)
+                    else:
+                        if field == 'inputs':
+                            for input_val in instance['inputs']:
+                                ref = self._get_any_of_ref(input_val["@id"])
+                                if ref:
+                                    input_val = self._inject_ld_collapsed(ref, input_val, input_val)
+                        elif field == 'outputs':
+                            for output_val in instance['outputs']:
+                                ref = self._get_any_of_ref(output_val["@id"])
+                                if ref:
+                                    output_val = self._inject_ld_collapsed(ref, output_val, output_val)
+                        else:
+                            ref = field + '_schema.json'
+                            self.schemas[ref] = field_props
+                            for value in instance[field]:
+                                value = self._inject_ld_collapsed(ref, value, value)
+                elif 'type' in field_props.keys() and field_props['type'] == 'object':
+                    ref = field + '_schema.json'
+                    self.schemas[ref] = field_props
+                    instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
+                elif '$ref' in field_props.keys():
+                    ref = field_props['$ref'].replace("#", "")
+                    instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
+                elif 'anyOf' in field_props.keys() and field == 'value' and isinstance(instance[field], dict):
+                    ref = [n for n in field_props['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
+                    instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
+            output[field] = instance[field]
         return output
 
     def _get_context_url(self, raw_name):
@@ -152,7 +207,7 @@ class ISALDSerializer:
         :return: the corresponding context url
         """
         context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
-                      "resources/json-context/obo/"
+                      "resources/json-context/%s/" % self.ontology
         filename = "_%s_context.jsonld" % self.ontology
         return context_url + "isa_" + raw_name.replace("_schema.json", filename)
 
