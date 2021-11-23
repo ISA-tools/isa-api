@@ -1,64 +1,64 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Assay": "isa:assay",
+    "Assay": "isaterms:assay",
     "identifier": {
-      "@id": "isa:identified_by",
+      "@id": "isaterms:identified_by",
       "@type": "@id"
     },
     "name": {
-       "@id": "isa:is_described_by",
-      "@type": "isa:name"
+       "@id": "isaterms:is_described_by",
+      "@type": "isaterms:name"
     },
     "description": {
-        "@id":"isa:is_described_by",
-        "@type":"isa:description"
+        "@id":"isaterms:is_described_by",
+        "@type":"isaterms:description"
     },
     "filename" :  {
-         "@id" : "isa:points_to",
-         "@type": "isa:assay_file"
+         "@id" : "isaterms:points_to",
+         "@type": "isaterms:assay_file"
     },
     "measurementType" :  {
-        "@id" : "isa:has_measurement",
-        "@type" : "isa:measurement"
+        "@id" : "isaterms:has_measurement",
+        "@type" : "isaterms:measurement"
     },  
     "technologyType" :  {
-        "@id" : "isa:has_technology",
-        "@type" : "isa:technology"
+        "@id" : "isaterms:has_technology",
+        "@type" : "isaterms:technology"
     }, 
     "technologyPlatform" :  {
-        "@id" : "isa:is_described_by",
-        "@type" : "isa:technology_platform"
+        "@id" : "isaterms:is_described_by",
+        "@type" : "isaterms:technology_platform"
     },     
     "materials" : {
-          "@id" : "isa:has_part",
-        "@type" : "isa:material_entity"
+          "@id" : "isaterms:has_part",
+        "@type" : "isaterms:material_entity"
      },
      "othermaterials" : {
-        "@id" : "isa:has_part",
-        "@type" : "isa:material_entity"
+        "@id" : "isaterms:has_part",
+        "@type" : "isaterms:material_entity"
      },   
     "characteristicCategories" :{
-         "@id" : "isa:qualified_by",
-         "@type" : "isa:characteristic"
+         "@id" : "isaterms:qualified_by",
+         "@type" : "isaterms:characteristic"
     },
     "dataFiles" : {
-        "@id" : "isa:has_output",
-        "@type" : "isa:file"
+        "@id" : "isaterms:has_output",
+        "@type" : "isaterms:file"
     },
     "processSequences" : {
-         "@id" : "isa:has_part",
-         "@type" : "isa:process"
+         "@id" : "isaterms:has_part",
+         "@type" : "isaterms:process"
     },
     "unitCategories": {
-          "@id": "isa:qualified_by" ,
-          "@type" : "isa:unit"
+          "@id": "isaterms:qualified_by" ,
+          "@type" : "isaterms:unit"
     },
     "comments": {
-      "@id" : "isa:qualified_by",
-      "@type" : "isa:comment"
+      "@id" : "isaterms:qualified_by",
+      "@type" : "isaterms:comment"
     }
   }
 }

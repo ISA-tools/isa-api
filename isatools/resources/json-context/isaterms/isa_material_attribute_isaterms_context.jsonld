@@ -1,12 +1,12 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "MaterialAttribute": "isa:qualifies",
+    "MaterialAttribute": "isaterms:qualifies",
     "characteristicType": {
-      "@id": "isa:has_part",
-      "@type" : "isa:characteristic"
+      "@id": "isaterms:has_part",
+      "@type" : "isaterms:characteristic"
     }   
   }
 }

@@ -1,45 +1,45 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Person":  "isa:person",
+    "Person":  "isaterms:person",
     "identifier": {
-      "@id": "isa:identified_by",
+      "@id": "isaterms:identified_by",
       "@type": "@id"
     },
     "firstName": {
-        "@id": "isa:is_described_by",
-        "@type":"isa:firstname"
+        "@id": "isaterms:is_described_by",
+        "@type":"isaterms:firstname"
         },
     "lastName": {   
-         "@id": "isa:is_described_by",
-         "@type":"isa:lastname"
+         "@id": "isaterms:is_described_by",
+         "@type":"isaterms:lastname"
          },
     "midInitials": {
-        "@id": "isa:is_described_by",
-        "@type": "isa:mid_initials"
+        "@id": "isaterms:is_described_by",
+        "@type": "isaterms:mid_initials"
         },
     "email": {
-        "@id": "isa:is_described_by",
-        "@type": "isa:email"
+        "@id": "isaterms:is_described_by",
+        "@type": "isaterms:email"
         },
     "phone": {
-        "@id": "isa:is_described_by",
-        "@type": "isa:telephone_number"
+        "@id": "isaterms:is_described_by",
+        "@type": "isaterms:telephone_number"
         },
     "fax" : {
-        "@id": "isa:is_described_by",
-        "@type": "isa:TODO"
+        "@id": "isaterms:is_described_by",
+        "@type": "isaterms:TODO"
         },
     "affiliations":
     {
-      "@id":"isa:affiliation",
-      "@type":"isa:organization"
+      "@id":"isaterms:affiliation",
+      "@type":"isaterms:organization"
     } ,
      "roles": {
-        "@id": "isa:TODO",
-        "@type" : "isa:TODO"
+        "@id": "isaterms:TODO",
+        "@type" : "isaterms:TODO"
         }
   }
 }
