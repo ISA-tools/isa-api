@@ -28,3 +28,4 @@ behave==1.2.6
 httpretty==1.0.5
 sure==1.4.11
 coveralls~=3.0.1
+rdflib~=6.0.2

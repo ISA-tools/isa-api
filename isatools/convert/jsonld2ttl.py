@@ -1,7 +1,6 @@
 import os
 from rdflib import Graph
 
-
 class JSONLDToTTLConverter:
 
     def __init__(self, json_path, output_path):
