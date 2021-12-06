@@ -1,0 +1,21 @@
+Source Name	Characteristics[organism]	Term Source REF	Term Accession Number	Characteristics[family ID]	Protocol REF	Parameter Value[anatomical entity]	Sample Name	Characteristics[organism part]	Term Source REF	Term Accession Number	Characteristics[sample type]	Term Source REF	Term Accession Number
+XOP1	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF1	sample collection	urine	urine_XOP1	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP1	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF1	sample collection	buccal mucosa	buccal_mucosa_XOP1						
+XOP10	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF10	sample collection	urine	urine_XOP10	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP10	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF10	sample collection	buccal mucosa	buccal_mucosa_XOP10						
+XOP2	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF2	sample collection	urine	urine_XOP2	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP2	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF2	sample collection	buccal mucosa	buccal_mucosa_XOP2						
+XOP3	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF3	sample collection	buccal mucosa	buccal_mucosa_XOP3						
+XOP3	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF3	sample collection	urine	urine_XOP3	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP4	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF4	sample collection	urine	urine_XOP4	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP4	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF4	sample collection	buccal mucosa	buccal_mucosa_XOP4						
+XOP5	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF5	sample collection	urine	urine_XOP5	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP5	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF5	sample collection	buccal mucosa	buccal_mucosa_XOP5						
+XOP6	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF6	sample collection	urine	urine_XOP6	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP6	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF6	sample collection	buccal mucosa	buccal_mucosa_XOP6						
+XOP7	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF7	sample collection	urine	urine_XOP7	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP7	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF7	sample collection	buccal mucosa	buccal_mucosa_XOP7						
+XOP8	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF8	sample collection	buccal mucosa	buccal_mucosa_XOP8						
+XOP8	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF8	sample collection	urine	urine_XOP8	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP9	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF9	sample collection	urine	urine_XOP9	urine	UBERON	http://purl.obolibrary.org/obo/UBERON_0001088	experimental sample	CHMO	http://purl.obolibrary.org/obo/CHMO_0002746
+XOP9	Homo sapiens	NCBITAXON	http://purl.bioontology.org/ontology/NCBITAXON/9606	XOF9	sample collection	buccal mucosa	buccal_mucosa_XOP9						
