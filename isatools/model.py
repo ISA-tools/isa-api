@@ -771,14 +771,24 @@ class OntologyAnnotation(Commentable):
                     term_source=repr(self.term_source))
 
     def __str__(self):
-        return """OntologyAnnotation(
-    term={ontology_annotation.term}
-    term_source={term_source_ref}
-    term_accession={ontology_annotation.term_accession}
-    comments={num_comments} Comment objects
-)""".format(ontology_annotation=self,
-            term_source_ref=self.term_source.name if self.term_source else '',
-            num_comments=len(self.comments))
+        if not self.term_source == str and isinstance(self.term_source, OntologySource):
+            return """OntologyAnnotation(
+        term={ontology_annotation.term}
+        term_source={term_source_ref}
+        term_accession={ontology_annotation.term_accession}
+        comments={num_comments} Comment objects
+    )""".format(ontology_annotation=self,
+                term_source_ref=self.term_source.name,
+                num_comments=len(self.comments))
+        else:
+            return """OntologyAnnotation(
+        term={ontology_annotation.term}
+        term_source={term_source_ref}
+        term_accession={ontology_annotation.term_accession}
+        comments={num_comments} Comment objects
+    )""".format(ontology_annotation=self,
+                term_source_ref=self.term_source ,
+                num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3013,8 +3023,8 @@ class Material(Commentable, ProcessSequenceNode, metaclass=abc.ABCMeta):
 
     @type.setter
     def type(self, val):
-        if val is not None and not isinstance(val, str) \
-                and val not in ('Extract Name', 'Labeled Extract Name'):
+        # TODO: use json_schema to get these values
+        if val is not None and (not isinstance(val, str) or val not in ['Extract Name', 'Labeled Extract Name']):
             raise AttributeError(
                 '{0}.type must be a str in ("Extract Name", "Labeled Extract '
                 'Name") or None; got {1}:{2}'

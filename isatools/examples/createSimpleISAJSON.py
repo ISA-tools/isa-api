@@ -163,7 +163,8 @@ def create_descriptor():
 
     sample_collection_protocol = Protocol(
         name="sample collection",
-        protocol_type=OntologyAnnotation(term="sample collection"))
+        protocol_type=OntologyAnnotation(term="sample collection", term_accession="", term_source=""))
+
     study.protocols.append(sample_collection_protocol)
     sample_collection_process = Process(
         executes_protocol=sample_collection_protocol)

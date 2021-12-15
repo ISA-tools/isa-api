@@ -529,7 +529,7 @@ def load(fp):
                     type_=other_material_json["type"],
                     comments=get_comments(other_material_json)
                 )
-                for characteristic_json in other_material_json["characteristics"]:
+                for characteristic_json in other_material_json["characteristics"]:  
                     characteristic = Characteristic(
                         category=categories_dict[characteristic_json["category"]["@id"]],
                         value=OntologyAnnotation(
@@ -1608,18 +1608,21 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_ontology_annotation(obj):
-            if obj is not None:
-                return clean_nulls(
-                    {
-                        "@id": id_gen(obj),
-                        "annotationValue": obj.term,
-                        "termAccession": obj.term_accession,
-                        "termSource": obj.term_source.name if obj.term_source else None,
-                        "comments": get_comments(obj.comments)
-                    }
-                )
-            else:
-                return None
+            ontology_annotation = {
+                "@id": id_gen(obj),
+                "annotationValue": "",
+                "termAccession": "",
+                "termSource": "",
+                "comments": ""
+            }
+            if isinstance(obj, OntologyAnnotation):
+                ontology_annotation['termSource'] = obj.term_source
+                if isinstance(obj.term_source, OntologySource):
+                    ontology_annotation['termSource'] = obj.term_source.name
+                ontology_annotation['annotationValue'] = obj.term
+                ontology_annotation['termAccession'] = obj.term_accession
+                ontology_annotation["comments"] = get_comments(obj.comments)
+            return clean_nulls(ontology_annotation)
 
         def get_ontology_annotations(obj):
             return list(map(lambda x: get_ontology_annotation(x), obj))
@@ -1771,7 +1774,7 @@ class ISAJSONEncoder(JSONEncoder):
                     if obj.type == 'Extract Name':
                         return '#material/extract-' + o_id
                     elif obj.type == 'Labeled Extract Name':
-                        return '#material/labledextract-' + o_id
+                        return '#material/labeledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
                 elif isinstance(obj, DataFile):

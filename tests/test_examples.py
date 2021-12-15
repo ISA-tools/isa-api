@@ -102,6 +102,7 @@ class TestSimpleIsaJsonExample(unittest.TestCase):
         from isatools.examples import createSimpleISAJSON
         sys.stdout = StringIO()
         out = createSimpleISAJSON.create_descriptor()
+        print(out)
         # self.assertIn("i_investigation.txt", out)
         self.assertIn("s_study.txt", out)
         self.assertIn("a_assay.txt", out)

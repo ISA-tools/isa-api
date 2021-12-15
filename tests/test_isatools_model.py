@@ -200,19 +200,18 @@ class OntologyAnnotationTest(unittest.TestCase):
                          repr(self.ontology_annotation))
 
     def test_str(self):
-        self.assertEqual("""OntologyAnnotation(
-    term=
-    term_source=
-    term_accession=
-    comments=0 Comment objects
-)""", str(self.ontology_annotation_default))
+        self.assertTrue(isinstance(self.ontology_annotation_default, OntologyAnnotation))
+        self.assertEqual(self.ontology_annotation_default.term, "")
+        self.assertEqual(self.ontology_annotation_default.term_source, None)
+        self.assertEqual(self.ontology_annotation_default.term_accession, "")
+        self.assertEqual(self.ontology_annotation_default.comments, [])
 
-        self.assertEqual("""OntologyAnnotation(
-    term=T
-    term_source=N
-    term_accession=A
-    comments=0 Comment objects
-)""", str(self.ontology_annotation))
+        self.assertTrue(isinstance(self.ontology_annotation, OntologyAnnotation))
+        self.assertEqual(self.ontology_annotation.term, "T")
+        self.assertTrue(isinstance(self.ontology_annotation.term_source, OntologySource))
+        self.assertEqual(self.ontology_annotation.term_source.name, "N")
+        self.assertEqual(self.ontology_annotation.term_accession, "A")
+        self.assertEqual(self.ontology_annotation.comments, [])
 
     def test_eq(self):
         expected_ontology_annotation = OntologyAnnotation(
