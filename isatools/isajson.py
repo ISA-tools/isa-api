@@ -164,6 +164,7 @@ def load(fp):
         for assay_json in study_json["assays"]:
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category = get_characteristic_category(assay_characteristics_category_json)
+                # print("from ISAJSON:", characteristic_category["@id"])
                 # study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
     for study_json in investigation_json["studies"]:
@@ -286,7 +287,8 @@ def load(fp):
         for source_json in study_json["materials"]["sources"]:
             source = Source(
                 id_=source_json["@id"],
-                name=source_json["name"][7:],
+               # name=source_json["name"][7:],
+                name=source_json["name"].replace("source-", ""),
                 comments=get_comments(source_json)
             )
             for characteristic_json in source_json["characteristics"]:
@@ -449,6 +451,7 @@ def load(fp):
                 process.outputs.append(output)
             study.process_sequence.append(process)
             process_dict[process.id] = process
+
         for study_process_json in study_json["processSequence"]:  # 2nd pass
             try:
                 prev_proc = study_process_json["previousProcess"]["@id"]
@@ -518,28 +521,39 @@ def load(fp):
                 categories_dict[characteristic_category.id] = characteristic_category
             other_materials_dict = dict()
             for other_material_json in assay_json["materials"]["otherMaterials"]:
-                material_name = other_material_json["name"]
-                if material_name.startswith("labeledextract-"):
-                    material_name = material_name[15:]
-                else:
-                    material_name = material_name[8:]
+                material_name = other_material_json["name"].replace("labeledextract-", "").replace("extract-", "")
+
+                # if material_name.startswith("labeledextract-"):
+                #     material_name = material_name[15:]
+                # # else:
+                # #     material_name = material_name[8:]
                 material = Material(
                     id_=other_material_json["@id"],
                     name=material_name,
                     type_=other_material_json["type"],
                     comments=get_comments(other_material_json)
                 )
-                for characteristic_json in other_material_json["characteristics"]:  
-                    characteristic = Characteristic(
-                        category=categories_dict[characteristic_json["category"]["@id"]],
-                        value=OntologyAnnotation(
-                            term=characteristic_json["value"]["annotationValue"],
-                            term_source=term_source_dict[characteristic_json["value"]["termSource"]],
-                            term_accession=characteristic_json["value"]["termAccession"],
-                            comments=get_comments(characteristic_json["value"])
-                        ),
-                        comments=get_comments(characteristic_json)
-                    )
+                for characteristic_json in other_material_json["characteristics"]:
+                    if not isinstance(characteristic_json["value"], str):
+                        characteristic = Characteristic(
+                            category=categories_dict[characteristic_json["category"]["@id"]],
+                            value=OntologyAnnotation(
+                                term=characteristic_json["value"]["annotationValue"],
+                                term_source=term_source_dict[characteristic_json["value"]["termSource"]],
+                                term_accession=characteristic_json["value"]["termAccession"],
+                                comments=get_comments(characteristic_json["value"])
+                            ),
+                            comments=get_comments(characteristic_json)
+                        )
+                    else:
+                        characteristic = Characteristic(
+                            category=categories_dict[characteristic_json["category"]["@id"]],
+
+                            value=OntologyAnnotation(
+                                term=characteristic_json["value"]
+                            ),
+                            comments=get_comments(characteristic_json)
+                        )
                     material.characteristics.append(characteristic)
                 assay.other_material.append(material)
                 other_materials_dict[material.id] = material
@@ -1608,20 +1622,34 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_ontology_annotation(obj):
-            ontology_annotation = {
-                "@id": id_gen(obj),
-                "annotationValue": "",
-                "termAccession": "",
-                "termSource": "",
-                "comments": ""
-            }
-            if isinstance(obj, OntologyAnnotation):
-                ontology_annotation['termSource'] = obj.term_source
+            ontology_annotation = {}
+            # ontology_annotation = {
+            #     "@id": id_gen(obj),
+            #     "annotationValue": "",
+            #     "termAccession": "",
+            #     "termSource": "",
+            #     "comments": ""
+            # }
+            if obj is not None and isinstance(obj, OntologyAnnotation):
+                ontology_annotation["@id"] = "#ontology_annotation/"+obj.id
+                # print("ISAJSON get_ontology_annotation:", ontology_annotation["@id"])
                 if isinstance(obj.term_source, OntologySource):
                     ontology_annotation['termSource'] = obj.term_source.name
+                else:
+                    ontology_annotation['termSource'] = obj.term_source
                 ontology_annotation['annotationValue'] = obj.term
                 ontology_annotation['termAccession'] = obj.term_accession
                 ontology_annotation["comments"] = get_comments(obj.comments)
+            # else:
+            #     return None
+                # ontology_annotation = {
+                #     "@id": "",
+                #     "annotationValue": "",
+                #     "termAccession": "",
+                #     "termSource": "",
+                #     "comments": ""
+                # }
+
             return clean_nulls(ontology_annotation)
 
         def get_ontology_annotations(obj):
@@ -1712,12 +1740,14 @@ class ISAJSONEncoder(JSONEncoder):
                 raise ValueError("Unexpected value type found: " + type(obj))
 
         def get_characteristic_category(obj):  # TODO: Deal with Material Type
+
             res = clean_nulls(
                 {
-                    "@id": id_gen(obj),
-                    "characteristicType": get_ontology_annotation(obj)
+                    "@id": "#ontology_annotation/"+obj.category.id,
+                    "characteristicType": obj.category
                 }
             )
+            # print("ISAJSON GET CHART_CAT_OBJ:", id_gen(obj), obj.category.id, res["@id"])
             return res
 
         def get_sample(obj):
@@ -1781,6 +1811,8 @@ class ISAJSONEncoder(JSONEncoder):
                         return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
                 elif isinstance(obj, Process):
                     return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
+                elif isinstance(obj, OntologyAnnotation):
+                    return '#ontology_annotation/' + o_id
                 else:
                     return '#' + o_id
             else:

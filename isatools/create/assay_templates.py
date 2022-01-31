@@ -2,8 +2,6 @@ from isatools.create.model import *
 
 NAME = 'name'
 
-
-
 rna_seq_dict = OrderedDict([
     ('measurement_type', 'transcription profiling'),
     ('technology_type', 'nucleic acid sequencing'),
@@ -95,7 +93,6 @@ rna_seq_dict = OrderedDict([
     ])
 
 ])
-
 
 chip_seq_dict = rna_seq_dic = OrderedDict([
     ('measurement_type', 'chromatin modification profiling'),
@@ -189,7 +186,6 @@ chip_seq_dict = rna_seq_dic = OrderedDict([
 
 ])
 
-
 meth_seq_dict = OrderedDict([
     ('measurement_type', 'DNA methylation profiling'),
     ('technology_type', 'nucleic acid sequencing'),
@@ -281,8 +277,6 @@ meth_seq_dict = OrderedDict([
     ])
 
 ])
-
-
 
 exom_seq_dict = OrderedDict([
     ('measurement_type', 'exome sequencing'),
@@ -376,8 +370,6 @@ exom_seq_dict = OrderedDict([
 
 ])
 
-
-
 whole_genome_seq_dict = OrderedDict([
     ('measurement_type', 'genome sequencing'),
     ('technology_type', 'nucleic acid sequencing'),
@@ -469,9 +461,6 @@ whole_genome_seq_dict = OrderedDict([
     ])
 
 ])
-
-
-
 
 env_gene_survey_dict = OrderedDict([
     ('measurement_type', 'environmental gene survey'),
@@ -573,14 +562,6 @@ env_gene_survey_dict = OrderedDict([
 
 ])
 
-
-
-
-
-
-
-
-
 nmr_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite profiling'),
     ('technology_type', 'nmr spectroscopy'),
@@ -654,7 +635,6 @@ sirm_nmr_assay_dict = OrderedDict([
                 }
             ])
         ])
-
 
 ms_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite profiling'),
@@ -752,47 +732,43 @@ sirm_ms_assay_dict = OrderedDict([
     ])
 ])
 
-
-
-
-
 phti_assay_dict = OrderedDict([
     ('measurement_type', 'phenotyping'),
     ('technology_type', 'high-throughput imaging'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': SAMPLE,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('phenotyping by high throughput imaging', {
-                'instrument': ['lemnatech gigant'],
-                'acquisition_mode': ['UV light','near-IR light','far-IR light','visible light'],
-                'camera position': ['top','120 degree','240 degree','360 degree'],
-                'imaging daily schedule': ['06.00','19.00']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
+    ('extraction', {}),
+    ('extract', [
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'supernatant',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': SAMPLE,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'pellet',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('phenotyping by high throughput imaging', {
+        'instrument': ['lemnatech gigant'],
+        'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
+        'camera position': ['top', '120 degree', '240 degree', '360 degree'],
+        'imaging daily schedule': ['06.00', '19.00']
+    }),
+    ('raw_spectral_data_file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 1,
+            'technical_replicates': 2,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
 
 lcdad_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite identification'),

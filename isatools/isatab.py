@@ -438,7 +438,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                     for element in contact.comments:
                         if element.name == key:
                             contacts_df_row.append(element.value)
-
                 else:
                     contacts_df_row.append("")
 
@@ -1194,7 +1193,22 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
+        print("GRAPH:", "|", study_obj)
+        print("STUDY:", study_obj.title, "||", len(study_obj.sources), study_obj.characteristic_categories)
+        for src in study_obj.sources:
+            print("STUDY-SOURCES: ", src)
+
         s_graph = study_obj.graph
+        n=0
+        counter=0
+        for n in s_graph.nodes():
+            if isinstance(s_graph.indexes[n], Source):
+                counter = counter+1
+                print(n, s_graph.indexes[n])
+            else:
+                print(n, s_graph.indexes[n])
+        print("COUNTER of SOURCES: ", counter)
+
         if s_graph is None:
             break
         protrefcount = 0
@@ -1210,11 +1224,16 @@ def write_study_table_files(inv_obj, output_dir):
             s_graph,
             [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
         log.warning(s_graph.nodes())
+
+        print("PATHS:", len(paths), len(s_graph.nodes()))
+
         sample_in_path_count = 0
         longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
+        print("LONGEST:", len(longest_path))
         for node_index in longest_path:
             node = s_graph.indexes[node_index]
             if isinstance(node, Source):
+                print(node.name)
                 olabel = "Source Name"
                 columns.append(olabel)
                 columns += flatten(
@@ -1264,6 +1283,7 @@ def write_study_table_files(inv_obj, output_dir):
                                         ETA()]).start()
         else:
             def pbar(x): return x"""
+
         for path in paths:
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
@@ -1274,6 +1294,7 @@ def write_study_table_files(inv_obj, output_dir):
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
+                    print("ISATAB:", node_index, node.name)
                     for c in node.characteristics:
                         clabel = "{0}.Characteristics[{1}]".format(
                             olabel, c.category.term)
@@ -1283,6 +1304,7 @@ def write_study_table_files(inv_obj, output_dir):
                         df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Process):
+                    print("ISATAB - process:", node.id)
                     olabel = "Protocol REF.{}".format(
                         node.executes_protocol.name)
                     df_dict[olabel][-1] = node.executes_protocol.name

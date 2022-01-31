@@ -1,0 +1,2299 @@
+{
+    "comments": [],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [
+        {
+            "comments": [],
+            "description": "Chemical Entities of Biological Interest",
+            "file": "",
+            "name": "CHEBI",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "Chemical Methods Ontology",
+            "file": "",
+            "name": "CHMO",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "Metabolite Standards Initiative Ontology",
+            "file": "",
+            "name": "MSIO",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "NCBI organismal classification",
+            "file": "",
+            "name": "NCBITAXON",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "NCI Thesaurus OBO Edition",
+            "file": "",
+            "name": "NCIT",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "Ontology for Biomedical Investigations",
+            "file": "",
+            "name": "OBI",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "MS - the Mass Spectrometry Ontology",
+            "file": "",
+            "name": "MS",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "UO - the Unit Ontology",
+            "file": "",
+            "name": "UO",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "PATO - the Phenotype And Trait Ontology",
+            "file": "",
+            "name": "PATO",
+            "version": ""
+        },
+        {
+            "comments": [],
+            "description": "Uber-anatomy ontology",
+            "file": "",
+            "name": "UBERON",
+            "version": ""
+        }
+    ],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "assays": [
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25",
+                                "annotationValue": "labeled extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25",
+                                "annotationValue": "labeled extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "comments": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/rawspectraldatafile-4827171376",
+                            "comments": [],
+                            "name": "AT0_S1_DAE_R1_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827170032",
+                            "comments": [],
+                            "name": "AT0_S1_DAE_R2_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827170848",
+                            "comments": [],
+                            "name": "AT0_S1_DAE_R3_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827171808",
+                            "comments": [],
+                            "name": "AT0_S1_DAE_R4_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827171904",
+                            "comments": [],
+                            "name": "AT0_S2_DAE_R1_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827172000",
+                            "comments": [],
+                            "name": "AT0_S2_DAE_R2_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827172240",
+                            "comments": [],
+                            "name": "AT0_S2_DAE_R3_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        },
+                        {
+                            "@id": "#data/rawspectraldatafile-4827171760",
+                            "comments": [],
+                            "name": "AT0_S2_DAE_R4_raw-spectral-data-file.mzml.gz",
+                            "type": "Raw Spectral Data File"
+                        }
+                    ],
+                    "filename": "a_AT0_metabolite-profiling_mass-spectrometry.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/extract-4827170320",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/129c184e-fbae-4801-86d8-fe7c173afbdc",
+                                            "annotationValue": "lipid",
+                                            "comments": [],
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_18059",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S1_Extract-R1",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-4827170368",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/a4297b30-c7bc-495a-bfcc-0085a78abc24",
+                                            "annotationValue": "",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S1_LE-R1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-4827170560",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/3bb1ee67-e45f-4105-ae0a-d5119fb65cc7",
+                                            "annotationValue": "polar fraction",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S1_Extract-R2",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-4827172048",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/a4297b30-c7bc-495a-bfcc-0085a78abc24",
+                                            "annotationValue": "",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S1_LE-R2",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-4827171136",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/f8eb2064-114f-4c6f-b9e6-a730944ebec3"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/129c184e-fbae-4801-86d8-fe7c173afbdc",
+                                            "annotationValue": "lipid",
+                                            "comments": [],
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_18059",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S2_Extract-R1",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-4827170704",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/a4297b30-c7bc-495a-bfcc-0085a78abc24",
+                                            "annotationValue": "",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S2_LE-R1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-4827171328",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/06d40bdd-239b-433c-9074-b75eedaa7ce2"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/3bb1ee67-e45f-4105-ae0a-d5119fb65cc7",
+                                            "annotationValue": "polar fraction",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S2_Extract-R2",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-4827171712",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/a6214a3a-5208-4d93-b503-3ba46ee9ce25"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/a4297b30-c7bc-495a-bfcc-0085a78abc24",
+                                            "annotationValue": "",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": ""
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT0_S2_LE-R2",
+                                "type": "Labeled Extract Name"
+                            }
+                        ],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "@id": "#ontology_annotation/44ca5e93-34c6-47a1-aa31-125956eee492",
+                        "annotationValue": "metabolite profiling",
+                        "comments": [],
+                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                        "termSource": "OBI"
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/4827170272",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#extraction_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/4827169840"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827170992"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-4827170320"
+                                },
+                                {
+                                    "@id": "#material/extract-4827170560"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "University of Birmingham"
+                        },
+                        {
+                            "@id": "#process/4827170128",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#derivatization_000_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827170320"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827170464"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170368"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827125840"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/e61c4409-285c-4c8f-abbc-6852de510b07",
+                                        "annotationValue": "silylation",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000117",
+                                        "termSource": "MSIO"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827086128"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/1925b35a-2301-4730-b8a8-bafd0d9657c2",
+                                        "annotationValue": "N-(tert-butyldimethylsilyl)-N-methyltrifluoroacetamide",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_85060",
+                                        "termSource": "CHEBI"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170272"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827172096",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_001_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170368"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827171376"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827086752"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827085456"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083440"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/2949254c-d4ae-452f-a39d-e685f593265e",
+                                        "annotationValue": "negative mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000129",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170128"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827170464",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_000_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170368"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R2",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827170032"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827084256"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084064"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083872"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/a9dd8c95-59d7-43b1-b92b-ace5be3dd157",
+                                        "annotationValue": "positive mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000130",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170128"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827170992",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#derivatization_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827170560"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R2",
+                            "nextProcess": {
+                                "@id": "#process/4827170512"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827172048"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827127040"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/e61c4409-285c-4c8f-abbc-6852de510b07",
+                                        "annotationValue": "silylation",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000117",
+                                        "termSource": "MSIO"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827126848"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/1925b35a-2301-4730-b8a8-bafd0d9657c2",
+                                        "annotationValue": "N-(tert-butyldimethylsilyl)-N-methyltrifluoroacetamide",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_85060",
+                                        "termSource": "CHEBI"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170272"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171616",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827172048"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R3",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827170848"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827085888"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083488"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084976"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/a9dd8c95-59d7-43b1-b92b-ace5be3dd157",
+                                        "annotationValue": "positive mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000130",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170992"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827170512",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_001_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827172048"
+                                }
+                            ],
+                            "name": "AT0_S1_DAE_R4",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827171808"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827084016"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084160"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827085552"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/2949254c-d4ae-452f-a39d-e685f593265e",
+                                        "annotationValue": "negative mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000129",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170992"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827170752",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#extraction_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/4827168976"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827171664"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-4827171136"
+                                },
+                                {
+                                    "@id": "#material/extract-4827171328"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "University of Birmingham"
+                        },
+                        {
+                            "@id": "#process/4827170656",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#derivatization_000_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827171136"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827171472"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170704"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827125840"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/e61c4409-285c-4c8f-abbc-6852de510b07",
+                                        "annotationValue": "silylation",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000117",
+                                        "termSource": "MSIO"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827086128"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/1925b35a-2301-4730-b8a8-bafd0d9657c2",
+                                        "annotationValue": "N-(tert-butyldimethylsilyl)-N-methyltrifluoroacetamide",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_85060",
+                                        "termSource": "CHEBI"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170752"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171568",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_001_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170704"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827171904"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827086752"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827085456"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083440"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/2949254c-d4ae-452f-a39d-e685f593265e",
+                                        "annotationValue": "negative mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000129",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170656"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171472",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_000_001"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827170704"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R2",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827172000"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827084256"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084064"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083872"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/a9dd8c95-59d7-43b1-b92b-ace5be3dd157",
+                                        "annotationValue": "positive mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000130",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170656"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171664",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#derivatization_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827171328"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R2",
+                            "nextProcess": {
+                                "@id": "#process/4827172144"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827171712"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827127040"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/e61c4409-285c-4c8f-abbc-6852de510b07",
+                                        "annotationValue": "silylation",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000117",
+                                        "termSource": "MSIO"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827126848"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/1925b35a-2301-4730-b8a8-bafd0d9657c2",
+                                        "annotationValue": "N-(tert-butyldimethylsilyl)-N-methyltrifluoroacetamide",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_85060",
+                                        "termSource": "CHEBI"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827170752"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171424",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827171712"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R3",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827172240"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827085888"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827083488"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084976"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/a9dd8c95-59d7-43b1-b92b-ace5be3dd157",
+                                        "annotationValue": "positive mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000130",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827171664"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827172144",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#mass_spectrometry_001_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-4827171712"
+                                }
+                            ],
+                            "name": "AT0_S2_DAE_R4",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawspectraldatafile-4827171760"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827084016"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/735e0eaf-6f44-4f6e-89b6-12e4c26cfdf5",
+                                        "annotationValue": "7000A Triple Quadrupole GC/MS",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002802",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827084160"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/7f469540-c854-4375-a8c5-a3fed593742d",
+                                        "annotationValue": "GC",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1002272",
+                                        "termSource": "MS"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827085552"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/2949254c-d4ae-452f-a39d-e685f593265e",
+                                        "annotationValue": "negative mode",
+                                        "comments": [],
+                                        "termAccession": "http://purl.obolibrary.org/obo/MS_1000129",
+                                        "termSource": "MS"
+                                    }
+                                }
+                            ],
+                            "performer": "University of Birmingham",
+                            "previousProcess": {
+                                "@id": "#process/4827171664"
+                            }
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "@id": "#ontology_annotation/449edc20-7746-4820-9768-26248c650ac4",
+                        "annotationValue": "mass spectrometry",
+                        "comments": [],
+                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                        "termSource": "OBI"
+                    },
+                    "unitCategories": []
+                },
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e",
+                                "annotationValue": "extract type",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "comments": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/rawdatafile-4827278256",
+                            "comments": [],
+                            "name": "AT1_S1_DAE_R1_raw_data_file.fastq.gz",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-4827278496",
+                            "comments": [],
+                            "name": "AT1_S2_DAE_R1_raw_data_file.fastq.gz",
+                            "type": "Raw Data File"
+                        }
+                    ],
+                    "filename": "a_AT1_transcription-profiling_nucleotide-sequencing.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/extract-4827170224",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/44e18682-3bcc-4359-9d6c-4dce6917f113",
+                                            "annotationValue": "mRNA",
+                                            "comments": [],
+                                            "termAccession": "https://purl.obolibrary.org/obo/OBI_03234235",
+                                            "termSource": "OBI"
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT1_S1_Extract-R1",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-4827171520",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#ontology_annotation/3aa471f4-8108-4907-8bea-daab2bccb63e"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/44e18682-3bcc-4359-9d6c-4dce6917f113",
+                                            "annotationValue": "mRNA",
+                                            "comments": [],
+                                            "termAccession": "https://purl.obolibrary.org/obo/OBI_03234235",
+                                            "termSource": "OBI"
+                                        }
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "AT1_S2_Extract-R1",
+                                "type": "Extract Name"
+                            }
+                        ],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "@id": "#ontology_annotation/a5d2f59c-86c1-4ab3-8d2c-7548d0e54714",
+                        "annotationValue": "transcription profiling",
+                        "comments": [],
+                        "termAccession": "https://purl.obolibrary.org/obo/OBI_000066",
+                        "termSource": "OBI"
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/4827170800",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#extraction_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/4827169840"
+                                }
+                            ],
+                            "name": "AT1_S1_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827171280"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-4827170224"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "MGI Latvia"
+                        },
+                        {
+                            "@id": "#process/4827171280",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#library_preparation_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827170224"
+                                }
+                            ],
+                            "name": "AT1_S1_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827171232"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827026912"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/df3170b3-01a9-4b11-a356-f5815df127c3",
+                                        "annotationValue": "RNA-SEQ",
+                                        "comments": [],
+                                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100023",
+                                        "termSource": "OBI"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827026720"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/73892dfd-31a6-4ecb-8d7f-d78c1d111d1b",
+                                        "annotationValue": "PAIRED",
+                                        "comments": [],
+                                        "termAccession": "",
+                                        "termSource": ""
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827026336"
+                                    },
+                                    "value": "40"
+                                }
+                            ],
+                            "performer": "MGI Latvia",
+                            "previousProcess": {
+                                "@id": "#process/4827170800"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827171232",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#nucleic_acid_sequencing_000_000"
+                            },
+                            "inputs": [],
+                            "name": "AT1_S1_DAE_R1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawdatafile-4827278256"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827040208"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/0be1984e-cf82-4e8b-9082-25d0131c1cb6",
+                                        "annotationValue": "DNBSEQ-T7",
+                                        "comments": [],
+                                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                                        "termSource": "OBI"
+                                    }
+                                }
+                            ],
+                            "performer": "MGI Latvia",
+                            "previousProcess": {
+                                "@id": "#process/4827171280"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827169984",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#extraction_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/4827168976"
+                                }
+                            ],
+                            "name": "AT1_S2_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827171952"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-4827171520"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "MGI Latvia"
+                        },
+                        {
+                            "@id": "#process/4827171952",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#library_preparation_000_000"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-4827171520"
+                                }
+                            ],
+                            "name": "AT1_S2_DAE_R1",
+                            "nextProcess": {
+                                "@id": "#process/4827278928"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827026912"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/df3170b3-01a9-4b11-a356-f5815df127c3",
+                                        "annotationValue": "RNA-SEQ",
+                                        "comments": [],
+                                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100023",
+                                        "termSource": "OBI"
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827026720"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/73892dfd-31a6-4ecb-8d7f-d78c1d111d1b",
+                                        "annotationValue": "PAIRED",
+                                        "comments": [],
+                                        "termAccession": "",
+                                        "termSource": ""
+                                    }
+                                },
+                                {
+                                    "category": {
+                                        "@id": "#4827026336"
+                                    },
+                                    "value": "40"
+                                }
+                            ],
+                            "performer": "MGI Latvia",
+                            "previousProcess": {
+                                "@id": "#process/4827169984"
+                            }
+                        },
+                        {
+                            "@id": "#process/4827278928",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#nucleic_acid_sequencing_000_000"
+                            },
+                            "inputs": [],
+                            "name": "AT1_S2_DAE_R1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawdatafile-4827278496"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#4827040208"
+                                    },
+                                    "value": {
+                                        "@id": "#ontology_annotation/0be1984e-cf82-4e8b-9082-25d0131c1cb6",
+                                        "annotationValue": "DNBSEQ-T7",
+                                        "comments": [],
+                                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                                        "termSource": "OBI"
+                                    }
+                                }
+                            ],
+                            "performer": "MGI Latvia",
+                            "previousProcess": {
+                                "@id": "#process/4827171952"
+                            }
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "@id": "#ontology_annotation/ab40d569-9ce8-467f-879b-66e394811a2a",
+                        "annotationValue": "nucleotide sequencing",
+                        "comments": [],
+                        "termAccession": "https://purl.obolibrary.org/obo/OBI_0000234",
+                        "termSource": "OBI"
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [
+                {
+                    "@id": "#ontology_annotation/9d4255fa-f1f1-4634-8b89-05fd1aa357c1",
+                    "characteristicType": {
+                        "@id": "#ontology_annotation/9d4255fa-f1f1-4634-8b89-05fd1aa357c1",
+                        "annotationValue": "Study Subject",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/NCIT_C41189",
+                        "termSource": "NCIT"
+                    }
+                },
+                {
+                    "@id": "#ontology_annotation/4bff8da2-9188-406b-b40c-0a4fc3ec245c",
+                    "characteristicType": {
+                        "@id": "#ontology_annotation/4bff8da2-9188-406b-b40c-0a4fc3ec245c",
+                        "annotationValue": "organism part",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
+            "comments": [
+                {
+                    "name": "SRA Broker Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "SRA Center Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "SRA Center Project Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "SRA Lab Name",
+                    "value": "Oxford e-Research Centre"
+                },
+                {
+                    "name": "SRA Submission Action",
+                    "value": "ADD"
+                }
+            ],
+            "description": "",
+            "factors": [
+                {
+                    "@id": "#4827043248",
+                    "comments": [],
+                    "factorName": "AGENT",
+                    "factorType": {
+                        "@id": "#ontology_annotation/6179c107-d1e3-4bda-9aef-29bafe49bc05",
+                        "annotationValue": "perturbation agent",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#4827043536",
+                    "comments": [],
+                    "factorName": "Sequence Order",
+                    "factorType": {
+                        "@id": "#ontology_annotation/ade0336f-43a4-4f6e-a61c-c2fc8233863c",
+                        "annotationValue": "sequence order",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#4827012976",
+                    "comments": [],
+                    "factorName": "DURATION",
+                    "factorType": {
+                        "@id": "#ontology_annotation/4f8b30fd-1c81-441a-87c8-fefe63316ca3",
+                        "annotationValue": "time",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#4827043104",
+                    "comments": [],
+                    "factorName": "INTENSITY",
+                    "factorType": {
+                        "@id": "#ontology_annotation/c1f9880b-adaa-4418-8ef1-250d1cd8d6f6",
+                        "annotationValue": "intensity",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
+            "filename": "s_study_01.txt",
+            "identifier": "PTX-ST01",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [
+                    {
+                        "@id": "#sample/4827169840",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#ontology_annotation/4bff8da2-9188-406b-b40c-0a4fc3ec245c"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/61e0fcdb-5991-4c64-a5fe-1992ef2baec4",
+                                    "annotationValue": "whole organism",
+                                    "comments": [],
+                                    "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                                    "termSource": "OBI"
+                                }
+                            }
+                        ],
+                        "comments": [
+                            {
+                                "name": "study step with treatment",
+                                "value": "YES"
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/PTX-ST01-GRP0_SBJ1"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#4827043536"
+                                },
+                                "value": 0
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827043248"
+                                },
+                                "value": {
+                                    "@id": "#ontology_annotation/db8d69cb-7a02-47dc-aab6-05af88eac69a",
+                                    "annotationValue": "cadmium chloride",
+                                    "comments": [],
+                                    "termAccession": "https://purl.obolibrary.org/obo/CHEBI_35456",
+                                    "termSource": "CHEBI"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827012976"
+                                },
+                                "unit": {
+                                    "@id": "#ontology_annotation/0933f284-7bf4-466a-b2ed-a8e2b1b79e0c"
+                                },
+                                "value": 0
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827043104"
+                                },
+                                "unit": {
+                                    "@id": "#ontology_annotation/9f6384e8-e3cc-47f1-bb59-ade850af1705"
+                                },
+                                "value": {
+                                    "@id": "#ontology_annotation/9162fed1-7aa1-4022-b19b-a3ec2c87d6b3",
+                                    "annotationValue": "EC25",
+                                    "comments": [],
+                                    "termAccession": "",
+                                    "termSource": ""
+                                }
+                            }
+                        ],
+                        "name": "PTX-ST01-GRP0_SBJ1_ARM_00_CELL_00_SMP-whole-organism-#1"
+                    },
+                    {
+                        "@id": "#sample/4827168976",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#ontology_annotation/4bff8da2-9188-406b-b40c-0a4fc3ec245c"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/61e0fcdb-5991-4c64-a5fe-1992ef2baec4",
+                                    "annotationValue": "whole organism",
+                                    "comments": [],
+                                    "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                                    "termSource": "OBI"
+                                }
+                            }
+                        ],
+                        "comments": [
+                            {
+                                "name": "study step with treatment",
+                                "value": "YES"
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/PTX-ST01-GRP1_SBJ1"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#4827043536"
+                                },
+                                "value": 0
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827043248"
+                                },
+                                "value": {
+                                    "@id": "#ontology_annotation/db8d69cb-7a02-47dc-aab6-05af88eac69a",
+                                    "annotationValue": "cadmium chloride",
+                                    "comments": [],
+                                    "termAccession": "https://purl.obolibrary.org/obo/CHEBI_35456",
+                                    "termSource": "CHEBI"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827012976"
+                                },
+                                "unit": {
+                                    "@id": "#ontology_annotation/0933f284-7bf4-466a-b2ed-a8e2b1b79e0c"
+                                },
+                                "value": 0
+                            },
+                            {
+                                "category": {
+                                    "@id": "#4827043104"
+                                },
+                                "unit": {
+                                    "@id": "#ontology_annotation/9f6384e8-e3cc-47f1-bb59-ade850af1705"
+                                },
+                                "value": {
+                                    "@id": "#ontology_annotation/c8a45660-efb5-414f-80a4-6d4a2989db05",
+                                    "annotationValue": "BMD",
+                                    "comments": [],
+                                    "termAccession": "",
+                                    "termSource": ""
+                                }
+                            }
+                        ],
+                        "name": "PTX-ST01-GRP1_SBJ1_ARM_01_CELL_00_SMP-whole-organism-#1"
+                    }
+                ],
+                "sources": [
+                    {
+                        "@id": "#source/PTX-ST01-GRP0_SBJ1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#ontology_annotation/9d4255fa-f1f1-4634-8b89-05fd1aa357c1"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/cd95a275-04a9-4be0-a5b5-b7aa58b0a929",
+                                    "annotationValue": "Danio rerio",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_7955",
+                                    "termSource": "NCBITAXON"
+                                }
+                            }
+                        ],
+                        "comments": [],
+                        "name": "PTX-ST01-GRP0_SBJ1"
+                    },
+                    {
+                        "@id": "#source/PTX-ST01-GRP1_SBJ1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#ontology_annotation/9d4255fa-f1f1-4634-8b89-05fd1aa357c1"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/cd95a275-04a9-4be0-a5b5-b7aa58b0a929",
+                                    "annotationValue": "Danio rerio",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_7955",
+                                    "termSource": "NCBITAXON"
+                                }
+                            }
+                        ],
+                        "comments": [],
+                        "name": "PTX-ST01-GRP1_SBJ1"
+                    }
+                ]
+            },
+            "people": [
+                {
+                    "address": "",
+                    "affiliation": "University of Birmingham",
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": "https://orcid.org/0000-0002-6966-2972"
+                        }
+                    ],
+                    "email": "J.K.Colbourne@bham.ac.uk",
+                    "fax": "",
+                    "firstName": "John",
+                    "lastName": "Colbourne",
+                    "midInitials": "",
+                    "phone": "",
+                    "roles": [
+                        {
+                            "@id": "#ontology_annotation/cfe809eb-4d36-4d21-899f-3fb7e8ab55ec",
+                            "annotationValue": "principal investigator role",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": ""
+                        },
+                        {
+                            "@id": "#ontology_annotation/7fbbe2e4-8899-4fea-b7c0-51fe74508623",
+                            "annotationValue": "SRA Inform On Status",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": ""
+                        },
+                        {
+                            "@id": "#ontology_annotation/082cb8b9-5a7f-464a-a0d1-6ab5d48d3461",
+                            "annotationValue": "SRA Inform On Error",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": ""
+                        }
+                    ]
+                }
+            ],
+            "processSequence": [
+                {
+                    "@id": "#process/d6379224-cd68-458b-bcd8-12b0b0c9fcf5",
+                    "comments": [],
+                    "date": "2022-01-28",
+                    "executesProtocol": {
+                        "@id": "#4fd1d906-48f2-4fad-8777-7820ee19f609"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/PTX-ST01-GRP0_SBJ1"
+                        }
+                    ],
+                    "name": "#sampling_process/1",
+                    "outputs": [
+                        {
+                            "@id": "#sample/4827169840"
+                        }
+                    ],
+                    "parameterValues": [
+                        {
+                            "category": {
+                                "@id": "#4827147904"
+                            },
+                            "value": "001"
+                        },
+                        {
+                            "category": {
+                                "@id": "#4827168880"
+                            },
+                            "value": "ARM_00_CELL_00"
+                        }
+                    ],
+                    "performer": "Unknown"
+                },
+                {
+                    "@id": "#process/30945d58-a37d-448a-bf7a-1505a4028ebf",
+                    "comments": [],
+                    "date": "2022-01-28",
+                    "executesProtocol": {
+                        "@id": "#4fd1d906-48f2-4fad-8777-7820ee19f609"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/PTX-ST01-GRP1_SBJ1"
+                        }
+                    ],
+                    "name": "#sampling_process/2",
+                    "outputs": [
+                        {
+                            "@id": "#sample/4827168976"
+                        }
+                    ],
+                    "parameterValues": [
+                        {
+                            "category": {
+                                "@id": "#4827147904"
+                            },
+                            "value": "002"
+                        },
+                        {
+                            "category": {
+                                "@id": "#4827168880"
+                            },
+                            "value": "ARM_01_CELL_00"
+                        }
+                    ],
+                    "performer": "Unknown"
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "#4fd1d906-48f2-4fad-8777-7820ee19f609",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "sample collection",
+                    "parameters": [
+                        {
+                            "@id": "#4827147904",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/0afc55a3-04c2-4c26-b8b0-03246e77ae17",
+                                "annotationValue": "Sampling order",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827168880",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/9e4d0030-da5f-4415-9dcd-259760fe72aa",
+                                "annotationValue": "Study cell",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/56c732b4-53bd-4263-8531-169317047c29",
+                        "annotationValue": "sample_collection",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#derivatization_000_001",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-derivatization",
+                    "parameters": [
+                        {
+                            "@id": "#4827125840",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/9e980b07-45e2-4cba-a348-ca41637d7707",
+                                "annotationValue": "derivatization",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000111",
+                                "termSource": "MSIO"
+                            }
+                        },
+                        {
+                            "@id": "#4827086128",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/139121ec-e7fd-430f-be7d-4690b404a44a",
+                                "annotationValue": "derivatization agent",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000029",
+                                "termSource": "MSIO"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/b0207260-06b7-4d5e-b385-d702135afe66",
+                        "annotationValue": "derivatization",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#mass_spectrometry_001_001",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-mass spectrometry",
+                    "parameters": [
+                        {
+                            "@id": "#4827086752",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/3ecfb750-d7d0-42c6-97eb-fa517a7d0970",
+                                "annotationValue": "instrument",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000463",
+                                "termSource": "MS"
+                            }
+                        },
+                        {
+                            "@id": "#4827085456",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/50de1125-04ea-4dd0-a7ed-4fa208072944",
+                                "annotationValue": "injection_mode",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827083440",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/0c2f4451-475a-4f3a-b236-3cd6ca58e721",
+                                "annotationValue": "acquisition_mode",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000465",
+                                "termSource": "MS"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/876293a1-3426-4cb7-9243-4b359564b2c8",
+                        "annotationValue": "mass spectrometry",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#derivatization_000_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-derivatization",
+                    "parameters": [
+                        {
+                            "@id": "#4827127040",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/9e980b07-45e2-4cba-a348-ca41637d7707",
+                                "annotationValue": "derivatization",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000111",
+                                "termSource": "MSIO"
+                            }
+                        },
+                        {
+                            "@id": "#4827126848",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/139121ec-e7fd-430f-be7d-4690b404a44a",
+                                "annotationValue": "derivatization agent",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000029",
+                                "termSource": "MSIO"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/7e153ca0-930f-4300-8c21-57ed0916eb5f",
+                        "annotationValue": "derivatization",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#mass_spectrometry_000_001",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-mass spectrometry",
+                    "parameters": [
+                        {
+                            "@id": "#4827084256",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/3ecfb750-d7d0-42c6-97eb-fa517a7d0970",
+                                "annotationValue": "instrument",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000463",
+                                "termSource": "MS"
+                            }
+                        },
+                        {
+                            "@id": "#4827084064",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/50de1125-04ea-4dd0-a7ed-4fa208072944",
+                                "annotationValue": "injection_mode",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827083872",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/0c2f4451-475a-4f3a-b236-3cd6ca58e721",
+                                "annotationValue": "acquisition_mode",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000465",
+                                "termSource": "MS"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/584d104f-2cab-414e-ad0b-f3e92c0666aa",
+                        "annotationValue": "mass spectrometry",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#library_preparation_000_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT1-library_preparation",
+                    "parameters": [
+                        {
+                            "@id": "#4827026912",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/307e1122-ddb0-4cfb-be12-88f66d2c7356",
+                                "annotationValue": "library strategy",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827026720",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/12cc398b-a0c8-4a44-b86a-5585fa89a98d",
+                                "annotationValue": "library layout",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827026336",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/5d54246e-9a3a-42dc-a3f8-0bfa1d3379df",
+                                "annotationValue": "size",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/88cf82e0-fdb3-4e21-8908-8e287f42ffa4",
+                        "annotationValue": "library_preparation",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#mass_spectrometry_001_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-mass spectrometry",
+                    "parameters": [
+                        {
+                            "@id": "#4827084016",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/3ecfb750-d7d0-42c6-97eb-fa517a7d0970",
+                                "annotationValue": "instrument",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000463",
+                                "termSource": "MS"
+                            }
+                        },
+                        {
+                            "@id": "#4827084160",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/50de1125-04ea-4dd0-a7ed-4fa208072944",
+                                "annotationValue": "injection_mode",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827085552",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/0c2f4451-475a-4f3a-b236-3cd6ca58e721",
+                                "annotationValue": "acquisition_mode",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000465",
+                                "termSource": "MS"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/3ead689b-f4f6-4c67-9f38-d77b3d39fd9f",
+                        "annotationValue": "mass spectrometry",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#extraction_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-extraction",
+                    "parameters": [],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/e90106f7-f2ff-48e3-a9e7-5a8b00e6d3cc",
+                        "annotationValue": "extraction",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#extraction_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT1-extraction",
+                    "parameters": [],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/f80be643-1c97-4179-be21-ed40df0cef39",
+                        "annotationValue": "extraction",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#nucleic_acid_sequencing_000_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT1-nucleic acid sequencing",
+                    "parameters": [
+                        {
+                            "@id": "#4827040208",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/7d45e6b4-8447-451f-a8ec-deb8ac0f0e6a",
+                                "annotationValue": "sequencing instrument",
+                                "comments": [],
+                                "termAccession": "https://purl.obolibrary.org/obo/OBI_0100026",
+                                "termSource": "OBI"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/9ca35e3e-7916-4a4f-8087-764ea3c2c955",
+                        "annotationValue": "nucleic acid sequencing",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#mass_spectrometry_000_000",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "AT0-mass spectrometry",
+                    "parameters": [
+                        {
+                            "@id": "#4827085888",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/3ecfb750-d7d0-42c6-97eb-fa517a7d0970",
+                                "annotationValue": "instrument",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000463",
+                                "termSource": "MS"
+                            }
+                        },
+                        {
+                            "@id": "#4827083488",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/50de1125-04ea-4dd0-a7ed-4fa208072944",
+                                "annotationValue": "injection_mode",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#4827084976",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/0c2f4451-475a-4f3a-b236-3cd6ca58e721",
+                                "annotationValue": "acquisition_mode",
+                                "comments": [],
+                                "termAccession": "http://purl.obolibrary.org/obo/MS_1000465",
+                                "termSource": "MS"
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/d317e854-fd00-4c1e-9dbc-d88be2ca159d",
+                        "annotationValue": "mass spectrometry",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "Study Design",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": ""
+}
