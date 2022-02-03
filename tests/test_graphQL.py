@@ -45,9 +45,6 @@ class TestGraphQLQueries(unittest.TestCase):
             graph_file.close()
 
     def test_full_query(self):
-        log.warning("GRAPHQL")
-        log.warning(investigation)
-        log.warning(self.query)
         variables = {
             "technologyType": "nucleotide sequencing",
             "measurementType": "transcription profiling",
@@ -57,6 +54,8 @@ class TestGraphQLQueries(unittest.TestCase):
             "dose": "high"
         }
         response = investigation.execute_query(self.query, variables)
+        log.warning('graphQL')
+        log.warning(response)
         self.assertTrue(not response.errors)
 
     def test_introspection(self):
