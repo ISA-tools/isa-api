@@ -1,4 +1,4 @@
-graphene>=2.0
+graphene==2.1
 wheel~=0.36.2
 setuptools~=57.1.0
 numpy~=1.21.0
