@@ -54,8 +54,6 @@ class TestGraphQLQueries(unittest.TestCase):
             "dose": "high"
         }
         response = investigation.execute_query(self.query, variables)
-        log.warning('graphQL')
-        log.warning(response.errors)
         self.assertTrue(not response.errors)
 
     def test_introspection(self):
@@ -146,7 +144,7 @@ class TestSearch(unittest.TestCase):
 
         with self.assertRaises(Exception) as context:
             search_assays(investigation.studies[0].assays, filters, "TEST")
-        self.assertTrue("Operator should be AND or OR" == str(context.exception))
+        self.assertTrue("Operator TEST should be AND or OR" == str(context.exception))
 
     def test_search_process_sequence(self):
         process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {}, 'AND')
@@ -193,7 +191,7 @@ class TestSearch(unittest.TestCase):
 
         with self.assertRaises(Exception) as context:
             search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'TEST')
-        self.assertTrue("Operator should be AND or OR" == str(context.exception))
+        self.assertTrue("Operator TEST should be AND or OR" == str(context.exception))
 
     def test_search_inputs(self):
         filters = {}
