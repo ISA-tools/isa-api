@@ -1,6 +1,6 @@
 # ISA-QL:
 
-ISA-QL is a syntax querying language build for the ISA model and based on [GraphQL](https://graphql.org/) and 
+ISA-QL is a syntax querying language built for the ISA model and based on [GraphQL](https://graphql.org/) and 
 [Graphene](https://github.com/graphql-python/graphene).
 It provides a fast and easy programmatic access to the very complex and nested fields within an ISA Investigation as 
 well as the ability to filter attributes based on user inputs.
