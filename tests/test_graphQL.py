@@ -1,5 +1,6 @@
 import os
 import unittest
+import logging
 from isatools.isatab import load
 from isatools.graphQL.utils.validate import validate_input, validate_outputs
 from isatools.graphQL.utils.search import (
@@ -25,6 +26,8 @@ with open(investigation_filepath, 'r') as investigation_file:
     investigation = load(investigation_file)
     investigation_file.close()
 
+log = logging.getLogger('isatools')
+
 
 class I0Data:
     def __init__(self, target, treatment_group, characteristics):
@@ -42,8 +45,9 @@ class TestGraphQLQueries(unittest.TestCase):
             graph_file.close()
 
     def test_full_query(self):
-        print('INVESTIGATION: ', investigation)
-        print(self.query)
+        log.warning("GRAPHQL")
+        log.warning(investigation)
+        log.warning(self.query)
         variables = {
             "technologyType": "nucleotide sequencing",
             "measurementType": "transcription profiling",
