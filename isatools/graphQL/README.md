@@ -138,9 +138,9 @@ elif response.errors:
 | unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)        |
 | processSequence             | Processes associated with this assay                     | [Process](#Process)                              |
 
-The assay query is usable on its own (in which cases all assays from different studies will be concatenated in the same 
-output) or as a field of a `studies` query. The request above will retrieve the filename associated with the 
-investigation, with each study in that investigation and with each assay in each study.
+The assay query is usable on its own (in which cases, all assays from different studies will be concatenated in the same output) or as a field of a `studies` query. 
+
+The request below will retrieve the filename associated with the investigation, with each study in that investigation, and with each assay in each study.
 
 ```python
 query = "{ investigation { filename studies { filename assays { filename }}}}"
