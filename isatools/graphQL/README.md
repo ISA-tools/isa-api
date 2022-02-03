@@ -23,9 +23,9 @@ with open(investigation_filepath, "r") as investigation_file:
     investigation_file.close()
 ```
 
-One of the very powerful features of GraphQL is its ability to self document through what are called introspection 
-queries. These queries can ask an endpoint information about the queryable fields and their valid inputs.
-One of these queries has already been written for easiness of use and wrapped in the ``investivagation.instropect()``
+One of the powerful features of GraphQL is its ability to self-document through so-called *introspection 
+queries*. This allows interrogating an endpoint information about the queryable fields and their valid inputs.
+One such *introspection query* has already been written for ease of use and wrapped in the ``investigation.instropect()``
 method (see usage below.)
 
 ```python
