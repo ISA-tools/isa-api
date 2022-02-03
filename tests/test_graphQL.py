@@ -55,7 +55,7 @@ class TestGraphQLQueries(unittest.TestCase):
         }
         response = investigation.execute_query(self.query, variables)
         log.warning('graphQL')
-        log.warning(response)
+        log.warning(response.errors)
         self.assertTrue(not response.errors)
 
     def test_introspection(self):
