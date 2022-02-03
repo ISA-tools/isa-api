@@ -157,7 +157,7 @@ elif response.errors:
 The assay query is different from investigations and studies because it accepts parameters that will allow to
 filter them based on specific inputs. For instance, a user may want to retrieve only the assays performed using 
 `nucleotide sequencing`.
-The assays query takes two inputs:
+The `assays` query takes two inputs:
 - an operator: 'AND' or 'OR', it indicates how filters should be assembled. Its default value is always 'AND'.
 - a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied 
   and an expression in the form of an object. This expression contains a key that indicates the operation to run and a 
