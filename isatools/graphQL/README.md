@@ -39,9 +39,13 @@ The *introspection query* is available from the ``/graphQL/queries/`` directory.
 ---
 
 ## Queryable Objects:
-There are 3 mains queryable objects at the root of the ISA-QL syntax: the [investigation](#investigation), the 
-[studies](#study) and the [assays](#assay).
+There are 3 mains queryable objects at the root of the ISA-QL syntax: 
 
+- the [investigation](#investigation)
+
+- the [studies](#study)
+
+- the [assays](#assay)
 ### The Investigation query:
 
 #### Queryable fields:
