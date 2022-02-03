@@ -246,7 +246,7 @@ Let's create a `my_query.gql` file to store our query:
   }
 }
 ```
-We can now read the query file as a text stream and execute it the same way we previously did.
+We can now read the query file as a text stream and execute it the same way we did previously.
 
 ```python
 query_filepath = path.join(here_path, "my_query.gql")
