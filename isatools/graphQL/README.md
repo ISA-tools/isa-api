@@ -34,8 +34,7 @@ documentation = investigation.introspect()
 print(dumps(documentation.data, indent=1))
 ```
 
-The introspection query is accessible inside the ``/graphQL/queries/`` directory. Feel free to explore the query and its
-outputs before writing your own.
+The *introspection query* is available from the ``/graphQL/queries/`` directory. Check it out along with its output and use it as a guide before writing your own.
 
 ---
 
