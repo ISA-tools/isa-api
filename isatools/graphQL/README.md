@@ -101,7 +101,7 @@ also have their own queryable fields.
 | characteristicCategories  | Categories of characteristics associated with this study  | [OntologyAnnotation](#OntologyAnnotation)  |
 | unitCategories            | Categories of units associated with the study             | [OntologyAnnotation](#OntologyAnnotation)  |
 
-We could rewrite the previous example's query to request the same fields but for studies. 
+We can reuse the previous query to request the same fields but this time for any of the studies present in the ISA document. 
 
 ```python
 query = '{ studies { title description identifier }}'
