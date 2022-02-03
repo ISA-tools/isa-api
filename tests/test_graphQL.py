@@ -42,6 +42,8 @@ class TestGraphQLQueries(unittest.TestCase):
             graph_file.close()
 
     def test_full_query(self):
+        print('INVESTIGATION: ', investigation)
+        print(self.query)
         variables = {
             "technologyType": "nucleotide sequencing",
             "measurementType": "transcription profiling",
