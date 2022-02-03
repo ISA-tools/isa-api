@@ -261,7 +261,7 @@ elif response.errors:
 ```
 
 We now want to be able to harvest user inputs and dynamically pass values to the query instead of using plain strings.
-This can be done by modifying the query and passing the values though python variables. <br>
+This can be done by modifying the query and passing the values through python variables. <br>
 Let's go back to our query and add the variables. To do that, we first need to alias the query, so let's name it
 `assaysFilenames`. We can then pass our variable using the `$` prefix and the `ID` keyword type.
 Variables can be passed to the `execute_query()` method as an optional parameter in the form of a python dictionary.
