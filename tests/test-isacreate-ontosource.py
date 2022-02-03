@@ -440,7 +440,7 @@ class MyTestCase(unittest.TestCase):
             # study_tmaps.append((t, rnaseq_sample_assay_plan))
 
         # assuming a parallel group design and single treatment, the study arms are computed
-        study_design_test = sdf.compute_parallel_design(treatments_map=study_tmaps, group_sizes=2)
+        study_design_test = sdf.compute_parallel_design(treatments_map=study_tmaps, group_sizes=3)
 
         # print("study design factory: ", study_design_test)
         # print("study design arms: ", study_design_test.study_arms)
@@ -478,42 +478,39 @@ class MyTestCase(unittest.TestCase):
 
         treatment_assay = next(iter(study.assays))
 
-        # print(treatment_assay.graph)
-
         [(process.name, getattr(process.prev_process, 'name', None), getattr(process.next_process, 'name', None)) for
          process in treatment_assay.process_sequence]
 
-        # a_graph = treatment_assay.graph
-        # print(len(a_graph.nodes))
-
         isa_investigation.studies = [study]
 
-        isa_investigation.studies[0].comments.append(Comment(name="SRA Broker Name", value="OXFORD"))
-        isa_investigation.studies[0].comments.append(Comment(name="SRA Center Name", value="OXFORD"))
-        isa_investigation.studies[0].comments.append(Comment(name="SRA Center Project Name", value="OXFORD"))
-        isa_investigation.studies[0].comments.append(Comment(name="SRA Lab Name", value="Oxford e-Research Centre"))
-        isa_investigation.studies[0].comments.append(Comment(name="SRA Submission Action", value="ADD"))
+        sra_broker_associated_cmts = [Comment(name="SRA Broker Name", value="OXFORD"),
+                                      Comment(name="SRA Center Name", value="OXFORD"),
+                                      Comment(name="SRA Center Project Name", value="OXFORD"),
+                                      Comment(name="SRA Lab Name", value="Oxford e-Research Centre"),
+                                      Comment(name="SRA Submission Action", value="ADD")
+                                      ]
+        default_contact = Person(first_name="John",
+                                 last_name="Colbourne",
+                                 email="J.K.Colbourne@bham.ac.uk",
+                                 affiliation="University of Birmingham",
+                                 roles=[OntologyAnnotation(term="principal investigator role"),
+                                        OntologyAnnotation(term="SRA Inform On Status"),
+                                        OntologyAnnotation(term="SRA Inform On Error")],
+                                 comments=[Comment(name="Study Person REF",
+                                                   value="https://orcid.org/0000-0002-6966-2972")])
 
-        isa_investigation.studies[0].contacts.append(Person(first_name="John",
-                                                            last_name="Colbourne",
-                                                            email="J.K.Colbourne@bham.ac.uk",
-                                                            affiliation="University of Birmingham",
-                                                            roles=[OntologyAnnotation(term="principal investigator role"),
-                                                                   OntologyAnnotation(term="SRA Inform On Status"),
-                                                                   OntologyAnnotation(term="SRA Inform On Error")],
-                                                            comments=[Comment(name="Study Person REF",
-                                                                              value="https://orcid.org/0000-0002-6966-2972")]))
+        isa_investigation.studies[0].contacts.append(default_contact)
 
-        for ps in isa_investigation.studies[0].process_sequence:
-            print("PS: ", ps.inputs[0].name, "|", ps.outputs[0].name, "|", len(isa_investigation.studies[0].process_sequence))
-            print("PS: ", ps.id)
-            print("PS derives_from: ", ps.outputs[0].derives_from[-1].name)
-            print("PS nextitem:", ps)
-        for source in isa_investigation.studies[0].sources:
-            print("SOURCES: ", source.name, "|", source.id)
+        for cmt in sra_broker_associated_cmts:
+            isa_investigation.studies[0].comments.append(cmt)
 
-        # for protocol in isa_investigation.studies[0].protocols:
-        #     print("PROT: ", protocol.id, "|", protocol.name)
+        # for ps in isa_investigation.studies[0].process_sequence:
+        #     print("PS: ", ps.inputs[0].name, "|", ps.outputs[0].name, "|", len(isa_investigation.studies[0].process_sequence))
+        #     print("PS: ", ps.id)
+        #     print("PS derives_from: ", ps.outputs[0].derives_from[-1].name)
+        #     print("PS nextitem:", ps)
+        # for source in isa_investigation.studies[0].sources:
+        #     print("SOURCES: ", source.name, "|", source.id)
 
         for assay in isa_investigation.studies[0].assays:
             if "metabolite profiling" in assay.measurement_type.term:
@@ -523,19 +520,9 @@ class MyTestCase(unittest.TestCase):
                 for ps in assay.process_sequence:
                     ps.performer = "MGI Latvia"
 
-        # isa_tables = dumpdf(isa_investigation)
-        #
-        # from isatools.model import _build_assay_graph
-        # gph = _build_assay_graph(treatment_assay.process_sequence)
-
-        # [print(key) for key in isa_tables.keys()]
-        # print(isa_tables['s_study_01.txt'])
-        # print(isa_tables['a_AT1_transcription-profiling_nucleotide-sequencing.txt'])
-        # print(isa_tables['a_AT0_metabolite-profiling_mass-spectrometry.txt'])
-
         final_dir = os.path.abspath(os.path.join('notebook-output', 'sd-test'))
 
-        isatab.dump(isa_obj=isa_investigation, output_path=final_dir,write_factor_values_in_assay_table=False)
+        isatab.dump(isa_obj=isa_investigation, output_path=final_dir, write_factor_values_in_assay_table=False)
 
         isa_j = json.dumps(isa_investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
         with open(os.path.join(final_dir, "isa_as_json_from_dumps2.json"), "w") as isajson_output:

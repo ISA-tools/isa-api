@@ -1746,7 +1746,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
         prefix = 'assay-table-prefix'
-        processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
+        processes, other_materials, characteristic_categories, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
             node, assay_graph, prefix
         )
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
@@ -1758,9 +1758,11 @@ class StudyDesignTest(BaseStudyDesignTest):
         nmr_processes = [
             process for process in processes if process.executes_protocol.name.endswith('nmr spectroscopy')
         ]
+        print("Characteristic categories:", [char.category.term for char in characteristic_categories])
         self.assertEqual(len(nmr_processes), 8 * 2)
         self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
+        self.assertEqual(len(characteristic_categories), 2)
         self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)

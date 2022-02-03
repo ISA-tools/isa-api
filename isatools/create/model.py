@@ -862,7 +862,6 @@ class ProductNode(SequenceNode):
         self.__characteristics = []
         try:
             for characteristic in characteristics:
-                # print("SETTER: ", characteristic.category.term, "| ", characteristic.category.id)
                 self.add_characteristic(characteristic)
         except TypeError as e:
             raise AttributeError(e)
@@ -2121,30 +2120,43 @@ class StudyDesign(object):
         idarr.append('-'.join(smparr))
         return '_'.join(idarr).replace(' ', '-')
 
-    def _generate_sources(self, ontology_source_references):
+    def _generate_sources(self):
         """
         Private method to be used in 'generate_isa_study'.
         :return: 
         """
         src_map = dict()
         for s_ix, s_arm in enumerate(self.study_arms):
-            source_prototype = Source(
-                characteristics=[
-                                    s_arm.source_type if isinstance(s_arm.source_type,
-                                                                    Characteristic) else Characteristic(
-                                        category=OntologyAnnotation(term=s_arm.source_type),
-                                        value=OntologyAnnotation(term=s_arm.source_type)
-                                    )
-                                ] + [sc for sc in sorted(
-                        s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
-                        sc.category, OntologyAnnotation
-                    ) else sc.category
-                )]
-            )
+            # source_prototype = Source(
+            #     characteristics=[
+            #                         s_arm.source_type if isinstance(s_arm.source_type,
+            #                                                         Characteristic) else Characteristic(
+            #                             category=OntologyAnnotation(term=s_arm.source_type),
+            #                             value=OntologyAnnotation(term=s_arm.source_type)
+            #                         )
+            #                     ] + [sc for sc in sorted(
+            #             s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
+            #             sc.category, OntologyAnnotation
+            #         ) else sc.category
+            #     )]
+            # )
             srcs = set()
             digits = n_digits(s_arm.group_size)
             for subj_n in (str(ix).zfill(digits) for ix in range(1, s_arm.group_size + 1)):
-                src = copy.copy(source_prototype)
+                # src = copy.copy(source_prototype)
+                src = Source(
+                    characteristics=[
+                                        s_arm.source_type if isinstance(s_arm.source_type,
+                                                                        Characteristic) else Characteristic(
+                                            category=OntologyAnnotation(term=s_arm.source_type),
+                                            value=OntologyAnnotation(term=s_arm.source_type)
+                                        )
+                                    ] + [sc for sc in sorted(
+                        s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
+                            sc.category, OntologyAnnotation
+                        ) else sc.category
+                    )]
+                )
                 src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
                                              s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
                                              # start counting from 1
@@ -2157,7 +2169,7 @@ class StudyDesign(object):
                                                )
                 srcs.add(src)
             src_map[s_arm.name] = list(srcs)
-            print("TOTAL NUMBER OF SRC:", len(srcs))
+
         return src_map
 
     def _generate_samples_and_assays(self, sources_map, sampling_protocol, performer):
@@ -2225,7 +2237,7 @@ class StudyDesign(object):
                             )
                             if sample_type not in characteristic_categories:
                                 characteristic_categories.append(sample_type)
-                            # print(sampling_size, "|", source.name, "|", sample.name, "|", sample_type.category.id)
+
                             sample_batches[sample_node].append(sample)
                             sample_count += 1
                             process = Process(
@@ -2245,13 +2257,6 @@ class StudyDesign(object):
                                 ]
                             )
                             process_sequence.append(process)
-
-                            # print("create/model assay:",
-                            #       process.inputs[0].name, "|",
-                            #       process.id, "|",
-                            #       process.executes_protocol.id, "|",
-                            #       process.date, "|",
-                            #       process.performer)
 
                 for sample_node in sample_assay_plan.sample_plan:
                     samples.extend(sample_batches[sample_node])
@@ -2328,7 +2333,6 @@ class StudyDesign(object):
             other_materials.append(item)
             # characteristic_categories.append(item.characteristics)
             for charx in item.characteristics:
-                 # print("charx:",charx, charx.category.term, "|", charx.value.term)
                  if charx not in characteristic_categories:
                     characteristic_categories.append(charx)
 
@@ -2564,16 +2568,12 @@ class StudyDesign(object):
             OntologySource(**study_config['ontology_source_references'][0])
         ]
         study.protocols = [
-            Protocol(**protocol_config, id_=str(uuid.uuid4())) for protocol_config in study_config['protocols']
+            Protocol(**protocol_config) for protocol_config in study_config['protocols']
         ]
 
-        # print("THERE:", study.protocols[0].name, len(study.protocols))
-
         # log.debug('Sampling protocol is {0}'.format(study.protocols[0]))
-        sources_map = self._generate_sources(study.ontology_source_references)
+        sources_map = self._generate_sources()
         study.sources = [source for sources in sources_map.values() for source in sources]
-
-        print("THERE TOO - ALL SOURCES:", len(study.sources))
 
         # setting the `characteristic_categories` associated to study and required for isajson loading
         those_cats = []
@@ -2588,7 +2588,6 @@ class StudyDesign(object):
         for new_protocol in new_protocols:
             study.add_protocol(new_protocol)
 
-        print("AND THERE", study.protocols[0].name,study.protocols[0].id, len(study.protocols))
         return study
 
     def __repr__(self):
