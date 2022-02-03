@@ -203,12 +203,13 @@ This query retrieves filename of assays for which the technology type includes t
 | on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
 
 
-Using the `operator` key we can assemble multiple filters in a single query. However, at this point the code will
-become hard to maintain, and we suggest creating dedicated query files in the `.gql `format. We now want to retrieve assays
-filename given the following constraints:
-- the technology used is 'nucleotide sequencing' (exact match)
-- the subjects must have been exposed to a low dose of carbon dioxide.
-- the samples were obtained from subjects livers.
+Using the `operator` key, we can assemble multiple filters in a single query. 
+However, at this point the code becomes hard to maintain, and we suggest creating dedicated query files in the `.gql` format. 
+
+We now want to retrieve ISA assay filenames given the following constraints:
+- the technology used is `nucleotide sequencing` (**exact match**)
+- the subjects must have been exposed to a `low dose` of `carbon dioxide`.
+- the samples were obtained from an organism part such as `liver`.
 
 Let's create a `my_query.gql` file to store our query:
 
