@@ -20,7 +20,7 @@ def search_assays(assays, filters, operator):
     :return: a list of assays or an empty list
     """
     if operator not in ['AND', 'OR']:
-        raise Exception("Operator should be AND or OR")
+        raise Exception("Operator %s should be AND or OR" % operator)
     target = filters['target'] if filters and 'target' in filters else None
     filters = build_assays_filters(filters)
     measurement_value, measurement_operator = filters['measurementType']
@@ -81,8 +81,8 @@ def search_process_sequence(process_sequence, filters, operator):
     :param operator: the operator for combining the filters. Should be AND or OR
     :return: a list of processes or an empty list
     """
-    if operator not in ['AND', 'OR']:
-        raise Exception("Operator should be AND or OR")
+    if operator and operator not in ['AND', 'OR']:
+        raise Exception("Operator %s should be AND or OR" % operator)
 
     if not filters:
         return process_sequence
