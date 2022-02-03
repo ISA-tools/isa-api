@@ -169,10 +169,13 @@ filters: {
 }
 ```
 
-The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison 
-operation should be executed. For strings, it can take the `eq` (equal) or `in` (includes) values. For integers, it can 
-be `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal). Finally, 
-the string indicates the filter value is "nucleotide sequencing".
+The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison operation should be executed. 
+
+- For strings, it can take the `eq` (equal) or `in` (includes) values. 
+
+- For integers, it can be `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal). 
+
+Finally, the string indicates the filter value is "nucleotide sequencing".
 
 We can now apply this filter to a real query:
 
