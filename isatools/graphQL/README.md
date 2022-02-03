@@ -73,9 +73,10 @@ elif response.errors:
     print(response.errors)
 ```
 
-As shown in the example above, the query is divided into two segments: the first one indicates which object we want to
-query (in this case an `investigation`). The second one, located between the second set of curly brackets indicated the 
-fields we want to retrieve. Queryable fields can be simple, as shown in the example, or represent complex objects which 
+As shown in the example above, the `query` is divided into two segments: the first one indicates which object we want to
+query (in this case an `investigation`). The second one, located between the second set of curly brackets indicates the 
+fields we want to retrieve. 
+Queryable fields can be simple, as shown in the example, or represent complex objects, which 
 also have their own queryable fields.
 
 ### The Studies query:
