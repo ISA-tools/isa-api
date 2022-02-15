@@ -2127,23 +2127,9 @@ class StudyDesign(object):
         """
         src_map = dict()
         for s_ix, s_arm in enumerate(self.study_arms):
-            # source_prototype = Source(
-            #     characteristics=[
-            #                         s_arm.source_type if isinstance(s_arm.source_type,
-            #                                                         Characteristic) else Characteristic(
-            #                             category=OntologyAnnotation(term=s_arm.source_type),
-            #                             value=OntologyAnnotation(term=s_arm.source_type)
-            #                         )
-            #                     ] + [sc for sc in sorted(
-            #             s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
-            #             sc.category, OntologyAnnotation
-            #         ) else sc.category
-            #     )]
-            # )
             srcs = set()
             digits = n_digits(s_arm.group_size)
             for subj_n in (str(ix).zfill(digits) for ix in range(1, s_arm.group_size + 1)):
-                # src = copy.copy(source_prototype)
                 src = Source(
                     characteristics=[
                                         s_arm.source_type if isinstance(s_arm.source_type,
@@ -2178,7 +2164,7 @@ class StudyDesign(object):
         :param sources_map: dict - the output of '_generate_sources'
         :param sampling_protocol: isatools.model.Protocol
         :param performer: str
-        :return: 
+        :return:
         """
         factors = {SEQUENCE_ORDER_FACTOR}
         ontology_sources = set()
@@ -2213,14 +2199,17 @@ class StudyDesign(object):
                     continue
                 sample_batches = {sample_node: [] for sample_node in sample_assay_plan.sample_plan}
                 factor_values = [seq_order_fv]
+
                 for element in cell.get_all_elements():
                     factors.update([f_val.factor_name for f_val in element.factor_values])
                     # all the factor values up to the current element in the cell are actually serialised
                     # FIXME could this be an issue for concomitant treatments?
                     factor_values.extend([f_val for f_val in element.factor_values])
+
                 for sample_node in sample_assay_plan.sample_plan:
                     for source in sources_map[arm.name]:
                         sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
+                        # print("(create.model.py) category TYPE:",isinstance(sample_type,Characteristic), sample_type.category.id, sample_type.category.term)
                         sample_term_source = sample_type.value.term_source if \
                             hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
                         if sample_term_source:
@@ -2333,8 +2322,8 @@ class StudyDesign(object):
             other_materials.append(item)
             # characteristic_categories.append(item.characteristics)
             for charx in item.characteristics:
-                 if charx not in characteristic_categories:
-                    characteristic_categories.append(charx)
+                if charx not in characteristic_categories:
+                   characteristic_categories.append(charx)
 
         elif isinstance(item, DataFile):
             data_files.append(item)
@@ -2436,12 +2425,17 @@ class StudyDesign(object):
                         node, assay_graph, assay_graph.id, start_node_index=ix + 1, counter=None, processes=[],
                         other_materials=[], characteristic_categories=[], data_files=[], previous_items=[sample]
                     )
+
                     assay.other_material.extend(other_materials)
                     assay.characteristic_categories.extend(characteristic_categories)
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
                     log.debug('i={0}, i={1}, num_processes={2}, num_assay_files={3}'.format(i, j, len(processes),
                                                                                             len(data_files)))
+            final_list = set(assay.characteristic_categories)
+            assay.characteristic_categories.clear()
+            assay.characteristic_categories.extend(final_list)
+
         return assay
 
     @staticmethod
@@ -2576,14 +2570,15 @@ class StudyDesign(object):
         study.sources = [source for sources in sources_map.values() for source in sources]
 
         # setting the `characteristic_categories` associated to study and required for isajson loading
-        those_cats = []
+        # study_charac_categories = []
         study.characteristic_categories.append(DEFAULT_SOURCE_TYPE)
-        study.factors, new_protocols, study.samples, those_cats, study.assays, study.process_sequence, \
+        study.factors, new_protocols, study.samples, study_charac_categories, study.assays, study.process_sequence, \
         study.ontology_source_references = \
             self._generate_samples_and_assays(
                 sources_map, study.protocols[0], study_config['performers'][0]['name']
             )
-        study.characteristic_categories.extend(those_cats)
+
+        study.characteristic_categories.extend(study_charac_categories)
 
         for new_protocol in new_protocols:
             study.add_protocol(new_protocol)
@@ -2695,7 +2690,6 @@ class QualityControlService(object):
     def _augment_sample_batch_with_qc_samples(samples, pre_run_samples=None, post_run_samples=None,
                                               interspersed_samples=None):
         """
-
         :param samples:
         :param pre_run_samples:
         :param post_run_samples:

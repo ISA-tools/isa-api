@@ -176,7 +176,7 @@ class TransposedTabParser(object):
             if not isinstance(tab_options, dict):
                 raise TypeError(
                     'tab_options must be dict, not {tab_options_type}'
-                        .format(tab_options_type=type(tab_options))
+                    .format(tab_options_type=type(tab_options))
                 )
             self.log_level = log_level
 
@@ -303,8 +303,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     def _build_ontology_reference_section(ontologies=list()):
         """Build ontology reference section DataFrame
-
-        :param prefix: Section prefix - ''
         :param ontologies: List of Ontology objects describing the section's
         Ontology Resource
         :return: DataFrame corresponding to the ONTOLOGY REFERENCE section
@@ -535,7 +533,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     def _build_protocols_section_df(protocols=list()):
         """Build Protocol section DataFrame
-        :param prefix: Section prefix - Investigation or Study
         :param protocols: List of Publications objects describing the
         section's protocols
         :return: DataFrame corresponding to the PROTOCOLS section
@@ -614,7 +611,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                     component.component_type.term_accession + ';'
                 component_types_source_refs += \
                     component.component_type.term_source.name \
-                        if component.component_type.term_source else '' + ';'
+                    if component.component_type.term_source else '' + ';'
             if len(protocol.components) > 0:
                 component_names = component_names[:-1]
                 component_types = component_types[:-1]
@@ -1078,8 +1075,7 @@ def _get_start_end_nodes(G):
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if process.prev_process is None:
-            for material in [
-                m for m in process.inputs if not isinstance(m, DataFile)]:
+            for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
                 start_nodes.append(material)
         outputs_no_data = [
             m for m in process.outputs if not isinstance(m, DataFile)]
@@ -1278,8 +1274,10 @@ def write_study_table_files(inv_obj, output_dir):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
+                        category_label = c.category.term if isinstance(c.category.term, str) \
+                                                         else c.category.term["annotationValue"]
                         clabel = "{0}.Characteristics[{1}]".format(
-                            olabel, c.category.term)
+                            olabel, category_label)
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
                         colabel = "{0}.Comment[{1}]".format(olabel, co.name)
@@ -1306,8 +1304,10 @@ def write_study_table_files(inv_obj, output_dir):
                     sample_in_path_count += 1
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
+                        category_label = c.category.term if isinstance(c.category.term, str)\
+                                                         else c.category.term["annotationValue"]
                         clabel = "{0}.Characteristics[{1}]".format(
-                            olabel, c.category.term)
+                            olabel, category_label)
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
                         colabel = "{0}.Comment[{1}]".format(olabel, co.name)
@@ -1556,8 +1556,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
                         for c in node.characteristics:
+                            category_label = c.category.term if isinstance(c.category.term, str) \
+                                                             else c.category.term["annotationValue"]
                             clabel = "{0}.Characteristics[{1}]".format(
-                                olabel, c.category.term)
+                                olabel, category_label)
                             write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
@@ -1699,18 +1701,28 @@ def get_characteristic_columns(label, c):
     :param c: The Characteristic object of interest
     :return: List of column labels
     """
-    columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
-    columns.extend(get_value_columns(columns[0], c))
+
+    if isinstance(c.category.term, str):
+        if c.category.term.startswith("{",):
+            c_as_json = json.loads(c.category.term)
+            if "annotationValue" in c_as_json.keys():
+                columns = ["{0}.Characteristics[{1}]".format(label, c_as_json["annotationValue"])]
+                columns.extend(get_value_columns(columns[0], c))
+    if isinstance(c.category.term, dict):
+        columns = ["{0}.Characteristics[{1}]".format(label, c.category.term["annotationValue"])]
+        columns.extend(get_value_columns(columns[0], c))
+    else:
+        columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
+        columns.extend(get_value_columns(columns[0], c))
     return columns
 
 
 def get_fv_columns(label, fv):
     """Generates Factor Value columns for a given material
 
-    :param fv: Factor Value
+    :param fv: The Factor Value object of interest
     :param label: Header label needed for the material type,
     e.g. "Sample Name"
-    :param c: The Factor Value object of interest
     :return: List of column labels
     """
     columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
@@ -1737,6 +1749,7 @@ def write_value_columns(df_dict, label, x):
     :param x: Object of interest
     :return: None
     """
+
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             df_dict[label][-1] = x.value
@@ -1773,7 +1786,7 @@ def get_pv_columns(label, pv):
     """Generates Parameter Value columns for a given process
 
     :param label: Header label needed for the process
-    :param c: The Parameter Value object of interest
+    :param pv: The Parameter Value object of interest
     :return: List of column labels
     """
     columns = None
@@ -1787,7 +1800,7 @@ def get_pv_columns(label, pv):
 
 
 def read_investigation_file(fp):
-    """Reads an investigatin file into a dictionary of DataFrames, each
+    """Reads an investigation file into a dictionary of DataFrames, each
     DataFrame being each section of the investigation file. e.g. One DataFrame
     for the INVESTIGATION PUBLICATIONS section
 
@@ -1952,7 +1965,7 @@ def check_utf8(fp):
             })
             log.warning("File should be UTF-8 encoding but found it is '{0}' "
                         "encoding with {1} confidence".format(
-                charset['encoding'], charset['confidence']))
+                            charset['encoding'], charset['confidence']))
             raise SystemError()
 
 
@@ -2215,8 +2228,7 @@ def check_dois(i_df):
                 log.warning("(W) DOI {} does not conform to DOI format"
                             .format(doi_str))
 
-    for doi in i_df['i_publications'][
-        'Investigation Publication DOI'].tolist():
+    for doi in i_df['i_publications']['Investigation Publication DOI'].tolist():
         check_doi(doi)
     for i, study_df in enumerate(i_df['s_publications']):
         for doi in study_df['Study Publication DOI'].tolist():
@@ -2293,7 +2305,7 @@ def check_protocol_parameter_names(i_df):
                         validator_warnings.append({
                             "message": "Protocol Parameter missing name",
                             "supplemental": "Protocol Parameter at pos={}"
-                                .format(i),
+                            .format(i),
                             "code": 1011
                         })
                         log.warning("(W) A Protocol Parameter used in "
@@ -2364,14 +2376,12 @@ def check_table_files_read(i_df, dir_context):
                 validator_errors.append({
                     "message": "Missing study tab file(s)",
                     "supplemental": "Study File {} does not appear to exist"
-                        .format(study_filename),
+                    .format(study_filename),
                     "code": 6
                 })
                 log.error("(E) Study File {} does not appear to exist"
                           .format(study_filename))
-        for j, assay_filename in enumerate(i_df['s_assays'][i][
-                                               'Study Assay File Name']
-                                                   .tolist()):
+        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
@@ -2484,13 +2494,13 @@ def check_protocol_usage(i_df, dir_context):
                             "supplemental": "protocols in study file {} are "
                                             "not declared in the "
                                             "investigation file: {}".format(
-                                study_filename, diff),
+                                             study_filename, diff),
                             "code": 1007
                         })
                         log.error(
                             "(E) Some protocols used in a study file {} are "
                             "not declared in the investigation file: {}"
-                                .format(study_filename, diff))
+                            .format(study_filename, diff))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
@@ -2502,8 +2512,7 @@ def check_protocol_usage(i_df, dir_context):
                             os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [
-                            i for i in assay_df.columns
-                            if i.startswith('Protocol REF')]:
+                                i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(
                                 assay_df[protocol_ref_col])
                         protocol_refs_used = set(
@@ -2515,7 +2524,7 @@ def check_protocol_usage(i_df, dir_context):
                                 "supplemental": "protocols in study file {} "
                                                 "are not declared in the "
                                                 "investigation file: {}"
-                                    .format(study_filename, diff),
+                                .format(study_filename, diff),
                                 "code": 1007
                             })
                             log.error("(E) Some protocols used in an assay "
@@ -2532,11 +2541,8 @@ def check_protocol_usage(i_df, dir_context):
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
-                    for protocol_ref_col in [
-                        i for i in study_df.columns
-                        if i.startswith('Protocol REF')]:
-                        protocol_refs_used = protocol_refs_used.union(
-                            study_df[protocol_ref_col])
+                    for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                        protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
@@ -2546,11 +2552,8 @@ def check_protocol_usage(i_df, dir_context):
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
-                        for protocol_ref_col in [
-                            i for i in assay_df.columns
-                            if i.startswith('Protocol REF')]:
-                            protocol_refs_used = protocol_refs_used.union(
-                                assay_df[protocol_ref_col])
+                        for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                            protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except FileNotFoundError:
                     pass
         diff = protocols_declared - protocol_refs_used - {''}
@@ -2558,8 +2561,7 @@ def check_protocol_usage(i_df, dir_context):
             validator_warnings.append({
                 "message": "Protocol declared but not used",
                 "supplemental": "protocols declared in the file {} are not "
-                                "used in any assay file: {}".format(
-                    study_filename, diff),
+                                "used in any assay file: {}".format(study_filename, diff),
                 "code": 1019
             })
             log.warning(
@@ -2648,7 +2650,7 @@ def load_table_checks(fp):
                 validator_warnings.append({
                     "message": "Missing name in Comment[] label",
                     "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    .format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_CHARACTERISTICS.match(column):
@@ -2658,7 +2660,7 @@ def load_table_checks(fp):
                 validator_warnings.append({
                     "message": "Missing name in Characteristics[] label",
                     "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    .format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_PARAMETER_VALUE.match(column):
@@ -2668,7 +2670,7 @@ def load_table_checks(fp):
                 validator_warnings.append({
                     "message": "Missing name in Parameter Value[] label",
                     "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    .format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_FACTOR_VALUE.match(column):
@@ -2678,7 +2680,7 @@ def load_table_checks(fp):
                 validator_warnings.append({
                     "message": "Missing name in Factor Value[] label",
                     "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    .format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
     norm_columns = list()
@@ -2718,8 +2720,7 @@ def load_table_checks(fp):
                         and not _RX_COMMENT.match(col):
                     log.error("(E) Expected only Characteristics, "
                               "Factor Values or Comments following {} "
-                              "columns but found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number',
@@ -2729,8 +2730,7 @@ def load_table_checks(fp):
                         and not _RX_PARAMETER_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
                     log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "column. Found {} at offset {}".format(prop_name, col, x + 1))
         elif prop_name == 'Extract Name':
             if len(object_columns) > 1:
                 log.error(
@@ -2745,12 +2745,10 @@ def load_table_checks(fp):
                                        'Term Accession Number']:
                             log.error("(E) Unexpected column heading "
                                       "following {} column. Found {} at "
-                                      "offset {}".format(
-                                prop_name, col, x + 1))
+                                      "offset {}".format(prop_name, col, x + 1))
                 else:
                     log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(
-                        prop_name, object_columns[1:], 2))
+                              "column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
             else:
                 log.error("Expected Label column after Labeled Extract Name "
                           "but none found")
@@ -2762,8 +2760,7 @@ def load_table_checks(fp):
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     log.error("(E) Expected only Comments following {} "
-                              "columns but found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ['Term Source REF', 'Term Accession Number']:
@@ -2802,8 +2799,7 @@ def check_study_factor_usage(i_df, dir_context):
                         log.error(
                             "(E) Some factors used in an study file {} are "
                             "not declared in the investigation file: {}"
-                                .format(study_filename, list(
-                                study_factors_used - study_factors_declared)))
+                            .format(study_filename, list(study_factors_used - study_factors_declared)))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
@@ -2826,9 +2822,9 @@ def check_study_factor_usage(i_df, dir_context):
                             log.error("(E) Some factors used in an assay file "
                                       "{} are not declared in the "
                                       "investigation file: {}".format(
-                                assay_filename, list(
-                                    study_factors_used -
-                                    study_factors_declared)))
+                                        assay_filename, list(
+                                            study_factors_used -
+                                            study_factors_declared)))
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
@@ -2904,8 +2900,8 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         log.error("(E) Some protocol parameters referenced in "
                                   "an study file {} are not declared in the "
                                   "investigation file: {}".format(
-                            study_filename, list(
-                                protocol_parameters_used
+                                  study_filename, list(
+                                        protocol_parameters_used
                                 - protocol_parameters_declared)))
             except FileNotFoundError:
                 pass
@@ -3025,11 +3021,8 @@ def check_term_source_refs_in_investigation(i_df):
                                                section_label, pos))
 
     i_publication_status_term_source_ref = [
-        i for i in i_df['i_publications'][
-            'Investigation Publication Status Term Source REF']
-            .tolist() if i != '']
-    diff = set(i_publication_status_term_source_ref) - \
-           set(ontology_sources_list)
+        i for i in i_df['i_publications']['Investigation Publication Status Term Source REF'].tolist() if i != '']
+    diff = set(i_publication_status_term_source_ref) - set(ontology_sources_list)
     if len(diff) > 0:
         validator_warnings.append({
             "message": "Missing Term Source",
@@ -3038,8 +3031,7 @@ def check_term_source_refs_in_investigation(i_df):
         })
         log.warning("(W) Investigation Publication Status Term Source REF {} "
                     "has not been declared in ONTOLOGY SOURCE "
-                    "REFERENCE section".format(
-            i_publication_status_term_source_ref))
+                    "REFERENCE section".format(i_publication_status_term_source_ref))
     i_person_roles_term_source_ref = [
         i for i in i_df['i_contacts'][
             'Investigation Person Roles Term Source REF'].tolist() if i != '']
@@ -3077,6 +3069,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
     """Used for rules 3007 and 3009
 
     :param i_df: An investigation DataFrame
+    :param dir_context: a directory
     :return: None
     """
 
@@ -4580,7 +4573,7 @@ def dumps(isa_obj, skip_dump_tables=False,
 
     :param isa_obj: An ISA Investigation object
     :param skip_dump_tables: Boolean flag on whether or not to write the
-    :param write_factor_values_in_assay_table: Boolean flag indicating whether
+    :param  write_fvs_in_assay_table: Boolean flag indicating whether
         or not to write Factor Values in the assay table files
     :return: String output of the ISA-Tab files
     """

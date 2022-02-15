@@ -11,10 +11,10 @@
         },
         "value": {
             "anyOf" : [
-                { "$ref": "ontology_annotation_schema.json#"},
-                { "type": "string"},
-                { "type": "number"}
-                ]
+                { "$ref": "ontology_annotation_schema.json#" },
+                { "type": "string" },
+                { "type": "number" }
+            ]
         },
         "unit": {
             "$ref": "ontology_annotation_schema.json#"

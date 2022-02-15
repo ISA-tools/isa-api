@@ -1,7 +1,7 @@
 """Functions for reading, writing and validating ISA-JSON.
 
 Don't forget to read the ISA-JSON spec:
-http://isa-specs.readthedocs.io/en/latest/isajson.html
+https://isa-specs.readthedocs.io/en/latest/isajson.html
 """
 from __future__ import absolute_import
 import glob
@@ -21,7 +21,6 @@ from isatools.model import (
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
-
 log = logging.getLogger('isatools')
 
 errors = []
@@ -35,7 +34,6 @@ _RX_PMCID = re.compile("PMC[0-9]{8}")
 
 
 def load(fp):
-
     def get_comments(commentable_dict):
         comments = [
             Comment(
@@ -59,10 +57,12 @@ def load(fp):
 
     def get_characteristic_category(characteristics_cats_dict):
         res = OntologyAnnotation(
-            id_=characteristics_cats_dict["@id"],
+            id_=characteristics_cats_dict["@id"],  # Here we use the id for the CharacteristicType \
+                                                   # to back support older JSON serializations
             term=characteristics_cats_dict["characteristicType"]["annotationValue"],
-            term_source=term_source_dict[characteristics_cats_dict["characteristicType"]["termSource"]],
-            term_accession=characteristics_cats_dict["characteristicType"]["termAccession"],
+            term_source=term_source_dict[characteristics_cats_dict["characteristicType"]["termSource"]] \
+            if isinstance(characteristics_cats_dict["characteristicType"]["termSource"], OntologySource) \
+            else "", term_accession=characteristics_cats_dict["characteristicType"]["termAccession"],
         )
         try:
             res.comments = get_comments(characteristics_cats_dict)
@@ -164,8 +164,6 @@ def load(fp):
         for assay_json in study_json["assays"]:
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category = get_characteristic_category(assay_characteristics_category_json)
-                # print("from ISAJSON:", characteristic_category["@id"])
-                # study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
     for study_json in investigation_json["studies"]:
         process_dict = dict()
@@ -242,8 +240,10 @@ def load(fp):
                 version=protocol_json["version"],
                 protocol_type=OntologyAnnotation(
                     term=protocol_json["protocolType"]["annotationValue"],
-                    term_accession=protocol_json["protocolType"]["termAccession"] if "termAccession" in protocol_json["protocolType"].keys() else "",
-                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]] if "termSource" in protocol_json["protocolType"].keys() else None,
+                    term_accession=protocol_json["protocolType"]["termAccession"]
+                    if "termAccession" in protocol_json["protocolType"].keys() else "",
+                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]]
+                    if "termSource" in protocol_json["protocolType"].keys() else None,
                 )
             )
             for parameter_json in protocol_json["parameters"]:
@@ -287,7 +287,7 @@ def load(fp):
         for source_json in study_json["materials"]["sources"]:
             source = Source(
                 id_=source_json["@id"],
-               # name=source_json["name"][7:],
+                # name=source_json["name"][7:],
                 name=source_json["name"].replace("source-", ""),
                 comments=get_comments(source_json)
             )
@@ -295,9 +295,12 @@ def load(fp):
                 value = characteristic_json["value"]
                 unit = None
                 characteristic = Characteristic(
-                    category=categories_dict[characteristic_json["category"]["@id"]],
+                    category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
+                                                                                            "#characteristic_category")
+                                             ],
                     comments=get_comments(characteristic_json)
                 )
+
                 if isinstance(value, dict):
                     try:
                         term = characteristic_json["value"]["annotationValue"]
@@ -310,7 +313,8 @@ def load(fp):
                             comments=get_comments(characteristic_json["value"])
                         )
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + str(ke) + " \n object: " + str(characteristic_json))
+                        raise IOError("Can't create value as annotation: " + str(ke)
+                                      + " \n object: " + str(characteristic_json))
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -326,14 +330,17 @@ def load(fp):
         for sample_json in study_json["materials"]["samples"]:
             sample = Sample(
                 id_=sample_json["@id"],
-                name=sample_json["name"][7:],
+                # name=sample_json["name"][7:],
+                name=sample_json["name"].replace("sample-", ""),
                 comments=get_comments(sample_json)
             )
             for characteristic_json in sample_json["characteristics"]:
                 value = characteristic_json["value"]
                 unit = None
                 characteristic = Characteristic(
-                    category=categories_dict[characteristic_json["category"]["@id"]],
+                    category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
+                                                                                            "#characteristic_category")
+                                             ],
                     comments=get_comments(characteristic_json)
                 )
                 if isinstance(value, dict):
@@ -345,7 +352,8 @@ def load(fp):
                             comments=get_comments(characteristic_json["value"])
                         )
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + str(ke) + "\n object: " + str(characteristic_json))
+                        raise IOError("Can't create value as annotation: " + str(ke)
+                                      + "\n object: " + str(characteristic_json))
                 elif isinstance(value, int) or isinstance(value, float):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
@@ -373,7 +381,8 @@ def load(fp):
                             comments=get_comments(factor_value_json["value"])
                         )
                     except KeyError as ke:
-                        raise IOError("Can't create value as annotation: " + str(ke) + "\n object: " + str(factor_value_json))
+                        raise IOError("Can't create value as annotation: " + str(ke)
+                                      + "\n object: " + str(factor_value_json))
                 elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[factor_value_json["unit"]["@id"]]
@@ -511,9 +520,10 @@ def load(fp):
                 assay.samples.append(sample)
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category = OntologyAnnotation(
-                    id_=assay_characteristics_category_json["@id"],
+                    # id_=assay_characteristics_category_json["characteristicType"]["@id"],
                     term=assay_characteristics_category_json["characteristicType"]["annotationValue"],
-                    term_source=term_source_dict[assay_characteristics_category_json["characteristicType"]["termSource"]],
+                    term_source=term_source_dict[assay_characteristics_category_json["characteristicType"]["termSource"]
+                                                 ],
                     term_accession=assay_characteristics_category_json["characteristicType"]["termAccession"],
                     comments=get_comments(assay_characteristics_category_json["characteristicType"])
                 )
@@ -536,7 +546,10 @@ def load(fp):
                 for characteristic_json in other_material_json["characteristics"]:
                     if not isinstance(characteristic_json["value"], str):
                         characteristic = Characteristic(
-                            category=categories_dict[characteristic_json["category"]["@id"]],
+                            category=categories_dict[
+                                characteristic_json["category"]["@id"].replace("#ontology_annotation",
+                                                                               "#characteristic_category")
+                            ],
                             value=OntologyAnnotation(
                                 term=characteristic_json["value"]["annotationValue"],
                                 term_source=term_source_dict[characteristic_json["value"]["termSource"]],
@@ -547,8 +560,10 @@ def load(fp):
                         )
                     else:
                         characteristic = Characteristic(
-                            category=categories_dict[characteristic_json["category"]["@id"]],
-
+                            category=categories_dict[
+                                characteristic_json["category"]["@id"].replace("#ontology_annotation",
+                                                                               "#characteristic_category")
+                            ],
                             value=OntologyAnnotation(
                                 term=characteristic_json["value"]
                             ),
@@ -564,7 +579,8 @@ def load(fp):
                     comments=get_comments(assay_process_json)
                 )
                 # additional properties, currently hard-coded special cases
-                if process.executes_protocol.protocol_type.term == "data collection" and assay.technology_type.term == "DNA microarray":
+                if process.executes_protocol.protocol_type.term == "data collection" and \
+                        assay.technology_type.term == "DNA microarray":
                     process.name = assay_process_json["name"]
                 elif process.executes_protocol.protocol_type.term == "nucleic acid sequencing":
                     process.name = assay_process_json["name"]
@@ -606,10 +622,10 @@ def load(fp):
                         except KeyError:
                             pass
                         finally:
-                                try:
-                                    output = data_dict[output_json["@id"]]
-                                except KeyError:
-                                    pass
+                            try:
+                                output = data_dict[output_json["@id"]]
+                            except KeyError:
+                                pass
                     if output is None:
                         raise IOError("Could not find output node in samples or materials or data dicts: " +
                                       output_json["@id"])
@@ -688,7 +704,8 @@ def get_io_ids_in_process_sequence(study_json):
     all_process_sequences = list(study_json["processSequence"])
     for assay_json in study_json["assays"]:
         all_process_sequences.extend(assay_json["processSequence"])
-    return [elem for iterabl in [[i["@id"] for i in process["inputs"]] + [o["@id"] for o in process["outputs"]] for process in
+    return [elem for iterabl in [[i["@id"] for i in process["inputs"]] + [o["@id"]
+                                                                          for o in process["outputs"]] for process in
                                  all_process_sequences] for elem in iterabl]
 
 
@@ -709,8 +726,10 @@ def check_material_ids_declared_used(study_json, id_collector_func):
 
 def check_material_ids_not_declared_used(study_json):
     """Used for rules 1002-1005"""
-    node_ids = get_source_ids(study_json) + get_sample_ids(study_json) + get_material_ids(study_json) + \
-               get_data_file_ids(study_json)
+    node_ids = get_source_ids(study_json) \
+        + get_sample_ids(study_json) \
+        + get_material_ids(study_json) \
+        + get_data_file_ids(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
     if len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
         diff = set(io_ids_in_process_sequence) - set(node_ids)
@@ -721,7 +740,7 @@ def check_material_ids_not_declared_used(study_json):
             "code": 1005
         })
         log.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files"
-                     "declared".format(list(diff)))
+                  "declared".format(list(diff)))
 
 
 def check_process_sequence_links(process_sequence_json):
@@ -737,7 +756,7 @@ def check_process_sequence_links(process_sequence_json):
                     "code": 1006
                 })
                 log.error("(E) previousProcess link {} in process {} does not refer to another process in "
-                             "sequence".format(process["previousProcess"]["@id"], process["@id"]))
+                          "sequence".format(process["previousProcess"]["@id"], process["@id"]))
         except KeyError:
             pass
         try:
@@ -793,7 +812,7 @@ def check_process_protocol_ids_usage(study_json):
             "code": 1019
         })
         log.warning("(W) There are some protocol IDs declared {} not used in any study or assay process "
-                       "sequence".format(list(diff)))
+                    "sequence".format(list(diff)))
 
 
 def get_study_protocols_parameter_ids(study_json):
@@ -818,7 +837,8 @@ def get_parameter_value_parameter_ids(study_json):
 
 def check_protocol_parameter_ids_usage(study_json):
     """Used for rule 1009 and 1020"""
-    protocols_declared = get_study_protocols_parameter_ids(study_json) + ["#parameter/Array_Design_REF"] # + special case
+    protocols_declared = get_study_protocols_parameter_ids(study_json) + [
+        "#parameter/Array_Design_REF"]  # + special case
     protocols_used = get_parameter_value_parameter_ids(study_json)
     if len(set(protocols_used) - set(protocols_declared)) > 0:
         diff = set(protocols_used) - set(protocols_declared)
@@ -828,7 +848,7 @@ def check_protocol_parameter_ids_usage(study_json):
             "code": 1009
         })
         log.error("(E) There are protocol parameters {} used in a study or assay process not declared in any "
-                     "protocol".format(list(diff)))
+                  "protocol".format(list(diff)))
     elif len(set(protocols_declared) - set(protocols_used)) > 0:
         diff = set(protocols_declared) - set(protocols_used)
         warnings.append({
@@ -842,21 +862,26 @@ def check_protocol_parameter_ids_usage(study_json):
 
 def get_characteristic_category_ids(study_or_assay_json):
     """Used for rule 1013"""
-    return [category["@id"] for category in study_or_assay_json["characteristicCategories"]]
+    return [category["@id"].replace("#ontology_annotation", "#characteristic_category")
+            for category in study_or_assay_json["characteristicCategories"]]
 
 
 def get_characteristic_category_ids_in_study_materials(study_json):
     """Used for rule 1013"""
     return [elem for iterabl in
-            [[characteristic["category"]["@id"] for characteristic in material["characteristics"]] for material in
+            [[characteristic["category"]["@id"].replace("#ontology_annotation", "#characteristic_category")
+              for characteristic in material["characteristics"]] for material in
              study_json["materials"]["sources"] + study_json["materials"]["samples"]] for elem in iterabl]
 
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in [[characteristic["category"]["@id"]  for characteristic in material["characteristics"]]
+    return [elem for iterabl in [[characteristic["category"]["@id"].replace("#ontology_annotation",
+                                                                            "#characteristic_category")
+                                  for characteristic in material["characteristics"]]
                                  if "characteristics" in material.keys() else [] for material in
-              assay_json["materials"]["samples"] + assay_json["materials"]["otherMaterials"]] for elem in iterabl]
+                                 assay_json["materials"]["samples"] + assay_json["materials"]["otherMaterials"]] for
+            elem in iterabl]
 
 
 def check_characteristic_category_ids_usage(studies_json):
@@ -875,12 +900,12 @@ def check_characteristic_category_ids_usage(studies_json):
     if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
         diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
         errors.append({
-                "message": "Missing Characteristic Category declaration",
-                "supplemental": "Characteristic Categories {} used not declared".format(list(diff)),
-                "code": 1013
-            })
+            "message": "Missing Characteristic Category declaration",
+            "supplemental": "Characteristic Categories {} used not declared".format(list(diff)),
+            "code": 1013
+        })
         log.error("(E) There are characteristic categories {} used in a source or sample characteristic that have "
-                     "not been not declared".format(list(diff)))
+                  "not been not declared".format(list(diff)))
     elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
         diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
         warnings.append({
@@ -889,7 +914,7 @@ def check_characteristic_category_ids_usage(studies_json):
             "code": 1022
         })
         log.warning("(W) There are characteristic categories declared {} that have not been used in any source or "
-                       "sample characteristic".format(list(diff)))
+                    "sample characteristic".format(list(diff)))
 
 
 def get_study_factor_ids(study_json):
@@ -944,10 +969,10 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
                                        factor_value in material["factorValues"]] for material in
                                       study_json["materials"]["samples"]] for
                                      elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value["unit"]["@id"]
-                                                       if "unit" in parameter_value.keys() else None for
-                                   parameter_value in process["parameterValues"]] for process in
-                                  study_json["processSequence"]] for
+    parameter_value_units_used = [elem for iterabl in [[parameter_value["unit"]["@id"]
+                                                        if "unit" in parameter_value.keys() else None for
+                                                        parameter_value in process["parameterValues"]] for process in
+                                                       study_json["processSequence"]] for
                                   elem in iterabl]
     return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
             if x is not None]
@@ -956,14 +981,17 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
     assay_characteristics_units_used = [elem for iterabl in [[characteristic["unit"]["@id"] if "unit" in
-                                        characteristic.keys() else None
+                                                                                               characteristic.keys()
+                                                              else None
                                                               for characteristic in material["characteristics"]]
                                                              if "characteristics" in material.keys() else None for
-                                     material in assay_json["materials"]["otherMaterials"]] for elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value["unit"]["@id"]
-                                                       if "unit" in parameter_value.keys() else None
-                                                       for parameter_value in process["parameterValues"]] for process in
-                                                      assay_json["processSequence"]] for
+                                                             material in assay_json["materials"]["otherMaterials"]] for
+                                        elem in iterabl]
+    parameter_value_units_used = [elem for iterabl in [[parameter_value["unit"]["@id"]
+                                                        if "unit" in parameter_value.keys() else None
+                                                        for parameter_value in process["parameterValues"]] for process
+                                                       in
+                                                       assay_json["processSequence"]] for
                                   elem in iterabl]
     return [x for x in assay_characteristics_units_used + parameter_value_units_used if x is not None]
 
@@ -1003,7 +1031,8 @@ def check_utf8(fp):
         if charset["encoding"].upper() != "UTF-8" and charset["encoding"].lower() != "ascii":
             warnings.append({
                 "message": "File should be UTF8 encoding",
-                "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"], charset["confidence"]),
+                "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"],
+                                                                               charset["confidence"]),
                 "code": 10
             })
             log.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
@@ -1032,6 +1061,7 @@ def check_isa_schemas(isa_json, investigation_schema_path):
 
 def check_date_formats(isa_json):
     """Used for rule 3001"""
+
     def check_iso8601_date(date_str):
         if date_str != "":
             try:
@@ -1043,6 +1073,7 @@ def check_date_formats(isa_json):
                     "code": 3001
                 })
                 log.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
+
     import iso8601
     try:
         check_iso8601_date(isa_json["publicReleaseDate"])
@@ -1070,6 +1101,7 @@ def check_date_formats(isa_json):
 
 def check_dois(isa_json):
     """Used for rule 3002"""
+
     def check_doi(doi_str):
         if doi_str != "":
             if not _RX_DOI.match(doi_str):
@@ -1079,6 +1111,7 @@ def check_dois(isa_json):
                     "code": 3002
                 })
                 log.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
+
     for ipub in isa_json["publications"]:
         try:
             check_doi(ipub["doi"])
@@ -1114,6 +1147,7 @@ def check_filenames_present(isa_json):
 
 def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
+
     def check_pubmed_id(pubmed_id_str):
         if pubmed_id_str != "":
             if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
@@ -1123,6 +1157,7 @@ def check_pubmed_ids_format(isa_json):
                     "code": 3003
                 })
                 log.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
+
     for ipub in isa_json["publications"]:
         check_pubmed_id(ipub["pubMedID"])
     for study in isa_json["studies"]:
@@ -1201,7 +1236,7 @@ def walk_and_get_annotations(isa_json, collector):
     #  Walk JSON tree looking for ontology annotation structures in the JSON
     if isinstance(isa_json, dict):
         if set(isa_json.keys()) == {"annotationValue", "termAccession", "termSource"} or \
-                        set(isa_json.keys()) == {"@id", "annotationValue", "termAccession", "termSource"}:
+                set(isa_json.keys()) == {"@id", "annotationValue", "termAccession", "termSource"}:
             collector.append(isa_json)
         for i in isa_json.keys():
             walk_and_get_annotations(isa_json[i], collector)
@@ -1246,7 +1281,8 @@ def check_term_accession_used_no_source_ref(isa_json):
     if len(terms_using_accession_no_source_ref) > 0:
         warnings.append({
             "message": "Missing Term Source REF in annotation",
-            "supplemental": "Terms with accession but no source reference {}".format(terms_using_accession_no_source_ref),
+            "supplemental": "Terms with accession but no source reference {}".format(
+                terms_using_accession_no_source_ref),
             "code": 3010
         })
         log.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
@@ -1277,6 +1313,8 @@ def load_config(config_dir):
 
 
 def check_measurement_technology_types(assay_json, configs):
+    measurement_type = ""
+    technology_type = ""
     try:
         measurement_type = assay_json["measurementType"]["annotationValue"]
         technology_type = assay_json["technologyType"]["annotationValue"]
@@ -1294,7 +1332,6 @@ def check_measurement_technology_types(assay_json, configs):
 
 
 def check_study_and_assay_graphs(study_json, configs):
-
     def check_assay_graph(process_sequence_json, config):
         list_of_last_processes_in_sequence = [i for i in process_sequence_json if "nextProcess" not in i.keys()]
         log.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
@@ -1322,7 +1359,9 @@ def check_study_and_assay_graphs(study_json, configs):
                     assay_graph.append(process_graph)
                     process = [i for i in process_sequence_json if i["@id"] == process["previousProcess"]["@id"]][0]
                     if process['@id'] == process["previousProcess"]["@id"]:
-                        log.fatal("Previous process is same as current process, which forms a loop!!!!! Cannot find start node!!!!!!!")
+                        log.fatal(
+                            "Previous process is same as current process, which forms a loop!!!!!"
+                            " Cannot find start node!!!!!!!")
                         break
             except KeyError:  # this happens when we can"t find a previousProcess
                 pass
@@ -1341,8 +1380,9 @@ def check_study_and_assay_graphs(study_json, configs):
             if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
                 warnings.append({
                     "message": "Process sequence is not valid against configuration",
-                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(config_protocol_sequence,
-                                                                                                                squished_assay_protocol_sequence_of_interest),
+                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(
+                        config_protocol_sequence,
+                        squished_assay_protocol_sequence_of_interest),
                     "code": 4004
                 })
                 log.warning("Configuration protocol sequence {} does not match study graph found in {}"
@@ -1387,9 +1427,8 @@ def check_study_groups(study_or_assay):
                     .format(num_study_groups,
                             study_or_assay.identifier),
                 'supplemental': 'Study group size reported as {} but found {} '
-                                'in {}'.format(
-                    study_group_size_in_comment, num_study_groups,
-                    study_or_assay.identifier),
+                                'in {}'.format(study_group_size_in_comment, num_study_groups,
+                                               study_or_assay.identifier),
                 'code': 5002
             })
 
@@ -1414,8 +1453,8 @@ def validate(
     if config_dir is None:
         config_dir = default_config_dir
     if log_level in (
-        logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
-        logging.ERROR, logging.CRITICAL):
+            logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
+            logging.ERROR, logging.CRITICAL):
         log.setLevel(log_level)
     log.info("ISA JSON Validator from ISA tools API v0.12.")
     stream = StringIO()
@@ -1597,6 +1636,7 @@ class ISAJSONEncoder(JSONEncoder):
 
         # TODO: deal with non-verbose mode parsing; currently will break because of missing k-v's
         clean_nulls = nulls_to_str  # creates verbose JSON if using nulls to str
+
         # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings but breaks reader
 
         def get_comment(obj):
@@ -1623,16 +1663,9 @@ class ISAJSONEncoder(JSONEncoder):
 
         def get_ontology_annotation(obj):
             ontology_annotation = {}
-            # ontology_annotation = {
-            #     "@id": id_gen(obj),
-            #     "annotationValue": "",
-            #     "termAccession": "",
-            #     "termSource": "",
-            #     "comments": ""
-            # }
+
             if obj is not None and isinstance(obj, OntologyAnnotation):
-                ontology_annotation["@id"] = "#ontology_annotation/"+obj.id
-                # print("ISAJSON get_ontology_annotation:", ontology_annotation["@id"])
+                ontology_annotation["@id"] = "#ontology_annotation/" + obj.id
                 if isinstance(obj.term_source, OntologySource):
                     ontology_annotation['termSource'] = obj.term_source.name
                 else:
@@ -1640,15 +1673,6 @@ class ISAJSONEncoder(JSONEncoder):
                 ontology_annotation['annotationValue'] = obj.term
                 ontology_annotation['termAccession'] = obj.term_accession
                 ontology_annotation["comments"] = get_comments(obj.comments)
-            # else:
-            #     return None
-                # ontology_annotation = {
-                #     "@id": "",
-                #     "annotationValue": "",
-                #     "termAccession": "",
-                #     "termSource": "",
-                #     "comments": ""
-                # }
 
             return clean_nulls(ontology_annotation)
 
@@ -1740,14 +1764,42 @@ class ISAJSONEncoder(JSONEncoder):
                 raise ValueError("Unexpected value type found: " + type(obj))
 
         def get_characteristic_category(obj):  # TODO: Deal with Material Type
+            if isinstance(obj, OntologyAnnotation):
+                res = clean_nulls(
+                    {
+                        "@id": "#characteristic_category/" + str(obj.id),
+                        "characteristicType": {
+                            "@id": "#ontology_annotation/" + str(obj.id),
+                            "annotationValue": obj.term["annotationValue"] if not isinstance(obj.term, str) else "",
+                            "termAccession": obj.term["termAccession"] if not isinstance(obj.term, str) else "",
+                            "termSource": obj.term["termSource"] if not isinstance(obj.term, str) else ""
+                        }
+                    }
+                )
 
-            res = clean_nulls(
-                {
-                    "@id": "#ontology_annotation/"+obj.category.id,
-                    "characteristicType": obj.category
-                }
-            )
-            # print("ISAJSON GET CHART_CAT_OBJ:", id_gen(obj), obj.category.id, res["@id"])
+            elif isinstance(obj, Characteristic):
+                res = clean_nulls(
+                    {
+                        "@id": "#characteristic_category/" + str(obj.category.id),
+                        "characteristicType":
+                            {
+                                "@id": "#ontology_annotation/" + obj.category.id,
+                                "annotationValue": obj.category.term,
+                                "termAccession": obj.category.term_accession,
+                                "termSource": obj.category.term_source
+                            }
+
+                    }
+                )
+
+            else:
+                res = clean_nulls(
+                    {
+                        "@id": "#characteristic_category/" + obj.id if isinstance(obj, OntologyAnnotation) else None,
+                        "characteristicType": obj.category.term if isinstance(obj, OntologyAnnotation) else None
+                    }
+                )
+
             return res
 
         def get_sample(obj):
@@ -1763,9 +1815,10 @@ class ISAJSONEncoder(JSONEncoder):
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
-                    "derivesFrom": list(map(lambda x: {"@id": id_gen(x)}, obj.derives_from)) if obj.derives_from else [],
+                    "derivesFrom": list(
+                        map(lambda x: {"@id": id_gen(x)}, obj.derives_from)) if obj.derives_from else [],
                     "comments": get_comments(obj.comments) if obj.comments else []
-            })
+                })
 
         def get_factor(obj):
             return clean_nulls(
@@ -1807,12 +1860,32 @@ class ISAJSONEncoder(JSONEncoder):
                         return '#material/labeledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
-                elif isinstance(obj, DataFile):
-                        return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
-                elif isinstance(obj, Process):
-                    return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
+                elif isinstance(obj, OntologySource):
+                    return '#ontology/' + o_id
                 elif isinstance(obj, OntologyAnnotation):
                     return '#ontology_annotation/' + o_id
+                elif isinstance(obj, StudyFactor):
+                    return '#studyfactor/' + o_id
+                elif isinstance(obj, FactorValue):
+                    return '#factor_value/' + o_id
+                elif isinstance(obj, ParameterValue):
+                    return '#parameter_value/' + o_id
+                elif isinstance(obj, ProtocolParameter):
+                    return '#parameter/' + o_id
+                elif isinstance(obj, Protocol):
+                    return '#protocol/' + o_id
+                elif isinstance(obj, Publication):
+                    return '#publication/' + o_id
+                elif isinstance(obj, Person):
+                    return '#person/' + o_id
+                elif isinstance(obj, Investigation):
+                    return '#investigation/' + o_id
+                elif isinstance(obj, Study):
+                    return '#study/' + o_id
+                elif isinstance(obj, DataFile):
+                    return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
+                elif isinstance(obj, Process):
+                    return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
                     return '#' + o_id
             else:
@@ -1844,31 +1917,32 @@ class ISAJSONEncoder(JSONEncoder):
                 }
             )
 
-        def get_study(obj): return clean_nulls(
-            {
-                "filename": obj.filename,
-                "identifier": obj.identifier,
-                "title": obj.title,
-                "description": obj.description,
-                "submissionDate": obj.submission_date,
-                "publicReleaseDate": obj.public_release_date,
-                "publications": get_publications(obj.publications),
-                "people": get_people(obj.contacts),
-                "studyDesignDescriptors": get_ontology_annotations(obj.design_descriptors),
-                "protocols": list(map(lambda x: get_protocol(x), obj.protocols)),
-                "materials": {
-                    "sources": list(map(lambda x: get_source(x), obj.sources)),
-                    "samples": get_samples(obj.samples),
-                    "otherMaterials": get_other_materials(obj.other_material)
-                },
-                "processSequence": list(map(lambda x: get_process(x), obj.process_sequence)),
-                "factors": list(map(lambda x: get_factor(x), obj.factors)),
-                "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
-                "unitCategories": get_ontology_annotations(obj.units),
-                "comments": get_comments(obj.comments),
-                "assays": list(map(lambda x: get_assay(x), obj.assays))
-            }
-        )
+        def get_study(obj):
+            return clean_nulls(
+                {
+                    "filename": obj.filename,
+                    "identifier": obj.identifier,
+                    "title": obj.title,
+                    "description": obj.description,
+                    "submissionDate": obj.submission_date,
+                    "publicReleaseDate": obj.public_release_date,
+                    "publications": get_publications(obj.publications),
+                    "people": get_people(obj.contacts),
+                    "studyDesignDescriptors": get_ontology_annotations(obj.design_descriptors),
+                    "protocols": list(map(lambda x: get_protocol(x), obj.protocols)),
+                    "materials": {
+                        "sources": list(map(lambda x: get_source(x), obj.sources)),
+                        "samples": get_samples(obj.samples),
+                        "otherMaterials": get_other_materials(obj.other_material)
+                    },
+                    "processSequence": list(map(lambda x: get_process(x), obj.process_sequence)),
+                    "factors": list(map(lambda x: get_factor(x), obj.factors)),
+                    "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
+                    "unitCategories": get_ontology_annotations(obj.units),
+                    "comments": get_comments(obj.comments),
+                    "assays": list(map(lambda x: get_assay(x), obj.assays))
+                }
+            )
 
         def get_characteristic_categories(obj):
             return list(map(lambda x: get_characteristic_category(x), obj))
@@ -1918,7 +1992,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "title": o.title,
                     "description": o.description,
                     "comments": get_comments(o.comments),
-                    "ontologySourceReferences": list(map(lambda x: get_ontology_source(x), o.ontology_source_references)),
+                    "ontologySourceReferences": list(
+                        map(lambda x: get_ontology_source(x), o.ontology_source_references)),
                     "people": get_people(o.contacts),
                     "publicReleaseDate": o.public_release_date,
                     "submissionDate": o.submission_date,
