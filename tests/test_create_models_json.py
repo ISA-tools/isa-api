@@ -74,7 +74,7 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
 NAME = 'name'
 
 FACTORS_0_VALUE = 'nitroglycerin'
-FACTORS_0_VALUE_ALT = 'alchohol'
+FACTORS_0_VALUE_ALT = 'alcohol'
 FACTORS_0_VALUE_THIRD = 'water'
 FACTORS_1_VALUE = 5
 FACTORS_1_UNIT = OntologyAnnotation(term='kg/m^3')
@@ -685,7 +685,7 @@ class StudyDesignEncoderTest(BaseTestCase):
                 self.single_treatment_cell_arm,
                 self.single_treatment_cell_arm_01,
                 self.single_treatment_cell_arm_02
-        })
+            })
         self.multi_element_cell_two_arm_study_design = StudyDesign(
             name=TEST_STUDY_DESIGN_NAME_TWO_ARMS_MULTI_ELEMENT_CELLS,
             description='This is a study design with two multi-element arms',
@@ -771,7 +771,3 @@ class StudyDesignDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)
         self.assertEqual(self.multi_element_cell_two_arm_study_design, actual_study_design)
-
-
-
-

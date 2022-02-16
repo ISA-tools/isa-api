@@ -29,7 +29,7 @@ from isatools.create.model import (
     AssayGraph
 )
 from isatools.create.constants import DATA_FILE, DEFAULT_EXTENSION
-from isatools.create.constants import DEFAULT_STUDY_IDENTIFIER, BASE_FACTORS, IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR_
+from isatools.create.constants import IS_TREATMENT_EPOCH, SEQUENCE_ORDER_FACTOR_
 from isatools.isajson import ISAJSONEncoder
 from isatools.tests.create_sample_assay_plan_odicts import (
     ms_assay_dict,
@@ -291,7 +291,8 @@ class TestMappings(unittest.TestCase):
             all(sample.characteristics[0].value.term == blood_sample['term'] for sample in marker_panel_samples)
         )
         self.assertTrue(
-            all(sample.characteristics[0].value.term_accession == blood_sample['iri'] for sample in marker_panel_samples)
+            all(sample.characteristics[0].value.term_accession == blood_sample['iri']
+                for sample in marker_panel_samples)
         )
         self.assertTrue(
             all(data_file.filename.split('.')[-1] == 'raw' for data_file in marker_panel_assay.data_files)

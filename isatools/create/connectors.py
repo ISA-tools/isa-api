@@ -157,7 +157,7 @@ def assay_ordered_dict_to_template(assay_ord_dict):
 
 def _generate_element(datascriptor_element_dict):
     """
-    Generates elements (Treatement and NonTreatment) from their description as Datascriptor dicts
+    Generates elements (Treatment and NonTreatment) from their description as Datascriptor dicts
     :param datascriptor_element_dict: dict
     :return: isatools.create.models.Element
     """
@@ -240,7 +240,7 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                 if candidate_param_name[0] == '#' and not isinstance(param, list):
                     prepared_nodes[candidate_param_name] = param['value']
                 else:
-                    if not param['values']:
+                    if not param["values"]:
                         raise ValueError('Missing values for Protocol Param {}'.format(
                             candidate_param_name['term'] if isinstance(
                                 candidate_param_name, dict
@@ -249,7 +249,7 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                     # this is really a parameter name
                     param_name = _map_ontology_annotation(candidate_param_name, expand_strings=True)
                     prepared_nodes[param_name] = [
-                        _map_ontology_annotation(param_value) for param_value in param['values']
+                        _map_ontology_annotation(param_value) for param_value in param["values"]
                     ]
         elif 'node_type' in node:
             # this is a product node

@@ -46,7 +46,6 @@ class TestMzml2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 's_{}.txt'.format(study_id))) as out_fp:
             with open(os.path.join(self._tab_data_dir, study_id + '-partial', 's_{}.txt'.format(study_id))) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
-    
 
     def test_mzml2isa_convert_assay_table(self):
         study_id = 'MTBLS267'

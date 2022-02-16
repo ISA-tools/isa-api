@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import unittest
+
 from unittest.mock import patch, mock_open
 from isatools.net import mtbls as MTBLS
 import shutil

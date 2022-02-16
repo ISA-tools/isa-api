@@ -294,8 +294,8 @@ class StudyCell(object):
                'name={name}, ' \
                'elements={elements}, ' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=[
-            sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
-        ])
+                sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
+                ])
 
     def __str__(self):
         return """{0}(
@@ -440,7 +440,7 @@ class StudyCell(object):
             raise ValueError('element must be either an Element or a set of treatments')
         is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
             self._treatment_check(self.elements) if isinstance(element, Treatment) else \
-                self._concomitant_treatments_check(element) if isinstance(element, set) else False
+            self._concomitant_treatments_check(element) if isinstance(element, set) else False
         if is_valid:
             self.__elements.insert(index, element)
         else:
@@ -807,7 +807,7 @@ class ProductNode(SequenceNode):
         return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
                'characteristics={2.characteristics}, size={2.size}, ' \
                'extension={2.extension})'.format(
-            self.__class__.__module__, self.__class__.__name__, self)
+                self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
         return """{0}(
@@ -939,8 +939,8 @@ class QualityControl(object):
     def __repr__(self):
         return '{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, ' \
                'interspersed_sample_types={2.interspersed_sample_types})'.format(
-            self.__class__.__module__, self.__class__.__name__, self
-        )
+                self.__class__.__module__, self.__class__.__name__, self
+                )
 
     def __str__(self):
         return """{0}(
@@ -1319,9 +1319,9 @@ class AssayGraph(object):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return '{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, ' \
                'nodes={2.nodes}, links={3}, quality_control={2.quality_control})'.format(
-            self.__class__.__module__, self.__class__.__name__, self,
-            sorted(links, key=lambda link: (link[0], link[1]))
-        )
+                self.__class__.__module__, self.__class__.__name__, self,
+                sorted(links, key=lambda link: (link[0], link[1]))
+                )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
@@ -1502,8 +1502,8 @@ class SampleAndAssayPlan(object):
         sample_plan = sorted(self.sample_plan, key=lambda s_t: s_t.id)
         return '{0}.{1}(name={2.name}, sample_plan={4}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
-            self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
-        )
+                self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
+                )
 
     def __str__(self):
         return """{0}(
@@ -1711,15 +1711,15 @@ class StudyArm(object):
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
-            self.__class__.__module__, self.__class__.__name__,
-            name=self.name, source_type=self.source_type,
-            source_characteristics=[sc for sc in sorted(
-                self.source_characteristics,
-                key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
-            )],
-            group_size=self.group_size,
-            cells=self.cells, sample_assay_plans=self.sample_assay_plans
-        )
+                self.__class__.__module__, self.__class__.__name__,
+                name=self.name, source_type=self.source_type,
+                source_characteristics=[sc for sc in sorted(
+                    self.source_characteristics,
+                    key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
+                )],
+                group_size=self.group_size,
+                cells=self.cells, sample_assay_plans=self.sample_assay_plans
+                )
 
     def __str__(self):
         return """"{0}(
@@ -2109,8 +2109,9 @@ class StudyDesign(object):
             idarr.append('{}'.format(source_name))
         if cell_name != '':
             idarr.append('{}'.format(cell_name))
-        smparr = []
-        smparr.append('{}'.format(SAMPLE_PREFIX))
+        # smparr = []
+        # smparr.append('{}'.format(SAMPLE_PREFIX))
+        smparr = ['{}'.format(SAMPLE_PREFIX)]
         if sample_type != '':
             smparr.append(sample_type)
         if sample_number != '':
@@ -2136,10 +2137,9 @@ class StudyDesign(object):
                                             value=OntologyAnnotation(term=s_arm.source_type)
                                         )
                                     ] + [sc for sc in sorted(
-                        s_arm.source_characteristics, key=lambda sc: sc.category.term if isinstance(
-                            sc.category, OntologyAnnotation
-                        ) else sc.category
-                    )]
+                                        s_arm.source_characteristics, key=lambda sc: sc.category.term
+                                        if isinstance(sc.category, OntologyAnnotation) else sc.category
+                                        )]
                 )
                 src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
                                              s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
@@ -2207,7 +2207,6 @@ class StudyDesign(object):
                 for sample_node in sample_assay_plan.sample_plan:
                     for source in sources_map[arm.name]:
                         sample_type, sampling_size = sample_node.characteristics[0], sample_node.size
-                        # print("(create.model.py) category TYPE:",isinstance(sample_type,Characteristic), sample_type.category.id, sample_type.category.term)
                         sample_term_source = sample_type.value.term_source if \
                             hasattr(sample_type.value, 'term_source') and sample_type.value.term_source else ''
                         if sample_term_source:
@@ -2321,7 +2320,7 @@ class StudyDesign(object):
             # characteristic_categories.append(item.characteristics)
             for charx in item.characteristics:
                 if charx not in characteristic_categories:
-                   characteristic_categories.append(charx)
+                    characteristic_categories.append(charx)
 
         elif isinstance(item, DataFile):
             data_files.append(item)
@@ -2419,10 +2418,11 @@ class StudyDesign(object):
                 for k in range(size):
                     ix = i * len(assay_samples) * size + j * size + k
                     log.debug('i = {0}, j = {1}, k={2}, ix={3}'.format(i, j, k, ix))
-                    processes, other_materials, characteristic_categories, data_files, _, __ = StudyDesign._generate_isa_elements_from_node(
-                        node, assay_graph, assay_graph.id, start_node_index=ix + 1, counter=None, processes=[],
-                        other_materials=[], characteristic_categories=[], data_files=[], previous_items=[sample]
-                    )
+                    processes, other_materials, characteristic_categories, data_files, _, __ = \
+                        StudyDesign._generate_isa_elements_from_node(
+                            node, assay_graph, assay_graph.id, start_node_index=ix + 1, counter=None, processes=[],
+                            other_materials=[], characteristic_categories=[], data_files=[], previous_items=[sample]
+                        )
 
                     assay.other_material.extend(other_materials)
                     assay.characteristic_categories.extend(characteristic_categories)
@@ -2571,7 +2571,7 @@ class StudyDesign(object):
         # study_charac_categories = []
         study.characteristic_categories.append(DEFAULT_SOURCE_TYPE)
         study.factors, new_protocols, study.samples, study_charac_categories, study.assays, study.process_sequence, \
-        study.ontology_source_references = \
+            study.ontology_source_references = \
             self._generate_samples_and_assays(
                 sources_map, study.protocols[0], study_config['performers'][0]['name']
             )
@@ -2667,10 +2667,10 @@ class QualityControlService(object):
                             ))
                             qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
                                 = cls._generate_quality_control_samples(
-                                assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
-                                # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                sampling_protocol=qc_study.protocols[0]
-                            )
+                                    assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                                    # FIXME? the assumption here is that the first protocol is the sampling protocol
+                                    sampling_protocol=qc_study.protocols[0]
+                                )
                             qc_study.sources += qc_sources
                             qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
                             for qc_samples in qc_samples_interspersed.values():
