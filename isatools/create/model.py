@@ -9,14 +9,12 @@ import json
 import re
 from collections import OrderedDict, Iterable
 from copy import deepcopy
-import copy
 import logging
 from numbers import Number
 from abc import ABC
 from math import factorial
 import os
 
-import characteristic as characteristic
 import yaml
 import uuid
 import networkx as nx
