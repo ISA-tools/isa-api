@@ -1631,7 +1631,7 @@ class SampleAndAssayPlanDecoder(object):
             return ProductNode(id_=node_dict["@id"], name=node_dict["name"], size=node_dict["size"],
                                node_type=node_dict["productType"],
                                characteristics=[
-                                   char_decoder.loads_characteristic(chr) for chr in node_dict["characteristics"]
+                                   char_decoder.loads_characteristic(char) for char in node_dict["characteristics"]
                                ])
 
     def loads_assay_graph(self, assay_graph_dict):
@@ -1639,7 +1639,8 @@ class SampleAndAssayPlanDecoder(object):
             else OntologyAnnotation(**assay_graph_dict["measurementType"])
         technology_type = assay_graph_dict["technologyType"] if isinstance(assay_graph_dict["technologyType"], str) \
             else OntologyAnnotation(**assay_graph_dict["technologyType"])
-        assay_graph = AssayGraph(id_=assay_graph_dict["@id"], measurement_type=measurement_type,
+        assay_graph = AssayGraph(id_=assay_graph_dict["@id"],
+                                 measurement_type=measurement_type,
                                  technology_type=technology_type)
         nodes = [self.loads_node(node_dict) for node_dict in assay_graph_dict["nodes"]]
         assay_graph.add_nodes(nodes)
@@ -2995,26 +2996,33 @@ class StudyDesignFactory(object):
         for i, permutation in enumerate(treatment_permutations):
             counter = 0
             arm_map = []
+
             if screen_map:
-                arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
-                                          elements=[screen_map[0]]), screen_map[1]])
+                study_cell = StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
+                                       elements=[screen_map[0]])
+                arm_map.append([study_cell, screen_map[1]])
                 counter += 1
             if run_in_map:
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
-                                          elements=[run_in_map[0]]), run_in_map[1]])
+                                          elements=[run_in_map[0]]),
+                                run_in_map[1]])
                 counter += 1
             for j, treatment in enumerate(permutation):
                 sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
-                                          elements=[treatment]), sa_plan])
+                                          elements=[treatment]),
+                                sa_plan])
                 counter += 1
                 if washout_map and j < len(permutation) - 1:  # do not add a washout after the last treatment cell
                     arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
-                                              elements=[washout_map[0]]), washout_map[1]])
+                                              elements=[washout_map[0]]),
+                                    washout_map[1]])
                     counter += 1
             if follow_up_map:
                 arm_map.append([StudyCell('ARM_{0}_CELL_{1}'.format(str(i).zfill(2), str(counter).zfill(2)),
-                                          elements=[follow_up_map[0]]), follow_up_map[1]])
+                                          elements=[follow_up_map[0]]),
+                                follow_up_map[1]])
+
             group_size = group_sizes if type(group_sizes) == int else group_sizes[i]
             arm = StudyArm('ARM_{0}'.format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)

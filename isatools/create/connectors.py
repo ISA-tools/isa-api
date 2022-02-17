@@ -237,7 +237,7 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
             prepared_nodes = {}
             for candidate_param_name, param in node.items():
                 # if it is a special key (e.g."#replicates") leave it alone
-                if candidate_param_name[0] == '#' and not isinstance(param, list):
+                if candidate_param_name[0] == '#':
                     prepared_nodes[candidate_param_name] = param['value']
                 else:
                     if not param["values"]:

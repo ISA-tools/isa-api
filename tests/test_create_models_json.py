@@ -257,7 +257,8 @@ class BaseTestCase(unittest.TestCase):
             source_characteristics=self.test_source_characteristics_00,
             group_size=10,
             arm_map=OrderedDict([
-                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_screen, None),
+                (self.cell_run_in, None),
                 (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
                 (self.cell_washout_00, self.sample_assay_plan_for_washout),
                 (self.cell_single_treatment_01, self.sample_assay_plan_for_treatments),
@@ -270,7 +271,8 @@ class BaseTestCase(unittest.TestCase):
             source_characteristics=self.test_source_characteristics_01,
             group_size=30,
             arm_map=OrderedDict([
-                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_screen, None),
+                (self.cell_run_in, None),
                 (self.cell_single_treatment_00, self.sample_assay_plan_for_treatments),
                 (self.cell_washout_00, self.sample_assay_plan_for_washout),
                 (self.cell_single_treatment_biological, self.sample_assay_plan_for_treatments),
@@ -283,7 +285,8 @@ class BaseTestCase(unittest.TestCase):
             source_characteristics=self.test_source_characteristics_02,
             group_size=24,
             arm_map=OrderedDict([
-                (self.cell_screen, None), (self.cell_run_in, None),
+                (self.cell_screen, None),
+                (self.cell_run_in, None),
                 (self.cell_single_treatment_diet, self.sample_assay_plan_for_treatments),
                 (self.cell_washout_00, self.sample_assay_plan_for_washout),
                 (self.cell_single_treatment_radiological, self.sample_assay_plan_for_treatments),
