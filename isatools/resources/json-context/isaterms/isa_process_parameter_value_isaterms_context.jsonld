@@ -1,20 +1,20 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "ParameterValue": "isa:parameter_value",
+    "ParameterValue": "isaterms:parameter_value",
     "category": {
-        "@id":"isa:has_part",
-        "@type": "isa:parameter"
+        "@id":"isaterms:has_part",
+        "@type": "isaterms:parameter"
     },
       "value": {
-      "@id": "isa:has_value",
+      "@id": "isaterms:has_value",
       "@type" : "xsd:string"
     },
      "unit": {
-          "@id": "isa:has_value" ,
-          "@type" : "isa:unit"
+          "@id": "isaterms:has_value" ,
+          "@type" : "isaterms:unit"
     }
   }
 }
