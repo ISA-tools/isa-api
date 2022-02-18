@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ProtocolParameter": "sdo:PropertyValue",
+
+    "parameterName": {
+      "@id":"sdo:name",
+      "@type":  "sdo:Text"
+    },
+    "type" : {
+        "@id": "sdo:hasCategoryCode",
+        "@type": "sdo:DefinedTerm"
+    },
+
+  "comments": {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+  }
+}
+

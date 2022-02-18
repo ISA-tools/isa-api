@@ -1,0 +1,378 @@
+{
+    "comments": [],
+    "description": "this is test to understand the conditions under which ISA-API will serialize or not serialize a Source entity declared but not used in a workflow. Note: while the python ISA-API does not serialize in the Tab format, the information is available from ISA-JSON.",
+    "identifier": "BRAPI-test-unused-source",
+    "ontologySourceReferences": [],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "assays": [
+                {
+                    "characteristicCategories": [],
+                    "comments": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/-4844619280",
+                            "comments": [],
+                            "name": "dummy.txt",
+                            "type": ""
+                        }
+                    ],
+                    "filename": "a_assay-test.txt",
+                    "materials": {
+                        "otherMaterials": [],
+                        "samples": [
+                            {
+                                "@id": "#sample/4844418528",
+                                "characteristics": [],
+                                "comments": [],
+                                "factorValues": [],
+                                "name": "SBJ2"
+                            }
+                        ]
+                    },
+                    "measurementType": {
+                        "@id": "#a4b9a4d6-3ff4-4177-90e0-7887d0dd631f",
+                        "annotationValue": "phenotyping",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/4844558560",
+                            "comments": [],
+                            "date": "2021-07-21",
+                            "executesProtocol": {
+                                "@id": "#4844418432"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#source/4844420400"
+                                }
+                            ],
+                            "name": "",
+                            "nextProcess": {
+                                "@id": "#process/4844617984"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#sample/4844418528"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Philippe"
+                        },
+                        {
+                            "@id": "#process/4844617984",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#4844558320"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/4844504112"
+                                }
+                            ],
+                            "name": "",
+                            "outputs": [
+                                {
+                                    "@id": "#data/-4844619280"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Philippe",
+                            "previousProcess": {
+                                "@id": "#process/4844558560"
+                            }
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "@id": "#0029124a-476d-4791-99e6-cf28e035e3d7",
+                        "annotationValue": "",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [],
+            "comments": [],
+            "description": "testing if the python ISA-API supports unusued Sources in ISA-Tab serialization",
+            "factors": [],
+            "filename": "s_prs_test.txt",
+            "identifier": "PRS",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [
+                    {
+                        "@id": "#sample/4844504112",
+                        "characteristics": [],
+                        "comments": [],
+                        "factorValues": [],
+                        "name": "SBJ0_sample1"
+                    },
+                    {
+                        "@id": "#sample/4844420352",
+                        "characteristics": [],
+                        "comments": [],
+                        "factorValues": [],
+                        "name": "SBJ1_sample1"
+                    },
+                    {
+                        "@id": "#sample/4844504160",
+                        "characteristics": [],
+                        "comments": [],
+                        "factorValues": [],
+                        "name": "SBJ1_sample2"
+                    },
+                    {
+                        "@id": "#sample/4844418528",
+                        "characteristics": [],
+                        "comments": [],
+                        "factorValues": [],
+                        "name": "SBJ2"
+                    }
+                ],
+                "sources": [
+                    {
+                        "@id": "#source/4484635712",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#fcda1090-d80e-4c1e-b41c-7fb5dc4dc318"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#516a4286-d949-4139-87be-12c14a1c0758",
+                                    "annotationValue": "Homo Sapiens",
+                                    "comments": [],
+                                    "termAccession": "http://purl.bioontology.org/ontology/NCBITAXON/9606",
+                                    "termSource": "NCBITaxon"
+                                }
+                            }
+                        ],
+                        "comments": [],
+                        "name": "human individual-0"
+                    },
+                    {
+                        "@id": "#source/4484634896",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#fcda1090-d80e-4c1e-b41c-7fb5dc4dc318"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#516a4286-d949-4139-87be-12c14a1c0758",
+                                    "annotationValue": "Homo Sapiens",
+                                    "comments": [],
+                                    "termAccession": "http://purl.bioontology.org/ontology/NCBITAXON/9606",
+                                    "termSource": "NCBITaxon"
+                                }
+                            }
+                        ],
+                        "comments": [],
+                        "name": "human individual-1"
+                    },
+                    {
+                        "@id": "#source/4844420400",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#fcda1090-d80e-4c1e-b41c-7fb5dc4dc318"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#516a4286-d949-4139-87be-12c14a1c0758",
+                                    "annotationValue": "Homo Sapiens",
+                                    "comments": [],
+                                    "termAccession": "http://purl.bioontology.org/ontology/NCBITAXON/9606",
+                                    "termSource": "NCBITaxon"
+                                }
+                            }
+                        ],
+                        "comments": [],
+                        "name": "human individual-2"
+                    }
+                ]
+            },
+            "people": [
+                {
+                    "address": "",
+                    "affiliation": "OeRC",
+                    "comments": [],
+                    "email": "prs@hotmail.com",
+                    "fax": "",
+                    "firstName": "Philippe",
+                    "lastName": "Rocca-Serra",
+                    "midInitials": "T",
+                    "phone": "",
+                    "roles": []
+                }
+            ],
+            "processSequence": [
+                {
+                    "@id": "#process/4844557792",
+                    "comments": [],
+                    "date": "",
+                    "executesProtocol": {
+                        "@id": "#4844418432"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/4484635712"
+                        }
+                    ],
+                    "name": "",
+                    "outputs": [
+                        {
+                            "@id": "#sample/4844504112"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": ""
+                },
+                {
+                    "@id": "#process/4844558512",
+                    "comments": [],
+                    "date": "2021-07-21",
+                    "executesProtocol": {
+                        "@id": "#4844418432"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/4484634896"
+                        }
+                    ],
+                    "name": "",
+                    "outputs": [
+                        {
+                            "@id": "#sample/4844420352"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Philippe"
+                },
+                {
+                    "@id": "#process/4844557888",
+                    "comments": [],
+                    "date": "2021-07-21",
+                    "executesProtocol": {
+                        "@id": "#4844418432"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/4484634896"
+                        }
+                    ],
+                    "name": "",
+                    "outputs": [
+                        {
+                            "@id": "#sample/4844504160"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Philippe"
+                },
+                {
+                    "@id": "#process/4844558560",
+                    "comments": [],
+                    "date": "2021-07-21",
+                    "executesProtocol": {
+                        "@id": "#4844418432"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/4844420400"
+                        }
+                    ],
+                    "name": "",
+                    "nextProcess": {
+                        "@id": "#process/4844617984"
+                    },
+                    "outputs": [
+                        {
+                            "@id": "#sample/4844418528"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Philippe"
+                },
+                {
+                    "@id": "#process/4844617984",
+                    "comments": [],
+                    "date": "",
+                    "executesProtocol": {
+                        "@id": "#4844558320"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#sample/4844504112"
+                        }
+                    ],
+                    "name": "",
+                    "outputs": [
+                        {
+                            "@id": "#data/-4844619280"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Philippe",
+                    "previousProcess": {
+                        "@id": "#process/4844558560"
+                    }
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "#4844418432",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "sample collection",
+                    "parameters": [],
+                    "protocolType": {
+                        "@id": "#bf1bc35f-2b90-4a91-a5d2-585ddb608fcd",
+                        "annotationValue": "sample collection",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#4844558320",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "assay-on-source",
+                    "parameters": [],
+                    "protocolType": {
+                        "@id": "#ae6c07db-2b7b-4601-8f8d-60b8fd92ae39",
+                        "annotationValue": "data acquisition",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "Unused Sources",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": "BRAPI-test-unused-source"
+}

@@ -1,0 +1,99 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	CHEBI	EFO	OBI	PATO	NCIBTaxon
+Term Source File					
+Term Source Version					
+Term Source Description	Chemical Entity of Biological Interest	Experimental Factor Ontology	Ontology for Biomedical Investigations	Phenotype and Trait Ontology	NCBI Taxonomy
+INVESTIGATION
+Investigation Identifier	
+Investigation Title	
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	BII-S-9-synth
+Study Title	cross-omics synthetic experiment
+Study Description	cross-omics experiment testing ISA-API support for sample aliquoting at study or assay level
+Study Submission Date	15/08/2021
+Study Public Release Date	15/08/2021
+Study File Name	s_BII-S-9-synthesic.txt
+Comment[SRA Broker Name]	OXFORD
+Comment[SRA Center Name]	OXFORD
+Comment[SRA Center Project Name]	OXFORD
+Comment[SRA Lab Name]	Oxford e-Research Centre
+Comment[SRA Submission Action]	ADD
+Comment[Study Funding Agency]	
+Comment[Study Grant Number]	
+STUDY DESIGN DESCRIPTORS
+Study Design Type	intervention design
+Study Design Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000115
+Study Design Type Term Source REF	OBI
+STUDY PUBLICATIONS
+Study PubMed ID	18725995
+Study Publication DOI	10.1371/journal.pone.0003042
+Study Publication Author List	Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I.
+Study Publication Title	Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.
+Study Publication Status	indexed in PubMed
+Study Publication Status Term Accession Number	
+Study Publication Status Term Source REF	
+STUDY FACTORS
+Study Factor Name	compound	dose	collection time
+Study Factor Type	chemical substance	dose	time
+Study Factor Type Term Accession Number	http://purl.obolibrary.org/obo/CHEBI_59999	http://www.ebi.ac.uk/efo/EFO_0000428	http://purl.obolibrary.org/obo/PATO_0000165
+Study Factor Type Term Source REF	CHEBI	EFO	PATO
+STUDY ASSAYS
+Study Assay File Name	a_gilbert-assay-Gx.txt
+Study Assay Measurement Type	metagenome sequencing
+Study Assay Measurement Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0002623
+Study Assay Measurement Type Term Source REF	OBI
+Study Assay Technology Type	nucleotide sequencing
+Study Assay Technology Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000626
+Study Assay Technology Type Term Source REF	OBI
+Study Assay Technology Platform	
+STUDY PROTOCOLS
+Study Protocol Name	environmental material collection - standard procedure 1	nucleic acid extraction	sample aliquoting - standard procedure 3	genomic DNA extraction - standard procedure 4	reverse transcription - standard procedure 5	library construction	nucleic acid sequencing	sequence analysis - standard procedure 7
+Study Protocol Type	sample collection	nucleic acid extraction	aliquoting	nucleic acid extraction	reverse transcription	library construction	nucleic acid sequencing	data transformation
+Study Protocol Type Term Accession Number								
+Study Protocol Type Term Source REF								
+Study Protocol Description	Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.	Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.	splitting collected samples into aliquots	superscript+random hexamer primer			1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.	
+Study Protocol URI								
+Study Protocol Version								
+Study Protocol Parameters Name	filter pore size					library strategy;library layout;library selection	sequencing instrument	
+Study Protocol Parameters Name Term Accession Number						;;		
+Study Protocol Parameters Name Term Source REF						;;		
+Study Protocol Components Name								
+Study Protocol Components Type								
+Study Protocol Components Type Term Accession Number								
+Study Protocol Components Type Term Source REF								
+STUDY CONTACTS
+Study Person Last Name	Durand
+Study Person First Name	Rex
+Study Person Mid Initials	
+Study Person Email	rex.durand@lhcl.ac.uk
+Study Person Phone	
+Study Person Fax	
+Study Person Address	Nevsky perspective, Bournemouth, United Kingdom
+Study Person Affiliation	LHC Laboratory
+Study Person Roles	principal investigator role;SRA Inform On Status;SRA Inform On Error
+Study Person Roles Term Accession Number	;;
+Study Person Roles Term Source REF	;;
+Comment[Study Person REF]	

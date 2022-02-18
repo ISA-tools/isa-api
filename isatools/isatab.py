@@ -10,7 +10,6 @@ import csv
 import glob
 import io
 import json
-import yaml
 import logging
 import math
 import os
@@ -25,7 +24,7 @@ import iso8601
 import networkx as nx
 import numpy as np
 import pandas as pd
-# from pandas.io.parsers import ParserError
+
 from pandas.errors import ParserError
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
@@ -176,7 +175,7 @@ class TransposedTabParser(object):
             if not isinstance(tab_options, dict):
                 raise TypeError(
                     'tab_options must be dict, not {tab_options_type}'
-                        .format(tab_options_type=type(tab_options))
+                    .format(tab_options_type=type(tab_options))
                 )
             self.log_level = log_level
 
@@ -304,7 +303,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
     def _build_ontology_reference_section(ontologies=list()):
         """Build ontology reference section DataFrame
 
-        :param prefix: Section prefix - ''
         :param ontologies: List of Ontology objects describing the section's
         Ontology Resource
         :return: DataFrame corresponding to the ONTOLOGY REFERENCE section
@@ -318,11 +316,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for ontology in ontologies:
-            for comment in ontology.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in ontology.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -349,8 +347,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             #     except IndexError:
             #         ontology_source_references_df_row.append('')
             common_names = []
-            for comment in ontology.comments:
-                common_names.append(comment.name)
+            for current_comment in ontology.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -392,11 +390,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for contact in contacts:
-            for comment in contact.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in contact.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -428,8 +426,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             #     except IndexError:
             #         contacts_df_row.append('')
             common_names = []
-            for comment in contact.comments:
-                common_names.append(comment.name)
+            for current_comment in contact.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -466,11 +464,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for publication in publications:
-            for comment in publication.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in publication.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -514,8 +512,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
             # here, given an object, we create a list comments fields  associated to it
 
             common_names = []
-            for comment in publication.comments:
-                common_names.append(comment.name)
+            for current_comment in publication.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -535,7 +533,6 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     def _build_protocols_section_df(protocols=list()):
         """Build Protocol section DataFrame
-        :param prefix: Section prefix - Investigation or Study
         :param protocols: List of Publications objects describing the
         section's protocols
         :return: DataFrame corresponding to the PROTOCOLS section
@@ -561,11 +558,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for protocol in protocols:
-            for comment in protocol.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in protocol.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -614,7 +611,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                     component.component_type.term_accession + ';'
                 component_types_source_refs += \
                     component.component_type.term_source.name \
-                        if component.component_type.term_source else '' + ';'
+                    if component.component_type.term_source else '' + ';'
             if len(protocol.components) > 0:
                 component_names = component_names[:-1]
                 component_types = component_types[:-1]
@@ -647,8 +644,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
             # here, given an object, we create a list comments fields  associated to it
             common_names = []
-            for comment in protocol.comments:
-                common_names.append(comment.name)
+            for current_comment in protocol.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -688,11 +685,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for assay in assays:
-            for comment in assay.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in assay.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -724,8 +721,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
             # here, given an object, we create a list comments fields  associated to it
             common_names = []
-            for comment in assay.comments:
-                common_names.append(comment.name)
+            for current_comment in assay.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -759,11 +756,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         seen_comments = {}
         # step1: going over each object and pulling associated comments to build a full list of those
         for factor in factors:
-            for comment in factor.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in factor.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
 
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
@@ -797,8 +794,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
             # here, given an object, we create a list comments fields  associated to it
             common_names = []
-            for comment in factor.comments:
-                common_names.append(comment.name)
+            for current_comment in factor.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -825,11 +822,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
         # step1: going over each object and pulling associated comments to build a full list of those
         for design_descriptor in design_descriptors:
-            for comment in design_descriptor.comments:
-                if comment.name in seen_comments.keys():
-                    seen_comments[comment.name].append(comment.value)
+            for current_comment in design_descriptor.comments:
+                if current_comment.name in seen_comments.keys():
+                    seen_comments[current_comment.name].append(current_comment.value)
                 else:
-                    seen_comments[comment.name] = [comment.value]
+                    seen_comments[current_comment.name] = [current_comment.value]
         # step2: based on the list of unique Comments, create the relevant ISA headers
         for comment_name in seen_comments.keys():
             study_design_descriptors_df_cols.append('Comment[' + comment_name + ']')
@@ -848,8 +845,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
             # here, given an object, we create a list comments fields  associated to it
             common_names = []
-            for comment in design_descriptor.comments:
-                common_names.append(comment.name)
+            for current_comment in design_descriptor.comments:
+                common_names.append(current_comment.name)
 
             # now check which comments are associated to it out of the full possible range of Comments
             # if a match is found, get the value and add it to the record
@@ -1078,8 +1075,7 @@ def _get_start_end_nodes(G):
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if process.prev_process is None:
-            for material in [
-                m for m in process.inputs if not isinstance(m, DataFile)]:
+            for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
                 start_nodes.append(material)
         outputs_no_data = [
             m for m in process.outputs if not isinstance(m, DataFile)]
@@ -1193,45 +1189,28 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
-        print("GRAPH:", "|", study_obj)
-        print("STUDY:", study_obj.title, "||", len(study_obj.sources), study_obj.characteristic_categories)
-        for src in study_obj.sources:
-            print("STUDY-SOURCES: ", src)
 
-        s_graph = study_obj.graph
-        n=0
-        counter=0
-        for n in s_graph.nodes():
-            if isinstance(s_graph.indexes[n], Source):
-                counter = counter+1
-                print(n, s_graph.indexes[n])
-            else:
-                print(n, s_graph.indexes[n])
-        print("COUNTER of SOURCES: ", counter)
+        if study_obj.graph is None:
 
-        if s_graph is None:
             break
         protrefcount = 0
         protnames = dict()
 
-        def flatten(l):
-            return [item for sublist in l for item in sublist]
+        def flatten(current_list):
+            return [item for sublist in current_list for item in sublist]
 
         columns = []
 
-        # start_nodes, end_nodes = _get_start_end_nodes(s_graph)
+        # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(
-            s_graph,
-            [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
-        log.warning(s_graph.nodes())
-
-        print("PATHS:", len(paths), len(s_graph.nodes()))
-
+            study_obj.graph,
+            [x for x in study_obj.graph.nodes() if isinstance(study_obj.graph.indexes[x], Source)])
+        log.warning(study_obj.graph.nodes())
         sample_in_path_count = 0
-        longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
-        print("LONGEST:", len(longest_path))
+        longest_path = _longest_path_and_attrs(paths, study_obj.graph.indexes)
+
         for node_index in longest_path:
-            node = s_graph.indexes[node_index]
+            node = study_obj.graph.indexes[node_index]
             if isinstance(node, Source):
                 print(node.name)
                 olabel = "Source Name"
@@ -1290,7 +1269,7 @@ def write_study_table_files(inv_obj, output_dir):
 
             sample_in_path_count = 0
             for node_index in path:
-                node = s_graph.indexes[node_index]
+                node = study_obj.graph.indexes[node_index]
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
@@ -1416,31 +1395,36 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
     protocol_types_dict = load_protocol_types_info()
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
-            a_graph = assay_obj.graph
-            if a_graph is None:
+            if assay_obj.graph is None:
                 break
             protrefcount = 0
             protnames = dict()
 
-            def flatten(l):
-                return [item for sublist in l for item in sublist]
+            def flatten(current_list):
+                return [item for sublist in current_list for item in sublist]
 
             columns = []
 
-            # start_nodes, end_nodes = _get_start_end_nodes(a_graph)
-            paths = _all_end_to_end_paths(
-                a_graph, [x for x in a_graph.nodes()
-                          if isinstance(a_graph.indexes[x], Sample)])
+            # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+
+            paths = _all_end_to_end_paths(assay_obj.graph,
+                                          [x for x in assay_obj.graph.nodes() if isinstance(assay_obj.graph.indexes[x],
+                                                                                            Sample)]
+                                          )
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
-            if _longest_path_and_attrs(paths, a_graph.indexes) is None:
+            if _longest_path_and_attrs(paths, assay_obj.graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
-            for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
-                node = a_graph.indexes[node_index]
+
+            sample_in_path_count = 0
+            for node_index in _longest_path_and_attrs(paths, assay_obj.graph.indexes):
+                node = assay_obj.graph.indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
+                    # olabel = "Sample Name.{}".format(sample_in_path_count)
+                    # sample_in_path_count += 1
                     columns.append(olabel)
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -1518,7 +1502,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     df_dict[k].extend([""])
 
                 for node_index in path:
-                    node = a_graph.indexes[node_index]
+                    node = assay_obj.graph.indexes[node_index]
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(
                             node.executes_protocol.name
@@ -1560,6 +1544,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
+                        # olabel = "Sample Name.{}".format(sample_in_path_count)
+                        # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
@@ -1726,10 +1712,9 @@ def get_characteristic_columns(label, c):
 def get_fv_columns(label, fv):
     """Generates Factor Value columns for a given material
 
-    :param fv: Factor Value
+    :param fv: The Factor Value object of interest
     :param label: Header label needed for the material type,
     e.g. "Sample Name"
-    :param c: The Factor Value object of interest
     :return: List of column labels
     """
     columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
@@ -1792,7 +1777,7 @@ def get_pv_columns(label, pv):
     """Generates Parameter Value columns for a given process
 
     :param label: Header label needed for the process
-    :param c: The Parameter Value object of interest
+    :param pv: The Parameter Value object of interest
     :return: List of column labels
     """
     columns = None
@@ -1970,8 +1955,7 @@ def check_utf8(fp):
                 "code": 10
             })
             log.warning("File should be UTF-8 encoding but found it is '{0}' "
-                        "encoding with {1} confidence".format(
-                charset['encoding'], charset['confidence']))
+                        "encoding with {1} confidence".format(charset['encoding'], charset['confidence']))
             raise SystemError()
 
 
@@ -2234,8 +2218,7 @@ def check_dois(i_df):
                 log.warning("(W) DOI {} does not conform to DOI format"
                             .format(doi_str))
 
-    for doi in i_df['i_publications'][
-        'Investigation Publication DOI'].tolist():
+    for doi in i_df['i_publications']['Investigation Publication DOI'].tolist():
         check_doi(doi)
     for i, study_df in enumerate(i_df['s_publications']):
         for doi in study_df['Study Publication DOI'].tolist():
@@ -2311,8 +2294,7 @@ def check_protocol_parameter_names(i_df):
                             or 'Unnamed: ' in protocol_parameter_name:
                         validator_warnings.append({
                             "message": "Protocol Parameter missing name",
-                            "supplemental": "Protocol Parameter at pos={}"
-                                .format(i),
+                            "supplemental": "Protocol Parameter at pos={}".format(i),
                             "code": 1011
                         })
                         log.warning("(W) A Protocol Parameter used in "
@@ -2382,15 +2364,13 @@ def check_table_files_read(i_df, dir_context):
             except FileNotFoundError:
                 validator_errors.append({
                     "message": "Missing study tab file(s)",
-                    "supplemental": "Study File {} does not appear to exist"
-                        .format(study_filename),
+                    "supplemental": "Study File {} does not appear to exist".format(study_filename),
                     "code": 6
                 })
                 log.error("(E) Study File {} does not appear to exist"
                           .format(study_filename))
         for j, assay_filename in enumerate(i_df['s_assays'][i][
-                                               'Study Assay File Name']
-                                                   .tolist()):
+                                               'Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(os.path.join(
@@ -2502,14 +2482,12 @@ def check_protocol_usage(i_df, dir_context):
                             "message": "Missing Protocol declaration",
                             "supplemental": "protocols in study file {} are "
                                             "not declared in the "
-                                            "investigation file: {}".format(
-                                study_filename, diff),
+                                            "investigation file: {}".format(study_filename, diff),
                             "code": 1007
                         })
                         log.error(
                             "(E) Some protocols used in a study file {} are "
-                            "not declared in the investigation file: {}"
-                                .format(study_filename, diff))
+                            "not declared in the investigation file: {}".format(study_filename, diff))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
@@ -2520,9 +2498,7 @@ def check_protocol_usage(i_df, dir_context):
                     with utf8_text_file_open(
                             os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
-                        for protocol_ref_col in [
-                            i for i in assay_df.columns
-                            if i.startswith('Protocol REF')]:
+                        for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(
                                 assay_df[protocol_ref_col])
                         protocol_refs_used = set(
@@ -2533,8 +2509,7 @@ def check_protocol_usage(i_df, dir_context):
                                 "message": "Missing Protocol declaration",
                                 "supplemental": "protocols in study file {} "
                                                 "are not declared in the "
-                                                "investigation file: {}"
-                                    .format(study_filename, diff),
+                                                "investigation file: {}".format(study_filename, diff),
                                 "code": 1007
                             })
                             log.error("(E) Some protocols used in an assay "
@@ -2551,9 +2526,7 @@ def check_protocol_usage(i_df, dir_context):
                 with utf8_text_file_open(
                         os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
-                    for protocol_ref_col in [
-                        i for i in study_df.columns
-                        if i.startswith('Protocol REF')]:
+                    for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(
                             study_df[protocol_ref_col])
             except FileNotFoundError:
@@ -2565,9 +2538,7 @@ def check_protocol_usage(i_df, dir_context):
                     with utf8_text_file_open(os.path.join(
                             dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
-                        for protocol_ref_col in [
-                            i for i in assay_df.columns
-                            if i.startswith('Protocol REF')]:
+                        for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(
                                 assay_df[protocol_ref_col])
                 except FileNotFoundError:
@@ -2577,8 +2548,7 @@ def check_protocol_usage(i_df, dir_context):
             validator_warnings.append({
                 "message": "Protocol declared but not used",
                 "supplemental": "protocols declared in the file {} are not "
-                                "used in any assay file: {}".format(
-                    study_filename, diff),
+                                "used in any assay file: {}".format(study_filename, diff),
                 "code": 1019
             })
             log.warning(
@@ -2618,6 +2588,9 @@ def load_table(fp):
             elif 'Factor Value' in label:
                 new_label = 'Factor Value[{val}]'.format(val=val)
             new_labels.append(new_label)
+        elif label == "Material Type":
+            new_label = 'Characteristics[Material Type]'
+            new_labels.append(new_label)
         else:
             new_labels.append(label)
     df.columns = new_labels
@@ -2640,8 +2613,7 @@ def load_table_checks(fp):
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
                            'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name'
-                                                                              'Raw Spectral Data File',
-                           'Labeled Extract Name',
+                           'Raw Spectral Data File', 'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',
                            'Protein Assignment File',
@@ -2666,8 +2638,7 @@ def load_table_checks(fp):
                             .format(os.path.basename(fp.name), column))
                 validator_warnings.append({
                     "message": "Missing name in Comment[] label",
-                    "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_CHARACTERISTICS.match(column):
@@ -2676,8 +2647,7 @@ def load_table_checks(fp):
                             .format(os.path.basename(fp.name), column))
                 validator_warnings.append({
                     "message": "Missing name in Characteristics[] label",
-                    "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_PARAMETER_VALUE.match(column):
@@ -2686,8 +2656,7 @@ def load_table_checks(fp):
                             .format(os.path.basename(fp.name), column))
                 validator_warnings.append({
                     "message": "Missing name in Parameter Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
         if _RX_FACTOR_VALUE.match(column):
@@ -2696,8 +2665,7 @@ def load_table_checks(fp):
                             .format(os.path.basename(fp.name), column))
                 validator_warnings.append({
                     "message": "Missing name in Factor Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name"
-                        .format(os.path.basename(fp.name), column),
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
                 })
     norm_columns = list()
@@ -2737,8 +2705,7 @@ def load_table_checks(fp):
                         and not _RX_COMMENT.match(col):
                     log.error("(E) Expected only Characteristics, "
                               "Factor Values or Comments following {} "
-                              "columns but found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number',
@@ -2748,8 +2715,7 @@ def load_table_checks(fp):
                         and not _RX_PARAMETER_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
                     log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "column. Found {} at offset {}".format(prop_name, col, x + 1))
         elif prop_name == 'Extract Name':
             if len(object_columns) > 1:
                 log.error(
@@ -2764,12 +2730,10 @@ def load_table_checks(fp):
                                        'Term Accession Number']:
                             log.error("(E) Unexpected column heading "
                                       "following {} column. Found {} at "
-                                      "offset {}".format(
-                                prop_name, col, x + 1))
+                                      "offset {}".format(prop_name, col, x + 1))
                 else:
                     log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(
-                        prop_name, object_columns[1:], 2))
+                              "column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
             else:
                 log.error("Expected Label column after Labeled Extract Name "
                           "but none found")
@@ -2781,8 +2745,7 @@ def load_table_checks(fp):
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     log.error("(E) Expected only Comments following {} "
-                              "columns but found {} at offset {}".format(
-                        prop_name, col, x + 1))
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ['Term Source REF', 'Term Accession Number']:
@@ -2820,8 +2783,7 @@ def check_study_factor_usage(i_df, dir_context):
                     if not study_factors_used.issubset(study_factors_declared):
                         log.error(
                             "(E) Some factors used in an study file {} are "
-                            "not declared in the investigation file: {}"
-                                .format(study_filename, list(
+                            "not declared in the investigation file: {}".format(study_filename, list(
                                 study_factors_used - study_factors_declared)))
             except FileNotFoundError:
                 pass
@@ -2844,10 +2806,10 @@ def check_study_factor_usage(i_df, dir_context):
                                 study_factors_declared):
                             log.error("(E) Some factors used in an assay file "
                                       "{} are not declared in the "
-                                      "investigation file: {}".format(
-                                assay_filename, list(
-                                    study_factors_used -
-                                    study_factors_declared)))
+                                      "investigation file: {}".format(assay_filename,
+                                                                      list(study_factors_used -
+                                                                           study_factors_declared))
+                                      )
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
@@ -2902,7 +2864,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             protocol_parameters_declared = protocol_parameters_declared.union(
                 set(parameters_list))
         protocol_parameters_declared = protocol_parameters_declared - \
-                                       {''}  # empty string is not a valid protocol parameter
+            {''}  # empty string is not a valid protocol parameter
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename != '':
             try:
@@ -2922,10 +2884,9 @@ def check_protocol_parameter_usage(i_df, dir_context):
                             protocol_parameters_declared):
                         log.error("(E) Some protocol parameters referenced in "
                                   "an study file {} are not declared in the "
-                                  "investigation file: {}".format(
-                            study_filename, list(
-                                protocol_parameters_used
-                                - protocol_parameters_declared)))
+                                  "investigation file: {}".format(study_filename,
+                                                                  list(protocol_parameters_used
+                                                                       - protocol_parameters_declared)))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
@@ -2948,10 +2909,9 @@ def check_protocol_parameter_usage(i_df, dir_context):
                             log.error("(E) Some protocol parameters "
                                       "referenced in an assay file {} are "
                                       "not declared in the investigation "
-                                      "file: {}".format(
-                                assay_filename, list(
-                                    protocol_parameters_used
-                                    - protocol_parameters_declared)))
+                                      "file: {}".format(assay_filename,
+                                                        list(protocol_parameters_used
+                                                             - protocol_parameters_declared)))
                 except FileNotFoundError:
                     pass
         # now collect all protocol parameters in all assays to compare to
@@ -3034,8 +2994,7 @@ def check_term_source_refs_in_investigation(i_df):
         if len(diff) > 0:
             validator_warnings.append({
                 "message": "Missing Term Source",
-                "supplemental": "Ontology sources missing {}"
-                    .format(list(diff)),
+                "supplemental": "Ontology sources missing {}".format(list(diff)),
                 "code": 3009
             })
             log.warning("(W) In {} one or more of {} has not been declared in "
@@ -3045,10 +3004,8 @@ def check_term_source_refs_in_investigation(i_df):
 
     i_publication_status_term_source_ref = [
         i for i in i_df['i_publications'][
-            'Investigation Publication Status Term Source REF']
-            .tolist() if i != '']
-    diff = set(i_publication_status_term_source_ref) - \
-           set(ontology_sources_list)
+            'Investigation Publication Status Term Source REF'].tolist() if i != '']
+    diff = set(i_publication_status_term_source_ref) - set(ontology_sources_list)
     if len(diff) > 0:
         validator_warnings.append({
             "message": "Missing Term Source",
@@ -3057,8 +3014,7 @@ def check_term_source_refs_in_investigation(i_df):
         })
         log.warning("(W) Investigation Publication Status Term Source REF {} "
                     "has not been declared in ONTOLOGY SOURCE "
-                    "REFERENCE section".format(
-            i_publication_status_term_source_ref))
+                    "REFERENCE section".format(i_publication_status_term_source_ref))
     i_person_roles_term_source_ref = [
         i for i in i_df['i_contacts'][
             'Investigation Person Roles Term Source REF'].tolist() if i != '']
@@ -3096,6 +3052,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
     """Used for rules 3007 and 3009
 
     :param i_df: An investigation DataFrame
+    :param dir_context:
     :return: None
     """
 
@@ -3145,11 +3102,11 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                     "and row {} in {} not "
                                                     "declared in ontology "
                                                     "sources {}".format(
-                                            row + 1,
-                                            object_index[x],
-                                            y + 1,
-                                            study_filename,
-                                            list(oslist)))
+                                                                        row + 1,
+                                                                        object_index[x],
+                                                                        y + 1,
+                                                                        study_filename,
+                                                                        list(oslist)))
                                 else:
                                     oslist = ontology_sources_list
                                     validator_warnings.append({
@@ -3160,23 +3117,23 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                         "row {} in {} not "
                                                         "declared in ontology "
                                                         "sources {}".format(
-                                            row + 1,
-                                            object_index[x],
-                                            y + 1,
-                                            study_filename,
-                                            list(oslist)),
-                                        "code": 3009
+                                                                            row + 1,
+                                                                            object_index[x],
+                                                                            y + 1,
+                                                                            study_filename,
+                                                                            list(oslist)),
+                                                        "code": 3009
                                     })
                                     log.warning("(W) Term Source REF {} at "
                                                 "column position {} and row "
                                                 "{} in {} not in declared "
                                                 "ontology sources {}"
-                                        .format(
-                                        row + 1,
-                                        object_index[x],
-                                        y + 1,
-                                        study_filename,
-                                        list(oslist)))
+                                                .format(
+                                                        row + 1,
+                                                        object_index[x],
+                                                        y + 1,
+                                                        study_filename,
+                                                        list(oslist)))
             except FileNotFoundError:
                 pass
             for j, assay_filename in enumerate(
@@ -3241,7 +3198,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                 "and row {} in {} not " \
                                                 "declared in ontology " \
                                                 "sources {}" \
-                                                    .format(
+                                                .format(
                                                     row + 1,
                                                     object_index[x],
                                                     y + 1, study_filename,
@@ -3258,7 +3215,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                 "column position {} and row "
                                                 "{} in {} not in declared "
                                                 "ontology sources {}"
-                                                    .format(
+                                                .format(
                                                     row + 1,
                                                     object_index[x],
                                                     y + 1, study_filename,
@@ -3309,9 +3266,9 @@ def load_config(config_dir):
         for k in configs.keys():
             log.debug("Loaded table configuration '{}' for measurement and "
                       "technology {}".format(
-                str(configs[k].get_isatab_configuration()
-                    [0].table_name),
-                str(k)))
+                                            str(configs[k].get_isatab_configuration()
+                                                [0].table_name),
+                                            str(k)))
     return configs
 
 
@@ -3334,14 +3291,14 @@ def check_measurement_technology_types(i_df, configs):
                         "message": "Measurement/technology type invalid",
                         "supplemental": "Measurement {}/technology {}, "
                                         "STUDY ASSAY.{}"
-                            .format(measurement_types[x], technology_types[x], i),
+                        .format(measurement_types[x], technology_types[x], i),
                         "code": 4002
                     })
                     log.error("(E) Could not load configuration for "
                               "measurement type '{}' and technology type '{}' "
                               "for STUDY ASSAY.{}'".format(
-                        measurement_types[x],
-                        technology_types[x], i))
+                                measurement_types[x],
+                                technology_types[x], i))
 
 
 def check_investigation_against_config(i_df, configs):
@@ -3370,7 +3327,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "{}.{} of investigation "
                                                     "file at column {} is "
                                                     "required".format(
-                                        col, i + 1, x + 1),
+                                                     col, i + 1, x + 1),
                                     "code": 4003
                                 })
                                 log.warning(
@@ -3385,7 +3342,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "of investigation file "
                                                     "at column {} is "
                                                     "required".format(
-                                        col, x + 1),
+                                                     col, x + 1),
                                     "code": 4003
                                 })
                                 log.warning(
@@ -3404,7 +3361,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "{}.{} of investigation "
                                                     "file at column {} is "
                                                     "required".format(
-                                        col, i + 1, x + 1),
+                                                     col, i + 1, x + 1),
                                     "code": 4003
                                 })
                                 log.warning(
@@ -3420,7 +3377,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "{} of investigation "
                                                     "file at column {} is "
                                                     "required".format(
-                                        col, x + 1),
+                                                     col, x + 1),
                                     "code": 4003
                                 })
                                 log.warning(
@@ -3483,8 +3440,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
     fields = [i.header for i in config.get_isatab_configuration()[
         0].get_field()]
     protocols = [(i.pos, i.protocol_type)
-                 for i in config.get_isatab_configuration()[0]
-                     .get_protocol_field()]
+                 for i in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
@@ -3495,7 +3451,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
                 "message": "The column order in assay table is not valid",
                 "supplemental": "Unexpected heading found. Expected {} but "
                                 "found {} at column number {}"
-                    .format(fields[x], object[1], object[0]),
+                .format(fields[x], object[1], object[0]),
                 "code": 4005
             })
             log.warning("(W) Unexpected heading found. Expected {} but "
@@ -3544,24 +3500,23 @@ def check_assay_table_against_config(s_df, config):
     fields = [i.header for i in config.get_isatab_configuration()[
         0].get_field()]
     protocols = [(i.pos, i.protocol_type)
-                 for i in config.get_isatab_configuration()[0]
-                     .get_protocol_field()]
+                 for i in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
     object_index = [i for i in object_index if i[1] in fields]
-    for x, object in enumerate(object_index):
-        if fields[x] != object[1]:
+    for x, current_object in enumerate(object_index):
+        if fields[x] != current_object[1]:
             validator_warnings.append({
                 "message": "The column order in assay table is not valid",
                 "supplemental": "Unexpected heading found. Expected {} but "
                                 "found {} at column number {}"
-                    .format(fields[x], object[1], object[0]),
+                .format(fields[x], current_object[1], current_object[0]),
                 "code": 4005
             })
             log.warning("(W) Unexpected heading found. Expected {} but found "
                         "{} at column number {}".format(
-                fields[x], object[1], object[0]))
+                         fields[x], current_object[1], current_object[0]))
 
 
 def cell_has_value(cell):
@@ -3607,7 +3562,7 @@ def check_assay_table_with_config(
                 "message": "A required column in assay table is not present",
                 "supplemental": "In {} the required column {} missing "
                                 "from column headings"
-                    .format(filename, required_field),
+                .format(filename, required_field),
                 "code": 4010
             })
             log.warning("(W) In {} the required column {} missing from "
@@ -3694,8 +3649,8 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                         config = configs[(lowered_mt, lowered_tt)]
                         log.debug("Checking assay file {} against default "
                                   "table configuration ({}, {})...".format(
-                            assay_filename, measurement_type,
-                            technology_type))
+                                    assay_filename, measurement_type,
+                                    technology_type))
                         check_assay_table_with_config(
                             df, config, assay_filename,
                             protocol_names_and_types)
@@ -3735,8 +3690,7 @@ def check_required_fields(table, cfg):
     :param cfg: A ISA Configuration object
     :return: None
     """
-    for fheader in [i.header for i in cfg.get_isatab_configuration()[
-        0].get_field() if i.is_required]:
+    for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
         found_field = [i for i in table.columns if i.lower() ==
                        fheader.lower()]
         if len(found_field) == 0:
@@ -3781,8 +3735,7 @@ def check_sample_names(study_sample_table, assay_tables=[]):
                         "supplemental": "{} is a Sample Name in {}, but it is "
                                         "not defined in the Study "
                                         "Sample File {}."
-                            .format(assay_sample, assay_table.filename,
-                                    study_sample_table.filename),
+                        .format(assay_sample, assay_table.filename, study_sample_table.filename),
                         "code": 1003
                     })
                     log.warning("(W) {} is a Sample Name in {}, but it is "
@@ -4038,9 +3991,8 @@ def check_protocol_fields(table, cfg, proto_map):
                 cright = crights[0]
             if cleft is not None and cright is not None:
                 cprotos = [i.protocol_type for i in
-                           cfg.get_isatab_configuration()[0]
-                               .get_protocol_field() if
-                           cleft.pos < i.pos and cright.pos > i.pos]
+                           cfg.get_isatab_configuration()[0].get_protocol_field()
+                           if cleft.pos < i.pos and cright.pos > i.pos]
                 fprotos_headers = [i for i in table.columns[
                                               table.columns.get_loc(cleft.header):table.columns.get_loc(
                                                   cright.header)] if
@@ -4057,8 +4009,7 @@ def check_protocol_fields(table, cfg, proto_map):
                             "supplemental": " Could not find protocol type "
                                             "for protocol name '{}', "
                                             "trying to validate "
-                                            "against name only".format(
-                                proto_name),
+                                            "against name only".format(proto_name),
                             "code": 1007
                         })
                         log.warning("(W) Could not find protocol type for "
@@ -4115,7 +4066,7 @@ def check_ontology_fields(table, cfg, tsrs):
         """
         if (cell_has_value(cell_value) and not cell_has_value(
                 source) and cell_has_value(acc)) or not cell_has_value(
-            cell_value):
+                cell_value):
             validator_warnings.append({
                 "message": "Missing Term Source REF in annotation or missing "
                            "Term Source Name",
@@ -4231,10 +4182,9 @@ def check_study_groups(table, filename, study_group_size_in_comment):
                             filename))
         validator_warnings.append({
             'message': 'Reported study group size does not match table'
-                .format(num_study_groups, filename),
+            .format(num_study_groups, filename),
             'supplemental': 'Study group size reported as {} but found {} '
-                            'in {}'.format(
-                study_group_size_in_comment, num_study_groups, filename),
+                            'in {}'.format(study_group_size_in_comment, num_study_groups, filename),
             'code': 5002
         })
         return False
@@ -4342,15 +4292,15 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                             log.warning("(W) There are some field value "
                                         "inconsistencies in {} against {} "
                                         "configuration".format(
-                                study_sample_table.filename,
-                                'Study Sample'))
+                                         study_sample_table.filename,
+                                         'Study Sample'))
                         log.info("Checking unit fields...")
                         if not check_unit_field(study_sample_table, config):
                             log.warning("(W) There are some unit value "
                                         "inconsistencies in {} against {} "
                                         "configuration".format(
-                                study_sample_table.filename,
-                                'Study Sample'))
+                                         study_sample_table.filename,
+                                         'Study Sample'))
                         log.info("Checking protocol fields...")
                         # Rule 4009
                         if not check_protocol_fields(
@@ -4359,8 +4309,8 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                             log.warning("(W) There are some protocol "
                                         "inconsistencies in {} against {} "
                                         "configuration".format(
-                                study_sample_table.filename,
-                                'Study Sample'))
+                                         study_sample_table.filename,
+                                         'Study Sample'))
                         log.info("Checking ontology fields...")
                         # Rule 3010
                         if not check_ontology_fields(
@@ -4369,8 +4319,8 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                         "annotation inconsistencies in {} "
                                         "against {} "
                                         "configuration".format(
-                                study_sample_table.filename,
-                                'Study Sample'))
+                                         study_sample_table.filename,
+                                         'Study Sample'))
                         log.info("Checking study group size...")
                         check_study_groups(
                             study_sample_table, study_filename,
@@ -4401,8 +4351,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                         except KeyError:
                             log.error(
                                 "Could not load config matching ({}, {})"
-                                    .format(
-                                    measurement_type, technology_type))
+                                .format(measurement_type, technology_type))
                             log.warning("Only have configs matching:")
                             for k in configs.keys():
                                 log.warning(k)
@@ -4422,10 +4371,10 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                     assay_tables.append(assay_table)
                                     log.info("Validating {} against assay "
                                              "table configuration ({}, {})..."
-                                        .format(
-                                        assay_filename,
-                                        measurement_type,
-                                        technology_type))
+                                             .format(
+                                                    assay_filename,
+                                                    measurement_type,
+                                                    technology_type))
                                     log.info(
                                         "Checking Factor Value presence...")
                                     check_factor_value_presence(
@@ -4451,9 +4400,9 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                                     "value inconsistencies in "
                                                     "{} against {} "
                                                     "configuration".format(
-                                            assay_table.filename,
-                                            (measurement_type,
-                                             technology_type)))
+                                                     assay_table.filename,
+                                                     (measurement_type,
+                                                      technology_type)))
                                     log.info("Checking protocol fields...")
                                     # Rule 4009
                                     if not check_protocol_fields(
@@ -4463,9 +4412,9 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                                     "protocol inconsistencies "
                                                     "in {} against {} "
                                                     "configuration".format(
-                                            assay_table.filename, (
-                                                measurement_type,
-                                                technology_type)))
+                                                     assay_table.filename, (
+                                                      measurement_type,
+                                                      technology_type)))
                                     log.info("Checking ontology fields...")
                                     # Rule 3010
                                     if not check_ontology_fields(
@@ -4476,16 +4425,14 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                                     "inconsistencies in {} "
                                                     "against {} "
                                                     "configuration".format(
-                                            assay_table.filename, (
-                                                measurement_type,
-                                                technology_type)))
+                                                     assay_table.filename, (
+                                                      measurement_type,
+                                                      technology_type)))
                                     log.info("Checking study group size...")
                                     check_study_groups(
                                         assay_table, assay_filename,
                                         study_group_size_in_comment)
-                                    log.info("Finished validation on {}"
-                                        .format(
-                                        assay_filename))
+                                    log.info("Finished validation on {}".format(assay_filename))
                             except FileNotFoundError:
                                 pass
                         if study_sample_table is not None:
@@ -4514,7 +4461,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             "message": "Unknown/System Error",
             "supplemental":
                 "The validator could not identify what the error is: {}"
-                    .format(str(cpe)),
+                .format(str(cpe)),
             "code": 0
         })
         log.fatal("(F) There was an error when trying to parse the ISA tab")
@@ -4524,7 +4471,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             "message": "Unknown/System Error",
             "supplemental":
                 "The validator could not identify what the error is: {}"
-                    .format(str(ve)),
+                .format(str(ve)),
             "code": 0
         })
         log.fatal("(F) There was an error when trying to parse the ISA tab")
@@ -4534,7 +4481,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             "message": "Unknown/System Error",
             "supplemental":
                 "The validator could not identify what the error is: {}"
-                    .format(str(se)),
+                .format(str(se)),
             "code": 0
         })
         log.fatal("(F) Something went very very wrong! :(")
@@ -4544,7 +4491,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             "message": "Unknown/System Error",
             "supplemental":
                 "The validator could not identify what the error is: {}"
-                    .format(str(e)),
+                .format(str(e)),
             "code": 0
         })
         log.fatal("(F) Something went very very wrong! :(")
@@ -4599,7 +4546,7 @@ def dumps(isa_obj, skip_dump_tables=False,
 
     :param isa_obj: An ISA Investigation object
     :param skip_dump_tables: Boolean flag on whether or not to write the
-    :param write_factor_values_in_assay_table: Boolean flag indicating whether
+    :param write_fvs_in_assay_table: Boolean flag indicating whether
         or not to write Factor Values in the assay table files
     :return: String output of the ISA-Tab files
     """
@@ -4665,10 +4612,10 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
     def get_ontology_source(term_source_ref):
         try:
-            os = ontology_source_map[term_source_ref]
+            current_onto_source = ontology_source_map[term_source_ref]
         except KeyError:
-            os = None
-        return os
+            current_onto_source = None
+        return current_onto_source
 
     def get_oa(val, accession, ts_ref):
         """Gets a OntologyAnnotation for a give value, accession and
@@ -4726,18 +4673,18 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
         publications = []
 
-        for _, row in section_df.iterrows():
-            publication = Publication(pubmed_id=row[prefix + 'PubMed ID'],
-                                      doi=row[prefix + 'Publication DOI'],
-                                      author_list=row[
+        for _, current_row in section_df.iterrows():
+            publication = Publication(pubmed_id=current_row[prefix + 'PubMed ID'],
+                                      doi=current_row[prefix + 'Publication DOI'],
+                                      author_list=current_row[
                                           prefix + 'Publication Author List'],
-                                      title=row[prefix + 'Publication Title'])
+                                      title=current_row[prefix + 'Publication Title'])
 
             publication.status = get_oa(
-                row[prefix + 'Publication Status'],
-                row[prefix + 'Publication Status Term Accession Number'],
-                row[prefix + 'Publication Status Term Source REF'])
-            publication.comments = get_comments_row(section_df.columns, row)
+                current_row[prefix + 'Publication Status'],
+                current_row[prefix + 'Publication Status Term Accession Number'],
+                current_row[prefix + 'Publication Status Term Source REF'])
+            publication.comments = get_comments_row(section_df.columns, current_row)
             publications.append(publication)
 
         return publications
@@ -4758,21 +4705,21 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
         contacts = []
 
-        for _, row in section_df.iterrows():
-            person = Person(last_name=row[prefix + 'Person Last Name'],
-                            first_name=row[prefix + 'Person First Name'],
-                            mid_initials=row[prefix + 'Person Mid Initials'],
-                            email=row[prefix + 'Person Email'],
-                            phone=row[prefix + 'Person Phone'],
-                            fax=row[prefix + 'Person Fax'],
-                            address=row[prefix + 'Person Address'],
-                            affiliation=row[prefix + 'Person Affiliation'])
+        for _, current_row in section_df.iterrows():
+            person = Person(last_name=current_row[prefix + 'Person Last Name'],
+                            first_name=current_row[prefix + 'Person First Name'],
+                            mid_initials=current_row[prefix + 'Person Mid Initials'],
+                            email=current_row[prefix + 'Person Email'],
+                            phone=current_row[prefix + 'Person Phone'],
+                            fax=current_row[prefix + 'Person Fax'],
+                            address=current_row[prefix + 'Person Address'],
+                            affiliation=current_row[prefix + 'Person Affiliation'])
 
             person.roles = get_oa_list_from_semi_c_list(
-                row[prefix + 'Person Roles'],
-                row[prefix + 'Person Roles Term Accession Number'],
-                row[prefix + 'Person Roles Term Source REF'])
-            person.comments = get_comments_row(section_df.columns, row)
+                current_row[prefix + 'Person Roles'],
+                current_row[prefix + 'Person Roles Term Accession Number'],
+                current_row[prefix + 'Person Roles Term Source REF'])
+            person.comments = get_comments_row(section_df.columns, current_row)
             contacts.append(person)
 
         return contacts
@@ -4784,11 +4731,10 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         :return: A list of Comment objects as found in the section
         """
         comments = []
-        for col in [
-            x for x in section_df.columns if _RX_COMMENT.match(str(x))]:
-            for _, row in section_df.iterrows():
+        for col in [x for x in section_df.columns if _RX_COMMENT.match(str(x))]:
+            for _, current_row in section_df.iterrows():
                 comment = Comment(
-                    name=next(iter(_RX_COMMENT.findall(col))), value=row[col])
+                    name=next(iter(_RX_COMMENT.findall(col))), value=current_row[col])
                 comments.append(comment)
         return comments
 
@@ -4913,7 +4859,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
                     os.path.dirname(FP.name), study.filename))
                 iosrs = investigation.ontology_source_references
                 sources, samples, _, __, processes, \
-                characteristic_categories, unit_categories = \
+                    characteristic_categories, unit_categories = \
                     ProcessSequenceFactory(
                         ontology_sources=iosrs,
                         study_protocols=study.protocols,
@@ -4972,8 +4918,8 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
                     assay_tfile_df = read_tfile(os.path.join(
                         os.path.dirname(FP.name), assay.filename))
                     _, samples, other, data, processes, \
-                    characteristic_categories, \
-                    unit_categories = \
+                        characteristic_categories, \
+                        unit_categories = \
                         ProcessSequenceFactory(
                             ontology_sources=iosrs,
                             study_samples=study.samples,
@@ -5347,18 +5293,15 @@ def preprocess(DF):
                          protocol_ref_cols]
 
     for i in process_node_name_indices:
-        if not columns[
-            find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
+        if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
             log.info('warning: Protocol REF missing between \'{}\' and \'{}\''
-                .format(
-                columns[find_lt(all_cols_indicies, i)], columns[i]))
+                     .format(columns[find_lt(all_cols_indicies, i)], columns[i]))
             missing_process_indices.append(i)
 
     # insert Protocol REF columns
     offset = 0
 
     for i in reversed(missing_process_indices):
-        inferred_protocol_type = ''
         leftcol = columns[find_lt(all_cols_indicies, i)]
         rightcol = columns[i]
         """
@@ -5417,13 +5360,11 @@ def get_object_column_map(isatab_header, df_columns):
     if set(isatab_header) == set(df_columns):
         object_index = [
             i for i, x in enumerate(
-                df_columns) if x in _LABELS_MATERIAL_NODES +
-                               _LABELS_DATA_NODES or 'Protocol REF' in x]
+                df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES or 'Protocol REF' in x]
     else:
         object_index = [
             i for i, x in enumerate(
-                isatab_header) if x in _LABELS_MATERIAL_NODES +
-                                  _LABELS_DATA_NODES + ['Protocol REF']]
+                isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + ['Protocol REF']]
 
     # group headers regarding objects delimited by object_index by slicing up
     # the header list
@@ -5531,8 +5472,7 @@ class ProcessSequenceFactory:
                 except KeyError:
                     category = OntologyAnnotation(term='Label')
                     characteristic_categories['Label'] = category
-                for _, lextract_name in DF[
-                    'Labeled Extract Name'].drop_duplicates().iteritems():
+                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
                     if lextract_name != '':
                         lextract = Material(
                             name=lextract_name, type_='Labeled Extract Name')
@@ -5557,8 +5497,7 @@ class ProcessSequenceFactory:
 
         node_cols = [
             i for i, c in enumerate(
-                DF.columns) if c in _LABELS_MATERIAL_NODES
-                               + _LABELS_DATA_NODES]
+                DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [
             i for i, c in enumerate(
                 DF.columns) if c.startswith("Protocol REF")]
@@ -5570,9 +5509,9 @@ class ProcessSequenceFactory:
             object_column_map = get_object_column_map(
                 DF.columns, DF.columns)
 
-        def get_node_by_label_and_key(labl, k):
+        def get_node_by_label_and_key(labl, this_key):
             n = None
-            lk = labl + ':' + k
+            lk = labl + ':' + this_key
             if labl == 'Source Name':
                 n = sources[lk]
             if labl == 'Sample Name':
@@ -5650,7 +5589,7 @@ class ProcessSequenceFactory:
 
                             if characteristic.category.term in [
                                 x.category.term
-                                for x in material.characteristics]:
+                                    for x in material.characteristics]:
                                 log.warning(
                                     'Duplicate characteristic found for '
                                     'material, skipping adding to material '
@@ -5664,7 +5603,7 @@ class ProcessSequenceFactory:
                             comment_key = next(iter(
                                 _RX_COMMENT.findall(comment_column)))
                             if comment_key not in [
-                                x.name for x in material.comments]:
+                                    x.name for x in material.comments]:
                                 material.comments.append(
                                     Comment(
                                         name=comment_key,
@@ -5730,8 +5669,7 @@ class ProcessSequenceFactory:
                                 'Comment[')]:
                             comment_key = next(iter(
                                 _RX_COMMENT.findall(comment_column)))
-                            if comment_key not in [
-                                x.name for x in data_file.comments]:
+                            if comment_key not in [x.name for x in data_file.comments]:
                                 data_file.comments.append(
                                     Comment(
                                         name=comment_key,
@@ -5944,8 +5882,7 @@ class ProcessSequenceFactory:
                 r = processes[pair[1]]  # get process on right of pair
                 plink(left, r)
 
-        return sources, samples, other_material, data, processes, \
-               characteristic_categories, unit_categories
+        return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
 
 
 def find_in_between(a, x, y):
@@ -6001,9 +5938,10 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path,
     merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
     log.info("Writing merged DataFrame to file %s", target_file_path)
     with open(target_file_path, 'w', encoding='utf-8') as fp:
-        merged_DF.to_csv(
-            fp, sep='\t', index=False,
-            header=study_DF.isatab_header + assay_DF.isatab_header[1:])
+        merged_DF.to_csv(fp,
+                         sep='\t',
+                         index=False,
+                         header=study_DF.isatab_header + assay_DF.isatab_header[1:])
 
 
 def squashstr(string):
@@ -6164,23 +6102,21 @@ class IsaTabParser(object):
         for name, file, version, description in zip_longest(
                 names, files, versions, descriptions):
             i += 1
-            os = OntologySource(
+            current_onto_source = OntologySource(
                 name=name, file=file, version=version, description=description)
             for k, v in comments_dict.items():
                 if i < len(v) > 0:
-                    os.comments.append(
+                    current_onto_source.comments.append(
                         Comment(name=next(iter(_RX_COMMENT.findall(k))),
                                 value=v[i]))
-            self.ISA.ontology_source_references.append(os)
-            self._ts_dict[name] = os
+            self.ISA.ontology_source_references.append(current_onto_source)
+            self._ts_dict[name] = current_onto_source
 
     def parse_investigation_section(
             self, identifiers, titles, descriptions, submissiondates,
             publicreleasedates, comments_dict):
-        for identifier, title, description, submissiondate, \
-            publicreleasedate in zip_longest(
-            identifiers, titles, descriptions, submissiondates,
-            publicreleasedates):
+        for identifier, title, description, submissiondate, publicreleasedate in \
+           zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates):
             self.ISA.identifier = identifier
             self.ISA.title = title
             self.ISA.description = description
@@ -6196,9 +6132,8 @@ class IsaTabParser(object):
     def parse_study_section(self, identifiers, titles, descriptions,
                             submissiondates, publicreleasedates, filenames):
         for identifier, title, description, submissiondate, publicreleasedate, \
-            filename in zip_longest(
-            identifiers, titles, descriptions, submissiondates,
-            publicreleasedates, filenames):
+            filename in zip_longest(identifiers, titles, descriptions, submissiondates,
+                                    publicreleasedates, filenames):
             study = Study(
                 identifier=identifier, title=title, description=description,
                 submission_date=submissiondate,
@@ -6312,6 +6247,7 @@ def isatab_get_data_files_list_command(
     """Get a data files list  based on a slicer query
 
     :param input_path: Path to an ISA-Tab
+    :param output: resulting structure
     :param json_query: JSON query to slice
     :param galaxy_parameters_file: Galaxy input parameters JSON if not
     json_query
@@ -6412,8 +6348,7 @@ def slice_data_files(dir, factor_selection=None):
 
                 for indx, match in matches:
                     sample_name = match
-                    if len([r for r in results if r['sample'] ==
-                                                  sample_name]) == 1:
+                    if len([r for r in results if r['sample'] == sample_name]) == 1:
                         continue
                     else:
                         results.append(
@@ -6433,8 +6368,7 @@ def slice_data_files(dir, factor_selection=None):
 
                         for indx, match in matches:
                             sample_name = match
-                            if len([r for r in results if r['sample'] ==
-                                                          sample_name]) == 1:
+                            if len([r for r in results if r['sample'] == sample_name]) == 1:
                                 continue
                             else:
                                 results.append(

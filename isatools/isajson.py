@@ -16,7 +16,7 @@ from jsonschema import Draft4Validator, RefResolver, ValidationError
 from isatools.model import (
     Investigation, OntologyAnnotation, Comment, OntologySource, Publication, Person, Study, Protocol, ProtocolParameter,
     ProtocolComponent, StudyFactor, Source, Characteristic, Sample, FactorValue, Process, ParameterValue, Assay,
-    DataFile, Material,
+    DataFile, Material
 )
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
@@ -104,6 +104,7 @@ def load(fp):
     term_source_dict = {"": None}
     for ontologySourceReference_json in investigation_json["ontologySourceReferences"]:
         ontology_source_reference = OntologySource(
+            #id_= ontologySourceReferences["@id"],
             name=ontologySourceReference_json["name"],
             file=ontologySourceReference_json["file"],
             version=ontologySourceReference_json["version"],
@@ -114,6 +115,7 @@ def load(fp):
         investigation.ontology_source_references.append(ontology_source_reference)
     for publication_json in investigation_json["publications"]:
         publication = Publication(
+            #id_= publication["@id"],
             pubmed_id=publication_json["pubMedID"],
             doi=publication_json["doi"],
             author_list=publication_json["authorList"],
@@ -131,6 +133,7 @@ def load(fp):
         investigation.publications.append(publication)
     for person_json in investigation_json["people"]:
         person = Person(
+            #id_= person_json["@id"],
             last_name=person_json["lastName"],
             first_name=person_json["firstName"],
             mid_initials=person_json["midInitials"],
@@ -194,6 +197,7 @@ def load(fp):
             study.units.append(unit)
         for study_publication_json in study_json["publications"]:
             study_publication = Publication(
+                # id_=study_publication_json["@id"],
                 pubmed_id=study_publication_json["pubMedID"],
                 doi=study_publication_json["doi"],
                 author_list=study_publication_json["authorList"],
@@ -211,6 +215,7 @@ def load(fp):
             study.publications.append(study_publication)
         for study_person_json in study_json["people"]:
             study_person = Person(
+                # id_=study_person_json["@id"],
                 last_name=study_person_json["lastName"],
                 first_name=study_person_json["firstName"],
                 mid_initials=study_person_json["midInitials"],
@@ -361,6 +366,7 @@ def load(fp):
                 value = factor_value_json["value"]
                 unit = None
                 factor_value = FactorValue(
+                    #id_=factor_value_json["@id"],
                     factor_name=factors_dict[factor_value_json["category"]["@id"]],
                     comments=get_comments(factor_value_json)
                 )
@@ -854,7 +860,7 @@ def get_characteristic_category_ids_in_study_materials(study_json):
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in [[characteristic["category"]["@id"]  for characteristic in material["characteristics"]]
+    return [elem for iterabl in [[characteristic["category"]["@id"] for characteristic in material["characteristics"]]
                                  if "characteristics" in material.keys() else [] for material in
               assay_json["materials"]["samples"] + assay_json["materials"]["otherMaterials"]] for elem in iterabl]
 
@@ -1613,6 +1619,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_ontology_source(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "name": obj.name,
                     "description": obj.description,
                     "file": obj.file,
@@ -1658,6 +1665,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_person(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "address": obj.address,
                     "affiliation": obj.affiliation,
                     "comments": get_comments(obj.comments),
@@ -1677,6 +1685,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_publication(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "authorList": obj.author_list,
                     "doi": obj.doi,
                     "pubMedID": obj.pubmed_id,
@@ -1760,6 +1769,7 @@ class ISAJSONEncoder(JSONEncoder):
                         {
                             "category": {"@id": id_gen(x.factor_name)} if x.factor_name else None,
                             "value": get_value(x.value),
+                            "@id": id_gen(x),
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
@@ -1807,7 +1817,33 @@ class ISAJSONEncoder(JSONEncoder):
                         return '#material/labeledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + obj.type)
+
+                elif isinstance(obj, OntologySource):
+                    return '#ontology/' + o_id
+                elif isinstance(obj, OntologyAnnotation):
+                    return '#annotation_value/' + o_id
+                elif isinstance(obj, StudyFactor):
+                    return '#studyfactor/' + o_id
+                elif isinstance(obj, FactorValue):
+                    return '#factor_value/' + o_id
+                elif isinstance(obj, ParameterValue):
+                    return '#parameter_value/' + o_id
+                elif isinstance(obj, ProtocolParameter):
+                    return '#parameter/' + o_id
+                elif isinstance(obj, Protocol):
+                    return '#protocol/' + o_id
+                elif isinstance(obj, Publication):
+                    return '#publication/' + o_id
+                elif isinstance(obj, Person):
+                    return '#person/' + o_id
+                elif isinstance(obj, Investigation):
+                    return '#investigation/' + o_id
+                elif isinstance(obj, Study):
+                    return '#study/' + o_id
                 elif isinstance(obj, DataFile):
+                    if obj.label == 'Raw Data File':
+                        return '#data/rawdata-' + o_id
+                    else:
                         return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
                 elif isinstance(obj, Process):
                     return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
@@ -1838,6 +1874,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_parameter_value(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     "value": get_value(obj.value),
                     "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
@@ -1846,6 +1883,7 @@ class ISAJSONEncoder(JSONEncoder):
 
         def get_study(obj): return clean_nulls(
             {
+                "@id": id_gen(obj),
                 "filename": obj.filename,
                 "identifier": obj.identifier,
                 "title": obj.title,
@@ -1885,6 +1923,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_assay(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "measurementType": get_ontology_annotation(obj.measurement_type),
                     "technologyType": get_ontology_annotation(obj.technology_type),
                     "technologyPlatform": obj.technology_platform,
@@ -1914,6 +1953,7 @@ class ISAJSONEncoder(JSONEncoder):
         if isinstance(o, Investigation):
             return clean_nulls(
                 {
+                    "@id": id_gen(o),
                     "identifier": o.identifier,
                     "title": o.title,
                     "description": o.description,

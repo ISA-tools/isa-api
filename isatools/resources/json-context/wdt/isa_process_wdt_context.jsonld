@@ -1,0 +1,52 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Process": "wdt:Q3249551",
+    "identifier": {
+      "@id": "wdt:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wdtp:P1448",
+      "@type": "wdt:Q82799"
+    },
+    "description": {
+        "@id":"wdtp:P1552",
+        "@type":"wdt:Q1200750"
+    },
+    "date" : {
+      "@id":"wdtp:P1390",
+      "@type": "xsd:date"
+    },
+    "executesProtocol" : {
+      "@id":"wdtp:P2283",
+      "@type" : "wdt:Q41689629"
+    },
+    "parameterValues": {
+       "@id":"wdtp:P2283",
+        "@type" : "wdt:Q2356542"
+    },
+    "previousProcess" : { 
+    "@id":"wdtp:P155",
+      "@type" : "wdt:Q3249551"
+      },
+    "nextProcess" : {
+    "@id":"wdtp:P156",
+      "@type" :  "wdt:Q3249551"
+      },
+    "inputs" : "wdtp:P2283",
+    "outputs" :  "wdtp:P1056",
+    "performer" :
+    {
+      "@id" : "wdtp:P137",
+      "@type": "wdt:Q215627"
+    },
+    "comments" : {
+         "@id" : "wdtp:P6607",
+         "@type" : "wdt:Q58897583"
+    }
+  }
+}

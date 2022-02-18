@@ -1,0 +1,101 @@
+ONTOLOGY SOURCE REFERENCE								
+Term Source Name	CHEBI	EFO	OBI	NCBITAXON	PATO			
+Term Source File	http://data.bioontology.org/ontologies/CHEBI	http://data.bioontology.org/ontologies/EFO	http://data.bioontology.org/ontologies/OBI	http://data.bioontology.org/ontologies/NCBITAXON	http://data.bioontology.org/ontologies/PATO			
+Term Source Version	78	111	21	2	160			
+Term Source Description	Chemical Entities of Biological Interest Ontology	Experimental Factor Ontology	Ontology for Biomedical Investigations	National Center for Biotechnology Information (NCBI) Organismal Classification	Phenotypic Quality Ontology			
+INVESTIGATION								
+Investigation Identifier	BII-S-TEST							
+Investigation Title								
+Investigation Description								
+Investigation Submission Date								
+Investigation Public Release Date								
+Comment[Created With Configuration]								
+Comment[Last Opened With Configuration]	GSC MIxS human gut							
+INVESTIGATION PUBLICATIONS								
+Investigation PubMed ID								
+Investigation Publication DOI								
+Investigation Publication Author List								
+Investigation Publication Title								
+Investigation Publication Status								
+Investigation Publication Status Term Accession Number								
+Investigation Publication Status Term Source REF								
+INVESTIGATION CONTACTS								
+Investigation Person Last Name								
+Investigation Person First Name								
+Investigation Person Mid Initials								
+Investigation Person Email								
+Investigation Person Phone								
+Investigation Person Fax								
+Investigation Person Address								
+Investigation Person Affiliation								
+Investigation Person Roles								
+Investigation Person Roles Term Accession Number								
+Investigation Person Roles Term Source REF								
+STUDY								
+Study Identifier	BII-S-TEST							
+Study Title	Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment							
+Study Description	"Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples."							
+Study Submission Date	15/08/2008							
+Study Public Release Date	15/08/2008							
+Study File Name	s_test.txt							
+Comment[SRA Broker Name]	OXFORD							
+Comment[SRA Center Name]	OXFORD							
+Comment[SRA Center Project Name]	OXFORD							
+Comment[SRA Lab Name]	Oxford e-Research Centre							
+Comment[SRA Submission Action]	ADD							
+Comment[Study Funding Agency]								
+Comment[Study Grant Number]								
+STUDY DESIGN DESCRIPTORS								
+Study Design Type	time series design							
+Study Design Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0500020							
+Study Design Type Term Source REF	OBI							
+STUDY PUBLICATIONS								
+Study PubMed ID	18725995	18783384						
+Study Publication DOI	10.1371/journal.pone.0003042	10.1111/j.1462-2920.2008.01745.x						
+Study Publication Author List	"Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."	"Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."						
+Study Publication Title	Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.	Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters.						
+Study Publication Status	indexed in PubMed	indexed in PubMed						
+Study Publication Status Term Accession Number								
+Study Publication Status Term Source REF								
+STUDY FACTORS								
+Study Factor Name	dose	compound	collection time					
+Study Factor Type	dose	chemical substance	time					
+Study Factor Type Term Accession Number	http://www.ebi.ac.uk/efo/EFO_0000428	http://purl.obolibrary.org/obo/CHEBI_59999	http://purl.obolibrary.org/obo/PATO_0000165					
+Study Factor Type Term Source REF	EFO	CHEBI	PATO					
+STUDY ASSAYS								
+Study Assay File Name	a_test-assay-Gx.txt	a_test-assay-Tx.txt						
+Study Assay Measurement Type	metagenome sequencing	transcription profiling						
+Study Assay Measurement Type Term Accession Number								
+Study Assay Measurement Type Term Source REF	OBI	OBI						
+Study Assay Technology Type	nucleotide sequencing	nucleotide sequencing						
+Study Assay Technology Type Term Accession Number								
+Study Assay Technology Type Term Source REF	OBI	OBI						
+Study Assay Technology Platform	454 GS FLX	454 GS FLX						
+STUDY PROTOCOLS								
+Study Protocol Name	environmental material collection - standard procedure 1	nucleic acid extraction - standard procedure 2	mRNA extraction - standard procedure 3	genomic DNA extraction - standard procedure 4	reverse transcription - standard procedure 5	library construction	pyrosequencing - standard procedure 6	labeling
+Study Protocol Type	sample collection	nucleic acid extraction	nucleic acid extraction	nucleic acid extraction	reverse transcription	library construction	nucleic acid sequencing	labeling
+Study Protocol Type Term Accession Number								
+Study Protocol Type Term Source REF								
+Study Protocol Description	Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.	"Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007."	"RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006."		superscript+random hexamer primer		"1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below."	labeling protocol
+Study Protocol URI								
+Study Protocol Version								
+Study Protocol Parameters Name	filter pore size					library strategy;library layout;library selection	sequencing instrument	library strategy;library layout;library selection
+Study Protocol Parameters Name Term Accession Number						;;		;;
+Study Protocol Parameters Name Term Source REF						;;		;;
+Study Protocol Components Name								
+Study Protocol Components Type								
+Study Protocol Components Type Term Accession Number								
+Study Protocol Components Type Term Source REF								
+STUDY CONTACTS								
+Study Person Last Name	Gilbert	Field	Huang	Edwards	Li	Gilna	Joint	
+Study Person First Name	Jack	Dawn	Ying	Rob	Weizhong	Paul	Ian	
+Study Person Mid Initials	A							
+Study Person Email	jagi@pml.ac.uk							
+Study Person Phone								
+Study Person Fax								
+Study Person Address	"Prospect Place, Plymouth, United Kingdom"	"CEH Oxford, Oxford, United Kingdom"	"San Diego State University, San Diego, California, United States of America"	"Argonne National Laboratory, Argonne, Illinois, United States of America"	"San Diego State University, San Diego, California, United States of America"	"San Diego State University, San Diego, California, United States of America"	"Prospect Place, Plymouth, United Kingdom"	
+Study Person Affiliation	Plymouth Marine Laboratory	NERC Centre for Ecology and Hydrology	California Institute for Telecommunications and Information Technology	"Department of Computer Science, Mathematics and Computer Science Division,"	California Institute for Telecommunications and Information Technology	California Institute for Telecommunications and Information Technology	Plymouth Marine Laboratory	
+Study Person Roles	principal investigator role;SRA Inform On Status;SRA Inform On Error	principal investigator role	principal investigator role	principal investigator role	principal investigator role	principal investigator role	principal investigator role	
+Study Person Roles Term Accession Number	;;							
+Study Person Roles Term Source REF	;;							
+Comment[Study Person REF]								

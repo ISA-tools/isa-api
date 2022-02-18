@@ -1,0 +1,45 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person":  "sdo:Person",
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "firstName": {
+        "@id": "sdo:firstName",
+        "@type":"sdo:Text"
+        },
+    "lastName": {   
+         "@id": "sdo:lastname",
+         "@type":"sdo:Text"
+         },
+    "midInitials": {
+        "@id": "sdo:additionalName",
+        "@type": "sdo:Text"
+        },
+    "email": {
+        "@id": "sdo:email",
+        "@type": "sdo:URL"
+        },
+    "phone": {
+        "@id": "sdo:telephone",
+        "@type": "sdo:Text"
+        },
+    "fax" : {
+        "@id": "sdo:faxNumber",
+        "@type": "sdo:Text"
+        },
+    "affiliations":
+    {
+      "@id":"sdo:affiliation",
+      "@type":"sdo:Organization"
+    } ,
+     "roles": {
+        "@id": "sdo:roleName",
+        "@type" : "sdo:Role"
+        }
+  }
+}
