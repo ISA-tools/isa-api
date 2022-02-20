@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Material": "wdt:Q53617407",
+    "type" :{
+        "@id" : "wdtp:P527",
+        "@type" : "wdt:Q53617407"
+    },
+    "identifier": {
+      "@id": "wdt:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wdtp:P1448",
+      "@type": "wdt:Q82799"
+    },
+    "characteristics": {
+      "@id" : "wdtp:P6532",
+      "@type" : "wdt:Q1207505"
+    },
+     "roles": {
+        "@id": "wdtp:P2868",
+        "@type" : "wdt:Q102293686"
+        },
+    "derivesFrom": {
+      "@id" : "wdtp:P9072",
+      "@type" : "wdt:Q53617407"
+    }
+  }
+}

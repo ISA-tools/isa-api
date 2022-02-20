@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "MaterialAttribute": "wdt:Q3523867",
+    "characteristicType": {
+      "@id": "wdt:Q3707858",
+      "@type" : ["wdt:Q214609","wdt:Q1183543","wdt:Q27043950","wdt:Q12136","wdt:Q70069716","wdt:Q2221906"]
+    }   
+  }
+}

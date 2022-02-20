@@ -130,7 +130,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
 
     if name_header is not None:
         log.debug('Are you sure you want to add a column of hash values in {}? '
-              'Y/(N)'.format(name_header))
+                  'Y/(N)'.format(name_header))
         confirm = input()
         if confirm == 'Y':
             df[name_header] = distindex
@@ -414,8 +414,7 @@ class IsaTabAnalyzer(object):
                         'assay_key': assay_key,
                         'num_sources': len(assay.samples),
                         'num_samples': len([x for x in assay.data_files
-                                            if x.label.startswith(
-                                raw_data_file_prefix)])
+                                            if x.label.startswith(raw_data_file_prefix)])
                     }
                     with open(os.path.join(self.path, assay.filename)) as a_fp:
                         a_df = isatab.load_table(a_fp)
@@ -467,18 +466,15 @@ class IsaTabAnalyzer(object):
                                             factor_query.split(' == ')
                                         fmt_query_part = \
                                             "Factor_Value_{0}_ == '{1}'" \
-                                                .format(pyvar(factor_value[0]),
-                                                        factor_value[1])
+                                            .format(pyvar(factor_value[0]), factor_value[1])
                                         fmt_query.append(fmt_query_part)
                                     fmt_query = ' and '.join(fmt_query)
                                     log.debug('running query: {}'.format(
                                         fmt_query))
                                     df2 = merged_df.query(fmt_query)
                                     data_column = [x for x in merged_df.columns
-                                                   if x.startswith(
-                                            raw_data_file_prefix)
-                                                   and x.endswith(
-                                            'Data File')][0]
+                                                   if x.startswith(raw_data_file_prefix)
+                                                   and x.endswith('Data File')][0]
                                     assay_report['group_summary'].append(
                                         dict(study_group=query,
                                              sources=len(
@@ -528,8 +524,7 @@ class IsaTabAnalyzer(object):
             print('Num assays: {}'.format(len(study.assays)))
             from collections import Counter
             counter = Counter()
-            for material in study.sources + study.samples + \
-                            study.other_material:
+            for material in study.sources + study.samples + study.other_material:
                 counter.update(material.characteristics)
             for k, v in counter.items():
                 print('{characteristic} used {num} times'.format(
@@ -768,7 +763,7 @@ class IsaTabFixer(object):
         if protocol_ref_index < 0:
             raise IOError(
                 'Could not find protocol ref matching {protocol_ref}'
-                    .format(protocol_ref=protocol_ref))
+                .format(protocol_ref=protocol_ref))
 
         if factor_index < len(field_names) and \
                 'Term Source REF' in field_names[factor_index + 1] and \
@@ -792,7 +787,7 @@ class IsaTabFixer(object):
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit term columns'
-                    .format(factor_name=factor_name))
+                .format(factor_name=factor_name))
             # move Factor Value and Unit as ontology annotation
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -810,7 +805,7 @@ class IsaTabFixer(object):
                 'Unit' in field_names[factor_index + 1]:
             log.debug(
                 'Moving Factor Value[{factor_name}] with unit column'
-                    .format(factor_name=factor_name))
+                .format(factor_name=factor_name))
             # move Factor Value and Unit columns
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])

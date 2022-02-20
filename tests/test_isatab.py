@@ -749,6 +749,251 @@ class TestIsaTabDump(unittest.TestCase):
         #     self.assertIsInstance(isatab.dumps(investigation), str)
 
 
+    # def test_isatab_dump_investigation_with_assay_sample_sample(self):
+    #     investigation = Investigation()
+    #     # i_comment = Comment(name="i_comment", value="i_value")
+    #     # investigation.comments.append(i_comment)
+    #
+    #     # Declaring the Ontologies and Vocabularies used in the ISA Study
+    #     # dummy_onto=OntologySource(name="Dumbo",description="")
+    #     chebi = OntologySource(name="CHEBI", description="Chemical Entity of Biological Interest")
+    #     efo = OntologySource(name="EFO", description="Experimental Factor Ontology")
+    #     obi = OntologySource(name='OBI', description="Ontology for Biomedical Investigations")
+    #     pato = OntologySource(name='PATO', description="Phenotype and Trait Ontology")
+    #     ncbitaxon = OntologySource(name="NCIBTaxon", description="NCBI Taxonomy")
+    #     investigation.ontology_source_references = [chebi, efo, obi, pato, ncbitaxon]
+    #
+    #     study = Study(filename="s_BII-S-10-synthesic.txt")
+    #     # st_comment = Comment(name="st_comment", value="st_value")
+    #     # study.comments.append(st_comment)
+    #     study.identifier = "BII-S-10-synth"
+    #     study.title = "cross-omics synthetic experiment"
+    #     study.description = "cross-omics experiment testing ISA-API support for sample aliquoting at study or assay level"
+    #     study.submission_date = "15/08/2021"
+    #     study.public_release_date = "15/08/2021"
+    #
+    #     # These NCBI SRA related ISA Comments fields are required and must be present for the ISA SRAconverter is to be invoked later
+    #     src_comment_sra1 = Comment(name="SRA Broker Name", value="OXFORD")
+    #     src_comment_sra2 = Comment(name="SRA Center Name", value="OXFORD")
+    #     src_comment_sra3 = Comment(name="SRA Center Project Name", value="OXFORD")
+    #     src_comment_sra4 = Comment(name="SRA Lab Name", value="Oxford e-Research Centre")
+    #     src_comment_sra5 = Comment(name="SRA Submission Action", value="ADD")
+    #     study.comments.append(src_comment_sra1)
+    #     study.comments.append(src_comment_sra2)
+    #     study.comments.append(src_comment_sra3)
+    #     study.comments.append(src_comment_sra4)
+    #     study.comments.append(src_comment_sra5)
+    #
+    #     # These ISA Comments are optional and may be used to report funding information
+    #     src_comment_st1 = Comment(name="Study Funding Agency", value="")
+    #     src_comment_st2 = Comment(name="Study Grant Number", value="")
+    #     study.comments.append(src_comment_st1)
+    #     study.comments.append(src_comment_st2)
+    #
+    #     # Declaring all the protocols used in the ISA study. Note also the declaration of Protocol Parameters when needed.
+    #     study.protocols = [
+    #         Protocol(name="environmental material collection - standard procedure 1",
+    #                  description="Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
+    #                  protocol_type=OntologyAnnotation(term="sample collection"),
+    #                  parameters=[
+    #                      ProtocolParameter(parameter_name=OntologyAnnotation(term="filter pore size"))
+    #                  ]
+    #                  ),
+    #         Protocol(name="aliquoting-procedure",
+    #                  description="aliquoting",
+    #                  protocol_type=OntologyAnnotation(term="sample collection")),
+    #         Protocol(
+    #             name="nucleic acid extraction",
+    #             description="Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid extraction")
+    #         ),
+    #         Protocol(
+    #             name="sample aliquoting - standard procedure 3",
+    #             description="splitting collected samples into aliquots",
+    #             protocol_type=OntologyAnnotation(term="aliquoting")
+    #         ),
+    #         Protocol(
+    #             name="genomic DNA extraction - standard procedure 4",
+    #             description="superscript+random hexamer primer",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid extraction")
+    #         ),
+    #         Protocol(
+    #             name="reverse transcription - standard procedure 5",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="reverse transcription"),
+    #         ),
+    #         Protocol(
+    #             name="library construction",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="library construction"),
+    #             parameters=[
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library strategy")),
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library layout")),
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library selection"))
+    #             ]
+    #         ),
+    #         Protocol(
+    #             name="nucleic acid sequencing",  # pyrosequencing - standard procedure 6",
+    #             description="1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid sequencing"),
+    #             parameters=[
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="sequencing instrument"))
+    #             ]
+    #         ),
+    #         Protocol(
+    #             name="sequence analysis - standard procedure 7",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="data transformation")
+    #         )
+    #     ]
+    #
+    #     # Adding a Study Design descriptor to the ISA Study object
+    #     intervention_design = OntologyAnnotation(term_source=obi)
+    #     intervention_design.term = "intervention design"
+    #     intervention_design.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
+    #     study.design_descriptors.append(intervention_design)
+    #
+    #     # Declaring the Study Factors
+    #     study.factors = [
+    #         StudyFactor(name="compound", factor_type=OntologyAnnotation(term="chemical substance",
+    #                                                                     term_accession="http://purl.obolibrary.org/obo/CHEBI_59999",
+    #                                                                     term_source=chebi)),
+    #         StudyFactor(name="dose", factor_type=OntologyAnnotation(term="dose",
+    #                                                                 term_accession="http://www.ebi.ac.uk/efo/EFO_0000428",
+    #                                                                 term_source=efo)),
+    #         StudyFactor(name="collection time", factor_type=OntologyAnnotation(term="time",
+    #                                                                            term_accession="http://purl.obolibrary.org/obo/PATO_0000165",
+    #                                                                            term_source=pato))
+    #     ]
+    #
+    #     # Associating the levels to each of the Study Factor.
+    #     fv1 = FactorValue(factor_name=study.factors[0], value=OntologyAnnotation(term="atorvastatin"))
+    #     fv2 = FactorValue(factor_name=study.factors[1], value=OntologyAnnotation(term="high dose"))
+    #     fv3 = FactorValue(factor_name=study.factors[1], value=OntologyAnnotation(term="low dose"))
+    #     fv4 = FactorValue(factor_name=study.factors[2], value="2 months")
+    #     fv5 = FactorValue(factor_name=study.factors[2], value="18 months")
+    #
+    #     # Adding the publications associated to the study
+    #     study.publications = [
+    #         Publication(doi="10.1371/journal.pone.0003042", pubmed_id="18725995",
+    #                     title="Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.",
+    #                     status=OntologyAnnotation(term="indexed in PubMed"),
+    #                     author_list="Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I.")
+    #     ]
+    #
+    #     # Adding the authors of the study
+    #     study.contacts = [
+    #         Person(first_name="Rex", last_name="Durand", affiliation="LHC Laboratory", email="rex.durand@lhcl.ac.uk",
+    #                address="Nevsky perspective, Bournemouth, United Kingdom",
+    #                comments=[Comment(name="Study Person REF", value="")],
+    #                roles=[OntologyAnnotation(term="principal investigator role"),
+    #                       OntologyAnnotation(term="SRA Inform On Status"),
+    #                       OntologyAnnotation(term="SRA Inform On Error")]
+    #                )
+    #     ]
+    #
+    #     study.sources = [Source(name="GSM255770"), Source(name="GSM255771"), Source(name="GSM255772"),
+    #                      Source(name="GSM255773")]
+    #     study.samples = [Sample(name="GSM255770"), Sample(name="GSM255771"), Sample(name="GSM255772"),
+    #                      Sample(name="GSM255773")]
+    #
+    #     # Note how the treatment groups are defined as sets of factor values attached to the ISA.Sample object
+    #     study.samples[0].factor_values = [fv1, fv2, fv4]
+    #     study.samples[1].factor_values = [fv1, fv3, fv4]
+    #     study.samples[2].factor_values = [fv1, fv2, fv5]
+    #     study.samples[3].factor_values = [fv1, fv3, fv5]
+    #
+    #     characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
+    #                                              value=OntologyAnnotation(term="marine metagenome",
+    #                                                                       term_source=ncbitaxon,
+    #                                                                       term_accession="http://purl.obolibrary.org/obo/NCBITaxon_408172"))
+    #
+    #     # Now creating a Process showing a `Protocol Application` using Source as input and producing Sample as output.
+    #     for i in range(len(study.sources)):
+    #         study.sources[i].characteristics.append(characteristic_organism)
+    #
+    #         study.process_sequence.append(Process(executes_protocol=study.protocols[0],
+    #                                               inputs=[study.sources[i]],
+    #                                               outputs=[study.samples[i]])
+    #                                       )
+    #
+    #     # Now appending the ISA Study object to the ISA Investigation object
+    #     investigation.studies = [study]
+    #
+    #     assay = Assay(filename="a_gilbert-assay-Gx.txt")
+    #     assay.measurement_type = OntologyAnnotation(term="metagenome sequencing",
+    #                                                 term_accession="http://purl.obolibrary.org/obo/OBI_0002623",
+    #                                                 term_source=obi)
+    #     assay.technology_type = OntologyAnnotation(term="nucleotide sequencing",
+    #                                                term_accession="http://purl.obolibrary.org/obo/OBI_0000626",
+    #                                                term_source=obi)
+    #
+    #     for i, sample in enumerate(study.samples):
+    #         assay.samples.append(sample)
+    #
+    #         # create an aliquoting process which creates new samples from existing samples created in a study.processSequence
+    #         aliquoting_process = Process(executes_protocol=study.protocols[1])
+    #         aliquoting_process.inputs.append(sample)
+    #         aliquot = Sample(name="aliquot-{}".format(i), derives_from=[sample])
+    #
+    #         char_alq = Characteristic(category=OntologyAnnotation(term="Material"),
+    #                                   value=OntologyAnnotation(term="aliquot"))
+    #         aliquot.characteristics.append(char_alq)
+    #         # print(aliquot)
+    #
+    #         aliquoting_process.outputs.append(aliquot)
+    #
+    #         assay.samples.append(aliquot)
+    #
+    #         # create an extraction process that executes the extraction protocol
+    #         extraction_process = Process(executes_protocol=study.protocols[1])
+    #
+    #         # extraction process takes as input a sample, and produces an extract material as output
+    #         char_ext = Characteristic(category=OntologyAnnotation(term="Material Type"),
+    #                                   value=OntologyAnnotation(term="pellet"))
+    #
+    #         extraction_process.inputs.append(aliquot)
+    #         material = Material(name="extract-{}".format(i))
+    #         material.type = "Extract Name"
+    #         material.characteristics.append(char_ext)
+    #         extraction_process.outputs.append(material)
+    #
+    #         # create a sequencing process that executes the sequencing protocol
+    #
+    #         sequencing_process = Process(executes_protocol=study.protocols[7])
+    #         sequencing_process.name = "assay-name-{}".format(i)
+    #         sequencing_process.inputs.append(extraction_process.outputs[0])
+    #         # sequencing_process.inputs.append(material)
+    #
+    #         # Sequencing process usually has an output data file
+    #
+    #         datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
+    #         data_comment = Comment(name="data_comment", value="data_value")
+    #         datafile.comments.append(data_comment)
+    #         sequencing_process.outputs.append(datafile)
+    #
+    #         # make sure the extract, data file, and the processes are attached to the assay
+    #
+    #         assay.other_material.append(material)
+    #         assay.data_files.append(datafile)
+    #
+    #         assay.process_sequence.append(aliquoting_process)
+    #         assay.process_sequence.append(extraction_process)
+    #         assay.process_sequence.append(sequencing_process)
+    #
+    #         # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
+    #         # these links for you. It is found in the isatools.model package
+    #
+    #         plink(aliquoting_process, sequencing_process)
+    #
+    #         study.assays.append(assay)
+    #
+    #         from isatools.isatab import dump
+    #
+    #         # note the use of the flag for explicit serialization on factor values on assay tables
+    #         dump(investigation, "./output/BII-S-10/", write_factor_values_in_assay_table=False)
+
+
 class TestIsaTabLoad(unittest.TestCase):
 
     def setUp(self):
@@ -1612,17 +1857,6 @@ sample1\textraction\te2\tscanning\td2"""
             self.assertTrue(gen_dna_extraction_process.outputs[0] is extract)
             self.assertTrue(nucl_ac_extraction_process.inputs)
             self.assertFalse(gen_dna_extraction_process.inputs)
-            # FIXME characteristics are not loaded into the extract name
-            # self.assertTrue(extract.characteristics)
-            dumps_out = isatab.dumps(investigation)
-            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
-            self.assertIn(expected_chained_protocol_snippet, dumps_out)
-
-    def test_isatab_load_and_dump_missing_technology_type(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-S-3-missing-technology-type', 'i_gilbert.txt'),
-                  encoding='utf-8') as fp:
-            investigation = isatab.load(fp)
-            self.assertIsInstance(investigation, Investigation)
             # FIXME characteristics are not loaded into the extract name
             # self.assertTrue(extract.characteristics)
             dumps_out = isatab.dumps(investigation)
