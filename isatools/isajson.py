@@ -16,7 +16,7 @@ from jsonschema import Draft4Validator, RefResolver, ValidationError
 from isatools.model import (
     Investigation, OntologyAnnotation, Comment, OntologySource, Publication, Person, Study, Protocol, ProtocolParameter,
     ProtocolComponent, StudyFactor, Source, Characteristic, Sample, FactorValue, Process, ParameterValue, Assay,
-    DataFile, Material
+    DataFile, Material,
 )
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
@@ -47,22 +47,22 @@ def load(fp):
         roles = None
         if "roles" in j.keys():
             roles = list()
-            for current_role_json in j["roles"]:
-                current_term = current_role_json["annotationValue"]
-                term_accession = current_role_json["termAccession"]
-                term_source = term_source_dict[current_role_json["termSource"]]
-                new_role = OntologyAnnotation(current_term, term_source, term_accession)
-                roles.append(new_role)
+            for role_json in j["roles"]:
+                term = role_json["annotationValue"]
+                term_accession = role_json["termAccession"]
+                term_source = term_source_dict[role_json["termSource"]]
+                role = OntologyAnnotation(term, term_source, term_accession)
+                roles.append(role)
         return roles
 
     def get_characteristic_category(characteristics_cats_dict):
         res = OntologyAnnotation(
             id_=characteristics_cats_dict["@id"],  # Here we use the id for the CharacteristicType \
-                                                   # to back support older JSON serializations
+            # to back support older JSON serializations
             term=characteristics_cats_dict["characteristicType"]["annotationValue"],
             term_source=term_source_dict[characteristics_cats_dict["characteristicType"]["termSource"]] \
-            if isinstance(characteristics_cats_dict["characteristicType"]["termSource"], OntologySource) \
-            else "", term_accession=characteristics_cats_dict["characteristicType"]["termAccession"],
+                if isinstance(characteristics_cats_dict["characteristicType"]["termSource"], OntologySource) \
+                else "", term_accession=characteristics_cats_dict["characteristicType"]["termAccession"],
         )
         try:
             res.comments = get_comments(characteristics_cats_dict)
@@ -104,7 +104,6 @@ def load(fp):
     term_source_dict = {"": None}
     for ontologySourceReference_json in investigation_json["ontologySourceReferences"]:
         ontology_source_reference = OntologySource(
-            # id_=ontologySourceReference_json["@id"],
             name=ontologySourceReference_json["name"],
             file=ontologySourceReference_json["file"],
             version=ontologySourceReference_json["version"],
@@ -115,7 +114,6 @@ def load(fp):
         investigation.ontology_source_references.append(ontology_source_reference)
     for publication_json in investigation_json["publications"]:
         publication = Publication(
-            # id_= publication["@id"],
             pubmed_id=publication_json["pubMedID"],
             doi=publication_json["doi"],
             author_list=publication_json["authorList"],
@@ -133,7 +131,6 @@ def load(fp):
         investigation.publications.append(publication)
     for person_json in investigation_json["people"]:
         person = Person(
-            # id_= person_json["@id"],
             last_name=person_json["lastName"],
             first_name=person_json["firstName"],
             mid_initials=person_json["midInitials"],
@@ -195,7 +192,6 @@ def load(fp):
             study.units.append(unit)
         for study_publication_json in study_json["publications"]:
             study_publication = Publication(
-                # id_=study_publication_json["@id"],
                 pubmed_id=study_publication_json["pubMedID"],
                 doi=study_publication_json["doi"],
                 author_list=study_publication_json["authorList"],
@@ -213,7 +209,6 @@ def load(fp):
             study.publications.append(study_publication)
         for study_person_json in study_json["people"]:
             study_person = Person(
-                # id_=study_person_json["@id"],
                 last_name=study_person_json["lastName"],
                 first_name=study_person_json["firstName"],
                 mid_initials=study_person_json["midInitials"],
@@ -302,7 +297,7 @@ def load(fp):
                 characteristic = Characteristic(
                     category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
                                                                                             "#characteristic_category")
-                                             ],
+                    ],
                     comments=get_comments(characteristic_json)
                 )
 
@@ -345,7 +340,7 @@ def load(fp):
                 characteristic = Characteristic(
                     category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
                                                                                             "#characteristic_category")
-                                             ],
+                    ],
                     comments=get_comments(characteristic_json)
                 )
                 if isinstance(value, dict):
@@ -374,7 +369,6 @@ def load(fp):
                 value = factor_value_json["value"]
                 unit = None
                 factor_value = FactorValue(
-                    # id_=factor_value_json["@id"],
                     factor_name=factors_dict[factor_value_json["category"]["@id"]],
                     comments=get_comments(factor_value_json)
                 )
@@ -526,9 +520,10 @@ def load(fp):
                 assay.samples.append(sample)
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category = OntologyAnnotation(
-                    id_=assay_characteristics_category_json["@id"],
+                    # id_=assay_characteristics_category_json["characteristicType"]["@id"],
                     term=assay_characteristics_category_json["characteristicType"]["annotationValue"],
-                    term_source=term_source_dict[assay_characteristics_category_json["characteristicType"]["termSource"]],
+                    term_source=term_source_dict[assay_characteristics_category_json["characteristicType"]["termSource"]
+                    ],
                     term_accession=assay_characteristics_category_json["characteristicType"]["termAccession"],
                     comments=get_comments(assay_characteristics_category_json["characteristicType"])
                 )
@@ -732,9 +727,9 @@ def check_material_ids_declared_used(study_json, id_collector_func):
 def check_material_ids_not_declared_used(study_json):
     """Used for rules 1002-1005"""
     node_ids = get_source_ids(study_json) \
-        + get_sample_ids(study_json) \
-        + get_material_ids(study_json) \
-        + get_data_file_ids(study_json)
+               + get_sample_ids(study_json) \
+               + get_material_ids(study_json) \
+               + get_data_file_ids(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
     if len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
         diff = set(io_ids_in_process_sequence) - set(node_ids)
@@ -1461,8 +1456,7 @@ def validate(
             logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
             logging.ERROR, logging.CRITICAL):
         log.setLevel(log_level)
-    log.info("ISA JSON Validator from ISA tools API v0.13rc2.")
-    log.info("CONFIG DIR: ", default_isa_json_schemas_dir)
+    log.info("ISA JSON Validator from ISA tools API v0.12.")
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     log.addHandler(handler)
@@ -1659,7 +1653,6 @@ class ISAJSONEncoder(JSONEncoder):
         def get_ontology_source(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(obj),
                     "name": obj.name,
                     "description": obj.description,
                     "file": obj.file,
@@ -1689,7 +1682,6 @@ class ISAJSONEncoder(JSONEncoder):
         def get_person(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(obj),
                     "address": obj.address,
                     "affiliation": obj.affiliation,
                     "comments": get_comments(obj.comments),
@@ -1709,7 +1701,6 @@ class ISAJSONEncoder(JSONEncoder):
         def get_publication(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(obj),
                     "authorList": obj.author_list,
                     "doi": obj.doi,
                     "pubMedID": obj.pubmed_id,
@@ -1821,7 +1812,6 @@ class ISAJSONEncoder(JSONEncoder):
                         {
                             "category": {"@id": id_gen(x.factor_name)} if x.factor_name else None,
                             "value": get_value(x.value),
-                            "@id": id_gen(x),
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
@@ -1892,14 +1882,8 @@ class ISAJSONEncoder(JSONEncoder):
                     return '#investigation/' + o_id
                 elif isinstance(obj, Study):
                     return '#study/' + o_id
-                elif isinstance(obj, Assay):
-                    return '#assay/' + o_id
                 elif isinstance(obj, DataFile):
-                    # return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
-                    if obj.label == 'Raw Data File':
-                        return '#data/rawdata-' + o_id
-                    else:
-                        return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
+                    return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
                 elif isinstance(obj, Process):
                     return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
@@ -1927,39 +1911,38 @@ class ISAJSONEncoder(JSONEncoder):
         def get_parameter_value(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(obj),
                     "category": {"@id": id_gen(obj.category)} if obj.category else None,
                     "value": get_value(obj.value),
                     "unit": {"@id": id_gen(obj.unit)} if obj.unit else None
                 }
             )
 
-        def get_study(obj): return clean_nulls(
-            {
-                "@id": id_gen(obj),
-                "filename": obj.filename,
-                "identifier": obj.identifier,
-                "title": obj.title,
-                "description": obj.description,
-                "submissionDate": obj.submission_date,
-                "publicReleaseDate": obj.public_release_date,
-                "publications": get_publications(obj.publications),
-                "people": get_people(obj.contacts),
-                "studyDesignDescriptors": get_ontology_annotations(obj.design_descriptors),
-                "protocols": list(map(lambda x: get_protocol(x), obj.protocols)),
-                "materials": {
-                    "sources": list(map(lambda x: get_source(x), obj.sources)),
-                    "samples": get_samples(obj.samples),
-                    "otherMaterials": get_other_materials(obj.other_material)
-                },
-                "processSequence": list(map(lambda x: get_process(x), obj.process_sequence)),
-                "factors": list(map(lambda x: get_factor(x), obj.factors)),
-                "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
-                "unitCategories": get_ontology_annotations(obj.units),
-                "comments": get_comments(obj.comments),
-                "assays": list(map(lambda x: get_assay(x), obj.assays))
-            }
-        )
+        def get_study(obj):
+            return clean_nulls(
+                {
+                    "filename": obj.filename,
+                    "identifier": obj.identifier,
+                    "title": obj.title,
+                    "description": obj.description,
+                    "submissionDate": obj.submission_date,
+                    "publicReleaseDate": obj.public_release_date,
+                    "publications": get_publications(obj.publications),
+                    "people": get_people(obj.contacts),
+                    "studyDesignDescriptors": get_ontology_annotations(obj.design_descriptors),
+                    "protocols": list(map(lambda x: get_protocol(x), obj.protocols)),
+                    "materials": {
+                        "sources": list(map(lambda x: get_source(x), obj.sources)),
+                        "samples": get_samples(obj.samples),
+                        "otherMaterials": get_other_materials(obj.other_material)
+                    },
+                    "processSequence": list(map(lambda x: get_process(x), obj.process_sequence)),
+                    "factors": list(map(lambda x: get_factor(x), obj.factors)),
+                    "characteristicCategories": get_characteristic_categories(obj.characteristic_categories),
+                    "unitCategories": get_ontology_annotations(obj.units),
+                    "comments": get_comments(obj.comments),
+                    "assays": list(map(lambda x: get_assay(x), obj.assays))
+                }
+            )
 
         def get_characteristic_categories(obj):
             return list(map(lambda x: get_characteristic_category(x), obj))
@@ -1976,7 +1959,6 @@ class ISAJSONEncoder(JSONEncoder):
         def get_assay(obj):
             return clean_nulls(
                 {
-                    "@id": id_gen(obj),
                     "measurementType": get_ontology_annotation(obj.measurement_type),
                     "technologyType": get_ontology_annotation(obj.technology_type),
                     "technologyPlatform": obj.technology_platform,
@@ -2006,7 +1988,6 @@ class ISAJSONEncoder(JSONEncoder):
         if isinstance(o, Investigation):
             return clean_nulls(
                 {
-                    "@id": id_gen(o),
                     "identifier": o.identifier,
                     "title": o.title,
                     "description": o.description,
