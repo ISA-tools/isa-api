@@ -14,7 +14,11 @@
         "description" : { "type" : "string" },
         "file" : { "type" : "string" },
         "name": {"type": "string"},
-        "version": { "type": "string"}
+        "version": { "type": "string"},
+        "@id": {
+            "type": "string",
+            "format": "uri"
+        }
     },
     "additionalProperties": false
 }

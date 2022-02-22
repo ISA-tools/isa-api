@@ -50,6 +50,6 @@ class TestIsaTabConfigurator(unittest.TestCase):
         config_dict = configurator.load(self._config_dir)
         self.assertEqual(len(config_dict), 30)
         self.assertEqual(config_dict[('metagenome sequencing', 'nucleotide sequencing')].isatab_configuration[0]
-                         .table_name,'metagenome_seq')
+                         .table_name, 'metagenome_seq')
         self.assertEqual(configurator.get_config(
             config_dict, 'metagenome sequencing', 'nucleotide sequencing')[0].header, 'Sample Name')

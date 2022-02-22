@@ -200,19 +200,18 @@ class OntologyAnnotationTest(unittest.TestCase):
                          repr(self.ontology_annotation))
 
     def test_str(self):
-        self.assertEqual("""OntologyAnnotation(
-    term=
-    term_source=
-    term_accession=
-    comments=0 Comment objects
-)""", str(self.ontology_annotation_default))
+        self.assertTrue(isinstance(self.ontology_annotation_default, OntologyAnnotation))
+        self.assertEqual(self.ontology_annotation_default.term, "")
+        self.assertEqual(self.ontology_annotation_default.term_source, None)
+        self.assertEqual(self.ontology_annotation_default.term_accession, "")
+        self.assertEqual(self.ontology_annotation_default.comments, [])
 
-        self.assertEqual("""OntologyAnnotation(
-    term=T
-    term_source=N
-    term_accession=A
-    comments=0 Comment objects
-)""", str(self.ontology_annotation))
+        self.assertTrue(isinstance(self.ontology_annotation, OntologyAnnotation))
+        self.assertEqual(self.ontology_annotation.term, "T")
+        self.assertTrue(isinstance(self.ontology_annotation.term_source, OntologySource))
+        self.assertEqual(self.ontology_annotation.term_source.name, "N")
+        self.assertEqual(self.ontology_annotation.term_accession, "A")
+        self.assertEqual(self.ontology_annotation.comments, [])
 
     def test_eq(self):
         expected_ontology_annotation = OntologyAnnotation(
@@ -346,12 +345,12 @@ class PersonTest(unittest.TestCase):
 
     def test_ne(self):
         expected_other_person = Person(last_name='F', first_name='L',
-                                 mid_initials='M2', email='c@d.com', phone='1',
-                                 fax='2', address='A2', affiliation='Af2',
-                                 roles=[OntologyAnnotation(
-                                     term='R2', term_source=None,
-                                     term_accession='', comments=[])],
-                                 comments=[])
+                                       mid_initials='M2', email='c@d.com', phone='1',
+                                       fax='2', address='A2', affiliation='Af2',
+                                       roles=[OntologyAnnotation(
+                                             term='R2', term_source=None,
+                                             term_accession='', comments=[])],
+                                       comments=[])
         self.assertNotEqual(expected_other_person, self.person)
         self.assertNotEqual(
             hash(expected_other_person), hash(self.person))
@@ -505,7 +504,7 @@ class CharacteristicTest(unittest.TestCase):
         self.characteristic_default = Characteristic()
         self.characteristic = Characteristic(
             category=OntologyAnnotation(term='C'), value=0,
-            unit=OntologyAnnotation(term='U') )
+            unit=OntologyAnnotation(term='U'))
 
     def test_repr(self):
         self.assertEqual("isatools.model.Characteristic("
@@ -612,8 +611,8 @@ class AssayTest(unittest.TestCase):
 
     def test_eq(self):
         expected_assay = Assay(measurement_type=OntologyAnnotation(term='MT'),
-                           technology_type=OntologyAnnotation(term='TT'),
-                           technology_platform='TP', filename='file')
+                               technology_type=OntologyAnnotation(term='TT'),
+                               technology_platform='TP', filename='file')
         self.assertEqual(expected_assay, self.assay)
         self.assertEqual(hash(expected_assay),  hash(self.assay))
 
@@ -1001,7 +1000,8 @@ class FactorValueTest(unittest.TestCase):
     def setUp(self):
         self.factor_value_default = FactorValue()
         self.factor_value = FactorValue(factor_name=StudyFactor(name='F'),
-            value=0, unit=OntologyAnnotation(term='U'))
+                                        value=0,
+                                        unit=OntologyAnnotation(term='U'))
 
     def test_repr(self):
         self.assertEqual("isatools.model.FactorValue(factor_name=None, "
@@ -1031,7 +1031,8 @@ class FactorValueTest(unittest.TestCase):
 
     def test_eq(self):
         expected_factor_value = FactorValue(factor_name=StudyFactor(name='F'),
-            value=0, unit=OntologyAnnotation(term='U'))
+                                            value=0,
+                                            unit=OntologyAnnotation(term='U'))
         self.assertEqual(expected_factor_value, self.factor_value)
         self.assertEqual(
             hash(expected_factor_value),  hash(self.factor_value))

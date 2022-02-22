@@ -38,7 +38,7 @@ QUALITY_CONTROL_ERROR = "The 'quality_control' must be a valid QualityControl ob
 # ERROR MESSAGES: SAMPLE AND ASSAYPLAN
 ASSAY_PLAN_NAME_ERROR = 'The attribute \'name\' must be a string. {0} provided'
 MISSING_SAMPLE_IN_PLAN = 'ProductNode is missing from the sample_plan'
-MISSING_ASSAY_IN_PLAN = 'AsssayGraph is missing from the assay_plan'
+MISSING_ASSAY_IN_PLAN = 'AssayGraph is missing from the assay_plan'
 
 # ERROR MESSAGES: STUDY ARM
 SCREEN_ERROR_MESSAGE = 'A SCREEN cell can only be inserted into an empty arm_map.'

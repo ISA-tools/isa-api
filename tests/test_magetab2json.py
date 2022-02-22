@@ -33,4 +33,5 @@ class TestMageTab2IsaJson(unittest.TestCase):
             json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
+            print(report['errors'])
             self.assertEqual(len(report['errors']), 0)

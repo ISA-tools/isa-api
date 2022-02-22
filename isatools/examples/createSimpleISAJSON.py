@@ -60,7 +60,6 @@ def create_descriptor():
     # This is to show that ISA Comments can be used to annotate ISA objects, here ISA Study
     study.comments.append(Comment(name="Study Start Date", value="Sun"))
 
-
     # Some instance variables are typed with different objects and lists of
     # objects. For example, a Study can have a list of design descriptors.
     # A design descriptor is an Ontology Annotation describing the kind of
@@ -114,7 +113,7 @@ def create_descriptor():
     # Then we create three Sample objects, with organism as Homo Sapiens, and
     # attach them to the study. We use the utility function
     # batch_create_material() to clone a prototype material object. The
-    # function automatiaclly appends an index to the material name. In this
+    # function automatically appends an index to the material name. In this
     # case, three samples will be created, with the names 'sample_material-0',
     # 'sample_material-1' and 'sample_material-2'.
 
@@ -135,11 +134,11 @@ def create_descriptor():
     source.characteristics.append(characteristic_organism)
     study.sources.append(source)
 
-    #declaring a new ontology and adding it to the list of resources used
+    # declaring a new ontology and adding it to the list of resources used
     uberon = OntologySource(name='UBERON', description='Uber Anatomy Ontology')
     investigation.ontology_source_references.append(uberon)
 
-    #preparing an ISA Characteristic object (~Material Property ) to annotate sample materials
+    # preparing an ISA Characteristic object (~Material Property ) to annotate sample materials
     characteristic_organ = Characteristic(
         category=OntologyAnnotation(term="OrganismPart"),
         value=OntologyAnnotation(
@@ -153,7 +152,6 @@ def create_descriptor():
     study.samples = batch_create_materials(prototype_sample, n=3)
     # creates a batch of 3 samples
 
-
     # Now we create a single Protocol object that represents our sample
     # collection protocol, and attach it to the study object. Protocols must be
     # declared before we describe Processes, as a processing event of some sort
@@ -163,7 +161,8 @@ def create_descriptor():
 
     sample_collection_protocol = Protocol(
         name="sample collection",
-        protocol_type=OntologyAnnotation(term="sample collection"))
+        protocol_type=OntologyAnnotation(term="sample collection", term_accession="", term_source=""))
+
     study.protocols.append(sample_collection_protocol)
     sample_collection_process = Process(
         executes_protocol=sample_collection_protocol)
@@ -171,9 +170,8 @@ def create_descriptor():
     # adding a dummy Comment[] to ISA.protocol object
     study.protocols[0].comments.append(Comment(name="Study Start Date", value="Uranus"))
     study.protocols[0].comments.append(Comment(name="Study End Date", value="2017-08-11"))
-    # checking that the ISA Protocool object has been modified
+    # checking that the ISA Protocol object has been modified
     # print(study.protocols[0])
-
 
     # Creation of an ISA Study Factor object
     f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment['modality']"))
@@ -184,12 +182,6 @@ def create_descriptor():
 
     # checking that the ISA Factor object has been modified
     study.factors.append(f)
-
-
-
-
-
-
 
     # Next, we link our materials to the Process. In this particular case, we
     # are describing a sample collection process that takes one source
@@ -209,10 +201,7 @@ def create_descriptor():
 
     study.process_sequence.append(sample_collection_process)
 
-
-
-
-    #IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
+    # IMPORTANT: remember to populate the list of ontology categories used to annotation ISA Material in a Study:
     study.characteristic_categories.append(characteristic_organism.category)
 
     # Next, we build n Assay object and attach two protocols,
@@ -228,7 +217,7 @@ def create_descriptor():
         protocol_type=OntologyAnnotation(term="material sequencing"))
     study.protocols.append(sequencing_protocol)
 
-    # To build out assay graphs, we enumereate the samples from the
+    # To build out assay graphs, we enumerate the samples from the
     # study-level, and for each sample we create an extraction process and
     # a sequencing process. The extraction process takes as input a sample
     # material, and produces an extract material. The sequencing process

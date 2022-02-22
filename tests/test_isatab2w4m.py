@@ -40,15 +40,14 @@ class TestIsatab2w4m(unittest.TestCase):
             matrix_output='%s-w4m-sample-variable-matrix.tsv')
         # Check files
         for x in [
-            'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+                'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
             ref_file = os.path.join(utils.TAB_DATA_DIR, test_dir, '.'.join(
                 ['-'.join([study, 'w4m', x]), 'tsv']))
             output_file = os.path.join(self._tmp_dir, '.'.join(
                 ['-'.join([study, 'w4m', x]), 'tsv']))
             self.assertTrue(os.path.exists(output_file))
             self.assertTrue(filecmp.cmp(output_file, ref_file),
-                'Output file "{0}" differs from reference file "{1}".'.format(
-                    output_file, ref_file))
+                            'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
 
     # Test MTBLS30
     def test_MTBLS30(self):
@@ -71,7 +70,7 @@ class TestIsatab2w4m(unittest.TestCase):
         output_files = dict()
         ref_files = dict()
         for x in [
-            'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+                'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
             filename = '.'.join(
                 ['-'.join([study, 'w4m', var_filtering, x, 'na-filtering']), 
                  'tsv'])
@@ -87,7 +86,7 @@ class TestIsatab2w4m(unittest.TestCase):
                            var_na_filtering=var_na_filtering)
         # Check files
         for x in [
-            'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+                'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
             self.assertTrue(os.path.exists(output_files[x]))
         self.assertTrue(
             filecmp.cmp(output_files[x], ref_files[x]),
@@ -142,5 +141,4 @@ class TestIsatab2w4m(unittest.TestCase):
                 self.assertTrue(os.path.exists(output_file))
                 self.assertTrue(
                     filecmp.cmp(output_file, ref_file),
-                    'Output file "{0}" differs from reference file "{1}".'
-                        .format(output_file, ref_file))
+                    'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))

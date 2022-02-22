@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Comment": "sdo:Comment",
+        "name": {
+        "@id": "sdo:name",
+        "@type":"sdo:Text"
+        },
+     "value": {
+      "@id": "sdo:value",
+      "@type" : "sdo:Text"
+    }
+  }
+}

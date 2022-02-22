@@ -1,9 +1,11 @@
 {
+    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/organization_schema.json",
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA organization schema",
     "description" : "JSON-schema representing an organization in the ISA model v1.0",
     "type" : "object",
     "properties" : {
+      "@id": { "type": "string", "format": "uri" },
        "name" : {
            "type" : "string"
        }

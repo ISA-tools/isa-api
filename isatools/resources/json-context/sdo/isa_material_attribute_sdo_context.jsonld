@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "MaterialAttribute": "sdo:Property",
+    "characteristicType": {
+      "@id": "sdo:property",
+      "@type" : "sdo:PropertyValue"
+    }   
+  }
+}
