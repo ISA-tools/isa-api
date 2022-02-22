@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 from pandas.errors import ParserError
+
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
 from isatools import logging as isa_logging

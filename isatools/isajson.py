@@ -1816,7 +1816,7 @@ class ISAJSONEncoder(JSONEncoder):
                     elif obj.type == 'Labeled Extract Name':
                         return '#material/labeledextract-' + o_id
                     else:
-                        raise TypeError("Could not resolve data type labeled: " + obj.type)
+                        raise TypeError("Could not resolve node type named: " + obj.type)
 
                 elif isinstance(obj, OntologySource):
                     return '#ontology/' + o_id

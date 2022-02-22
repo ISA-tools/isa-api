@@ -1,68 +1,68 @@
 {
   "@context":{
      "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Study": "isa:study",
+    "Study": "isaterms:study",
     "filename" : {
-         "@id": "isa:has_part",
-         "@type" : "isa:file"
+         "@id": "isaterms:has_part",
+         "@type" : "isaterms:file"
     },
     "identifier" : {
-      "@id": "isa:identified_by",
+      "@id": "isaterms:identified_by",
       "@type": "@id"
     }, 
     "title" : {
-      "@id":"isa:is_described_by",
-      "@type":  "isa:title"
+      "@id":"isaterms:is_described_by",
+      "@type":  "isaterms:title"
     },
     "description" : {   
-      "@id":"isa:is_described_by",
-      "@type":  "isa:description"
+      "@id":"isaterms:is_described_by",
+      "@type":  "isaterms:description"
     } ,
     "submissionDate" : {
-      "@id":"isa:performed_on",
-      "@type": "isa:submission_date"
+      "@id":"isaterms:performed_on",
+      "@type": "isaterms:submission_date"
     } ,
     "publicReleaseDate" : {
-      "@id":"isa:performed_on",
-      "@type": "isa:release_date"
+      "@id":"isaterms:performed_on",
+      "@type": "isaterms:release_date"
     } ,
     "publications" : {
-                "@id":"isa:has_part",
-                "@type":"isa:publication"
+                "@id":"isaterms:has_part",
+                "@type":"isaterms:publication"
     },
     "people" : {
-                "@id":"isa:performed_by",
-                "@type":"isa:person"
+                "@id":"isaterms:performed_by",
+                "@type":"isaterms:person"
     },
     "studyDesignDescriptors": {
-        "@id":"isa:executes",
-        "@type":"isa:study_design"
+        "@id":"isaterms:executes",
+        "@type":"isaterms:study_design"
     },
     "protocols" : {
-        "@id":"isa:has_part",
-      "@type":"isa:protocol"
+        "@id":"isaterms:has_part",
+      "@type":"isaterms:protocol"
     },
     "materials": {  
-        "@id": "isa:has_part",
-        "@type" : "isa:material"
+        "@id": "isaterms:has_part",
+        "@type" : "isaterms:material"
     },
     "processSequence": {
-        "@id":"isa:has_part",
-        "@type" : "isa:process"
+        "@id":"isaterms:has_part",
+        "@type" : "isaterms:process"
     },
     "assays" : {
-        "@id":"isa:has_part",
-        "@type" : "isa:assays"
+        "@id":"isaterms:has_part",
+        "@type" : "isaterms:assays"
     },
     "factors": {
-        "@id":"isa:has_part",
-      "@type":"isa:factor"
+        "@id":"isaterms:has_part",
+      "@type":"isaterms:factor"
     },
     "characteristicCategories": {
-        "@id":"isa:is_described_by",
-        "@type":"isa:characteristic"
+        "@id":"isaterms:is_described_by",
+        "@type":"isaterms:characteristic"
     },
     "unitCategories": {},
     "comments" : {}

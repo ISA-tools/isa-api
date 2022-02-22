@@ -1,48 +1,48 @@
 {
   "@context":{
      "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isaterms": "http://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Protocol": "isa:protocol",
+    "Protocol": "isaterms:protocol",
     "filename" : {
-         "@id": "isa:has_part",
-         "@type": "isa:file"
+         "@id": "isaterms:has_part",
+         "@type": "isaterms:file"
     },
     "identifier" : {
-      "@id": "isa:identified_by",
+      "@id": "isaterms:identified_by",
       "@type": "@id"
     }, 
     "title" : {
-        "@id": "isa:is_described_by",
-        "@type": "isa:title"
+        "@id": "isaterms:is_described_by",
+        "@type": "isaterms:title"
     },
     "description" : {
-         "@id":"isa:is_described_by",
-         "@type":"isa:description"
+         "@id":"isaterms:is_described_by",
+         "@type":"isaterms:description"
     },
     "version" : {
-         "@id": "isa:version",
-         "@type":["isa:Text","isa:Number"]
+         "@id": "isaterms:version",
+         "@type":["isaterms:Text","isaterms:Number"]
          },   
     "components" : {
-                "@id":"isa:has_part",
-                "@type":"isa:instrument"
+                "@id":"isaterms:has_part",
+                "@type":"isaterms:instrument"
     },
     "parameters" : {
-                "@id":"isa:has_part",
-                "@type":"isa:parameters"  
+                "@id":"isaterms:has_part",
+                "@type":"isaterms:parameters"  
     },
     "uri" :{
-      "@id": "isa:is_described_by",
-      "@type": "isa:TODO"   
+      "@id": "isaterms:is_described_by",
+      "@type": "isaterms:TODO"   
     },  
     "publications" : {
-                "@id":"isa:has_part",
-                "@type":"isa:publication"
+                "@id":"isaterms:has_part",
+                "@type":"isaterms:publication"
     },
     "comments" : {
-     "@id" : "isa:is_described_by",
-     "@type" : "isa:comment"     
+     "@id" : "isaterms:is_described_by",
+     "@type" : "isaterms:comment"     
     }
     }
 }

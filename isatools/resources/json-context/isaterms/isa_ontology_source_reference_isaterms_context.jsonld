@@ -1,36 +1,36 @@
 {
   "@context": {
     "@language": "en",
-    "sdo": "http://schema.org",
+    "isaterms": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "OntologySourceReference": "sdo:DefinedTermSet",
+    "OntologySourceReference": "isaterms:ontology",
     "type" :{
-        "@id" : "sdo:",
-        "@type" : "sdo:DefinedTermSet"
+        "@id" : "isaterms:",
+        "@type" : "isaterms:ontology"
     },
     "title" : {
-        "@id": "sdo:headline",
-        "@type":"sdo:Text"
+        "@id": "isaterms:headline",
+        "@type":"isaterms:Text"
     },
     "description" : {
-         "@id": "sdo:description",
-         "@type":"sdo:Text"
+         "@id": "isaterms:description",
+         "@type":"isaterms:Text"
     } ,
     "name": {
-      "@id": "sdo:name",
-      "@type":"sdo:Text"
+      "@id": "isaterms:name",
+      "@type":"isaterms:Text"
     },
     "file" :  {
-         "@id" : "sdo:url",
-         "@type": "sdo:DataDownload"
+         "@id" : "isaterms:url",
+         "@type": "isaterms:file"
     },  
     "version" : {
-         "@id": "sdo:version",
-         "@type": "sdo:Text"
+         "@id": "isaterms:version",
+         "@type": "isaterms:Text"
          },
     "comments": {
-      "@id" : "sdo:comment",
-      "@type" : "sdo:Comment"
+      "@id" : "isaterms:comment",
+      "@type" : "isaterms:comment"
     }
   }
 }

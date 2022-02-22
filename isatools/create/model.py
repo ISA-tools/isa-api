@@ -2463,7 +2463,6 @@ class StudyDesign(object):
         """
         if isinstance(node, ProtocolNode):
             return Process(
-
                 name='{}_S{}_DAE_R{}'.format(  # DAE: DataAcquisitionEvent
                     assay_file_prefix,
                     start_node_index,
