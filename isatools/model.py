@@ -23,6 +23,7 @@ from collections.abc import Iterable
 import pprint
 import networkx as nx
 import yaml
+from isatools.graphQL.models import IsaSchema
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
@@ -532,6 +533,29 @@ class Investigation(Commentable, MetadataMixin, object):
             raise AttributeError(
                 'Investigation.studies must be iterable containing Study '
                 'objects')
+
+    def execute_query(self, query, variables=None):
+        """
+        Executes the given graphQL query with the given variables on the investigation
+        :param query: a graphQL query to execute
+        :param variables: the variables to bind to the graphQL query
+        :return: a response containing the selected data
+        """
+        IsaSchema.set_investigation(self)
+        return IsaSchema.execute(query, variables=variables)
+
+    @staticmethod
+    def introspect():
+        """
+        Executes the introspection query to get the schemas properties
+        :return: a response to the introspection query
+        """
+        project_root = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(project_root, os.path.join("graphQL/queries", "introspection.gql"))
+        with open(filepath, "r") as introspectionFile:
+            introspection_query = introspectionFile.read()
+            introspectionFile.close()
+        return IsaSchema.execute(introspection_query)
 
     def __repr__(self):
         return "isatools.model.Investigation(" \
@@ -1239,11 +1263,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     def add_source(self, name='', characteristics=None, comments=None):
         """Adds a new source to the source materials list.
-
-        Args:
-            name: Source name
-            characteristics: Source characteristics
-            comments: Source comments
+        :param string name: Source name
+        :param list[Characteristics] characteristics: Characteristics about the Source
+        :param list comments: Comments about the Source
         """
         s = Source(name=name, characteristics=characteristics,
                    comments=comments)
@@ -1342,12 +1364,13 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def add_sample(self, name='', characteristics=None, factor_values=None,
                    derives_from=None, comments=None):
         """Adds a new sample to the sample materials list.
-
-        Args:
-            name: Source name
-            characteristics: Source characteristics
-            comments: Source comments
+        :param string name: Sample name
+        :param list[Characteristics] characteristics: Characteristics about the sample
+        :param list comments: Comments about the sample
+        :param list derives_from: Sources
+        :param list factor_values: FactorValues
         """
+         
         s = Sample(name=name, characteristics=characteristics,
                    factor_values=factor_values, derives_from=derives_from,
                    comments=comments)
@@ -1355,13 +1378,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     def yield_samples(self, name=None):
         """Gets an iterator of matching samples for a given name.
-
-        Args:
-            name: Sample name
-
-        Returns:
-            :obj:`filter` of :obj:`Source` that can be iterated on.  If name is
-                None, yields all samples.
+        :param string name: Sample name
+        :return: object:`filter` of object:`Source` that can be iterated on.  If name is None, yields all samples.
         """
         if name is None:
             return filter(True, self.samples)

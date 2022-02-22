@@ -6,13 +6,12 @@ import shutil
 
 from isatools import isajson, isatab
 
-
 log = logging.getLogger('isatools')
 
 
 def convert(json_fp, path, i_file_name='i_investigation.txt',
             config_dir=isajson.default_config_dir,
-            validate_first=True):
+            validate_first=True, write_factor_values_in_assay_table=False):
     """
     Converter for ISA JSON to ISA Tab. Currently only converts
     investigation file contents
@@ -22,6 +21,7 @@ def convert(json_fp, path, i_file_name='i_investigation.txt',
                             i_investigation.txt
         :param config_dir: Directory to config directory
         :param validate_first: Validate JSON before conversion, default is True
+        :param write_factor_values_in_assay_table: Whether or not to write out Factor values in the Assay table, default is False
 
     Example usage:
         Read from a JSON and write to an investigation file, make sure to
@@ -46,7 +46,8 @@ def convert(json_fp, path, i_file_name='i_investigation.txt',
     isa_obj = isajson.load(fp=json_fp)
     log.info("Dumping ISA-Tab to %s", path)
     log.debug("Using configuration from %s", config_dir)
-    isatab.dump(isa_obj=isa_obj, output_path=path, i_file_name=i_file_name)
+    isatab.dump(isa_obj=isa_obj, output_path=path, i_file_name=i_file_name,
+                write_factor_values_in_assay_table=write_factor_values_in_assay_table)
     #  copy data files across from source directory where JSON is located
     log.info("Copying data files from source to target")
     for file in [f for f in os.listdir(os.path.dirname(json_fp.name))

@@ -1,0 +1,87 @@
+query introspection {
+    schemas: __schema {
+        types  {     ...FullType   }
+    }
+}
+
+fragment FullType on __Type {
+    name
+    kind
+    possibleTypes {
+        name
+        kind
+        fields {
+            name
+            description
+            type { kind }
+        }
+    }
+    fields(includeDeprecated: true) {
+        name
+        description
+        args {...InputValue }
+        isDeprecated
+        type {
+            kind
+        }
+    }
+}
+
+fragment InputValue on __InputValue {
+    name
+    description
+    type { ...TypeRef }
+    defaultValue
+}
+
+fragment TypeRef on __Type {
+    name
+    description
+    kind
+    ofType {name}
+    inputFields {
+        name
+        description
+        defaultValue
+        type {
+            kind
+            name
+            description
+            ofType {
+                name
+                inputFields {
+                    name
+                    description
+                    defaultValue
+                    type {
+                        kind
+                        name
+                        description
+                        ofType {name}
+                        inputFields {
+                            name
+                            description
+                            defaultValue
+                        }
+                    }
+                }
+            }
+            inputFields {
+                name
+                description
+                defaultValue
+                type {
+                    kind
+                    name
+                    description
+                    ofType {name}
+                    inputFields {
+                        name
+                        description
+                        defaultValue
+                    }
+                }
+            }
+        }
+    }
+}

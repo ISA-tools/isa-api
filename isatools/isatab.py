@@ -1419,6 +1419,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
+                    if node.date is not None:
+                        columns.append(olabel + ".Date")
+                    if node.performer is not None:
+                        columns.append(olabel + ".Performer")
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
                     if node.executes_protocol.protocol_type:
@@ -1433,10 +1437,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.extend(
                                 ["Hybridization Assay Name",
                                  "Array Design REF"])
-                    if node.date is not None:
-                        columns.append(olabel + ".Date")
-                    if node.performer is not None:
-                        columns.append(olabel + ".Performer")
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
@@ -5153,7 +5153,7 @@ def pairwise(iterable):
 class IsaTabSeries(pd.Series):
     """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
-    def _consutrctor(self):
+    def _constructor(self):
         return IsaTabSeries
 
 

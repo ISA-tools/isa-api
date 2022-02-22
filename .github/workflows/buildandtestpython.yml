@@ -3,7 +3,6 @@ name: Python package
 on:
   pull_request:
   push:
-    branches: master
 
 jobs:
   build:
@@ -38,3 +37,17 @@ jobs:
           behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
           coverage run -m unittest discover -s tests/
           coverage report -m
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test
+
+  coveralls_finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel-finished: true

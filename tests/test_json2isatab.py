@@ -160,4 +160,15 @@ class TestJson2IsaTab(unittest.TestCase):
             with open(os.path.join(self._tab_data_dir, 'BII-I-1_written_by_isatab', 'a_transcriptome.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
-
+    def test_json2isatab_convert_write_factor_values_in_assay_table(self):
+        with open(os.path.join(self._json_data_dir, "BII-I-1",
+                               "BII-I-1.json")) as json_fp:
+            json2isatab.convert(
+                json_fp, self._tmp_dir, write_factor_values_in_assay_table=True
+            )
+        with open(
+                os.path.join(self._tmp_dir, "a_transcriptome.txt")) as out_fp:
+            self.assertIn(
+                "Factor Value[limiting nutrient]\tFactor Value[rate]",
+                out_fp.readlines()[0]
+            )

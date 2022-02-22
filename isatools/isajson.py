@@ -993,7 +993,7 @@ def check_utf8(fp):
     import chardet
     with open(fp.name, "rb") as fp:
         charset = chardet.detect(fp.read())
-        if charset["encoding"] != "UTF-8" and charset["encoding"] != "ascii":
+        if charset["encoding"].upper() != "UTF-8" and charset["encoding"].lower() != "ascii":
             warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"], charset["confidence"]),
@@ -1741,6 +1741,7 @@ class ISAJSONEncoder(JSONEncoder):
                             "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), obj.factor_values)),
+                    "derivesFrom": list(map(lambda x: {"@id": id_gen(x)}, obj.derives_from)) if obj.derives_from else [],
                     "comments": get_comments(obj.comments) if obj.comments else []
             })
 
