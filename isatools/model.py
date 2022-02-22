@@ -23,6 +23,7 @@ from collections.abc import Iterable
 import pprint
 import networkx as nx
 import yaml
+from isatools.graphQL.models import IsaSchema
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
@@ -532,6 +533,29 @@ class Investigation(Commentable, MetadataMixin, object):
             raise AttributeError(
                 'Investigation.studies must be iterable containing Study '
                 'objects')
+
+    def execute_query(self, query, variables=None):
+        """
+        Executes the given graphQL query with the given variables on the investigation
+        :param query: a graphQL query to execute
+        :param variables: the variables to bind to the graphQL query
+        :return: a response containing the selected data
+        """
+        IsaSchema.set_investigation(self)
+        return IsaSchema.execute(query, variables=variables)
+
+    @staticmethod
+    def introspect():
+        """
+        Executes the introspection query to get the schemas properties
+        :return: a response to the introspection query
+        """
+        project_root = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(project_root, os.path.join("graphQL/queries", "introspection.gql"))
+        with open(filepath, "r") as introspectionFile:
+            introspection_query = introspectionFile.read()
+            introspectionFile.close()
+        return IsaSchema.execute(introspection_query)
 
     def __repr__(self):
         return "isatools.model.Investigation(" \
