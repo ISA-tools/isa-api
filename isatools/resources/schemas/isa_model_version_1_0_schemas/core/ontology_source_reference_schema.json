@@ -1,20 +1,33 @@
 {
+    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/prs-fix-isascreate/isatools/resources/schemas/isa_model_version_1_0_schemas/core/ontology_source_schema.json",
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA ontology source reference schema",
     "name" : "ISA ontology source reference schema",
     "description" : "JSON-schema representing an ontology reference in the ISA model",
     "type" : "object",
     "properties" : {
-        "comments" : {
+        "@id": {
+            "type": "string",
+            "format": "uri"
+        },
+        "comments": {
             "type": "array",
             "items": {
-                 "$ref": "comment_schema.json#"
+                "$ref": "comment_schema.json#"
             }
         },
-        "description" : { "type" : "string" },
-        "file" : { "type" : "string" },
-        "name": {"type": "string"},
-        "version": { "type": "string"}
+        "description": {
+            "type": "string"
+        },
+        "file": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "version": {
+            "type": "string"
+        }
     },
     "additionalProperties": false
 }

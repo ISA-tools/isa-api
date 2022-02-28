@@ -11,6 +11,7 @@
                  "$ref": "comment_schema.json#"
             }
         },
+        "@id": {"type": "string", "format" :  "uri" },
         "description" : { "type" : "string" },
         "file" : { "type" : "string" },
         "name": {"type": "string"},

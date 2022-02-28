@@ -29,6 +29,18 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 `isatools` currently supports Python 3.6+.
 
 ----
+### Read the Publication...
+
+Read our **open access [publication](https://doi.org/10.1093/gigascience/giab060) "SA API: An open platform for interoperable life science experimental metadata", published in GigaScience** as a `technical note`
+
+*David Johnson, Dominique Batista, Keeva Cochrane, Robert P. Davey, Anthony Etuk, Alejandra Gonzalez-Beltran, Kenneth Haug, Massimiliano Izzo, Martin Larralde, Thomas N. Lawson, Alice Minotto, Pablo Moreno, Venkata Chandrasekhar Nainala, Claire O'Donovan, Luca Pireddu, Pierrick Roger, Felix Shaw, Christoph Steinbeck, Ralf J. M. Weber, Susanna-Assunta Sansone, Philippe Rocca-Serra.
+ISA API: An open platform for interoperable life science experimental metadata. 2020.11.13.382119; doi:
+[10.1093/gigascience/giab060](https://doi.org/10.1093/gigascience/giab060)*
+
+----
+
+
+----
 *Authors*: [The ISA team](http://www.isa-tools.org/team/).
 
 *License*:      This code is licensed under the [CPAL License](https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt).
@@ -44,7 +56,10 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 ----
 Using the ISA-API
 -----------------
-To install and start using the ISA-API, check out the project documentation at [isatools.readthedocs.org](https://isatools.readthedocs.org).
+
+The documentation to install and use the ISA-API (v0.12 and above) can be found [here](https://isa-tools.org/isa-api/content/index.html).
+
+For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
 Contributing
 ------------

@@ -7,7 +7,14 @@ SCREEN = 'screen'
 RUN_IN = 'run-in'
 WASHOUT = 'washout'
 FOLLOW_UP = 'follow-up'
-ELEMENT_TYPES = dict(SCREEN=SCREEN, RUN_IN=RUN_IN, WASHOUT=WASHOUT, FOLLOW_UP=FOLLOW_UP)
+OBSERVATION_PERIOD = 'observation period'
+ELEMENT_TYPES = dict(
+    SCREEN=SCREEN,
+    RUN_IN=RUN_IN,
+    WASHOUT=WASHOUT,
+    FOLLOW_UP=FOLLOW_UP,
+    OBSERVATION_PERIOD=OBSERVATION_PERIOD
+)
 
 # TREATMENT/INTERVENTION TYPES
 INTERVENTIONS = dict(CHEMICAL='chemical intervention',
@@ -23,10 +30,13 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention',
 FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
                     DURATION_VALUES='duration values')
+
 DURATION_FACTOR_ = dict(name='DURATION', type=OntologyAnnotation(term="time"),
                         display_singular='DURATION VALUE',
                         display_plural='DURATION VALUES', values=set())
+
 DURATION_FACTOR = StudyFactor(name=DURATION_FACTOR_['name'], factor_type=DURATION_FACTOR_.get('type', None))
+
 BASE_FACTORS_ = (
     dict(
         name='AGENT', type=OntologyAnnotation(term="perturbation agent"),
@@ -48,7 +58,22 @@ BASE_FACTORS = (
     DURATION_FACTOR,
 )
 
+# Is treatment EPOCH
+IS_TREATMENT_EPOCH = 'study step with treatment'
+
+# Sequence Order Study Factor
+SEQUENCE_ORDER_FACTOR_ = dict(
+    name='Sequence Order',
+    type=OntologyAnnotation(term='sequence order')
+)
+
+SEQUENCE_ORDER_FACTOR = StudyFactor(
+    name=SEQUENCE_ORDER_FACTOR_['name'],
+    factor_type=SEQUENCE_ORDER_FACTOR_['type']
+)
+
 # Allowed types of product nodes in ISA create mode
+# TODO create a regex instead
 SOURCE = 'source'
 SAMPLE = 'sample'
 EXTRACT = 'extract'
@@ -69,16 +94,20 @@ EXTRACT_PREFIX = 'EXTR'
 LABELED_EXTRACT_PREFIX = 'LBLEXTR'
 ASSAY_GRAPH_PREFIX = 'AT'   # AT stands for Assay Type
 
-# constants specific to the sampling plan in the study generation from the study design
-RUN_ORDER = 'run order'
-STUDY_CELL = 'study cell'
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'study-creator-config.yml')) as yaml_file:
     yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
 default_ontology_source_reference = OntologySource(**yaml_config['study']['ontology_source_references'][1])
+
+# constants specific to the sampling plan in the study generation from the study design
+RUN_ORDER = yaml_config['study']['protocols'][0]['parameters'][0]
+STUDY_CELL = yaml_config['study']['protocols'][0]['parameters'][1]
+
 with open(os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml',
                        'assay-options.yml')) as yaml_file:
     assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+
 DEFAULT_SOURCE_TYPE = Characteristic(
     category=OntologyAnnotation(
         term='Study Subject',
@@ -91,6 +120,16 @@ DEFAULT_SOURCE_TYPE = Characteristic(
         term_accession='http://purl.obolibrary.org/obo/NCIT_C14225'
     )
 )
+
+
+def set_defaulttype_value(term="Human",
+                          term_accession="http://purl.obolibrary.org/obo/NCIT_C14225",
+                          term_source=default_ontology_source_reference):
+
+    DEFAULT_SOURCE_TYPE.value.term = term
+    DEFAULT_SOURCE_TYPE.value.term_accession = term_accession
+    DEFAULT_SOURCE_TYPE.value.term_source = term_source
+
 
 # CONSTANTS/PARAMS FOR QUALITY CONTROL
 SOURCE_QC_SOURCE_NAME = 'source_QC'
@@ -106,7 +145,7 @@ ZFILL_WIDTH = 3
 DEFAULT_PERFORMER = 'Unknown'
 
 # Default study identifier
-DEFAULT_STUDY_IDENTIFIER = 's_01'
+DEFAULT_STUDY_IDENTIFIER = 'PTX-ST01'
 DEFAULT_INVESTIGATION_IDENTIFIER = 'i_01'
 
 # Default file extension (no dot required)

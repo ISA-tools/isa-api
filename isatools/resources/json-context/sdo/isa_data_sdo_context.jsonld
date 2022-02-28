@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Data": "sdo:DataDownload",
+    "type" :{
+        "@id" : "sdo:encoding",
+        "@type" :  "sdo:DataDownload"
+    },
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "sdo:name",
+      "@type":"sdo:Text"
+    },
+    "comments": {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+  }
+}

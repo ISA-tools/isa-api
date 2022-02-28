@@ -17,6 +17,7 @@ def convert(json_fp, path, config_dir=None, sra_settings=None,
         embedded in API
     :param sra_settings: SRA settings dict
     :param datafilehashes: Data files with hashes, in a dict
+    :param validate_first: a boolean flag to indicate whether to validate or not before converting
     """
     if validate_first:
         log.info("Validating input JSON before conversion")

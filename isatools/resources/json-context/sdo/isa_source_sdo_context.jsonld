@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Source": "sdo:Product",
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "name": {
+        "@id": "sdo:name",
+        "@type": "sdo:Text"
+    },
+
+    "characteristics": {
+      "@id" : "sdo:hasPart",
+      "@type" : "sdo:PropertyValue"
+    },
+     "roles": {
+        "@id": "sdo:potentialAction",
+        "@type" : "sdo:Action"
+        }
+  }
+}

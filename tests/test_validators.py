@@ -52,10 +52,10 @@ class TestValidateIsaJson(unittest.TestCase):
             report = isajson.validate(fp)
             if 10 in [e['code'] for e in report['warnings']]:
                 self.fail("Validation warning present when testing against UTF-8 encoded file")
-            with open(os.path.join(self._unit_json_data_dir, 'non_utf8.json')) as fp:
-                report = isajson.validate(fp)
-                if 10 not in [e['code'] for e in report['warnings']]:
-                    self.fail("Validation warning missing when testing against UTF-16 encoded file (UTF-8 required)")
+        with open(os.path.join(self._unit_json_data_dir, 'non_utf8.json')) as fp:
+            report = isajson.validate(fp)
+            if 10 not in [e['code'] for e in report['warnings']]:
+                self.fail("Validation warning missing when testing against UTF-16 encoded file (UTF-8 required)")
 
     def test_validate_isajson_source_link(self):
         """Tests against 1002, but reports 1005 error (more general case)"""
@@ -374,9 +374,9 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                 'supplemental': 'Found 12 study groups in a_transcriptome.txt'},
                 report['info'])
             self.assertIn({'message': 'Found 7 study groups in a_microarray.txt',
-                'code': 5001,
-                'supplemental': 'Found 7 study groups in a_microarray.txt'},
-                report['info'])
+                           'code': 5001,
+                           'supplemental': 'Found 7 study groups in a_microarray.txt'},
+                          report['info'])
 
     def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
         test_case = 'BII-I-1'
@@ -436,8 +436,6 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                  'code': 5001,
                  'message': 'Found 4 study groups in s_MTBLS1.txt'},
                 report['info'])
-
-
 
 
 class TestBatchValidateIsaTab(unittest.TestCase):

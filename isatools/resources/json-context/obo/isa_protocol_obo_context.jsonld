@@ -1,0 +1,49 @@
+{
+  "@context":{
+     "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Protocol":  {"@id": "obo:OBI_0000272"},
+    "filename" : {
+         "@id": "obo:IAO_0000590",
+         "@type": ""
+    },
+    "identifier" : {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "obo:IAO_0000235",
+        "@type": "obo:OBI_0001622"
+    },
+    "description" : {
+         "@id":"obo:IAO_0000235",
+         "@type":"obo:IAO_0000300"
+    },
+    "version" : {
+         "@id": "obo:IAO_0000235",
+         "@type":"obo:IAO_000012"
+         },   
+    "components" : {
+                "@id":"obo:ECO_9000001",
+                "@type":["obo:OBI_0000968","obo:IAO_0000010"]
+    },
+    "parameters" : {
+                "@id":"obo:STATO_0000001",
+                "@type":["obo:BFO_0000019","obo:OBI_0000968","obo:IAO_0000010"]   
+    },
+    "uri" :{
+       "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000577"   
+    },  
+    "publications" : {
+                "@id":"obo:IAO_0000235",
+                "@type":"obo:IAO_0000013"
+    },
+    "comments" : {
+              "@id" : "obo:IAO_0000235",
+              "@type" : "obo:IAO_0000300"
+        
+    }
+    }
+}

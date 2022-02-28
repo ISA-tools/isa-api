@@ -23,6 +23,7 @@ from collections.abc import Iterable
 import pprint
 import networkx as nx
 import yaml
+from isatools.graphQL.models import IsaSchema
 
 log = logging.getLogger('isatools')
 log.setLevel(logging.DEBUG)
@@ -43,11 +44,13 @@ def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
     g = nx.DiGraph()
+    g.indexes = {}
     if process_sequence is None:
         return g
     for process in process_sequence:
-        # log.debug('Current process is: {0}'.format(process.id))
-        # log.debug('Next process for current process is: {0}'.format(getattr(process.next_process, 'id', None)))
+        g.indexes[process.sequence_identifier] = process
+        # log.debug('Current process is: {0}'.format(process.identifier))
+        # log.debug('Next process for current process is: {0}'.format(getattr(process.next_process_identifier, 'id', None)))
         # log.debug('Previous process for current process is: {0}'.format(getattr(process.prev_process, 'id', None)))
         # log.debug('Inputs for current process are: {0}'.format(
         #    [getattr(input_, 'id', None) for input_ in process.inputs]
@@ -60,20 +63,28 @@ def _build_assay_graph(process_sequence=None):
                     not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
-                    g.add_edge(process, output)
+                    g.add_edge(process.sequence_identifier, output.sequence_identifier)
+                    g.indexes[output.sequence_identifier] = output
                     # log.debug('linking process {0} to output {1}'.format(process.id, getattr(output, 'id', None)))
             else:
-                g.add_edge(process, process.next_process)
+                next_process_identifier = getattr(process.next_process, "sequence_identifier", None)
+                if next_process_identifier is not None:
+                    g.add_edge(process.sequence_identifier, next_process_identifier)
+                    g.indexes[next_process_identifier] = process.next_process
                 # log.debug('linking process {1} to prev_process {0}'.format(
-                #    getattr(process.next_process, 'id', None), process.id))
+                #    getattr(process.next_process_identifier, 'id', None), process.id))
 
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
-                    g.add_edge(input_, process)
+                    g.add_edge(input_.sequence_identifier, process.sequence_identifier)
+                    g.indexes[input_.sequence_identifier] = input_
                     # log.debug('linking input {1} to process {0}'.format(process.id, getattr(input_, 'id', None)))
             else:
-                g.add_edge(process.prev_process, process)
+                previous_process_identifier = getattr(process.prev_process, "sequence_identifier", None)
+                if previous_process_identifier is not None:
+                    g.add_edge(previous_process_identifier, process.sequence_identifier)
+                    g.indexes[previous_process_identifier] = process.prev_process
                 # log.debug('linking prev_process {0} to process {1}'.format(
                 #     getattr(process.prev_process, 'id', None), process.id))
     return g
@@ -523,6 +534,29 @@ class Investigation(Commentable, MetadataMixin, object):
                 'Investigation.studies must be iterable containing Study '
                 'objects')
 
+    def execute_query(self, query, variables=None):
+        """
+        Executes the given graphQL query with the given variables on the investigation
+        :param query: a graphQL query to execute
+        :param variables: the variables to bind to the graphQL query
+        :return: a response containing the selected data
+        """
+        IsaSchema.set_investigation(self)
+        return IsaSchema.execute(query, variables=variables)
+
+    @staticmethod
+    def introspect():
+        """
+        Executes the introspection query to get the schemas properties
+        :return: a response to the introspection query
+        """
+        project_root = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(project_root, os.path.join("graphQL/queries", "introspection.gql"))
+        with open(filepath, "r") as introspectionFile:
+            introspection_query = introspectionFile.read()
+            introspectionFile.close()
+        return IsaSchema.execute(introspection_query)
+
     def __repr__(self):
         return "isatools.model.Investigation(" \
                "identifier='{investigation.identifier}', " \
@@ -761,14 +795,24 @@ class OntologyAnnotation(Commentable):
                     term_source=repr(self.term_source))
 
     def __str__(self):
-        return """OntologyAnnotation(
-    term={ontology_annotation.term}
-    term_source={term_source_ref}
-    term_accession={ontology_annotation.term_accession}
-    comments={num_comments} Comment objects
-)""".format(ontology_annotation=self,
-            term_source_ref=self.term_source.name if self.term_source else '',
-            num_comments=len(self.comments))
+        if not self.term_source == str and isinstance(self.term_source, OntologySource):
+            return """OntologyAnnotation(
+        term={ontology_annotation.term}
+        term_source={term_source_ref}
+        term_accession={ontology_annotation.term_accession}
+        comments={num_comments} Comment objects
+    )""".format(ontology_annotation=self,
+                term_source_ref=self.term_source.name,
+                num_comments=len(self.comments))
+        else:
+            return """OntologyAnnotation(
+        term={ontology_annotation.term}
+        term_source={term_source_ref}
+        term_accession={ontology_annotation.term_accession}
+        comments={num_comments} Comment objects
+    )""".format(ontology_annotation=self,
+                term_source_ref=self.term_source ,
+                num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -1229,11 +1273,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     def add_source(self, name='', characteristics=None, comments=None):
         """Adds a new source to the source materials list.
-
-        Args:
-            name: Source name
-            characteristics: Source characteristics
-            comments: Source comments
+        :param string name: Source name
+        :param list[Characteristics] characteristics: Characteristics about the Source
+        :param list comments: Comments about the Source
         """
         s = Source(name=name, characteristics=characteristics,
                    comments=comments)
@@ -1332,12 +1374,13 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def add_sample(self, name='', characteristics=None, factor_values=None,
                    derives_from=None, comments=None):
         """Adds a new sample to the sample materials list.
-
-        Args:
-            name: Source name
-            characteristics: Source characteristics
-            comments: Source comments
+        :param string name: Sample name
+        :param list[Characteristics] characteristics: Characteristics about the sample
+        :param list comments: Comments about the sample
+        :param list derives_from: Sources
+        :param list factor_values: FactorValues
         """
+         
         s = Sample(name=name, characteristics=characteristics,
                    factor_values=factor_values, derives_from=derives_from,
                    comments=comments)
@@ -1345,13 +1388,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     def yield_samples(self, name=None):
         """Gets an iterator of matching samples for a given name.
-
-        Args:
-            name: Sample name
-
-        Returns:
-            :obj:`filter` of :obj:`Source` that can be iterated on.  If name is
-                None, yields all samples.
+        :param string name: Sample name
+        :return: object:`filter` of object:`Source` that can be iterated on.  If name is None, yields all samples.
         """
         if name is None:
             return filter(True, self.samples)
@@ -2387,12 +2425,15 @@ class ProtocolParameter(Commentable):
 
     @parameter_name.setter
     def parameter_name(self, val):
-        if val is not None and not isinstance(val, (str, OntologyAnnotation)):
+        if val is None or isinstance(val, OntologyAnnotation):
+            self.__parameter_name = val
+        elif isinstance(val, str):
+            self.__parameter_name = OntologyAnnotation(term=val)
+        else:
             raise AttributeError(
                 'ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation '
-                'or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__parameter_name = val
+                'or None; got {0}:{1}'.format(val, type(val))
+            )
 
     def __repr__(self):
         return 'isatools.model.ProtocolParameter(' \
@@ -2600,7 +2641,20 @@ class ProtocolComponent(Commentable):
         return not self == other
 
 
-class Source(Commentable):
+class ProcessSequenceNode(metaclass=abc.ABCMeta):
+    sequence_identifier = 0
+
+    def __init__(self):
+        self.sequence_identifier = ProcessSequenceNode.sequence_identifier
+        ProcessSequenceNode.sequence_identifier += 1
+
+    def assign_identifier(self):
+        # ProcessSequenceNode.sequence_identifier += 1
+        self.sequence_identifier = ProcessSequenceNode.sequence_identifier
+        ProcessSequenceNode.sequence_identifier += 1
+
+
+class Source(Commentable, ProcessSequenceNode):
     """Represents a Source material in an experimental graph.
 
     Attributes:
@@ -2611,7 +2665,9 @@ class Source(Commentable):
     """
 
     def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(comments)
+        #super().__init__(comments)
+        Commentable.__init__(self, comments)
+        ProcessSequenceNode.__init__(self)
 
         self.id = id_
         self.__name = name
@@ -2800,7 +2856,7 @@ class Characteristic(Commentable):
         return not self == other
 
 
-class Sample(Commentable):
+class Sample(Commentable, ProcessSequenceNode):
     """Represents a Sample material in an experimental graph.
 
     Attributes:
@@ -2816,7 +2872,9 @@ class Sample(Commentable):
 
     def __init__(self, name='', id_='', factor_values=None,
                  characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        #super().__init__(comments)
+        Commentable.__init__(self, comments)
+        ProcessSequenceNode.__init__(self)
 
         self.id = id_
         self.__name = name
@@ -2945,13 +3003,15 @@ class Sample(Commentable):
         return not self == other
 
 
-class Material(Commentable, metaclass=abc.ABCMeta):
+class Material(Commentable, ProcessSequenceNode, metaclass=abc.ABCMeta):
     """Represents a generic material in an experimental graph.
     """
 
     def __init__(self, name='', id_='', type_='', characteristics=None,
                  comments=None):
-        super().__init__(comments)
+        # super().__init__(comments)
+        Commentable.__init__(self, comments)
+        ProcessSequenceNode.__init__(self)
 
         self.id = id_
         self.__name = name
@@ -2983,8 +3043,8 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 
     @type.setter
     def type(self, val):
-        if val is not None and not isinstance(val, str) \
-                and val not in ('Extract Name', 'Labeled Extract Name'):
+        # TODO: use json_schema to get these values
+        if val is not None and (not isinstance(val, str) or val not in ['Extract Name', 'Labeled Extract Name']):
             raise AttributeError(
                 '{0}.type must be a str in ("Extract Name", "Labeled Extract '
                 'Name") or None; got {1}:{2}'
@@ -3182,7 +3242,7 @@ class FactorValue(Commentable):
         return not self == other
 
 
-class Process(Commentable):
+class Process(Commentable, ProcessSequenceNode):
     """Process nodes represent the application of a protocol to some input
     material (e.g. a Source) to produce some output (e.g.a Sample).
 
@@ -3208,7 +3268,8 @@ class Process(Commentable):
     def __init__(self, id_='', name='', executes_protocol=None, date_=None,
                  performer=None, parameter_values=None, inputs=None,
                  outputs=None, comments=None):
-        super().__init__(comments)
+        Commentable.__init__(self, comments)
+        ProcessSequenceNode.__init__(self)
 
         self.id = id_
         self.__name = None
@@ -3401,7 +3462,7 @@ class Process(Commentable):
         return not self == other
 
 
-class DataFile(Commentable):
+class DataFile(Commentable, ProcessSequenceNode):
     """Represents a data file in an experimental graph.
 
     Attributes:
@@ -3411,10 +3472,11 @@ class DataFile(Commentable):
         generated_from: Reference to Sample(s) the DataFile is generated from
         comments: Comments associated with instances of this class.
     """
-
     def __init__(self, filename='', id_='', label='', generated_from=None,
                  comments=None):
-        super().__init__(comments)
+        # super().__init__(comments)
+        Commentable.__init__(self, comments)
+        ProcessSequenceNode.__init__(self)
 
         self.id = id_
         self.__filename = filename
@@ -3943,6 +4005,17 @@ class FreeInductionDecayDataFile(DataFile):
         return not self == other
 
 
+def _deep_copy(isa_object):
+    """
+    Re-implementation of the deepcopy function that also increases and sets the object identifiers for copied objects.
+    :param {Object} isa_object: the object to copy
+    """
+    from copy import deepcopy
+    new_obj = deepcopy(isa_object)
+    new_obj.assign_identifier()
+    return new_obj
+
+
 def batch_create_materials(material=None, n=1):
     """Creates a batch of material objects (Source, Sample or Material) from a
     prototype material object
@@ -3965,11 +4038,9 @@ def batch_create_materials(material=None, n=1):
     """
     material_list = list()
     if isinstance(material, (Source, Sample, Material)):
-        from copy import deepcopy
         for x in range(0, n):
-            new_obj = deepcopy(material)
+            new_obj = _deep_copy(material)
             new_obj.name = material.name + '-' + str(x)
-
             if hasattr(material, 'derives_from'):
                 new_obj.derives_from = material.derives_from
 
@@ -4018,13 +4089,12 @@ def batch_create_assays(*args, n=1):
     materialA = None
     process = None
     materialB = None
-    from copy import deepcopy
     for x in range(0, n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
                 if isinstance(arg[0], (Source, Sample, Material)):
                     if materialA is None:
-                        materialA = deepcopy(arg)
+                        materialA = _deep_copy(arg)
                         y = 0
                         for material in materialA:
                             material.name = \
@@ -4032,7 +4102,7 @@ def batch_create_assays(*args, n=1):
                                 + str(y)
                             y += 1
                     else:
-                        materialB = deepcopy(arg)
+                        materialB = _deep_copy(arg)
                         y = 0
                         for material in materialB:
                             material.name = \
@@ -4040,20 +4110,20 @@ def batch_create_assays(*args, n=1):
                                 + str(y)
                             y += 1
                 elif isinstance(arg[0], Process):
-                    process = deepcopy(arg)
+                    process = _deep_copy(arg)
                     y = 0
                     for p in process:
                         p.name = p.name + '-' + str(x) + '-' + str(y)
                         y += 1
             if isinstance(arg, (Source, Sample, Material)):
                 if materialA is None:
-                    materialA = deepcopy(arg)
+                    materialA = _deep_copy(arg)
                     materialA.name = materialA.name + '-' + str(x)
                 else:
-                    materialB = deepcopy(arg)
+                    materialB = _deep_copy(arg)
                     materialB.name = materialB.name + '-' + str(x)
             elif isinstance(arg, Process):
-                process = deepcopy(arg)
+                process = _deep_copy(arg)
                 process.name = process.name + '-' + str(x)
             if materialA is not None and materialB is not None \
                     and process is not None:
@@ -4120,6 +4190,11 @@ class ISADocument:
 
 
 def plink(p1, p2):
+    """
+    Function to create a link between two processes nodes of the isa graph
+    :param Process p1: node 1
+    :param Process p2: node 2
+    """
     if isinstance(p1, Process) and isinstance(p2, Process):
         p1.next_process = p2
         p2.prev_process = p1

@@ -157,7 +157,7 @@ def assay_ordered_dict_to_template(assay_ord_dict):
 
 def _generate_element(datascriptor_element_dict):
     """
-    Generates elements (Treatement and NonTreatment) from their description as Datascriptor dicts
+    Generates elements (Treatment and NonTreatment) from their description as Datascriptor dicts
     :param datascriptor_element_dict: dict
     :return: isatools.create.models.Element
     """
@@ -237,10 +237,10 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
             prepared_nodes = {}
             for candidate_param_name, param in node.items():
                 # if it is a special key (e.g."#replicates") leave it alone
-                if candidate_param_name[0] == '#' and not isinstance(param, list):
+                if candidate_param_name[0] == '#':
                     prepared_nodes[candidate_param_name] = param['value']
                 else:
-                    if not param['values']:
+                    if not param["values"]:
                         raise ValueError('Missing values for Protocol Param {}'.format(
                             candidate_param_name['term'] if isinstance(
                                 candidate_param_name, dict
@@ -249,7 +249,7 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
                     # this is really a parameter name
                     param_name = _map_ontology_annotation(candidate_param_name, expand_strings=True)
                     prepared_nodes[param_name] = [
-                        _map_ontology_annotation(param_value) for param_value in param['values']
+                        _map_ontology_annotation(param_value) for param_value in param["values"]
                     ]
         elif 'node_type' in node:
             # this is a product node
@@ -285,13 +285,14 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
     return res
 
 
-def generate_study_design(study_design_config):
+def generate_study_design(datascriptor_study_config):
     """
     This function takes a study design configuration as produced from the Datascriptor application
     and outputs a StudyDesign object
-    :param study_design_config: dict
+    :param datascriptor_study_config: dict
     :return: isatools.create.StudyDesign
     """
+    study_design_config = datascriptor_study_config['design']
     arms = []
     for arm_ix, arm_dict in enumerate(study_design_config['arms']['selected']):
         arm_map = OrderedDict()
@@ -345,8 +346,9 @@ def generate_study_design(study_design_config):
         )
         arms.append(arm)
     return StudyDesign(
-        name=study_design_config['name'],
-        description=study_design_config.get('description', None),
+        identifier=datascriptor_study_config.get('_id', None),
+        name=datascriptor_study_config['name'],
+        description=datascriptor_study_config.get('description', None),
         design_type=_map_ontology_annotation(study_design_config['designType']),
         study_arms=arms
     )

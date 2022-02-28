@@ -94,13 +94,13 @@ class TestOlsSearch(unittest.TestCase):
         ontology_annotations = ols.search_ols('cell type', ontology_source)
         self.assertIsInstance(ontology_annotations, list)
         self.assertGreater(len(ontology_annotations), 0)
-        ontology_anotations = [oa for oa in ontology_annotations if 
-                               oa.term == 'cell type']
-        self.assertIsInstance(ontology_anotations[-1], OntologyAnnotation)
-        self.assertEqual(ontology_anotations[-1].term, 'cell type')
+        ontology_annotations = [oa for oa in ontology_annotations if
+                                oa.term == 'cell type']
+        self.assertIsInstance(ontology_annotations[-1], OntologyAnnotation)
+        self.assertEqual(ontology_annotations[-1].term, 'cell type')
         self.assertIn('http://www.ebi.ac.uk/efo/EFO_0000324',
-                      [oa.term_accession for oa in ontology_anotations])
-        self.assertEqual(ontology_anotations[-1].term_source, ontology_source)
+                      [oa.term_accession for oa in ontology_annotations])
+        self.assertEqual(ontology_annotations[-1].term_source, ontology_source)
 
 
 class TestISArchiveExport(unittest.TestCase):
@@ -407,7 +407,6 @@ class TestIsaTabFixer(unittest.TestCase):
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
-
 
         # check the parameter got added to the protocol
         with open(os.path.dirname(

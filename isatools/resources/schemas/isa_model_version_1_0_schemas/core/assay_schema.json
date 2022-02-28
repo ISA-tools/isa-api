@@ -1,32 +1,22 @@
 {
+  "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/assay_schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Assay JSON Schema",
   "name": "Assay JSON Schema",
   "description": "JSON Schema describing an Assay",
   "@context": {
-    "@base": "http://purl.org/isaterms/",
+    "@base": "https://purl.org/isaterms/",
     "xsd": "http://www.w3.org/2001/XMLSchema#"
   },
   "type": "object",
   "properties": {
     "@id": { "type": "string", "format": "uri" },
-    "comments" : {
-      "type": "array",
-      "items": {
-        "$ref": "comment_schema.json#"
-      }
-    },
     "filename" : { "type" : "string" },
     "measurementType" : {
       "$ref": "ontology_annotation_schema.json#"
     },
     "technologyType" : {
-      "type" : "object",
-      "properties": {
-        "ontologyAnnotation" : {
           "$ref": "ontology_annotation_schema.json#"
-        }
-      }
     },
     "technologyPlatform" : { "type" : "string"},
     "dataFiles" : {
@@ -70,6 +60,12 @@
       "type": "array",
       "items" : {
         "$ref" : "process_schema.json#"
+      }
+    },
+    "comments" : {
+      "type": "array",
+      "items": {
+        "$ref": "comment_schema.json#"
       }
     }
   },

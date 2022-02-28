@@ -86,7 +86,8 @@ class TestSimpleIsaTabExample(unittest.TestCase):
         args = ['validateISAtab.py', os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')]
         validateISAtab.main(args)
         sys.stdout = old_stdout
-        self.assertIn("Validated 1 ISA-Tab archives, 1 valid ISA-Tab archives, 0 invalid ISA-Tab archives", mystdout.getvalue())
+        self.assertIn("Validated 1 ISA-Tab archives, 1 valid ISA-Tab archives, 0 invalid ISA-Tab archives",
+                      mystdout.getvalue())
         self.assertIn("Found 0 errors and 40 warnings in across all ISA-Tab archives", mystdout.getvalue())
 
 
@@ -102,6 +103,7 @@ class TestSimpleIsaJsonExample(unittest.TestCase):
         from isatools.examples import createSimpleISAJSON
         sys.stdout = StringIO()
         out = createSimpleISAJSON.create_descriptor()
+        print(out)
         # self.assertIn("i_investigation.txt", out)
         self.assertIn("s_study.txt", out)
         self.assertIn("a_assay.txt", out)
@@ -147,4 +149,5 @@ class TestSimpleIsaJsonExample(unittest.TestCase):
         validateISAjson.main(args)
         sys.stdout = old_stdout
         self.assertIn("Validated 1 ISA-JSONs, 1 valid ISA-JSONs, 0 invalid ISA-JSONs", mystdout.getvalue())
-        self.assertIn("Found 0 errors and 136 warnings in across all ISA-JSONs", mystdout.getvalue())  # TODO: Double check why the warnings occur
+        # TODO: Double check why the warnings occur#
+        self.assertIn("Found 0 errors and 136 warnings in across all ISA-JSONs", mystdout.getvalue())

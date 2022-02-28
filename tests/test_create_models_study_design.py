@@ -89,14 +89,14 @@ class NonTreatmentTest(unittest.TestCase):
     def setUp(self):
         self.non_treatment = NonTreatment(duration_value=self.DURATION_VALUE, duration_unit=self.DURATION_UNIT)
 
-    def test_init_and_propeties(self):
+    def test_init_and_properties(self):
         self.assertEqual(self.non_treatment.type, ELEMENT_TYPES['SCREEN'])
         self.assertEqual(self.non_treatment.duration, FactorValue(factor_name=DURATION_FACTOR,
                                                                   value=self.DURATION_VALUE,
                                                                   unit=self.DURATION_UNIT))
 
     def test_repr(self):
-        print(self.non_treatment.duration)
+        # print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
                          "isatools.create.model.NonTreatment(type='screen', duration=isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='DURATION', "
@@ -221,19 +221,19 @@ class StudyCellTest(unittest.TestCase):
     # _non_treatment_check() tests
     def test_non_treatment_check__empty_cell_00(self):
         self.assertTrue(self.cell._non_treatment_check([], self.screen),
-                        'A SCREEN element can alway be added to an empty cell')
+                        'A SCREEN element can always be added to an empty cell')
 
     def test_non_treatment_check__empty_cell_01(self):
         self.assertTrue(self.cell._non_treatment_check([], self.run_in),
-                        'A RUN-IN element can alway be added to an empty cell')
+                        'A RUN-IN element can always be added to an empty cell')
 
     def test_non_treatment_check__empty_cell_02(self):
         self.assertTrue(self.cell._non_treatment_check([], self.washout),
-                        'A WASHOUT element can alway be added to an empty cell')
+                        'A WASHOUT element can always be added to an empty cell')
 
     def test_non_treatment_check__empty_cell_03(self):
         self.assertTrue(self.cell._non_treatment_check([], self.follow_up),
-                        'A FOLLOW-UP element can alway be added to an empty cell')
+                        'A FOLLOW-UP element can always be added to an empty cell')
 
     def test_non_treatment_check__screen_cell_00(self):
         self.assertFalse(self.cell._non_treatment_check([self.screen], self.screen),
@@ -659,6 +659,14 @@ class StudyCellTest(unittest.TestCase):
         self.cell.elements = [self.follow_up]
         self.assertEqual(self.cell.get_all_elements(), [self.follow_up])
 
+    def test_has_treatments_true(self):
+        self.cell.elements = [self.first_treatment, self.washout, self.fourth_treatment]
+        self.assertTrue(self.cell.has_treatments)
+
+    def test_has_treatments_false(self):
+        self.cell.elements = [self.screen, self.run_in]
+        self.assertFalse(self.cell.has_treatments)
+
 
 class ProtocolNodeTest(unittest.TestCase):
 
@@ -864,7 +872,7 @@ class AssayGraphTest(unittest.TestCase):
         self.assertIsInstance(self.assay_graph, AssayGraph)
         self.assertIsNotNone(nmr_assay_graph.id)
         self.assertIsInstance(nmr_assay_graph.id, str)
-        nmr_nodes = list(filter(lambda n: n.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
+        nmr_nodes = list(filter(lambda n: n.name.endswith('nmr spectroscopy'), nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for node in nmr_nodes:
             self.assertEqual(node.replicates, 2)
@@ -959,8 +967,8 @@ class AssayGraphTest(unittest.TestCase):
 
     def test_previous_protocol_nodes(self):
         nmr_assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
-        extraction_node = next(node for node in nmr_assay_graph.nodes if node.name == 'extraction')
-        nmr_nodes = list(filter(lambda node: node.name == 'nmr spectroscopy', nmr_assay_graph.nodes))
+        extraction_node = next(node for node in nmr_assay_graph.nodes if node.name.endswith('extraction'))
+        nmr_nodes = list(filter(lambda node: node.name.endswith('nmr spectroscopy'), nmr_assay_graph.nodes))
         self.assertEqual(len(nmr_nodes), 8)
         for nmr_node in nmr_nodes:
             self.assertEqual(nmr_assay_graph.previous_protocol_nodes(nmr_node), {extraction_node})
@@ -1141,11 +1149,12 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         self.assertEqual(ms_assay_graph.technology_type, ms_assay_dict['technology_type'])
         self.assertEqual(len(ms_assay_graph.nodes), 15)
         self.assertEqual(len(ms_assay_graph.links), 14)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'extraction', ms_assay_graph.nodes))), 1)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('extraction'), ms_assay_graph.nodes))), 1)
         self.assertEqual(len(list(filter(lambda node: node.name == 'extract', ms_assay_graph.nodes))), 2)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'labelling', ms_assay_graph.nodes))), 2)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('labelling'), ms_assay_graph.nodes))), 2)
         self.assertEqual(len(list(filter(lambda node: node.name == 'labelled extract', ms_assay_graph.nodes))), 2)
-        self.assertEqual(len(list(filter(lambda node: node.name == 'mass spectrometry', ms_assay_graph.nodes))), 4)
+        self.assertEqual(len(list(filter(lambda node: node.name.endswith('mass spectrometry'),
+                                         ms_assay_graph.nodes))), 4)
         self.assertEqual(len(list(filter(lambda node: node.name == 'raw spectral data file',
                                          ms_assay_graph.nodes))), 4)
         self.assertEqual(len(smp_ass_plan.sample_to_assay_map.keys()), len(sample_list))
@@ -1312,7 +1321,7 @@ class StudyArmTest(unittest.TestCase):
     def test_add_item_to_arm__multi_unit_cells_01(self):
         self.arm.add_item_to_arm_map(self.cell_screen, None)
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to a'
-                                                       'an ARM ending with a SCREEN') as ex_cm:
+                                               'an ARM ending with a SCREEN') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, None)
         self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_ERROR_MESSAGE)
         self.arm.add_item_to_arm_map(self.cell_multi_elements_padded, self.sample_assay_plan)
@@ -1329,7 +1338,7 @@ class StudyArmTest(unittest.TestCase):
 
     def test_add_item_to_arm__follow_up_to_empty_cell(self):
         with self.assertRaises(ValueError, msg='A cell beginning with a FOLLOW-UP element cannot be added to '
-                                                       'an empty arm.') as ex_cm:
+                                               'an empty arm.') as ex_cm:
             self.arm.add_item_to_arm_map(self.cell_follow_up, self.sample_assay_plan)
         self.assertEqual(ex_cm.exception.args[0], errors.FOLLOW_UP_EMPTY_ARM_ERROR_MESSAGE)
 
@@ -1738,22 +1747,27 @@ class StudyDesignTest(BaseStudyDesignTest):
         assay_graph = AssayGraph.generate_assay_plan_from_dict(nmr_assay_dict)
         node = next(iter(assay_graph.start_nodes))
         prefix = 'assay-table-prefix'
-        processes, other_materials, data_files, next_item, counter = StudyDesign._generate_isa_elements_from_node(
-            node, assay_graph, prefix
-        )
+        processes, other_materials, characteristic_categories, data_files, next_item, counter = \
+            StudyDesign._generate_isa_elements_from_node(node, assay_graph, prefix)
         # one extraction protocol + 16 NRM protocols (4 combinations, 2 replicates)
-        print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
-        extraction_processes = [process for process in processes if process.executes_protocol.name == 'extraction']
+        # print('Processes are {0}'.format([process.executes_protocol.name for process in processes]))
+        extraction_processes = [
+            process for process in processes if process.executes_protocol.name.endswith('extraction')
+        ]
         self.assertEqual(len(extraction_processes), 1)
-        nmr_processes = [process for process in processes if process.executes_protocol.name == 'nmr spectroscopy']
+        nmr_processes = [
+            process for process in processes if process.executes_protocol.name.endswith('nmr spectroscopy')
+        ]
+        # print("Characteristic categories:", [char.category.term for char in characteristic_categories])
         self.assertEqual(len(nmr_processes), 8 * 2)
         self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
+        self.assertEqual(len(characteristic_categories), 2)
         self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)
-            print('expected previous process: {0}'.format(extraction_processes[0]))
-            print('actual previous process: {0}'.format(nmr_process.prev_process))
+            # print('expected previous process: {0}'.format(extraction_processes[0]))
+            # print('actual previous process: {0}'.format(nmr_process.prev_process))
             self.assertEqual(nmr_process.prev_process, extraction_processes[0])
             self.assertEqual(nmr_process.next_process, None)
         self.assertEqual(extraction_processes[0].prev_process, None)
@@ -1795,10 +1809,14 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(treatment_assay.measurement_type, nmr_assay_dict['measurement_type'])
         self.assertEqual(treatment_assay.technology_type, nmr_assay_dict['technology_type'])
         # pdb.set_trace()
-        extraction_processes = [process for process in treatment_assay.process_sequence
-                                if process.executes_protocol.name == 'extraction']
-        nmr_processes = [process for process in treatment_assay.process_sequence
-                         if process.executes_protocol.name == 'nmr spectroscopy']
+        extraction_processes = [
+            process for process in treatment_assay.process_sequence
+            if process.executes_protocol.name.endswith('extraction')
+        ]
+        nmr_processes = [
+            process for process in treatment_assay.process_sequence
+            if process.executes_protocol.name.endswith('nmr spectroscopy')
+        ]
         self.assertEqual(len(extraction_processes), expected_num_of_samples)
         self.assertEqual(
             len(nmr_processes),
@@ -1856,8 +1874,10 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertIsNotNone(ms_assay)
         self.assertIsInstance(ms_assay, Assay)
         # self.assertEqual(len(ms_assay.samples), expected_num_of_samples_ms_plan_first_arm)
-        ms_processes = [process for process in ms_assay.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
 
     def test_generate_isa_study_two_arms_single_cell_elements_check_source_characteristics(self):
@@ -1947,8 +1967,10 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         expected_num_of_samples_ms_plan_first_arm = reduce(
             lambda acc_value, sample_node: acc_value + sample_node.size,
             ms_sample_assay_plan.sample_plan, 0) * first_arm.group_size
-        ms_processes = [process for process in ms_assay_no_qc.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay_no_qc.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 * expected_num_of_samples_ms_plan_first_arm)
         log.debug('MS Assay no QC: {0}'.format(ms_assay_no_qc))
         study_with_qc = QualityControlService.augment_study(study_no_qc, study_design)
@@ -1958,7 +1980,7 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         log.debug('Sample name occurrences: {}'.format(
             json.dumps(Counter(sample_names), sort_keys=True, indent=2)
         ))
-        self.assertEqual(len(sample_names), len(set(sample_names))) # all sample names are unique
+        self.assertEqual(len(sample_names), len(set(sample_names)))  # all sample names are unique
         ms_assay_no_qc = next(assay for assay in study_no_qc.assays
                               if assay.technology_type == ms_assay_dict['technology_type'])
         ms_assay_with_qc = next(assay for assay in study_with_qc.assays
@@ -1966,11 +1988,13 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         self.assertIsInstance(ms_assay_no_qc, Assay)
         self.assertIsInstance(ms_assay_with_qc, Assay)
         self.assertNotEqual(ms_assay_with_qc, ms_assay_no_qc)
-        ms_processes = [process for process in ms_assay_with_qc.process_sequence
-                        if process.executes_protocol.name == 'mass spectrometry']
+        ms_processes = [
+            process for process in ms_assay_with_qc.process_sequence
+            if process.executes_protocol.name.endswith('mass spectrometry')
+        ]
         log.debug('QC pre-run sample size: {0}, QC post-run sample size: {1}, QC interspersed samples: {2}'
-                 .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
-                         self.interspersed_sample_types[0][1]))
+                  .format(self.qc.pre_run_sample_type.size, self.qc.post_run_sample_type.size,
+                          self.interspersed_sample_types[0][1]))
         log.debug('expected_num_of_samples_ms_plan_first_arm: {0}'.format(expected_num_of_samples_ms_plan_first_arm))
         expected_num_of_interspersed_samples = \
             (expected_num_of_samples_ms_plan_first_arm - 1) // self.interspersed_sample_types[0][1]
@@ -2019,99 +2043,100 @@ class TreatmentFactoryTest(unittest.TestCase):
         intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
         duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
 
-        self.factory.add_factor_value(agent, {'cocaine', 'crack', 'aether'})
-        self.factory.add_factor_value(intensity, {'low', 'medium', 'high'})
-        self.factory.add_factor_value(duration, {'short', 'long'})
+        self.factory.add_factor_value(agent, {('agent blue', None), ('agent yellow', None), ('agent red', None)})
+        self.factory.add_factor_value(intensity, {('high', None), ('medium', None), ('low', None)})
+        self.factory.add_factor_value(duration, {('short', None), ('long', None)})
 
         full_factorial = self.factory.compute_full_factorial_design()
+
         self.assertEqual(full_factorial, {
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='cocaine'),
+                FactorValue(factor_name=agent, value='agent blue'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='crack'),
+                FactorValue(factor_name=agent, value='agent yellow'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='high'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='low'),
                 FactorValue(factor_name=duration, value='short')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='long')
             )),
             Treatment(element_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-                FactorValue(factor_name=agent, value='aether'),
+                FactorValue(factor_name=agent, value='agent red'),
                 FactorValue(factor_name=intensity, value='medium'),
                 FactorValue(factor_name=duration, value='short')
             ))
@@ -2134,7 +2159,7 @@ class TreatmentFactoryTest(unittest.TestCase):
         agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
         duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
-        self.factory.add_factor_value(agent, {'cocaine', 'crack', 'aether'})
+        self.factory.add_factor_value(agent, {'agent blue', 'agent yellow', 'agent red'})
         self.factory.add_factor_value(intensity, set())
         self.factory.add_factor_value(duration, {'short', 'long'})
 
@@ -2211,18 +2236,19 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
-                                 (StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan),
-                                 (StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None),
-                                 (StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan),
-                                 (StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
+                                (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                (StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan),
+                                (StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None),
+                                (StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan),
+                                (StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design.study_arms[1],
                          StudyArm(name='ARM_01', group_size=10, arm_map=OrderedDict(
                              [
                                  (StudyCell('ARM_01_CELL_00', elements=(self.screen,)), None),
-                                 (StudyCell('ARM_01_CELL_01', elements=(self.second_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_01_CELL_01', elements=(self.second_treatment,)), self.sample_assay_plan
+                                  ),
                                  (StudyCell('ARM_01_CELL_02', elements=(self.washout,)), None),
                                  (StudyCell('ARM_01_CELL_03', elements=(self.first_treatment,)), self.sample_assay_plan),
                                  (StudyCell('ARM_01_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
@@ -2241,7 +2267,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
             washout_map=(self.washout, None),
             follow_up_map=(self.follow_up, self.sample_assay_plan)
         )
-        self.assertEqual(len(crossover_design.study_arms), 6) # three treatments means six permutations
+        self.assertEqual(len(crossover_design.study_arms), 6)  # three treatments means six permutations
         self.assertEqual(crossover_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
@@ -2445,8 +2471,8 @@ class StudyDesignFactoryTest(unittest.TestCase):
             run_in_map=(self.run_in, None),
             follow_up_map=(self.follow_up, self.sample_assay_plan)
         )
-        self.assertEqual(len(crossover_design_with_multi_element_cell.study_arms), 6)  # three treatments means
-                                                                                       # six permutations
+        self.assertEqual(len(crossover_design_with_multi_element_cell.study_arms), 6)  # three treatments means \
+        # six permutations
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
@@ -2504,7 +2530,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
             follow_up_map=(self.follow_up, self.sample_assay_plan)
         )
         self.assertEqual(len(crossover_design_with_multi_element_cell.study_arms), 1)  # three treatments means
-                                                                                       # six permutations
+        # six permutations
         self.assertEqual(crossover_design_with_multi_element_cell.study_arms[0],
                          StudyArm(name='ARM_00', group_size=12, arm_map=OrderedDict(
                              [

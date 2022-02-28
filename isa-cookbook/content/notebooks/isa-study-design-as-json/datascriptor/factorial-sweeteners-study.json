@@ -1,0 +1,1143 @@
+{
+  "_id": "60d9b8f2d9a62b00087140b0",
+  "name": "Sweeteners study",
+  "description": "Example of a factorial study using natural and artificial sweeteners ",
+  "design": {
+    "subjectType": "Humans",
+    "subjectSize": 9,
+    "designType": {
+      "term": "full factorial design",
+      "id": "STATO:0000270",
+      "iri": "http://purl.obolibrary.org/obo/STATO_0000270",
+      "label": "Study subjects receive a single treatment",
+      "value": "fullFactorial"
+    },
+    "observationalFactors": [],
+    "subjectGroups": {
+      "selected": [
+        {
+          "name": "SubjectGroup_0",
+          "type": "Humans",
+          "characteristics": []
+        }
+      ],
+      "unselected": []
+    },
+    "treatmentPlan": {
+      "observationPeriod": {
+        "name": "observation period",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "screen": {
+        "selected": false,
+        "name": "screen",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "runIn": {
+        "selected": false,
+        "name": "run-in",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "washout": {
+        "selected": false,
+        "name": "washout",
+        "duration": null,
+        "durationUnit": ""
+      },
+      "followUp": {
+        "selected": true,
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      },
+      "elementParams": {
+        "agents": [
+          "sucrose",
+          "sucralose",
+          "splenda+maltodextrin"
+        ],
+        "intensities": [
+          2,
+          5
+        ],
+        "durations": [
+          30,
+          50
+        ],
+        "interventionType": {
+          "id": "ero:class:http://purl.obolibrary.org/obo/ERO_0000600",
+          "iri": "http://purl.obolibrary.org/obo/ERO_0000600",
+          "short_form": "ERO_0000600",
+          "obo_id": "ERO:0000600",
+          "label": "drug intervention",
+          "ontology_name": "ero",
+          "ontology_prefix": "ERO",
+          "type": "class"
+        },
+        "intensityUnit": "doses/day",
+        "durationUnit": "days"
+      },
+      "treatments": [
+        {
+          "_id": "60d9b8f1d9a62b000871407d",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        },
+        {
+          "_id": "60d9b8f1d9a62b000871407e",
+          "interventionType": null,
+          "agent": null,
+          "intensity": null,
+          "intensityUnit": "",
+          "duration": null,
+          "durationUnit": ""
+        }
+      ]
+    },
+    "elements": [
+      {
+        "_id": "60d9b8f1d9a62b000871407f",
+        "id": "584feb47-be8e-481f-b17e-75c3933a12c9",
+        "name": "treatment_0",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "sucrose",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714080",
+        "id": "f5506574-3756-488d-ae06-2898ab792c99",
+        "name": "follow-up",
+        "duration": 90,
+        "durationUnit": "days"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714081",
+        "id": "1",
+        "name": "treatment_1",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "sucrose",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714082",
+        "id": "2",
+        "name": "treatment_2",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "sucrose",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714083",
+        "id": "3",
+        "name": "treatment_3",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "sucrose",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714084",
+        "id": "4",
+        "name": "treatment_4",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "sucralose",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714085",
+        "id": "5",
+        "name": "treatment_5",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "sucralose",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714086",
+        "id": "6",
+        "name": "treatment_6",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "sucralose",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714087",
+        "id": "7",
+        "name": "treatment_7",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "sucralose",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714088",
+        "id": "8",
+        "name": "treatment_8",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "splenda+maltodextrin",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b0008714089",
+        "id": "9",
+        "name": "treatment_9",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "splenda+maltodextrin",
+        "intensity": 5,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b000871408a",
+        "id": "10",
+        "name": "treatment_10",
+        "duration": 30,
+        "durationUnit": "days",
+        "agent": "splenda+maltodextrin",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      },
+      {
+        "_id": "60d9b8f1d9a62b000871408b",
+        "id": "11",
+        "name": "treatment_11",
+        "duration": 50,
+        "durationUnit": "days",
+        "agent": "splenda+maltodextrin",
+        "intensity": 2,
+        "intensityUnit": "doses/day"
+      }
+    ],
+    "arms": {
+      "unselected": [],
+      "selected": [
+        {
+          "_id": "60d9b8f1d9a62b000871408c",
+          "id": "0",
+          "name": "Arm_0",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "584feb47-be8e-481f-b17e-75c3933a12c9"
+              ],
+              "_id": "60d9b8f1d9a62b000871408d"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b000871408e"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b000871408f",
+          "id": "1",
+          "name": "Arm_1",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "1"
+              ],
+              "_id": "60d9b8f1d9a62b0008714090"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b0008714091"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b0008714092",
+          "id": "2",
+          "name": "Arm_2",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "2"
+              ],
+              "_id": "60d9b8f1d9a62b0008714093"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b0008714094"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b0008714095",
+          "id": "3",
+          "name": "Arm_3",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "3"
+              ],
+              "_id": "60d9b8f1d9a62b0008714096"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b0008714097"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b0008714098",
+          "id": "4",
+          "name": "Arm_4",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "4"
+              ],
+              "_id": "60d9b8f1d9a62b0008714099"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b000871409a"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b000871409b",
+          "id": "5",
+          "name": "Arm_5",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "5"
+              ],
+              "_id": "60d9b8f1d9a62b000871409c"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b000871409d"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b000871409e",
+          "id": "6",
+          "name": "Arm_6",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "6"
+              ],
+              "_id": "60d9b8f1d9a62b000871409f"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a0"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b00087140a1",
+          "id": "7",
+          "name": "Arm_7",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "7"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a2"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a3"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b00087140a4",
+          "id": "8",
+          "name": "Arm_8",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "8"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a5"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a6"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b00087140a7",
+          "id": "9",
+          "name": "Arm_9",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "9"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a8"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140a9"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b00087140aa",
+          "id": "10",
+          "name": "Arm_10",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "10"
+              ],
+              "_id": "60d9b8f1d9a62b00087140ab"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140ac"
+            }
+          ]
+        },
+        {
+          "_id": "60d9b8f1d9a62b00087140ad",
+          "id": "11",
+          "name": "Arm_11",
+          "observationalFactors": [],
+          "size": 9,
+          "epochs": [
+            {
+              "elements": [
+                "11"
+              ],
+              "_id": "60d9b8f1d9a62b00087140ae"
+            },
+            {
+              "elements": [
+                "f5506574-3756-488d-ae06-2898ab792c99"
+              ],
+              "_id": "60d9b8f1d9a62b00087140af"
+            }
+          ]
+        }
+      ]
+    },
+    "samplePlan": [
+      {
+        "sampleType": "blood",
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true
+          ],
+          "Arm_6": [
+            true,
+            true
+          ],
+          "Arm_7": [
+            true,
+            true
+          ],
+          "Arm_8": [
+            true,
+            true
+          ],
+          "Arm_9": [
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true
+          ],
+          "Arm_11": [
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            1,
+            1
+          ],
+          "Arm_1": [
+            1,
+            1
+          ],
+          "Arm_2": [
+            1,
+            1
+          ],
+          "Arm_3": [
+            1,
+            1
+          ],
+          "Arm_4": [
+            1,
+            1
+          ],
+          "Arm_5": [
+            1,
+            1
+          ],
+          "Arm_6": [
+            1,
+            1
+          ],
+          "Arm_7": [
+            1,
+            1
+          ],
+          "Arm_8": [
+            1,
+            1
+          ],
+          "Arm_9": [
+            1,
+            1
+          ],
+          "Arm_10": [
+            1,
+            1
+          ],
+          "Arm_11": [
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "sampleType": "saliva",
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true
+          ],
+          "Arm_6": [
+            true,
+            true
+          ],
+          "Arm_7": [
+            true,
+            true
+          ],
+          "Arm_8": [
+            true,
+            true
+          ],
+          "Arm_9": [
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true
+          ],
+          "Arm_11": [
+            true,
+            true
+          ]
+        },
+        "sampleTypeSizes": {
+          "Arm_0": [
+            1,
+            2
+          ],
+          "Arm_1": [
+            1,
+            2
+          ],
+          "Arm_2": [
+            1,
+            2
+          ],
+          "Arm_3": [
+            1,
+            2
+          ],
+          "Arm_4": [
+            1,
+            2
+          ],
+          "Arm_5": [
+            1,
+            2
+          ],
+          "Arm_6": [
+            1,
+            2
+          ],
+          "Arm_7": [
+            1,
+            2
+          ],
+          "Arm_8": [
+            1,
+            2
+          ],
+          "Arm_9": [
+            1,
+            2
+          ],
+          "Arm_10": [
+            1,
+            2
+          ],
+          "Arm_11": [
+            1,
+            2
+          ]
+        }
+      }
+    ],
+    "assayPlan": [
+      {
+        "id": 0,
+        "name": "metabolite profiling using mass spectrometry",
+        "icon": "fas fa-chart-bar fas fa-bullseye",
+        "color": "green",
+        "measurement_type": "metabolite profiling",
+        "technology_type": "mass spectrometry",
+        "workflow": [
+          [
+            "extraction",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "extract",
+            {
+              "node_type": "extract",
+              "characteristics_category": "extract type",
+              "characteristics_value": {
+                "options": [
+                  "polar fraction",
+                  "non-polar fraction"
+                ],
+                "values": [
+                  "non-polar fraction"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "labeling",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "labeled extract",
+            {
+              "node_type": "labeled extract",
+              "characteristics_category": "labeled extract type",
+              "characteristics_value": {
+                "options": [
+                  "label_0",
+                  "label_1"
+                ],
+                "values": [
+                  "label_0"
+                ]
+              },
+              "is_input_to_next_protocols": {
+                "value": true
+              }
+            }
+          ],
+          [
+            "mass spectrometry",
+            {
+              "#replicates": {
+                "value": 2
+              },
+              "instrument": {
+                "options": [
+                  "Agilent QTQF 6510",
+                  "Agilent QTQF 6520A"
+                ],
+                "values": [
+                  "Agilent QTQF 6510"
+                ]
+              },
+              "injection_mode": {
+                "options": [
+                  "FIA",
+                  "LC"
+                ],
+                "values": [
+                  "FIA"
+                ]
+              },
+              "acquisition_mode": {
+                "options": [
+                  "positive mode",
+                  "negative mode"
+                ],
+                "values": [
+                  "positive mode",
+                  "negative mode"
+                ]
+              }
+            }
+          ],
+          [
+            "raw spectral data file",
+            {
+              "node_type": "data file",
+              "is_input_to_next_protocols": {
+                "value": true
+              },
+              "extension": {
+                "options": [
+                  "mzML",
+                  "mzXML",
+                  "JCAMP-DX"
+                ],
+                "value": "mzML",
+                "newValues": true
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true
+          ],
+          "Arm_6": [
+            true,
+            true
+          ],
+          "Arm_7": [
+            true,
+            true
+          ],
+          "Arm_8": [
+            true,
+            true
+          ],
+          "Arm_9": [
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true
+          ],
+          "Arm_11": [
+            true,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_1": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_2": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_3": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_4": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_5": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_6": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_7": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_8": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_9": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_10": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ],
+          "Arm_11": [
+            [
+              "saliva"
+            ],
+            [
+              "saliva"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 11,
+        "name": "hematology by marker panel",
+        "icon": "fa fa-flask",
+        "color": "red",
+        "measurement_type": "clinical chemistry",
+        "technology_type": "marker panel",
+        "workflow": [
+          [
+            "sample preparation",
+            {
+              "#replicates": {
+                "value": 1
+              }
+            }
+          ],
+          [
+            "raw_data_file",
+            {
+              "node_type": "data file",
+              "size": 1,
+              "is_input_to_next_protocols": {
+                "value": false
+              }
+            }
+          ]
+        ],
+        "selectedCells": {
+          "Arm_0": [
+            true,
+            true
+          ],
+          "Arm_1": [
+            true,
+            true
+          ],
+          "Arm_2": [
+            true,
+            true
+          ],
+          "Arm_3": [
+            true,
+            true
+          ],
+          "Arm_4": [
+            true,
+            true
+          ],
+          "Arm_5": [
+            true,
+            true
+          ],
+          "Arm_6": [
+            true,
+            true
+          ],
+          "Arm_7": [
+            true,
+            true
+          ],
+          "Arm_8": [
+            true,
+            true
+          ],
+          "Arm_9": [
+            true,
+            true
+          ],
+          "Arm_10": [
+            true,
+            true
+          ],
+          "Arm_11": [
+            true,
+            true
+          ]
+        },
+        "selectedSampleTypes": {
+          "Arm_0": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_1": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_2": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_3": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_4": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_5": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_6": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_7": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_8": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_9": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_10": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ],
+          "Arm_11": [
+            [
+              "blood"
+            ],
+            [
+              "blood"
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

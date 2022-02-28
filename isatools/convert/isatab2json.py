@@ -119,42 +119,42 @@ class ISATab2ISAjson_v1:
         if isa_tab is None:
             log.fatal("No ISA-Tab dataset found")
         else:
-                isa_json = dict([])
-                if isa_tab.metadata != {}:
-                    isa_json = dict([
-                        ("identifier",
-                         isa_tab.metadata['Investigation Identifier']),
-                        ("title", isa_tab.metadata['Investigation Title']),
-                        ("description",
-                         isa_tab.metadata['Investigation Description']),
-                        ("submissionDate",
-                         isa_tab.metadata['Investigation Submission Date']),
-                        ("publicReleaseDate",
-                         isa_tab.metadata[
-                             'Investigation Public Release Date']),
-                        ("ontologySourceReferences",
-                         self.createOntologySourceReferences(
-                             isa_tab.ontology_refs)),
-                        ("publications",
-                         self.createPublications(isa_tab.publications,
-                                                 "Investigation")),
-                        ("people", self.createContacts(isa_tab.contacts,
-                                                       "Investigation")),
-                        ("studies", self.createStudies(isa_tab.studies)),
-                        ("comments", self.createComments(isa_tab.metadata))
-                    ])
+            isa_json = dict([])
+            if isa_tab.metadata != {}:
+                isa_json = dict([
+                    ("identifier",
+                     isa_tab.metadata['Investigation Identifier']),
+                    ("title", isa_tab.metadata['Investigation Title']),
+                    ("description",
+                     isa_tab.metadata['Investigation Description']),
+                    ("submissionDate",
+                     isa_tab.metadata['Investigation Submission Date']),
+                    ("publicReleaseDate",
+                     isa_tab.metadata[
+                         'Investigation Public Release Date']),
+                    ("ontologySourceReferences",
+                     self.createOntologySourceReferences(
+                         isa_tab.ontology_refs)),
+                    ("publications",
+                     self.createPublications(isa_tab.publications,
+                                             "Investigation")),
+                    ("people", self.createContacts(isa_tab.contacts,
+                                                   "Investigation")),
+                    ("studies", self.createStudies(isa_tab.studies)),
+                    ("comments", self.createComments(isa_tab.metadata))
+                ])
 
-                # validate json
-                with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
-                    schema = json.load(json_fp)
-                    resolver = RefResolver(
-                        'file://' + join(SCHEMAS_PATH, INVESTIGATION_SCHEMA),
-                        schema)
-                    validator = Draft4Validator(schema, resolver=resolver)
-                    validator.validate(isa_json, schema)
+            # validate json
+            with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
+                schema = json.load(json_fp)
+                resolver = RefResolver(
+                    'file://' + join(SCHEMAS_PATH, INVESTIGATION_SCHEMA),
+                    schema)
+                validator = Draft4Validator(schema, resolver=resolver)
+                validator.validate(isa_json, schema)
 
-                    log.info("Conversion finished")
-                    return isa_json
+                log.info("Conversion finished")
+                return isa_json
 
     def createComments(self, isadict):
         comments = []
@@ -219,7 +219,7 @@ class ISATab2ISAjson_v1:
         for assay in assays:
             for process_node in assay.process_nodes.values():
                 if self.ARRAY_DESIGN_REF in process_node.parameters:
-                        protocols_to_attach_parameter.append(
+                    protocols_to_attach_parameter.append(
                             process_node.protocol)
         protocol_identifier = self.generateIdentifier("protocol", "unknown")
         protocol_json = dict([
@@ -284,11 +284,11 @@ class ISATab2ISAjson_v1:
         ])
         return onto_ann
 
-    def createOntologyAnnotation(self, name, termSource, termAccesssion):
+    def createOntologyAnnotation(self, name, termSource, termAccession):
         onto_ann = dict([
             ("annotationValue", name),
             ("termSource", termSource),
-            ("termAccession", termAccesssion)
+            ("termAccession", termAccession)
         ])
         return onto_ann
 
@@ -301,7 +301,7 @@ class ISATab2ISAjson_v1:
             inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
         for i in range(0, len(name_array)):
-            if (not name_array[i]):
+            if not name_array[i]:
                 continue
             onto_ann = self.createOntologyAnnotation(name_array[i],
                                                      term_source_array[i],

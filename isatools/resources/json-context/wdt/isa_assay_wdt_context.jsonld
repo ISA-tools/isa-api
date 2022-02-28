@@ -1,0 +1,61 @@
+{
+  "@context": {
+    "@language": "en",
+    "@version" : 1.1,
+    "materials": "@nest",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "wdt:Q739897",
+    "identifier": {
+      "@id": "wdt:Q6545185",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wdtp:P1448",
+      "@type": "wdt:Q82799"
+    },
+    "description": {
+        "@id":"wdtp:P1552",
+        "@type":"wdt:Q1200750"
+    },
+    "filename" :  {
+         "@id" : "wdtp:P7793",
+         "@type": "wdt:Q1144928"
+    },
+    "measurementType" :  {
+        "@id" : "wdtp:P1552",
+        "@type" : "wdt:Q12453"
+    },  
+    "technologyType" :  {
+        "@id" : "wdtp:P2283",
+        "@type" : "wdt:Q11016"
+    }, 
+    "technologyPlatform" :  {
+        "@id" : "wdtp:P2283",
+        "@type" : "wdt:Q11016"
+    },     
+    "samples" : "wdt:Q53617407",
+    "otherMaterials": "wdt:Q53617407",
+    "characteristicCategories" :{
+         "@id" : "wdtp:P1552",
+         "@type" : "wdt:Q937228"
+    },
+    "dataFiles" : {
+        "@id" : "wdtp:P527",
+        "@type" : "wdt:Q5227290"
+    },
+    "processSequence" : {
+         "@id" : "wdtp:P527",
+         "@type" : "wdt:Q3249551"
+    },
+    "unitCategories": {
+          "@id": "wdtp:P8111" ,
+          "@type" : "wdt:Q47574"
+    },
+    "comments": {
+             "@id" : "wdtp:P6607",
+             "@type" : "wdt:Q58897583"
+    }
+  }
+}

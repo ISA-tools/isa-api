@@ -1,0 +1,64 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "https://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "sdo:MedicalTest",
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "name": {
+       "@id": "sdo:name",
+      "@type": "sdo:Text"
+    },
+    "description": {
+        "@id":"sdo:description",
+        "@type":"sdo:Text"
+    },
+    "filename" :  {
+         "@id" : "sdo:url",
+         "@type": "sdo:DataDownload"
+    },
+    "measurementType" :  {
+        "@id" : "sdo:variableMeasured",
+        "@type" : "sdo:Text"
+    },  
+    "technologyType" :  {
+        "@id" : "sdo:measurementTechnique",
+        "@type" : "sdo:Text"
+    }, 
+    "technologyPlatform" :  {
+        "@id" : "sdo:instrument",
+        "@type" : "sdo:MedicalDevice"
+    },     
+    "materials" : {
+          "@id" : "sdo:participant",
+        "@type" : "sdo:Product"
+     },
+     "othermaterials" : {
+        "@id" : "sdo:participant",
+        "@type" : "sdo:Product"
+     },   
+    "characteristicCategories" :{
+         "@id" : "sdo:measuredProperty",
+         "@type" : "sdo:StructuredValue"
+    },
+    "dataFiles" : {
+        "@id" : "sdo:url",
+        "@type" : "sdo:DataDownload"
+    },
+    "processSequences" : {
+         "@id" : "sdo:hasPart",
+         "@type" : "sdo:Action"
+    },
+    "unitCategories": {
+          "@id": "sdo:unit" ,
+          "@type" : ["sdo:Text","sdo:URL"]
+    },
+    "comments": {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+  }
+}

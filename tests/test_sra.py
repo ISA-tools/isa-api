@@ -164,7 +164,6 @@ class TestSraExport(unittest.TestCase):
                   'rb') as out_fp:
             self.assertTrue('<SPOT_DESCRIPTOR>' in str(out_fp.read()))
 
-
     def test_sra_paired_export_submission_xml(self):
         sra.export(self._inv_obj, self._tmp_dir,
                    sra_settings=self._sra_default_config)

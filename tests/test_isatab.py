@@ -1,7 +1,7 @@
 """Tests on isatab.py package"""
 from __future__ import absolute_import
 import unittest
-import os
+
 import pandas as pd
 import shutil
 import tempfile
@@ -96,7 +96,8 @@ class TestIsaTabDump(unittest.TestCase):
                                 version='216',
                                 file='http://data.bioontology.org/ontologies/UBERON')
         ncbitaxon = OntologySource(name='NCBITAXON',
-                                   description="National Center for Biotechnology Information (NCBI) Organismal Classification",
+                                   description="National Center for Biotechnology Information \
+                                   (NCBI) Organismal Classification",
                                    version='2',
                                    file='http://data.bioontology.org/ontologies/NCBITAXON')
         i.ontology_source_references.append(uberon)
@@ -119,7 +120,6 @@ class TestIsaTabDump(unittest.TestCase):
 
         s.design_descriptors.append(OntologyAnnotation(term="factorial design"))
         s.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
-
 
         # testing if study factors can receive comments[]
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
@@ -175,6 +175,10 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
         i.studies = [s]
+
+        # from isatools.model import _build_assay_graph
+        # graph =_build_assay_graph(s.process_sequence)
+
         isatab.dump(i, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
@@ -197,12 +201,12 @@ class TestIsaTabDump(unittest.TestCase):
         s.protocols.append(sample_collection_protocol)
         s.protocols[0].comments.append(Comment(name="protocol comment", value="Jupiter"))
 
-        researcher = Person(first_name="bob",last_name="morane",email="bob.morane@gmail.com")
+        researcher = Person(first_name="bob", last_name="morane", email="bob.morane@gmail.com")
         s.contacts.append(researcher)
         s.contacts[0].comments.append(Comment(name="astrological sign", value="Saturn"))
         s.contacts[0].comments.append(Comment(name="chinese astrological sign", value="tiger"))
 
-        other_researcher = Person(first_name="toxic",last_name="avengers",email="toxic.avengers@gmail.com")
+        other_researcher = Person(first_name="toxic", last_name="avengers", email="toxic.avengers@gmail.com")
         s.contacts.append(other_researcher)
         s.contacts[1].comments.append(Comment(name="astrological sign", value="balance"))
         s.contacts[1].comments.append(Comment(name="chinese astrological sign", value="pig"))
@@ -349,7 +353,7 @@ class TestIsaTabDump(unittest.TestCase):
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
             self.assertIsInstance(isatab.dumps(i), str)
 
-    def test_isatab_dump_investigation_multiple_comments(self):
+    def test_isatab_dump_investigation_with_assay(self):
         # Create an empty Investigation object and set some values to the
         # instance variables.
 
@@ -402,7 +406,7 @@ class TestIsaTabDump(unittest.TestCase):
         # to annotation ONTOLOGY SOURCE REFERENCE SECTION
         # i.ontology_source_references.comments.append(Comment(name="test", value="test-value"))
         # instead you should do the following:
-        # testing additon of comment and handling by ISA serializer
+        # testing addition of comment and handling by ISA serializer
         obi.comments.append(Comment(name="reasoning type", value="using the reasoned version"))
         obi.comments.append(Comment(name="Ontology rating", value="sweet"))
 
@@ -420,7 +424,7 @@ class TestIsaTabDump(unittest.TestCase):
         study.design_descriptors.append(intervention_design)
 
         other_design = OntologyAnnotation(term_source=obi)
-        other_design.term="italian design"
+        other_design.term = "italian design"
         other_design.comments.append(Comment(name="Study Design Descriptor", value="smart design"))
         other_design.comments.append(Comment(name="design rating", value="rating 4"))
         other_design.comments.append(Comment(name="award", value="London award"))
@@ -439,15 +443,15 @@ class TestIsaTabDump(unittest.TestCase):
         # Person and Publication objects.
 
         contact1 = Person(first_name="Alice", last_name="Robertson",
-                         affiliation="University of Life",
-                         roles=[OntologyAnnotation(term='submitter')])
-        # testing additon of comment and handling by ISA serializer
+                          affiliation="University of Life",
+                          roles=[OntologyAnnotation(term='submitter')])
+        # testing addition of comment and handling by ISA serializer
         contact1.comments.append(Comment(name="Study Person comment", value="outstanding person"))
 
         contact2 = Person(first_name="Bob", last_name="Cat",
-                         affiliation="University of Life",
-                         roles=[OntologyAnnotation(term='submitter')])
-        # testing additon of comment and handling by ISA serializer
+                          affiliation="University of Life",
+                          roles=[OntologyAnnotation(term='submitter')])
+        # testing addition of comment and handling by ISA serializer
         contact2.comments.append(Comment(name="Study Person comment", value="cool person"))
         contact2.comments.append(Comment(name="Study Person HR rating", value="#1"))
         study.contacts.append(contact1)
@@ -547,7 +551,6 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_protocol.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation("material description")))
         # sample_collection_protocol.parameters.append(ProtocolParameter(parameter_name="Sample Description"))
 
-
         study.protocols.append(sample_collection_protocol)
 
         # data_collection_protocol = Protocol(
@@ -626,10 +629,8 @@ class TestIsaTabDump(unittest.TestCase):
         study.protocols[1].comments.append(Comment(name="Protocol Reuse Date", value="2017-08-11"))
         study.protocols[2].comments.append(Comment(name="Protocol QC", value="alpha"))
         study.protocols[3].comments.append(Comment(name="Protocol QC", value="none"))
-        # checking that the ISA Protocool object has been modified
+        # checking that the ISA Protocol object has been modified
         # print(study.protocols[0])
-
-
 
         assay2 = Assay(filename="a_assay-methyl.txt")
 
@@ -687,7 +688,7 @@ class TestIsaTabDump(unittest.TestCase):
             # Sequencing process usually has an output data file
 
             datafile1 = DataFile(filename="sequenced-data-{}".format(i),
-                                label="Raw Data File", generated_from=[material1])
+                                 label="Raw Data File", generated_from=[material1])
             sequencing_process1.outputs.append(datafile1)
 
             # create a sequencing process that executes the sequencing protocol
@@ -699,9 +700,8 @@ class TestIsaTabDump(unittest.TestCase):
             # Sequencing process usually has an output data file
 
             datafile2 = DataFile(filename="methyl-sequenced-data-{}".format(i),
-                                label="Raw Data File", generated_from=[material1])
+                                 label="Raw Data File", generated_from=[material1])
             sequencing_process2.outputs.append(datafile2)
-
 
             # ensure Processes are linked
             plink(extraction_process1, sequencing_process1)
@@ -731,6 +731,11 @@ class TestIsaTabDump(unittest.TestCase):
 
         investigation.studies.append(study)
 
+        from isatools.model import _build_assay_graph
+        graph = _build_assay_graph(study.process_sequence)
+        graph1 = _build_assay_graph(assay1.process_sequence)
+        graph2 = _build_assay_graph(assay2.process_sequence)
+
         try:
             isatab.dump(investigation, self._tmp_dir)
         except IOError as ioe:
@@ -742,6 +747,251 @@ class TestIsaTabDump(unittest.TestCase):
         #                           'i_test_investigation.txt')) as expected_file:
         #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
         #     self.assertIsInstance(isatab.dumps(investigation), str)
+
+
+    # def test_isatab_dump_investigation_with_assay_sample_sample(self):
+    #     investigation = Investigation()
+    #     # i_comment = Comment(name="i_comment", value="i_value")
+    #     # investigation.comments.append(i_comment)
+    #
+    #     # Declaring the Ontologies and Vocabularies used in the ISA Study
+    #     # dummy_onto=OntologySource(name="Dumbo",description="")
+    #     chebi = OntologySource(name="CHEBI", description="Chemical Entity of Biological Interest")
+    #     efo = OntologySource(name="EFO", description="Experimental Factor Ontology")
+    #     obi = OntologySource(name='OBI', description="Ontology for Biomedical Investigations")
+    #     pato = OntologySource(name='PATO', description="Phenotype and Trait Ontology")
+    #     ncbitaxon = OntologySource(name="NCIBTaxon", description="NCBI Taxonomy")
+    #     investigation.ontology_source_references = [chebi, efo, obi, pato, ncbitaxon]
+    #
+    #     study = Study(filename="s_BII-S-10-synthesic.txt")
+    #     # st_comment = Comment(name="st_comment", value="st_value")
+    #     # study.comments.append(st_comment)
+    #     study.identifier = "BII-S-10-synth"
+    #     study.title = "cross-omics synthetic experiment"
+    #     study.description = "cross-omics experiment testing ISA-API support for sample aliquoting at study or assay level"
+    #     study.submission_date = "15/08/2021"
+    #     study.public_release_date = "15/08/2021"
+    #
+    #     # These NCBI SRA related ISA Comments fields are required and must be present for the ISA SRAconverter is to be invoked later
+    #     src_comment_sra1 = Comment(name="SRA Broker Name", value="OXFORD")
+    #     src_comment_sra2 = Comment(name="SRA Center Name", value="OXFORD")
+    #     src_comment_sra3 = Comment(name="SRA Center Project Name", value="OXFORD")
+    #     src_comment_sra4 = Comment(name="SRA Lab Name", value="Oxford e-Research Centre")
+    #     src_comment_sra5 = Comment(name="SRA Submission Action", value="ADD")
+    #     study.comments.append(src_comment_sra1)
+    #     study.comments.append(src_comment_sra2)
+    #     study.comments.append(src_comment_sra3)
+    #     study.comments.append(src_comment_sra4)
+    #     study.comments.append(src_comment_sra5)
+    #
+    #     # These ISA Comments are optional and may be used to report funding information
+    #     src_comment_st1 = Comment(name="Study Funding Agency", value="")
+    #     src_comment_st2 = Comment(name="Study Grant Number", value="")
+    #     study.comments.append(src_comment_st1)
+    #     study.comments.append(src_comment_st2)
+    #
+    #     # Declaring all the protocols used in the ISA study. Note also the declaration of Protocol Parameters when needed.
+    #     study.protocols = [
+    #         Protocol(name="environmental material collection - standard procedure 1",
+    #                  description="Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
+    #                  protocol_type=OntologyAnnotation(term="sample collection"),
+    #                  parameters=[
+    #                      ProtocolParameter(parameter_name=OntologyAnnotation(term="filter pore size"))
+    #                  ]
+    #                  ),
+    #         Protocol(name="aliquoting-procedure",
+    #                  description="aliquoting",
+    #                  protocol_type=OntologyAnnotation(term="sample collection")),
+    #         Protocol(
+    #             name="nucleic acid extraction",
+    #             description="Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid extraction")
+    #         ),
+    #         Protocol(
+    #             name="sample aliquoting - standard procedure 3",
+    #             description="splitting collected samples into aliquots",
+    #             protocol_type=OntologyAnnotation(term="aliquoting")
+    #         ),
+    #         Protocol(
+    #             name="genomic DNA extraction - standard procedure 4",
+    #             description="superscript+random hexamer primer",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid extraction")
+    #         ),
+    #         Protocol(
+    #             name="reverse transcription - standard procedure 5",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="reverse transcription"),
+    #         ),
+    #         Protocol(
+    #             name="library construction",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="library construction"),
+    #             parameters=[
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library strategy")),
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library layout")),
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="library selection"))
+    #             ]
+    #         ),
+    #         Protocol(
+    #             name="nucleic acid sequencing",  # pyrosequencing - standard procedure 6",
+    #             description="1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
+    #             protocol_type=OntologyAnnotation(term="nucleic acid sequencing"),
+    #             parameters=[
+    #                 ProtocolParameter(parameter_name=OntologyAnnotation(term="sequencing instrument"))
+    #             ]
+    #         ),
+    #         Protocol(
+    #             name="sequence analysis - standard procedure 7",
+    #             description="",
+    #             protocol_type=OntologyAnnotation(term="data transformation")
+    #         )
+    #     ]
+    #
+    #     # Adding a Study Design descriptor to the ISA Study object
+    #     intervention_design = OntologyAnnotation(term_source=obi)
+    #     intervention_design.term = "intervention design"
+    #     intervention_design.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
+    #     study.design_descriptors.append(intervention_design)
+    #
+    #     # Declaring the Study Factors
+    #     study.factors = [
+    #         StudyFactor(name="compound", factor_type=OntologyAnnotation(term="chemical substance",
+    #                                                                     term_accession="http://purl.obolibrary.org/obo/CHEBI_59999",
+    #                                                                     term_source=chebi)),
+    #         StudyFactor(name="dose", factor_type=OntologyAnnotation(term="dose",
+    #                                                                 term_accession="http://www.ebi.ac.uk/efo/EFO_0000428",
+    #                                                                 term_source=efo)),
+    #         StudyFactor(name="collection time", factor_type=OntologyAnnotation(term="time",
+    #                                                                            term_accession="http://purl.obolibrary.org/obo/PATO_0000165",
+    #                                                                            term_source=pato))
+    #     ]
+    #
+    #     # Associating the levels to each of the Study Factor.
+    #     fv1 = FactorValue(factor_name=study.factors[0], value=OntologyAnnotation(term="atorvastatin"))
+    #     fv2 = FactorValue(factor_name=study.factors[1], value=OntologyAnnotation(term="high dose"))
+    #     fv3 = FactorValue(factor_name=study.factors[1], value=OntologyAnnotation(term="low dose"))
+    #     fv4 = FactorValue(factor_name=study.factors[2], value="2 months")
+    #     fv5 = FactorValue(factor_name=study.factors[2], value="18 months")
+    #
+    #     # Adding the publications associated to the study
+    #     study.publications = [
+    #         Publication(doi="10.1371/journal.pone.0003042", pubmed_id="18725995",
+    #                     title="Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.",
+    #                     status=OntologyAnnotation(term="indexed in PubMed"),
+    #                     author_list="Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I.")
+    #     ]
+    #
+    #     # Adding the authors of the study
+    #     study.contacts = [
+    #         Person(first_name="Rex", last_name="Durand", affiliation="LHC Laboratory", email="rex.durand@lhcl.ac.uk",
+    #                address="Nevsky perspective, Bournemouth, United Kingdom",
+    #                comments=[Comment(name="Study Person REF", value="")],
+    #                roles=[OntologyAnnotation(term="principal investigator role"),
+    #                       OntologyAnnotation(term="SRA Inform On Status"),
+    #                       OntologyAnnotation(term="SRA Inform On Error")]
+    #                )
+    #     ]
+    #
+    #     study.sources = [Source(name="GSM255770"), Source(name="GSM255771"), Source(name="GSM255772"),
+    #                      Source(name="GSM255773")]
+    #     study.samples = [Sample(name="GSM255770"), Sample(name="GSM255771"), Sample(name="GSM255772"),
+    #                      Sample(name="GSM255773")]
+    #
+    #     # Note how the treatment groups are defined as sets of factor values attached to the ISA.Sample object
+    #     study.samples[0].factor_values = [fv1, fv2, fv4]
+    #     study.samples[1].factor_values = [fv1, fv3, fv4]
+    #     study.samples[2].factor_values = [fv1, fv2, fv5]
+    #     study.samples[3].factor_values = [fv1, fv3, fv5]
+    #
+    #     characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
+    #                                              value=OntologyAnnotation(term="marine metagenome",
+    #                                                                       term_source=ncbitaxon,
+    #                                                                       term_accession="http://purl.obolibrary.org/obo/NCBITaxon_408172"))
+    #
+    #     # Now creating a Process showing a `Protocol Application` using Source as input and producing Sample as output.
+    #     for i in range(len(study.sources)):
+    #         study.sources[i].characteristics.append(characteristic_organism)
+    #
+    #         study.process_sequence.append(Process(executes_protocol=study.protocols[0],
+    #                                               inputs=[study.sources[i]],
+    #                                               outputs=[study.samples[i]])
+    #                                       )
+    #
+    #     # Now appending the ISA Study object to the ISA Investigation object
+    #     investigation.studies = [study]
+    #
+    #     assay = Assay(filename="a_gilbert-assay-Gx.txt")
+    #     assay.measurement_type = OntologyAnnotation(term="metagenome sequencing",
+    #                                                 term_accession="http://purl.obolibrary.org/obo/OBI_0002623",
+    #                                                 term_source=obi)
+    #     assay.technology_type = OntologyAnnotation(term="nucleotide sequencing",
+    #                                                term_accession="http://purl.obolibrary.org/obo/OBI_0000626",
+    #                                                term_source=obi)
+    #
+    #     for i, sample in enumerate(study.samples):
+    #         assay.samples.append(sample)
+    #
+    #         # create an aliquoting process which creates new samples from existing samples created in a study.processSequence
+    #         aliquoting_process = Process(executes_protocol=study.protocols[1])
+    #         aliquoting_process.inputs.append(sample)
+    #         aliquot = Sample(name="aliquot-{}".format(i), derives_from=[sample])
+    #
+    #         char_alq = Characteristic(category=OntologyAnnotation(term="Material"),
+    #                                   value=OntologyAnnotation(term="aliquot"))
+    #         aliquot.characteristics.append(char_alq)
+    #         # print(aliquot)
+    #
+    #         aliquoting_process.outputs.append(aliquot)
+    #
+    #         assay.samples.append(aliquot)
+    #
+    #         # create an extraction process that executes the extraction protocol
+    #         extraction_process = Process(executes_protocol=study.protocols[1])
+    #
+    #         # extraction process takes as input a sample, and produces an extract material as output
+    #         char_ext = Characteristic(category=OntologyAnnotation(term="Material Type"),
+    #                                   value=OntologyAnnotation(term="pellet"))
+    #
+    #         extraction_process.inputs.append(aliquot)
+    #         material = Material(name="extract-{}".format(i))
+    #         material.type = "Extract Name"
+    #         material.characteristics.append(char_ext)
+    #         extraction_process.outputs.append(material)
+    #
+    #         # create a sequencing process that executes the sequencing protocol
+    #
+    #         sequencing_process = Process(executes_protocol=study.protocols[7])
+    #         sequencing_process.name = "assay-name-{}".format(i)
+    #         sequencing_process.inputs.append(extraction_process.outputs[0])
+    #         # sequencing_process.inputs.append(material)
+    #
+    #         # Sequencing process usually has an output data file
+    #
+    #         datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
+    #         data_comment = Comment(name="data_comment", value="data_value")
+    #         datafile.comments.append(data_comment)
+    #         sequencing_process.outputs.append(datafile)
+    #
+    #         # make sure the extract, data file, and the processes are attached to the assay
+    #
+    #         assay.other_material.append(material)
+    #         assay.data_files.append(datafile)
+    #
+    #         assay.process_sequence.append(aliquoting_process)
+    #         assay.process_sequence.append(extraction_process)
+    #         assay.process_sequence.append(sequencing_process)
+    #
+    #         # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
+    #         # these links for you. It is found in the isatools.model package
+    #
+    #         plink(aliquoting_process, sequencing_process)
+    #
+    #         study.assays.append(assay)
+    #
+    #         from isatools.isatab import dump
+    #
+    #         # note the use of the flag for explicit serialization on factor values on assay tables
+    #         dump(investigation, "./output/BII-S-10/", write_factor_values_in_assay_table=False)
 
 
 class TestIsaTabLoad(unittest.TestCase):
@@ -762,7 +1012,7 @@ class TestIsaTabLoad(unittest.TestCase):
         protocol = Protocol(description="some description containing a # character that should not be picked up", name="", protocol_type=OntologyAnnotation(term=""))
         print("test protocol description", protocol.description)
 
-        self.assertEqual(len(protocol.description),70)
+        self.assertEqual(len(protocol.description), 70)
 
     def test_isatab_load_issue200(self):
         with open(os.path.join(self._tab_data_dir, 'issue200', 'i_Investigation.txt')) as fp:
@@ -1150,41 +1400,41 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
 #         # self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
-            i = Investigation()
-            s = Study(
-                filename='s_test.txt',
-                protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')), Protocol(name='nucleic acid sequencing', protocol_type=OntologyAnnotation(term='nucleic acid sequencing'))]
-            )
-            sample1 = Sample(name='sample1')
-            extract1 = Material(name='extract1', type_='Extract Name')
-            data1 = DataFile(filename='datafile.raw', label='Raw Data File')
-            extraction_process = Process(executes_protocol=s.protocols[0])
-            sequencing_assay_process = Process(executes_protocol=s.protocols[1])
-            extraction_process.inputs = [sample1]
-            extraction_process.outputs = [extract1]
-            sequencing_assay_process.inputs = [extract1]
-            sequencing_assay_process.outputs = [data1]
-            sequencing_assay_process.name = "assay-1"
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')), Protocol(name='nucleic acid sequencing', protocol_type=OntologyAnnotation(term='nucleic acid sequencing'))]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+        extraction_process = Process(executes_protocol=s.protocols[0])
+        sequencing_assay_process = Process(executes_protocol=s.protocols[1])
+        extraction_process.inputs = [sample1]
+        extraction_process.outputs = [extract1]
+        sequencing_assay_process.inputs = [extract1]
+        sequencing_assay_process.outputs = [data1]
+        sequencing_assay_process.name = "assay-1"
 
-            plink(extraction_process, sequencing_assay_process)
-            a = Assay(filename='a_test.txt')
-            a.process_sequence = [extraction_process, sequencing_assay_process]
-            a.measurement_type = OntologyAnnotation(term="gene sequencing")
-            a.technology_type = OntologyAnnotation(term="nucleotide sequencing")
-            s.assays = [a]
-            i.studies = [s]
-            expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
+        plink(extraction_process, sequencing_assay_process)
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process, sequencing_assay_process]
+        a.measurement_type = OntologyAnnotation(term="gene sequencing")
+        a.technology_type = OntologyAnnotation(term="nucleotide sequencing")
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
 sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
 
-            # print("Expected:", expected)
-            # print(isatab.dumps(i))
-            # dump_out = isatab.dumps(i)
-            # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
-            # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+        # print("Expected:", expected)
+        # print(isatab.dumps(i))
+        # dump_out = isatab.dumps(i)
+        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
+        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
 
-            # self.assertIn(expected_line1, dump_out)
-            # self.assertIn(expected_line2, dump_out)
-            self.assertIn(expected, isatab.dumps(i))
+        # self.assertIn(expected_line1, dump_out)
+        # self.assertIn(expected_line2, dump_out)
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):
         i = Investigation()
@@ -1226,44 +1476,43 @@ sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
         self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data4(self):
-            i = Investigation()
-            s = Study(
-                filename='s_test.txt',
-                protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
-                           Protocol(name='NMR spectroscopy',
-                                    protocol_type=OntologyAnnotation(term='NMR spectroscopy'))]
-            )
-            sample1 = Sample(name='sample1')
-            extract1 = Material(name='extract1', type_='Extract Name')
-            data1 = DataFile(filename='datafile.raw', label='Free Induction Decay Data File')
-            extraction_process = Process(executes_protocol=s.protocols[0])
-            nmr_assay_process = Process(executes_protocol=s.protocols[1])
-            extraction_process.inputs = [sample1]
-            extraction_process.outputs = [extract1]
-            nmr_assay_process.inputs = [extract1]
-            nmr_assay_process.outputs = [data1]
-            nmr_assay_process.name = "assay-1"
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
+                       Protocol(name='NMR spectroscopy',
+                                protocol_type=OntologyAnnotation(term='NMR spectroscopy'))]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile.raw', label='Free Induction Decay Data File')
+        extraction_process = Process(executes_protocol=s.protocols[0])
+        nmr_assay_process = Process(executes_protocol=s.protocols[1])
+        extraction_process.inputs = [sample1]
+        extraction_process.outputs = [extract1]
+        nmr_assay_process.inputs = [extract1]
+        nmr_assay_process.outputs = [data1]
+        nmr_assay_process.name = "assay-1"
 
-            plink(extraction_process, nmr_assay_process)
-            a = Assay(filename='a_test.txt')
-            a.process_sequence = [extraction_process, nmr_assay_process]
-            a.measurement_type = OntologyAnnotation(term="metabolite profiling")
-            a.technology_type = OntologyAnnotation(term="NMR spectroscopy")
-            s.assays = [a]
-            i.studies = [s]
-            expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tNMR Assay Name\tFree Induction Decay Data File
+        plink(extraction_process, nmr_assay_process)
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process, nmr_assay_process]
+        a.measurement_type = OntologyAnnotation(term="metabolite profiling")
+        a.technology_type = OntologyAnnotation(term="NMR spectroscopy")
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tNMR Assay Name\tFree Induction Decay Data File
 sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
 
-            # print("Expected:", expected)
-            # print(isatab.dumps(i))
-            # dump_out = isatab.dumps(i)
-            # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
-            # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+        # print("Expected:", expected)
+        # print(isatab.dumps(i))
+        # dump_out = isatab.dumps(i)
+        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
+        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
 
-            # self.assertIn(expected_line1, dump_out)
-            # self.assertIn(expected_line2, dump_out)
-            self.assertIn(expected, isatab.dumps(i))
-
+        # self.assertIn(expected_line1, dump_out)
+        # self.assertIn(expected_line2, dump_out)
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
         i = Investigation()
@@ -1311,9 +1560,15 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         i = Investigation()
         s = Study(
             filename='s_test.txt',
-            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning'), Protocol(name="sampling")]
         )
+
+        source = Source(name="source1")
         sample1 = Sample(name='sample1')
+        sampling_process = Process(executes_protocol=s.protocols[2])
+        sampling_process.inputs = [source]
+        sampling_process.outputs = [sample1]
+        s.process_sequence = [sampling_process]
         extract1 = Material(name='extract1', type_='Extract Name')
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
@@ -1575,6 +1830,39 @@ sample1\textraction\te2\tscanning\td2"""
             for sample in s.samples:
                 self.assertGreater(len(sample.factor_values), 0)
 
+    def test_isatab_protocol_chain_parsing(self):
+        logging.info("Testing")
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'),
+                  encoding='utf-8') as fp:
+            investigation = isatab.load(fp)
+            self.assertIsInstance(investigation, Investigation)
+            study = investigation.studies[0]
+            nucleotide_sequencing_assay = next(
+                assay for assay in study.assays if assay.technology_type.term == 'nucleotide sequencing'
+            )
+            nucl_ac_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'nucleic acid extraction - standard procedure 2'
+            )
+            gen_dna_extraction_process = next(
+                proc for proc in nucleotide_sequencing_assay.process_sequence
+                if proc.executes_protocol.name == 'genomic DNA extraction - standard procedure 4'
+            )
+            extract = next(
+                mat for mat in nucleotide_sequencing_assay.materials['other_material'] if mat.name == 'GSM255770.e1'
+            )
+            self.assertTrue(nucl_ac_extraction_process.next_process is gen_dna_extraction_process)
+            self.assertEqual(len(gen_dna_extraction_process.outputs), 1)
+            self.assertFalse(nucl_ac_extraction_process.outputs)
+            self.assertTrue(gen_dna_extraction_process.outputs[0] is extract)
+            self.assertTrue(nucl_ac_extraction_process.inputs)
+            self.assertFalse(gen_dna_extraction_process.inputs)
+            # FIXME characteristics are not loaded into the extract name
+            # self.assertTrue(extract.characteristics)
+            dumps_out = isatab.dumps(investigation)
+            expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
+            self.assertIn(expected_chained_protocol_snippet, dumps_out)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
@@ -1601,30 +1889,3 @@ label2\trow2_value1\trow2_value2\n"""
             'header': ['label1', 'label2']
         }
         self.assertEqual(ttable_dict, expected_ttable)
-
-
-class UnitTestIsaStudyGroups():
-
-    def setUp(self):
-        self.fp = open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8')
-        self.i_df = isatab.load_investigation(fp=self.fp)
-        for i, study_df in enumerate(self.i_df['studies']):
-            study_filename = study_df.iloc[0]['Study File Name']
-            self.s_fp = open(os.path.join(os.path.dirname(self.fp.name), study_filename), encoding='utf-8')
-            self.study_sample_table = isatab.load_table(self.s_fp)
-            self.study_sample_table.filename = study_filename
-
-    def tearDown(self):
-        self.fp.close()
-        self.s_fp.close()
-
-    def test_get_num_study_groups(self):
-        num_study_groups = isatab.get_num_study_groups(self.study_sample_table, self.study_filename)
-        self.assertEqual(num_study_groups, 1)
-
-    def test_check_study_groups(self):
-        self.assertTrue(isatab.NUMBER_OF_STUDY_GROUPS in self.study_df.columns)
-        study_group_sizes = self.study_df[isatab.NUMBER_OF_STUDY_GROUPS]
-        study_group_size_in_comment = next(iter(study_group_sizes))
-        self.assertTrue(isatab.check_study_groups(self.study_sample_table, self.study_filename, study_group_size_in_comment))
-

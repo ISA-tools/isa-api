@@ -122,5 +122,3 @@ class TestIsaTab2Cedar(unittest.TestCase):
     #         self.isa2cedar.createCEDARjson(os.path.join(self.path, directory),
     #                                        os.path.join(self._data_dir, "sdata"), False)
     #     print("\t... done")
-
-

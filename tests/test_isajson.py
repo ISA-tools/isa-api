@@ -108,7 +108,7 @@ def create_descriptor(use_strings_for_characteristic_categories=False):
     # Then we create three Sample objects, with organism as Homo Sapiens, and
     # attach them to the study. We use the utility function
     # batch_create_material() to clone a prototype material object. The
-    # function automatiaclly appends an index to the material name. In this
+    # function automatically appends an index to the material name. In this
     # case, three samples will be created, with the names 'sample_material-0',
     # 'sample_material-1' and 'sample_material-2'.
 
@@ -212,7 +212,7 @@ def create_descriptor(use_strings_for_characteristic_categories=False):
         protocol_type=OntologyAnnotation(term="material sequencing"))
     study.protocols.append(sequencing_protocol)
 
-    # To build out assay graphs, we enumereate the samples from the
+    # To build out assay graphs, we enumerate the samples from the
     # study-level, and for each sample we create an extraction process and
     # a sequencing process. The extraction process takes as input a sample
     # material, and produces an extract material. The sequencing process
