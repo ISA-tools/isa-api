@@ -120,7 +120,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
@@ -283,6 +283,11 @@ commentsRunWhenDOMLoaded(addUtterances);
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
      ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
     </a>
    </li>
    <li class="toctree-l2">
@@ -855,6 +860,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NonTreatment(
+            type=&#39;screen&#39;,
+            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;DURATION&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=0.0, unit=isatools.model.OntologyAnnotation(term=&#39;days&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))
+        )
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="creation-of-another-isa-study-design-element-of-type-treatment">
@@ -864,6 +877,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te1</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
 <span class="n">te1</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;biological intervention&#39;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">te1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=biological intervention, 
+        factor_values=[])
+        
 </pre></div>
 </div>
 </div>
@@ -891,6 +912,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=biological intervention, 
+        factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;dose&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;quantity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;high dose&#39;, unit=None), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;time post infection&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=2, unit=isatools.model.OntologyAnnotation(term=&#39;hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;virus&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;hsv1&#39;, unit=None)])
+        
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -913,6 +942,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=chemical intervention, 
+        factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;antiviral&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;chemical entity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;hsvflumab&#39;, unit=None), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;dose&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;quantity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=10, unit=isatools.model.OntologyAnnotation(term=&#39;mg/kg/day&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;treatment duration&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=2, unit=isatools.model.OntologyAnnotation(term=&#39;weeks&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))])
+        
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -930,6 +967,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=radiological intervention, 
+        factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;dose&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;quantity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;10&#39;, unit=isatools.model.OntologyAnnotation(term=&#39;mSev&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;radiation&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;physical entity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;neutron beam&#39;, unit=None), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;treatment duration&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;30&#39;, unit=isatools.model.OntologyAnnotation(term=&#39;minutes&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))])
+        
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="creation-of-wash-out-period-as-an-isa-study-design-element">
@@ -942,6 +987,11 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>screen
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -951,12 +1001,22 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>run-in
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#let&#39;s change it again by direct use of the allowed strings (note: the string should match exactly the predefined values)</span>
 <span class="n">nte2</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">WASHOUT</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nte2</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>washout
 </pre></div>
 </div>
 </div>
@@ -979,6 +1039,14 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <span class="c1"># nte3.duration.value = 2</span>
 <span class="c1"># nte3.duration.unit = &#39;months&#39;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nte3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NonTreatment(
+            type=&#39;follow-up&#39;,
+            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;DURATION&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=4, unit=isatools.model.OntologyAnnotation(term=&#39;month&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))
+        )
 </pre></div>
 </div>
 </div>
@@ -1021,6 +1089,34 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
     <span class="p">)</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">arm1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;StudyArm(
+               name=Arm 1,
+               source_type=Characteristic(
+    category=Study Subject
+    value=Human
+    unit=
+    comments=0 Comment objects
+),
+               group_size=5, 
+               no. cells=0,
+               no. sample_assay_plans=0
+               )
+&quot;StudyArm(
+               name=Arm 1,
+               source_type=Characteristic(
+    category=genotype
+    value=control - normal
+    unit=
+    comments=0 Comment objects
+),
+               group_size=2, 
+               no. cells=0,
+               no. sample_assay_plans=0
+               )
 </pre></div>
 </div>
 </div>
@@ -1203,6 +1299,16 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arm1</span><span class="o">.</span><span class="n">add_item_to_arm_map</span><span class="p">(</span><span class="n">st_cl1</span><span class="p">,</span><span class="n">sap1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">arm1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">arm1</span><span class="o">.</span><span class="n">source_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Arm 1 Characteristic(
+    category=genotype
+    value=control - normal
+    unit=
+    comments=0 Comment objects
+)
 </pre></div>
 </div>
 </div>
@@ -1484,6 +1590,11 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1496,6 +1607,23 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(investigation.studies[0].assays[1])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">investigation</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assays</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Assay(
+    measurement_type=protein profiling
+    technology_type=Western blot
+    technology_platform=
+    filename=a_WB_protein-profiling_Western-blot.txt
+    data_files=252 DataFile objects
+    samples=0 Sample objects
+    process_sequence=504 Process objects
+    other_material=252 Material objects
+    characteristic_categories=0 OntologyAnnots
+    comments=0 Comment objects
+    units=0 Unit objects
+)
 </pre></div>
 </div>
 </div>
@@ -1516,6 +1644,51 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 18:16:26,476 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0, 1, 2]
+2021-07-21 18:16:26,735 [WARNING]: isatab.py(write_study_table_files:1195) &gt;&gt; [4, 3, 0, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 43, 46, 45, 48, 47, 50, 49, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62, 61, 64, 63, 66, 65, 68, 67, 70, 69, 72, 71, 74, 73, 76, 75, 78, 77, 80, 79, 82, 81, 84, 83, 86, 85, 88, 87, 90, 89, 92, 91, 94, 93, 96, 95, 98, 97, 100, 99, 102, 101, 104, 103, 106, 105, 108, 107, 110, 109, 112, 111, 114, 113, 116, 115, 118, 117, 120, 119, 122, 121, 124, 123, 126, 125, 128, 127, 130, 129, 132, 131, 134, 133, 136, 135, 138, 137, 140, 139, 142, 141, 144, 143, 1, 146, 145, 148, 147, 150, 149, 152, 151, 154, 153, 156, 155, 158, 157, 160, 159, 162, 161, 164, 163, 166, 165, 168, 167, 170, 169, 172, 171, 174, 173, 176, 175, 178, 177, 180, 179, 182, 181, 184, 183, 186, 185, 188, 187, 190, 189, 192, 191, 194, 193, 196, 195, 198, 197, 200, 199, 202, 201, 204, 203, 206, 205, 208, 207, 210, 209, 212, 211, 214, 213, 216, 215, 218, 217, 220, 219, 222, 221, 224, 223, 226, 225, 228, 227, 230, 229, 232, 231, 234, 233, 236, 235, 238, 237, 240, 239, 242, 241, 244, 243, 246, 245, 248, 247, 250, 249, 252, 251, 254, 253, 256, 255, 258, 257, 260, 259, 262, 261, 264, 263, 266, 265, 268, 267, 270, 269, 272, 271, 274, 273, 276, 275, 278, 277, 280, 279, 282, 281, 284, 283, 286, 285, 288, 287, 290, 289, 292, 291, 294, 293, 296, 295, 298, 297, 300, 299, 302, 301, 304, 303, 306, 305, 308, 307, 310, 309, 312, 311, 314, 313, 316, 315, 318, 317, 320, 319, 322, 321, 324, 323, 326, 325, 328, 327, 330, 329, 332, 331, 334, 333, 336, 335, 338, 337, 340, 339, 342, 341, 344, 343, 346, 345, 348, 347, 350, 349, 352, 351, 354, 353, 356, 355, 358, 357, 360, 359, 362, 361, 364, 363, 366, 365, 368, 367, 370, 369, 372, 371, 374, 373, 376, 375, 378, 377, 380, 379, 382, 381, 384, 383, 386, 385, 388, 387, 390, 389, 392, 391, 394, 393, 396, 395, 398, 397, 400, 399, 402, 401, 404, 403, 406, 405, 408, 407, 410, 409, 412, 411, 414, 413, 416, 415, 418, 417, 420, 419, 422, 421, 424, 423, 426, 425, 428, 427, 430, 429, 432, 431, 434, 433, 436, 435, 438, 437, 440, 439, 442, 441, 444, 443, 446, 445, 448, 447, 450, 449, 452, 451, 454, 453, 456, 455, 458, 457, 460, 459, 462, 461, 464, 463, 466, 465, 468, 467, 470, 469, 472, 471, 474, 473, 476, 475, 478, 477, 480, 479, 482, 481, 484, 483, 486, 485, 488, 487, 490, 489, 492, 491, 494, 493, 2, 496, 495, 498, 497, 500, 499, 502, 501, 504, 503, 506, 505, 508, 507, 510, 509, 512, 511, 514, 513, 516, 515, 518, 517, 520, 519, 522, 521, 524, 523, 526, 525, 528, 527, 530, 529, 532, 531, 534, 533, 536, 535, 538, 537, 540, 539, 542, 541, 544, 543, 546, 545, 548, 547, 550, 549, 552, 551, 554, 553, 556, 555, 558, 557, 560, 559, 562, 561, 564, 563, 566, 565, 568, 567, 570, 569, 572, 571, 574, 573, 576, 575, 578, 577, 580, 579, 582, 581, 584, 583, 586, 585, 588, 587, 590, 589, 592, 591, 594, 593, 596, 595, 598, 597, 600, 599, 602, 601, 604, 603, 606, 605, 608, 607, 610, 609, 612, 611, 614, 613, 616, 615, 618, 617, 620, 619, 622, 621, 624, 623, 626, 625, 628, 627, 630, 629, 632, 631, 634, 633, 636, 635, 638, 637, 640, 639, 642, 641, 644, 643, 646, 645, 648, 647, 650, 649, 652, 651, 654, 653, 656, 655, 658, 657, 660, 659, 662, 661, 664, 663, 666, 665, 668, 667, 670, 669, 672, 671, 674, 673, 676, 675, 678, 677, 680, 679, 682, 681, 684, 683, 686, 685, 688, 687, 690, 689, 692, 691, 694, 693, 696, 695, 698, 697, 700, 699, 702, 701, 704, 703, 706, 705, 708, 707, 710, 709, 712, 711, 714, 713, 716, 715, 718, 717, 720, 719, 722, 721, 724, 723, 726, 725, 728, 727, 730, 729, 732, 731, 734, 733, 736, 735, 738, 737, 740, 739, 742, 741, 744, 743, 746, 745, 748, 747, 750, 749, 752, 751, 754, 753, 756, 755, 758, 757, 760, 759, 762, 761, 764, 763, 766, 765, 768, 767, 770, 769, 772, 771, 774, 773, 776, 775, 778, 777, 780, 779, 782, 781, 784, 783, 786, 785, 788, 787, 790, 789, 792, 791, 794, 793, 796, 795, 798, 797, 800, 799, 802, 801, 804, 803, 806, 805, 808, 807, 810, 809, 812, 811, 814, 813, 816, 815, 818, 817, 820, 819, 822, 821, 824, 823, 826, 825, 828, 827, 830, 829, 832, 831, 834, 833, 836, 835, 838, 837, 840, 839, 842, 841]
+2021-07-21 18:16:26,736 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[0, 4, 3], [0, 6, 5], [0, 8, 7], [0, 10, 9], [0, 12, 11], [0, 14, 13], [0, 16, 15], [0, 18, 17], [0, 20, 19], [0, 22, 21], [0, 24, 23], [0, 26, 25], [0, 28, 27], [0, 30, 29], [0, 32, 31], [0, 34, 33], [0, 36, 35], [0, 38, 37], [0, 40, 39], [0, 42, 41], [0, 44, 43], [0, 46, 45], [0, 48, 47], [0, 50, 49], [0, 52, 51], [0, 54, 53], [0, 56, 55], [0, 58, 57], [0, 60, 59], [0, 62, 61], [0, 64, 63], [0, 66, 65], [0, 68, 67], [0, 70, 69], [0, 72, 71], [0, 74, 73], [0, 76, 75], [0, 78, 77], [0, 80, 79], [0, 82, 81], [0, 84, 83], [0, 86, 85], [0, 88, 87], [0, 90, 89], [0, 92, 91], [0, 94, 93], [0, 96, 95], [0, 98, 97], [0, 100, 99], [0, 102, 101], [0, 104, 103], [0, 106, 105], [0, 108, 107], [0, 110, 109], [0, 112, 111], [0, 114, 113], [0, 116, 115], [0, 118, 117], [0, 120, 119], [0, 122, 121], [0, 124, 123], [0, 126, 125], [0, 128, 127], [0, 130, 129], [0, 132, 131], [0, 134, 133], [0, 136, 135], [0, 138, 137], [0, 140, 139], [0, 142, 141], [1, 144, 143], [1, 146, 145], [1, 148, 147], [1, 150, 149], [1, 152, 151], [1, 154, 153], [1, 156, 155], [1, 158, 157], [1, 160, 159], [1, 162, 161], [1, 164, 163], [1, 166, 165], [1, 168, 167], [1, 170, 169], [1, 172, 171], [1, 174, 173], [1, 176, 175], [1, 178, 177], [1, 180, 179], [1, 182, 181], [1, 184, 183], [1, 186, 185], [1, 188, 187], [1, 190, 189], [1, 192, 191], [1, 194, 193], [1, 196, 195], [1, 198, 197], [1, 200, 199], [1, 202, 201], [1, 204, 203], [1, 206, 205], [1, 208, 207], [1, 210, 209], [1, 212, 211], [1, 214, 213], [1, 216, 215], [1, 218, 217], [1, 220, 219], [1, 222, 221], [1, 224, 223], [1, 226, 225], [1, 228, 227], [1, 230, 229], [1, 232, 231], [1, 234, 233], [1, 236, 235], [1, 238, 237], [1, 240, 239], [1, 242, 241], [1, 244, 243], [1, 246, 245], [1, 248, 247], [1, 250, 249], [1, 252, 251], [1, 254, 253], [1, 256, 255], [1, 258, 257], [1, 260, 259], [1, 262, 261], [1, 264, 263], [1, 266, 265], [1, 268, 267], [1, 270, 269], [1, 272, 271], [1, 274, 273], [1, 276, 275], [1, 278, 277], [1, 280, 279], [1, 282, 281], [1, 284, 283], [1, 286, 285], [1, 288, 287], [1, 290, 289], [1, 292, 291], [1, 294, 293], [1, 296, 295], [1, 298, 297], [1, 300, 299], [1, 302, 301], [1, 304, 303], [1, 306, 305], [1, 308, 307], [1, 310, 309], [1, 312, 311], [1, 314, 313], [1, 316, 315], [1, 318, 317], [1, 320, 319], [1, 322, 321], [1, 324, 323], [1, 326, 325], [1, 328, 327], [1, 330, 329], [1, 332, 331], [1, 334, 333], [1, 336, 335], [1, 338, 337], [1, 340, 339], [1, 342, 341], [1, 344, 343], [1, 346, 345], [1, 348, 347], [1, 350, 349], [1, 352, 351], [1, 354, 353], [1, 356, 355], [1, 358, 357], [1, 360, 359], [1, 362, 361], [1, 364, 363], [1, 366, 365], [1, 368, 367], [1, 370, 369], [1, 372, 371], [1, 374, 373], [1, 376, 375], [1, 378, 377], [1, 380, 379], [1, 382, 381], [1, 384, 383], [1, 386, 385], [1, 388, 387], [1, 390, 389], [1, 392, 391], [1, 394, 393], [1, 396, 395], [1, 398, 397], [1, 400, 399], [1, 402, 401], [1, 404, 403], [1, 406, 405], [1, 408, 407], [1, 410, 409], [1, 412, 411], [1, 414, 413], [1, 416, 415], [1, 418, 417], [1, 420, 419], [1, 422, 421], [1, 424, 423], [1, 426, 425], [1, 428, 427], [1, 430, 429], [1, 432, 431], [1, 434, 433], [1, 436, 435], [1, 438, 437], [1, 440, 439], [1, 442, 441], [1, 444, 443], [1, 446, 445], [1, 448, 447], [1, 450, 449], [1, 452, 451], [1, 454, 453], [1, 456, 455], [1, 458, 457], [1, 460, 459], [1, 462, 461], [1, 464, 463], [1, 466, 465], [1, 468, 467], [1, 470, 469], [1, 472, 471], [1, 474, 473], [1, 476, 475], [1, 478, 477], [1, 480, 479], [1, 482, 481], [1, 484, 483], [1, 486, 485], [1, 488, 487], [1, 490, 489], [1, 492, 491], [2, 494, 493], [2, 496, 495], [2, 498, 497], [2, 500, 499], [2, 502, 501], [2, 504, 503], [2, 506, 505], [2, 508, 507], [2, 510, 509], [2, 512, 511], [2, 514, 513], [2, 516, 515], [2, 518, 517], [2, 520, 519], [2, 522, 521], [2, 524, 523], [2, 526, 525], [2, 528, 527], [2, 530, 529], [2, 532, 531], [2, 534, 533], [2, 536, 535], [2, 538, 537], [2, 540, 539], [2, 542, 541], [2, 544, 543], [2, 546, 545], [2, 548, 547], [2, 550, 549], [2, 552, 551], [2, 554, 553], [2, 556, 555], [2, 558, 557], [2, 560, 559], [2, 562, 561], [2, 564, 563], [2, 566, 565], [2, 568, 567], [2, 570, 569], [2, 572, 571], [2, 574, 573], [2, 576, 575], [2, 578, 577], [2, 580, 579], [2, 582, 581], [2, 584, 583], [2, 586, 585], [2, 588, 587], [2, 590, 589], [2, 592, 591], [2, 594, 593], [2, 596, 595], [2, 598, 597], [2, 600, 599], [2, 602, 601], [2, 604, 603], [2, 606, 605], [2, 608, 607], [2, 610, 609], [2, 612, 611], [2, 614, 613], [2, 616, 615], [2, 618, 617], [2, 620, 619], [2, 622, 621], [2, 624, 623], [2, 626, 625], [2, 628, 627], [2, 630, 629], [2, 632, 631], [2, 634, 633], [2, 636, 635], [2, 638, 637], [2, 640, 639], [2, 642, 641], [2, 644, 643], [2, 646, 645], [2, 648, 647], [2, 650, 649], [2, 652, 651], [2, 654, 653], [2, 656, 655], [2, 658, 657], [2, 660, 659], [2, 662, 661], [2, 664, 663], [2, 666, 665], [2, 668, 667], [2, 670, 669], [2, 672, 671], [2, 674, 673], [2, 676, 675], [2, 678, 677], [2, 680, 679], [2, 682, 681], [2, 684, 683], [2, 686, 685], [2, 688, 687], [2, 690, 689], [2, 692, 691], [2, 694, 693], [2, 696, 695], [2, 698, 697], [2, 700, 699], [2, 702, 701], [2, 704, 703], [2, 706, 705], [2, 708, 707], [2, 710, 709], [2, 712, 711], [2, 714, 713], [2, 716, 715], [2, 718, 717], [2, 720, 719], [2, 722, 721], [2, 724, 723], [2, 726, 725], [2, 728, 727], [2, 730, 729], [2, 732, 731], [2, 734, 733], [2, 736, 735], [2, 738, 737], [2, 740, 739], [2, 742, 741], [2, 744, 743], [2, 746, 745], [2, 748, 747], [2, 750, 749], [2, 752, 751], [2, 754, 753], [2, 756, 755], [2, 758, 757], [2, 760, 759], [2, 762, 761], [2, 764, 763], [2, 766, 765], [2, 768, 767], [2, 770, 769], [2, 772, 771], [2, 774, 773], [2, 776, 775], [2, 778, 777], [2, 780, 779], [2, 782, 781], [2, 784, 783], [2, 786, 785], [2, 788, 787], [2, 790, 789], [2, 792, 791], [2, 794, 793], [2, 796, 795], [2, 798, 797], [2, 800, 799], [2, 802, 801], [2, 804, 803], [2, 806, 805], [2, 808, 807], [2, 810, 809], [2, 812, 811], [2, 814, 813], [2, 816, 815], [2, 818, 817], [2, 820, 819], [2, 822, 821], [2, 824, 823], [2, 826, 825], [2, 828, 827], [2, 830, 829], [2, 832, 831], [2, 834, 833], [2, 836, 835], [2, 838, 837], [2, 840, 839], [2, 842, 841]]
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="mi">5</span><span class="n">n</span><span class="o">/</span><span class="n">rl6lqnks4rqb59pbtpvvntqw0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_18651</span><span class="o">/</span><span class="mf">1244306393.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">dataframes</span> <span class="o">=</span> <span class="n">dumpdf</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">dataframes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">dump_tables_to_dataframes</span><span class="nt">(isa_obj)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4578</span>     <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">4579</span>         <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="ne">-&gt; </span><span class="mi">4580</span>         <span class="n">dump</span><span class="p">(</span><span class="n">isa_obj</span><span class="o">=</span><span class="n">isa_obj</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">skip_dump_tables</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4581</span>         <span class="k">for</span> <span class="n">s_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s1">&#39;s_*&#39;</span><span class="p">)):</span>
+<span class="g g-Whitespace">   </span><span class="mi">4582</span>             <span class="n">output</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">s_file</span><span class="p">)]</span> <span class="o">=</span> <span class="n">read_tfile</span><span class="p">(</span><span class="n">s_file</span><span class="p">)</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">dump</span><span class="nt">(isa_obj, output_path, i_file_name, skip_dump_tables, write_factor_values_in_assay_table)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1047</span>         <span class="k">pass</span>
+<span class="g g-Whitespace">   </span><span class="mi">1048</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1049</span>         <span class="n">write_study_table_files</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1050</span>         <span class="n">write_assay_table_files</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1051</span>             <span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">write_factor_values_in_assay_table</span><span class="p">)</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">write_study_table_files</span><span class="nt">(inv_obj, output_dir)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1296</span>                         <span class="n">fvlabel</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">.Factor Value[</span><span class="si">{1}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1297</span>                             <span class="n">olabel</span><span class="p">,</span> <span class="n">fv</span><span class="o">.</span><span class="n">factor_name</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1298</span>                         <span class="n">write_value_columns</span><span class="p">(</span><span class="n">df_dict</span><span class="p">,</span> <span class="n">fvlabel</span><span class="p">,</span> <span class="n">fv</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1299</span>         <span class="sd">&quot;&quot;&quot;if isinstance(pbar, ProgressBar):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1300</span><span class="sd">             pbar.finish()&quot;&quot;&quot;</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">write_value_columns</span><span class="nt">(df_dict, label, x)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1717</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1718</span>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1719</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span>
+<span class="g g-Whitespace">   </span><span class="mi">1720</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">term</span>
+<span class="g g-Whitespace">   </span><span class="mi">1721</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit.Term Source REF&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> \
+
+<span class="ne">KeyError</span>: &#39;Sample Name.0.Factor Value[DURATION]&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1524,6 +1697,44 @@ It creates each <code class="docutils literal notranslate"><span class="pre">Ele
 <span class="c1"># import os</span>
 <span class="c1"># os.makedirs(&#39;/notebook-output/isa-repeated-measure-crossover-design&#39;, exist_ok = True)</span>
 <span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="s1">&#39;./notebook-output/isa-repeated-measure-crossover-design&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-08-09 18:51:57,184 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0, 1, 2]
+2021-08-09 18:51:57,468 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [4, 3, 0, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 43, 46, 45, 48, 47, 50, 49, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62, 61, 64, 63, 66, 65, 68, 67, 70, 69, 72, 71, 74, 73, 76, 75, 78, 77, 80, 79, 82, 81, 84, 83, 86, 85, 88, 87, 90, 89, 92, 91, 94, 93, 96, 95, 98, 97, 100, 99, 102, 101, 104, 103, 106, 105, 108, 107, 110, 109, 112, 111, 114, 113, 116, 115, 118, 117, 120, 119, 122, 121, 124, 123, 126, 125, 128, 127, 130, 129, 132, 131, 134, 133, 136, 135, 138, 137, 140, 139, 142, 141, 144, 143, 1, 146, 145, 148, 147, 150, 149, 152, 151, 154, 153, 156, 155, 158, 157, 160, 159, 162, 161, 164, 163, 166, 165, 168, 167, 170, 169, 172, 171, 174, 173, 176, 175, 178, 177, 180, 179, 182, 181, 184, 183, 186, 185, 188, 187, 190, 189, 192, 191, 194, 193, 196, 195, 198, 197, 200, 199, 202, 201, 204, 203, 206, 205, 208, 207, 210, 209, 212, 211, 214, 213, 216, 215, 218, 217, 220, 219, 222, 221, 224, 223, 226, 225, 228, 227, 230, 229, 232, 231, 234, 233, 236, 235, 238, 237, 240, 239, 242, 241, 244, 243, 246, 245, 248, 247, 250, 249, 252, 251, 254, 253, 256, 255, 258, 257, 260, 259, 262, 261, 264, 263, 266, 265, 268, 267, 270, 269, 272, 271, 274, 273, 276, 275, 278, 277, 280, 279, 282, 281, 284, 283, 286, 285, 288, 287, 290, 289, 292, 291, 294, 293, 296, 295, 298, 297, 300, 299, 302, 301, 304, 303, 306, 305, 308, 307, 310, 309, 312, 311, 314, 313, 316, 315, 318, 317, 320, 319, 322, 321, 324, 323, 326, 325, 328, 327, 330, 329, 332, 331, 334, 333, 336, 335, 338, 337, 340, 339, 342, 341, 344, 343, 346, 345, 348, 347, 350, 349, 352, 351, 354, 353, 356, 355, 358, 357, 360, 359, 362, 361, 364, 363, 366, 365, 368, 367, 370, 369, 372, 371, 374, 373, 376, 375, 378, 377, 380, 379, 382, 381, 384, 383, 386, 385, 388, 387, 390, 389, 392, 391, 394, 393, 396, 395, 398, 397, 400, 399, 402, 401, 404, 403, 406, 405, 408, 407, 410, 409, 412, 411, 414, 413, 416, 415, 418, 417, 420, 419, 422, 421, 424, 423, 426, 425, 428, 427, 430, 429, 432, 431, 434, 433, 436, 435, 438, 437, 440, 439, 442, 441, 444, 443, 446, 445, 448, 447, 450, 449, 452, 451, 454, 453, 456, 455, 458, 457, 460, 459, 462, 461, 464, 463, 466, 465, 468, 467, 470, 469, 472, 471, 474, 473, 476, 475, 478, 477, 480, 479, 482, 481, 484, 483, 486, 485, 488, 487, 490, 489, 492, 491, 494, 493, 2, 496, 495, 498, 497, 500, 499, 502, 501, 504, 503, 506, 505, 508, 507, 510, 509, 512, 511, 514, 513, 516, 515, 518, 517, 520, 519, 522, 521, 524, 523, 526, 525, 528, 527, 530, 529, 532, 531, 534, 533, 536, 535, 538, 537, 540, 539, 542, 541, 544, 543, 546, 545, 548, 547, 550, 549, 552, 551, 554, 553, 556, 555, 558, 557, 560, 559, 562, 561, 564, 563, 566, 565, 568, 567, 570, 569, 572, 571, 574, 573, 576, 575, 578, 577, 580, 579, 582, 581, 584, 583, 586, 585, 588, 587, 590, 589, 592, 591, 594, 593, 596, 595, 598, 597, 600, 599, 602, 601, 604, 603, 606, 605, 608, 607, 610, 609, 612, 611, 614, 613, 616, 615, 618, 617, 620, 619, 622, 621, 624, 623, 626, 625, 628, 627, 630, 629, 632, 631, 634, 633, 636, 635, 638, 637, 640, 639, 642, 641, 644, 643, 646, 645, 648, 647, 650, 649, 652, 651, 654, 653, 656, 655, 658, 657, 660, 659, 662, 661, 664, 663, 666, 665, 668, 667, 670, 669, 672, 671, 674, 673, 676, 675, 678, 677, 680, 679, 682, 681, 684, 683, 686, 685, 688, 687, 690, 689, 692, 691, 694, 693, 696, 695, 698, 697, 700, 699, 702, 701, 704, 703, 706, 705, 708, 707, 710, 709, 712, 711, 714, 713, 716, 715, 718, 717, 720, 719, 722, 721, 724, 723, 726, 725, 728, 727, 730, 729, 732, 731, 734, 733, 736, 735, 738, 737, 740, 739, 742, 741, 744, 743, 746, 745, 748, 747, 750, 749, 752, 751, 754, 753, 756, 755, 758, 757, 760, 759, 762, 761, 764, 763, 766, 765, 768, 767, 770, 769, 772, 771, 774, 773, 776, 775, 778, 777, 780, 779, 782, 781, 784, 783, 786, 785, 788, 787, 790, 789, 792, 791, 794, 793, 796, 795, 798, 797, 800, 799, 802, 801, 804, 803, 806, 805, 808, 807, 810, 809, 812, 811, 814, 813, 816, 815, 818, 817, 820, 819, 822, 821, 824, 823, 826, 825, 828, 827, 830, 829, 832, 831, 834, 833, 836, 835, 838, 837, 840, 839, 842, 841]
+2021-08-09 18:51:57,471 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[0, 4, 3], [0, 6, 5], [0, 8, 7], [0, 10, 9], [0, 12, 11], [0, 14, 13], [0, 16, 15], [0, 18, 17], [0, 20, 19], [0, 22, 21], [0, 24, 23], [0, 26, 25], [0, 28, 27], [0, 30, 29], [0, 32, 31], [0, 34, 33], [0, 36, 35], [0, 38, 37], [0, 40, 39], [0, 42, 41], [0, 44, 43], [0, 46, 45], [0, 48, 47], [0, 50, 49], [0, 52, 51], [0, 54, 53], [0, 56, 55], [0, 58, 57], [0, 60, 59], [0, 62, 61], [0, 64, 63], [0, 66, 65], [0, 68, 67], [0, 70, 69], [0, 72, 71], [0, 74, 73], [0, 76, 75], [0, 78, 77], [0, 80, 79], [0, 82, 81], [0, 84, 83], [0, 86, 85], [0, 88, 87], [0, 90, 89], [0, 92, 91], [0, 94, 93], [0, 96, 95], [0, 98, 97], [0, 100, 99], [0, 102, 101], [0, 104, 103], [0, 106, 105], [0, 108, 107], [0, 110, 109], [0, 112, 111], [0, 114, 113], [0, 116, 115], [0, 118, 117], [0, 120, 119], [0, 122, 121], [0, 124, 123], [0, 126, 125], [0, 128, 127], [0, 130, 129], [0, 132, 131], [0, 134, 133], [0, 136, 135], [0, 138, 137], [0, 140, 139], [0, 142, 141], [1, 144, 143], [1, 146, 145], [1, 148, 147], [1, 150, 149], [1, 152, 151], [1, 154, 153], [1, 156, 155], [1, 158, 157], [1, 160, 159], [1, 162, 161], [1, 164, 163], [1, 166, 165], [1, 168, 167], [1, 170, 169], [1, 172, 171], [1, 174, 173], [1, 176, 175], [1, 178, 177], [1, 180, 179], [1, 182, 181], [1, 184, 183], [1, 186, 185], [1, 188, 187], [1, 190, 189], [1, 192, 191], [1, 194, 193], [1, 196, 195], [1, 198, 197], [1, 200, 199], [1, 202, 201], [1, 204, 203], [1, 206, 205], [1, 208, 207], [1, 210, 209], [1, 212, 211], [1, 214, 213], [1, 216, 215], [1, 218, 217], [1, 220, 219], [1, 222, 221], [1, 224, 223], [1, 226, 225], [1, 228, 227], [1, 230, 229], [1, 232, 231], [1, 234, 233], [1, 236, 235], [1, 238, 237], [1, 240, 239], [1, 242, 241], [1, 244, 243], [1, 246, 245], [1, 248, 247], [1, 250, 249], [1, 252, 251], [1, 254, 253], [1, 256, 255], [1, 258, 257], [1, 260, 259], [1, 262, 261], [1, 264, 263], [1, 266, 265], [1, 268, 267], [1, 270, 269], [1, 272, 271], [1, 274, 273], [1, 276, 275], [1, 278, 277], [1, 280, 279], [1, 282, 281], [1, 284, 283], [1, 286, 285], [1, 288, 287], [1, 290, 289], [1, 292, 291], [1, 294, 293], [1, 296, 295], [1, 298, 297], [1, 300, 299], [1, 302, 301], [1, 304, 303], [1, 306, 305], [1, 308, 307], [1, 310, 309], [1, 312, 311], [1, 314, 313], [1, 316, 315], [1, 318, 317], [1, 320, 319], [1, 322, 321], [1, 324, 323], [1, 326, 325], [1, 328, 327], [1, 330, 329], [1, 332, 331], [1, 334, 333], [1, 336, 335], [1, 338, 337], [1, 340, 339], [1, 342, 341], [1, 344, 343], [1, 346, 345], [1, 348, 347], [1, 350, 349], [1, 352, 351], [1, 354, 353], [1, 356, 355], [1, 358, 357], [1, 360, 359], [1, 362, 361], [1, 364, 363], [1, 366, 365], [1, 368, 367], [1, 370, 369], [1, 372, 371], [1, 374, 373], [1, 376, 375], [1, 378, 377], [1, 380, 379], [1, 382, 381], [1, 384, 383], [1, 386, 385], [1, 388, 387], [1, 390, 389], [1, 392, 391], [1, 394, 393], [1, 396, 395], [1, 398, 397], [1, 400, 399], [1, 402, 401], [1, 404, 403], [1, 406, 405], [1, 408, 407], [1, 410, 409], [1, 412, 411], [1, 414, 413], [1, 416, 415], [1, 418, 417], [1, 420, 419], [1, 422, 421], [1, 424, 423], [1, 426, 425], [1, 428, 427], [1, 430, 429], [1, 432, 431], [1, 434, 433], [1, 436, 435], [1, 438, 437], [1, 440, 439], [1, 442, 441], [1, 444, 443], [1, 446, 445], [1, 448, 447], [1, 450, 449], [1, 452, 451], [1, 454, 453], [1, 456, 455], [1, 458, 457], [1, 460, 459], [1, 462, 461], [1, 464, 463], [1, 466, 465], [1, 468, 467], [1, 470, 469], [1, 472, 471], [1, 474, 473], [1, 476, 475], [1, 478, 477], [1, 480, 479], [1, 482, 481], [1, 484, 483], [1, 486, 485], [1, 488, 487], [1, 490, 489], [1, 492, 491], [2, 494, 493], [2, 496, 495], [2, 498, 497], [2, 500, 499], [2, 502, 501], [2, 504, 503], [2, 506, 505], [2, 508, 507], [2, 510, 509], [2, 512, 511], [2, 514, 513], [2, 516, 515], [2, 518, 517], [2, 520, 519], [2, 522, 521], [2, 524, 523], [2, 526, 525], [2, 528, 527], [2, 530, 529], [2, 532, 531], [2, 534, 533], [2, 536, 535], [2, 538, 537], [2, 540, 539], [2, 542, 541], [2, 544, 543], [2, 546, 545], [2, 548, 547], [2, 550, 549], [2, 552, 551], [2, 554, 553], [2, 556, 555], [2, 558, 557], [2, 560, 559], [2, 562, 561], [2, 564, 563], [2, 566, 565], [2, 568, 567], [2, 570, 569], [2, 572, 571], [2, 574, 573], [2, 576, 575], [2, 578, 577], [2, 580, 579], [2, 582, 581], [2, 584, 583], [2, 586, 585], [2, 588, 587], [2, 590, 589], [2, 592, 591], [2, 594, 593], [2, 596, 595], [2, 598, 597], [2, 600, 599], [2, 602, 601], [2, 604, 603], [2, 606, 605], [2, 608, 607], [2, 610, 609], [2, 612, 611], [2, 614, 613], [2, 616, 615], [2, 618, 617], [2, 620, 619], [2, 622, 621], [2, 624, 623], [2, 626, 625], [2, 628, 627], [2, 630, 629], [2, 632, 631], [2, 634, 633], [2, 636, 635], [2, 638, 637], [2, 640, 639], [2, 642, 641], [2, 644, 643], [2, 646, 645], [2, 648, 647], [2, 650, 649], [2, 652, 651], [2, 654, 653], [2, 656, 655], [2, 658, 657], [2, 660, 659], [2, 662, 661], [2, 664, 663], [2, 666, 665], [2, 668, 667], [2, 670, 669], [2, 672, 671], [2, 674, 673], [2, 676, 675], [2, 678, 677], [2, 680, 679], [2, 682, 681], [2, 684, 683], [2, 686, 685], [2, 688, 687], [2, 690, 689], [2, 692, 691], [2, 694, 693], [2, 696, 695], [2, 698, 697], [2, 700, 699], [2, 702, 701], [2, 704, 703], [2, 706, 705], [2, 708, 707], [2, 710, 709], [2, 712, 711], [2, 714, 713], [2, 716, 715], [2, 718, 717], [2, 720, 719], [2, 722, 721], [2, 724, 723], [2, 726, 725], [2, 728, 727], [2, 730, 729], [2, 732, 731], [2, 734, 733], [2, 736, 735], [2, 738, 737], [2, 740, 739], [2, 742, 741], [2, 744, 743], [2, 746, 745], [2, 748, 747], [2, 750, 749], [2, 752, 751], [2, 754, 753], [2, 756, 755], [2, 758, 757], [2, 760, 759], [2, 762, 761], [2, 764, 763], [2, 766, 765], [2, 768, 767], [2, 770, 769], [2, 772, 771], [2, 774, 773], [2, 776, 775], [2, 778, 777], [2, 780, 779], [2, 782, 781], [2, 784, 783], [2, 786, 785], [2, 788, 787], [2, 790, 789], [2, 792, 791], [2, 794, 793], [2, 796, 795], [2, 798, 797], [2, 800, 799], [2, 802, 801], [2, 804, 803], [2, 806, 805], [2, 808, 807], [2, 810, 809], [2, 812, 811], [2, 814, 813], [2, 816, 815], [2, 818, 817], [2, 820, 819], [2, 822, 821], [2, 824, 823], [2, 826, 825], [2, 828, 827], [2, 830, 829], [2, 832, 831], [2, 834, 833], [2, 836, 835], [2, 838, 837], [2, 840, 839], [2, 842, 841]]
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="mi">5</span><span class="n">n</span><span class="o">/</span><span class="n">rl6lqnks4rqb59pbtpvvntqw0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_54507</span><span class="o">/</span><span class="mf">4200718032.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="c1"># import os</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="c1"># os.makedirs(&#39;/notebook-output/isa-repeated-measure-crossover-design&#39;, exist_ok = True)</span>
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="s1">&#39;./notebook-output/isa-repeated-measure-crossover-design&#39;</span><span class="p">)</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">dump</span><span class="nt">(isa_obj, output_path, i_file_name, skip_dump_tables, write_factor_values_in_assay_table)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1047</span>         <span class="k">pass</span>
+<span class="g g-Whitespace">   </span><span class="mi">1048</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1049</span>         <span class="n">write_study_table_files</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1050</span>         <span class="n">write_assay_table_files</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1051</span>             <span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">write_factor_values_in_assay_table</span><span class="p">)</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">write_study_table_files</span><span class="nt">(inv_obj, output_dir)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1295</span>                         <span class="n">fvlabel</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">.Factor Value[</span><span class="si">{1}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1296</span>                             <span class="n">olabel</span><span class="p">,</span> <span class="n">fv</span><span class="o">.</span><span class="n">factor_name</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1297</span>                         <span class="n">write_value_columns</span><span class="p">(</span><span class="n">df_dict</span><span class="p">,</span> <span class="n">fvlabel</span><span class="p">,</span> <span class="n">fv</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1298</span>         <span class="sd">&quot;&quot;&quot;if isinstance(pbar, ProgressBar):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1299</span><span class="sd">             pbar.finish()&quot;&quot;&quot;</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/src/isatools/isatools/isatab.py</span> in <span class="ni">write_value_columns</span><span class="nt">(df_dict, label, x)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1715</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1716</span>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1717</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span>
+<span class="g g-Whitespace">   </span><span class="mi">1718</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">term</span>
+<span class="g g-Whitespace">   </span><span class="mi">1719</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit.Term Source REF&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> \
+
+<span class="ne">KeyError</span>: &#39;Sample Name.0.Factor Value[DURATION]&#39;
 </pre></div>
 </div>
 </div>

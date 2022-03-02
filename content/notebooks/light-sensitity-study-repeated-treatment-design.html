@@ -120,7 +120,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
@@ -283,6 +283,11 @@ commentsRunWhenDOMLoaded(addUtterances);
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
      ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
     </a>
    </li>
    <li class="toctree-l2">
@@ -822,6 +827,19 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>isatools.model.Investigation(identifier=&#39;&#39;, filename=&#39;&#39;, title=&#39;&#39;, submission_date=&#39;&#39;, public_release_date=&#39;&#39;, ontology_source_references=[], publications=[], contacts=[], studies=[isatools.model.Study(filename=&#39;s_study_xover.txt&#39;, identifier=&#39;elifesprint2019-1&#39;, title=&#39;elifesprint2019-1: light sensitivity&#39;, description=&#39;a study about light sensitivity difference between a control population (n=10) and a genotype A population (n=10).&#39;, submission_date=&#39;2021-07-21 17:43:54.131318&#39;, public_release_date=&#39;2021-07-21 17:43:54.131358&#39;, contacts=[], design_descriptors=[], publications=[], factors=[], protocols=[isatools.model.Protocol(name=&#39;sample collection&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[])], assays=[], sources=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[], comments=[])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=sample collection
+    protocol_type=
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[])], outputs=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[], comments=[])])], other_material=[], characteristic_categories=[], comments=[], units=[])], comments=[])
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -847,6 +865,14 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NonTreatment(
+            type=&#39;screen&#39;,
+            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;DURATION&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=0.0, unit=isatools.model.OntologyAnnotation(term=&#39;days&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))
+        )
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="creation-of-another-isa-study-design-element-of-type-treatment">
@@ -856,6 +882,14 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">te1</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">()</span>
 <span class="n">te1</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;radiological intervention&#39;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">te1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=radiological intervention, 
+        factor_values=[])
+        
 </pre></div>
 </div>
 </div>
@@ -879,12 +913,33 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FactorValue(
+    factor_name=light
+    value=&#39;visible light at 3000K produced by LED array&#39;
+    unit=
+) FactorValue(
+    factor_name=dose
+    value=250
+    unit=lux
+)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#assigning the factor values declared above to the ISA treatment element</span>
 <span class="n">te1</span><span class="o">.</span><span class="n">factor_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">f1v</span><span class="p">,</span><span class="n">f2v</span><span class="p">,</span><span class="n">f3v</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">te1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=radiological intervention, 
+        factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;dose&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;quantity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=250, unit=isatools.model.OntologyAnnotation(term=&#39;lux&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;duration&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=1, unit=isatools.model.OntologyAnnotation(term=&#39;hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;light&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;electromagnetic energy&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;visible light at 3000K produced by LED array&#39;, unit=None)])
+        
 </pre></div>
 </div>
 </div>
@@ -910,6 +965,14 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;Treatment
+        (type=radiological intervention, 
+        factor_values=[isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;dose&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;quantity&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=250, unit=isatools.model.OntologyAnnotation(term=&#39;lux&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;duration&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=1, unit=isatools.model.OntologyAnnotation(term=&#39;hour&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])), isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;light&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;electromagnetic energy&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=&#39;visible light at 3000K produced by LED array&#39;, unit=None)])
+        
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="creation-of-wash-out-period-as-an-isa-study-design-element">
@@ -923,6 +986,14 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 
 <span class="n">nte2</span> <span class="o">=</span> <span class="n">NonTreatment</span><span class="p">(</span><span class="n">element_type</span><span class="o">=</span><span class="s1">&#39;washout&#39;</span><span class="p">,</span> <span class="n">duration_unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nte2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NonTreatment(
+            type=&#39;washout&#39;,
+            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name=&#39;DURATION&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;time&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=0.0, unit=isatools.model.OntologyAnnotation(term=&#39;days&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]))
+        )
 </pre></div>
 </div>
 </div>
@@ -982,6 +1053,22 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arm1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;StudyArm(
+               name=Arm 1,
+               source_type=Characteristic(
+    category=genotype
+    value=control - normal
+    unit=
+    comments=0 Comment objects
+),
+               group_size=2, 
+               no. cells=0,
+               no. sample_assay_plans=0
+               )
 </pre></div>
 </div>
 </div>
@@ -1123,6 +1210,98 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sap1</span><span class="o">.</span><span class="n">sample_to_assay_map</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{isatools.create.model.ProductNode(id=MAT2, type=sample, name=saliva, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;organism part&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;saliva&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])], size=1, extension=None): {isatools.create.model.AssayGraph(id=cce3713d-dfd3-4942-8d87-cb391156d756, measurement_type=OntologyAnnotation(
+      term=light sensitivity
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), technology_type=OntologyAnnotation(
+      term=electroencephalography
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), nodes={isatools.create.model.ProductNode(id=raw_data_file_000_001, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=data_collection_001, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;instrument&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Somnotouch&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;sampling_rate&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;200 Hz&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;2 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProtocolNode(id=data_collection_000, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;instrument&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Somnotouch&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;sampling_rate&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;200 Hz&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;1 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_000, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None)}, links=[(&#39;data_collection_000&#39;, &#39;raw_data_file_000_000&#39;), (&#39;data_collection_001&#39;, &#39;raw_data_file_000_001&#39;)], quality_control=None)},
+ isatools.create.model.ProductNode(id=MAT1, type=sample, name=subject, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;organism part&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;whole organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])], size=1, extension=None): {isatools.create.model.AssayGraph(id=05599bfb-d02b-471e-b9b1-6ce6758791db, measurement_type=OntologyAnnotation(
+      term=melatonine concentration
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), technology_type=OntologyAnnotation(
+      term=radioimmunoprecipitation assay
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), nodes={isatools.create.model.ProductNode(id=extract_000_000, type=extract, name=extract, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;extract type&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;extract&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])], size=1, extension=None), isatools.create.model.ProtocolNode(id=extraction_000, name=assay0 - extraction, protocol_type=OntologyAnnotation(
+      term=assay0 - extraction
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[]), isatools.create.model.ProtocolNode(id=radioimmunoprecipitation_001_000, name=assay0 - radioimmunoprecipitation, protocol_type=OntologyAnnotation(
+      term=assay0 - radioimmunoprecipitation
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;instrument&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Beckon Dickison XYZ&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;antibody&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;AbCam antiMelatonine &#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;2 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_001, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=radioimmunoprecipitation_000_000, name=assay0 - radioimmunoprecipitation, protocol_type=OntologyAnnotation(
+      term=assay0 - radioimmunoprecipitation
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;instrument&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Beckon Dickison XYZ&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;antibody&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;AbCam antiMelatonine &#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;1 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_000, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None)}, links=[(&#39;extract_000_000&#39;, &#39;radioimmunoprecipitation_000_000&#39;), (&#39;extract_000_000&#39;, &#39;radioimmunoprecipitation_001_000&#39;), (&#39;extraction_000&#39;, &#39;extract_000_000&#39;), (&#39;radioimmunoprecipitation_000_000&#39;, &#39;raw_data_file_000_000&#39;), (&#39;radioimmunoprecipitation_001_000&#39;, &#39;raw_data_file_000_001&#39;)], quality_control=None),
+  isatools.create.model.AssayGraph(id=d7726069-1823-4f49-b10c-8856036ad082, measurement_type=OntologyAnnotation(
+      term=light sensitivity phenotyping
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), technology_type=OntologyAnnotation(
+      term=direct measurement
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), nodes={isatools.create.model.ProductNode(id=raw_data_file_000_002, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProductNode(id=raw_data_file_000_003, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=data_collection_004, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;pupilla size&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;1 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_004, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=data_collection_000, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;sleepiness&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;1 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_001, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=data_collection_002, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;heart rate&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;1 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProtocolNode(id=data_collection_005, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;pupilla size&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;2 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProtocolNode(id=data_collection_003, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;heart rate&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;2 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_005, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None), isatools.create.model.ProtocolNode(id=data_collection_001, name=assay0 - data_collection, protocol_type=OntologyAnnotation(
+      term=assay0 - data_collection
+      term_source=
+      term_accession=
+      comments=0 Comment objects
+  ), uri=, description=, version=, parameter_values=[isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;variables&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;sleepiness&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[]), isatools.model.ParameterValue(category=isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;time point&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;2 hr&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), unit=None, comments=[])]), isatools.create.model.ProductNode(id=raw_data_file_000_000, type=data file, name=raw_data_file, characteristics=[], size=1, extension=None)}, links=[(&#39;data_collection_000&#39;, &#39;raw_data_file_000_000&#39;), (&#39;data_collection_001&#39;, &#39;raw_data_file_000_001&#39;), (&#39;data_collection_002&#39;, &#39;raw_data_file_000_002&#39;), (&#39;data_collection_003&#39;, &#39;raw_data_file_000_003&#39;), (&#39;data_collection_004&#39;, &#39;raw_data_file_000_004&#39;), (&#39;data_collection_005&#39;, &#39;raw_data_file_000_005&#39;)], quality_control=None)}}
 </pre></div>
 </div>
 </div>
@@ -1268,6 +1447,46 @@ Finally, the <code class="docutils literal notranslate"><span class="pre">study<
 
 <span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
 <span class="n">dataframes</span> <span class="o">=</span> <span class="n">dumpdf</span><span class="p">(</span><span class="n">investigation</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:43:54,822 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [3, 4, 5, 6]
+2021-07-21 17:43:54,828 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [8, 7, 3, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 43, 46, 45, 48, 47, 4, 50, 49, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62, 61, 64, 63, 66, 65, 68, 67, 70, 69, 72, 71, 74, 73, 76, 75, 78, 77, 80, 79, 82, 81, 84, 83, 86, 85, 88, 87, 5, 90, 89, 92, 91, 94, 93, 96, 95, 98, 97, 100, 99, 102, 101, 104, 103, 106, 105, 108, 107, 110, 109, 112, 111, 114, 113, 116, 115, 118, 117, 120, 119, 122, 121, 124, 123, 126, 125, 128, 127, 6, 130, 129, 132, 131, 134, 133, 136, 135, 138, 137, 140, 139, 142, 141, 144, 143, 146, 145, 148, 147, 150, 149]
+2021-07-21 17:43:54,829 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[3, 8, 7], [3, 10, 9], [3, 12, 11], [3, 14, 13], [3, 16, 15], [3, 18, 17], [3, 20, 19], [3, 22, 21], [3, 24, 23], [3, 26, 25], [3, 28, 27], [3, 30, 29], [3, 32, 31], [3, 34, 33], [3, 36, 35], [3, 38, 37], [3, 40, 39], [3, 42, 41], [3, 44, 43], [3, 46, 45], [4, 48, 47], [4, 50, 49], [4, 52, 51], [4, 54, 53], [4, 56, 55], [4, 58, 57], [4, 60, 59], [4, 62, 61], [4, 64, 63], [4, 66, 65], [4, 68, 67], [4, 70, 69], [4, 72, 71], [4, 74, 73], [4, 76, 75], [4, 78, 77], [4, 80, 79], [4, 82, 81], [4, 84, 83], [4, 86, 85], [5, 88, 87], [5, 90, 89], [5, 92, 91], [5, 94, 93], [5, 96, 95], [5, 98, 97], [5, 100, 99], [5, 102, 101], [5, 104, 103], [5, 106, 105], [5, 108, 107], [5, 110, 109], [5, 112, 111], [5, 114, 113], [5, 116, 115], [5, 118, 117], [5, 120, 119], [5, 122, 121], [5, 124, 123], [5, 126, 125], [6, 130, 129], [6, 132, 131], [6, 134, 133], [6, 136, 135], [6, 138, 137], [6, 140, 139], [6, 142, 141], [6, 144, 143], [6, 146, 145], [6, 148, 147], [6, 150, 149], [6, 128, 127]]
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="mi">5</span><span class="n">n</span><span class="o">/</span><span class="n">rl6lqnks4rqb59pbtpvvntqw0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_17990</span><span class="o">/</span><span class="mf">2479725034.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># print(json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(&#39;,&#39;, &#39;: &#39;)))</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation1</span><span class="p">,</span> <span class="n">final_dir</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump_tables_to_dataframes</span> <span class="k">as</span> <span class="n">dumpdf</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/isatab.py</span> in <span class="ni">dump</span><span class="nt">(isa_obj, output_path, i_file_name, skip_dump_tables, write_factor_values_in_assay_table)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1047</span>         <span class="k">pass</span>
+<span class="g g-Whitespace">   </span><span class="mi">1048</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1049</span>         <span class="n">write_study_table_files</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1050</span>         <span class="n">write_assay_table_files</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1051</span>             <span class="n">investigation</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">write_factor_values_in_assay_table</span><span class="p">)</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/isatab.py</span> in <span class="ni">write_study_table_files</span><span class="nt">(inv_obj, output_dir)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1295</span>                         <span class="n">fvlabel</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">.Factor Value[</span><span class="si">{1}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1296</span>                             <span class="n">olabel</span><span class="p">,</span> <span class="n">fv</span><span class="o">.</span><span class="n">factor_name</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1297</span>                         <span class="n">write_value_columns</span><span class="p">(</span><span class="n">df_dict</span><span class="p">,</span> <span class="n">fvlabel</span><span class="p">,</span> <span class="n">fv</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1298</span>         <span class="sd">&quot;&quot;&quot;if isinstance(pbar, ProgressBar):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1299</span><span class="sd">             pbar.finish()&quot;&quot;&quot;</span>
+
+<span class="nn">~/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/isatab.py</span> in <span class="ni">write_value_columns</span><span class="nt">(df_dict, label, x)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1715</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1716</span>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">OntologyAnnotation</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1717</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span>
+<span class="g g-Whitespace">   </span><span class="mi">1718</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">term</span>
+<span class="g g-Whitespace">   </span><span class="mi">1719</span>             <span class="n">df_dict</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="s2">&quot;.Unit.Term Source REF&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> \
+
+<span class="ne">KeyError</span>: &#39;Sample Name.0.Factor Value[DURATION]&#39;
 </pre></div>
 </div>
 </div>

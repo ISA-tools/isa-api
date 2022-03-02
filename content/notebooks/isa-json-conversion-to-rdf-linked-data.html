@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>From ISA JSON to RDF Linked Data with ISALDSerializer function: &#8212; The ISA cookbook</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mermaid.js"></script>
+    <script src="../../_static/mermaid.min.js"></script>
+    <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/isa-json-conversion-to-rdf-linked-data.html" />
+    <link rel="shortcut icon" href="../../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+      <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../examples.html">
+   ISA API example programs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../knownissues.html">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../notebooks.html">
+   Hands-on Practicals
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="light-sensitity-study-repeated-treatment-design.html">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/isa-json-conversion-to-rdf-linked-data.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/isa-json-conversion-to-rdf-linked-data.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/isa-json-conversion-to-rdf-linked-data.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/isa-json-conversion-to-rdf-linked-data.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/isa-json-conversion-to-rdf-linked-data.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   From ISA JSON to RDF Linked Data with ISALDSerializer function:
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#getting-isatools-and-importing-the-latest-module-for-conversion-to-json-ld-from-isa-json">
+     Getting ISAtools and importing the latest module for conversion to JSON-LD from ISA-JSON
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#abstract">
+     Abstract:
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#loading-an-isa-json-document-in-memory-with-json-load-function">
+     1. Loading an ISA-JSON document in memory with
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       json.load()
+      </span>
+     </code>
+     function
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#transforming-isa-json-to-isa-json-ld-with-isaldserializer-function">
+     2. Transforming ISA-JSON to ISA JSON-LD with
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ISALDserializer
+      </span>
+     </code>
+     function
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#writing-isa-json-ld-to-file">
+     3. Writing ISA JSON-LD to file
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#converting-isa-jsonld-instance-to-rdf-turtle-using-rdllib-6-0-2">
+     Converting ISA-JSONLD instance to RDF Turtle using RDLlib (&gt;= 6.0.2)
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#packaging-the-isa-archive-and-its-various-serializations-isa-tab-isa-json-isa-json-ld-as-a-research-object-crate">
+     Packaging the ISA archive and its various serializations (ISA-Tab, ISA-JSON, ISA-JSON-LD) as a Research Object Crate
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#instantiating-a-research-object-and-providing-basic-metadata">
+       Instantiating a Research Object and providing basic metadata
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adding-the-two-isa-rdf-serializations-to-the-newly-created-research-object">
+       Adding the two ISA RDF serializations to the newly created Research Object
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#finally-writing-the-research-object-to-file">
+       Finally, writing the Research Object to file
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#about-this-notebook">
+   About this notebook
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="from-isa-json-to-rdf-linked-data-with-isaldserializer-function">
+<h1>From ISA JSON to RDF Linked Data with ISALDSerializer function:<a class="headerlink" href="#from-isa-json-to-rdf-linked-data-with-isaldserializer-function" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-isatools-and-importing-the-latest-module-for-conversion-to-json-ld-from-isa-json">
+<h2>Getting ISAtools and importing the latest module for conversion to JSON-LD from ISA-JSON<a class="headerlink" href="#getting-isatools-and-importing-the-latest-module-for-conversion-to-json-ld-from-isa-json" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="abstract">
+<h2>Abstract:<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>The goal of this tutorial is to show how to go from an ISA document to an equivalent RDF representation using python tools but also to highlight some of the limitations of existing libraries and point to alternative options to complete a meainingful conversion to RDF Turtle format.</p>
+<p>This notebook mainly highlights the new functionality coming with ISA-API rc10.3 latest release which allows to convert ISA-JSON to ISA-JSON-LD, with the choice of 3 popular ontological frameworks for semantic anchoring. These are:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.obofoundry.org">obofoundry</a>, a set of interoperable ontologies for the biological domain.</p></li>
+<li><p><a class="reference external" href="https://schema.org">schema.org</a>, the search engine orientated ontology developed by companies such as Yandex,Bing,Google</p></li>
+<li><p><a class="reference external" href="https://wikidata.org">wikidata</a>, a set of semantic concepts backing wikipedia and wikidata resources.</p></li>
+</ul>
+<p>These frameworks have been chosen for interoperability.</p>
+<p>This notebook has a companion notebook which goes over the exploration of the resulting RDF representations using a set of SPARQL queries.
+Check it out <a class="reference external" href="http://localhost:8888/notebooks/isa-cookbook/content/notebooks/isa-jsonld%20exploration%20with%20SPARQL.ipynb">here</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">load</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">isatools</span>
+
+<span class="kn">from</span> <span class="nn">isatools.convert.json2jsonld</span> <span class="kn">import</span> <span class="n">ISALDSerializer</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="loading-an-isa-json-document-in-memory-with-json-load-function">
+<h2>1. Loading an ISA-JSON document in memory with <code class="docutils literal notranslate"><span class="pre">json.load()</span></code> function<a class="headerlink" href="#loading-an-isa-json-document-in-memory-with-json-load-function" title="Permalink to this headline">¶</a></h2>
+<p>Prior to invoking the ISALDserializer function, we need to do 3 things.</p>
+<ul class="simple">
+<li><p>First, pass a url or a path to the ISA-JSON instance to convert to JSON-LD</p></li>
+<li><p>Second, select the ontology framework used for the semantic conversion. One may choose from the following 3 options:</p>
+<ul>
+<li><p>obofoundry ontologies, abbreviated as <code class="docutils literal notranslate"><span class="pre">obo</span></code></p></li>
+<li><p><a class="reference external" href="http://schema.org">schema.org</a> ontology, abbreviated as <code class="docutils literal notranslate"><span class="pre">sdo</span></code></p></li>
+<li><p>wikidata ontology, abbreviated as <code class="docutils literal notranslate"><span class="pre">wdt</span></code></p></li>
+</ul>
+</li>
+<li><p>Third, choose if to rely on embedding the &#64;context file in the output or relying on url to individual contexts. By default, the converter will embedded the ‘all in one’ context information. The reason for this is the lack of support for JSON-LD 1.1 specifications in many of the python libraries supported RDF parsing (e.g. rdflib)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">instance_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/BII-S-3-synth/&quot;</span><span class="p">,</span> <span class="s2">&quot;isa-new_ids.json&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">instance_file</span><span class="p">:</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">instance_file</span><span class="p">)</span>
+        <span class="n">instance_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="transforming-isa-json-to-isa-json-ld-with-isaldserializer-function">
+<h2>2. Transforming ISA-JSON to ISA JSON-LD with <code class="docutils literal notranslate"><span class="pre">ISALDserializer</span></code> function<a class="headerlink" href="#transforming-isa-json-to-isa-json-ld-with-isaldserializer-function" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we now invoke the ISALDSerializer function</span>
+
+<span class="n">ontology</span> <span class="o">=</span> <span class="s2">&quot;isaterms&quot;</span>
+
+<span class="n">serializer</span> <span class="o">=</span> <span class="n">ISALDSerializer</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+<span class="n">serializer</span><span class="o">.</span><span class="n">set_ontology</span><span class="p">(</span><span class="n">ontology</span><span class="p">)</span>
+<span class="n">serializer</span><span class="o">.</span><span class="n">set_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+<span class="n">jsonldcontent</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">output</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now that the conversion is performed, we can write the resulting ISA-JSON-LD to file:</p>
+</div>
+<div class="section" id="writing-isa-json-ld-to-file">
+<h2>3. Writing ISA JSON-LD to file<a class="headerlink" href="#writing-isa-json-ld-to-file" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">isa_json_ld_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/BII-S-3-synth/&quot;</span><span class="p">,</span> <span class="s2">&quot;isa-new_ids-BII-S-3-ld-&quot;</span> <span class="o">+</span> <span class="n">ontology</span> <span class="o">+</span> <span class="s2">&quot;-v1.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># with open(isa_json_ld_path, &#39;w&#39;) as outfile:</span>
+<span class="c1">#     json.dump(jsonldcontent,  outfile, ensure_ascii=False, indent=4)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="converting-isa-jsonld-instance-to-rdf-turtle-using-rdllib-6-0-2">
+<h2>Converting ISA-JSONLD instance to RDF Turtle using RDLlib (&gt;= 6.0.2)<a class="headerlink" href="#converting-isa-jsonld-instance-to-rdf-turtle-using-rdllib-6-0-2" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">isa_json_ld_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Graph g has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="si">}</span><span class="s2"> statements.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write turtle file</span>
+<span class="n">rdf_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/BII-S-3-synth/&quot;</span><span class="p">,</span> <span class="s2">&quot;isa-new_ids-BII-S-3-ld-&quot;</span> <span class="o">+</span> <span class="n">ontology</span> <span class="o">+</span> <span class="s2">&quot;-v3.ttl&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">rdf_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rdf_file</span><span class="p">:</span>
+        <span class="n">rdf_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="packaging-the-isa-archive-and-its-various-serializations-isa-tab-isa-json-isa-json-ld-as-a-research-object-crate">
+<h2>Packaging the ISA archive and its various serializations (ISA-Tab, ISA-JSON, ISA-JSON-LD) as a Research Object Crate<a class="headerlink" href="#packaging-the-isa-archive-and-its-various-serializations-isa-tab-isa-json-isa-json-ld-as-a-research-object-crate" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rocrate.rocrate</span> <span class="kn">import</span> <span class="n">ROCrate</span>
+<span class="kn">from</span> <span class="nn">rocrate.model.person</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="kn">from</span> <span class="nn">rocrate.model.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">rocrate</span> <span class="kn">import</span> <span class="n">rocrate_api</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="instantiating-a-research-object-and-providing-basic-metadata">
+<h3>Instantiating a Research Object and providing basic metadata<a class="headerlink" href="#instantiating-a-research-object-and-providing-basic-metadata" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a_crate_for_isa</span> <span class="o">=</span> <span class="n">ROCrate</span><span class="p">()</span>
+
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ISA JSON-LD representation of BII-S-3&quot;</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;ISA study serialized as JSON-LD using &quot;</span> <span class="o">+</span> <span class="n">ontology</span> <span class="o">+</span> <span class="s2">&quot; ontology mapping&quot;</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ISA&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON-LD&quot;</span><span class="p">]</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">license</span> <span class="o">=</span> <span class="s2">&quot;https://creativecommons.org/licenses/by/4.0/&quot;</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">a_crate_for_isa</span><span class="p">,</span><span class="s2">&quot;https://www.orcid.org/0000-0001-9853-5668&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-the-two-isa-rdf-serializations-to-the-newly-created-research-object">
+<h3>Adding the two ISA RDF serializations to the newly created Research Object<a class="headerlink" href="#adding-the-two-isa-rdf-serializations-to-the-newly-created-research-object" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">isa_json_ld_path</span><span class="p">,</span><span class="n">isa_nquads_path</span> <span class="p">]</span>
+<span class="c1"># with a python comprehension, we do it like this:</span>
+<span class="p">[</span><span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now adding a dataset to the Research Object, which is meant to describe a bag of associated images.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">a_crate_for_isa</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">)</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="finally-writing-the-research-object-to-file">
+<h3>Finally, writing the Research Object to file<a class="headerlink" href="#finally-writing-the-research-object-to-file" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ro_outpath</span> <span class="o">=</span> <span class="s2">&quot;./output/BII-S-3-synth/ISA_in_a_ROcrate&quot;</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">write_crate</span><span class="p">(</span><span class="n">ro_outpath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#### Alternately, a zipped archive can be created as follows:</span>
+<span class="n">a_crate_for_isa</span><span class="o">.</span><span class="n">write_zip</span><span class="p">(</span><span class="n">ro_outpath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="about-this-notebook">
+<h1>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>authors: Philippe Rocca-Serra (<a class="reference external" href="mailto:philippe&#46;rocca-serra&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">philippe<span>&#46;</span>rocca-serra<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>), Dominique Batista (<a class="reference external" href="mailto:dominique&#46;batista&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">dominique<span>&#46;</span>batista<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>)</p></li>
+<li><p>license: CC-BY 4.0</p></li>
+<li><p>support: <a class="reference external" href="mailto:isatools&#37;&#52;&#48;googlegroups&#46;com">isatools<span>&#64;</span>googlegroups<span>&#46;</span>com</a></p></li>
+<li><p>issue tracker: <a class="reference external" href="https://github.com/ISA-tools/isa-api/issues">https://github.com/ISA-tools/isa-api/issues</a></p></li>
+</ul>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

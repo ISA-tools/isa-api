@@ -1,0 +1,1575 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How To Pool and Merge Nodes (Material or Data) with ISA-API &#8212; The ISA cookbook</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mermaid.js"></script>
+    <script src="../../_static/mermaid.min.js"></script>
+    <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/create_ISA_sample_pools.html" />
+    <link rel="shortcut icon" href="../../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+      <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../examples.html">
+   ISA API example programs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../knownissues.html">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../notebooks.html">
+   Hands-on Practicals
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="light-sensitity-study-repeated-treatment-design.html">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/create_ISA_sample_pools.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/create_ISA_sample_pools.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/create_ISA_sample_pools.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/create_ISA_sample_pools.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/create_ISA_sample_pools.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   How To Pool and Merge Nodes (Material or Data) with ISA-API
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-basic-isa-objects-investigation-study-protocols">
+     Creating basic ISA objects: Investigation, Study, Protocols
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-the-study-without-assay-to-isa-tab">
+   Writing the Study without Assay to ISA-Tab
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#writing-the-isa-study-object-to-isa-json">
+     Writing the ISA Study object to ISA-JSON
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-isa-assays-data-acquisition-and-data-transformation-events">
+     Creating ISA Assays, Data Acquisition and Data Transformation events
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data-acquisition-events">
+     Data Acquisition Events
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data-transformation-event-acting-on-2-isa-data-nodes-and-resulting-in-1-isa-data-node">
+     Data Transformation Event acting on 2 ISA Data Nodes and resulting in 1 ISA Data Node.
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#writing-the-full-isa-study-complete-with-assay-to-isa-tab">
+     Writing the full ISA Study complete with  Assay to ISA-Tab
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#writing-the-same-isa-study-to-isa-json">
+       Writing the same ISA Study to ISA-JSON
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="how-to-pool-and-merge-nodes-material-or-data-with-isa-api">
+<h1>How To Pool and Merge Nodes (Material or Data) with ISA-API<a class="headerlink" href="#how-to-pool-and-merge-nodes-material-or-data-with-isa-api" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>author: <a class="reference external" href="https://orcid.org/0000-0001-9853-5668">https://orcid.org/0000-0001-9853-5668</a></p></li>
+<li><p>email: <a class="reference external" href="mailto:philippe&#46;rocca-serra&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">philippe<span>&#46;</span>rocca-serra<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a></p></li>
+<li><p>license: CC-BY-4.0</p></li>
+<li><p>createdOn: 2021-04-27</p></li>
+</ul>
+<p>This example shows how to use the ProtocolProcessSequence to build an ISA graph with Node merging(pooling) events.
+The notebook shows 2 examples:</p>
+<ul class="simple">
+<li><p>pooling samples, as in the case of using to Source Material to create a pooled Samples (for example, pooling soil samples)</p></li>
+<li><p>pooling data, as in the case of a normalization data transformation event acting on 2 raw data files</p></li>
+</ul>
+<p>The notebooks shows how to serialize (write) the ISA Model content to ISA-Tab and ISA-JSON formats.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">isatools.create.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-basic-isa-objects-investigation-study-protocols">
+<h2>Creating basic ISA objects: Investigation, Study, Protocols<a class="headerlink" href="#creating-basic-isa-objects-investigation-study-protocols" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating an ISA.Investigation object</span>
+<span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+
+<span class="c1"># creating an ISA.Study object</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">Study</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;s_study.txt&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;S1&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;ISA Study example: creating sample pools&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;a jupytern notebook showing how to create pooled samples (a node merging event with material nodes)&quot;</span>
+
+<span class="c1"># creating the necessary ISA.Protocol objects</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">,</span><span class="n">protocol_type</span><span class="o">=</span><span class="s2">&quot;pooling&quot;</span><span class="p">),</span>
+                   <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;intracellular fraction extraction&quot;</span><span class="p">,</span>
+                            <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;extraction&quot;</span><span class="p">),</span>
+                            <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;concentration&quot;</span><span class="p">)),</span>
+                                        <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;sample QC&quot;</span><span class="p">))]),</span>
+                    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data collection&quot;</span><span class="p">,</span>
+                             <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data acquisition&quot;</span><span class="p">)),</span>
+                    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">,</span>
+                             <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data normalization&quot;</span><span class="p">))</span>
+                  <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating 4 ISA.Source objects</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source1&quot;</span><span class="p">),</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source2&quot;</span><span class="p">),</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source3&quot;</span><span class="p">),</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source4&quot;</span><span class="p">)]</span>
+
+<span class="c1"># creating 2 ISA.Sample objects</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample1&quot;</span><span class="p">),</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample2&quot;</span><span class="p">)]</span>
+
+<span class="c1"># creating an ISA.ProtocolApplication pooling Source1 and Source2 into Sample1</span>
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]])]</span>
+
+
+<span class="c1"># doing the same again for pooling Source3 and Source4 into Sample2</span>
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
+
+<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-the-study-without-assay-to-isa-tab">
+<h1>Writing the Study without Assay to ISA-Tab<a class="headerlink" href="#writing-the-study-without-assay-to-isa-tab" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># let&#39;s check how this looks in ISA-Tab</span>
+<span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmp5xyrzxr6/i_investigation.txt
+ONTOLOGY SOURCE REFERENCE
+Term Source Name
+Term Source File
+Term Source Version
+Term Source Description
+INVESTIGATION
+Investigation Identifier	
+Investigation Title	
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	S1
+Study Title	ISA Study example: creating sample pools
+Study Description	a jupytern notebook showing how to create pooled samples (a node merging event with material nodes)
+Study Submission Date	
+Study Public Release Date	
+Study File Name	s_study.txt
+STUDY DESIGN DESCRIPTORS
+Study Design Type
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+STUDY PUBLICATIONS
+Study PubMed ID
+Study Publication DOI
+Study Publication Author List
+Study Publication Title
+Study Publication Status
+Study Publication Status Term Accession Number
+Study Publication Status Term Source REF
+STUDY FACTORS
+Study Factor Name
+Study Factor Type
+Study Factor Type Term Accession Number
+Study Factor Type Term Source REF
+STUDY ASSAYS
+Study Assay File Name
+Study Assay Measurement Type
+Study Assay Measurement Type Term Accession Number
+Study Assay Measurement Type Term Source REF
+Study Assay Technology Type
+Study Assay Technology Type Term Accession Number
+Study Assay Technology Type Term Source REF
+Study Assay Technology Platform
+STUDY PROTOCOLS
+Study Protocol Name	sample collection	intracellular fraction extraction	data collection	data transformation
+Study Protocol Type	pooling	extraction	data acquisition	data normalization
+Study Protocol Type Term Accession Number				
+Study Protocol Type Term Source REF				
+Study Protocol Description				
+Study Protocol URI				
+Study Protocol Version				
+Study Protocol Parameters Name		concentration;sample QC		
+Study Protocol Parameters Name Term Accession Number		;		
+Study Protocol Parameters Name Term Source REF		;		
+Study Protocol Components Name				
+Study Protocol Components Type				
+Study Protocol Components Type Term Accession Number				
+Study Protocol Components Type Term Source REF				
+STUDY CONTACTS
+Study Person Last Name
+Study Person First Name
+Study Person Mid Initials
+Study Person Email
+Study Person Phone
+Study Person Fax
+Study Person Address
+Study Person Affiliation
+Study Person Roles
+Study Person Roles Term Accession Number
+Study Person Roles Term Source REF
+--------
+/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmp5xyrzxr6/s_study.txt
+Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample1
+source3	sample collection	sample2
+source4	sample collection	sample2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-the-isa-study-object-to-isa-json">
+<h2>Writing the ISA Study object to ISA-JSON<a class="headerlink" href="#writing-the-isa-study-object-to-isa-json" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+    &quot;comments&quot;: [],
+    &quot;description&quot;: &quot;&quot;,
+    &quot;identifier&quot;: &quot;&quot;,
+    &quot;ontologySourceReferences&quot;: [],
+    &quot;people&quot;: [],
+    &quot;publicReleaseDate&quot;: &quot;&quot;,
+    &quot;publications&quot;: [],
+    &quot;studies&quot;: [
+        {
+            &quot;assays&quot;: [],
+            &quot;characteristicCategories&quot;: [],
+            &quot;comments&quot;: [],
+            &quot;description&quot;: &quot;a jupytern notebook showing how to create pooled samples (a node merging event with material nodes)&quot;,
+            &quot;factors&quot;: [],
+            &quot;filename&quot;: &quot;s_study.txt&quot;,
+            &quot;identifier&quot;: &quot;S1&quot;,
+            &quot;materials&quot;: {
+                &quot;otherMaterials&quot;: [],
+                &quot;samples&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#sample/5116543904&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;factorValues&quot;: [],
+                        &quot;name&quot;: &quot;sample1&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#sample/5116545584&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;factorValues&quot;: [],
+                        &quot;name&quot;: &quot;sample2&quot;
+                    }
+                ],
+                &quot;sources&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#source/5116545344&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source1&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5116545824&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source2&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5119072912&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source3&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5119071040&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source4&quot;
+                    }
+                ]
+            },
+            &quot;people&quot;: [],
+            &quot;processSequence&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#process/5119073488&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;date&quot;: &quot;&quot;,
+                    &quot;executesProtocol&quot;: {
+                        &quot;@id&quot;: &quot;#5109903952&quot;
+                    },
+                    &quot;inputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#source/5116545344&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#source/5116545824&quot;
+                        }
+                    ],
+                    &quot;name&quot;: &quot;&quot;,
+                    &quot;outputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#sample/5116543904&quot;
+                        }
+                    ],
+                    &quot;parameterValues&quot;: [],
+                    &quot;performer&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#process/5119071088&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;date&quot;: &quot;&quot;,
+                    &quot;executesProtocol&quot;: {
+                        &quot;@id&quot;: &quot;#5109903952&quot;
+                    },
+                    &quot;inputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#source/5119072912&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#source/5119071040&quot;
+                        }
+                    ],
+                    &quot;name&quot;: &quot;&quot;,
+                    &quot;outputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#sample/5116545584&quot;
+                        }
+                    ],
+                    &quot;parameterValues&quot;: [],
+                    &quot;performer&quot;: &quot;&quot;
+                }
+            ],
+            &quot;protocols&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#5109903952&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;sample collection&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#87632ca1-1109-4f42-bdc9-fd56c30cead8&quot;,
+                        &quot;annotationValue&quot;: &quot;pooling&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5118472000&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;intracellular fraction extraction&quot;,
+                    &quot;parameters&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#5119051952&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#590aaeb5-2e11-4aff-a2c9-9b34bf676249&quot;,
+                                &quot;annotationValue&quot;: &quot;concentration&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#5119050704&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#33dfce38-e133-4bc0-9666-9a81bfb39362&quot;,
+                                &quot;annotationValue&quot;: &quot;sample QC&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        }
+                    ],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#9a41779d-eb92-467d-88ac-d1595fe189de&quot;,
+                        &quot;annotationValue&quot;: &quot;extraction&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5118472096&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data collection&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#26e7d865-e6be-454b-bd91-a8ee33a3cbcd&quot;,
+                        &quot;annotationValue&quot;: &quot;data acquisition&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5116464528&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data transformation&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#e3ed694a-215c-45f5-bb09-cf4c2a6154e7&quot;,
+                        &quot;annotationValue&quot;: &quot;data normalization&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                }
+            ],
+            &quot;publicReleaseDate&quot;: &quot;&quot;,
+            &quot;publications&quot;: [],
+            &quot;studyDesignDescriptors&quot;: [],
+            &quot;submissionDate&quot;: &quot;&quot;,
+            &quot;title&quot;: &quot;ISA Study example: creating sample pools&quot;,
+            &quot;unitCategories&quot;: []
+        }
+    ],
+    &quot;submissionDate&quot;: &quot;&quot;,
+    &quot;title&quot;: &quot;&quot;
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-isa-assays-data-acquisition-and-data-transformation-events">
+<h2>Creating ISA Assays, Data Acquisition and Data Transformation events<a class="headerlink" href="#creating-isa-assays-data-acquisition-and-data-transformation-events" title="Permalink to this headline">¶</a></h2>
+<p>Let’s now augment the ISA.Study by adding an Assay table where</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">raw</span> <span class="pre">data</span></code> will be collected <em>independently</em> on each of the samples created in the previous.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">derived</span> <span class="pre">data</span></code> resulting from a data transformation acting on the raw data (node merging)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This creates intermediate ISA.Materials (Extracts) from Samples. </span>
+<span class="c1"># The extracts will be used as input to the next protocol application</span>
+<span class="n">extraction_process1</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">extraction_process1</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">material1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-1&quot;</span><span class="p">)</span>
+<span class="n">material1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+
+<span class="n">extraction_process2</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">extraction_process2</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">material2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-2&quot;</span><span class="p">)</span>
+<span class="n">material2</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+
+<span class="n">extraction_process1</span><span class="o">.</span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">material1</span><span class="p">]</span>
+<span class="n">extraction_process2</span><span class="o">.</span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">material2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="data-acquisition-events">
+<h2>Data Acquisition Events<a class="headerlink" href="#data-acquisition-events" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metprof_assay</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">measurement_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;metabolite profiling&quot;</span><span class="p">),</span>
+                      <span class="n">technology_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass spectrometry&quot;</span><span class="p">),</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_mp_by_ms.txt&quot;</span><span class="p">)</span>
+
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># metprof_assay.data_files.append(DataFile(filename=&quot;sequenced-data-1&quot;, label=&quot;Raw Data File&quot;))</span>
+
+<span class="n">datafile1</span><span class="o">=</span><span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;file-1&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Spectral Raw Data File&quot;</span><span class="p">)</span>
+<span class="n">datafile2</span><span class="o">=</span><span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;file-2&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Spectral Raw Data File&quot;</span><span class="p">)</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile1</span><span class="p">)</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile2</span><span class="p">)</span>
+
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material1</span><span class="p">)</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material2</span><span class="p">)</span>
+                      
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process1</span><span class="p">)</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process2</span><span class="p">)</span>
+
+<span class="n">da_process1</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">material1</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">datafile1</span><span class="p">],</span> <span class="n">date_</span><span class="o">=</span><span class="s2">&quot;2021-03-30&quot;</span><span class="p">,</span> <span class="n">performer</span><span class="o">=</span><span class="s2">&quot;Bob Louis&quot;</span><span class="p">)</span>
+<span class="n">da_process1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-test-1&quot;</span>
+<span class="n">da_process2</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">material2</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">datafile2</span><span class="p">],</span> <span class="n">date_</span><span class="o">=</span><span class="s2">&quot;2021-04-10&quot;</span><span class="p">,</span> <span class="n">performer</span><span class="o">=</span><span class="s2">&quot;Yu Wong&quot;</span><span class="p">)</span>
+<span class="n">da_process2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-test-2&quot;</span>
+                      
+
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">da_process1</span><span class="p">)</span>
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">da_process2</span><span class="p">)</span>
+
+<span class="c1"># IMPORTANT: explictly set the linking/sequence between processes</span>
+<span class="c1"># NOTE: one-to-one mapping between protocol applications</span>
+<span class="n">plink</span><span class="p">(</span><span class="n">extraction_process1</span><span class="p">,</span> <span class="n">da_process1</span><span class="p">)</span>
+<span class="n">plink</span><span class="p">(</span><span class="n">extraction_process2</span><span class="p">,</span> <span class="n">da_process2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="data-transformation-event-acting-on-2-isa-data-nodes-and-resulting-in-1-isa-data-node">
+<h2>Data Transformation Event acting on 2 ISA Data Nodes and resulting in 1 ISA Data Node.<a class="headerlink" href="#data-transformation-event-acting-on-2-isa-data-nodes-and-resulting-in-1-isa-data-node" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">datafile3</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;analysis-output1.txt&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Derived Spectral Data File&quot;</span><span class="p">)</span>
+<span class="n">dt_process1</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">datafile1</span><span class="p">,</span><span class="n">datafile2</span><span class="p">],</span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">datafile3</span><span class="p">],</span> <span class="n">date_</span><span class="o">=</span><span class="s2">&quot;2021-04-25&quot;</span><span class="p">,</span> <span class="n">performer</span><span class="o">=</span><span class="s2">&quot;Data Science Officer&quot;</span><span class="p">)</span>
+
+<span class="n">dt_process1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;data transformation 1&quot;</span>
+
+<span class="n">metprof_assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt_process1</span><span class="p">)</span>
+
+<span class="c1"># IMPORTANT: explictly set the linking/sequence between processes</span>
+<span class="c1"># NOTE: many-to-one mapping between protocol applications ~ pooling/merging event</span>
+<span class="n">plink</span><span class="p">(</span><span class="n">da_process1</span><span class="p">,</span><span class="n">dt_process1</span><span class="p">)</span>
+<span class="n">plink</span><span class="p">(</span><span class="n">da_process2</span><span class="p">,</span><span class="n">dt_process1</span><span class="p">)</span>
+
+
+<span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metprof_assay</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-the-full-isa-study-complete-with-assay-to-isa-tab">
+<h2>Writing the full ISA Study complete with  Assay to ISA-Tab<a class="headerlink" href="#writing-the-full-isa-study-complete-with-assay-to-isa-tab" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmp3hybi37n/i_investigation.txt
+ONTOLOGY SOURCE REFERENCE
+Term Source Name
+Term Source File
+Term Source Version
+Term Source Description
+INVESTIGATION
+Investigation Identifier	
+Investigation Title	
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	S1
+Study Title	ISA Study example: creating sample pools
+Study Description	a jupytern notebook showing how to create pooled samples (a node merging event with material nodes)
+Study Submission Date	
+Study Public Release Date	
+Study File Name	s_study.txt
+STUDY DESIGN DESCRIPTORS
+Study Design Type
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+STUDY PUBLICATIONS
+Study PubMed ID
+Study Publication DOI
+Study Publication Author List
+Study Publication Title
+Study Publication Status
+Study Publication Status Term Accession Number
+Study Publication Status Term Source REF
+STUDY FACTORS
+Study Factor Name
+Study Factor Type
+Study Factor Type Term Accession Number
+Study Factor Type Term Source REF
+STUDY ASSAYS
+Study Assay File Name	a_mp_by_ms.txt
+Study Assay Measurement Type	metabolite profiling
+Study Assay Measurement Type Term Accession Number	
+Study Assay Measurement Type Term Source REF	
+Study Assay Technology Type	mass spectrometry
+Study Assay Technology Type Term Accession Number	
+Study Assay Technology Type Term Source REF	
+Study Assay Technology Platform	
+STUDY PROTOCOLS
+Study Protocol Name	sample collection	intracellular fraction extraction	data collection	data transformation
+Study Protocol Type	pooling	extraction	data acquisition	data normalization
+Study Protocol Type Term Accession Number				
+Study Protocol Type Term Source REF				
+Study Protocol Description				
+Study Protocol URI				
+Study Protocol Version				
+Study Protocol Parameters Name		concentration;sample QC		
+Study Protocol Parameters Name Term Accession Number		;		
+Study Protocol Parameters Name Term Source REF		;		
+Study Protocol Components Name				
+Study Protocol Components Type				
+Study Protocol Components Type Term Accession Number				
+Study Protocol Components Type Term Source REF				
+STUDY CONTACTS
+Study Person Last Name
+Study Person First Name
+Study Person Mid Initials
+Study Person Email
+Study Person Phone
+Study Person Fax
+Study Person Address
+Study Person Affiliation
+Study Person Roles
+Study Person Roles Term Accession Number
+Study Person Roles Term Source REF
+--------
+/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmp3hybi37n/s_study.txt
+Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample1
+source3	sample collection	sample2
+source4	sample collection	sample2
+--------
+/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmp3hybi37n/a_mp_by_ms.txt
+Sample Name	Protocol REF	Extract Name	Protocol REF	Assay Name	Date	Performer	Spectral Raw Data File	Protocol REF	Date	Performer	Derived Spectral Data File
+sample1	intracellular fraction extraction	extract-1	data collection	assay-name-test-1	2021-03-30	Bob Louis	file-1	data transformation	2021-04-25	Data Science Officer	analysis-output1.txt
+sample2	intracellular fraction extraction	extract-2	data collection	assay-name-test-2	2021-04-10	Yu Wong	file-2	data transformation	2021-04-25	Data Science Officer	analysis-output1.txt
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-the-same-isa-study-to-isa-json">
+<h3>Writing the same ISA Study to ISA-JSON<a class="headerlink" href="#writing-the-same-isa-study-to-isa-json" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+    &quot;comments&quot;: [],
+    &quot;description&quot;: &quot;&quot;,
+    &quot;identifier&quot;: &quot;&quot;,
+    &quot;ontologySourceReferences&quot;: [],
+    &quot;people&quot;: [],
+    &quot;publicReleaseDate&quot;: &quot;&quot;,
+    &quot;publications&quot;: [],
+    &quot;studies&quot;: [
+        {
+            &quot;assays&quot;: [
+                {
+                    &quot;characteristicCategories&quot;: [],
+                    &quot;comments&quot;: [],
+                    &quot;dataFiles&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#data/spectralrawdatafile-5120399872&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;name&quot;: &quot;file-1&quot;,
+                            &quot;type&quot;: &quot;Spectral Raw Data File&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#data/spectralrawdatafile-5119233712&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;name&quot;: &quot;file-2&quot;,
+                            &quot;type&quot;: &quot;Spectral Raw Data File&quot;
+                        }
+                    ],
+                    &quot;filename&quot;: &quot;a_mp_by_ms.txt&quot;,
+                    &quot;materials&quot;: {
+                        &quot;otherMaterials&quot;: [
+                            {
+                                &quot;@id&quot;: &quot;#material/extract-5116526304&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;name&quot;: &quot;extract-1&quot;,
+                                &quot;type&quot;: &quot;Extract Name&quot;
+                            },
+                            {
+                                &quot;@id&quot;: &quot;#material/extract-5116523040&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;name&quot;: &quot;extract-2&quot;,
+                                &quot;type&quot;: &quot;Extract Name&quot;
+                            }
+                        ],
+                        &quot;samples&quot;: [
+                            {
+                                &quot;@id&quot;: &quot;#sample/5116543904&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;factorValues&quot;: [],
+                                &quot;name&quot;: &quot;sample1&quot;
+                            },
+                            {
+                                &quot;@id&quot;: &quot;#sample/5116545584&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;factorValues&quot;: [],
+                                &quot;name&quot;: &quot;sample2&quot;
+                            }
+                        ]
+                    },
+                    &quot;measurementType&quot;: {
+                        &quot;@id&quot;: &quot;#08e97f57-79b7-45e1-ba49-fec0232deb22&quot;,
+                        &quot;annotationValue&quot;: &quot;metabolite profiling&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;processSequence&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#process/5116524192&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#5118472000&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#sample/5116543904&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5119233568&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-5116526304&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/5116526016&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#5118472000&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#sample/5116545584&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5119234000&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-5116523040&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/5119233568&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;2021-03-30&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#5118472096&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-5116526304&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;assay-name-test-1&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5116526112&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#data/spectralrawdatafile-5120399872&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;Bob Louis&quot;,
+                            &quot;previousProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5116524192&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/5119234000&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;2021-04-10&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#5118472096&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-5116523040&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;assay-name-test-2&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5116526112&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#data/spectralrawdatafile-5119233712&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;Yu Wong&quot;,
+                            &quot;previousProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5116526016&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/5116526112&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;2021-04-25&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#5116464528&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#data/spectralrawdatafile-5120399872&quot;
+                                },
+                                {
+                                    &quot;@id&quot;: &quot;#data/spectralrawdatafile-5119233712&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;data transformation 1&quot;,
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#data/derivedspectraldatafile-5116523904&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;Data Science Officer&quot;,
+                            &quot;previousProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/5119234000&quot;
+                            }
+                        }
+                    ],
+                    &quot;technologyPlatform&quot;: &quot;&quot;,
+                    &quot;technologyType&quot;: {
+                        &quot;@id&quot;: &quot;#4eb6ea6c-c1a9-4b8c-ae88-a59f328cfcd7&quot;,
+                        &quot;annotationValue&quot;: &quot;mass spectrometry&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;unitCategories&quot;: []
+                }
+            ],
+            &quot;characteristicCategories&quot;: [],
+            &quot;comments&quot;: [],
+            &quot;description&quot;: &quot;a jupytern notebook showing how to create pooled samples (a node merging event with material nodes)&quot;,
+            &quot;factors&quot;: [],
+            &quot;filename&quot;: &quot;s_study.txt&quot;,
+            &quot;identifier&quot;: &quot;S1&quot;,
+            &quot;materials&quot;: {
+                &quot;otherMaterials&quot;: [],
+                &quot;samples&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#sample/5116543904&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;factorValues&quot;: [],
+                        &quot;name&quot;: &quot;sample1&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#sample/5116545584&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;factorValues&quot;: [],
+                        &quot;name&quot;: &quot;sample2&quot;
+                    }
+                ],
+                &quot;sources&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#source/5116545344&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source1&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5116545824&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source2&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5119072912&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source3&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/5119071040&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;name&quot;: &quot;source4&quot;
+                    }
+                ]
+            },
+            &quot;people&quot;: [],
+            &quot;processSequence&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#process/5119073488&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;date&quot;: &quot;&quot;,
+                    &quot;executesProtocol&quot;: {
+                        &quot;@id&quot;: &quot;#5109903952&quot;
+                    },
+                    &quot;inputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#source/5116545344&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#source/5116545824&quot;
+                        }
+                    ],
+                    &quot;name&quot;: &quot;&quot;,
+                    &quot;outputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#sample/5116543904&quot;
+                        }
+                    ],
+                    &quot;parameterValues&quot;: [],
+                    &quot;performer&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#process/5119071088&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;date&quot;: &quot;&quot;,
+                    &quot;executesProtocol&quot;: {
+                        &quot;@id&quot;: &quot;#5109903952&quot;
+                    },
+                    &quot;inputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#source/5119072912&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#source/5119071040&quot;
+                        }
+                    ],
+                    &quot;name&quot;: &quot;&quot;,
+                    &quot;outputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#sample/5116545584&quot;
+                        }
+                    ],
+                    &quot;parameterValues&quot;: [],
+                    &quot;performer&quot;: &quot;&quot;
+                }
+            ],
+            &quot;protocols&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#5109903952&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;sample collection&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#87632ca1-1109-4f42-bdc9-fd56c30cead8&quot;,
+                        &quot;annotationValue&quot;: &quot;pooling&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5118472000&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;intracellular fraction extraction&quot;,
+                    &quot;parameters&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#5119051952&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#590aaeb5-2e11-4aff-a2c9-9b34bf676249&quot;,
+                                &quot;annotationValue&quot;: &quot;concentration&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#5119050704&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#33dfce38-e133-4bc0-9666-9a81bfb39362&quot;,
+                                &quot;annotationValue&quot;: &quot;sample QC&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        }
+                    ],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#9a41779d-eb92-467d-88ac-d1595fe189de&quot;,
+                        &quot;annotationValue&quot;: &quot;extraction&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5118472096&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data collection&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#26e7d865-e6be-454b-bd91-a8ee33a3cbcd&quot;,
+                        &quot;annotationValue&quot;: &quot;data acquisition&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#5116464528&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data transformation&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#e3ed694a-215c-45f5-bb09-cf4c2a6154e7&quot;,
+                        &quot;annotationValue&quot;: &quot;data normalization&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                }
+            ],
+            &quot;publicReleaseDate&quot;: &quot;&quot;,
+            &quot;publications&quot;: [],
+            &quot;studyDesignDescriptors&quot;: [],
+            &quot;submissionDate&quot;: &quot;&quot;,
+            &quot;title&quot;: &quot;ISA Study example: creating sample pools&quot;,
+            &quot;unitCategories&quot;: []
+        }
+    ],
+    &quot;submissionDate&quot;: &quot;&quot;,
+    &quot;title&quot;: &quot;&quot;
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "isa-api-py38"
+        },
+        kernelOptions: {
+            kernelName: "isa-api-py38",
+            path: "./content/notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'isa-api-py38'</script>
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

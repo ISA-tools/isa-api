@@ -92,7 +92,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="shortcut icon" href="../../_static/isa.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="ISA Create Mode example" href="isa-metabolomics-study-design-create.html" />
+    <link rel="prev" title="Create ISA-API Investigation from Datascriptor Study Design configuration" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -119,7 +119,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
@@ -282,6 +282,11 @@ commentsRunWhenDOMLoaded(addUtterances);
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
      ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -638,6 +643,11 @@ The future releases of the ISA-API will see to address the issue.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>T
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -903,6 +913,16 @@ The future releases of the ISA-API will see to address the issue.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:44:03,166 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0, 1, 2]
+2021-07-21 17:44:03,166 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [7, 3, 0, 8, 4, 1, 9, 5, 10, 6, 2, 11]
+2021-07-21 17:44:03,167 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[1, 8, 4], [1, 9, 5], [2, 10, 6]]
+2021-07-21 17:44:03,187 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [6, 3]
+2021-07-21 17:44:03,189 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[3, 11]]
+2021-07-21 17:44:03,189 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[3, 11]]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -910,6 +930,72 @@ The future releases of the ISA-API will see to address the issue.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Source Name</th>
+      <th>Characteristics[Organism]</th>
+      <th>Term Source REF</th>
+      <th>Term Accession Number</th>
+      <th>Protocol REF</th>
+      <th>Date</th>
+      <th>Performer</th>
+      <th>Sample Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>human individual-1</td>
+      <td>Homo Sapiens</td>
+      <td>NCBITaxon</td>
+      <td>http://purl.bioontology.org/ontology/NCBITAXON...</td>
+      <td>sample collection</td>
+      <td>2021-07-21</td>
+      <td>Philippe</td>
+      <td>SBJ1_sample1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>human individual-1</td>
+      <td>Homo Sapiens</td>
+      <td>NCBITaxon</td>
+      <td>http://purl.bioontology.org/ontology/NCBITAXON...</td>
+      <td>sample collection</td>
+      <td>2021-07-21</td>
+      <td>Philippe</td>
+      <td>SBJ1_sample2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>human individual-2</td>
+      <td>Homo Sapiens</td>
+      <td>NCBITaxon</td>
+      <td>http://purl.bioontology.org/ontology/NCBITAXON...</td>
+      <td>sample collection</td>
+      <td>2021-07-21</td>
+      <td>Philippe</td>
+      <td>SBJ2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -925,11 +1011,26 @@ The future releases of the ISA-API will see to address the issue.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:44:03,322 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0, 1, 2]
+2021-07-21 17:44:03,323 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [7, 3, 0, 8, 4, 1, 9, 5, 10, 6, 2, 11]
+2021-07-21 17:44:03,323 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[1, 8, 4], [1, 9, 5], [2, 10, 6]]
+2021-07-21 17:44:03,340 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [6, 3]
+2021-07-21 17:44:03,341 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[3, 11]]
+2021-07-21 17:44:03,342 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[3, 11]]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">isa_j</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
 <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./notebook-output/issue-brapi&quot;</span><span class="p">,</span><span class="s2">&quot;isa_as_json_from_dumps.json&quot;</span><span class="p">),</span><span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">isa_j</span><span class="p">)</span> <span class="c1"># this call write the string &#39;isa_j&#39; to the file called &#39;isa_as_json_from_dumps.json&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>14821
 </pre></div>
 </div>
 </div>
@@ -940,10 +1041,75 @@ The future releases of the ISA-API will see to address the issue.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:44:03,364 [INFO]: isatab.py(validate:4206) &gt;&gt; Loading... /Users/philippe/Documents/git/isa-api2/isa-api/isa-cookbook/content/notebooks/notebook-output/issue-brapi/i_investigation.txt
+2021-07-21 17:44:03,484 [INFO]: isatab.py(validate:4208) &gt;&gt; Running prechecks...
+2021-07-21 17:44:03,494 [ERROR]: isatab.py(check_samples_not_declared_in_study_used_in_assay:2403) &gt;&gt; (E) Some samples in an assay file a_assay-test.txt are not declared in the study file s_prs_test.txt: [&#39;SBJ0_sample1&#39;]
+2021-07-21 17:44:03,521 [INFO]: isatab.py(validate:4229) &gt;&gt; Finished prechecks...
+2021-07-21 17:44:03,522 [INFO]: isatab.py(validate:4230) &gt;&gt; Loading configurations found in /Users/philippe/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/resources/config/xml
+2021-07-21 17:44:03,552 [INFO]: isatab.py(validate:4235) &gt;&gt; Using configurations found in /Users/philippe/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/resources/config/xml
+2021-07-21 17:44:03,553 [ERROR]: isatab.py(check_measurement_technology_types:3278) &gt;&gt; (E) Could not load configuration for measurement type &#39;phenotyping&#39; and technology type &#39;&#39; for STUDY ASSAY.0&#39;
+2021-07-21 17:44:03,554 [INFO]: isatab.py(validate:4237) &gt;&gt; Checking investigation file against configuration...
+2021-07-21 17:44:03,556 [INFO]: isatab.py(validate:4240) &gt;&gt; Finished checking investigation file
+2021-07-21 17:44:03,557 [INFO]: isatab.py(validate:4259) &gt;&gt; Loading... s_prs_test.txt
+2021-07-21 17:44:03,560 [INFO]: isatab.py(validate:4265) &gt;&gt; Validating s_prs_test.txt against default study table configuration
+2021-07-21 17:44:03,560 [INFO]: isatab.py(validate:4267) &gt;&gt; Checking Factor Value presence...
+2021-07-21 17:44:03,561 [INFO]: isatab.py(validate:4270) &gt;&gt; Checking required fields...
+2021-07-21 17:44:03,561 [INFO]: isatab.py(validate:4273) &gt;&gt; Checking generic fields...
+2021-07-21 17:44:03,562 [INFO]: isatab.py(validate:4281) &gt;&gt; Checking unit fields...
+2021-07-21 17:44:03,563 [INFO]: isatab.py(validate:4288) &gt;&gt; Checking protocol fields...
+2021-07-21 17:44:03,564 [INFO]: isatab.py(validate:4298) &gt;&gt; Checking ontology fields...
+2021-07-21 17:44:03,564 [INFO]: isatab.py(validate:4308) &gt;&gt; Checking study group size...
+2021-07-21 17:44:03,564 [INFO]: isatab.py(validate:4312) &gt;&gt; Finished validation on s_prs_test.txt
+2021-07-21 17:44:03,565 [ERROR]: isatab.py(validate:4336) &gt;&gt; Could not load config matching (phenotyping, )
+2021-07-21 17:44:03,565 [WARNING]: isatab.py(validate:4340) &gt;&gt; Only have configs matching:
+2021-07-21 17:44:03,566 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein-dna binding site identification&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,566 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;loss of heterozygosity profiling&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,567 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;histone modification profiling&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,567 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;dna methylation profiling&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,567 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein identification&#39;, &#39;mass spectrometry&#39;)
+2021-07-21 17:44:03,568 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein-protein interaction detection&#39;, &#39;protein microarray&#39;)
+2021-07-21 17:44:03,568 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;snp analysis&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,569 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;[sample]&#39;, &#39;&#39;)
+2021-07-21 17:44:03,569 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein-dna binding site identification&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,570 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;metabolite profiling&#39;, &#39;mass spectrometry&#39;)
+2021-07-21 17:44:03,570 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;metabolite profiling&#39;, &#39;nmr spectroscopy&#39;)
+2021-07-21 17:44:03,571 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein expression profiling&#39;, &#39;protein microarray&#39;)
+2021-07-21 17:44:03,571 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;cell sorting&#39;, &#39;flow cytometry&#39;)
+2021-07-21 17:44:03,572 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;[investigation]&#39;, &#39;&#39;)
+2021-07-21 17:44:03,573 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;genome sequencing&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,574 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;metagenome sequencing&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,574 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;clinical chemistry analysis&#39;, &#39;&#39;)
+2021-07-21 17:44:03,575 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;transcription factor binding site identification&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,575 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;copy number variation profiling&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,576 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;cell counting&#39;, &#39;flow cytometry&#39;)
+2021-07-21 17:44:03,576 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;transcription factor binding site identification&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,576 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein expression profiling&#39;, &#39;mass spectrometry&#39;)
+2021-07-21 17:44:03,577 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;environmental gene survey&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,577 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;transcription profiling&#39;, &#39;real time pcr&#39;)
+2021-07-21 17:44:03,578 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;histology&#39;, &#39;&#39;)
+2021-07-21 17:44:03,578 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;dna methylation profiling&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,579 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;transcription profiling&#39;, &#39;nucleotide sequencing&#39;)
+2021-07-21 17:44:03,579 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;protein expression profiling&#39;, &#39;gel electrophoresis&#39;)
+2021-07-21 17:44:03,580 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;transcription profiling&#39;, &#39;dna microarray&#39;)
+2021-07-21 17:44:03,580 [WARNING]: isatab.py(validate:4342) &gt;&gt; (&#39;hematology&#39;, &#39;&#39;)
+2021-07-21 17:44:03,581 [WARNING]: isatab.py(validate:4345) &gt;&gt; Skipping configuration validation as could not load config...
+2021-07-21 17:44:03,581 [INFO]: isatab.py(validate:4426) &gt;&gt; Checking consistencies between study sample table and assay tables...
+2021-07-21 17:44:03,581 [INFO]: isatab.py(validate:4431) &gt;&gt; Finished checking study sample table against assay tables...
+2021-07-21 17:44:03,582 [INFO]: isatab.py(validate:4435) &gt;&gt; Skipping pooling test as there are outstanding errors
+2021-07-21 17:44:03,582 [INFO]: isatab.py(validate:4444) &gt;&gt; Finished validation...
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">my_json_report</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;errors&#39;: [{&#39;message&#39;: &#39;Measurement/technology type invalid&#39;, &#39;supplemental&#39;: &#39;Measurement phenotyping/technology , STUDY ASSAY.0&#39;, &#39;code&#39;: 4002}], &#39;warnings&#39;: [], &#39;info&#39;: [{&#39;message&#39;: &#39;Found -1 study groups in s_prs_test.txt&#39;, &#39;supplemental&#39;: &#39;Found -1 study groups in s_prs_test.txt&#39;, &#39;code&#39;: 5001}], &#39;validation_finished&#39;: True}
 </pre></div>
 </div>
 </div>
@@ -986,7 +1152,7 @@ The future releases of the ISA-API will see to address the issue.</p>
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="isa-metabolomics-study-design-create.html" title="previous page">ISA Create Mode example</a>
+    <a class='left-prev' id="prev-link" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html" title="previous page">Create ISA-API Investigation from Datascriptor Study Design configuration</a>
 
         </div>
         

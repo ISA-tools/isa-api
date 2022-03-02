@@ -1,0 +1,1359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a simple ISA descriptor &#8212; The ISA cookbook</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mermaid.js"></script>
+    <script src="../../_static/mermaid.min.js"></script>
+    <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/create-a-simple-ISA-descriptor-test-json.html" />
+    <link rel="shortcut icon" href="../../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+      <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../examples.html">
+   ISA API example programs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../knownissues.html">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../notebooks.html">
+   Hands-on Practicals
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="light-sensitity-study-repeated-treatment-design.html">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/create-a-simple-ISA-descriptor-test-json.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/create-a-simple-ISA-descriptor-test-json.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/create-a-simple-ISA-descriptor-test-json.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/create-a-simple-ISA-descriptor-test-json.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/create-a-simple-ISA-descriptor-test-json.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#study-metadata">
+   Study metadata
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-isa-tab">
+   Writing to ISA-Tab
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-isa-json">
+   Writing to ISA-JSON
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#about-this-notebook">
+   About this notebook
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="create-a-simple-isa-descriptor">
+<h1>Create a simple ISA descriptor<a class="headerlink" href="#create-a-simple-isa-descriptor" title="Permalink to this headline">¶</a></h1>
+<p>This example creates minimal metadata for a single study ISA descriptor with no assay declared.</p>
+<p>It shows how to serialize (write) the ISA Model content to ISA-Tab and ISA-JSON formats.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If executing the notebooks on `Google Colab`,uncomment the following command </span>
+<span class="c1"># and run it to install the required python libraries. Also, make the test datasets available.</span>
+
+<span class="c1"># !pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Comment</span><span class="p">,</span>
+    <span class="n">Investigation</span><span class="p">,</span>
+    <span class="n">Study</span><span class="p">,</span>
+    <span class="n">StudyFactor</span><span class="p">,</span>
+    <span class="n">FactorValue</span><span class="p">,</span>
+    <span class="n">OntologyAnnotation</span><span class="p">,</span>
+    <span class="n">Material</span><span class="p">,</span>
+    <span class="n">Sample</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">ProtocolParameter</span><span class="p">,</span>
+    <span class="n">ProtocolComponent</span><span class="p">,</span>
+    <span class="n">ParameterValue</span><span class="p">,</span>
+    <span class="n">Process</span><span class="p">,</span>
+    <span class="n">Publication</span><span class="p">,</span>
+    <span class="n">Person</span><span class="p">,</span>
+    <span class="n">Assay</span><span class="p">,</span>
+    <span class="n">DataFile</span><span class="p">,</span>
+    <span class="n">plink</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="study-metadata">
+<h2>Study metadata<a class="headerlink" href="#study-metadata" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+<span class="n">i_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;i_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;i_value&quot;</span><span class="p">)</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_comment</span><span class="p">)</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">Study</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;s_study.txt&quot;</span><span class="p">)</span>
+<span class="n">st_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;st_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;st_value&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_comment</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;S1&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;My Simple ISA Study&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;We could alternatively use the class constructor&#39;s parameters to set some default &quot;</span> \
+          <span class="s2">&quot;values at the time of creation, however we want to demonstrate how to use the &quot;</span> \
+          <span class="s2">&quot;object&#39;s instance variables to set values.&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source1&quot;</span><span class="p">),</span> <span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source2&quot;</span><span class="p">)]</span>
+<span class="n">src_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;src_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;src_value&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment</span><span class="p">)</span>
+<span class="n">smp_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;smp_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;smp_value&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample1&quot;</span><span class="p">)]</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">smp_comment</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">derives_from</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">derives_from</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">,</span>
+             <span class="n">components</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ProtocolComponent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;magnetic agitator&quot;</span><span class="p">,</span>
+                <span class="n">component_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">))]),</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data analysis with Galaxy&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5464/workflow.cwl&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genome assembly&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;cut-off value&quot;</span><span class="p">))</span>
+        <span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data visualization with Intermine&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://intermine.org/10.5464/network.svg&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data visualization&quot;</span><span class="p">),</span>
+        <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pro_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;pro_value&quot;</span><span class="p">)]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">factors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Factor&quot;</span><span class="p">,</span><span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;factor category&quot;</span><span class="p">))</span>
+<span class="p">]</span>
+
+
+<span class="n">study</span><span class="o">.</span><span class="n">publications</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Publication</span><span class="p">(</span><span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.12314&quot;</span><span class="p">,</span><span class="n">pubmed_id</span><span class="o">=</span><span class="s2">&quot;1222322&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;publication title&quot;</span><span class="p">)</span>
+    
+<span class="p">]</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">contacts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Person</span><span class="p">(</span><span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;hughes&quot;</span><span class="p">,</span> <span class="n">affiliation</span><span class="o">=</span><span class="s2">&quot;WHO&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;bob.hughes@who.else&quot;</span><span class="p">,</span>
+           <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;per_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;per_value&quot;</span><span class="p">)]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Process</span><span class="p">(</span>
+        <span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Next, we build n Assay object and attach two protocols, extraction and sequencing.</span>
+
+<span class="n">assay</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_assay.txt&quot;</span><span class="p">)</span>
+
+<span class="n">extraction_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;extraction&#39;</span><span class="p">,</span> <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;material extraction&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_protocol</span><span class="p">)</span>
+
+<span class="n">labeling_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;labeling&#39;</span><span class="p">,</span> <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;labeling&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_protocol</span><span class="p">)</span>
+
+<span class="n">sequencing_protocol</span> <span class="o">=</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;sequencing&#39;</span><span class="p">,</span> <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;material sequencing&quot;</span><span class="p">))</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sequencing_protocol</span><span class="p">)</span>
+
+<span class="c1"># To build out assay graphs, we enumereate the samples from the study-level, and for each sample we create an</span>
+<span class="c1"># extraction process and a sequencing process. The extraction process takes as input a sample material, and produces</span>
+<span class="c1"># an extract material. The sequencing process takes the extract material and produces a data file. This will</span>
+<span class="c1"># produce three graphs, from sample material through to data, as follows:</span>
+<span class="c1">#</span>
+<span class="c1"># (sample_material-0)-&gt;(extraction)-&gt;(extract-0)-&gt;(sequencing)-&gt;(sequenced-data-0)</span>
+<span class="c1"># (sample_material-1)-&gt;(extraction)-&gt;(extract-1)-&gt;(sequencing)-&gt;(sequenced-data-1)</span>
+<span class="c1"># (sample_material-2)-&gt;(extraction)-&gt;(extract-2)-&gt;(sequencing)-&gt;(sequenced-data-2)</span>
+<span class="c1">#</span>
+<span class="c1"># Note that the extraction processes and sequencing processes are distinctly separate instances, where the three</span>
+<span class="c1"># graphs are NOT interconnected.</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+
+    <span class="c1"># create an extraction process that executes the extraction protocol</span>
+
+    <span class="n">extraction_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">extraction_protocol</span><span class="p">)</span>
+
+    <span class="c1"># extraction process takes as input a sample, and produces an extract material as output</span>
+
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">mat_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mat_comment&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;mat_value&quot;</span><span class="p">)</span>
+    <span class="n">material</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mat_comment</span><span class="p">)</span>
+    <span class="n">material</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+
+    
+    <span class="c1">#labeling process</span>
+    <span class="n">labeling_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">labeling_protocol</span><span class="p">)</span>
+    <span class="n">le</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;labeleddextract-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">le</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Labeled Extract Name&quot;</span>
+    <span class="n">labeling_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">labeling_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">le</span><span class="p">)</span>
+    
+    <span class="c1"># create a sequencing process that executes the sequencing protocol</span>
+
+    <span class="n">sequencing_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">sequencing_protocol</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labeling_process</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Sequencing process usually has an output data file</span>
+
+    <span class="n">datafile</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sequenced-data-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Raw Data File&quot;</span><span class="p">)</span>
+    <span class="n">data_comment</span> <span class="o">=</span>  <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data_comment&quot;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;data_value&quot;</span><span class="p">)</span>
+    <span class="n">datafile</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_comment</span><span class="p">)</span>
+    <span class="n">sequencing_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+
+    <span class="c1"># Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set</span>
+    <span class="c1"># these links for you. It is found in the isatools.model package</span>
+
+    <span class="n">plink</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">,</span> <span class="n">labeling_process</span><span class="p">)</span>
+    <span class="n">plink</span><span class="p">(</span><span class="n">labeling_process</span><span class="p">,</span> <span class="n">sequencing_process</span><span class="p">)</span>
+
+    <span class="c1"># make sure the extract, data file, and the processes are attached to the assay</span>
+
+    <span class="n">assay</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">le</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labeling_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sequencing_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">measurement_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;genome sequencing&quot;</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">technology_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nucleotide sequencing&quot;</span><span class="p">)</span>
+
+    
+<span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s see the object :</span>
+<span class="n">investigation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>isatools.model.Investigation(identifier=&#39;&#39;, filename=&#39;&#39;, title=&#39;&#39;, submission_date=&#39;&#39;, public_release_date=&#39;&#39;, ontology_source_references=[], publications=[], contacts=[], studies=[isatools.model.Study(filename=&#39;s_study.txt&#39;, identifier=&#39;S1&#39;, title=&#39;My Simple ISA Study&#39;, description=&#39;We could alternatively use the class constructor&#39;s parameters to set some default values at the time of creation, however we want to demonstrate how to use the object&#39;s instance variables to set values.&#39;, submission_date=&#39;2021-12-01 22:29:22.101893&#39;, public_release_date=&#39;2021-12-01 22:29:22.101933&#39;, contacts=[isatools.model.Person(last_name=&#39;hughes&#39;, first_name=&#39;bob&#39;, mid_initials=&#39;&#39;, email=&#39;bob.hughes@who.else&#39;, phone=&#39;&#39;, fax=&#39;&#39;, address=&#39;&#39;, affiliation=&#39;WHO&#39;, roles=[], comments=[isatools.model.Comment(name=&#39;per_comment&#39;, value=&#39;per_value&#39;)])], design_descriptors=[], publications=[isatools.model.Publication(pubmed_id=&#39;1222322&#39;, doi=&#39;10.12314&#39;, author_list=&#39;&#39;, title=&#39;publication title&#39;, status=None, comments=[])], factors=[isatools.model.StudyFactor(name=&#39;Factor&#39;, factor_type=isatools.model.OntologyAnnotation(term=&#39;factor category&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[])], protocols=[isatools.model.Protocol(name=&#39;sample collection&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;data analysis with Galaxy&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;data transformation&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;https://doi.org/10.5464/workflow.cwl&#39;, version=&#39;&#39;, parameters=[isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;genome assembly&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[]), isatools.model.ProtocolParameter(parameter_name=isatools.model.OntologyAnnotation(term=&#39;cut-off value&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[])], components=[], comments=[]), isatools.model.Protocol(name=&#39;data visualization with Intermine&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;data visualization&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;https://intermine.org/10.5464/network.svg&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[isatools.model.Comment(name=&#39;pro_comment&#39;, value=&#39;pro_value&#39;)]), isatools.model.Protocol(name=&#39;extraction&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material extraction&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;extraction&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material extraction&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;sequencing&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[])], assays=[isatools.model.Assay(measurement_type=isatools.model.OntologyAnnotation(term=&#39;genome sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_type=isatools.model.OntologyAnnotation(term=&#39;nucleotide sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_platform=&#39;&#39;, filename=&#39;a_assay.txt&#39;, data_files=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[isatools.model.Comment(name=&#39;data_comment&#39;, value=&#39;data_value&#39;)])], samples=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[isatools.model.Comment(name=&#39;src_comment&#39;, value=&#39;src_value&#39;)]), isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], comments=[isatools.model.Comment(name=&#39;smp_comment&#39;, value=&#39;smp_value&#39;)])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[isatools.model.Comment(name=&#39;src_comment&#39;, value=&#39;src_value&#39;)]), isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], comments=[isatools.model.Comment(name=&#39;smp_comment&#39;, value=&#39;smp_value&#39;)])], outputs=[&lt;isatools.model.Material object at 0x103b2f7f0&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=labeling
+    protocol_type=labeling
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x103b2f7f0&gt;], outputs=[&lt;isatools.model.Material object at 0x103b2f6a0&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-0&quot;, executes_protocol=Protocol(
+    name=sequencing
+    protocol_type=material sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x103b2f6a0&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[isatools.model.Comment(name=&#39;data_comment&#39;, value=&#39;data_value&#39;)])])], other_material=[&lt;isatools.model.Material object at 0x103b2f7f0&gt;, &lt;isatools.model.Material object at 0x103b2f6a0&gt;], characteristic_categories=[], comments=[], units=[])], sources=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[isatools.model.Comment(name=&#39;src_comment&#39;, value=&#39;src_value&#39;)]), isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[isatools.model.Comment(name=&#39;src_comment&#39;, value=&#39;src_value&#39;)]), isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], comments=[isatools.model.Comment(name=&#39;smp_comment&#39;, value=&#39;smp_value&#39;)])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=data visualization with Intermine
+    protocol_type=data visualization
+    uri=https://intermine.org/10.5464/network.svg
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=1 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], outputs=[isatools.model.Sample(name=&#39;sample1&#39;, characteristics=[], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source1&#39;, characteristics=[], comments=[isatools.model.Comment(name=&#39;src_comment&#39;, value=&#39;src_value&#39;)]), isatools.model.Source(name=&#39;source2&#39;, characteristics=[], comments=[])], comments=[isatools.model.Comment(name=&#39;smp_comment&#39;, value=&#39;smp_value&#39;)])])], other_material=[], characteristic_categories=[], comments=[isatools.model.Comment(name=&#39;st_comment&#39;, value=&#39;st_value&#39;)], units=[])], comments=[isatools.model.Comment(name=&#39;i_comment&#39;, value=&#39;i_value&#39;)])
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-to-isa-tab">
+<h2>Writing to ISA-Tab<a class="headerlink" href="#writing-to-isa-tab" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-12-01 22:29:22,205 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [1]
+2021-12-01 22:29:22,206 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [3, 2, 1]
+2021-12-01 22:29:22,207 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[1, 3, 2]]
+2021-12-01 22:29:22,229 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2]
+2021-12-01 22:29:22,230 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 4, 5, 6, 7, 8]]
+2021-12-01 22:29:22,230 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 4, 5, 6, 7, 8]]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmpkd97rbgg/i_investigation.txt
+ONTOLOGY SOURCE REFERENCE
+Term Source Name
+Term Source File
+Term Source Version
+Term Source Description
+INVESTIGATION
+Investigation Identifier	
+Investigation Title	
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	
+Comment[i_comment]	i_value
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	S1
+Study Title	My Simple ISA Study
+Study Description	We could alternatively use the class constructor&#39;s parameters to set some default values at the time of creation, however we want to demonstrate how to use the object&#39;s instance variables to set values.
+Study Submission Date	2021-12-01 22:29:22.101893
+Study Public Release Date	2021-12-01 22:29:22.101933
+Study File Name	s_study.txt
+Comment[st_comment]	st_value
+STUDY DESIGN DESCRIPTORS
+Study Design Type
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+STUDY PUBLICATIONS
+Study PubMed ID	1222322
+Study Publication DOI	10.12314
+Study Publication Author List	
+Study Publication Title	publication title
+Study Publication Status	
+Study Publication Status Term Accession Number	
+Study Publication Status Term Source REF	
+STUDY FACTORS
+Study Factor Name	Factor
+Study Factor Type	factor category
+Study Factor Type Term Accession Number	
+Study Factor Type Term Source REF	
+STUDY ASSAYS
+Study Assay File Name	a_assay.txt
+Study Assay Measurement Type	genome sequencing
+Study Assay Measurement Type Term Accession Number	
+Study Assay Measurement Type Term Source REF	
+Study Assay Technology Type	nucleotide sequencing
+Study Assay Technology Type Term Accession Number	
+Study Assay Technology Type Term Source REF	
+Study Assay Technology Platform	
+STUDY PROTOCOLS
+Study Protocol Name	sample collection	data analysis with Galaxy	data visualization with Intermine	extraction	extraction	sequencing
+Study Protocol Type		data transformation	data visualization	material extraction	material extraction	material sequencing
+Study Protocol Type Term Accession Number						
+Study Protocol Type Term Source REF						
+Study Protocol Description						
+Study Protocol URI		https://doi.org/10.5464/workflow.cwl	https://intermine.org/10.5464/network.svg			
+Study Protocol Version						
+Study Protocol Parameters Name		genome assembly;cut-off value				
+Study Protocol Parameters Name Term Accession Number		;				
+Study Protocol Parameters Name Term Source REF		;				
+Study Protocol Components Name						
+Study Protocol Components Type						
+Study Protocol Components Type Term Accession Number						
+Study Protocol Components Type Term Source REF						
+Comment[pro_comment]			pro_value			
+STUDY CONTACTS
+Study Person Last Name	hughes
+Study Person First Name	bob
+Study Person Mid Initials	
+Study Person Email	bob.hughes@who.else
+Study Person Phone	
+Study Person Fax	
+Study Person Address	
+Study Person Affiliation	WHO
+Study Person Roles	
+Study Person Roles Term Accession Number	
+Study Person Roles Term Source REF	
+Comment[per_comment]	per_value
+--------
+/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmpkd97rbgg/s_study.txt
+Source Name	Protocol REF	Sample Name	Comment[smp_comment]
+source2	data visualization with Intermine	sample1	smp_value
+--------
+/var/folders/5n/rl6lqnks4rqb59pbtpvvntqw0000gr/T/tmpkd97rbgg/a_assay.txt
+Sample Name	Comment[smp_comment]	Protocol REF	Extract Name	Comment[mat_comment]	Protocol REF	Labeled Extract Name	Protocol REF	Raw Data File	Comment[data_comment]
+sample1	smp_value	extraction	extract-0	mat_value	labeling	labeleddextract-0	sequencing	sequenced-data-0	data_value
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-to-isa-json">
+<h2>Writing to ISA-JSON<a class="headerlink" href="#writing-to-isa-json" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">isatools.isajson</span> <span class="kn">import</span> <span class="n">ISAJSONEncoder</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+    &quot;@id&quot;: &quot;#investigation/4909215360&quot;,
+    &quot;comments&quot;: [
+        {
+            &quot;name&quot;: &quot;i_comment&quot;,
+            &quot;value&quot;: &quot;i_value&quot;
+        }
+    ],
+    &quot;description&quot;: &quot;&quot;,
+    &quot;identifier&quot;: &quot;&quot;,
+    &quot;ontologySourceReferences&quot;: [],
+    &quot;people&quot;: [],
+    &quot;publicReleaseDate&quot;: &quot;&quot;,
+    &quot;publications&quot;: [],
+    &quot;studies&quot;: [
+        {
+            &quot;@id&quot;: &quot;#study/4909211904&quot;,
+            &quot;assays&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#4909152096&quot;,
+                    &quot;characteristicCategories&quot;: [],
+                    &quot;comments&quot;: [],
+                    &quot;dataFiles&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#data/rawdata-4357026720&quot;,
+                            &quot;comments&quot;: [
+                                {
+                                    &quot;name&quot;: &quot;data_comment&quot;,
+                                    &quot;value&quot;: &quot;data_value&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;sequenced-data-0&quot;,
+                            &quot;type&quot;: &quot;Raw Data File&quot;
+                        }
+                    ],
+                    &quot;filename&quot;: &quot;a_assay.txt&quot;,
+                    &quot;materials&quot;: {
+                        &quot;otherMaterials&quot;: [
+                            {
+                                &quot;@id&quot;: &quot;#material/extract-4357027824&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;comments&quot;: [
+                                    {
+                                        &quot;name&quot;: &quot;mat_comment&quot;,
+                                        &quot;value&quot;: &quot;mat_value&quot;
+                                    }
+                                ],
+                                &quot;name&quot;: &quot;extract-0&quot;,
+                                &quot;type&quot;: &quot;Extract Name&quot;
+                            },
+                            {
+                                &quot;@id&quot;: &quot;#material/labeledextract-4357027488&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;comments&quot;: [],
+                                &quot;name&quot;: &quot;labeleddextract-0&quot;,
+                                &quot;type&quot;: &quot;Labeled Extract Name&quot;
+                            }
+                        ],
+                        &quot;samples&quot;: [
+                            {
+                                &quot;@id&quot;: &quot;#sample/4909191280&quot;,
+                                &quot;characteristics&quot;: [],
+                                &quot;comments&quot;: [
+                                    {
+                                        &quot;name&quot;: &quot;smp_comment&quot;,
+                                        &quot;value&quot;: &quot;smp_value&quot;
+                                    }
+                                ],
+                                &quot;factorValues&quot;: [],
+                                &quot;name&quot;: &quot;sample1&quot;
+                            }
+                        ]
+                    },
+                    &quot;measurementType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/33b03c28-95c0-4f2c-8755-9986e71e9290&quot;,
+                        &quot;annotationValue&quot;: &quot;genome sequencing&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;processSequence&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#process/4357029072&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#protocol/4909154064&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#sample/4909191280&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/4357027536&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-4357027824&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;&quot;
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/4357027536&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#protocol/4909153968&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/extract-4357027824&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;&quot;,
+                            &quot;nextProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/4357026672&quot;
+                            },
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/labeledextract-4357027488&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;&quot;,
+                            &quot;previousProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/4357029072&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#process/4357026672&quot;,
+                            &quot;comments&quot;: [],
+                            &quot;date&quot;: &quot;&quot;,
+                            &quot;executesProtocol&quot;: {
+                                &quot;@id&quot;: &quot;#protocol/4909153920&quot;
+                            },
+                            &quot;inputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#material/labeledextract-4357027488&quot;
+                                }
+                            ],
+                            &quot;name&quot;: &quot;assay-name-0&quot;,
+                            &quot;outputs&quot;: [
+                                {
+                                    &quot;@id&quot;: &quot;#data/rawdata-4357026720&quot;
+                                }
+                            ],
+                            &quot;parameterValues&quot;: [],
+                            &quot;performer&quot;: &quot;&quot;,
+                            &quot;previousProcess&quot;: {
+                                &quot;@id&quot;: &quot;#process/4357027536&quot;
+                            }
+                        }
+                    ],
+                    &quot;technologyPlatform&quot;: &quot;&quot;,
+                    &quot;technologyType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/5174e4a8-f267-480d-930f-998f81064712&quot;,
+                        &quot;annotationValue&quot;: &quot;nucleotide sequencing&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;unitCategories&quot;: []
+                }
+            ],
+            &quot;characteristicCategories&quot;: [],
+            &quot;comments&quot;: [
+                {
+                    &quot;name&quot;: &quot;st_comment&quot;,
+                    &quot;value&quot;: &quot;st_value&quot;
+                }
+            ],
+            &quot;description&quot;: &quot;We could alternatively use the class constructor&#39;s parameters to set some default values at the time of creation, however we want to demonstrate how to use the object&#39;s instance variables to set values.&quot;,
+            &quot;factors&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#studyfactor/4909204480&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;factorName&quot;: &quot;Factor&quot;,
+                    &quot;factorType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/78be4c7e-965a-4d42-bc4b-fad329c708e6&quot;,
+                        &quot;annotationValue&quot;: &quot;factor category&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    }
+                }
+            ],
+            &quot;filename&quot;: &quot;s_study.txt&quot;,
+            &quot;identifier&quot;: &quot;S1&quot;,
+            &quot;materials&quot;: {
+                &quot;otherMaterials&quot;: [],
+                &quot;samples&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#sample/4909191280&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;comments&quot;: [
+                            {
+                                &quot;name&quot;: &quot;smp_comment&quot;,
+                                &quot;value&quot;: &quot;smp_value&quot;
+                            }
+                        ],
+                        &quot;factorValues&quot;: [],
+                        &quot;name&quot;: &quot;sample1&quot;
+                    }
+                ],
+                &quot;sources&quot;: [
+                    {
+                        &quot;@id&quot;: &quot;#source/4909191232&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;comments&quot;: [
+                            {
+                                &quot;name&quot;: &quot;src_comment&quot;,
+                                &quot;value&quot;: &quot;src_value&quot;
+                            }
+                        ],
+                        &quot;name&quot;: &quot;source1&quot;
+                    },
+                    {
+                        &quot;@id&quot;: &quot;#source/4909191520&quot;,
+                        &quot;characteristics&quot;: [],
+                        &quot;comments&quot;: [],
+                        &quot;name&quot;: &quot;source2&quot;
+                    }
+                ]
+            },
+            &quot;people&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#person/4909204384&quot;,
+                    &quot;address&quot;: &quot;&quot;,
+                    &quot;affiliation&quot;: &quot;WHO&quot;,
+                    &quot;comments&quot;: [
+                        {
+                            &quot;name&quot;: &quot;per_comment&quot;,
+                            &quot;value&quot;: &quot;per_value&quot;
+                        }
+                    ],
+                    &quot;email&quot;: &quot;bob.hughes@who.else&quot;,
+                    &quot;fax&quot;: &quot;&quot;,
+                    &quot;firstName&quot;: &quot;bob&quot;,
+                    &quot;lastName&quot;: &quot;hughes&quot;,
+                    &quot;midInitials&quot;: &quot;&quot;,
+                    &quot;phone&quot;: &quot;&quot;,
+                    &quot;roles&quot;: []
+                }
+            ],
+            &quot;processSequence&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#process/4909204576&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;date&quot;: &quot;&quot;,
+                    &quot;executesProtocol&quot;: {
+                        &quot;@id&quot;: &quot;#protocol/4909204864&quot;
+                    },
+                    &quot;inputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#source/4909191520&quot;
+                        }
+                    ],
+                    &quot;name&quot;: &quot;&quot;,
+                    &quot;outputs&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#sample/4909191280&quot;
+                        }
+                    ],
+                    &quot;parameterValues&quot;: [],
+                    &quot;performer&quot;: &quot;&quot;
+                }
+            ],
+            &quot;protocols&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909205488&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;sample collection&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/e71e71d2-00df-4713-94f7-22913308b18b&quot;,
+                        &quot;annotationValue&quot;: &quot;&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909205104&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data analysis with Galaxy&quot;,
+                    &quot;parameters&quot;: [
+                        {
+                            &quot;@id&quot;: &quot;#parameter/4909205296&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#annotation_value/264cedf2-119a-406d-8da2-9a9e77ee9a96&quot;,
+                                &quot;annotationValue&quot;: &quot;genome assembly&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        },
+                        {
+                            &quot;@id&quot;: &quot;#parameter/4909205008&quot;,
+                            &quot;parameterName&quot;: {
+                                &quot;@id&quot;: &quot;#annotation_value/ef75225f-9a81-41ec-9143-31dce1542a95&quot;,
+                                &quot;annotationValue&quot;: &quot;cut-off value&quot;,
+                                &quot;comments&quot;: [],
+                                &quot;termAccession&quot;: &quot;&quot;,
+                                &quot;termSource&quot;: &quot;&quot;
+                            }
+                        }
+                    ],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/564e017b-4fac-40e2-ad6d-324ca1a6bf55&quot;,
+                        &quot;annotationValue&quot;: &quot;data transformation&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;https://doi.org/10.5464/workflow.cwl&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909204864&quot;,
+                    &quot;comments&quot;: [
+                        {
+                            &quot;name&quot;: &quot;pro_comment&quot;,
+                            &quot;value&quot;: &quot;pro_value&quot;
+                        }
+                    ],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;data visualization with Intermine&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/ae77ae54-aa7b-40c9-9c16-a8ba70953a1b&quot;,
+                        &quot;annotationValue&quot;: &quot;data visualization&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;https://intermine.org/10.5464/network.svg&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909154064&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;extraction&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/840a6f25-8ddc-4071-a1f5-60d37c88a9bc&quot;,
+                        &quot;annotationValue&quot;: &quot;material extraction&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909154064&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;extraction&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/840a6f25-8ddc-4071-a1f5-60d37c88a9bc&quot;,
+                        &quot;annotationValue&quot;: &quot;material extraction&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                },
+                {
+                    &quot;@id&quot;: &quot;#protocol/4909153920&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;components&quot;: [],
+                    &quot;description&quot;: &quot;&quot;,
+                    &quot;name&quot;: &quot;sequencing&quot;,
+                    &quot;parameters&quot;: [],
+                    &quot;protocolType&quot;: {
+                        &quot;@id&quot;: &quot;#annotation_value/13330396-e038-4ae6-872b-c7f16ed298e3&quot;,
+                        &quot;annotationValue&quot;: &quot;material sequencing&quot;,
+                        &quot;comments&quot;: [],
+                        &quot;termAccession&quot;: &quot;&quot;,
+                        &quot;termSource&quot;: &quot;&quot;
+                    },
+                    &quot;uri&quot;: &quot;&quot;,
+                    &quot;version&quot;: &quot;&quot;
+                }
+            ],
+            &quot;publicReleaseDate&quot;: &quot;2021-12-01 22:29:22.101933&quot;,
+            &quot;publications&quot;: [
+                {
+                    &quot;@id&quot;: &quot;#publication/4909204720&quot;,
+                    &quot;authorList&quot;: &quot;&quot;,
+                    &quot;comments&quot;: [],
+                    &quot;doi&quot;: &quot;10.12314&quot;,
+                    &quot;pubMedID&quot;: &quot;1222322&quot;,
+                    &quot;status&quot;: {
+                        &quot;@id&quot;: &quot;&quot;
+                    },
+                    &quot;title&quot;: &quot;publication title&quot;
+                }
+            ],
+            &quot;studyDesignDescriptors&quot;: [],
+            &quot;submissionDate&quot;: &quot;2021-12-01 22:29:22.101893&quot;,
+            &quot;title&quot;: &quot;My Simple ISA Study&quot;,
+            &quot;unitCategories&quot;: []
+        }
+    ],
+    &quot;submissionDate&quot;: &quot;&quot;,
+    &quot;title&quot;: &quot;&quot;
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span> 
+<span class="c1"># with open(os.path.join(&#39;./BII-I-1/&#39;, &#39;i_investigation.txt&#39;)) as fp:</span>
+<span class="c1">#w ith open(os.path.join(&#39;./BII-S-3/&#39;, &#39;i_gilbert.txt&#39;)) as fp:</span>
+<span class="c1"># with open(os.path.join(&#39;./BII-S-4/&#39;, &#39;i_investigation.txt&#39;)) as fp:</span>
+<span class="c1"># with open(os.path.join(&#39;./BII-S-7/&#39;, &#39;i_matteo.txt&#39;)) as fp:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./BII-S-8_FP001RO-isatab-TEST/&#39;</span><span class="p">,</span> <span class="s1">&#39;i_fp001ro-investigation.txt&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">ISA</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="mi">5</span><span class="n">n</span><span class="o">/</span><span class="n">rl6lqnks4rqb59pbtpvvntqw0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_2669</span><span class="o">/</span><span class="mf">799938493.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># with open(os.path.join(&#39;./BII-S-4/&#39;, &#39;i_investigation.txt&#39;)) as fp:</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="c1"># with open(os.path.join(&#39;./BII-S-7/&#39;, &#39;i_matteo.txt&#39;)) as fp:</span>
+<span class="ne">----&gt; </span><span class="mi">7</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./BII-S-8_FP001RO-isatab-TEST/&#39;</span><span class="p">,</span> <span class="s1">&#39;i_fp001ro-investigation.txt&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>             <span class="n">ISA</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;./BII-S-8_FP001RO-isatab-TEST/i_fp001ro-investigation.txt&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">ISA</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="about-this-notebook">
+<h2>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>authors: <a class="reference external" href="mailto:philippe&#46;rocca-serra&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">philippe<span>&#46;</span>rocca-serra<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>, <a class="reference external" href="mailto:massimiliano&#46;izzo&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">massimiliano<span>&#46;</span>izzo<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a></p></li>
+<li><p>license: CC-BY 4.0</p></li>
+<li><p>support: <a class="reference external" href="mailto:isatools&#37;&#52;&#48;googlegroups&#46;com">isatools<span>&#64;</span>googlegroups<span>&#46;</span>com</a></p></li>
+<li><p>issue tracker: <a class="reference external" href="https://github.com/ISA-tools/isa-api/issues">https://github.com/ISA-tools/isa-api/issues</a></p></li>
+</ul>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "isa-api-py39"
+        },
+        kernelOptions: {
+            kernelName: "isa-api-py39",
+            path: "./content/notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'isa-api-py39'</script>
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

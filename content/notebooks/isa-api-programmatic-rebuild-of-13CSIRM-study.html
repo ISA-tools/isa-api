@@ -1,0 +1,1278 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Abstract: &#8212; The ISA cookbook</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mermaid.js"></script>
+    <script src="../../_static/mermaid.min.js"></script>
+    <script src="../../_static/mermaid.core.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "isa-tools/isa-api");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.html" />
+    <link rel="shortcut icon" href="../../_static/isa.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+      <img src="../../_static/isa_footer_logo.svg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">The ISA cookbook</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../index.html">
+   ISA tools API
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../installation.html">
+   ISA-API installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../isamodel.html">
+   ISA data model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reading.html">
+   Reading in ISA-Tab or ISA JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creation.html">
+   Creating ISA content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../creationtutorial.html">
+   Describing a simple experiment with
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isa
+    </span>
+    <span class="pre">
+     objects
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../validation.html">
+   Validating ISA-Tab and ISA-JSON
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../conversions.html">
+   Converting between ISA format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../importdata.html">
+   Importing data into ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../exportdata.html">
+   Exporting data from ISA formats
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../examples.html">
+   ISA API example programs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAtab.html">
+     createSimpleISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-createSimpleISAJSON.html">
+     createSimpleISAjson.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAtab.html">
+     validateISAtab.py
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../examples/example-validateISAjson.html">
+     validateISAjson.py
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../github.html">
+   Downloading files stored in Github
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../knownissues.html">
+   Release Notes
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../notebooks.html">
+   Hands-on Practicals
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
+     Reading ISA-Tab from files and Validating ISA-Tab files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
+     Programmatic recreation of BII-S-3 with the ISA-API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-protocol-type-synonym-effect-on-assay-table.html">
+     ISA-API built-in semantic requirements for
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       protocol
+      </span>
+      <span class="pre">
+       type
+      </span>
+     </code>
+     values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-simple-ISA-descriptor.html">
+     Create a simple ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create_2x2x2_factorial_design.html">
+     Create an ISA Study representing a 2x2x2 factorial design with single measurements
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="create-a-repeated-treatment-design-with-ISA-descriptor.html">
+     Create a repeated treatment design with ISA descriptor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="light-sensitity-study-repeated-treatment-design.html">
+     Light Sensitivity Experiment:
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-metabolomics-study-design-create.html">
+     ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="isa-tab-unused-sources-not-serialized-brapi.html">
+     Known Issue: unused ISA Source aren’t serialized to ISA-Tab
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/isa-tools/isa-api"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-13CSIRM-study.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Abstract:
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#loading-the-isa-api">
+     Loading the ISA-API
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#programmatic-reporting-of-a-13c-stable-isotope-resolved-metabolomics-sirm-study">
+     Programmatic reporting of a 13C Stable Isotope Resolved Metabolomics (SIRM) study
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#declaring-the-ontologies-and-vocabularies-used-in-the-isa-study">
+       Declaring the Ontologies and Vocabularies used in the ISA Study
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#basic-study-description-declaring-study-factor-and-and-study-design-type">
+       Basic Study description: declaring Study Factor and and Study Design type
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adding-the-publications-associated-to-the-study">
+       Adding the publications associated to the study
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adding-the-authors-of-the-study">
+       Adding the authors of the study
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#declaring-all-the-protocols-used-in-the-isa-study-note-also-the-declaration-of-protocol-parameters-when-needed">
+       Declaring all the protocols used in the ISA study. Note also the declaration of Protocol Parameters when needed.
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#now-creating-isa-source-and-sample-objects-and-building-the-isa-study-table">
+     Now, creating ISA Source and Sample objects and building the ISA study table
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-s-start-by-building-the-isa-source-and-isa-samples-reflecting-the-experimental-plan">
+       Let’s start by building the ISA Source and ISA Samples reflecting the experimental plan:
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#now-creating-the-isa-objects-needed-to-represent-assays-and-raw-data-acquisition">
+     Now, creating the ISA objects needed to represent assays and raw data acquisition.
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-s-start-by-declaring-the-3-modalities-as-3-isa-assays">
+       Let’s start by declaring the 3 modalities as 3 ISA Assays.
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-mass-isotopologue-distribution-analysis-assay-using-ms-acquisitions">
+     The mass isotopologue distribution analysis assay using MS acquisitions:
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-mass-isotopomer-distribution-analysis-assay-using-1d-13c-nmr-acquisitions">
+     The mass isotopomer distribution analysis assay using 1D 13C NMR acquisitions:
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#conventional-metabolite-profiling-using-dedicated-1d-13c-nmr-acquisitions">
+     Conventional Metabolite Profiling  using dedicated 1D 13C NMR acquisitions:
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-all-isa-assays-declarations-to-the-isa-study-object">
+     Adding all ISA Assays declarations to the ISA Study object
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reporting-a-cross-technique-integrative-analysis-by-referencing-a-workflow-e-g-snakemake-galaxy-with-an-isa-protocol-and-using-isa-protocol-uri-attribute-to-do-so">
+     Reporting a cross-technique integrative analysis by referencing a workflow (e.g. snakemake, galaxy) with an ISA protocol  and using ISA.Protocol.uri attribute to do so.
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#serializing-writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function">
+     Serializing (writing) the ISA object representation to file with the ISA-API
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       dump
+      </span>
+     </code>
+     function
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#validating-the-isa-object-representation-with-the-isa-validate-function">
+     Validating the ISA object representation  with the ISA
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       validate
+      </span>
+     </code>
+     function
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally">
+     Reading the ISA document from disk back in, loading it into memory and writing to disk again to check that the ISA-API load function works nominally
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#about-this-notebook">
+   About this notebook
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="abstract">
+<h1>Abstract:<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h1>
+<p>The aim of this notebook is to show to create an ISA document for depositing Stable Isotope Resolved Metabolomics Study metadata using the ISA API.</p>
+<p>This notebook highlights key steps of the deposition, including:</p>
+<ul class="simple">
+<li><p>declaration of study variables and treatment groups</p></li>
+<li><p>declaration of SIRM specific protocols, assays and annotation requirements for a given data modality.</p></li>
+<li><p>ISA roundtrip (write, reading, writing).</p></li>
+<li><p>Serialization to TAB and JSON</p></li>
+<li><p>Validation</p></li>
+</ul>
+<p>Stable Isotope Resolved Metabolomics Studies are a type of studies using MS and NMR acquisition techniques to decypher biochemical reactions using <code class="docutils literal notranslate"><span class="pre">tracer</span> <span class="pre">molecule</span></code>, i.e. molecules for which certain positions carry an isotope (e.g. 13C, 15N). Specific data acquisition and data processing techniques are required and dedicated software is used to make sense of the data. Software such as <code class="docutils literal notranslate"><span class="pre">IsoSolve</span></code> [1], <code class="docutils literal notranslate"><span class="pre">Ramid</span></code>[2](for primary processing of 13C mass isotopomer data obtained with GCMS) or <code class="docutils literal notranslate"><span class="pre">midcor</span></code>[3] (for natural abundance correction processes on13C mass isotopomers spectra), may be used to accomplish those tasks. The output of such tools are tables which may comply with a new specifications devised to better support the reporting of SIRM study results.</p>
+<ul class="simple">
+<li><p>[1]. IsoSolve <a class="reference external" href="https://doi.org/10.1021/acs.analchem.1c01064">https://doi.org/10.1021/acs.analchem.1c01064</a></p></li>
+<li><p>[2]. <a class="reference external" href="https://github.com/seliv55/ramid">https://github.com/seliv55/ramid</a></p></li>
+<li><p>[3]. <a class="reference external" href="https://github.com/seliv55/midcor">https://github.com/seliv55/midcor</a></p></li>
+</ul>
+<div class="section" id="loading-the-isa-api">
+<h2>Loading the ISA-API<a class="headerlink" href="#loading-the-isa-api" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Comment</span><span class="p">,</span>
+    <span class="n">Investigation</span><span class="p">,</span>
+    <span class="n">Study</span><span class="p">,</span>
+    <span class="n">StudyFactor</span><span class="p">,</span>
+    <span class="n">FactorValue</span><span class="p">,</span>
+    <span class="n">OntologyAnnotation</span><span class="p">,</span>
+    <span class="n">Characteristic</span><span class="p">,</span>
+    <span class="n">OntologySource</span><span class="p">,</span>
+    <span class="n">Material</span><span class="p">,</span>
+    <span class="n">Sample</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">ProtocolParameter</span><span class="p">,</span>
+    <span class="n">ProtocolComponent</span><span class="p">,</span>
+    <span class="n">ParameterValue</span><span class="p">,</span>
+    <span class="n">Process</span><span class="p">,</span>
+    <span class="n">Publication</span><span class="p">,</span>
+    <span class="n">Person</span><span class="p">,</span>
+    <span class="n">Assay</span><span class="p">,</span>
+    <span class="n">DataFile</span><span class="p">,</span>
+    <span class="n">plink</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="programmatic-reporting-of-a-13c-stable-isotope-resolved-metabolomics-sirm-study">
+<h2>Programmatic reporting of a 13C Stable Isotope Resolved Metabolomics (SIRM) study<a class="headerlink" href="#programmatic-reporting-of-a-13c-stable-isotope-resolved-metabolomics-sirm-study" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="declaring-the-ontologies-and-vocabularies-used-in-the-isa-study">
+<h3>Declaring the Ontologies and Vocabularies used in the ISA Study<a class="headerlink" href="#declaring-the-ontologies-and-vocabularies-used-in-the-isa-study" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
+
+<span class="n">chebi</span><span class="o">=</span><span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;CHEBI&quot;</span><span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Chemical Entity of Biological Interest&quot;</span><span class="p">)</span>
+<span class="n">efo</span><span class="o">=</span><span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;EFO&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Experimental Factor Ontology&quot;</span><span class="p">)</span>
+<span class="n">msio</span><span class="o">=</span><span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MSIO&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Metabolomics Standards Initiative Ontology&quot;</span><span class="p">)</span>
+<span class="n">obi</span> <span class="o">=</span> <span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;OBI&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Ontology for Biomedical Investigations&quot;</span><span class="p">)</span>
+<span class="n">pato</span> <span class="o">=</span> <span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;PATO&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Phenotype and Trait Ontology&quot;</span><span class="p">)</span>
+<span class="n">ncbitaxon</span> <span class="o">=</span> <span class="n">OntologySource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;NCIBTaxon&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;NCBI Taxonomy&quot;</span><span class="p">)</span>
+
+<span class="n">investigation</span><span class="o">.</span><span class="n">ontology_source_references</span><span class="o">=</span><span class="p">[</span><span class="n">chebi</span><span class="p">,</span><span class="n">efo</span><span class="p">,</span><span class="n">obi</span><span class="p">,</span><span class="n">pato</span><span class="p">,</span><span class="n">ncbitaxon</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="basic-study-description-declaring-study-factor-and-and-study-design-type">
+<h3>Basic Study description: declaring Study Factor and and Study Design type<a class="headerlink" href="#basic-study-description-declaring-study-factor-and-and-study-design-type" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span> <span class="o">=</span> <span class="n">Study</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;s_13C-SIRM-study.txt&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;MTBLS-XXXX-SIRM&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;[U-13C6]-D-glucose labeling experiment in MCF7 cancer cell line&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Probing cancer pathways of MCF7 cell line using 13C stable isotope resolved metabolomics study using isotopologue distribution analysis with mass spectrometry and isotopomer analysis by 1D 1H NMR.&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">submission_date</span> <span class="o">=</span> <span class="s2">&quot;15/08/2021&quot;</span>
+<span class="n">study</span><span class="o">.</span><span class="n">public_release_date</span> <span class="o">=</span> <span class="s2">&quot;15/08/2021&quot;</span>
+
+<span class="c1"># These EMBL-EBI Metabolights (MTBLS) related ISA Comments fields may be used for deposition to EMBL-EBI</span>
+<span class="n">src_comment_mtbls1</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MTBLS Broker Name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;OXFORD&quot;</span><span class="p">)</span>
+<span class="n">src_comment_mtbls2</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MTBLS Center Name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;OXFORD&quot;</span><span class="p">)</span>
+<span class="n">src_comment_mtbls3</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MTBLS Center Project Name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;OXFORD&quot;</span><span class="p">)</span>
+<span class="n">src_comment_mtbls4</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MTBLS Lab Name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Oxford e-Research Centre&quot;</span><span class="p">)</span>
+<span class="n">src_comment_mtbls5</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MTBLS Submission Action&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;ADD&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_mtbls1</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_mtbls2</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_mtbls3</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_mtbls4</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_mtbls5</span><span class="p">)</span>
+
+<span class="c1"># These ISA Comments are optional and may be used to report funding information</span>
+<span class="n">src_comment_st1</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Study Funding Agency&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">src_comment_st2</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Study Grant Number&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_st1</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_comment_st2</span><span class="p">)</span>
+   
+
+<span class="c1"># Adding a Study Design descriptor to the ISA Study object</span>
+<span class="n">intervention_design</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term_source</span><span class="o">=</span><span class="n">obi</span><span class="p">)</span>
+<span class="n">intervention_design</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="s2">&quot;intervention design&quot;</span>
+<span class="n">intervention_design</span><span class="o">.</span><span class="n">term_accession</span> <span class="o">=</span> <span class="s2">&quot;http://purl.obolibrary.org/obo/OBI_0000115&quot;</span>
+
+<span class="n">study_design</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+<span class="n">study_design</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="s2">&quot;stable isotope resolved metabolomics study&quot;</span>
+<span class="n">study_design</span><span class="o">.</span><span class="n">term_accession</span> <span class="o">=</span> <span class="s2">&quot;http://purl.obolibrary.org/obo/MSIO_0000096&quot;</span>
+
+
+<span class="n">study</span><span class="o">.</span><span class="n">design_descriptors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intervention_design</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">design_descriptors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study_design</span><span class="p">)</span>
+
+
+<span class="c1"># Declaring the Study Factors</span>
+<span class="n">study</span><span class="o">.</span><span class="n">factors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;compound&quot;</span><span class="p">,</span><span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;chemical substance&quot;</span><span class="p">,</span>
+                                                              <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/CHEBI_59999&quot;</span><span class="p">,</span>
+                                                              <span class="n">term_source</span><span class="o">=</span><span class="n">chebi</span><span class="p">)),</span>
+    <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dose&quot;</span><span class="p">,</span><span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;dose&quot;</span><span class="p">,</span> <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://www.ebi.ac.uk/efo/EFO_0000428&quot;</span><span class="p">,</span><span class="n">term_source</span><span class="o">=</span><span class="n">efo</span><span class="p">)),</span>
+    <span class="n">StudyFactor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span><span class="n">factor_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/PATO_0000165&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">pato</span><span class="p">))</span>
+<span class="p">]</span>
+
+<span class="c1"># Associating the levels to each of the Study Factor.</span>
+<span class="n">fv1</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;dioxygen&quot;</span><span class="p">))</span>
+<span class="n">fv2</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">))</span>
+<span class="n">fv3</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">))</span>
+<span class="n">fv4</span> <span class="o">=</span> <span class="n">FactorValue</span><span class="p">(</span><span class="n">factor_name</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;hour&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-the-publications-associated-to-the-study">
+<h3>Adding the publications associated to the study<a class="headerlink" href="#adding-the-publications-associated-to-the-study" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">publications</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Publication</span><span class="p">(</span><span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.1371/journal.pone.0000000&quot;</span><span class="p">,</span><span class="n">pubmed_id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Decyphering new cancer pathways with stable isotope resolved metabolomics in MCF7 cell lines&quot;</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;indexed in PubMed&quot;</span><span class="p">),</span>
+                <span class="n">author_list</span><span class="o">=</span><span class="s2">&quot;Min,W. and Everest H&quot;</span><span class="p">),</span>
+   
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-the-authors-of-the-study">
+<h3>Adding the authors of the study<a class="headerlink" href="#adding-the-authors-of-the-study" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">contacts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Person</span><span class="p">(</span><span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Weng&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="n">affiliation</span><span class="o">=</span><span class="s2">&quot;Beijing Institute of Metabolism&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;weng.min@bim.edu.cn&quot;</span><span class="p">,</span>
+           <span class="n">address</span><span class="o">=</span><span class="s2">&quot;Prospect Street, Beijing, People&#39;s Republic of China&quot;</span><span class="p">,</span>
+           <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Study Person REF&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)],</span>
+            <span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;principal investigator role&quot;</span><span class="p">),</span>
+                   <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;SRA Inform On Status&quot;</span><span class="p">),</span>
+                   <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;SRA Inform On Error&quot;</span><span class="p">)]</span>
+    <span class="p">),</span>
+    <span class="n">Person</span><span class="p">(</span><span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Hillary&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;Everest&quot;</span><span class="p">,</span> <span class="n">affiliation</span><span class="o">=</span><span class="s2">&quot;Centre for Cell Metabolism&quot;</span><span class="p">,</span>
+           <span class="n">address</span><span class="o">=</span><span class="s2">&quot;CCM, Edinborough, United Kingdom&quot;</span><span class="p">,</span>
+           <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Study Person REF&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)],</span>
+           <span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;principal investigator role&quot;</span><span class="p">)]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="declaring-all-the-protocols-used-in-the-isa-study-note-also-the-declaration-of-protocol-parameters-when-needed">
+<h3>Declaring all the protocols used in the ISA study. Note also the declaration of Protocol Parameters when needed.<a class="headerlink" href="#declaring-all-the-protocols-used-in-the-isa-study-note-also-the-declaration-of-protocol-parameters-when-needed" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="c1">#Protocol #0</span>
+    <span class="n">Protocol</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;cell culture and isotopic labeling&quot;</span><span class="p">,</span>
+             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for growing MCF7 cells and incubating them with the tracer molecule&quot;</span><span class="p">,</span>
+             <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;sample collection&quot;</span><span class="p">),</span>
+             <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+              <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;tracer molecule&quot;</span><span class="p">))</span>
+             <span class="p">]</span>
+            <span class="p">),</span>
+    <span class="c1">#Protocol #1</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;intracellular metabolite extraction&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for extracting metabolites from harvested cells&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;metabolite extraction&quot;</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #2</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;extracellular metabolite extraction&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for extracting metabolites from cell culture supernatant&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;metabolite extraction&quot;</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #3</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;liquid chromatography mass spectrometry&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for LC-MS data acquisition&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass spectrometry&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;chromatography column&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass spectrometry instrument&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass analyzer&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #4</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;1D 13C NMR spectroscopy for isotopomer analysis&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for 1D 13C NMR data acquisition for isotopomer analysis&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr spectroscopy&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;magnetic field strength&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr tube&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #5</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;1D 13C NMR spectroscopy for metabolite profiling&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for 1D 13C NMR data acquisition for metabolite profiling&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr spectroscopy&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;magnetic field strength&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr tube&quot;</span><span class="p">)),</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #6</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MS metabolite identification&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for MS signal processing and metabolite and isotopologue identification&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;metabolite identification&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;ms software&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="c1">#Protocol #7</span>
+    <span class="n">Protocol</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;NMR metabolite identification&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;SOP for NMR signal processing and metabolite and isotopomer identification&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.1021/acs.analchem.1c01064&quot;</span><span class="p">,</span>
+        <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr software&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="now-creating-isa-source-and-sample-objects-and-building-the-isa-study-table">
+<h2>Now, creating ISA Source and Sample objects and building the ISA study table<a class="headerlink" href="#now-creating-isa-source-and-sample-objects-and-building-the-isa-study-table" title="Permalink to this headline">¶</a></h2>
+<p>In this fictional study, we assume the following underlying experimental setup:</p>
+<ul class="simple">
+<li><p>Human MCF-7 breast cancer cell line will be grown in 2 distinct conditions, namely “normal concentration of dioxygen for 72 hours” and “high concentration of dioxygen for 72 hours”.</p></li>
+<li><p>Each cell culture batch will be grown in the presence of 80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose tracer molecules</p></li>
+<li><p>For each cell culture, 4 samples will be collected for characterisation.</p></li>
+<li><p>3 assay modalities will be used on each of the collected samples, namely:</p>
+<ul>
+<li><p>isotopologue distribution analysis using LC-MS</p></li>
+<li><p>isotopomer analysis using 1D 13C NMR spectrometry with 3 distinct pulse sequences (HSQC, ZQF-TOCSY, HCNA, and HACO-DIPSY)</p></li>
+<li><p>metabolite profiling using 1D 13C NMR spectrometry with one pulse sequence (CPMG)</p></li>
+</ul>
+</li>
+<li><p>Data analysis for each data modality will be performed with dedicated data analysis protocols</p></li>
+<li><p>Integrative analysis (cutting accross results coming from each assay modality) will be performed using a dedicated workflow.</p></li>
+</ul>
+<div class="section" id="let-s-start-by-building-the-isa-source-and-isa-samples-reflecting-the-experimental-plan">
+<h3>Let’s start by building the ISA Source and ISA Samples reflecting the experimental plan:<a class="headerlink" href="#let-s-start-by-building-the-isa-source-and-isa-samples-reflecting-the-experimental-plan" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating the ISA Source Materials</span>
+<span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;culture-1&quot;</span><span class="p">),</span> <span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;culture-2&quot;</span><span class="p">)]</span>
+
+<span class="n">characteristic_organism</span> <span class="o">=</span> <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Organism&quot;</span><span class="p">),</span>
+                                     <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Homo sapiens&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">ncbitaxon</span><span class="p">,</span>
+                                                              <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/NCBITaxon_9606&quot;</span><span class="p">))</span>
+
+<span class="n">characteristic_cell</span> <span class="o">=</span> <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;cell line&quot;</span><span class="p">),</span>
+                                     <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;MCF-7&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                              <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">)):</span>    
+    <span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">characteristic_organism</span><span class="p">)</span>
+    <span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">characteristics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">characteristic_cell</span><span class="p">)</span>
+
+
+<span class="c1"># Note how the treatment groups are defined as sets of factor values attached to the ISA.Sample object</span>
+<span class="n">treatment_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">fv1</span><span class="p">,</span><span class="n">fv2</span><span class="p">,</span><span class="n">fv4</span><span class="p">]</span>
+<span class="n">treatment_2</span> <span class="o">=</span> <span class="p">[</span><span class="n">fv1</span><span class="p">,</span><span class="n">fv3</span><span class="p">,</span><span class="n">fv4</span><span class="p">]</span>
+
+
+<span class="c1"># Ensuring the Tracer Molecule(s) used for the SIRM study is properly reported</span>
+<span class="n">tracer_mol_C</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;tracer molecule&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose&quot;</span><span class="p">))</span>
+
+
+<span class="n">tracers</span> <span class="o">=</span> <span class="p">[</span><span class="n">tracer_mol_C</span><span class="p">]</span>
+
+<span class="c1"># the number of samples collected from each culture condition</span>
+<span class="n">replicates</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="c1"># Now creating a Process showing a `Protocol Application` using Source as input and producing Sample as output.</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">replicates</span><span class="p">):</span>
+    <span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;-sample-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)),</span> <span class="n">factor_values</span><span class="o">=</span><span class="n">treatment_1</span><span class="p">))</span>
+    
+    <span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;-sample-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)),</span> <span class="n">factor_values</span><span class="o">=</span><span class="n">treatment_2</span><span class="p">))</span>
+
+
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># a sample collection</span>
+                                                 <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                                                 <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">6</span><span class="p">]],</span>
+                                                 <span class="n">parameter_values</span><span class="o">=</span> <span class="p">[</span><span class="n">tracer_mol_C</span><span class="p">]))</span>
+
+<span class="n">study</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># a sample collection</span>
+                                                 <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                                                 <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">7</span><span class="p">]],</span>
+                                                 <span class="n">parameter_values</span><span class="o">=</span> <span class="p">[</span><span class="n">tracer_mol_C</span><span class="p">]))</span>
+                          
+<span class="c1"># Now appending the ISA Study object to the ISA Investigation object    </span>
+<span class="n">investigation</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="n">study</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="now-creating-the-isa-objects-needed-to-represent-assays-and-raw-data-acquisition">
+<h2>Now, creating the ISA objects needed to represent assays and raw data acquisition.<a class="headerlink" href="#now-creating-the-isa-objects-needed-to-represent-assays-and-raw-data-acquisition" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="let-s-start-by-declaring-the-3-modalities-as-3-isa-assays">
+<h3>Let’s start by declaring the 3 modalities as 3 ISA Assays.<a class="headerlink" href="#let-s-start-by-declaring-the-3-modalities-as-3-isa-assays" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starting by declaring the 2 types of assays used in BII-S-3 as coded with ISAcreator tool</span>
+<span class="n">assay</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_isotopologue-ms-assay.txt&quot;</span><span class="p">)</span>
+<span class="n">assay</span><span class="o">.</span><span class="n">measurement_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;isotopologue distribution analysis&quot;</span><span class="p">,</span><span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/msio.owl#mass_isotopologue_distribution_analysis&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+<span class="n">assay</span><span class="o">.</span><span class="n">technology_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass spectrometry&quot;</span><span class="p">,</span> <span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/CHMO_0000470&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+
+
+<span class="n">assay_nmr_topo</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_isotopomer-nmr-assay.txt&quot;</span><span class="p">)</span>
+<span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">measurement_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;isotopomer analysis&quot;</span><span class="p">,</span><span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/msio.owl#isotopomer_analysis&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+<span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">technology_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;NMR spectroscopy&quot;</span><span class="p">,</span><span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/CHMO_0000591&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+
+<span class="n">assay_nmr_metpro</span> <span class="o">=</span> <span class="n">Assay</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;a_metabolite-profiling-nmr-assay.txt&quot;</span><span class="p">)</span>
+<span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">measurement_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;untargeted metabolite profiling&quot;</span><span class="p">,</span><span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/MSIO_0000101&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+<span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">technology_type</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;NMR spectroscopy&quot;</span><span class="p">,</span><span class="n">term_accession</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/CHMO_0000591&quot;</span><span class="p">,</span> <span class="n">term_source</span><span class="o">=</span><span class="n">msio</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Warning</strong></p>
+<ul class="simple">
+<li><p>The current release of ISA-API throws an error if Assay <code class="docutils literal notranslate"><span class="pre">technology</span> <span class="pre">type</span></code> OntologyAnnotation.term is left empty</p></li>
+<li><p>The coming release 10.13 will address this issue.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-mass-isotopologue-distribution-analysis-assay-using-ms-acquisitions">
+<h2>The mass isotopologue distribution analysis assay using MS acquisitions:<a class="headerlink" href="#the-mass-isotopologue-distribution-analysis-assay-using-ms-acquisitions" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+    
+    <span class="c1"># create an extraction process that executes the extraction protocol</span>
+
+    <span class="n">extraction_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># extraction process takes as input a sample, and produces an extract material as output</span>
+    
+    <span class="n">char_ext</span> <span class="o">=</span> <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Material Type&quot;</span><span class="p">),</span>
+                                     <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pellet&quot;</span><span class="p">))</span>
+    
+    <span class="n">char_ext1</span> <span class="o">=</span> <span class="n">Characteristic</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">),</span>
+                                     <span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mg&quot;</span><span class="p">))</span>
+
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">ms_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-ms-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">ms_material</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+    <span class="n">ms_material</span><span class="o">.</span><span class="n">characteristics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char_ext</span><span class="p">)</span>
+    <span class="n">ms_material</span><span class="o">.</span><span class="n">characteristics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char_ext1</span><span class="p">)</span>
+    <span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ms_material</span><span class="p">)</span>
+
+    <span class="c1"># create a ms acquisition process that executes the ms acquisition protocol</span>
+    <span class="n">column</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;chromatography column&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Agilent C18 TTX&quot;</span><span class="p">))</span>
+    <span class="n">ms_inst</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass spectrometry instrument&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Agilent QTOF XL&quot;</span><span class="p">))</span>
+    <span class="n">ms_anlzr</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;mass analyzer&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Agilent MassDiscovery&quot;</span><span class="p">))</span>
+    
+    <span class="n">isotopologue_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">column</span><span class="p">,</span> <span class="n">ms_inst</span><span class="p">,</span> <span class="n">ms_anlzr</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">isotopologue_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-ms-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">isotopologue_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+    <span class="c1"># ms acquisition process usually has an output mzml data file</span>
+
+    <span class="n">datafile</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;ms-data-</span><span class="si">{}</span><span class="s2">.mzml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Spectral Raw Data File&quot;</span><span class="p">)</span>
+    <span class="n">data_comment</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;data_comment&quot;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;data_value&quot;</span><span class="p">)</span>
+    <span class="n">datafile</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_comment</span><span class="p">)</span>
+    <span class="n">isotopologue_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+
+    <span class="c1"># Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set</span>
+    <span class="c1"># these links for you. It is found in the isatools.model package</span>
+    
+    <span class="n">assay</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ms_material</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+    
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">)</span>
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">isotopologue_process</span><span class="p">)</span>
+    
+    <span class="n">ms_sw</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;ms software&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;IsoSolve&quot;</span><span class="p">))</span>
+    <span class="n">ms_da_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">ms_sw</span><span class="p">])</span>
+    <span class="n">ms_da_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;MS-DT-ident&quot;</span>
+    <span class="n">ms_da_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+    <span class="n">ms_da_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;isotopologue-distribution-analysis.txt&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Derived Data File&quot;</span><span class="p">))</span>
+    
+    <span class="n">assay</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ms_da_process</span><span class="p">)</span>
+    <span class="c1"># create an extraction process that executes the extraction protocol</span>
+
+    <span class="c1"># plink(aliquoting_process, sequencing_process)</span>
+    <span class="n">plink</span><span class="p">(</span><span class="n">extraction_process</span><span class="p">,</span> <span class="n">isotopologue_process</span><span class="p">)</span>
+    <span class="n">plink</span><span class="p">(</span><span class="n">isotopologue_process</span><span class="p">,</span> <span class="n">ms_da_process</span><span class="p">)</span>
+    <span class="c1"># make sure the extract, data file, and the processes are attached to the assay</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>
+make sure to used <code class="docutils literal notranslate"><span class="pre">ISA</span> <span class="pre">API</span> <span class="pre">plink</span> <span class="pre">function</span></code> to connects the protocols in a chain.</p>
+</div>
+<div class="section" id="the-mass-isotopomer-distribution-analysis-assay-using-1d-13c-nmr-acquisitions">
+<h2>The mass isotopomer distribution analysis assay using 1D 13C NMR acquisitions:<a class="headerlink" href="#the-mass-isotopomer-distribution-analysis-assay-using-1d-13c-nmr-acquisitions" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+    
+    <span class="n">extraction_process_nmr</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># extraction process takes as input a sample, and produces an extract material as output</span>
+    <span class="n">extraction_process_nmr</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">material_nmr</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-nmr-topo-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">material_nmr</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+    <span class="n">extraction_process_nmr</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material_nmr</span><span class="p">)</span>  
+    
+    <span class="c1"># create a nmr acquisition process that executes the nmr protocol</span>
+    <span class="n">magnet</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;magnetic field strength&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Tesla&quot;</span><span class="p">))</span>
+    <span class="n">tube</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr tube&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Brucker 14 mm Oscar&quot;</span><span class="p">))</span>
+    <span class="n">pulse_a</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;HSQC&quot;</span><span class="p">))</span>
+    <span class="n">pulse_b</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;ZQF-TOCSY&quot;</span><span class="p">))</span>
+    <span class="n">pulse_c</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;HNCA&quot;</span><span class="p">))</span>
+    <span class="n">pulse_d</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;HACO-DIPSY&quot;</span><span class="p">))</span>
+    
+    <span class="n">pulses</span><span class="o">=</span><span class="p">[</span><span class="n">pulse_a</span><span class="p">,</span><span class="n">pulse_b</span><span class="p">,</span><span class="n">pulse_c</span><span class="p">,</span><span class="n">pulse_d</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pulses</span><span class="p">)):</span>
+    
+        <span class="n">isotopomer_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">magnet</span><span class="p">,</span><span class="n">tube</span><span class="p">,</span><span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+        <span class="n">isotopomer_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-nmr-topo-&quot;</span><span class="o">+</span> <span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span><span class="s2">&quot;-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">isotopomer_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process_nmr</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Sequencing process usually has an output data file</span>
+
+        <span class="n">datafile_nmr</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;nmr-data-topo&quot;</span><span class="o">+</span>  <span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span><span class="s2">&quot;-</span><span class="si">{}</span><span class="s2">.nmrml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Free Induction Decay File&quot;</span><span class="p">)</span>
+        <span class="n">isotopomer_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile_nmr</span><span class="p">)</span>
+
+        <span class="c1"># Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set</span>
+        <span class="c1"># these links for you. It is found in the isatools.model package</span>
+
+        <span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material_nmr</span><span class="p">)</span>
+        <span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile_nmr</span><span class="p">)</span>
+
+        <span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process_nmr</span><span class="p">)</span>
+        <span class="n">assay_nmr_topo</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">isotopomer_process</span><span class="p">)</span>    
+
+        <span class="n">nmr_sw</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr software&quot;</span><span class="p">)),</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;https://pypi.org/project/IsoSolve&quot;</span><span class="p">))</span>
+        <span class="n">nmr_topo_da_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">nmr_sw</span><span class="p">])</span>
+        <span class="n">nmr_topo_da_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;NMR-TOPO-DT-ident&quot;</span>
+        <span class="n">nmr_topo_da_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+        <span class="n">nmr_topo_da_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;isotopomer-analysis.txt&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Derived Data File&quot;</span><span class="p">))</span>
+
+        <span class="n">plink</span><span class="p">(</span><span class="n">extraction_process_nmr</span><span class="p">,</span> <span class="n">isotopomer_process</span><span class="p">)</span>
+        <span class="n">plink</span><span class="p">(</span><span class="n">isotopomer_process</span><span class="p">,</span> <span class="n">nmr_topo_da_process</span><span class="p">)</span>
+        <span class="c1"># make sure the extract, data file, and the processes are attached to the assay</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="conventional-metabolite-profiling-using-dedicated-1d-13c-nmr-acquisitions">
+<h2>Conventional Metabolite Profiling  using dedicated 1D 13C NMR acquisitions:<a class="headerlink" href="#conventional-metabolite-profiling-using-dedicated-1d-13c-nmr-acquisitions" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+    <span class="n">extraction_process_nmr_metpro</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># extraction process takes as input a sample, and produces an extract material as output</span>
+    <span class="n">extraction_process_nmr_metpro</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">material_nmr_metpro</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract-nmr-metpro-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">material_nmr_metpro</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;Extract Name&quot;</span>
+    <span class="n">extraction_process_nmr_metpro</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material_nmr_metpro</span><span class="p">)</span>
+    
+    <span class="c1"># create a nmr acquisition process that executes the nmr protocol</span>
+    <span class="n">magnet</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;magnetic field strength&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Tesla&quot;</span><span class="p">))</span>
+    <span class="n">tube</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr tube&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Brucker 14 mm Oscar&quot;</span><span class="p">))</span>
+    <span class="n">pulse_a</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;pulse sequence&quot;</span><span class="p">)),</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;CPMG&quot;</span><span class="p">))</span>
+    
+    <span class="n">pulses</span><span class="o">=</span><span class="p">[</span><span class="n">pulse_a</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pulses</span><span class="p">)):</span>
+    
+        <span class="n">metpro_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">magnet</span><span class="p">,</span><span class="n">tube</span><span class="p">,</span><span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+        <span class="n">metpro_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;assay-name-nmr-metpro-&quot;</span><span class="o">+</span> <span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span><span class="s2">&quot;-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">metpro_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process_nmr_metpro</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># a Data acquisition process usually has an output data file</span>
+
+        <span class="n">datafile_nmr_metpro</span> <span class="o">=</span> <span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;nmr-data-metpro&quot;</span><span class="o">+</span>  <span class="n">pulses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">term</span> <span class="o">+</span><span class="s2">&quot;-</span><span class="si">{}</span><span class="s2">.nmrml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Free Induction Decay File&quot;</span><span class="p">)</span>
+        <span class="n">metpro_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile_nmr</span><span class="p">)</span>
+
+        <span class="c1"># Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set</span>
+        <span class="c1"># these links for you. It is found in the isatools.model package</span>
+
+        <span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">other_material</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material_nmr_metpro</span><span class="p">)</span>
+        <span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">data_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile_nmr_metpro</span><span class="p">)</span>
+
+        <span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extraction_process_nmr_metpro</span><span class="p">)</span>
+        <span class="n">assay_nmr_metpro</span><span class="o">.</span><span class="n">process_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metpro_process</span><span class="p">)</span>    
+
+        <span class="n">nmr_sw</span> <span class="o">=</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;nmr software&quot;</span><span class="p">)),</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;Batman&quot;</span><span class="p">))</span>
+        <span class="n">nmr_da_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">executes_protocol</span><span class="o">=</span><span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">parameter_values</span><span class="o">=</span><span class="p">[</span><span class="n">nmr_sw</span><span class="p">])</span>
+        <span class="n">nmr_da_process</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;NMR-metpro-DT-ident&quot;</span>
+        <span class="n">nmr_da_process</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datafile_nmr_metpro</span><span class="p">)</span>
+        <span class="n">nmr_da_process</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DataFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;metpro-analysis.txt&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Derived Data File&quot;</span><span class="p">))</span>
+
+        <span class="n">plink</span><span class="p">(</span><span class="n">extraction_process_nmr_metpro</span><span class="p">,</span> <span class="n">metpro_process</span><span class="p">)</span>
+        <span class="n">plink</span><span class="p">(</span><span class="n">metpro_process</span><span class="p">,</span> <span class="n">nmr_da_process</span><span class="p">)</span>
+        <span class="c1"># make sure the extract, data file, and the processes are attached to the assay</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-all-isa-assays-declarations-to-the-isa-study-object">
+<h2>Adding all ISA Assays declarations to the ISA Study object<a class="headerlink" href="#adding-all-isa-assays-declarations-to-the-isa-study-object" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay_nmr_topo</span><span class="p">)</span>
+<span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay_nmr_metpro</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="reporting-a-cross-technique-integrative-analysis-by-referencing-a-workflow-e-g-snakemake-galaxy-with-an-isa-protocol-and-using-isa-protocol-uri-attribute-to-do-so">
+<h2>Reporting a cross-technique integrative analysis by referencing a workflow (e.g. snakemake, galaxy) with an ISA protocol  and using ISA.Protocol.uri attribute to do so.<a class="headerlink" href="#reporting-a-cross-technique-integrative-analysis-by-referencing-a-workflow-e-g-snakemake-galaxy-with-an-isa-protocol-and-using-isa-protocol-uri-attribute-to-do-so" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Protocol #*</span>
+<span class="n">workflow_ref</span> <span class="o">=</span><span class="n">Protocol</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;13C SIRM MS and NMR integrative analysis&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a workflow for integrating data from NMR and MS acquisition into a consolidated result&quot;</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.1021/acs.analchem.1c01064&quot;</span><span class="p">,</span>
+    <span class="n">protocol_type</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;data transformation&quot;</span><span class="p">),</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ProtocolParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;software&quot;</span><span class="p">))</span>
+        <span class="p">])</span>
+<span class="n">study</span><span class="o">.</span><span class="n">protocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">workflow_ref</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="serializing-writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function">
+<h2>Serializing (writing) the ISA object representation to file with the ISA-API <code class="docutils literal notranslate"><span class="pre">dump</span></code> function<a class="headerlink" href="#serializing-writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump</span>
+
+<span class="c1"># note the use of the flag for explicit serialization on factor values on assay tables</span>
+<span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span> <span class="s2">&quot;./output/MTBLS-XXXX-SIRM/&quot;</span><span class="p">,</span> <span class="n">write_factor_values_in_assay_table</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="validating-the-isa-object-representation-with-the-isa-validate-function">
+<h2>Validating the ISA object representation  with the ISA <code class="docutils literal notranslate"><span class="pre">validate</span></code> function<a class="headerlink" href="#validating-the-isa-object-representation-with-the-isa-validate-function" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isatab</span>
+
+<span class="n">my_json_report_isa_flux</span> <span class="o">=</span> <span class="n">isatab</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/MTBLS-XXXX-SIRM/&quot;</span><span class="p">,</span><span class="s2">&quot;i_investigation.txt&quot;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_json_report_isa_flux</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>NOTE: The error report indicates the need to add new configurations files matching the assay definitions.</p>
+</div>
+<div class="section" id="reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally">
+<h2>Reading the ISA document from disk back in, loading it into memory and writing to disk again to check that the ISA-API load function works nominally<a class="headerlink" href="#reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">load</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/MTBLS-XXXX-SIRM/&quot;</span><span class="p">,</span><span class="s2">&quot;i_investigation.txt&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">isa_sirm_test</span><span class="p">:</span>
+    <span class="n">roundtrip</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">isa_sirm_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.convert</span> <span class="kn">import</span> <span class="n">isatab2json</span>
+<span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isajson</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="n">isa_json</span> <span class="o">=</span> <span class="n">isatab2json</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;./output/MTBLS-XXXX-SIRM/&#39;</span><span class="p">,</span> <span class="n">validate_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_new_parser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">isa_j</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="n">isa_json</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">isajson</span><span class="o">.</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./output/MTBLS-XXXX-SIRM/&#39;</span><span class="p">,</span> <span class="s1">&#39;isa-sirm-test.json&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_fp</span><span class="p">:</span>
+            <span class="n">out_fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">isa_j</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># note the use of the flag for explicit serialization on factor values on assay tables</span>
+<span class="c1"># dump(roundtrip, &quot;./notebook-output/MTBLS-0000-SIRM-roundtrip/&quot;, write_factor_values_in_assay_table=True)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="about-this-notebook">
+<h1>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>authors: Philippe Rocca-Serra (<a class="reference external" href="mailto:philippe&#46;rocca-serra&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">philippe<span>&#46;</span>rocca-serra<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a>)</p></li>
+<li><p>license: CC-BY 4.0</p></li>
+<li><p>support: <a class="reference external" href="mailto:isatools&#37;&#52;&#48;googlegroups&#46;com">isatools<span>&#64;</span>googlegroups<span>&#46;</span>com</a></p></li>
+<li><p>issue tracker: <a class="reference external" href="https://github.com/ISA-tools/isa-api/issues">https://github.com/ISA-tools/isa-api/issues</a></p></li>
+</ul>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "isa-api-py39"
+        },
+        kernelOptions: {
+            kernelName: "isa-api-py39",
+            path: "./content/notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'isa-api-py39'</script>
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The ISA Team<br/>
+        
+            &copy; Copyright 2021 (CC-BY 4.0).<br/>
+          <div class="extra_footer">
+            <script>mermaid.init();</script> <div class="row_footer"> This page was created thanks to work by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></div> <div class="row_footer"> This project is supported financially by the <a href="https://wellcome.org/">Welcome Trust</a>, Elixir-UK and the European Union</div>
+<div class="row_footer"> <div class="column" style="center"><a href="https://wellcome.org/"><img src="../_static/images/logo/wellcome-logo-black.png" height="25" alt="Wellcome" style="float:center""></a></div> <div class="column"><a href="https://www.elixir-uk.org.eu/"><img src="../_static/images/logo/elixir-uk_transparent.png" height="40" alt="IMI logo" style="float:center""></a></div> <div class="column"><a href="https://https://ec.europa.eu/programmes/horizon2020/en"><img src="../_static/images/logo/eu-flag-recolored.png" height="25" alt="EFPIA logo" style="float:center""></a></div> </div>
+          </div>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

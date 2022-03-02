@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Programmatic recreation of BII-S-3 with the ISA-API &#8212; The ISA cookbook</title>
+    <title>Loading the ISA-API &#8212; The ISA cookbook</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -88,12 +88,10 @@ commentsRunWhenDOMLoaded(addUtterances);
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
-    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.html" />
+    <link rel="canonical" href="https://isa-tools.github.io/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.html" />
     <link rel="shortcut icon" href="../../_static/isa.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="ISA-API built-in semantic requirements for protocol type values" href="isa-protocol-type-synonym-effect-on-assay-table.html" />
-    <link rel="prev" title="Reading ISA-Tab from files and Validating ISA-Tab files" href="reading-isa-tab-from-disk-exploring-and-validating.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -130,7 +128,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../installation.html">
    ISA-API installation
@@ -226,23 +224,23 @@ commentsRunWhenDOMLoaded(addUtterances);
    Release Notes
   </a>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../notebooks.html">
    Hands-on Practicals
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="reading-isa-tab-from-disk-exploring-and-validating.html">
      Reading ISA-Tab from files and Validating ISA-Tab files
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="programmatic-rebuild-of-BII-S-3-with-ISA-API.html">
      Programmatic recreation of BII-S-3 with the ISA-API
     </a>
    </li>
@@ -338,7 +336,7 @@ commentsRunWhenDOMLoaded(addUtterances);
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../../_sources/content/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -358,10 +356,10 @@ commentsRunWhenDOMLoaded(addUtterances);
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/isa-tools/isa-api/issues/new?title=Issue%20on%20page%20%2Fcontent/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.ipynb"><button
+        <a class="edit-button" href="https://github.com/isa-tools/isa-api/edit/master/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.ipynb"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
@@ -381,7 +379,7 @@ commentsRunWhenDOMLoaded(addUtterances);
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/isa-tools/isa-api/master?urlpath=lab/tree/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../../_static/images/logo_binder.svg"
@@ -389,7 +387,7 @@ commentsRunWhenDOMLoaded(addUtterances);
         
         
         
-        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/programmatic-rebuild-of-BII-S-3-with-ISA-API.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+        <a class="colab-button" href="https://colab.research.google.com/github/isa-tools/isa-api/blob/master/isa-cookbook/content/notebooks/isa-api-programmatic-rebuild-of-BII-S-3.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
                 title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
                     src="../../_static/images/logo_colab.png"
                     alt="Interact on Colab">Colab</button></a>
@@ -408,67 +406,50 @@ commentsRunWhenDOMLoaded(addUtterances);
             </div>
             <nav id="bd-toc-nav">
                 <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#abstract">
-   Abstract
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Loading the ISA-API
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#let-s-start-by-loading-the-isa-api">
-   1. Let’s start by loading the ISA-API
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#recreating-bii-s-3-isa-archive-programmatically-with-the-isa-api-starting-with-the-investigation-object">
+   Recreating BII-S-3 ISA archive programmatically with the ISA-API  starting with the Investigation object
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#building-the-isa-objects-for-representing-bii-s-3">
-   2. Building the ISA objects for representing BII-S-3
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#now-creating-isa-source-and-sample-objects-and-building-what-is-the-bii-s-3-study-table">
+   Now, creating ISA Source and Sample objects and building what is the BII-S-3 Study table
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#now-creating-isa-source-and-sample-objects-and-building-what-is-the-bii-s-3-study-table">
-     Now, creating ISA Source and Sample objects and building what is the BII-S-3 Study table
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#now-creating-the-isa-objects-to-represent-assays-and-acquired-raw-data">
-     Now, creating the ISA objects to represent assays and acquired raw data
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#adding-both-assays-to-the-isa-study-object">
-     Adding both assays to the ISA Study object
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function">
-     Writing the ISA object representation to file with the ISA-API
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       dump
-      </span>
-     </code>
-     function
-    </a>
-   </li>
-  </ul>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#now-creating-the-isa-objects-to-represent-assays-and-acquired-raw-data">
+   Now, creating the ISA objects to represent assays and acquired raw data
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-both-assays-to-the-isa-study-object">
+   Adding both assays to the ISA Study object
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function">
+   Writing the ISA object representation to file with the ISA-API
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     dump
+    </span>
+   </code>
+   function
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally">
    Reading the ISA document from disk back in, loading it into memory and writing to disk again to check that the ISA-API load function works nominally
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#comparing-the-output-of-each-serialization-and-checking-for-equivalence">
    Comparing the output of each serialization and checking for equivalence
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#conclusion">
-   Conclusion:
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#about-this-notebook">
-   About this notebook
   </a>
  </li>
 </ul>
@@ -482,20 +463,8 @@ commentsRunWhenDOMLoaded(addUtterances);
         
               <div>
                 
-  <div class="section" id="programmatic-recreation-of-bii-s-3-with-the-isa-api">
-<h1>Programmatic recreation of BII-S-3 with the ISA-API<a class="headerlink" href="#programmatic-recreation-of-bii-s-3-with-the-isa-api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="abstract">
-<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
-<p>With this practical, we’ll be showing how to use the ISA-API object to recreate programmatically the BII-S-3 dataset published in 2008 by Dr Jack Gilbert and colleagues.</p>
-<p>The practical demonstrates a so-called “roundtrip” exercice where:</p>
-<ul class="simple">
-<li><p>Programmatically generated ISA objects are written (serialized) to disk in the ISA-Tab format.</p></li>
-<li><p>The resulting output is then read back into memory by invoking the ISA-API load function.</p></li>
-<li><p>The objects loaded in memory are serialized back out again and compared to the first output to ensure equivalent and integrity to demonstrate validity of the parsing.</p></li>
-</ul>
-</div>
-<div class="section" id="let-s-start-by-loading-the-isa-api">
-<h2>1. Let’s start by loading the ISA-API<a class="headerlink" href="#let-s-start-by-loading-the-isa-api" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="loading-the-isa-api">
+<h1>Loading the ISA-API<a class="headerlink" href="#loading-the-isa-api" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.model</span> <span class="kn">import</span> <span class="p">(</span>
@@ -528,8 +497,8 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 </div>
-<div class="section" id="building-the-isa-objects-for-representing-bii-s-3">
-<h2>2. Building the ISA objects for representing BII-S-3<a class="headerlink" href="#building-the-isa-objects-for-representing-bii-s-3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="recreating-bii-s-3-isa-archive-programmatically-with-the-isa-api-starting-with-the-investigation-object">
+<h1>Recreating BII-S-3 ISA archive programmatically with the ISA-API  starting with the Investigation object<a class="headerlink" href="#recreating-bii-s-3-isa-archive-programmatically-with-the-isa-api-starting-with-the-investigation-object" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">investigation</span> <span class="o">=</span> <span class="n">Investigation</span><span class="p">()</span>
@@ -635,6 +604,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <span class="n">intervention_design</span> <span class="o">=</span> <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term_source</span><span class="o">=</span><span class="n">obi</span><span class="p">)</span>
 <span class="n">intervention_design</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="s2">&quot;intervention design&quot;</span>
 <span class="n">intervention_design</span><span class="o">.</span><span class="n">term_accession</span> <span class="o">=</span> <span class="s2">&quot;http://purl.obolibrary.org/obo/OBI_0000115&quot;</span>
+
 <span class="n">study</span><span class="o">.</span><span class="n">design_descriptors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intervention_design</span><span class="p">)</span>
 
 
@@ -674,7 +644,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <span class="n">Person</span><span class="p">(</span><span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Jack&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;Gilbert&quot;</span><span class="p">,</span> <span class="n">affiliation</span><span class="o">=</span><span class="s2">&quot;Plymouth Marine Laboratory&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;jagi@pml.ac.uk&quot;</span><span class="p">,</span>
            <span class="n">address</span><span class="o">=</span><span class="s2">&quot;Prospect Place, Plymouth, United Kingdom&quot;</span><span class="p">,</span>
            <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">Comment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Study Person REF&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)],</span>
-            <span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;principal investigator role&quot;</span><span class="p">),</span>
+           <span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;principal investigator role&quot;</span><span class="p">),</span>
                    <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;SRA Inform On Status&quot;</span><span class="p">),</span>
                    <span class="n">OntologyAnnotation</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="s2">&quot;SRA Inform On Error&quot;</span><span class="p">)]</span>
     <span class="p">),</span>
@@ -688,8 +658,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 </div>
+</div>
 <div class="section" id="now-creating-isa-source-and-sample-objects-and-building-what-is-the-bii-s-3-study-table">
-<h3>Now, creating ISA Source and Sample objects and building what is the BII-S-3 Study table<a class="headerlink" href="#now-creating-isa-source-and-sample-objects-and-building-what-is-the-bii-s-3-study-table" title="Permalink to this headline">¶</a></h3>
+<h1>Now, creating ISA Source and Sample objects and building what is the BII-S-3 Study table<a class="headerlink" href="#now-creating-isa-source-and-sample-objects-and-building-what-is-the-bii-s-3-study-table" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;GSM255770&quot;</span><span class="p">),</span> <span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;GSM255771&quot;</span><span class="p">),</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;GSM255772&quot;</span><span class="p">),</span><span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;GSM255773&quot;</span><span class="p">)]</span>
@@ -725,7 +696,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="section" id="now-creating-the-isa-objects-to-represent-assays-and-acquired-raw-data">
-<h3>Now, creating the ISA objects to represent assays and acquired raw data<a class="headerlink" href="#now-creating-the-isa-objects-to-represent-assays-and-acquired-raw-data" title="Permalink to this headline">¶</a></h3>
+<h1>Now, creating the ISA objects to represent assays and acquired raw data<a class="headerlink" href="#now-creating-the-isa-objects-to-represent-assays-and-acquired-raw-data" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starting by declaring the 2 types of assays used in BII-S-3 as coded with ISAcreator tool</span>
@@ -743,6 +714,11 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 </div>
+<p><strong>Warning</strong></p>
+<ul class="simple">
+<li><p>The current release of ISA-API throws an error if Assay <code class="docutils literal notranslate"><span class="pre">technology</span> <span class="pre">type</span></code> OntologyAnnotation.term is left empty</p></li>
+<li><p>The coming release 10.13 will address this issue.</p></li>
+</ul>
 <p><strong>warning</strong>
 make sure the plink function connects the first and last protocol in a chain</p>
 <div class="cell docutils container">
@@ -862,19 +838,11 @@ make sure the plink function connects the first and last protocol in a chain</p>
 </div>
 </div>
 <div class="section" id="adding-both-assays-to-the-isa-study-object">
-<h3>Adding both assays to the ISA Study object<a class="headerlink" href="#adding-both-assays-to-the-isa-study-object" title="Permalink to this headline">¶</a></h3>
+<h1>Adding both assays to the ISA Study object<a class="headerlink" href="#adding-both-assays-to-the-isa-study-object" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay</span><span class="p">)</span>
 <span class="n">study</span><span class="o">.</span><span class="n">assays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assay_tx</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># from isatools import isatab</span>
-<span class="c1"># print(isatab.dumps(investigation))</span>
 </pre></div>
 </div>
 </div>
@@ -929,7 +897,7 @@ make sure the plink function connects the first and last protocol in a chain</p>
 </div>
 </div>
 <div class="section" id="writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function">
-<h3>Writing the ISA object representation to file with the ISA-API <code class="docutils literal notranslate"><span class="pre">dump</span></code> function<a class="headerlink" href="#writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function" title="Permalink to this headline">¶</a></h3>
+<h1>Writing the ISA object representation to file with the ISA-API <code class="docutils literal notranslate"><span class="pre">dump</span></code> function<a class="headerlink" href="#writing-the-isa-object-representation-to-file-with-the-isa-api-dump-function" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">dump</span>
@@ -941,14 +909,31 @@ make sure the plink function connects the first and last protocol in a chain</p>
 </div>
 </div>
 </div>
-</div>
 <div class="section" id="reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally">
-<h2>Reading the ISA document from disk back in, loading it into memory and writing to disk again to check that the ISA-API load function works nominally<a class="headerlink" href="#reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally" title="Permalink to this headline">¶</a></h2>
+<h1>Reading the ISA document from disk back in, loading it into memory and writing to disk again to check that the ISA-API load function works nominally<a class="headerlink" href="#reading-the-isa-document-from-disk-back-in-loading-it-into-memory-and-writing-to-disk-again-to-check-that-the-isa-api-load-function-works-nominally" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.isatab</span> <span class="kn">import</span> <span class="n">load</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;./output/BII-S-3-synth/&quot;</span><span class="p">,</span><span class="s2">&quot;i_investigation.txt&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">bii3stest</span><span class="p">:</span>
     <span class="n">roundtrip</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">bii3stest</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">isatools.convert</span> <span class="kn">import</span> <span class="n">isatab2json</span>
+<span class="kn">from</span> <span class="nn">isatools</span> <span class="kn">import</span> <span class="n">isajson</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="n">isa_json</span> <span class="o">=</span> <span class="n">isatab2json</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;./output/BII-S-3-synth/&#39;</span><span class="p">,</span> <span class="n">validate_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_new_parser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">isa_j</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="n">isa_json</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">isajson</span><span class="o">.</span><span class="n">ISAJSONEncoder</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./output/BII-S-3-synth/&#39;</span><span class="p">,</span> <span class="s1">&#39;isa-new_ids.json&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_fp</span><span class="p">:</span>
+            <span class="n">out_fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">isa_j</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -963,7 +948,7 @@ make sure the plink function connects the first and last protocol in a chain</p>
 </div>
 </div>
 <div class="section" id="comparing-the-output-of-each-serialization-and-checking-for-equivalence">
-<h2>Comparing the output of each serialization and checking for equivalence<a class="headerlink" href="#comparing-the-output-of-each-serialization-and-checking-for-equivalence" title="Permalink to this headline">¶</a></h2>
+<h1>Comparing the output of each serialization and checking for equivalence<a class="headerlink" href="#comparing-the-output-of-each-serialization-and-checking-for-equivalence" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import hashlib</span>
@@ -1003,21 +988,8 @@ make sure the plink function connects the first and last protocol in a chain</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="conclusion">
-<h2>Conclusion:<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
-<p>While the <code class="docutils literal notranslate"><span class="pre">i_investigation.txt</span></code> files are identical, the other comparisons return <code class="docutils literal notranslate"><span class="pre">False</span></code> indicating that they  are not exactly identical.</p>
-<p>The cause of the difference is simply down to the order in which <code class="docutils literal notranslate"><span class="pre">FactorValues</span></code> are serialized. This is caused by the underlying data structure used to store this information but the the information is equivalent.</p>
-</div>
-<div class="section" id="about-this-notebook">
-<h2>About this notebook<a class="headerlink" href="#about-this-notebook" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>authors: <a class="reference external" href="mailto:philippe&#46;rocca-serra&#37;&#52;&#48;oerc&#46;ox&#46;ac&#46;uk">philippe<span>&#46;</span>rocca-serra<span>&#64;</span>oerc<span>&#46;</span>ox<span>&#46;</span>ac<span>&#46;</span>uk</a></p></li>
-<li><p>license: CC-BY 4.0</p></li>
-<li><p>support: <a class="reference external" href="mailto:isatools&#37;&#52;&#48;googlegroups&#46;com">isatools<span>&#64;</span>googlegroups<span>&#46;</span>com</a></p></li>
-<li><p>issue tracker: <a class="reference external" href="https://github.com/ISA-tools/isa-api/issues">https://github.com/ISA-tools/isa-api/issues</a></p></li>
-</ul>
-</div>
+<p><code class="docutils literal notranslate"><span class="pre">Comment:</span></code>
+While the <code class="docutils literal notranslate"><span class="pre">i_investigation.txt</span></code> files are identical, the other files are not exactly identical hence the <code class="docutils literal notranslate"><span class="pre">False</span></code> output resulting from the comparison. The cause of the different is simply the order in which <code class="docutils literal notranslate"><span class="pre">FactorValues</span></code> are serialized. The information is equivalent.</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -1045,8 +1017,6 @@ make sure the plink function connects the first and last protocol in a chain</p>
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="reading-isa-tab-from-disk-exploring-and-validating.html" title="previous page">Reading ISA-Tab from files and Validating ISA-Tab files</a>
-    <a class='right-next' id="next-link" href="isa-protocol-type-synonym-effect-on-assay-table.html" title="next page">ISA-API built-in semantic requirements for <code class="docutils literal notranslate"><span class="pre">protocol</span> <span class="pre">type</span></code> values</a>
 
         </div>
         

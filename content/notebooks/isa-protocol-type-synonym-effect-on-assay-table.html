@@ -120,7 +120,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search for FAIR recipes..." aria-label="Search for FAIR recipes..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
@@ -283,6 +283,11 @@ commentsRunWhenDOMLoaded(addUtterances);
    <li class="toctree-l2">
     <a class="reference internal" href="isa-metabolomics-study-design-create.html">
      ISA Create Mode example
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="investigation-from-datascriptor-config-observational-variables-and-ontology-annotation.html">
+     Create ISA-API Investigation from Datascriptor Study Design configuration
     </a>
    </li>
    <li class="toctree-l2">
@@ -841,6 +846,23 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Assay(
+    measurement_type=transcription profiling
+    technology_type=nucleotide sequencing
+    technology_platform=
+    filename=a_assay_2.txt
+    data_files=3 DataFile objects
+    samples=3 Sample objects
+    process_sequence=9 Process objects
+    other_material=3 Material objects
+    characteristic_categories=0 OntologyAnnots
+    comments=0 Comment objects
+    units=0 Unit objects
+)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -859,11 +881,41 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:40:39,386 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0]
+2021-07-21 17:40:39,386 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [5, 2, 3, 4, 0]
+2021-07-21 17:40:39,387 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[0, 5, 2], [0, 5, 3], [0, 5, 4]]
+2021-07-21 17:40:39,426 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,426 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 6, 7, 8], [3, 10, 11, 12], [4, 14, 15, 16]]
+2021-07-21 17:40:39,427 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 6, 7, 8], [3, 10, 11, 12], [4, 14, 15, 16]]
+2021-07-21 17:40:39,435 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,436 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 18, 19, 20], [3, 22, 23, 24], [4, 26, 27, 28]]
+2021-07-21 17:40:39,437 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 18, 19, 20], [3, 22, 23, 24], [4, 26, 27, 28]]
+2021-07-21 17:40:39,446 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,447 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 30, 31, 32, 34], [3, 36, 37, 38, 40], [4, 42, 43, 44, 46]]
+2021-07-21 17:40:39,447 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 30, 31, 32, 34], [3, 36, 37, 38, 40], [4, 42, 43, 44, 46]]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dataframes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
     <span class="n">display</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;s_study.txt&#39;
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;a_assay_2.txt&#39;
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;a_assay.txt&#39;
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;a_assay_1.txt&#39;
 </pre></div>
 </div>
 </div>
@@ -877,6 +929,60 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sample Name</th>
+      <th>Protocol REF</th>
+      <th>Extract Name</th>
+      <th>Protocol REF.1</th>
+      <th>Raw Data File</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sample_material-0</td>
+      <td>extraction</td>
+      <td>extract-0</td>
+      <td>sequencing</td>
+      <td>sequenced-data-0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sample_material-1</td>
+      <td>extraction</td>
+      <td>extract-1</td>
+      <td>sequencing</td>
+      <td>sequenced-data-1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>sample_material-2</td>
+      <td>extraction</td>
+      <td>extract-2</td>
+      <td>sequencing</td>
+      <td>sequenced-data-2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -884,6 +990,64 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sample Name</th>
+      <th>Protocol REF</th>
+      <th>Extract Name</th>
+      <th>Protocol REF.1</th>
+      <th>Assay Name</th>
+      <th>Raw Data File</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sample_material-0</td>
+      <td>extraction</td>
+      <td>extract-0</td>
+      <td>sequencing_1</td>
+      <td>assay-name-0</td>
+      <td>sequenced-data-0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sample_material-1</td>
+      <td>extraction</td>
+      <td>extract-1</td>
+      <td>sequencing_1</td>
+      <td>assay-name-1</td>
+      <td>sequenced-data-1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>sample_material-2</td>
+      <td>extraction</td>
+      <td>extract-2</td>
+      <td>sequencing_1</td>
+      <td>assay-name-2</td>
+      <td>sequenced-data-2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -891,10 +1055,275 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sample Name</th>
+      <th>Protocol REF</th>
+      <th>Extract Name</th>
+      <th>Protocol REF.1</th>
+      <th>Assay Name</th>
+      <th>Raw Data File</th>
+      <th>Protocol REF.2</th>
+      <th>Data Transformation Name</th>
+      <th>Derived Data File</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sample_material-0</td>
+      <td>nucleic acid extraction</td>
+      <td>extract-0</td>
+      <td>sequencing_2</td>
+      <td>assay-name-0</td>
+      <td>sequenced-data-0</td>
+      <td>analysis</td>
+      <td>dt-name-0</td>
+      <td>derived-data-0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sample_material-1</td>
+      <td>nucleic acid extraction</td>
+      <td>extract-1</td>
+      <td>sequencing_2</td>
+      <td>assay-name-1</td>
+      <td>sequenced-data-1</td>
+      <td>analysis</td>
+      <td>dt-name-1</td>
+      <td>derived-data-1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>sample_material-2</td>
+      <td>nucleic acid extraction</td>
+      <td>extract-2</td>
+      <td>sequencing_2</td>
+      <td>assay-name-2</td>
+      <td>sequenced-data-2</td>
+      <td>analysis</td>
+      <td>dt-name-2</td>
+      <td>derived-data-2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">isatab</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">investigation</span><span class="p">,</span><span class="s1">&#39;./notebook-output/isa-protocol-type-assay/&#39;</span><span class="p">)</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:40:39,603 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [0]
+2021-07-21 17:40:39,604 [WARNING]: isatab.py(write_study_table_files:1194) &gt;&gt; [5, 2, 3, 4, 0]
+2021-07-21 17:40:39,604 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[0, 5, 2], [0, 5, 3], [0, 5, 4]]
+2021-07-21 17:40:39,624 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,625 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 6, 7, 8], [3, 10, 11, 12], [4, 14, 15, 16]]
+2021-07-21 17:40:39,625 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 6, 7, 8], [3, 10, 11, 12], [4, 14, 15, 16]]
+2021-07-21 17:40:39,633 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,634 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 18, 19, 20], [3, 22, 23, 24], [4, 26, 27, 28]]
+2021-07-21 17:40:39,634 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 18, 19, 20], [3, 22, 23, 24], [4, 26, 27, 28]]
+2021-07-21 17:40:39,643 [INFO]: isatab.py(_all_end_to_end_paths:1131) &gt;&gt; [2, 3, 4]
+2021-07-21 17:40:39,644 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 30, 31, 32, 34], [3, 36, 37, 38, 40], [4, 42, 43, 44, 46]]
+2021-07-21 17:40:39,644 [INFO]: isatab.py(_longest_path_and_attrs:1091) &gt;&gt; [[2, 30, 31, 32, 34], [3, 36, 37, 38, 40], [4, 42, 43, 44, 46]]
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>isatools.model.Investigation(identifier=&#39;&#39;, filename=&#39;&#39;, title=&#39;&#39;, submission_date=&#39;&#39;, public_release_date=&#39;&#39;, ontology_source_references=[isatools.model.OntologySource(name=&#39;OBI&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;Ontology for Biomedical Investigations&#39;, comments=[])], publications=[], contacts=[], studies=[isatools.model.Study(filename=&#39;s_study.txt&#39;, identifier=&#39;s1&#39;, title=&#39;My ISA Study&#39;, description=&#39;Like with the Investigation, we could use the class constructor to set some default values, but have chosen to demonstrate in this example the use of instance variables to set initial values.&#39;, submission_date=&#39;2016-11-03&#39;, public_release_date=&#39;2016-11-03&#39;, contacts=[isatools.model.Person(last_name=&#39;Robertson&#39;, first_name=&#39;Alice&#39;, mid_initials=&#39;&#39;, email=&#39;&#39;, phone=&#39;&#39;, fax=&#39;&#39;, address=&#39;&#39;, affiliation=&#39;University of Life&#39;, roles=[isatools.model.OntologyAnnotation(term=&#39;submitter&#39;, term_source=None, term_accession=&#39;&#39;, comments=[])], comments=[])], design_descriptors=[isatools.model.OntologyAnnotation(term=&#39;intervention design&#39;, term_source=isatools.model.OntologySource(name=&#39;OBI&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;Ontology for Biomedical Investigations&#39;, comments=[]), term_accession=&#39;http://purl.obolibrary.org/obo/OBI_0000115&#39;, comments=[])], publications=[isatools.model.Publication(pubmed_id=&#39;12345678&#39;, doi=&#39;10.1038/sdata.2016.18&#39;, author_list=&#39;A. Robertson, B. Robertson&#39;, title=&#39;Experiments with Elephants&#39;, status=isatools.model.OntologyAnnotation(term=&#39;published&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), comments=[])], factors=[], protocols=[isatools.model.Protocol(name=&#39;sample collection&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;sample collection&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;extraction&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material extraction&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;sequencing&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;extraction&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;material extraction&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;sequencing_1&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;nucleic acid sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;nucleic acid extraction&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;nucleic acid extraction&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;sequencing_2&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;nucleic acid sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[]), isatools.model.Protocol(name=&#39;analysis&#39;, protocol_type=isatools.model.OntologyAnnotation(term=&#39;sequence analysis data transformation&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), uri=&#39;&#39;, version=&#39;&#39;, parameters=[], components=[], comments=[])], assays=[isatools.model.Assay(measurement_type=isatools.model.OntologyAnnotation(term=&#39;genome sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_type=isatools.model.OntologyAnnotation(term=&#39;nucleotide sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_platform=&#39;&#39;, filename=&#39;a_assay.txt&#39;, data_files=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200d82b0&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-0&quot;, executes_protocol=Protocol(
+    name=sequencing
+    protocol_type=material sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200d82b0&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200d8160&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-1&quot;, executes_protocol=Protocol(
+    name=sequencing
+    protocol_type=material sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200d8160&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x10a94cd90&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-2&quot;, executes_protocol=Protocol(
+    name=sequencing
+    protocol_type=material sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x10a94cd90&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])])], other_material=[&lt;isatools.model.Material object at 0x1200d82b0&gt;, &lt;isatools.model.Material object at 0x1200d8160&gt;, &lt;isatools.model.Material object at 0x10a94cd90&gt;], characteristic_categories=[], comments=[], units=[]), isatools.model.Assay(measurement_type=isatools.model.OntologyAnnotation(term=&#39;genome sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_type=isatools.model.OntologyAnnotation(term=&#39;nucleotide sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_platform=&#39;&#39;, filename=&#39;a_assay_1.txt&#39;, data_files=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200b3d90&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-0&quot;, executes_protocol=Protocol(
+    name=sequencing_1
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200b3d90&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200b3ee0&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-1&quot;, executes_protocol=Protocol(
+    name=sequencing_1
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200b3ee0&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=extraction
+    protocol_type=material extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200b3a00&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-2&quot;, executes_protocol=Protocol(
+    name=sequencing_1
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200b3a00&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])])], other_material=[&lt;isatools.model.Material object at 0x1200b3d90&gt;, &lt;isatools.model.Material object at 0x1200b3ee0&gt;, &lt;isatools.model.Material object at 0x1200b3a00&gt;], characteristic_categories=[], comments=[], units=[]), isatools.model.Assay(measurement_type=isatools.model.OntologyAnnotation(term=&#39;transcription profiling&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_type=isatools.model.OntologyAnnotation(term=&#39;nucleotide sequencing&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), technology_platform=&#39;&#39;, filename=&#39;a_assay_2.txt&#39;, data_files=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[]), isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=nucleic acid extraction
+    protocol_type=nucleic acid extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200d7700&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-0&quot;, executes_protocol=Protocol(
+    name=sequencing_2
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200d7700&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;dt-name-0&quot;, executes_protocol=Protocol(
+    name=analysis
+    protocol_type=sequence analysis data transformation
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.DataFile(filename=&#39;sequenced-data-0&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], outputs=[isatools.model.DataFile(filename=&#39;derived-data-0&#39;, label=&#39;Derived Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=nucleic acid extraction
+    protocol_type=nucleic acid extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200d7dc0&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-1&quot;, executes_protocol=Protocol(
+    name=sequencing_2
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200d7dc0&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;dt-name-1&quot;, executes_protocol=Protocol(
+    name=analysis
+    protocol_type=sequence analysis data transformation
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.DataFile(filename=&#39;sequenced-data-1&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], outputs=[isatools.model.DataFile(filename=&#39;derived-data-1&#39;, label=&#39;Derived Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=nucleic acid extraction
+    protocol_type=nucleic acid extraction
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], outputs=[&lt;isatools.model.Material object at 0x1200d7340&gt;]), isatools.model.Process(id=&quot;&quot;. name=&quot;assay-name-2&quot;, executes_protocol=Protocol(
+    name=sequencing_2
+    protocol_type=nucleic acid sequencing
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[&lt;isatools.model.Material object at 0x1200d7340&gt;], outputs=[isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])]), isatools.model.Process(id=&quot;&quot;. name=&quot;dt-name-2&quot;, executes_protocol=Protocol(
+    name=analysis
+    protocol_type=sequence analysis data transformation
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.DataFile(filename=&#39;sequenced-data-2&#39;, label=&#39;Raw Data File&#39;, generated_from=[], comments=[])], outputs=[isatools.model.DataFile(filename=&#39;derived-data-2&#39;, label=&#39;Derived Data File&#39;, generated_from=[], comments=[])])], other_material=[&lt;isatools.model.Material object at 0x1200d7700&gt;, &lt;isatools.model.Material object at 0x1200d7dc0&gt;, &lt;isatools.model.Material object at 0x1200d7340&gt;], characteristic_categories=[], comments=[], units=[])], sources=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], samples=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])], process_sequence=[isatools.model.Process(id=&quot;&quot;. name=&quot;None&quot;, executes_protocol=Protocol(
+    name=sample collection
+    protocol_type=sample collection
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+), date=&quot;None&quot;, performer=&quot;None&quot;, inputs=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], outputs=[isatools.model.Sample(name=&#39;sample_material-0&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-1&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[]), isatools.model.Sample(name=&#39;sample_material-2&#39;, characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term=&#39;Organism&#39;, term_source=None, term_accession=&#39;&#39;, comments=[]), value=isatools.model.OntologyAnnotation(term=&#39;Homo Sapiens&#39;, term_source=isatools.model.OntologySource(name=&#39;NCBITaxon&#39;, file=&#39;&#39;, version=&#39;&#39;, description=&#39;NCBI Taxonomy&#39;, comments=[]), term_accession=&#39;http://purl.bioontology.org/ontology/NCBITAXON/9606&#39;, comments=[]), unit=None, comments=[])], factor_values=[], derives_from=[isatools.model.Source(name=&#39;source_material&#39;, characteristics=[], comments=[])], comments=[])])], other_material=[], characteristic_categories=[], comments=[], units=[])], comments=[])
 </pre></div>
 </div>
 </div>
@@ -905,10 +1334,94 @@ graphs are NOT interconnected.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:40:39,664 [INFO]: isatab.py(validate:4206) &gt;&gt; Loading... ./notebook-output/isa-protocol-type-assay/i_investigation.txt
+2021-07-21 17:40:39,778 [INFO]: isatab.py(validate:4208) &gt;&gt; Running prechecks...
+2021-07-21 17:40:39,834 [WARNING]: isatab.py(check_doi:2176) &gt;&gt; (W) DOI 10.1038/sdata.2016.18 does not conform to DOI format
+2021-07-21 17:40:39,835 [INFO]: isatab.py(validate:4229) &gt;&gt; Finished prechecks...
+2021-07-21 17:40:39,836 [INFO]: isatab.py(validate:4230) &gt;&gt; Loading configurations found in /Users/philippe/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/resources/config/xml
+2021-07-21 17:40:39,857 [INFO]: isatab.py(validate:4235) &gt;&gt; Using configurations found in /Users/philippe/.pyenv/versions/3.9.0/envs/isa-api-py39/lib/python3.9/site-packages/isatools/resources/config/xml
+2021-07-21 17:40:39,857 [INFO]: isatab.py(validate:4237) &gt;&gt; Checking investigation file against configuration...
+2021-07-21 17:40:39,859 [WARNING]: isatab.py(check_section_against_required_fields_one_value:3363) &gt;&gt; (W) A property value in Study Person Mid Initials of investigation file at column 1 is required
+2021-07-21 17:40:39,860 [INFO]: isatab.py(validate:4240) &gt;&gt; Finished checking investigation file
+2021-07-21 17:40:39,860 [INFO]: isatab.py(validate:4259) &gt;&gt; Loading... s_study.txt
+2021-07-21 17:40:39,863 [INFO]: isatab.py(validate:4265) &gt;&gt; Validating s_study.txt against default study table configuration
+2021-07-21 17:40:39,864 [INFO]: isatab.py(validate:4267) &gt;&gt; Checking Factor Value presence...
+2021-07-21 17:40:39,864 [INFO]: isatab.py(validate:4270) &gt;&gt; Checking required fields...
+2021-07-21 17:40:39,865 [INFO]: isatab.py(validate:4273) &gt;&gt; Checking generic fields...
+2021-07-21 17:40:39,866 [INFO]: isatab.py(validate:4281) &gt;&gt; Checking unit fields...
+2021-07-21 17:40:39,866 [INFO]: isatab.py(validate:4288) &gt;&gt; Checking protocol fields...
+2021-07-21 17:40:39,867 [INFO]: isatab.py(validate:4298) &gt;&gt; Checking ontology fields...
+2021-07-21 17:40:39,868 [INFO]: isatab.py(validate:4308) &gt;&gt; Checking study group size...
+2021-07-21 17:40:39,868 [INFO]: isatab.py(validate:4312) &gt;&gt; Finished validation on s_study.txt
+2021-07-21 17:40:39,869 [INFO]: isatab.py(validate:4349) &gt;&gt; Loading... a_assay.txt
+2021-07-21 17:40:39,872 [INFO]: isatab.py(validate:4357) &gt;&gt; Validating a_assay.txt against assay table configuration (genome sequencing, nucleotide sequencing)...
+2021-07-21 17:40:39,872 [INFO]: isatab.py(validate:4363) &gt;&gt; Checking Factor Value presence...
+2021-07-21 17:40:39,873 [INFO]: isatab.py(validate:4367) &gt;&gt; Checking required fields...
+2021-07-21 17:40:39,873 [WARNING]: isatab.py(check_required_fields:3687) &gt;&gt; (W) Required field &#39;Assay Name&#39; not found in the file &#39;a_assay.txt&#39;
+2021-07-21 17:40:39,874 [INFO]: isatab.py(validate:4370) &gt;&gt; Checking generic fields...
+2021-07-21 17:40:39,875 [INFO]: isatab.py(validate:4381) &gt;&gt; Checking unit fields...
+2021-07-21 17:40:39,876 [INFO]: isatab.py(validate:4391) &gt;&gt; Checking protocol fields...
+2021-07-21 17:40:39,877 [WARNING]: isatab.py(check_protocol_fields:4018) &gt;&gt; (W) Protocol(s) of type [&#39;nucleic acid extraction&#39;] defined in the ISA-configuration expected as a between &#39;Sample Name&#39; and &#39;Extract Name&#39; but has not been found, in the file &#39;a_assay.txt&#39;
+2021-07-21 17:40:39,877 [WARNING]: isatab.py(check_protocol_fields:4018) &gt;&gt; (W) Protocol(s) of type [&#39;library construction&#39;, &#39;nucleic acid sequencing&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Raw Data File&#39; but has not been found, in the file &#39;a_assay.txt&#39;
+2021-07-21 17:40:39,878 [WARNING]: isatab.py(validate:4396) &gt;&gt; (W) There are some protocol inconsistencies in a_assay.txt against (&#39;genome sequencing&#39;, &#39;nucleotide sequencing&#39;) configuration
+2021-07-21 17:40:39,878 [INFO]: isatab.py(validate:4403) &gt;&gt; Checking ontology fields...
+2021-07-21 17:40:39,879 [INFO]: isatab.py(validate:4416) &gt;&gt; Checking study group size...
+2021-07-21 17:40:39,879 [INFO]: isatab.py(validate:4420) &gt;&gt; Finished validation on a_assay.txt
+2021-07-21 17:40:39,880 [INFO]: isatab.py(validate:4426) &gt;&gt; Checking consistencies between study sample table and assay tables...
+2021-07-21 17:40:39,880 [INFO]: isatab.py(validate:4431) &gt;&gt; Finished checking study sample table against assay tables...
+2021-07-21 17:40:39,881 [INFO]: isatab.py(validate:4349) &gt;&gt; Loading... a_assay_1.txt
+2021-07-21 17:40:39,884 [INFO]: isatab.py(validate:4357) &gt;&gt; Validating a_assay_1.txt against assay table configuration (genome sequencing, nucleotide sequencing)...
+2021-07-21 17:40:39,884 [INFO]: isatab.py(validate:4363) &gt;&gt; Checking Factor Value presence...
+2021-07-21 17:40:39,885 [INFO]: isatab.py(validate:4367) &gt;&gt; Checking required fields...
+2021-07-21 17:40:39,885 [INFO]: isatab.py(validate:4370) &gt;&gt; Checking generic fields...
+2021-07-21 17:40:39,887 [INFO]: isatab.py(validate:4381) &gt;&gt; Checking unit fields...
+2021-07-21 17:40:39,888 [INFO]: isatab.py(validate:4391) &gt;&gt; Checking protocol fields...
+2021-07-21 17:40:39,889 [WARNING]: isatab.py(check_protocol_fields:4018) &gt;&gt; (W) Protocol(s) of type [&#39;nucleic acid extraction&#39;] defined in the ISA-configuration expected as a between &#39;Sample Name&#39; and &#39;Extract Name&#39; but has not been found, in the file &#39;a_assay_1.txt&#39;
+2021-07-21 17:40:39,889 [WARNING]: isatab.py(check_protocol_fields:4018) &gt;&gt; (W) Protocol(s) of type [&#39;library construction&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Assay Name&#39; but has not been found, in the file &#39;a_assay_1.txt&#39;
+2021-07-21 17:40:39,890 [WARNING]: isatab.py(validate:4396) &gt;&gt; (W) There are some protocol inconsistencies in a_assay_1.txt against (&#39;genome sequencing&#39;, &#39;nucleotide sequencing&#39;) configuration
+2021-07-21 17:40:39,890 [INFO]: isatab.py(validate:4403) &gt;&gt; Checking ontology fields...
+2021-07-21 17:40:39,891 [INFO]: isatab.py(validate:4416) &gt;&gt; Checking study group size...
+2021-07-21 17:40:39,891 [INFO]: isatab.py(validate:4420) &gt;&gt; Finished validation on a_assay_1.txt
+2021-07-21 17:40:39,892 [INFO]: isatab.py(validate:4426) &gt;&gt; Checking consistencies between study sample table and assay tables...
+2021-07-21 17:40:39,892 [INFO]: isatab.py(validate:4431) &gt;&gt; Finished checking study sample table against assay tables...
+2021-07-21 17:40:39,893 [INFO]: isatab.py(validate:4349) &gt;&gt; Loading... a_assay_2.txt
+2021-07-21 17:40:39,896 [INFO]: isatab.py(validate:4357) &gt;&gt; Validating a_assay_2.txt against assay table configuration (transcription profiling, nucleotide sequencing)...
+2021-07-21 17:40:39,897 [INFO]: isatab.py(validate:4363) &gt;&gt; Checking Factor Value presence...
+2021-07-21 17:40:39,897 [INFO]: isatab.py(validate:4367) &gt;&gt; Checking required fields...
+2021-07-21 17:40:39,897 [WARNING]: isatab.py(check_required_fields:3687) &gt;&gt; (W) Required field &#39;Parameter Value[library layout]&#39; not found in the file &#39;a_assay_2.txt&#39;
+2021-07-21 17:40:39,898 [INFO]: isatab.py(validate:4370) &gt;&gt; Checking generic fields...
+2021-07-21 17:40:39,900 [INFO]: isatab.py(validate:4381) &gt;&gt; Checking unit fields...
+2021-07-21 17:40:39,901 [INFO]: isatab.py(validate:4391) &gt;&gt; Checking protocol fields...
+2021-07-21 17:40:39,902 [WARNING]: isatab.py(check_protocol_fields:4018) &gt;&gt; (W) Protocol(s) of type [&#39;library construction&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Assay Name&#39; but has not been found, in the file &#39;a_assay_2.txt&#39;
+2021-07-21 17:40:39,903 [WARNING]: isatab.py(validate:4396) &gt;&gt; (W) There are some protocol inconsistencies in a_assay_2.txt against (&#39;transcription profiling&#39;, &#39;nucleotide sequencing&#39;) configuration
+2021-07-21 17:40:39,903 [INFO]: isatab.py(validate:4403) &gt;&gt; Checking ontology fields...
+2021-07-21 17:40:39,904 [INFO]: isatab.py(validate:4416) &gt;&gt; Checking study group size...
+2021-07-21 17:40:39,904 [INFO]: isatab.py(validate:4420) &gt;&gt; Finished validation on a_assay_2.txt
+2021-07-21 17:40:39,905 [INFO]: isatab.py(validate:4426) &gt;&gt; Checking consistencies between study sample table and assay tables...
+2021-07-21 17:40:39,905 [INFO]: isatab.py(validate:4431) &gt;&gt; Finished checking study sample table against assay tables...
+2021-07-21 17:40:40,141 [INFO]: utils.py(detect_isatab_process_pooling:76) &gt;&gt; Checking s_study.txt
+2021-07-21 17:40:40,142 [INFO]: utils.py(detect_isatab_process_pooling:85) &gt;&gt; Checking a_assay.txt
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-07-21 17:40:40,142 [INFO]: utils.py(detect_isatab_process_pooling:85) &gt;&gt; Checking a_assay_1.txt
+2021-07-21 17:40:40,143 [INFO]: utils.py(detect_isatab_process_pooling:85) &gt;&gt; Checking a_assay_2.txt
+2021-07-21 17:40:40,143 [INFO]: utils.py(detect_graph_process_pooling:57) &gt;&gt; Possible process pooling detected on:  analysis
+2021-07-21 17:40:40,144 [INFO]: utils.py(detect_graph_process_pooling:57) &gt;&gt; Possible process pooling detected on:  analysis
+2021-07-21 17:40:40,145 [INFO]: utils.py(detect_graph_process_pooling:57) &gt;&gt; Possible process pooling detected on:  analysis
+2021-07-21 17:40:40,145 [INFO]: isatab.py(validate:4444) &gt;&gt; Finished validation...
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">my_json_report</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;errors&#39;: [], &#39;warnings&#39;: [{&#39;message&#39;: &#39;DOI is not valid format&#39;, &#39;supplemental&#39;: &#39;Found 10.1038/sdata.2016.18 in DOI field&#39;, &#39;code&#39;: 3002}, {&#39;message&#39;: &#39;A required property is missing&#39;, &#39;supplemental&#39;: &#39;A property value in Study Person Mid Initials of investigation file at column 1 is required&#39;, &#39;code&#39;: 4003}, {&#39;message&#39;: &#39;A required column in assay table is not present&#39;, &#39;supplemental&#39;: &quot;Required field &#39;Assay Name&#39; not found in the file &#39;a_assay.txt&#39;&quot;, &#39;code&#39;: 4010}, {&#39;message&#39;: &#39;Missing Protocol declaration&#39;, &#39;supplemental&#39;: &quot;Protocol(s) of type [&#39;nucleic acid extraction&#39;] defined in the ISA-configuration expected as a between &#39;Sample Name&#39; and &#39;Extract Name&#39; but has not been found, in the file &#39;a_assay.txt&#39;&quot;, &#39;code&#39;: 1007}, {&#39;message&#39;: &#39;Missing Protocol declaration&#39;, &#39;supplemental&#39;: &quot;Protocol(s) of type [&#39;library construction&#39;, &#39;nucleic acid sequencing&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Raw Data File&#39; but has not been found, in the file &#39;a_assay.txt&#39;&quot;, &#39;code&#39;: 1007}, {&#39;message&#39;: &#39;Missing Protocol declaration&#39;, &#39;supplemental&#39;: &quot;Protocol(s) of type [&#39;nucleic acid extraction&#39;] defined in the ISA-configuration expected as a between &#39;Sample Name&#39; and &#39;Extract Name&#39; but has not been found, in the file &#39;a_assay_1.txt&#39;&quot;, &#39;code&#39;: 1007}, {&#39;message&#39;: &#39;Missing Protocol declaration&#39;, &#39;supplemental&#39;: &quot;Protocol(s) of type [&#39;library construction&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Assay Name&#39; but has not been found, in the file &#39;a_assay_1.txt&#39;&quot;, &#39;code&#39;: 1007}, {&#39;message&#39;: &#39;A required column in assay table is not present&#39;, &#39;supplemental&#39;: &quot;Required field &#39;Parameter Value[library layout]&#39; not found in the file &#39;a_assay_2.txt&#39;&quot;, &#39;code&#39;: 4010}, {&#39;message&#39;: &#39;Missing Protocol declaration&#39;, &#39;supplemental&#39;: &quot;Protocol(s) of type [&#39;library construction&#39;] defined in the ISA-configuration expected as a between &#39;Extract Name&#39; and &#39;Assay Name&#39; but has not been found, in the file &#39;a_assay_2.txt&#39;&quot;, &#39;code&#39;: 1007}], &#39;info&#39;: [{&#39;message&#39;: &#39;Found -1 study groups in s_study.txt&#39;, &#39;supplemental&#39;: &#39;Found -1 study groups in s_study.txt&#39;, &#39;code&#39;: 5001}, {&#39;message&#39;: &#39;Found -1 study groups in a_assay.txt&#39;, &#39;supplemental&#39;: &#39;Found -1 study groups in a_assay.txt&#39;, &#39;code&#39;: 5001}, {&#39;message&#39;: &#39;Found -1 study groups in a_assay_1.txt&#39;, &#39;supplemental&#39;: &#39;Found -1 study groups in a_assay_1.txt&#39;, &#39;code&#39;: 5001}, {&#39;message&#39;: &#39;Found -1 study groups in a_assay_2.txt&#39;, &#39;supplemental&#39;: &#39;Found -1 study groups in a_assay_2.txt&#39;, &#39;code&#39;: 5001}], &#39;validation_finished&#39;: True}
 </pre></div>
 </div>
 </div>
