@@ -99,7 +99,7 @@ class ISALDSerializer:
 
     def _inject_ld_split(self, schema_name, output, instance, reference=False):
         """
-        Inject the LD properties at for the given instance or subinstance using separate context files
+        Inject the LD properties at for the given instance or sub-instance using separate context files
         :param schema_name: the name of the schema to get the properties from
         :param output: the output to add the properties to
         :param instance: the instance to get the values from
@@ -206,7 +206,7 @@ class ISALDSerializer:
         :param raw_name: the schema name
         :return: the corresponding context url
         """
-        context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/feature/isajson-context/isatools/" \
+        context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/" \
                       "resources/json-context/%s/isa_" % self.ontology
         filename = "_%s_context.jsonld" % self.ontology
         return context_url + "isa_" + raw_name.replace("_schema.json", filename)

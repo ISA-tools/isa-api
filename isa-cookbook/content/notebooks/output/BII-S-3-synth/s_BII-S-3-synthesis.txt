@@ -1,5 +1,0 @@
-Source Name	Characteristics[Organism]	Term Source REF	Term Accession Number	Protocol REF	Sample Name	Factor Value[compound]	Factor Value[dose]	Factor Value[collection time]
-GSM255770	marine metagenome	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_408172	environmental material collection - standard procedure 1	GSM255770	carbon dioxide	high	may 13th, 2006
-GSM255771	marine metagenome	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_408172	environmental material collection - standard procedure 1	GSM255771	carbon dioxide	normal	may 13th, 2006
-GSM255772	marine metagenome	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_408172	environmental material collection - standard procedure 1	GSM255772	carbon dioxide	high	may 19th, 2006
-GSM255773	marine metagenome	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_408172	environmental material collection - standard procedure 1	GSM255773	carbon dioxide	normal	may 19th, 2006

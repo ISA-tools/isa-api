@@ -36,6 +36,7 @@ class TestIsaJsonTestData(unittest.TestCase):
         test_case = 'BII-S-3'
         with open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')) as test_case_fp:
             report = isajson.validate(fp=test_case_fp, log_level=self._reporting_level)
+
             if len(report['errors']) > 0:
                 self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 

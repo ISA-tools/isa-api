@@ -7,7 +7,8 @@ from jsonschema import Draft4Validator
 
 class TestIsaJsonSchemas(unittest.TestCase):
 
-    def validateSchemasInFolder(self, folder):
+    @staticmethod
+    def validateSchemasInFolder(folder):
         path = os.path.abspath(folder)
         for schemaFile in glob.iglob(os.path.join(path, '*.json')):
             print("Validating schema ", os.path.basename(schemaFile), "...")
