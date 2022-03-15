@@ -8,8 +8,8 @@ class TestJson2JsonLD(unittest.TestCase):
 
     def setUp(self):
         self.test_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/json/BII-S-3/')
-        output_path = os.path.join(self.test_path, "BII-S-3-ld.json")
-        with open(output_path, 'r') as output_file:
+        self.output_path = os.path.join(self.test_path, "BII-S-3-ld.json")
+        with open(self.output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
 
         alternative_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-combined.jsonld")

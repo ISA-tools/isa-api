@@ -209,7 +209,7 @@ class ISALDSerializer:
         context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/" \
                       "resources/json-context/%s/isa_" % self.ontology
         filename = "_%s_context.jsonld" % self.ontology
-        return context_url + "isa_" + raw_name.replace("_schema.json", filename)
+        return context_url + raw_name.replace("_schema.json", filename)
 
     @staticmethod
     def _get_any_of_ref(input_val):
