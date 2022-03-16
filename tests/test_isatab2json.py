@@ -22,7 +22,7 @@ class TestIsaTab2Json(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
-
+        print(self._tmp_dir)
     # def tearDown(self):
     #     shutil.rmtree(self._tmp_dir)
 

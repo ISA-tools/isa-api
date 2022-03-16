@@ -1,6 +1,6 @@
 import unittest
 import os
-from json import load, dumps, dump
+from json import load, dump
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
@@ -12,9 +12,13 @@ class TestJson2JsonLD(unittest.TestCase):
         with open(self.output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
 
-        alternative_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-combined.jsonld")
-        with open(alternative_markup_path, 'r') as alternative_file:
-            self.alternative_expected_markup = load(alternative_file)
+        combined_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-combined-reference.jsonld")
+        with open(combined_markup_path, 'r') as combined_file:
+            self.combined_expected_markup = load(combined_file)
+
+        not_combined_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-remote-reference.jsonld")
+        with open(not_combined_markup_path, 'r') as not_combined_file:
+            self.not_combined_expected_markup = load(not_combined_file)
 
         instance_url = "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/tests/json/BII-S-3/BII-S-3-with@id.json"
         self.serializer = ISALDSerializer(instance_url)
@@ -43,6 +47,16 @@ class TestJson2JsonLD(unittest.TestCase):
         self.serializer.set_instance(
             "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/tests/json/BII-S-3/BII-S-3-with@id.json"
         )
-        # with open("./data/json/BII-S-3/BII-S-3-ld-isaterms-combined.jsonld", 'w') as out:
-        #     dump(self.serializer.output,  out, ensure_ascii=False, indent=4)
-        self.assertEqual(self.serializer.output, self.alternative_expected_markup)
+        with open("./data/json/BII-S-3/BII-S-3-ld-isaterms-combined-test.jsonld", 'w') as out:
+            dump(self.serializer.output,  out, ensure_ascii=False, indent=4)
+        self.assertEqual(self.serializer.output, self.combined_expected_markup)
+
+    def test_inject_remote_contexts(self):
+        self.serializer.set_ontology('isaterms')
+        self.serializer.set_contexts_method(False)
+        self.serializer.set_instance(
+            "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/tests/json/BII-S-3/BII-S-3-with@id.json"
+        )
+        with open("./data/json/BII-S-3/BII-S-3-ld-isaterms-remote-test.jsonld", 'w+') as out:
+            dump(self.serializer.output,  out, ensure_ascii=False, indent=4)
+        self.assertEqual(self.serializer.output, self.not_combined_expected_markup)

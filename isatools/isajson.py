@@ -1653,6 +1653,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_ontology_source(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "name": obj.name,
                     "description": obj.description,
                     "file": obj.file,
@@ -1682,6 +1683,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_person(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "address": obj.address,
                     "affiliation": obj.affiliation,
                     "comments": get_comments(obj.comments),
@@ -1701,6 +1703,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_publication(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "authorList": obj.author_list,
                     "doi": obj.doi,
                     "pubMedID": obj.pubmed_id,
@@ -1844,6 +1847,53 @@ class ISAJSONEncoder(JSONEncoder):
         def sqeezstr(s):
             return s.replace(' ', '').lower()
 
+        # def id_gen(obj):
+        #     if obj is not None:
+        #         o_id = getattr(obj, 'id', None)
+        #         if not o_id:
+        #             o_id = str(id(obj))
+        #         if isinstance(obj, Source):
+        #             return '#source/' + o_id
+        #         elif isinstance(obj, Sample):
+        #             return '#sample/' + o_id
+        #         elif isinstance(obj, Material):
+        #             if obj.type == 'Extract Name':
+        #                 return '#material/extract-' + o_id
+        #             elif obj.type == 'Labeled Extract Name':
+        #                 return '#material/labeledextract-' + o_id
+        #             else:
+        #                 raise TypeError("Could not resolve data type labeled: " + obj.type)
+        #         elif isinstance(obj, OntologySource):
+        #             return '#ontology/' + o_id
+        #         elif isinstance(obj, OntologyAnnotation):
+        #             return '#ontology_annotation/' + o_id
+        #         elif isinstance(obj, StudyFactor):
+        #             return '#studyfactor/' + o_id
+        #         elif isinstance(obj, FactorValue):
+        #             return '#factor_value/' + o_id
+        #         elif isinstance(obj, ParameterValue):
+        #             return '#parameter_value/' + o_id
+        #         elif isinstance(obj, ProtocolParameter):
+        #             return '#parameter/' + o_id
+        #         elif isinstance(obj, Protocol):
+        #             return '#protocol/' + o_id
+        #         elif isinstance(obj, Publication):
+        #             return '#publication/' + o_id
+        #         elif isinstance(obj, Person):
+        #             return '#person/' + o_id
+        #         elif isinstance(obj, Investigation):
+        #             return '#investigation/' + o_id
+        #         elif isinstance(obj, Study):
+        #             return '#study/' + o_id
+        #         elif isinstance(obj, DataFile):
+        #             return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
+        #         elif isinstance(obj, Process):
+        #             return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
+        #         else:
+        #             return '#' + o_id
+        #     else:
+        #         return None
+
         def id_gen(obj):
             """
             generates a unique node identifier for the given ISA object based on object type and identifier
@@ -1853,7 +1903,7 @@ class ISAJSONEncoder(JSONEncoder):
 
                 # regex convert CamelCase to snake_case
                 name = re.sub(r'(?<!^)(?=[A-Z])', '_', type(obj).__name__).lower()
-                name = name.replace("_file", "") if "data_file" in name else name
+                name.replace("_file", "") if "data_file" in name else name
                 if not o_id:
                     o_id = str(id(obj))
 
@@ -1898,6 +1948,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_study(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "filename": obj.filename,
                     "identifier": obj.identifier,
                     "title": obj.title,
@@ -1937,6 +1988,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_assay(obj):
             return clean_nulls(
                 {
+                    "@id": id_gen(obj),
                     "measurementType": get_ontology_annotation(obj.measurement_type),
                     "technologyType": get_ontology_annotation(obj.technology_type),
                     "technologyPlatform": obj.technology_platform,
@@ -1966,6 +2018,7 @@ class ISAJSONEncoder(JSONEncoder):
         if isinstance(o, Investigation):
             return clean_nulls(
                 {
+                    "@id": id_gen(o),
                     "identifier": o.identifier,
                     "title": o.title,
                     "description": o.description,
