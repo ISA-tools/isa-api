@@ -1847,7 +1847,6 @@ class ISAJSONEncoder(JSONEncoder):
         def sqeezstr(s):
             return s.replace(' ', '').lower()
 
-
         def id_gen(obj):
             """
             generates a unique node identifier for the given ISA object based on object type and identifier
@@ -1857,7 +1856,7 @@ class ISAJSONEncoder(JSONEncoder):
 
                 # regex convert CamelCase to snake_case
                 name = re.sub(r'(?<!^)(?=[A-Z])', '_', type(obj).__name__).lower()
-                name.replace("_file", "") if "data_file" in name else name
+                name = name.replace("_file", "") if "data_file" in name else name
                 if not o_id:
                     o_id = str(id(obj))
 
