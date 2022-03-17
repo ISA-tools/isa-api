@@ -21,23 +21,24 @@ class TestJson2JsonLD(unittest.TestCase):
             self.not_combined_expected_markup = load(not_combined_file)
 
         instance_url = "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/tests/json/BII-S-3/BII-S-3-with@id.json"
-        self.serializer = ISALDSerializer(instance_url)
+        self.serializer = ISALDSerializer(instance_url, ontology="obo", combined=False)
 
     def test_BII_s_3_convert_remote(self):
         self.assertEqual(self.serializer.output, self.expected_markup)
 
     def test_BII_s_3_convert_local(self):
         instance_path = os.path.join(self.test_path, "BII-S-3-with@id.json")
-        with open(instance_path, 'r') as instance_file:
-            instance = load(instance_file)
-            instance_file.close()
+        # with open(instance_path, 'r') as instance_file:
+        #     instance = load(instance_file)
+        #     instance_file.close()
         self.serializer.set_ontology("obo")
-        self.serializer.set_instance(instance)
+        self.serializer.set_contexts_method(False)
+        self.serializer.set_instance(instance_path)
         self.assertEqual(self.serializer.output, self.expected_markup)
 
     def test_singleton(self):
         instance_url = "https://raw.githubusercontent.com/ISA-tools/ISAdatasets/tests/json/BII-S-3/BII-S-3-with@id.json"
-        serializer = ISALDSerializer(instance_url)
+        serializer = ISALDSerializer(instance_url, ontology="obo", combined=True)
         self.assertTrue(self.serializer is serializer)
         self.assertTrue(id(self.serializer) == id(serializer))
 

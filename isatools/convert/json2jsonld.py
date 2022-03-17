@@ -9,7 +9,7 @@ class ISALDSerializer:
 
     _instance = None
 
-    def __init__(self, json_instance, ontology="obo", combined=False):
+    def __init__(self, json_instance, ontology, combined):
         """
         Given an instance url, serializes it into a JSON-LD. You can find the output of the serializer in self.output.
         This is a soft singleton.
@@ -28,7 +28,7 @@ class ISALDSerializer:
         self._resolve_network()
         self.set_instance(json_instance)
 
-    def __new__(cls, json_instance, ontology="obo"):
+    def __new__(cls, json_instance, ontology="obo", combined=True):
         if cls._instance is None:
             cls._instance = super(ISALDSerializer, cls).__new__(cls)
         return cls._instance
@@ -72,6 +72,9 @@ class ISALDSerializer:
         self.instance = instance
         if isinstance(instance, str) and (instance.startswith('http://') or instance.startswith('https://')):
             self.instance = json.loads(get(instance).text)
+        else:
+            with open(instance) as input:
+                self.instance = json.load(input)
         self.output = self._inject_ld(self.main_schema, {}, self.instance)
 
     def set_ontology(self, ontology):
@@ -115,6 +118,7 @@ class ISALDSerializer:
             context_key = schema_name.replace("_schema.json", "").replace("#", "")
             output["@context"] = self._get_context_url(reference)
         output["@type"] = context_key
+
         for field in instance:
             if field in props:
                 field_props = props[field]

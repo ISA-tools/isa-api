@@ -1847,52 +1847,6 @@ class ISAJSONEncoder(JSONEncoder):
         def sqeezstr(s):
             return s.replace(' ', '').lower()
 
-        # def id_gen(obj):
-        #     if obj is not None:
-        #         o_id = getattr(obj, 'id', None)
-        #         if not o_id:
-        #             o_id = str(id(obj))
-        #         if isinstance(obj, Source):
-        #             return '#source/' + o_id
-        #         elif isinstance(obj, Sample):
-        #             return '#sample/' + o_id
-        #         elif isinstance(obj, Material):
-        #             if obj.type == 'Extract Name':
-        #                 return '#material/extract-' + o_id
-        #             elif obj.type == 'Labeled Extract Name':
-        #                 return '#material/labeledextract-' + o_id
-        #             else:
-        #                 raise TypeError("Could not resolve data type labeled: " + obj.type)
-        #         elif isinstance(obj, OntologySource):
-        #             return '#ontology/' + o_id
-        #         elif isinstance(obj, OntologyAnnotation):
-        #             return '#ontology_annotation/' + o_id
-        #         elif isinstance(obj, StudyFactor):
-        #             return '#studyfactor/' + o_id
-        #         elif isinstance(obj, FactorValue):
-        #             return '#factor_value/' + o_id
-        #         elif isinstance(obj, ParameterValue):
-        #             return '#parameter_value/' + o_id
-        #         elif isinstance(obj, ProtocolParameter):
-        #             return '#parameter/' + o_id
-        #         elif isinstance(obj, Protocol):
-        #             return '#protocol/' + o_id
-        #         elif isinstance(obj, Publication):
-        #             return '#publication/' + o_id
-        #         elif isinstance(obj, Person):
-        #             return '#person/' + o_id
-        #         elif isinstance(obj, Investigation):
-        #             return '#investigation/' + o_id
-        #         elif isinstance(obj, Study):
-        #             return '#study/' + o_id
-        #         elif isinstance(obj, DataFile):
-        #             return '#data/{}-'.format(sqeezstr(obj.label)) + o_id
-        #         elif isinstance(obj, Process):
-        #             return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
-        #         else:
-        #             return '#' + o_id
-        #     else:
-        #         return None
 
         def id_gen(obj):
             """
