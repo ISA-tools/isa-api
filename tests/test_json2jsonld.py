@@ -12,7 +12,7 @@ class TestJson2JsonLD(unittest.TestCase):
         with open(output_path, 'r') as output_file:
             self.expected_markup = load(output_file)
 
-        alternative_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-combined.jsonld")
+        alternative_markup_path = os.path.join(self.test_path, "BII-S-3-ld-isaterms-combined-test.jsonld")
         with open(alternative_markup_path, 'r') as alternative_file:
             self.alternative_expected_markup = load(alternative_file)
 
