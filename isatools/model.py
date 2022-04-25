@@ -1613,11 +1613,20 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             assay.shuffle_materials('Extract Name')
             assay.shuffle_materials('Labeled Extract Name')
         """
+
+        def find(predictor, iterable):
+            it = 0
+            for element in iterable:
+                if predictor(element):
+                    return element, it
+                it += 1
+            return None, it
+
         ontology_mapping = {
             'samples': 'extraction',
             'sources': 'sampling',
             'Extract Name': None,
-            'Labeled Extract Name': ' data acquisition '
+            'Labeled Extract Name': 'data acquisition'
         }
 
         if attribute not in ontology_mapping:
@@ -1625,7 +1634,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             raise ValueError(error)
 
         if attribute == 'samples' or attribute == 'sources':
-            target_material = getattr(self, attribute)
+            target_material = [x for x in getattr(self, attribute)]
         else:
             target_material = [x for x in getattr(self, 'other_material') if getattr(x, 'type') == attribute]
 
@@ -1637,7 +1646,11 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 ontology_term = 'randomized %s order' % ontology_mapping[attribute]
             ontology_annotation = OntologyAnnotation(term=ontology_term)
             characteristic = Characteristic(category=ontology_annotation, value=mat_index)
-            mat.characteristics.append(characteristic)
+            char, char_index = find(lambda x: x.category.term == ontology_term, mat.characteristics)
+            if not char:
+                mat.characteristics.append(characteristic)
+            else:
+                mat.characteristics[char_index] = characteristic
             mat_index += 1
 
 

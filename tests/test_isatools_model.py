@@ -488,13 +488,27 @@ class StudyTest(unittest.TestCase):
         self.study.shuffle_materials('Extract Name')
         self.assertNotEqual(self.study.other_material, original_input)
 
-
     def test_shuffle_error(self):
         with self.assertRaises(ValueError) as context:
             self.study.shuffle_materials('foo')
             self.assertTrue('foo should be in samples, sources, Extract Name, Labeled Extract Name'
                             in context.exception)
-        self.study.shuffle_assays(['samples', 'Extract Name'])
+
+    def test_shuffle_with_existing_randomized(self):
+        ontology_annotation = OntologyAnnotation(term='randomized extraction order')
+        samples = [
+            Sample(name="Sample1", characteristics=[Characteristic(category=ontology_annotation, value='abc')]),
+            Sample(name="Sample2"),
+            Sample(name="Sample3"),
+            Sample(name="Sample4"),
+            Sample(name="Sample5"),
+            Sample(name="Sample6", characteristics=[Characteristic(category=ontology_annotation, value='def')]),
+            Sample(name="Sample7")
+        ]
+        original_input = deepcopy(samples)
+        self.study.samples = samples
+        self.study.shuffle_materials('samples')
+        self.assertNotEqual(original_input, self.study.samples)
 
 
 class StudyFactorTest(unittest.TestCase):
