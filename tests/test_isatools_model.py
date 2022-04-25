@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import datetime
 import unittest
 from unittest.mock import patch
+from copy import deepcopy
+
 
 from isatools.model import (
     Comment, Investigation, OntologySource, OntologyAnnotation, Publication, Person, Study, StudyFactor, Characteristic,
@@ -457,22 +459,35 @@ class StudyTest(unittest.TestCase):
         samples = [
             Sample(name="Sample1"),
             Sample(name="Sample2"),
-            Sample(name="Sample3")
+            Sample(name="Sample3"),
+            Sample(name="Sample4"),
+            Sample(name="Sample5"),
+            Sample(name="Sample6"),
+            Sample(name="Sample7")
         ]
+        original_input = deepcopy(samples)
         self.study.samples = samples
         self.study.shuffle_materials('samples')
-        self.assertNotEqual(samples, self.study.samples)
+        self.assertNotEqual(original_input, self.study.samples)
 
     def test_shuffle_other_material(self):
         other_materials = [
             Material(name="Material1", type_="Extract Name"),
             Material(name="Material2", type_="Extract Name"),
-            Material(name="Material3", type_="Labeled Extract Name"),
-            Material(name="Material4", type_="Labeled Extract Name"),
+            Material(name="Material3", type_="Extract Name"),
+            Material(name="Material4", type_="Extract Name"),
+            Material(name="Material5", type_="Extract Name"),
+            Material(name="Material6", type_="Labeled Extract Name"),
+            Material(name="Material7", type_="Labeled Extract Name"),
+            Material(name="Material8", type_="Labeled Extract Name"),
+            Material(name="Material9", type_="Labeled Extract Name"),
+            Material(name="Material10", type_="Labeled Extract Name"),
         ]
+        original_input = deepcopy(other_materials)
         self.study.other_material = other_materials
         self.study.shuffle_materials('Extract Name')
-        self.assertNotEqual(self.study.other_material, other_materials)
+        self.assertNotEqual(self.study.other_material, original_input)
+
 
     def test_shuffle_error(self):
         with self.assertRaises(ValueError) as context:

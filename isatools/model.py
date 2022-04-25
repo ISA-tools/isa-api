@@ -1614,9 +1614,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             assay.shuffle_materials('Labeled Extract Name')
         """
         ontology_mapping = {
-            'samples': ' extraction ',
-            'sources': ' sampling ',
-            'Extract Name': '',
+            'samples': 'extraction',
+            'sources': 'sampling',
+            'Extract Name': None,
             'Labeled Extract Name': ' data acquisition '
         }
 
@@ -1632,7 +1632,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
         shuffle(target_material)
         mat_index = 0
         for mat in target_material:
-            ontology_term = 'randomized%sorder' % ontology_mapping[attribute]
+            ontology_term = 'randomized order'
+            if ontology_mapping[attribute]:
+                ontology_term = 'randomized %s order' % ontology_mapping[attribute]
             ontology_annotation = OntologyAnnotation(term=ontology_term)
             characteristic = Characteristic(category=ontology_annotation, value=mat_index)
             mat.characteristics.append(characteristic)
