@@ -10,7 +10,7 @@ from isatools.model import (
     FactorValue, DataFile, RawDataFile, DerivedDataFile, RawSpectralDataFile, ArrayDataFile, DerivedSpectralDataFile,
     ProteinAssignmentFile, PeptideAssignmentFile, DerivedArrayDataMatrixFile,
     PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile, FreeInductionDecayDataFile,
-    load_protocol_types_info
+    load_protocol_types_info, Material
 )
 
 
@@ -452,6 +452,34 @@ class StudyTest(unittest.TestCase):
             characteristic_categories=[], comments=[], units=[])
         self.assertNotEqual(expected_other_study, self.study)
         self.assertNotEqual(hash(expected_other_study), hash(self.study))
+
+    def test_shuffle_samples(self):
+        samples = [
+            Sample(name="Sample1"),
+            Sample(name="Sample2"),
+            Sample(name="Sample3")
+        ]
+        self.study.samples = samples
+        self.study.shuffle_materials('samples')
+        self.assertNotEqual(samples, self.study.samples)
+
+    def test_shuffle_other_material(self):
+        other_materials = [
+            Material(name="Material1", type_="Extract Name"),
+            Material(name="Material2", type_="Extract Name"),
+            Material(name="Material3", type_="Labeled Extract Name"),
+            Material(name="Material4", type_="Labeled Extract Name"),
+        ]
+        self.study.other_material = other_materials
+        self.study.shuffle_materials('Extract Name')
+        self.assertNotEqual(self.study.other_material, other_materials)
+
+    def test_shuffle_error(self):
+        with self.assertRaises(ValueError) as context:
+            self.study.shuffle_materials('foo')
+            self.assertTrue('foo should be in samples, sources, Extract Name, Labeled Extract Name'
+                            in context.exception)
+        self.study.shuffle_assays(['samples', 'Extract Name'])
 
 
 class StudyFactorTest(unittest.TestCase):

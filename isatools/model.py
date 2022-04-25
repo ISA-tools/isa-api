@@ -20,7 +20,10 @@ import warnings
 import uuid
 from numbers import Number
 from collections.abc import Iterable
+from random import shuffle
 import pprint
+from typing import List
+
 import networkx as nx
 import yaml
 from isatools.graphQL.models import IsaSchema
@@ -1600,6 +1603,41 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
         raise AttributeError('{}.graph is not settable'
                              .format(type(self).__name__))
 
+    def shuffle_materials(self, attribute):
+        """
+        Shuffles the samples in the Study or Assay
+
+        :param attribute: The attribute to shuffle
+        :example:
+            study.shuffle_materials('samples')
+            assay.shuffle_materials('Extract Name')
+            assay.shuffle_materials('Labeled Extract Name')
+        """
+        ontology_mapping = {
+            'samples': ' extraction ',
+            'sources': ' sampling ',
+            'Extract Name': '',
+            'Labeled Extract Name': ' data acquisition '
+        }
+
+        if attribute not in ontology_mapping:
+            error = '%s should be in %s' % (attribute, ', '.join(list(ontology_mapping.keys())))
+            raise ValueError(error)
+
+        if attribute == 'samples' or attribute == 'sources':
+            target_material = getattr(self, attribute)
+        else:
+            target_material = [x for x in getattr(self, 'other_material') if getattr(x, 'type') == attribute]
+
+        shuffle(target_material)
+        mat_index = 0
+        for mat in target_material:
+            ontology_term = 'randomized%sorder' % ontology_mapping[attribute]
+            ontology_annotation = OntologyAnnotation(term=ontology_term)
+            characteristic = Characteristic(category=ontology_annotation, value=mat_index)
+            mat.characteristics.append(characteristic)
+            mat_index += 1
+
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     """Study is the central unit, containing information on the subject under
@@ -1923,6 +1961,15 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def __ne__(self, other):
         return not self == other
+
+    def shuffle_assays(self, targets: List) -> None:
+        """
+        Given a material type, provides a randomisation order for the materials of that type in each assay
+        :param targets: a list of material types
+        """
+        for assay in self.assays:
+            for target in targets:
+                assay.shuffle_materials(target)
 
 
 class StudyFactor(Commentable):
