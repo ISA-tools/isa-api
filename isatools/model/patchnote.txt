@@ -1,0 +1,3 @@
+Full refactor:
+1. Dropped the Commentable get_comments() method.
+2. Fixed OntologyAnnotation __str__() method.

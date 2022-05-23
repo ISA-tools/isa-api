@@ -1,0 +1,203 @@
+from __future__ import annotations
+from typing import List, Any
+from uuid import uuid4
+from isatools.model.comments import Commentable, Comment
+
+
+class OntologySource(Commentable):
+    """An OntologySource describes the resource from which the value of an
+    OntologyAnnotation is derived from.
+
+    Attributes:
+        name: The name of the source of a term; i.e. the source controlled
+            vocabulary or ontology.
+        file: A file name or a URI of an official resource.
+        version: The version number of the Term Source to support terms
+            tracking.
+        description: A free text description of the resource.
+        comments: Comments associated with instances of this class.
+    """
+
+    def __init__(self, name, file='', version='', description='', comments=None):
+        super().__init__(comments)
+
+        self.__name = name
+        self.__file = file
+        self.__version = version
+        self.__description = description
+
+    @property
+    def name(self):
+        """:obj:`str`: name of the ontology source"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise AttributeError('OntologySource.name must be a str; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def file(self):
+        """:obj:`str`: file of the ontology source"""
+        return self.__file
+
+    @file.setter
+    def file(self, val):
+        if not isinstance(val, str):
+            raise AttributeError('OntologySource.file must be a str; got {0}:{1}'.format(val, type(val)))
+        self.__file = val
+
+    @property
+    def version(self):
+        """:obj:`str`: version of the ontology source"""
+        return self.__version
+
+    @version.setter
+    def version(self, val):
+        if not isinstance(val, str):
+            raise AttributeError('OntologySource.version must be a str; got {0}:{1}'.format(val, type(val)))
+        self.__version = val
+
+    @property
+    def description(self):
+        """:obj:`str`: description of the ontology source"""
+        return self.__description
+
+    @description.setter
+    def description(self, val):
+        if not isinstance(val, str):
+            raise AttributeError('OntologySource.description must be a str; got {0}:{1}'.format(val, type(val)))
+        self.__description = val
+
+    def __repr__(self):
+        return ("isatools.model.OntologySource(name='{ontology_source.name}', "
+                "file='{ontology_source.file}', "
+                "version='{ontology_source.version}', "
+                "description='{ontology_source.description}', "
+                "comments={ontology_source.comments})").format(ontology_source=self)
+
+    def __str__(self):
+        return ("OntologySource(\n\t"
+                "name={ontology_source.name}\n\t"
+                "file={ontology_source.file}\n\t"
+                "version={ontology_source.version}\n\t"
+                "description={ontology_source.description}\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(ontology_source=self, num_comments=len(self.comments))
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, OntologySource) \
+               and self.name == other.name \
+               and self.file == other.file \
+               and self.version == other.version \
+               and self.description == other.description \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
+
+
+class OntologyAnnotation(Commentable):
+    """An ontology annotation
+
+    Attributes:
+        term : A term taken from an ontology or controlled vocabulary.
+        term_source : Reference to the OntologySource from which the term is
+            derived.
+        term_accession : A URI or resource-specific identifier for the term.
+        comments: Comments associated with instances of this class.
+    """
+
+    def __init__(self,
+                 term: str = '',
+                 term_source=None,
+                 term_accession: str = '',
+                 comments: List[Comment] = None,
+                 id_=None):
+        super().__init__(comments)
+
+        self.__term = term
+        self.__term_source = term_source
+        self.__term_accession = term_accession
+        self.id = str(uuid4()) if not id_ else id_
+
+    @property
+    def term(self) -> str:
+        """:obj:`str`: the ontology annotation name used"""
+        return self.__term
+
+    @term.setter
+    def term(self, val: str):
+        if val is not None and not isinstance(val, str):
+            raise AttributeError('OntologyAnnotation.term must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__term = val
+
+    @property
+    def term_source(self) -> OntologySource:
+        """:obj:`OntologySource: a reference to the ontology source the term is
+        taken from"""
+        return self.__term_source
+
+    @term_source.setter
+    def term_source(self, val: OntologySource):
+        if val is not None and not isinstance(val, OntologySource):
+            raise AttributeError('OntologyAnnotation.term_source must be a OntologySource or '
+                                 'None; got {0}:{1}'.format(val, type(val)))
+        self.__term_source = val
+
+    @property
+    def term_accession(self) -> str:
+        """:obj:`str`: the term accession number of reference of the term"""
+        return self.__term_accession
+
+    @term_accession.setter
+    def term_accession(self, val: str):
+        if val is not None and not isinstance(val, str):
+            raise AttributeError('OntologyAnnotation.term_accession must be a str or None')
+        self.__term_accession = val
+
+    def __repr__(self):
+        return ("isatools.model.OntologyAnnotation("
+                "term='{ontology_annotation.term}', "
+                "term_source={term_source}, "
+                "term_accession='{ontology_annotation.term_accession}', "
+                "comments={ontology_annotation.comments})"
+                ).format(ontology_annotation=self, term_source=repr(self.term_source))
+
+    def __str__(self):
+        if not self.term_source == str and isinstance(self.term_source, OntologySource):
+            return ("OntologyAnnotation(\n\t"
+                    "term={ontology_annotation.term}\n\t"
+                    "term_source={term_source_ref}\n\t"
+                    "term_accession={ontology_annotation.term_accession}\n\t"
+                    "comments={num_comments} Comment objects\n)"
+                    ).format(ontology_annotation=self,
+                             term_source_ref=self.term_source.name,
+                             num_comments=len(self.comments))
+        else:
+            return ("OntologyAnnotation(\n\t"
+                    "term={ontology_annotation.term}\n\t"
+                    "term_source={term_source_ref}\n\t"
+                    "term_accession={ontology_annotation.term_accession}\n\t"
+                    "comments={num_comments} Comment objects\n)"
+                    ).format(ontology_annotation=self,
+                             term_source_ref=self.term_source,
+                             num_comments=len(self.comments))
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other: Any) -> bool:
+        return (isinstance(other, OntologyAnnotation)
+                and self.term == other.term
+                and self.term_source == other.term_source
+                and self.term_accession == other.term_accession
+                and self.comments == other.comments)
+
+    def __ne__(self, other: Any) -> bool:
+        return not self == other
