@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from isatools.model import ProtocolParameter, OntologyAnnotation
+from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
 protocol_parameter = ProtocolParameter()
