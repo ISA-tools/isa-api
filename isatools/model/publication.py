@@ -35,11 +35,8 @@ class Publication(Commentable):
     @pubmed_id.setter
     def pubmed_id(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Publication.pubmed_id must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__pubmed_id = val
+            raise AttributeError('Publication.pubmed_id must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__pubmed_id = val
 
     @property
     def doi(self):
@@ -49,11 +46,8 @@ class Publication(Commentable):
     @doi.setter
     def doi(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Publication.doi must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__doi = val
+            raise AttributeError('Publication.doi must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__doi = val
 
     @property
     def author_list(self):
@@ -63,11 +57,8 @@ class Publication(Commentable):
     @author_list.setter
     def author_list(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Publication.author_list must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__author_list = val
+            raise AttributeError('Publication.author_list must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__author_list = val
 
     @property
     def title(self):
@@ -77,11 +68,8 @@ class Publication(Commentable):
     @title.setter
     def title(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Publication.title must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__title = val
+            raise AttributeError('Publication.title must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__title = val
 
     @property
     def status(self):
@@ -92,32 +80,30 @@ class Publication(Commentable):
     @status.setter
     def status(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError(
-                'Publication.status must be a OntologyAnnotation or '
-                'None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__status = val
+            raise AttributeError('Publication.status must be a OntologyAnnotation or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__status = val
 
     def __repr__(self):
-        return "isatools.model.Publication(" \
-               "pubmed_id='{publication.pubmed_id}', " \
-               "doi='{publication.doi}', " \
-               "author_list='{publication.author_list}', " \
-               "title='{publication.title}', status={status}, " \
-               "comments={publication.comments})".format(
-            publication=self, status=repr(self.status))
+        return ("isatools.model.Publication("
+                "pubmed_id='{publication.pubmed_id}', "
+                "doi='{publication.doi}', "
+                "author_list='{publication.author_list}', "
+                "title='{publication.title}', status={status}, "
+                "comments={publication.comments})"
+                ).format(publication=self, status=repr(self.status))
 
     def __str__(self):
-        return """Publication(
-    pubmed_id={publication.pubmed_id}
-    doi={publication.doi}
-    author_list={publication.author_list}
-    title={publication.title}
-    status={status}
-    comments={num_comments} Comment objects
-)""".format(publication=self,
-            status=self.status.term if self.status else '',
-            num_comments=len(self.comments))
+        return ("Publication(\n\t"
+                "pubmed_id={publication.pubmed_id}\n\t"
+                "doi={publication.doi}\n\t"
+                "author_list={publication.author_list}\n\t"
+                "title={publication.title}\n\t"
+                "status={status}\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(publication=self,
+                         status=self.status.term if self.status else '',
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
