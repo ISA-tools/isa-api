@@ -1,5 +1,5 @@
 from isatools.model.comments import Commentable
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
 class FactorValue(Commentable):

@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from isatools.model.assay import Assay
 from isatools.model.comments import Commentable
 from isatools.model.mixins import StudyAssayMixin, MetadataMixin
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol import Protocol, ProtocolParameter
 from isatools.model.factor_value import StudyFactor
 from isatools.model.logger import log

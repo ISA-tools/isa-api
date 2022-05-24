@@ -2,7 +2,7 @@ import os
 
 from isatools.model.comments import Commentable
 from isatools.model.mixins import MetadataMixin
-from isatools.model.ontologies import OntologySource
+from isatools.model.ontology_annotation import OntologySource
 from isatools.model.study import Study
 from isatools.graphQL.models import IsaSchema
 
@@ -171,7 +171,7 @@ class Investigation(Commentable, MetadataMixin, object):
         :return: a response to the introspection query
         """
         project_root = os.path.dirname(os.path.realpath(__file__))
-        filepath = os.path.join(project_root, os.path.join("graphQL/queries", "introspection.gql"))
+        filepath = os.path.join(project_root, os.path.join("../graphQL/queries", "introspection.gql"))
         with open(filepath, "r") as introspectionFile:
             introspection_query = introspectionFile.read()
             introspectionFile.close()

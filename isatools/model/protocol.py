@@ -3,7 +3,7 @@ from collections.abc import Iterable
 import pprint
 import yaml
 from isatools.model.comments import Commentable
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.logger import log
 
 
@@ -25,8 +25,14 @@ class Protocol(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', name='', protocol_type=None, uri='',
-                 description='', version='', parameters=None, components=None,
+    def __init__(self, id_='',
+                 name='',
+                 protocol_type=None,
+                 uri='',
+                 description='',
+                 version='',
+                 parameters=None,
+                 components=None,
                  comments=None):
         super().__init__(comments)
 

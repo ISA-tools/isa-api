@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from isatools.model.comments import Commentable, Comment
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
 class Characteristic(Commentable):

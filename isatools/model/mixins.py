@@ -7,7 +7,7 @@ import networkx as nx
 from isatools.model.publication import Publication
 from isatools.model.person import Person
 from isatools.model.source import Source
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.sample import Sample
 from isatools.model.characteristic import Characteristic
 from isatools.model.datafile import DataFile

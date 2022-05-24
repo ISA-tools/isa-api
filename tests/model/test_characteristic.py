@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from isatools.model.characteristic import Characteristic
-from isatools.model.ontologies import OntologyAnnotation
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
 class TestCharacteristic(TestCase):
