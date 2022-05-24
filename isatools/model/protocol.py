@@ -1,10 +1,10 @@
 import os
 from collections.abc import Iterable
-import pprint
-import yaml
+from pprint import pprint
+from yaml import load, FullLoader
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
-from isatools.model.logger import log
+from isatools.model.protocol_parameter import ProtocolParameter
 
 
 class Protocol(Commentable):
@@ -25,12 +25,13 @@ class Protocol(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='',
+    def __init__(self,
+                 id_='',
                  name='',
-                 protocol_type=None,
                  uri='',
                  description='',
                  version='',
+                 protocol_type=None,
                  parameters=None,
                  components=None,
                  comments=None):
@@ -42,10 +43,7 @@ class Protocol(Commentable):
         self.__parameters = None
         self.__components = None
 
-        if protocol_type is None:
-            self.protocol_type = OntologyAnnotation()
-        else:
-            self.protocol_type = protocol_type
+        self.protocol_type = protocol_type
 
         self.__description = description
         self.__uri = uri
@@ -54,11 +52,13 @@ class Protocol(Commentable):
         self.__parameters = []
         self.__components = []
 
-        if parameters is not None:
-            self.parameters = parameters
+        if parameters is None:
+            parameters = []
+        self.parameters = parameters
 
-        if components is not None:
-            self.components = components
+        if components is None:
+            components = []
+        self.components = components
 
     @staticmethod
     def show_allowed_protocol_types():
@@ -67,7 +67,7 @@ class Protocol(Commentable):
         XML validations) for Protocol Types
         """
         protocol_types_dict = load_protocol_types_info()
-        pprint.pprint(protocol_types_dict)
+        pprint(protocol_types_dict)
 
     @property
     def name(self):
@@ -80,8 +80,7 @@ class Protocol(Commentable):
             raise AttributeError(
                 'Protocol.name must be a str or None; got {0}:{1}'
                     .format(val, type(val)))
-        else:
-            self.__name = val
+        self.__name = val
 
     @property
     def protocol_type(self):
@@ -92,10 +91,11 @@ class Protocol(Commentable):
     @protocol_type.setter
     def protocol_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise AttributeError(
-                'Protocol.protocol_type must be a OntologyAnnotation, a string or '
-                'None; got {0}:{1}'.format(val, type(val)))
-        if isinstance(val, str):
+            raise AttributeError('Protocol.protocol_type must be a OntologyAnnotation, a string or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        elif isinstance(val, str) or val is None:
+            if val is None:
+                val = ''
             self.__protocol_type = OntologyAnnotation(term=val)
         else:
             self.__protocol_type = val
@@ -151,8 +151,7 @@ class Protocol(Commentable):
     @parameters.setter
     def parameters(self, val):
         if val is None or not isinstance(val, Iterable):
-            raise AttributeError('Protocol.parameters must be an iterable '
-                                 'containing ProtocolParameters')
+            raise AttributeError('Protocol.parameters must be an iterable containing ProtocolParameters')
         for el in val:
             self.add_param(el)
 
@@ -169,15 +168,20 @@ class Protocol(Commentable):
                 raise AttributeError('Parameter name must be either a string or a ProtocolParameter')
 
     def get_param(self, parameter_name):
+        ''' not a DOCTSTRING
+            try:
+               param = next(x for x in self.parameters if
+                            x.parameter_name.term == parameter_name)
+           except StopIteration:
+               pass
+           except AttributeError:
+               log.error('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
+        '''
         param = None
         try:
-            param = next(x for x in self.parameters if
-                         x.parameter_name.term == parameter_name)
-        except StopIteration:
+            param = self.parameters[[param.parameter_name.term for param in self.parameters].index(parameter_name)]
+        except ValueError:
             pass
-        except AttributeError:
-            log.error('Error caught: parameters: {0} - parameter_name: {1}'.format(self.parameters, parameter_name))
-            # raise AttributeError(e)
         return param
 
     @property
@@ -189,37 +193,34 @@ class Protocol(Commentable):
     @components.setter
     def components(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation)
-                                for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__components = list(val)
         else:
-            raise AttributeError(
-                'Protocol.components must be iterable containing '
-                'OntologyAnnotations')
+            raise AttributeError('Protocol.components must be iterable containing OntologyAnnotations')
 
     def __repr__(self):
-        return "isatools.model.Protocol(name='{protocol.name}', " \
-               "protocol_type={protocol_type}, " \
-               "uri='{protocol.uri}', version='{protocol.version}', " \
-               "parameters={protocol.parameters}, " \
-               "components={protocol.components}, " \
-               "comments={protocol.comments})".format(
-            protocol=self, protocol_type=repr(self.protocol_type))
+        return ("isatools.model.Protocol(name='{protocol.name}', "
+                "protocol_type={protocol_type}, "
+                "uri='{protocol.uri}', version='{protocol.version}', "
+                "parameters={protocol.parameters}, "
+                "components={protocol.components}, "
+                "comments={protocol.comments})"
+                ).format(protocol=self, protocol_type=repr(self.protocol_type))
 
     def __str__(self):
-        return """Protocol(
-    name={protocol.name}
-    protocol_type={protocol_type}
-    uri={protocol.uri}
-    version={protocol.version}
-    parameters={num_parameters} ProtocolParameter objects
-    components={num_components} OntologyAnnotation objects
-    comments={num_comments} Comment objects
-)""".format(protocol=self, protocol_type=self.protocol_type.term
-        if self.protocol_type else '',
-            num_parameters=len(self.parameters),
-            num_components=len(self.components) if self.components else 0,
-            num_comments=len(self.comments) if self.comments else 0)
+        return ("Protocol(\n\t"
+                "name={protocol.name}\n\t"
+                "protocol_type={protocol_type}\n\t"
+                "uri={protocol.uri}\n\t"
+                "version={protocol.version}\n\t"
+                "parameters={num_parameters} ProtocolParameter objects\n\t"
+                "components={num_components} OntologyAnnotation objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(protocol=self,
+                         protocol_type=self.protocol_type.term if self.protocol_type else '',
+                         num_parameters=len(self.parameters),
+                         num_components=len(self.components) if self.components else 0,
+                         num_comments=len(self.comments) if self.comments else 0)
 
     def __hash__(self):
         return hash(repr(self))
@@ -238,67 +239,12 @@ class Protocol(Commentable):
         return not self == other
 
 
-class ProtocolParameter(Commentable):
-    """A parameter used by a protocol.
-
-    Attributes:
-        parameter_name: A parameter name as an ontology term
-        comments: Comments associated with instances of this class.
-    """
-
-    def __init__(self, id_='', parameter_name=None, comments=None):
-        super().__init__(comments)
-        self.id = id_
-        self.__parameter_name = None
-        self.parameter_name = parameter_name
-
-    @property
-    def parameter_name(self):
-        """:obj:`OntologyAnnotation`: an ontology annotation representing the
-        parameter name"""
-        return self.__parameter_name
-
-    @parameter_name.setter
-    def parameter_name(self, val):
-        if val is None or isinstance(val, OntologyAnnotation):
-            self.__parameter_name = val
-        elif isinstance(val, str):
-            self.__parameter_name = OntologyAnnotation(term=val)
-        else:
-            error_msg = ('ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation or None; '
-                         'got {0}:{1}').format(val, type(val))
-            raise AttributeError(error_msg)
-
-    def __repr__(self):
-        return ('isatools.model.ProtocolParameter('
-                'parameter_name={parameter_name}, '
-                'comments={parameter.comments})').format(parameter=self, parameter_name=repr(self.parameter_name))
-
-    def __str__(self):
-        parameter_name = self.parameter_name.term if self.parameter_name else ''
-        return ("ProtocolParameter(\n\t"
-                "parameter_name={parameter_name}\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(parameter_name=parameter_name, num_comments=len(self.comments))
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return (isinstance(other, ProtocolParameter)
-                and self.parameter_name == other.parameter_name
-                and self.comments == other.comments)
-
-    def __ne__(self, other):
-        return not self == other
-
-
 def load_protocol_types_info() -> dict:
     """ Load the protocol types info from the YAML protocol types file
 
     Returns:
         A dictionary of protocol types
     """
-    filepath = os.path.join(os.path.dirname(__file__), 'resources', 'config', 'yaml', 'protocol-types.yml')
+    filepath = os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml', 'protocol-types.yml')
     with open(filepath) as yaml_file:
-        return yaml.load(yaml_file, Loader=yaml.FullLoader)
+        return load(yaml_file, Loader=FullLoader)

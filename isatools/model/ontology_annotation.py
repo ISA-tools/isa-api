@@ -18,7 +18,7 @@ class OntologyAnnotation(Commentable):
 
     def __init__(self,
                  term: str = '',
-                 term_source=None,
+                 term_source: OntologySource = None,
                  term_accession: str = '',
                  comments: List[Comment] = None,
                  id_=None):

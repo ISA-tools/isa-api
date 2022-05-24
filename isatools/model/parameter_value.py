@@ -1,7 +1,7 @@
 from numbers import Number
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
-from isatools.model.protocol import ProtocolParameter
+from isatools.model.protocol_parameter import ProtocolParameter
 
 
 class ParameterValue(Commentable):

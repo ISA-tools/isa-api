@@ -1,4 +1,5 @@
-from isatools.model.comments import Commentable
+from typing import List, Any
+from isatools.model.comments import Commentable, Comment
 
 
 class OntologySource(Commentable):
@@ -15,7 +16,12 @@ class OntologySource(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, name, file='', version='', description='', comments=None):
+    def __init__(self,
+                 name: str,
+                 file: str = '',
+                 version: str = '',
+                 description: str = '',
+                 comments: List[Comment] = None):
         super().__init__(comments)
 
         self.__name = name
@@ -23,17 +29,32 @@ class OntologySource(Commentable):
         self.__version = version
         self.__description = description
 
+        self.name = name
+        self.file = file
+        self.version = version
+        self.description = description
+
     @property
     def name(self):
         """:obj:`str`: name of the ontology source"""
         return self.__name
 
+    @staticmethod
+    def validate_field(val: Any, field_name: str):
+        """ Validates that the given value is a valid value for the given field
+
+        @param val: the value to validate
+        @param field_name: the name of the field to validate
+        """
+        if not isinstance(val, str):
+            raise AttributeError('OntologySource.{0} must be a str; got {1}:{2}'.format(field_name,
+                                                                                        val,
+                                                                                        type(val)))
+
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
-            raise AttributeError('OntologySource.name must be a str; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__name = val
+        self.validate_field(val, 'name')
+        self.__name = val
 
     @property
     def file(self):
@@ -42,8 +63,7 @@ class OntologySource(Commentable):
 
     @file.setter
     def file(self, val):
-        if not isinstance(val, str):
-            raise AttributeError('OntologySource.file must be a str; got {0}:{1}'.format(val, type(val)))
+        self.validate_field(val, 'file')
         self.__file = val
 
     @property
@@ -53,8 +73,7 @@ class OntologySource(Commentable):
 
     @version.setter
     def version(self, val):
-        if not isinstance(val, str):
-            raise AttributeError('OntologySource.version must be a str; got {0}:{1}'.format(val, type(val)))
+        self.validate_field(val, 'version')
         self.__version = val
 
     @property
@@ -64,8 +83,7 @@ class OntologySource(Commentable):
 
     @description.setter
     def description(self, val):
-        if not isinstance(val, str):
-            raise AttributeError('OntologySource.description must be a str; got {0}:{1}'.format(val, type(val)))
+        self.validate_field(val, 'description')
         self.__description = val
 
     def __repr__(self):

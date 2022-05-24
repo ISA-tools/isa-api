@@ -23,7 +23,7 @@ class TestOntologyAnnotation(TestCase):
         ontology_annotation_with_id = OntologyAnnotation(id_='I am NOT an uuid')
         self.assertTrue(ontology_annotation_with_id.id == 'I am NOT an uuid')
         ontology_annotation_mocked_id = OntologyAnnotation(term='test_term')
-        self.assertTrue(ontology_annotation_mocked_id.id == "i am a mocked UUID")
+        self.assertTrue(ontology_annotation_mocked_id.id == mock_uuid.return_value)
 
     def test_setters(self):
         self.ontology_annotation.term = None

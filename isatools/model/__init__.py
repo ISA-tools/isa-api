@@ -43,7 +43,8 @@ from isatools.model.parameter_value import ParameterValue
 from isatools.model.person import Person
 from isatools.model.process import Process
 from isatools.model.process_sequence import ProcessSequenceNode
-from isatools.model.protocol import Protocol, ProtocolParameter, load_protocol_types_info
+from isatools.model.protocol import Protocol, load_protocol_types_info
+from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.publication import Publication
 from isatools.model.sample import Sample
 from isatools.model.source import Source

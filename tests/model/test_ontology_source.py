@@ -74,3 +74,9 @@ class TestOntologySource(TestCase):
         new_ontology_source = OntologySource(name='test_name')
         self.assertFalse(self.ontology_source == new_ontology_source)
         self.assertTrue(self.ontology_source != new_ontology_source)
+
+    def test_validate_field(self):
+        with self.assertRaises(AttributeError) as context:
+            self.ontology_source.validate_field(1, 'name')
+        self.assertTrue("OntologySource.name must be a str; got 1:<class 'int'>" in str(context.exception))
+        self.assertIsNone(self.ontology_source.validate_field('test_name', 'name'))

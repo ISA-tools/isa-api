@@ -1,3 +1,5 @@
+# Mapped TO material_attribute_value_schema.json
+
 from __future__ import annotations
 
 from typing import List
