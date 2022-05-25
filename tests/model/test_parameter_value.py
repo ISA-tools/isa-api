@@ -1,4 +1,3 @@
-import this
 from unittest import TestCase
 
 from isatools.model.parameter_value import ParameterValue

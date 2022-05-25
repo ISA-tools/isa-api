@@ -44,8 +44,7 @@ class FactorValue(Commentable):
 
     @value.setter
     def value(self, val):
-        if val is not None \
-                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+        if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
             raise AttributeError(
                 'FactorValue.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
@@ -114,10 +113,8 @@ class StudyFactor(Commentable):
         self.id = id_
         self.__name = name
 
-        if factor_type is None:
-            self.__factor_type = OntologyAnnotation()
-        else:
-            self.__factor_type = factor_type
+        # factor type can be initialized as a string but shouldn't
+        self.__factor_type = OntologyAnnotation() if factor_type is None else factor_type
 
     @property
     def name(self):
@@ -127,11 +124,8 @@ class StudyFactor(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'StudyFactor.name must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__name = val
+            raise AttributeError('StudyFactor.name must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__name = val
 
     @property
     def factor_type(self):
@@ -142,25 +136,23 @@ class StudyFactor(Commentable):
     @factor_type.setter
     def factor_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError(
-                'StudyFactor.factor_type must be a OntologyAnnotation or '
-                'None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__factor_type = val
+            raise AttributeError('StudyFactor.factor_type must be a OntologyAnnotation or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__factor_type = val
 
     def __repr__(self):
-        return "isatools.model.StudyFactor(name='{study_factor.name}', " \
-               "factor_type={factor_type}, comments={study_factor.comments})" \
-            .format(study_factor=self, factor_type=repr(self.factor_type))
+        return ("isatools.model.StudyFactor(name='{study_factor.name}', "
+                "factor_type={factor_type}, comments={study_factor.comments})"
+                ).format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __str__(self):
-        return """StudyFactor(
-    name={factor.name}
-    factor_type={factor_type}
-    comments={num_comments} Comment objects
-)""".format(factor=self,
-            factor_type=self.factor_type.term if self.factor_type else '',
-            num_comments=len(self.comments))
+        return ("StudyFactor(\n\t"
+                "name={factor.name}\n\t"
+                "factor_type={factor_type}\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(factor=self,
+                         factor_type=self.factor_type.term if self.factor_type else '',
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
