@@ -28,11 +28,14 @@ def get_ols_ontologies():
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
+        file = ''
+        if 'href' in ontology_source_json['_links']['self'].keys():
+            file = ontology_source_json['_links']['self']['href']
         ontology_sources.append(OntologySource(
             name=ontology_source_json["ontologyId"],
-            version=ontology_source_json["config"]["version"],
-            description=ontology_source_json["config"]["title"],
-            file=ontology_source_json['_links']['self']
+            version=ontology_source_json["config"]["version"] if ontology_source_json["config"]["version"] else '',
+            description=ontology_source_json["config"]["title"] if ontology_source_json["config"]["title"] else '',
+            file=file
         ))
     return ontology_sources
 
@@ -47,8 +50,8 @@ def get_ols_ontology(ontology_name):
     for ontology_source_json in J["_embedded"]["ontologies"]:
         ontology_sources.append(OntologySource(
             name=ontology_source_json["ontologyId"],
-            version=ontology_source_json["config"]["version"],
-            description=ontology_source_json["config"]["title"],
+            version=ontology_source_json["config"]["version"] if ontology_source_json["config"]["version"] else '',
+            description=ontology_source_json["config"]["title"] if ontology_source_json["config"]["title"] else '',
             file=ontology_source_json['_links']['self']['href']
         ))
     hits = [o for o in ontology_sources if o.name == ontology_name]
