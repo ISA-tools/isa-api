@@ -30,11 +30,9 @@ class FactorValue(Commentable):
     @factor_name.setter
     def factor_name(self, val):
         if val is not None and not isinstance(val, StudyFactor):
-            raise AttributeError(
-                'FactorValue.factor_name must be a StudyFactor '
-                'or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__factor_name = val
+            raise AttributeError('FactorValue.factor_name must be a StudyFactor or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__factor_name = val
 
     @property
     def value(self):
@@ -45,12 +43,9 @@ class FactorValue(Commentable):
     @value.setter
     def value(self, val):
         if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise AttributeError(
-                'FactorValue.value must be a string, numeric, an '
-                'OntologyAnnotation, or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__value = val
+            raise AttributeError('FactorValue.value must be a string, numeric, an OntologyAnnotation, or None; '
+                                 'got {0}:{1}'.format(val, type(val)))
+        self.__value = val
 
     @property
     def unit(self):
@@ -64,24 +59,20 @@ class FactorValue(Commentable):
             raise AttributeError(
                 'FactorValue.unit must be an OntologyAnnotation, o string, or None; '
                 'got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__unit = val
+        self.__unit = val
 
     def __repr__(self):
-        return "isatools.model.FactorValue(factor_name={factor_name}, " \
-               "value={value}, unit={unit})" \
-            .format(factor_name=repr(self.factor_name),
-                    value=repr(self.value), unit=repr(self.unit))
+        return ("isatools.model.FactorValue(factor_name={factor_name}, value={value}, unit={unit})"
+                ).format(factor_name=repr(self.factor_name), value=repr(self.value), unit=repr(self.unit))
 
     def __str__(self):
-        return """FactorValue(
-    factor_name={factor_name}
-    value={value}
-    unit={unit}
-)""".format(factor_name=self.factor_name.name if self.factor_name else '',
-            value=self.value.term if isinstance(
-                self.value, OntologyAnnotation) else repr(self.value),
-            unit=self.unit.term if self.unit else '')
+        return ("FactorValue(\n\t"
+                "factor_name={factor_name}\n\t"
+                "value={value}\n\t"
+                "unit={unit}\n)"
+                ).format(factor_name=self.factor_name.name if self.factor_name else '',
+                         value=self.value.term if isinstance(self.value, OntologyAnnotation) else repr(self.value),
+                         unit=self.unit.term if self.unit else '')
 
     def __hash__(self):
         return hash(repr(self))
