@@ -22,10 +22,9 @@ class Source(Commentable, ProcessSequenceNode):
         self.id = id_
         self.__name = name
 
-        if characteristics is None:
-            self.__characteristics = []
-        else:
-            self.__characteristics = characteristics
+        self.__characteristics = []
+        if characteristics:
+            self.characteristics = characteristics
 
     @property
     def name(self):
@@ -52,15 +51,14 @@ class Source(Commentable, ProcessSequenceNode):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError(
-                'Source.characteristics must be iterable containing '
-                'Characteristics')
+            raise AttributeError('Source.characteristics must be iterable containing Characteristics')
 
     def has_char(self, char):
         if isinstance(char, str):
             char = Characteristic(category=OntologyAnnotation(term=char))
         if isinstance(char, Characteristic):
             return char in self.characteristics
+        return False
 
     def get_char(self, name):
         hits = [x for x in self.characteristics if x.category.term == name]

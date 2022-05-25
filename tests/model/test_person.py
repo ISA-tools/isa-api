@@ -118,8 +118,7 @@ class TestPerson(TestCase):
 
     def test_roles(self):
         self.assertTrue(self.person.roles == [])
-        ontology_annotation = OntologyAnnotation(term='test_term',
-                                                 term_accession="test_term_accession")
+        ontology_annotation = OntologyAnnotation(term='test_term', term_accession="test_term_accession")
         self.person.roles = [ontology_annotation]
         self.assertTrue(isinstance(self.person.roles[0], OntologyAnnotation))
         self.assertTrue(self.person.roles[0].term == 'test_term')

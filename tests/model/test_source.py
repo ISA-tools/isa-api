@@ -10,6 +10,13 @@ class TestSource(TestCase):
 
     def setUp(self):
         self.source = Source()
+        self.ontology_annotation = OntologyAnnotation(term='test_term')
+
+    def test_init(self):
+        characteristic = Characteristic(category=self.ontology_annotation)
+        source = Source(name='sars-cov2', characteristics=[characteristic])
+        self.assertTrue(source.name == 'sars-cov2')
+        self.assertTrue(source.characteristics == [characteristic])
 
     def test_getters(self):
         self.assertTrue(self.source.name == '')
@@ -29,34 +36,30 @@ class TestSource(TestCase):
 
     def test_characteristics(self):
         self.assertTrue(self.source.characteristics == [])
-        self.source.characteristics = [Characteristic(category=OntologyAnnotation(term='test_term',
-                                                                                  term_source="test_term_source",
-                                                                                  term_accession="test_term_accession"),
-                                                      value='',
-                                                      unit=''
-                                                      )]
+        self.source.characteristics = [Characteristic(category=self.ontology_annotation, value='', unit='')]
 
-        test_characteristics = [Characteristic(category=OntologyAnnotation(term='test_term',
-                                                                           term_source="test_term_source",
-                                                                           term_accession="test_term_accession"),
-                                               value='',
-                                               unit=''
-                                               )]
-
-        self.assertTrue(self.source.characteristics == test_characteristics)
-
-        expected_string = ("Characteristic(\n\t"
-                           "category=test_term\n\t"
-                           "value=\n\t"
-                           "unit=\n\t"
-                           "comments=0 Comment objects\n"
-                           ")")
-
-        self.assertTrue(str(self.source.characteristics[0]) == expected_string)
+        self.assertTrue(self.source.characteristics[0].value == '')
+        self.assertTrue(self.source.characteristics[0].unit == '')
+        self.assertTrue(self.source.characteristics[0].category == self.ontology_annotation)
 
         with self.assertRaises(AttributeError) as context:
             self.source.characteristics = 1
         self.assertTrue("Source.characteristics must be iterable containing" in str(context.exception))
+
+    def test_has_char(self):
+        characteristic = Characteristic(category=self.ontology_annotation)
+        self.source.characteristics = [characteristic]
+        self.assertTrue(self.source.has_char('test_term'))
+        self.assertTrue(self.source.has_char(characteristic))
+        self.assertFalse(self.source.has_char('test_term_2'))
+        self.assertFalse(self.source.has_char(1))
+
+    def test_get_char(self):
+        first_characteristic = Characteristic(category=self.ontology_annotation)
+        second_characteristic = Characteristic(category=OntologyAnnotation(term='test_term_2'))
+        self.source.characteristics = [first_characteristic, second_characteristic]
+        self.assertTrue(self.source.get_char('test_term'), [first_characteristic])
+        self.assertIsNone(self.source.get_char('foo'))
 
     def test_repr(self):
         self.assertTrue(repr(self.source) == expected_repr)
