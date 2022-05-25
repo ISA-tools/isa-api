@@ -44,10 +44,9 @@ class Person(Commentable):
         self.__address = address
         self.__affiliation = affiliation
 
-        if roles is None:
-            self.__roles = []
-        else:
-            self.__roles = roles
+        self.__roles = []
+        if roles:
+            self.roles = roles
 
     @property
     def last_name(self):
@@ -59,8 +58,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.last_name must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__last_name = val
+        self.__last_name = val
 
     @property
     def first_name(self):
@@ -72,8 +70,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.first_name must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__first_name = val
+        self.__first_name = val
 
     @property
     def mid_initials(self):
@@ -85,8 +82,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.mid_initials must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__mid_initials = val
+        self.__mid_initials = val
 
     @property
     def email(self):
@@ -98,8 +94,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.email must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__email = val
+        self.__email = val
 
     @property
     def phone(self):
@@ -111,8 +106,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.phone must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__phone = val
+        self.__phone = val
 
     @property
     def fax(self):
@@ -124,8 +118,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.fax must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__fax = val
+        self.__fax = val
 
     @property
     def address(self):
@@ -137,8 +130,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.address must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__address = val
+        self.__address = val
 
     @property
     def affiliation(self):
@@ -150,8 +142,7 @@ class Person(Commentable):
         if val is not None and not isinstance(val, str):
             raise AttributeError('Person.affiliation must be a str or None; got {0}:{1}'
                                  .format(val, type(val)))
-        else:
-            self.__affiliation = val
+        self.__affiliation = val
 
     @property
     def roles(self):
@@ -162,8 +153,7 @@ class Person(Commentable):
     @roles.setter
     def roles(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation)
-                                for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__roles = list(val)
         else:
             raise AttributeError('{0}.roles must be iterable containing OntologyAnnotations'

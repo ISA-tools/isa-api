@@ -1,16 +1,20 @@
 from unittest import TestCase
-# from unittest.mock import patch
 from isatools.model.person import Person
 from isatools.model.ontology_annotation import OntologyAnnotation
-
-expected_repr = ("isatools.model.Person(last_name='', first_name='', mid_initials='', "
-                 "email='', phone='', fax='', address='', affiliation='', roles=[], comments=[])")
 
 
 class TestPerson(TestCase):
 
     def setUp(self):
         self.person = Person()
+
+    def test_init(self):
+        person = Person(roles=['test_role'])
+        self.assertTrue(person.roles == [])
+
+        role = OntologyAnnotation(term='test_role')
+        person = Person(roles=[role])
+        self.assertTrue(person.roles == [role])
 
     def test_getters(self):
         self.assertTrue(self.person.id == '')
@@ -114,18 +118,16 @@ class TestPerson(TestCase):
 
     def test_roles(self):
         self.assertTrue(self.person.roles == [])
-        self.person.roles = [OntologyAnnotation(term='test_term',
-                                                term_source="test_term_source",
-                                                term_accession="test_term_accession")]
-
-        test_roles = [OntologyAnnotation(term='test_term',
-                                         term_source="test_term_source",
-                                         term_accession="test_term_accession")]
-        self.assertTrue(self.person.roles == test_roles)
+        ontology_annotation = OntologyAnnotation(term='test_term',
+                                                 term_accession="test_term_accession")
+        self.person.roles = [ontology_annotation]
+        self.assertTrue(isinstance(self.person.roles[0], OntologyAnnotation))
+        self.assertTrue(self.person.roles[0].term == 'test_term')
+        self.assertTrue(self.person.roles[0].term_accession == 'test_term_accession')
 
         expected_string = ("OntologyAnnotation(\n\t"
                            "term=test_term\n\t"
-                           "term_source=test_term_source\n\t"
+                           "term_source=None\n\t"
                            "term_accession=test_term_accession\n\t"
                            "comments=0 Comment objects\n)")
         self.assertTrue(str(self.person.roles[0]) == expected_string)
@@ -135,7 +137,10 @@ class TestPerson(TestCase):
         self.assertTrue("roles must be iterable containing OntologyAnnotations" in str(context.exception))
 
     def test_repr(self):
+        expected_repr = ("isatools.model.Person(last_name='', first_name='', mid_initials='', "
+                         "email='', phone='', fax='', address='', affiliation='', roles=[], comments=[])")
         self.assertTrue(repr(self.person) == expected_repr)
+        self.assertTrue(hash(self.person) == hash(expected_repr))
 
     def test_str(self):
         expected_str = ("Person(\n\t"
@@ -151,11 +156,8 @@ class TestPerson(TestCase):
                         "comments=0 Comment objects\n)")
         self.assertTrue(str(self.person) == expected_str)
 
-    def test_hash(self):
-        self.assertTrue(hash(self.person) == hash(expected_repr))
-
     def test_equalities(self):
-        a_person = Person(last_name='blog', first_name='joe', email='joe.blogg@protonmail.com', roles=None)
-        b_person = Person(last_name='blog', first_name='joe', email='joe.blogg@protonmail.com', roles=None)
+        a_person = Person(last_name='blog')
+        b_person = Person(last_name='blog')
         self.assertTrue(a_person == b_person)
         self.assertTrue(a_person != self.person)
