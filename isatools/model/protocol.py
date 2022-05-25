@@ -52,13 +52,11 @@ class Protocol(Commentable):
         self.__parameters = []
         self.__components = []
 
-        if parameters is None:
-            parameters = []
-        self.parameters = parameters
+        if parameters is not None:
+            self.parameters = parameters
 
-        if components is None:
-            components = []
-        self.components = components
+        if components is not None:
+            self.components = components
 
     @staticmethod
     def show_allowed_protocol_types():
