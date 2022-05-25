@@ -12,14 +12,18 @@ class TestSample(TestCase):
         self.sample = Sample()
 
     def test_init(self):
+        factor_value = FactorValue()
+        characteristic = Characteristic()
+        source = Source()
+
         sample = Sample(name="sample1",
-                        factor_values=[],
-                        characteristics=[],
-                        derives_from=[])
+                        factor_values=[factor_value],
+                        characteristics=[characteristic],
+                        derives_from=[source])
         self.assertEqual(sample.name, "sample1")
-        self.assertEqual(sample.factor_values, [])
-        self.assertEqual(sample.characteristics, [])
-        self.assertEqual(sample.derives_from, [])
+        self.assertEqual(sample.factor_values, [factor_value])
+        self.assertEqual(sample.characteristics, [characteristic])
+        self.assertEqual(sample.derives_from, [source])
 
     def test_name(self):
         self.assertTrue(self.sample.name == '')
@@ -60,6 +64,7 @@ class TestSample(TestCase):
         self.assertTrue(self.sample.has_char('test_factor_name'))
         self.assertTrue(self.sample.has_char(characteristic))
         self.assertFalse(self.sample.has_char('test_factor_name2'))
+        self.assertFalse(self.sample.has_char(1))
 
     def test_get_char(self):
         first_characteristic = Characteristic(category='test_factor_name')
