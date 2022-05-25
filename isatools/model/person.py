@@ -14,15 +14,24 @@ class Person(Commentable):
         fax: The fax number.
         address: The address of a person.
         affiliation: The organization affiliation for a person.
-        roles: A list of Orole(s) performed by this person. Roles reported here
+        roles: A list of role(s) performed by this person. Roles reported here
             need not correspond to roles held withing their affiliated
             organization.
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, last_name='', first_name='', mid_initials='', email='',
-                 phone='', fax='', address='', affiliation='', roles=None,
-                 comments=None, id_=''):
+    def __init__(self,
+                 id_='',
+                 last_name='',
+                 first_name='',
+                 mid_initials='',
+                 email='',
+                 phone='',
+                 fax='',
+                 address='',
+                 affiliation='',
+                 roles=None,
+                 comments=None):
         super().__init__(comments)
 
         self.id = id_
@@ -48,9 +57,8 @@ class Person(Commentable):
     @last_name.setter
     def last_name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.last_name must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.last_name must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__last_name = val
 
@@ -62,9 +70,8 @@ class Person(Commentable):
     @first_name.setter
     def first_name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.first_name must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.first_name must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__first_name = val
 
@@ -76,9 +83,8 @@ class Person(Commentable):
     @mid_initials.setter
     def mid_initials(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.mid_initials must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.mid_initials must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__mid_initials = val
 
@@ -90,9 +96,8 @@ class Person(Commentable):
     @email.setter
     def email(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.email must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.email must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__email = val
 
@@ -104,9 +109,8 @@ class Person(Commentable):
     @phone.setter
     def phone(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.phone must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.phone must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__phone = val
 
@@ -118,9 +122,8 @@ class Person(Commentable):
     @fax.setter
     def fax(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.fax must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.fax must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__fax = val
 
@@ -132,9 +135,8 @@ class Person(Commentable):
     @address.setter
     def address(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.address must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.address must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__address = val
 
@@ -146,9 +148,8 @@ class Person(Commentable):
     @affiliation.setter
     def affiliation(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Person.affiliation must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+            raise AttributeError('Person.affiliation must be a str or None; got {0}:{1}'
+                                 .format(val, type(val)))
         else:
             self.__affiliation = val
 
@@ -165,34 +166,35 @@ class Person(Commentable):
                                 for x in val):
                 self.__roles = list(val)
         else:
-            raise AttributeError(
-                '{0}.roles must be iterable containing OntologyAnnotations'
-                    .format(type(self).__name__))
+            raise AttributeError('{0}.roles must be iterable containing OntologyAnnotations'
+                                 .format(type(self).__name__))
 
     def __repr__(self):
-        return "isatools.model.Person(last_name='{person.last_name}', " \
-               "first_name='{person.first_name}', " \
-               "mid_initials='{person.mid_initials}', " \
-               "email='{person.email}', phone='{person.phone}', " \
-               "fax='{person.fax}', address='{person.address}', " \
-               "affiliation='{person.affiliation}', roles={person.roles}, " \
-               "comments={person.comments})" \
-            .format(person=self)
+        return ("isatools.model.Person("
+                "last_name='{person.last_name}', " 
+                "first_name='{person.first_name}', " 
+                "mid_initials='{person.mid_initials}', " 
+                "email='{person.email}', phone='{person.phone}', " 
+                "fax='{person.fax}', address='{person.address}', " 
+                "affiliation='{person.affiliation}', roles={person.roles}, " 
+                "comments={person.comments})"
+                ).format(person=self)
 
     def __str__(self):
-        return """Person(
-    last_name={person.last_name}
-    first_name={person.first_name}
-    mid_initials={person.mid_initials}
-    email={person.email}
-    phone={person.phone}
-    fax={person.fax}
-    address={person.address}
-    roles={num_roles} OntologyAnnotation objects
-    comments={num_comments} Comment objects
-)""".format(person=self,
-            num_roles=len(self.roles),
-            num_comments=len(self.comments))
+        return ("Person(\n\t"
+                "last_name={person.last_name}\n\t"
+                "first_name={person.first_name}\n\t"
+                "mid_initials={person.mid_initials}\n\t"
+                "email={person.email}\n\t"
+                "phone={person.phone}\n\t"
+                "fax={person.fax}\n\t"
+                "address={person.address}\n\t"
+                "affiliation={person.affiliation}\n\t"
+                "roles={num_roles} OntologyAnnotation objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(person=self,
+                         num_roles=len(self.roles),
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
