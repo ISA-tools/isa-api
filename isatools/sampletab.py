@@ -11,6 +11,7 @@ from io import StringIO
 
 import numpy as np
 import pandas as pd
+from math import isnan
 
 from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
@@ -210,9 +211,12 @@ def load(FP):
     for _, row in msi_df[["Term Source Name", "Term Source URI",
                           "Term Source Version"]]\
             .replace('', np.nan).dropna(axis=0, how='all').iterrows():
+        version = ''
+        if not isnan(row["Term Source Version"]):
+            version = row["Term Source Version"]
         ontology_source = OntologySource(name=row["Term Source Name"],
                                          file=row["Term Source URI"],
-                                         version=row["Term Source Version"],
+                                         version=version,
                                          description=row["Term Source Name"])
         ISA.ontology_source_references.append(ontology_source)
 
