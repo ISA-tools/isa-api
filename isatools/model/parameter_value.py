@@ -23,6 +23,8 @@ class ParameterValue(Commentable):
         self.__value = None
         self.__unit = None
         self.category = category
+
+        # Shouldn't this be in the setter to avoid manually setting a non-numerical value when a unit is supplied ?
         if not isinstance(value, Number) and unit:
             raise ValueError("ParameterValue value mus be quantitative (i.e. numeric) if a unit is supplied")
         self.value = value
@@ -37,11 +39,9 @@ class ParameterValue(Commentable):
     @category.setter
     def category(self, val):
         if val is not None and not isinstance(val, ProtocolParameter):
-            raise AttributeError(
-                'ParameterValue.category must be a ProtocolParameter '
-                'or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__category = val
+            raise AttributeError('ParameterValue.category must be a ProtocolParameter or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__category = val
 
     @property
     def value(self):
@@ -51,14 +51,10 @@ class ParameterValue(Commentable):
 
     @value.setter
     def value(self, val):
-        if val is not None \
-                and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise AttributeError(
-                'ParameterValue.value must be a string, numeric, an '
-                'OntologyAnnotation, or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__value = val
+        if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
+            raise AttributeError('ParameterValue.value must be a string, numeric, an OntologyAnnotation, or None; '
+                                 'got {0}:{1}'.format(val, type(val)))
+        self.__value = val
 
     @property
     def unit(self):
@@ -68,31 +64,27 @@ class ParameterValue(Commentable):
     @unit.setter
     def unit(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError(
-                'ParameterValue.unit must be a OntologyAnnotation, or None; '
-                'got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__unit = val
+            raise AttributeError('ParameterValue.unit must be a OntologyAnnotation, or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__unit = val
 
     def __repr__(self):
-        return 'isatools.model.ParameterValue(category={category}, ' \
-               'value={value}, unit={unit}, comments={comments})'.format(
-            category=repr(self.category), value=repr(self.value),
-            unit=repr(self.unit), comments=repr(self.comments))
+        return ('isatools.model.ParameterValue(category={category}, value={value}, unit={unit}, comments={comments})'
+                ).format(category=repr(self.category),
+                         value=repr(self.value),
+                         unit=repr(self.unit),
+                         comments=repr(self.comments))
 
     def __str__(self):
-        return """ParameterValue(
-    category={category}
-    value={value}
-    unit={unit}
-    comments={num_comments} Comment objects
-)""".format(category=self.category.parameter_name.term
-        if self.category else '',
-            value=self.value.term if isinstance(
-                self.value, OntologyAnnotation
-            ) else repr(self.value),
-            unit=self.unit.term if self.unit else '',
-            num_comments=len(self.comments))
+        return ("ParameterValue(\n\t"
+                "category={category}\n\t"
+                "value={value}\n\t"
+                "unit={unit}\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(category=self.category.parameter_name.term if self.category else '',
+                         value=self.value.term if isinstance(self.value, OntologyAnnotation) else repr(self.value),
+                         unit=self.unit.term if self.unit else '',
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))

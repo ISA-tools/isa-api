@@ -109,10 +109,8 @@ class Protocol(Commentable):
     def description(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                'Protocol.description must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__description = val
+                'Protocol.description must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__description = val
 
     @property
     def uri(self):
@@ -122,11 +120,8 @@ class Protocol(Commentable):
     @uri.setter
     def uri(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Protocol.uri must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__uri = val
+            raise AttributeError('Protocol.uri must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__uri = val
 
     @property
     def version(self):
@@ -136,11 +131,8 @@ class Protocol(Commentable):
     @version.setter
     def version(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Protocol.version must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__version = val
+            raise AttributeError('Protocol.version must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__version = val
 
     @property
     def parameters(self):
