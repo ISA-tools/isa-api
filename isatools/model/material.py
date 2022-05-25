@@ -18,9 +18,8 @@ class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
         self.__name = name
         self.__type = type_
 
-        if characteristics is None:
-            self.__characteristics = list()
-        else:
+        self.__characteristics = []
+        if characteristics:
             self.__characteristics = characteristics
 
     @property
@@ -31,11 +30,9 @@ class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                '{0}.name must be a str or None; got {1}:{2}'
-                    .format(type(self).__name__, val, type(val)))
-        else:
-            self.__name = val
+            raise AttributeError('{0}.name must be a str or None; got {1}:{2}'
+                                 .format(type(self).__name__, val, type(val)))
+        self.__name = val
 
     @property
     def type(self):
@@ -46,12 +43,9 @@ class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
     def type(self, val):
         # TODO: use json_schema to get these values
         if val is not None and (not isinstance(val, str) or val not in ['Extract Name', 'Labeled Extract Name']):
-            raise AttributeError(
-                '{0}.type must be a str in ("Extract Name", "Labeled Extract '
-                'Name") or None; got {1}:{2}'
-                    .format(type(self).__name__, val, type(val)))
-        else:
-            self.__type = val
+            raise AttributeError('{0}.type must be a str in ("Extract Name", "Labeled Extract Name") or None; '
+                                 'got {1}:{2}'.format(type(self).__name__, val, type(val)))
+        self.__type = val
 
     @property
     def characteristics(self):
@@ -65,9 +59,8 @@ class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError(
-                '{}.characteristics must be iterable containing '
-                'Characteristics'.format(type(self).__name__))
+            raise AttributeError('{}.characteristics must be iterable containing Characteristics'
+                                 .format(type(self).__name__))
 
 
 class Extract(Material):
@@ -80,19 +73,20 @@ class Extract(Material):
         self.type = 'Extract Name'
 
     def __repr__(self):
-        return "isatools.model.Extract(name='{extract.name}', " \
-               "type='{extract.type}', " \
-               "characteristics={extract.characteristics}, " \
-               "comments={extract.comments})".format(extract=self)
+        return ("isatools.model.Extract(name='{extract.name}', "
+                "type='{extract.type}', "
+                "characteristics={extract.characteristics}, "
+                "comments={extract.comments})").format(extract=self)
 
     def __str__(self):
-        return """Extract(
-    name={extract.name}
-    type={extract.type}
-    characteristics={num_characteristics} Characteristic objects
-    comments={num_comments} Comment objects
-)""".format(extract=self, num_characteristics=len(self.characteristics),
-            num_comments=len(self.comments))
+        return ("Extract(\n\t"
+                "name={extract.name}\n\t"
+                "type={extract.type}\n\t"
+                "characteristics={num_characteristics} Characteristic objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(extract=self,
+                         num_characteristics=len(self.characteristics),
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -125,14 +119,14 @@ class LabeledExtract(Material):
             .format(labeled_extract=self)
 
     def __str__(self):
-        return """LabeledExtract(
-    name={labeled_extract.name}
-    type=LabeledExtract Name
-    characteristics={num_characteristics} Characteristic objects
-    comments={num_comments} Comment objects
-)""".format(labeled_extract=self,
-            num_characteristics=len(self.characteristics),
-            num_comments=len(self.comments))
+        return ("LabeledExtract(\n\t"
+                "name={labeled_extract.name}\n\t"
+                "type=Labeled Extract Name\n\t"
+                "characteristics={num_characteristics} Characteristic objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(labeled_extract=self,
+                         num_characteristics=len(self.characteristics),
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
