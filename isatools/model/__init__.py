@@ -49,6 +49,7 @@ from isatools.model.publication import Publication
 from isatools.model.sample import Sample
 from isatools.model.source import Source
 from isatools.model.study import Study
+from isatools.model.logger import log
 
 
 class ProtocolComponent(Commentable):

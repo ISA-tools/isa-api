@@ -1,6 +1,7 @@
 """Tests on isatab.py package"""
 from __future__ import absolute_import
 import unittest
+import os
 
 import pandas as pd
 import shutil
@@ -1831,7 +1832,7 @@ sample1\textraction\te2\tscanning\td2"""
                 self.assertGreater(len(sample.factor_values), 0)
 
     def test_isatab_protocol_chain_parsing(self):
-        logging.info("Testing")
+        log.info("Testing")
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'),
                   encoding='utf-8') as fp:
             investigation = isatab.load(fp)
