@@ -14,8 +14,7 @@ class DataFile(Commentable, ProcessSequenceNode):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, filename='', id_='', label='', generated_from=None,
-                 comments=None):
+    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
@@ -24,9 +23,8 @@ class DataFile(Commentable, ProcessSequenceNode):
         self.__filename = filename
         self.__label = label
 
-        if generated_from is None:
-            self.__generated_from = []
-        else:
+        self.__generated_from = []
+        if generated_from:
             self.__generated_from = generated_from
 
     @property
@@ -37,11 +35,9 @@ class DataFile(Commentable, ProcessSequenceNode):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                '{0}.name must be a str or None; got {1}:{2}'
-                    .format(type(self).__name__, val, type(val)))
-        else:
-            self.__filename = val
+            raise AttributeError('{0}.name must be a str or None; got {1}:{2}'
+                                 .format(type(self).__name__, val, type(val)))
+        self.__filename = val
 
     @property
     def label(self):
@@ -69,9 +65,7 @@ class DataFile(Commentable, ProcessSequenceNode):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__generated_from = list(val)
         else:
-            raise AttributeError(
-                '{}.generated_from must be iterable containing Samples'.format(
-                    type(self).__name__))
+            raise AttributeError('{0}.generated_from must be iterable containing Samples'.format(type(self).__name__))
 
     def __repr__(self):
         return "isatools.model.DataFile(filename='{data_file.filename}', " \
@@ -81,13 +75,12 @@ class DataFile(Commentable, ProcessSequenceNode):
             .format(data_file=self)
 
     def __str__(self):
-        return """DataFile(
-    filename={data_file.filename}
-    label={data_file.label}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+        return ("DataFile(\n\t"
+                "filename={data_file.filename}\n\t"
+                "label={data_file.label}\n\t"
+                "generated_from={num_generated_from} Sample objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -224,7 +217,7 @@ class DerivedArrayDataFile(DataFile):
 
     def __repr__(self):
         return "isatools.model.DerivedArrayDataFile(" \
-               "filename='{data_file.filename}' " \
+               "filename='{data_file.filename}', " \
                "generated_from={data_file.generated_from}, " \
                "comments={data_file.comments})".format(data_file=self)
 
