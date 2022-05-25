@@ -90,11 +90,9 @@ class Process(Commentable, ProcessSequenceNode):
     @executes_protocol.setter
     def executes_protocol(self, val):
         if val is not None and not isinstance(val, Protocol):
-            raise AttributeError(
-                'Process.executes_protocol must be a Protocol '
-                'or None; got {0}:{1}'.format(val, type(val)))
-        else:
-            self.__executes_protocol = val
+            raise AttributeError('Process.executes_protocol must be a Protocol or None; got {0}:{1}'
+                                 .format(val, type(val)))
+        self.__executes_protocol = val
 
     @property
     def date(self):
@@ -132,9 +130,7 @@ class Process(Commentable, ProcessSequenceNode):
             if val == [] or all(isinstance(x, ParameterValue) for x in val):
                 self.__parameter_values = list(val)
         else:
-            raise AttributeError(
-                'Process.parameter_values must be iterable containing '
-                'ParameterValues')
+            raise AttributeError('Process.parameter_values must be iterable containing ParameterValues')
 
     @property
     def inputs(self):
@@ -145,15 +141,11 @@ class Process(Commentable, ProcessSequenceNode):
     @inputs.setter
     def inputs(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(
-                    isinstance(x, (Material, Source, Sample, DataFile)) for
-                    x in
-                    val):
+            if val == [] or all(isinstance(x, (Material, Source, Sample, DataFile)) for x in val):
                 self.__inputs = list(val)
         else:
-            raise AttributeError(
-                'Process.inputs must be iterable containing objects of types '
-                '(Material, Source, Sample, DataFile)')
+            raise AttributeError('Process.inputs must be iterable containing objects of types '
+                                 '(Material, Source, Sample, DataFile)')
 
     @property
     def outputs(self):
@@ -164,9 +156,7 @@ class Process(Commentable, ProcessSequenceNode):
     @outputs.setter
     def outputs(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(
-                    isinstance(x, (Material, Source, Sample, DataFile)) for
-                    x in val):
+            if val == [] or all(isinstance(x, (Material, Source, Sample, DataFile)) for x in val):
                 self.__outputs = list(val)
         else:
             raise AttributeError(
@@ -205,9 +195,9 @@ class Process(Commentable, ProcessSequenceNode):
             self.__next_process = val
 
     def __repr__(self):
-        return '{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, ' \
-               'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}' \
-               ')'.format(self.__class__.__module__, self.__class__.__name__, self)
+        return ('{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, '
+                'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}'
+                ')').format(self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
         return """{0}(name={1.name})""".format(self.__class__.__name__, self)

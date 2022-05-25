@@ -1,6 +1,6 @@
 import unittest
 
-from isatools.model import Commentable, Comment
+from isatools.model.comments import Commentable, Comment
 
 
 class TestComment(unittest.TestCase):
