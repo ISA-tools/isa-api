@@ -28,20 +28,15 @@ class Sample(Commentable, ProcessSequenceNode):
 
         self.id = id_
         self.__name = name
+        self.__factor_values = []
+        self.__characteristics = []
+        self.__derives_from = []
 
-        if factor_values is None:
-            self.__factor_values = []
-        else:
+        if factor_values:
             self.__factor_values = factor_values
-
-        if characteristics is None:
-            self.__characteristics = []
-        else:
+        if characteristics:
             self.__characteristics = characteristics
-
-        if derives_from is None:
-            self.__derives_from = []
-        else:
+        if derives_from:
             self.__derives_from = derives_from
 
     @property
@@ -52,11 +47,8 @@ class Sample(Commentable, ProcessSequenceNode):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Sample.name must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
-        else:
-            self.__name = val
+            raise AttributeError('Sample.name must be a str or None; got {0}:{1}'.format(val, type(val)))
+        self.__name = val
 
     @property
     def factor_values(self):
@@ -70,9 +62,7 @@ class Sample(Commentable, ProcessSequenceNode):
             if val == [] or all(isinstance(x, FactorValue) for x in val):
                 self.__factor_values = list(val)
         else:
-            raise AttributeError(
-                'Sample.factor_values must be iterable containing '
-                'FactorValues')
+            raise AttributeError('Sample.factor_values must be iterable containing FactorValues')
 
     @property
     def characteristics(self):
@@ -86,15 +76,14 @@ class Sample(Commentable, ProcessSequenceNode):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError(
-                'Sample.characteristics must be iterable containing '
-                'Characteristics')
+            raise AttributeError('Sample.characteristics must be iterable containing Characteristics')
 
     def has_char(self, char):
         if isinstance(char, str):
             char = Characteristic(category=OntologyAnnotation(term=char))
         if isinstance(char, Characteristic):
             return char in self.characteristics
+        return False
 
     def get_char(self, name):
         hits = [x for x in self.characteristics if x.category.term == name]
@@ -120,23 +109,24 @@ class Sample(Commentable, ProcessSequenceNode):
                 'Sample.derives_from must be iterable containing Sources')
 
     def __repr__(self):
-        return "isatools.model.Sample(name='{sample.name}', " \
-               "characteristics={sample.characteristics}, " \
-               "factor_values={sample.factor_values}, " \
-               "derives_from={sample.derives_from}, " \
-               "comments={sample.comments})".format(sample=self)
+        return ("isatools.model.Sample(name='{sample.name}', "
+                "characteristics={sample.characteristics}, "
+                "factor_values={sample.factor_values}, "
+                "derives_from={sample.derives_from}, "
+                "comments={sample.comments})").format(sample=self)
 
     def __str__(self):
-        return """Sample(
-    name={sample.name}
-    characteristics={num_characteristics} Characteristic objects
-    factor_values={num_factor_values} FactorValue objects
-    derives_from={num_derives_from} Source objects
-    comments={num_comments} Comment objects
-)""".format(sample=self, num_characteristics=len(self.characteristics),
-            num_factor_values=len(self.factor_values),
-            num_derives_from=len(self.derives_from),
-            num_comments=len(self.comments))
+        return ("Sample(\n\t"
+                "name={sample.name}\n\t"
+                "characteristics={num_characteristics} Characteristic objects\n\t"
+                "factor_values={num_factor_values} FactorValue objects\n\t"
+                "derives_from={num_derives_from} Source objects\n\t"
+                "comments={num_comments} Comment objects\n)"
+                ).format(sample=self,
+                         num_characteristics=len(self.characteristics),
+                         num_factor_values=len(self.factor_values),
+                         num_derives_from=len(self.derives_from),
+                         num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
