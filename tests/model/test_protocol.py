@@ -17,6 +17,21 @@ class TestProtocol(TestCase):
     def setUp(self):
         self.protocol = Protocol()
 
+    def test_init(self):
+        parameter = ProtocolParameter(parameter_name='test_parameters')
+        ontology_annotation = OntologyAnnotation(term='test_components')
+
+        protocol = Protocol(name='test_name', protocol_type='test_protocol_type',
+                            description='test_description', uri='test_uri', version='test_version',
+                            parameters=[parameter], components=[ontology_annotation])
+        self.assertTrue(protocol.name == 'test_name')
+        self.assertTrue(protocol.protocol_type.term == 'test_protocol_type')
+        self.assertTrue(protocol.description == 'test_description')
+        self.assertTrue(protocol.uri == 'test_uri')
+        self.assertTrue(protocol.version == 'test_version')
+        self.assertTrue(protocol.parameters == [parameter])
+        self.assertTrue(protocol.components == [ontology_annotation])
+
     def test_getters(self):
         self.assertTrue(self.protocol.id == '')
         self.assertTrue(self.protocol.version == '')
