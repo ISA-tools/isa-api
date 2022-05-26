@@ -130,6 +130,8 @@ class StudyTest(TestCase):
         self.study.add_factor(name='f1', factor_type='factor type')
         self.assertEqual(1, len(self.study.factors))
 
+        self.study.del_factor(name='abc')
+        self.assertEqual(1, len(self.study.factors))
         self.study.del_factor(name='f1')
         self.assertEqual(1, len(self.study.factors))
         self.study.del_factor(name='f1', are_you_sure=True)
