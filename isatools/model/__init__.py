@@ -50,6 +50,7 @@ from isatools.model.sample import Sample
 from isatools.model.source import Source
 from isatools.model.study import Study
 from isatools.model.logger import log
+from isatools.model.utils import _build_assay_graph
 
 
 class ProtocolComponent(Commentable):

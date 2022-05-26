@@ -3,7 +3,8 @@ from unittest.mock import patch
 from copy import deepcopy
 from networkx import DiGraph
 
-from isatools.model.mixins import MetadataMixin, StudyAssayMixin, _build_assay_graph
+
+from isatools.model.mixins import MetadataMixin, StudyAssayMixin
 from isatools.model.publication import Publication
 from isatools.model.person import Person
 from isatools.model.source import Source
@@ -372,10 +373,5 @@ class TestStudyAssayMixin(TestCase):
         self.study_assay_mixin.samples = samples
         self.study_assay_mixin.shuffle_materials('samples')
         self.assertNotEqual(original_input, self.study_assay_mixin.samples)
-
-
-class TestFunctions(TestCase):
-
-    def test_empty_process_sequence(self):
-        graph = _build_assay_graph()
-        self.assertTrue(len(graph.indexes.keys()) == 0)
+        self.study_assay_mixin.shuffle_materials('samples')
+        self.assertNotEqual(original_input, self.study_assay_mixin.samples)
