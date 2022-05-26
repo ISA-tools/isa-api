@@ -114,9 +114,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             if val == [] or all(isinstance(x, DataFile) for x in val):
                 self.__data_files = list(val)
         else:
-            raise AttributeError(
-                '{0}.data_files must be iterable containing DataFiles'
-                    .format(type(self).__name__))
+            raise AttributeError('{0}.data_files must be iterable containing DataFiles'.format(type(self).__name__))
 
     def __repr__(self):
         return "isatools.model.Assay(measurement_type={measurement_type}, " \

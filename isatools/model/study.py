@@ -106,13 +106,11 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     @design_descriptors.setter
     def design_descriptors(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation)
-                                for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__design_descriptors = list(val)
         else:
-            raise AttributeError(
-                '{}.design_descriptors must be iterable containing '
-                'OntologyAnnotations'.format(type(self).__name__))
+            raise AttributeError('{}.design_descriptors must be iterable containing OntologyAnnotations'
+                                 .format(type(self).__name__))
 
     @property
     def protocols(self):
@@ -142,52 +140,50 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @staticmethod
     def __get_default_protocol(protocol_type):
-        """Return default Protocol object based on protocol_type and from
-        isaconfig_v2015-07-02"""
-        default_protocol = Protocol(
-            protocol_type=OntologyAnnotation(
-                term=protocol_type))
+        """Return default Protocol object based on protocol_type and from isaconfig_v2015-07-02"""
+        default_protocol = Protocol(protocol_type=OntologyAnnotation(term=protocol_type))
         parameter_list = []
-        if protocol_type == 'mass spectrometry':
-            parameter_list = ['instrument',
-                              'ion source',
-                              'detector',
-                              'analyzer',
-                              'chromatography instrument',
-                              'chromatography column']
-        elif protocol_type == 'nmr spectroscopy':
-            parameter_list = ['instrument',
-                              'NMR probe',
-                              'number of acquisition',
-                              'magnetic field strength',
-                              'pulse sequence']
-        elif protocol_type == 'nucleic acid hybridization':
-            parameter_list = ['Array Design REF']
-        elif protocol_type == 'nucleic acid sequencing':
-            parameter_list = ['sequencing instrument',
-                              'quality scorer',
-                              'base caller']
-        default_protocol.parameters = [
-            ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
-            for x in parameter_list]
+
+        parameter_list_index = {
+            'mass spectrometry': [
+                'instrument',
+                'ion source',
+                'detector',
+                'analyzer',
+                'chromatography instrument',
+                'chromatography column'
+            ],
+            'nmr spectroscopy': [
+                'instrument',
+                'NMR probe',
+                'number of acquisition',
+                'magnetic field strength',
+                'pulse sequence'
+            ],
+            'nucleic acid hybridization': ['Array Design REF'],
+            'nucleic acid sequencing': ['sequencing instrument', 'quality scorer', 'base caller']
+        }
+        if protocol_type in parameter_list_index:
+            parameter_list = parameter_list_index[protocol_type]
+        default_protocol.parameters = [ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
+                                       for x in parameter_list]
         # TODO: Implement this for other defaults OR generate from config #51
         return default_protocol
 
-    def add_prot(self, protocol_name='', protocol_type=None,
+    def add_prot(self,
+                 protocol_name='',
+                 protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared '
-                        'in the study'.format(protocol_name))
+            log.warning('A protocol with name "{}" has already been declared in the study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
                 default_protocol.name = protocol_name
                 self.protocols.append(default_protocol)
             else:
-                self.protocols.append(Protocol(
-                    name=protocol_name,
-                    protocol_type=OntologyAnnotation(
-                        term=protocol_type)))
+                self.protocols.append(Protocol(name=protocol_name,
+                                               protocol_type=OntologyAnnotation(term=protocol_type)))
 
     def get_prot(self, protocol_name):
         prot = None
@@ -199,17 +195,13 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            log.warning('A factor with name "{}" has already been declared '
-                        'in the study'.format(name))
+            log.warning('A factor with name "{}" has already been declared in the study'.format(name))
         else:
-            self.factors.append(StudyFactor(
-                name=name, factor_type=OntologyAnnotation(term=factor_type)))
+            self.factors.append(StudyFactor(name=name, factor_type=OntologyAnnotation(term=factor_type)))
 
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
-            log.warning(
-                'A factor with name "{}" has not been found in the study'
-                    .format(name))
+            log.warning('A factor with name "{}" has not been found in the study'.format(name))
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
                 self.factors.remove(self.get_factor(name=name))
@@ -233,9 +225,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, Assay) for x in val):
                 self.__assays = list(val)
         else:
-            raise AttributeError(
-                '{}.assays must be iterable containing Assays'
-                    .format(type(self).__name__))
+            raise AttributeError('{}.assays must be iterable containing Assays'.format(type(self).__name__))
 
     @property
     def factors(self):
@@ -249,9 +239,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, StudyFactor) for x in val):
                 self.__factors = list(val)
         else:
-            raise AttributeError(
-                '{}.factors must be iterable containing StudyFactors'
-                    .format(type(self).__name__))
+            raise AttributeError('{}.factors must be iterable containing StudyFactors'.format(type(self).__name__))
 
     def __repr__(self):
         return "isatools.model.Study(filename='{study.filename}', " \
@@ -326,8 +314,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                and self.samples == other.samples \
                and self.process_sequence == other.process_sequence \
                and self.other_material == other.other_material \
-               and self.characteristic_categories \
-               == other.characteristic_categories \
+               and self.characteristic_categories == other.characteristic_categories \
                and self.comments == other.comments \
                and self.units == other.units
 
