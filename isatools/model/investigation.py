@@ -99,10 +99,9 @@ class Investigation(Commentable, MetadataMixin, object):
             :obj:`filter` of :obj:`OntologySources` that can be iterated on.
         """
         if name is None:
-            return filter(True, self.ontology_source_references)
+            return filter(lambda x: x, self.ontology_source_references)
         else:
-            return filter(lambda x: x.name == name,
-                          self.ontology_source_references)
+            return filter(lambda x: x.name == name, self.ontology_source_references)
 
     def get_ontology_source_references(self):
         """Gets a list of all ontology_source_references.
@@ -127,8 +126,7 @@ class Investigation(Commentable, MetadataMixin, object):
         clist = list(self.yield_ontology_source_references(name=name))
         if len(clist) > 0:
             return clist[-1]
-        else:
-            return None
+        return None
 
     def get_ontology_source_reference_names(self):
         """Gets all of the ontology_source_reference names
@@ -150,9 +148,7 @@ class Investigation(Commentable, MetadataMixin, object):
             if val == [] or all(isinstance(x, Study) for x in val):
                 self.__studies = list(val)
         else:
-            raise AttributeError(
-                'Investigation.studies must be iterable containing Study '
-                'objects')
+            raise AttributeError('Investigation.studies must be iterable containing Study objects')
 
     def execute_query(self, query, variables=None):
         """
