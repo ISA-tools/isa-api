@@ -1,6 +1,7 @@
 import networkx as nx
 
 from isatools.model.datafile import DataFile
+from isatools.model.process import Process
 
 
 def find(predictor, iterable):
@@ -44,3 +45,14 @@ def _build_assay_graph(process_sequence=None):
                     g.add_edge(previous_process_identifier, process.sequence_identifier)
                     g.indexes[previous_process_identifier] = process.prev_process
     return g
+
+
+def plink(p1, p2):
+    """
+    Function to create a link between two processes nodes of the isa graph
+    :param Process p1: node 1
+    :param Process p2: node 2
+    """
+    if isinstance(p1, Process) and isinstance(p2, Process):
+        p1.next_process = p2
+        p2.prev_process = p1

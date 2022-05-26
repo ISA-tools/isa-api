@@ -50,7 +50,7 @@ from isatools.model.sample import Sample
 from isatools.model.source import Source
 from isatools.model.study import Study
 from isatools.model.logger import log
-from isatools.model.utils import _build_assay_graph
+from isatools.model.utils import _build_assay_graph, plink
 
 
 class ProtocolComponent(Commentable):
@@ -311,14 +311,3 @@ class ISADocument:
     @property
     def valid_isajson(self):
         return True
-
-
-def plink(p1, p2):
-    """
-    Function to create a link between two processes nodes of the isa graph
-    :param Process p1: node 1
-    :param Process p2: node 2
-    """
-    if isinstance(p1, Process) and isinstance(p2, Process):
-        p1.next_process = p2
-        p2.prev_process = p1
