@@ -14,7 +14,7 @@ from jsonschema.exceptions import ValidationError
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import *
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
 from isatools.net import mtbls as MTBLS
 from isatools.net import ols
 from isatools.net import pubmed
