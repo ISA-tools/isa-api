@@ -3,7 +3,17 @@ import os
 from isatools.tests import utils
 from isatools import sampletab
 
-from isatools.model import *
+from isatools.model import (
+    Investigation,
+    OntologySource,
+    Comment,
+    OntologyAnnotation,
+    Protocol,
+    Study,
+    Characteristic,
+    Sample,
+    Process
+)
 import tempfile
 import shutil
 

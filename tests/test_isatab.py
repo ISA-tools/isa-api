@@ -11,7 +11,11 @@ from io import StringIO
 from isatools import isatab
 from isatools.io import isatab_parser
 from isatools.isatab import ProcessSequenceFactory
-from isatools.model import *
+from isatools.model import (
+    Investigation, OntologySource, Study, Comment, Protocol, OntologyAnnotation, StudyFactor,
+    Characteristic, Source, Sample, Process, Person, Publication, batch_create_materials, ProtocolParameter,
+    Assay, Material, DataFile, plink, ParameterValue, FactorValue, Extract, log
+)
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
 from isatools.isatab import IsaTabDataFrame
