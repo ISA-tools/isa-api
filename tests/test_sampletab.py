@@ -12,6 +12,7 @@ from isatools.model import (
     Study,
     Characteristic,
     Sample,
+    Source,
     Process
 )
 import tempfile
