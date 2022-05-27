@@ -9,7 +9,6 @@ from isatools.model import (
     Comment,
     OntologyAnnotation,
     Protocol,
-    Source,
     Study,
     Characteristic,
     Sample,
