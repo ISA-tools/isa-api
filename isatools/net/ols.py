@@ -3,7 +3,7 @@
 
 This module connects to the European Bioinformatics Institute's OLS.
 If you have problems with it, check that it's working at
-http://www.ebi.ac.uk/ols/
+https://www.ebi.ac.uk/ols/
 """
 from __future__ import absolute_import
 import json
@@ -13,7 +13,7 @@ from urllib.request import urlopen
 from isatools.model import OntologyAnnotation, OntologySource
 
 
-OLS_API_BASE_URI = "http://www.ebi.ac.uk/ols/api"
+OLS_API_BASE_URI = "https://www.ebi.ac.uk/ols/api"
 OLS_PAGINATION_SIZE = 500
 
 
@@ -22,12 +22,12 @@ log = logging.getLogger('isatools')
 
 def get_ols_ontologies():
     """Returns a list of OntologySource objects according to what's in OLS"""
-    ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(
+    ontologies_uri = OLS_API_BASE_URI + "/ontologies?size=" + str(
         OLS_PAGINATION_SIZE)
-    log.debug(ontologiesUri)
-    J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
+    log.debug(ontologies_uri)
+    json_payload = json.loads(urlopen(ontologies_uri).read().decode("utf-8"))
     ontology_sources = []
-    for ontology_source_json in J["_embedded"]["ontologies"]:
+    for ontology_source_json in json_payload["_embedded"]["ontologies"]:
         file = ''
         if 'href' in ontology_source_json['_links']['self'].keys():
             file = ontology_source_json['_links']['self']['href']
@@ -42,12 +42,12 @@ def get_ols_ontologies():
 
 def get_ols_ontology(ontology_name):
     """Returns a single OntologySource objects according to what's in OLS"""
-    ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(
+    ontologies_uri = OLS_API_BASE_URI + "/ontologies?size=" + str(
         OLS_PAGINATION_SIZE)
-    log.debug(ontologiesUri)
-    J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
+    log.debug(ontologies_uri)
+    json_payload = json.loads(urlopen(ontologies_uri).read().decode("utf-8"))
     ontology_sources = []
-    for ontology_source_json in J["_embedded"]["ontologies"]:
+    for ontology_source_json in json_payload["_embedded"]["ontologies"]:
         ontology_sources.append(OntologySource(
             name=ontology_source_json["ontologyId"],
             version=ontology_source_json["config"]["version"] if ontology_source_json["config"]["version"] else '',
@@ -77,9 +77,9 @@ def search_ols(term, ontology_source):
     log.debug(url)
     import requests
     req = requests.get(url)
-    J = json.loads(req.text)
+    json_payload = json.loads(req.text)
     ontology_annotations = []
-    for search_result_json in J["response"]["docs"]:
+    for search_result_json in json_payload["response"]["docs"]:
         ontology_annotations.append(
             OntologyAnnotation(
                 term=search_result_json["label"],

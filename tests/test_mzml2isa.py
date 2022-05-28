@@ -1,5 +1,6 @@
 import unittest
 import shutil
+from unittest.mock import mock, patch
 from isatools.convert import mzml2isa
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils

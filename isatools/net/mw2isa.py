@@ -9,6 +9,7 @@ import urllib
 from collections import defaultdict
 from datetime import date
 from urllib.request import urlopen
+from urllib import error
 
 from bs4 import BeautifulSoup
 
@@ -87,10 +88,10 @@ def get_archived_file(mw_study_id):
         print("connection refused \n")
     except FileNotFoundError:
         print("file not found on server \n")
-    else:
-        success = False
-        # print("someone broke the internet")
-        return success
+    # else:
+    #     success = False
+    #     # print("someone broke the internet")
+    #     return success
 
 # a method to create an EBI Metabolights MAF file from Metabolomics Workbench
 # REST API over data and metabolites
@@ -101,10 +102,10 @@ def get_archived_file(mw_study_id):
 def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
     try:
         data_url = \
-            "http://www.metabolomicsworkbench.org/rest/study/study_id/" \
+            "https://www.metabolomicsworkbench.org/rest/study/study_id/" \
             + mw_study_id + "/data"
         metabolites_url = \
-            "http://www.metabolomicsworkbench.org/rest/study/study_id/" \
+            "https://www.metabolomicsworkbench.org/rest/study/study_id/" \
             + mw_study_id + "/metabolites"
 
         with urllib.request.urlopen(data_url) as url:
@@ -704,11 +705,12 @@ def create_ms_assay_records(
         pv_ms_type = ""
         pv_ms_ion_mode = ""
         pv_ms_instrument = ""
-        pv_ms_acquisitionfile = ""
-        pv_ms_analysisfile = ""
+        pv_ms_instrument_type = ""
+        pv_ms_acquisition_file = ""
+        pv_ms_analysis_file = ""
         pv_ms_sw_version = ""
         raw_data_file = ""
-        ms_rawdata_qt = "NA"
+        ms_raw_data_qt = "NA"
         maf_file = ""
         ms_maf_qt = "NA"
 
@@ -797,14 +799,14 @@ def create_ms_assay_records(
                 pv_ms_ion_mode = row_item[1]
 
             if "AN:ACQUISITION_PARAMETERS_FILE" in row_item[0]:
-                pv_ms_acquisitionfile = row_item[1]
+                pv_ms_acquisition_file = row_item[1]
                 # protocol_files[3] = row_item[1]
 
             if "AN:SOFTWARE_VERSION" in row_item[0]:
                 pv_ms_sw_version = row_item[1]
 
             if "MS_ALL_DATA:UNITS" in row_item[0] and len(row_item) > 1:
-                ms_rawdata_qt = row_item[1]
+                ms_raw_data_qt = row_item[1]
 
             if "MS_ALL_DATA_START" in row_item[0]:
                 raw_data_file = str(
@@ -835,11 +837,11 @@ def create_ms_assay_records(
             pv_ms_instrument_type,
             pv_ms_type,
             pv_ms_ion_mode,
-            pv_ms_acquisitionfile,
+            pv_ms_acquisition_file,
             "",
             raw_data_file,
             "identification protocol",
-            pv_ms_analysisfile,
+            pv_ms_analysis_file,
             pv_ms_sw_version,
             "",
             raw_data_file,
@@ -848,20 +850,17 @@ def create_ms_assay_records(
             maf_file,
         ]
 
-        # print("assay workflow: ", str(assay_wf_backbone_record))
         assayrecords.append(assay_wf_record)
 
         # creating assay records
-        longrecords = {}
+        long_records = {}
         full_assay_record = assay_wf_backbone_record
 
         for fv_record in fv_records:
-            # print("factors:", fv_record)
-            longrecords[fv_record[3]] = [full_assay_record]
-            # print("full assay record: ",fv_record[3], ": ",
-            # longrecords[fv_record[3]])
+            long_records[fv_record[3]] = [full_assay_record]
+            # long_records[fv_record[3]])
 
-        return longrecords, assay_wf_header, ms_rawdata_qt, ms_maf_qt
+        return long_records, assay_wf_header, ms_raw_data_qt, ms_maf_qt
     except BaseException:
         print("Error: in create_ms_assay_records() method.")
 
@@ -875,7 +874,6 @@ def get_organism_with_taxid(lol):
                 that_species = this_row[1]
             if "SU:TAXONOMY_ID" in this_row[0]:
                 that_taxid = this_row[1]
-        # print("species & TaxID :", that_species, that_taxid)
         return that_species, that_taxid
     except Exception as e:
         logging.exception(e)
@@ -885,26 +883,26 @@ def get_organism_with_taxid(lol):
 def get_fv_records(lol):
     records = []
     factors = {}
-    restofrecordheader = []
+    rest_of_record_header = []
 
     for current_row in lol:
         if "SUBJECT_SAMPLE_FACTORS" in str(current_row) \
                 and "#" not in str(current_row):
-            # print('row from get_fv_records', row)
-            if len(current_row) > 2:
-                newrecord = []
-                if current_row[1] != "-":
-                    newrecord.append(current_row[1])
-                else:
-                    newrecord.append(current_row[2])
 
-                newrecord.append(current_row[2])
+            if len(current_row) > 2:
+                new_record = []
+                if current_row[1] != "-":
+                    new_record.append(current_row[1])
+                else:
+                    new_record.append(current_row[2])
+
+                new_record.append(current_row[2])
 
                 if "|" in current_row[3]:
                     for item in current_row[3].split("|"):
                         factor, value = item.split(":")
                         factor = factor.strip()
-                        newrecord.append(value.strip())
+                        new_record.append(value.strip())
 
                         if factor in factors.keys():
                             factors[factor] += 1
@@ -923,14 +921,14 @@ def get_fv_records(lol):
                     else:
                         factors[factor] = 1
 
-                    newrecord.append(value)
+                    new_record.append(value)
 
-                records.append(newrecord)
+                records.append(new_record)
 
     for my_key in factors.keys():
-        restofrecordheader.append("Factor Value[" + my_key + "]")
+        rest_of_record_header.append("Factor Value[" + my_key + "]")
 
-    return records, factors, restofrecordheader
+    return records, factors, rest_of_record_header
 
 
 def get_mwfile_as_lol(input_url):
@@ -948,14 +946,13 @@ def get_mwfile_as_lol(input_url):
               "read data ")
 
 # a method to write an ISA study file
-# a
 
 
-def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
+def write_study_file(write_dir, study_acc_num, study_file_header, long_records):
 
     try:
         this_study_filename = "s_" + study_acc_num + ".txt"
-        # print("study filename: ",this_study_filename)
+
         # /Users/Philippe/Documents/git/MW2ISA
         studyfilepath = write_dir + "/" + study_acc_num
         if not os.path.exists(studyfilepath):
@@ -967,12 +964,11 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
             # studyfileheader = studyfileheader+factorheader
             for this_element in study_file_header:
                 study_file.write('"{0}"'.format(this_element))
-                # print('"{0}"'.format(this_element))
                 study_file.write('\t')
             study_file.write("\n")
 
             # writing study records to file
-            for each in longrecords:
+            for each in long_records:
                 # this is to reorder fields following the merge
                 each[0], each[1], each[2], each[3] = \
                     each[3], each[0], each[1], each[2]
@@ -992,17 +988,9 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
             print("IOError in write_study_file method(): "
                   "can not write to file.")
 
-        # else:
-        #   print("Error in write_study_file method()
-        # -something went wrong while trying to write but don't know why!")
-
     except IOError:
         print("IOError in write_study_file() method: "
               "can not open file or read data ")
-    # else:
-    #     print("doh, something went wrong but
-    # don't know why in write_study_file method()!")
-
 
 # METHOD: given a Metabolomics Workbench Identifier, download the
 # corresponding zip archive via anonymous FTP
@@ -1057,9 +1045,8 @@ def mw2isa_convert(**kwargs):
 
     conversion_success = True
     try:
-
         options.update(kwargs)
-        print("user options", options)
+        # print("user options", options)
         studyid = options['studyid']
         outputdir = options['outputdir']
         dl_option = options['dl_option']
@@ -1073,68 +1060,61 @@ def mw2isa_convert(**kwargs):
         # checking MW study accession number is conform:
         if not re.match(r"(^ST\d{6})", studyid):
 
-            print("this is not a MW accession number, please try again")
+            print("This is not a MW accession number, please try again")
 
         else:
-            study_url = "http://www.metabolomicsworkbench.org/rest/study/" \
+            study_url = "https://www.metabolomicsworkbench.org/rest/study/" \
                         "study_id/" + studyid + "/analysis"
 
             with urllib.request.urlopen(study_url) as url:
                 study_response = url.read().decode('utf8')
                 analyses = json.loads(study_response)
-                # print("study analysis", analyses)
                 if "1" in analyses.keys():
                     print("several analysis")
                     for key in analyses.keys():
                         tt = analyses[key]["analysis_type"]
-                        print("analysis_type:", tt)
+                        # print("analysis_type:", tt)
                 else:
-                    print("Technology is: ", analyses["analysis_type"])
+                    # print("Technology is: ", analyses["analysis_type"])
                     tt = analyses["analysis_type"]
 
-            print("proceeding with MW study identifier: ", studyid,
-                  "and technology:", tt)
-            # studyid = "ST000367"
-            # tt = "MS"
-            outputpath = outputdir + "/" + studyid + "/"
-            if not os.path.exists(outputpath):
-                os.makedirs(outputpath)
+            print("proceeding with MW study identifier: ", studyid, "and technology:", tt)
+            output_path = outputdir + "/" + studyid + "/"
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
 
-            baseurl = "http://www.metabolomicsworkbench.org/data/" \
+            baseurl = "https://www.metabolomicsworkbench.org/data/" \
                       "DRCCMetadata.php?Mode=Study&DataMode="
             page_url = baseurl + tt + "Data&StudyID=" + studyid + \
                 "&StudyType=" + tt + "&ResultType=1#DataTabs"
             page = urlopen(page_url).read()
             soup = BeautifulSoup(page, "html.parser")
-            AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
+            analysis_param_table = soup.findAll("table", {'class': "datatable2"})
 
-            # analysisid = ""
+            # analysis_id = ""
             # assay_types = []
             # isa_assay_names = []
             # isa_assay_names_with_dlurl = {}
 
-            downLoadURI = "http://www.metabolomicsworkbench.org/data/" \
-                          "study_textformat_view.php?STUDY_ID=" + studyid \
-                          + "&ANALYSIS_ID="
+            download_uri = "https://www.metabolomicsworkbench.org/data/" \
+                           "study_textformat_view.php?STUDY_ID=" + studyid \
+                           + "&ANALYSIS_ID="
 
             study_assays_dict = {"study_id": studyid, "assays": []}
-            for table in AnalysisParamTable:
-                # ltab = len(table)
-                # index = 0
+            for table in analysis_param_table:
                 for index, obj in enumerate(table):
                     if "Analysis ID:" in str(obj):
                         tds = obj.find_all('td')
-                        analysisid = tds[1].text
-                        # print(index,"analysis ID", table.tr.next(),
-                        # analysisid)
+                        analysis_id = tds[1].text
+
                         if "MS" in str(table.tr.next()):
                             tt = "mass spectrometry"
                             study_assays_dict["assays"].append(
-                                {"analysis_id": analysisid, "techtype": tt})
+                                {"analysis_id": analysis_id, "techtype": tt})
                         elif "NMR" in str(table.tr.next()):
                             tt = "nmr spectroscopy"
                             study_assays_dict["assays"].append(
-                                {"analysis_id": analysisid, "techtype": tt})
+                                {"analysis_id": analysis_id, "techtype": tt})
 
             # DOC: This print statement shows we are getting all the possible
             # analysis for a given study
@@ -1201,8 +1181,8 @@ def mw2isa_convert(**kwargs):
             study_person_address = ""
             # study_person_phone = ""
             study_person_fax = ""
-            study_createdon = ""
-            study_submittedon = ""
+            study_created_on = ""
+            study_submitted_on = ""
             # study_convertedon = ""
             # study_num_group = ""
             # study_total_subj = ""
@@ -1227,17 +1207,17 @@ def mw2isa_convert(**kwargs):
             # and they all share common section and information about samples
             #  and protocols so we get the first file
             # to prime.
-            analysisid = study_assays_dict["assays"][0]["analysis_id"]
-            downLoadURI = downLoadURI + analysisid + "&MODE=d"
-            # Going over the firt MWtab and loading it as an array of lines
-            thisFileContent = get_mwfile_as_lol(downLoadURI)
+            analysis_id = study_assays_dict["assays"][0]["analysis_id"]
+            download_uri = download_uri + analysis_id + "&MODE=d"
+            # Going over the first MWtab and loading it as an array of lines
+            this_file_content = get_mwfile_as_lol(download_uri)
 
             # Generating the ISA Study Sample Table stub from MW Tab file
             # Factor section:
             study_factor_records, study_factors, fv_record_header = \
-                get_fv_records(thisFileContent)
+                get_fv_records(this_file_content)
             # Getting Sample Organism information:
-            species, taxonid = get_organism_with_taxid(thisFileContent)
+            species, taxonid = get_organism_with_taxid(this_file_content)
             # Inserting the taxonomic information in the ISA Study
             # Sample Table stub.
             for each_record in study_factor_records:
@@ -1260,9 +1240,9 @@ def mw2isa_convert(**kwargs):
             study1 = investigation.studies[0]
             study1.comments = list()
 
-            # Scannning the MWTab file for common information and setting
+            # Scanning the MWTab file for common information and setting
             # values to variables
-            for row in thisFileContent:
+            for row in this_file_content:
 
                 if str(row[0]).startswith('VERSIO'):
                     # study_version = row[1]
@@ -1270,12 +1250,12 @@ def mw2isa_convert(**kwargs):
                         name="Version", value=row[1]))
 
                 if row[0].find('CREATED_ON') != -1:
-                    study_createdon = row[1]
+                    study_created_on = row[1]
                     study1.comments.append(Comment(
                         name="MW creation date", value=row[1]))
 
                 if row[0].find('ST:SUBMIT_DATE') != -1:
-                    study_submittedon = row[1]
+                    study_submitted_on = row[1]
                     study1.comments.append(Comment(
                         name="MW submission date", value=row[1]))
 
@@ -2001,13 +1981,13 @@ def mw2isa_convert(**kwargs):
 
             study1.title = study_title
             study1.description = str(study_desc)
-            study1.submission_date = study_submittedon
-            study1.public_release_date = study_createdon
+            study1.submission_date = study_submitted_on
+            study1.public_release_date = study_created_on
             study1.design_descriptors = [oa_st_design]
             study1.filename = str(study_filename)
 
             for element in study_assays_dict["assays"]:
-                # print("in study_assays_dict: ",element)
+
                 if element["techtype"] == "mass spectrometry":
                     print("detected technology type:", element["techtype"])
                     orefTT = OntologySource(
@@ -2025,29 +2005,29 @@ def mw2isa_convert(**kwargs):
 
                     this_assay_file = "a_" + str(studyid) + "_" + \
                                       str(element["analysis_id"]) + ".txt"
-                    # print("this assay_file:", this_assay_file)
+
                     this_assay = Assay(measurement_type=oaTT,
                                        technology_type=oaMT,
                                        filename=this_assay_file)
                     study1.assays.append(this_assay)
 
-                    downLoadURI = "http://www.metabolomicsworkbench.org/" \
-                                  "data/study_textformat_view.php?STUDY_ID=" \
-                                  + studyid \
-                                  + "&ANALYSIS_ID="
+                    download_uri = "https://www.metabolomicsworkbench.org/" \
+                                   "data/study_textformat_view.php?STUDY_ID=" \
+                                   + studyid \
+                                   + "&ANALYSIS_ID="
 
-                    downLoadURI = downLoadURI + element["analysis_id"] \
+                    download_uri = download_uri + element["analysis_id"] \
                         + "&MODE=d"
 
                     create_raw_data_files(
-                        outputdir, tt, downLoadURI, studyid,
+                        outputdir, tt, download_uri, studyid,
                         element["analysis_id"])
 
                     generate_maf_file(outputdir,
                                       studyid, element["analysis_id"])
 
                     assay_records, assay_header, qt1, qt2 = \
-                        create_ms_assay_records(downLoadURI,
+                        create_ms_assay_records(download_uri,
                                                 studyid,
                                                 element["analysis_id"],
                                                 study_factor_records)
@@ -2078,24 +2058,23 @@ def mw2isa_convert(**kwargs):
                                        technology_type=oaMT,
                                        filename=this_assay_file)
                     study1.assays.append(this_assay)
-                    # print("is it here?", study1.name)
 
-                    downLoadURI = "http://www.metabolomicsworkbench.org/" \
-                                  "data/study_textformat_view.php?STUDY_ID=" +\
-                                  studyid + "&ANALYSIS_ID="
+                    download_uri = "https://www.metabolomicsworkbench.org/" \
+                                   "data/study_textformat_view.php?STUDY_ID=" +\
+                                   studyid + "&ANALYSIS_ID="
 
-                    downLoadURI = \
-                        downLoadURI + element["analysis_id"] + "&MODE=d"
+                    download_uri = \
+                        download_uri + element["analysis_id"] + "&MODE=d"
                     print("invoking create_raw_data_method for NMR data now\n")
                     create_raw_data_files(
-                        outputdir, tt, downLoadURI, studyid,
+                        outputdir, tt, download_uri, studyid,
                         element["analysis_id"])
 
                     generate_maf_file(
                         outputdir, studyid, element["analysis_id"])
 
                     assay_records, assay_header, qt1, qt2 = \
-                        create_nmr_assay_records(downLoadURI,
+                        create_nmr_assay_records(download_uri,
                                                  studyid,
                                                  element["analysis_id"],
                                                  study_factor_records)
@@ -2288,19 +2267,15 @@ def mw2isa_convert(**kwargs):
             try:
                 print("writing 'investigation information' to file...")
                 print(isatab.dumps(investigation))
-                isatab.dump(investigation, outputpath)
+                isatab.dump(investigation, output_path)
             except IOError:
                 print("Error: in main() method can\'t open file or write data")
-            # else:
-            #  print("doh, something went wrong while writing investigation
-            # but don't know why!: from main method")
 
-            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE
-            # FROM MW ANONYMOUS FTP:
+            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
             if dl_option == 'yes':
                 get_archived_file(studyid)
             elif dl_option == 'no':
-                print('user elected not to dowload raw data')
+                print('user elected not to download raw data')
             else:
                 print('user input not recognized')
 

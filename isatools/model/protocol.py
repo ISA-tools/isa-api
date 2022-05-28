@@ -188,6 +188,7 @@ class Protocol(Commentable):
         else:
             raise AttributeError('Protocol.components must be iterable containing OntologyAnnotations')
 
+
     def __repr__(self):
         return ("isatools.model.Protocol(name='{protocol.name}', "
                 "protocol_type={protocol_type}, "
