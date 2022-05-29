@@ -236,11 +236,7 @@ class Investigation(Commentable, MetadataMixin, object):
             "ontologySourceReferences": [
                 ontology_source.to_dict() for ontology_source in self.ontology_source_references
             ],
-            "people": [
-                person.to_dict() for person in self.contacts
-            ],
-            "publications": [
-                publication.to_dict() for publication in self.publications
-            ],
-            "studies": []
+            "people": [person.to_dict() for person in self.contacts],
+            "publications": [publication.to_dict() for publication in self.publications],
+            "studies": [study.to_dict() for study in self.studies]
         }

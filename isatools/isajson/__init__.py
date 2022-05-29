@@ -6,4 +6,4 @@ https://isa-specs.readthedocs.io/en/latest/isajson.html
 
 from isatools.isajson.load import load
 from isatools.isajson.dump import ISAJSONEncoder
-from isatools.isajson.validate import validate, batch_validate, default_config_dir
+from isatools.isajson.validate import validate, batch_validate, default_config_dir, load_config

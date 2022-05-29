@@ -649,6 +649,7 @@ def check_term_accession_used_no_source_ref(isa_json):
 
 
 def load_config(config_dir):
+    print('CONFIG at: ', config_dir)
     import json
     configs = dict()
     for file in glob.iglob(os.path.join(config_dir, "*.json")):
@@ -793,9 +794,10 @@ def check_study_groups(study_or_assay):
 
 
 BASE_DIR = os.path.dirname(__file__)
-default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
+default_config_dir = os.path.join(BASE_DIR, "..", "resources", "config", "json", "default")
 default_isa_json_schemas_dir = os.path.join(
     BASE_DIR,
+    "..",
     "resources",
     "schemas",
     "isa_model_version_1_0_schemas",
@@ -830,7 +832,8 @@ def validate(
         isa_json = json.load(fp=fp)  # Rule 0002
         log.info("Validating JSON against schemas using Draft4Validator")
         check_isa_schemas(isa_json=isa_json,
-                          investigation_schema_path=os.path.join(BASE_DIR, "resources", "schemas", base_schemas_dir,
+                          investigation_schema_path=os.path.join(BASE_DIR,
+                                                                 "..", "resources", "schemas", base_schemas_dir,
                                                                  "core", "investigation_schema.json"))  # Rule 0003
         log.info("Checking if material IDs used are declared...")
         for study_json in isa_json["studies"]:
