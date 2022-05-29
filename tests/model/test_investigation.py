@@ -3,7 +3,11 @@ from unittest import TestCase
 
 from isatools.model.investigation import Investigation
 from isatools.model.ontology_source import OntologySource
+from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.study import Study
+from isatools.model.person import Person
+from isatools.model.publication import Publication
+from isatools.model.comments import Comment
 
 
 class InvestigationTest(TestCase):
@@ -123,3 +127,96 @@ class InvestigationTest(TestCase):
         self.assertNotEqual(
             hash(expected_other_investigation), hash(self.investigation))
 
+    def test_to_dict(self):
+        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '', 'submissionDate': '', 'comments': [],
+                         'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []}
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        # Test string fields
+        expected_dict['identifier'] = 'id_1'
+        expected_dict['title'] = 'Title'
+        expected_dict['publicReleaseDate'] = 'why am I a string ?'
+        expected_dict['submissionDate'] = 'why am I a string ?'
+        self.investigation.title = 'Title'
+        self.investigation.identifier = "id_1"
+        self.investigation.public_release_date = "why am I a string ?"
+        self.investigation.submission_date = "why am I a string ?"
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        # Test comments
+        self.investigation.comments = [Comment(name='comment'), Comment(name='comment1', value='value1')]
+        expected_dict['comments'] = [{'name': 'comment', 'value': ''}, {'name': 'comment1', 'value': 'value1'}]
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        # Test ontology source references
+        self.investigation.ontology_source_references = [
+            OntologySource(name='name1', comments=[Comment(name='comment')]),
+            OntologySource(name='name2', version='version2')
+        ]
+        expected_dict['ontologySourceReferences'] = [
+            {
+                'name': 'name1',
+                'version': '',
+                'comments': [{'name': 'comment', 'value': ''}],
+                'file': '',
+                'description': ''
+            },
+            {'name': 'name2', 'version': 'version2', 'comments': [], 'file': '', 'description': ''},
+        ]
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        # Test people/contacts
+        self.investigation.contacts = [
+            Person(first_name='first_name1', last_name='last_name1', email='email1',
+                   roles=[OntologyAnnotation(term='role1', id_='id1')]),
+            Person(first_name='first_name2')
+        ]
+        expected_dict['people'] = [
+            {
+                'address': '',
+                'affiliation': '',
+                'comments': [], 'email':
+                'email1', 'fax': '',
+                'firstName': 'first_name1',
+                'lastName': 'last_name1',
+                'midInitials': '', 'phone': '',
+                'roles': [
+                    {
+                        '@id': '#ontology_annotation/id1',
+                        'annotationValue': 'role1',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []
+                    }
+                ]
+            },
+            {
+                'address': '',
+                'affiliation': '',
+                'comments': [],
+                'email': '',
+                'fax': '',
+                'firstName': 'first_name2',
+                'lastName': '',
+                'midInitials': '',
+                'phone': '',
+                'roles': []
+            }]
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        # Test publications
+        self.assertEqual(self.investigation.publications, [])
+        self.investigation.publications = [
+            Publication(pubmed_id='pubmed_id', doi='doi', status='status', author_list='a, b, c')
+        ]
+        expected_dict['publications'] = [
+            {
+                'authorList': 'a, b, c',
+                'comments': [],
+                'doi': 'doi',
+                'pubMedID': 'pubmed_id',
+                'status': 'status',
+                'title': ''
+            }
+        ]
+        self.assertEqual(expected_dict, self.investigation.to_dict())

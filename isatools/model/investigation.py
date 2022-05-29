@@ -217,8 +217,7 @@ class Investigation(Commentable, MetadataMixin, object):
                and self.title == other.title \
                and self.submission_date == other.submission_date \
                and self.public_release_date == other.public_release_date \
-               and self.ontology_source_references \
-               == other.ontology_source_references \
+               and self.ontology_source_references == other.ontology_source_references \
                and self.publications == other.publications \
                and self.contacts == other.contacts \
                and self.studies == other.studies \
@@ -226,3 +225,22 @@ class Investigation(Commentable, MetadataMixin, object):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            "identifier": self.identifier,
+            "title": self.title,
+            "publicReleaseDate": self.public_release_date,
+            "submissionDate": self.submission_date,
+            "comments": [comment.to_dict() for comment in self.comments],
+            "ontologySourceReferences": [
+                ontology_source.to_dict() for ontology_source in self.ontology_source_references
+            ],
+            "people": [
+                person.to_dict() for person in self.contacts
+            ],
+            "publications": [
+                publication.to_dict() for publication in self.publications
+            ],
+            "studies": []
+        }

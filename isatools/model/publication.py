@@ -119,3 +119,16 @@ class Publication(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        status = self.status if self.status else {"@id": ''}
+        if isinstance(self.status, OntologyAnnotation):
+            status = self.status.to_dict()
+        return {
+            "authorList": self.author_list,
+            "doi": self.doi,
+            "pubMedID": self.pubmed_id,
+            "status": status,
+            "title": self.title,
+            "comments": [comment.to_dict() for comment in self.comments]
+        }

@@ -1,5 +1,6 @@
 from unittest import TestCase
-from isatools.model import OntologySource, Commentable
+from isatools.model.ontology_source import OntologySource
+from isatools.model.comments import Commentable, Comment
 
 
 class TestOntologySource(TestCase):
@@ -80,3 +81,18 @@ class TestOntologySource(TestCase):
             self.ontology_source.validate_field(1, 'name')
         self.assertTrue("OntologySource.name must be a str; got 1:<class 'int'>" in str(context.exception))
         self.assertIsNone(self.ontology_source.validate_field('test_name', 'name'))
+
+    def test_to_dict(self):
+        ontology_source = OntologySource(name='name1',
+                                         version='version1',
+                                         file='file1',
+                                         description='description1',
+                                         comments=[Comment(name='commentA', value='valueA')])
+        expected_dict = {
+            'name': 'name1',
+            'version': 'version1',
+            'comments': [{'name': 'commentA', 'value': 'valueA'}],
+            'file': 'file1',
+            'description': 'description1'
+        }
+        self.assertEqual(ontology_source.to_dict(), expected_dict)

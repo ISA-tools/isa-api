@@ -104,3 +104,16 @@ class OntologyAnnotation(Commentable):
 
     def __ne__(self, other: Any) -> bool:
         return not self == other
+
+    def to_dict(self):
+        term_source = "" if not self.term_source else self.term_source
+        if self.term_source and isinstance(self.term_source, OntologySource):
+            term_source = self.term_source.name
+
+        return {
+            '@id': '#ontology_annotation/' + self.id,
+            'annotationValue': self.term,
+            'termSource': term_source,
+            'termAccession': self.term_accession,
+            'comments': [comment.to_dict() for comment in self.comments]
+        }

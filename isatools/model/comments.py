@@ -51,6 +51,12 @@ class Comment(object):
     def __ne__(self, other: Any):
         return not self == other
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "value": self.value
+        }
+
 
 class Commentable(metaclass=ABCMeta):
     """Abstract class to enable containment of Comments

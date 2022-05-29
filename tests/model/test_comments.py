@@ -45,6 +45,10 @@ class TestComment(unittest.TestCase):
         self.assertTrue(error_msg in str(context.exception))
         self.comment.value = 'new value'
 
+    def test_to_dict(self):
+        expected_dict = {'name': 'test_name', 'value': 'test_value'}
+        self.assertTrue(self.comment.to_dict() == expected_dict)
+
 
 class TestCommentable(unittest.TestCase):
 
