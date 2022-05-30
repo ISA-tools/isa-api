@@ -228,6 +228,25 @@ class Protocol(Commentable):
     def __ne__(self, other):
         return not self == other
 
+    def to_dict(self):
+        protocol_parameters = []
+        for parameter in self.parameters:
+            protocol_parameters.append({
+                "parameterName": parameter.parameter_name.to_dict(),  # parameter.to_dict(),
+                "@id": "SET ID"
+            })
+        return {
+            '@id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'uri': self.uri,
+            'version': self.version,
+            'comments': [comment.to_dict() for comment in self.comments],
+            'parameters': protocol_parameters,
+            'protocolType': self.protocol_type.to_dict() if self.protocol_type else {},
+            'components': []
+        }
+
 
 def load_protocol_types_info() -> dict:
     """ Load the protocol types info from the YAML protocol types file

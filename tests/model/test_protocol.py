@@ -3,6 +3,7 @@ from unittest.mock import patch
 from isatools.model.protocol import Protocol, load_protocol_types_info
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.comments import Comment
 
 expected_ProtocolParameter_string = ("ProtocolParameter(\n\t"
                                      "parameter_name=test_parameters\n\t"
@@ -180,6 +181,36 @@ class TestProtocol(TestCase):
         third_protocol = Protocol(name='test_name', version='1.0')
         self.assertTrue(second_protocol == third_protocol)
         self.assertTrue(second_protocol != self.protocol)
+
+    def test_to_dict(self):
+        expected_dict = {
+            '@id': '#protocol/test_id',
+            'name': 'test_name', 'version': '1.0', 'description': '', 'uri': '',
+            'comments': [{'name': 'test_comment', 'value': ''}],
+            'parameters': [
+                {
+                    'parameterName': {
+                        '@id': '#ontology_annotation/pm_id',
+                        'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
+                    },
+                    '@id': 'SET ID'
+                 }
+            ],
+            'protocolType': {
+                '@id': '#ontology_annotation/oa_id',
+                'annotationValue': 'test_protocol_type',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []},
+            'components': []}
+        protocol = Protocol(name='test_name', version='1.0',
+                            id_='#protocol/test_id',
+                            comments=[Comment(name='test_comment')],
+                            parameters=[
+                                ProtocolParameter(parameter_name=OntologyAnnotation(term='test_parameter', id_='pm_id'))
+                            ],
+                            protocol_type=OntologyAnnotation(term='test_protocol_type', id_='oa_id'))
+        self.assertEqual(protocol.to_dict(), expected_dict)
 
 
 class TestFunctions(TestCase):

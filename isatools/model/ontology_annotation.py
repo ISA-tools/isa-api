@@ -110,8 +110,12 @@ class OntologyAnnotation(Commentable):
         if self.term_source and isinstance(self.term_source, OntologySource):
             term_source = self.term_source.name
 
+        id_ = self.id
+        if not self.id.startswith('#ontology_annotation/'):
+            id_ = '#ontology_annotation/' + self.id
+
         return {
-            '@id': '#ontology_annotation/' + self.id,
+            '@id': id_,
             'annotationValue': self.term,
             'termSource': term_source,
             'termAccession': self.term_accession,

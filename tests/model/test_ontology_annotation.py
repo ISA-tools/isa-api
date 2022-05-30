@@ -84,6 +84,9 @@ class TestOntologyAnnotation(TestCase):
             'comments': []
         }
         self.assertTrue(ontology_annotation.to_dict() == expected_dict)
+        ontology_annotation.id = 'test_id1'
+        expected_dict['@id'] = '#ontology_annotation/test_id1'
+        self.assertTrue(ontology_annotation.to_dict() == expected_dict)
 
         ontology_annotation.term_source = None
         expected_dict['termSource'] = ''
