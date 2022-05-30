@@ -81,3 +81,23 @@ class TestPublication(TestCase):
         third_publication = Publication(doi='123', pubmed_id='123', author_list='123', title='123', status=None)
         self.assertTrue(second_publication == third_publication)
         self.assertTrue(second_publication != self.publication)
+
+    def test_to_dict(self):
+        publication = Publication(pubmed_id='pubmed_id', doi='doi', author_list='a, b, c',
+                                  status=OntologyAnnotation(term='OA', id_='123'))
+        expected_dict = {
+            'authorList': 'a, b, c',
+            'doi': 'doi', 'pubMedID':
+                'pubmed_id',
+            'status': {
+                '@id': '#ontology_annotation/123',
+                'annotationValue': 'OA',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []},
+            'title': '',
+            'comments': []}
+        self.assertEqual(publication.to_dict(), expected_dict)
+        publication.status = None
+        expected_dict['status'] = {"@id": ''}
+        self.assertEqual(publication.to_dict(), expected_dict)

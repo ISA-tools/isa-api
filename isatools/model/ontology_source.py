@@ -115,3 +115,12 @@ class OntologySource(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'file': self.file,
+            'version': self.version,
+            'description': self.description,
+            'comments': [comment.to_dict() for comment in self.comments]
+        }

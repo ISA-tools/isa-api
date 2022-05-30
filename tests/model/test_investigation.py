@@ -123,3 +123,7 @@ class InvestigationTest(TestCase):
         self.assertNotEqual(
             hash(expected_other_investigation), hash(self.investigation))
 
+    def test_to_dict(self):
+        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '', 'submissionDate': '', 'comments': [],
+                         'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []}
+        self.assertEqual(self.investigation.to_dict(), expected_dict)

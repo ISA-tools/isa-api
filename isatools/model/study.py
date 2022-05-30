@@ -329,3 +329,30 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         for assay in self.assays:
             for target in targets:
                 assay.shuffle_materials(target)
+
+    def to_dict(self):
+        return {
+            "filename": self.filename,
+            "identifier": self.identifier,
+            "title": self.title,
+            "description": self.description,
+            "submissionDate": self.submission_date,
+            "publicReleaseDate": self.public_release_date,
+            "publications": [publication.to_dict() for publication in self.publications],
+            "people": [person.to_dict() for person in self.contacts],
+            "studyDesignDescriptors": [
+                ontology_annotation.to_dict() for ontology_annotation in self.design_descriptors
+            ],
+            "protocols": [],
+            "materials": {
+                "sources": [],
+                "samples": [],
+                "otherMaterials": []
+            },
+            "processSequence": [],
+            "factors": [],
+            "characteristicCategories": [],
+            "unitCategories": [],
+            "comments": [comment.to_dict() for comment in self.comments],
+            "assays": []
+        }

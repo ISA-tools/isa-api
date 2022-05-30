@@ -204,3 +204,17 @@ class Person(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            "address": self.address,
+            "affiliation": self.affiliation,
+            "comments": [comment.to_dict() for comment in self.comments],
+            "email": self.email,
+            "fax": self.fax,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
+            "midInitials": self.mid_initials,
+            "phone": self.phone,
+            "roles": [role.to_dict() for role in self.roles]
+        }

@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 from isatools.model.person import Person
 from isatools.model.ontology_annotation import OntologyAnnotation
 
@@ -160,3 +161,38 @@ class TestPerson(TestCase):
         b_person = Person(last_name='blog')
         self.assertTrue(a_person == b_person)
         self.assertTrue(a_person != self.person)
+
+    @patch('isatools.model.ontology_annotation.uuid4', return_value="mocked_UUID")
+    def test_to_dict(self, mock_uuid4):
+        person = Person(
+            address='test_address',
+            last_name='last_name',
+            first_name='first_name',
+            mid_initials='mid_initials',
+            phone='test_phone',
+            affiliation='affiliation',
+            email='email@test.com',
+            fax='fax',
+            roles=[OntologyAnnotation(term='test_term', term_accession='test_term_accession')]
+        )
+        expected_dict = {
+            'address': 'test_address',
+            'affiliation': 'affiliation',
+            'comments': [],
+            'email': 'email@test.com',
+            'fax': 'fax',
+            'firstName': 'first_name',
+            'lastName': 'last_name',
+            'midInitials': 'mid_initials',
+            'phone': 'test_phone',
+            'roles': [
+                {
+                    '@id': '#ontology_annotation/mocked_UUID',
+                    'annotationValue': 'test_term',
+                    'termSource': '',
+                    'termAccession': 'test_term_accession',
+                    'comments': []
+                }
+            ]
+        }
+        self.assertTrue(person.to_dict() == expected_dict)
