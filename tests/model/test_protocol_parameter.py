@@ -43,7 +43,7 @@ class TestProtocolParameter(TestCase):
 
     def test_equality(self):
         protocol_parameter.parameter_name = 'test_parameter_name'
-        another_protocol_parameter = ProtocolParameter(id_=1, parameter_name='another_parameter_name')
+        another_protocol_parameter = ProtocolParameter(id_="1", parameter_name='another_parameter_name')
         self.assertTrue(protocol_parameter != another_protocol_parameter)
         self.assertFalse(protocol_parameter == another_protocol_parameter)
         self.assertEqual(protocol_parameter, ProtocolParameter(parameter_name='test_parameter_name'))

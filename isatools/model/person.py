@@ -1,8 +1,9 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.identifiable import Identifiable
 
 
-class Person(Commentable):
+class Person(Commentable, Identifiable):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
@@ -32,7 +33,7 @@ class Person(Commentable):
                  affiliation='',
                  roles=None,
                  comments=None):
-        super().__init__(comments)
+        super().__init__(comments=comments)
 
         self.id = id_
         self.__last_name = last_name

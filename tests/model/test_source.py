@@ -2,6 +2,7 @@ from unittest import TestCase
 from isatools.model.source import Source
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
+from isatools.model.comments import Comment
 
 expected_repr = "isatools.model.Source(name='', characteristics=[], comments=[])"
 
@@ -9,7 +10,7 @@ expected_repr = "isatools.model.Source(name='', characteristics=[], comments=[])
 class TestSource(TestCase):
 
     def setUp(self):
-        self.source = Source()
+        self.source = Source(id_='test_id')
         self.ontology_annotation = OntologyAnnotation(term='test_term')
 
     def test_init(self):
@@ -20,7 +21,7 @@ class TestSource(TestCase):
 
     def test_getters(self):
         self.assertTrue(self.source.name == '')
-        self.assertTrue(self.source.id == '')
+        self.assertTrue(self.source.id == 'test_id')
 
     def test_name(self):
         self.assertTrue(self.source.name == '')
@@ -79,3 +80,26 @@ class TestSource(TestCase):
         source_b = Source(name='sars-cov2', characteristics=None)
         self.assertTrue(source_a == source_b)
         self.assertTrue(source_a != self.source)
+
+    def test_to_dict(self):
+        self.source.id = 'test_id'
+        self.source.comments = [Comment(name='test_comment')]
+        expected_dict = {
+            '@id': "test_id",
+            'name': '',
+            'characteristics': [],
+            'comments': [{'name': 'test_comment', 'value': ''}]
+        }
+        self.assertEqual(self.source.to_dict(), expected_dict)
+
+        ontology_annotation = OntologyAnnotation(term='test_term', id_='test_id')
+        self.source.characteristics = [Characteristic(category=ontology_annotation)]
+        expected_dict['characteristics'] = [
+            {
+                'category': {'@id': 'test_id'},
+                'comments': [],
+                'unit': '',
+                'value': None
+            }
+        ]
+        self.assertEqual(self.source.to_dict(), expected_dict)

@@ -7,6 +7,8 @@ from isatools.model.person import Person
 from isatools.model.publication import Publication
 from isatools.model.comments import Comment
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.protocol import Protocol
+from isatools.model.protocol_parameter import ProtocolParameter
 
 
 comments = [Comment(name='comment'), Comment(name='comment1', value='value1')]
@@ -27,7 +29,7 @@ expected_contacts = [
         'midInitials': '', 'phone': '',
         'roles': [
             {
-                '@id': '#ontology_annotation/id1',
+                '@id': 'id1',
                 'annotationValue': 'role1',
                 'termSource': '',
                 'termAccession': '',
@@ -171,11 +173,48 @@ class TestSerialize(TestCase):
         ]
         expected_dict['studyDesignDescriptors'] = [
             {
-                '@id': '#ontology_annotation/id1',
+                '@id': 'id1',
                 'annotationValue': 'name1',
                 'termSource': 'source1',
                 'termAccession': 'accession1',
                 'comments': expected_comments
             }
         ]
+        self.assertEqual(study.to_dict(), expected_dict)
+
+        # Test protocols
+        expected_dict['protocols'] = [
+            {
+                '@id': 'test_id',
+                'name': 'test_name', 'version': '1.0', 'description': '', 'uri': '',
+                'comments': [{'name': 'test_comment', 'value': ''}],
+                'parameters': [
+                    {
+                        'parameterName': {
+                            '@id': 'protocol_name_id',
+                            'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
+                        },
+                        '@id': 'protocol_parameter_id'
+                    }
+                ],
+                'protocolType': {
+                    '@id': 'protocol_type_id',
+                    'annotationValue': 'test_protocol_type',
+                    'termSource': '',
+                    'termAccession': '',
+                    'comments': []},
+                'components': []
+            }
+        ]
+        protocol = Protocol(name='test_name', version='1.0',
+                            id_='test_id',
+                            comments=[Comment(name='test_comment')],
+                            parameters=[
+                                ProtocolParameter(
+                                    parameter_name=OntologyAnnotation(term='test_parameter', id_='protocol_name_id'),
+                                    id_='protocol_parameter_id'
+                                ),
+                            ],
+                            protocol_type=OntologyAnnotation(term='test_protocol_type', id_='protocol_type_id'))
+        study.protocols = [protocol]
         self.assertEqual(study.to_dict(), expected_dict)

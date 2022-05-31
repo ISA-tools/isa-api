@@ -65,7 +65,7 @@ class Commentable(metaclass=ABCMeta):
         comments: Comments associated with the implementing ISA class.
     """
 
-    def __init__(self, comments: List[Comment] = None):
+    def __init__(self, comments: List[Comment] = None, **kwargs):
         self.__comments = [] if comments is None else comments
 
     @property

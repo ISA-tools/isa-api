@@ -176,7 +176,7 @@ def create_descriptor(use_strings_for_characteristic_categories=False):
     # testing serialization to ISA-TAB of Comments attached to ISA objects.
     f.comments.append(Comment(name="Study Start Date", value="Saturn"))
     f.comments.append(Comment(name="Study End Date", value="2039-12-12"))
-    print(f.comments[0].name, "|", f.comments[0].value)
+    # print(f.comments[0].name, "|", f.comments[0].value)
 
     # checking that the ISA Factor object has been modified
     study.factors.append(f)

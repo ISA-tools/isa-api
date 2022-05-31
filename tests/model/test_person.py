@@ -7,7 +7,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 class TestPerson(TestCase):
 
     def setUp(self):
-        self.person = Person()
+        self.person = Person(id_='person1')
 
     def test_init(self):
         person = Person(roles=['test_role'])
@@ -18,7 +18,7 @@ class TestPerson(TestCase):
         self.assertTrue(person.roles == [role])
 
     def test_getters(self):
-        self.assertTrue(self.person.id == '')
+        self.assertEqual(self.person.id, 'person1')
         self.assertTrue(self.person.last_name == '')
 
     def test_last_name(self):
@@ -162,7 +162,7 @@ class TestPerson(TestCase):
         self.assertTrue(a_person == b_person)
         self.assertTrue(a_person != self.person)
 
-    @patch('isatools.model.ontology_annotation.uuid4', return_value="mocked_UUID")
+    @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
     def test_to_dict(self, mock_uuid4):
         person = Person(
             address='test_address',
@@ -175,6 +175,7 @@ class TestPerson(TestCase):
             fax='fax',
             roles=[OntologyAnnotation(term='test_term', term_accession='test_term_accession')]
         )
+        self.assertEqual(person.id, '#person/mocked_UUID')
         expected_dict = {
             'address': 'test_address',
             'affiliation': 'affiliation',

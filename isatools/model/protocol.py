@@ -5,9 +5,10 @@ from yaml import load, FullLoader
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.identifiable import Identifiable
 
 
-class Protocol(Commentable):
+class Protocol(Commentable, Identifiable):
     """An experimental Protocol used in the study.
 
     Attributes:
@@ -35,7 +36,7 @@ class Protocol(Commentable):
                  parameters=None,
                  components=None,
                  comments=None):
-        super().__init__(comments)
+        super().__init__(comments=comments)
 
         self.id = id_
         self.__name = name
@@ -228,6 +229,19 @@ class Protocol(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'uri': self.uri,
+            'version': self.version,
+            'comments': [comment.to_dict() for comment in self.comments],
+            'parameters': [protocol_parameter.to_dict() for protocol_parameter in self.parameters],
+            'protocolType': self.protocol_type.to_dict() if self.protocol_type else {},
+            'components': []
+        }
 
 
 def load_protocol_types_info() -> dict:

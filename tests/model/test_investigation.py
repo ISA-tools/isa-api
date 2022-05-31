@@ -20,10 +20,12 @@ class InvestigationTest(TestCase):
             submission_date=mocked_date,
             public_release_date=mocked_date,
             ontology_source_references=[ontology_source],
-            studies=[study])
+            studies=[study],
+            id_="#investigation/investigation_1")
         self.assertEqual('id', investigation.identifier)
         self.assertEqual('file', investigation.filename)
         self.assertEqual('T', investigation.title)
+        self.assertEqual('#investigation/investigation_1', investigation.id)
         self.assertEqual(mocked_date, investigation.submission_date)
         self.assertEqual(mocked_date, investigation.public_release_date)
         self.assertEqual(1, len(investigation.ontology_source_references))

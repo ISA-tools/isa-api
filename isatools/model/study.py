@@ -340,12 +340,10 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "publicReleaseDate": self.public_release_date,
             "publications": [publication.to_dict() for publication in self.publications],
             "people": [person.to_dict() for person in self.contacts],
-            "studyDesignDescriptors": [
-                ontology_annotation.to_dict() for ontology_annotation in self.design_descriptors
-            ],
-            "protocols": [],
+            "studyDesignDescriptors": [descriptor.to_dict() for descriptor in self.design_descriptors],
+            "protocols": [protocol.to_dict() for protocol in self.protocols],
             "materials": {
-                "sources": [],
+                "sources": [source.to_dict() for source in self.sources],
                 "samples": [],
                 "otherMaterials": []
             },

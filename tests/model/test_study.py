@@ -215,3 +215,29 @@ class StudyTest(TestCase):
         self.study.assays = [assay]
         self.study.shuffle_assays(["samples"])
         self.assertNotEqual(assay.samples, samples)
+
+    def test_to_dict(self):
+        expected_dict = {
+            "filename": "",
+            "identifier": "",
+            "title": "",
+            "description": "",
+            "submissionDate": "",
+            "publicReleaseDate": "",
+            "publications": [],
+            "people": [],
+            "studyDesignDescriptors": [],
+            "protocols": [],
+            "materials": {
+                "sources": [],
+                "samples": [],
+                "otherMaterials": []
+            },
+            "processSequence": [],
+            "factors": [],
+            "characteristicCategories": [],
+            "unitCategories": [],
+            "comments": [],
+            "assays": []
+        }
+        self.assertEqual(self.study.to_dict(), expected_dict)

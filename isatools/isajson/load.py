@@ -36,7 +36,7 @@ def load(fp):
     def get_characteristic_category(characteristics_cats_dict):
         res = OntologyAnnotation(
             id_=characteristics_cats_dict["@id"],  # Here we use the id for the CharacteristicType \
-            # to back support older JSON serializations
+            # to back support older JSON serializations # TODO FIX THIS
             term=characteristics_cats_dict["characteristicType"]["annotationValue"],
             term_source=term_source_dict[characteristics_cats_dict["characteristicType"]["termSource"]] \
                 if isinstance(characteristics_cats_dict["characteristicType"]["termSource"], OntologySource) \
@@ -273,9 +273,7 @@ def load(fp):
                 value = characteristic_json["value"]
                 unit = None
                 characteristic = Characteristic(
-                    category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
-                                                                                            "#characteristic_category")
-                    ],
+                    category=categories_dict[characteristic_json["category"]["@id"]],
                     comments=get_comments(characteristic_json)
                 )
 
@@ -316,9 +314,7 @@ def load(fp):
                 value = characteristic_json["value"]
                 unit = None
                 characteristic = Characteristic(
-                    category=categories_dict[characteristic_json["category"]["@id"].replace("#ontology_annotation",
-                                                                                            "#characteristic_category")
-                    ],
+                    category=categories_dict[characteristic_json["category"]["@id"]],
                     comments=get_comments(characteristic_json)
                 )
                 if isinstance(value, dict):
@@ -525,8 +521,7 @@ def load(fp):
                     if not isinstance(characteristic_json["value"], str):
                         characteristic = Characteristic(
                             category=categories_dict[
-                                characteristic_json["category"]["@id"].replace("#ontology_annotation",
-                                                                               "#characteristic_category")
+                                characteristic_json["category"]["@id"]
                             ],
                             value=OntologyAnnotation(
                                 term=characteristic_json["value"]["annotationValue"],
@@ -539,8 +534,7 @@ def load(fp):
                     else:
                         characteristic = Characteristic(
                             category=categories_dict[
-                                characteristic_json["category"]["@id"].replace("#ontology_annotation",
-                                                                               "#characteristic_category")
+                                characteristic_json["category"]["@id"]
                             ],
                             value=OntologyAnnotation(
                                 term=characteristic_json["value"]
