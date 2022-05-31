@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import List
+from uuid import uuid4
 
 from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_annotation import OntologyAnnotation
@@ -115,4 +116,18 @@ class Characteristic(Commentable):
         return not self == other
 
     def to_dict(self):
-        return {}
+        category = ''
+        unit = ''
+        if self.category:
+            category = {"@id": self.category.id.replace('#ontology_annotation/', '#characteristic_category/')}
+        if self.unit:
+            id_ = "#Unit/" + str(uuid4())
+            if isinstance(self.unit, OntologyAnnotation):
+                id_ = self.unit.id.replace('#ontology_annotation/', '#Unit/')
+            unit = {"@id": id_}
+        return {
+            "category": category,
+            "value": self.value.to_dict() if isinstance(self.value, OntologyAnnotation) else self.value,
+            "unit": unit,
+            "comments": [comment.to_dict() for comment in self.comments]
+        }

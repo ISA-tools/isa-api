@@ -3,7 +3,7 @@ from uuid import uuid4
 from re import sub
 
 
-class Identifiable:
+class Identifiable(metaclass=ABCMeta):
 
     def __init__(self, id_: str = '', **kwargs):
         self.__id = None

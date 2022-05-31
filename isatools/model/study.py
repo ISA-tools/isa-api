@@ -343,7 +343,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "studyDesignDescriptors": [descriptor.to_dict() for descriptor in self.design_descriptors],
             "protocols": [protocol.to_dict() for protocol in self.protocols],
             "materials": {
-                "sources": [],
+                "sources": [source.to_dict() for source in self.sources],
                 "samples": [],
                 "otherMaterials": []
             },

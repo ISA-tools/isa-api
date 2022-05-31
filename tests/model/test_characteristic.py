@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.characteristic import Characteristic
 from isatools.model.ontology_annotation import OntologyAnnotation
@@ -83,3 +84,23 @@ class TestCharacteristic(TestCase):
         third_characteristic = Characteristic(category='test_category', value='test_value', unit='test_unit')
         self.assertTrue(self.characteristic == third_characteristic)
         self.assertTrue(self.characteristic != second_characteristic)
+
+    @patch('isatools.model.characteristic.uuid4', return_value='A random string')
+    def test_to_dict(self, mock_uuid4):
+        category = OntologyAnnotation(id_="#ontology_annotation/characteristic_category_1")
+        unit = OntologyAnnotation(id_="#ontology_annotation/characteristic_unit_1")
+        characteristic = Characteristic(value=12, unit='test_unit')
+
+        expected_dict = {
+            'category': '',
+            'value': 12,
+            'unit': {'@id': '#Unit/' + mock_uuid4.return_value},
+            'comments': []
+        }
+        self.assertEqual(characteristic.to_dict(), expected_dict)
+        characteristic.unit = unit
+        characteristic.category = category
+        expected_dict['unit'] = {'@id': '#Unit/characteristic_unit_1'}
+        expected_dict['category'] = {'@id': '#characteristic_category/characteristic_category_1'}
+        self.assertEqual(characteristic.to_dict(), expected_dict)
+

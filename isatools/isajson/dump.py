@@ -55,7 +55,7 @@ class ISAJSONEncoder(JSONEncoder):
             ontology_annotation = {}
 
             if obj is not None and isinstance(obj, OntologyAnnotation):
-                ontology_annotation["@id"] = "#ontology_annotation/" + obj.id
+                ontology_annotation["@id"] = id_gen(obj.id)
                 if isinstance(obj.term_source, OntologySource):
                     ontology_annotation['termSource'] = obj.term_source.name
                 else:
@@ -134,7 +134,9 @@ class ISAJSONEncoder(JSONEncoder):
         def get_characteristic(obj):
             return clean_nulls(
                 {
-                    "category": {"@id": id_gen(obj.category)} if obj.category else None,
+                    "category": {
+                        "@id": '#characteristic_category/' + id_gen(obj.category).replace('#ontology_annotation/', '')
+                    } if obj.category else None,
                     # "category": get_value(o.category) if o.category else None,
                     "value": get_value(obj.value),
                     "unit": {"@id": id_gen(obj.unit)} if obj.unit else None,
@@ -155,11 +157,12 @@ class ISAJSONEncoder(JSONEncoder):
 
         def get_characteristic_category(obj):  # TODO: Deal with Material Type
             if isinstance(obj, OntologyAnnotation):
+                id_ = id_gen(obj)
                 res = clean_nulls(
                     {
-                        "@id": "#characteristic_category/" + str(obj.id),
+                        "@id": '#characteristic_category/' + id_.replace("#ontology_annotation/", ""),
                         "characteristicType": {
-                            "@id": "#ontology_annotation/" + str(obj.id),
+                            "@id": id_,
                             "annotationValue": obj.term["annotationValue"] if not isinstance(obj.term, str) else "",
                             "termAccession": obj.term["termAccession"] if not isinstance(obj.term, str) else "",
                             "termSource": obj.term["termSource"] if not isinstance(obj.term, str) else ""
@@ -170,10 +173,10 @@ class ISAJSONEncoder(JSONEncoder):
             elif isinstance(obj, Characteristic):
                 res = clean_nulls(
                     {
-                        "@id": "#characteristic_category/" + str(obj.category.id),
+                        "@id": id_gen(obj),
                         "characteristicType":
                             {
-                                "@id": "#ontology_annotation/" + obj.category.id,
+                                "@id": id_gen(obj.category),
                                 "annotationValue": obj.category.term,
                                 "termAccession": obj.category.term_accession,
                                 "termSource": obj.category.term_source
@@ -185,7 +188,7 @@ class ISAJSONEncoder(JSONEncoder):
             else:
                 res = clean_nulls(
                     {
-                        "@id": "#characteristic_category/" + obj.id if isinstance(obj, OntologyAnnotation) else None,
+                        "@id": id_gen(obj) if isinstance(obj, OntologyAnnotation) else None,
                         "characteristicType": obj.category.term if isinstance(obj, OntologyAnnotation) else None
                     }
                 )
@@ -247,15 +250,18 @@ class ISAJSONEncoder(JSONEncoder):
                 if not o_id:
                     o_id = str(id(obj))
 
-                if isinstance(obj, Material):
-                    if obj.type == 'Extract Name':
-                        return '#material/extract-' + o_id
-                    elif obj.type == 'Labeled Extract Name':
-                        return '#material/labeledextract-' + o_id
+                if not o_id.startswith('#' + name + '/'):
+
+                    if isinstance(obj, Material):
+                        if obj.type == 'Extract Name':
+                            return '#material/extract-' + o_id
+                        elif obj.type == 'Labeled Extract Name':
+                            return '#material/labeledextract-' + o_id
+                        else:
+                            raise TypeError("Could not resolve data type labeled: " + obj.type)
                     else:
-                        raise TypeError("Could not resolve data type labeled: " + obj.type)
-                else:
-                    return "#" + str(name) + "/" + o_id
+                        return "#" + str(name) + "/" + o_id
+                return o_id
             else:
                 return None
 
