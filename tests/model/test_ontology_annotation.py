@@ -22,9 +22,9 @@ class TestOntologyAnnotation(TestCase):
         self.assertTrue(self.ontology_annotation.term_accession == 'test_term_accession')
 
         expected_value = '#ontology_annotation/' + mock_uuid.return_value
-        identifier = 'identifier'
+        identifier = '#investigation/identifier'
         ontology_annotation_with_id = OntologyAnnotation(id_=identifier)
-        self.assertTrue(ontology_annotation_with_id.id == '#ontology_annotation/' + identifier)
+        self.assertTrue(ontology_annotation_with_id.id == identifier)
         ontology_annotation_mocked_id = OntologyAnnotation(term='test_term')
         self.assertTrue(ontology_annotation_mocked_id.id == expected_value)
 
@@ -80,7 +80,7 @@ class TestOntologyAnnotation(TestCase):
     def test_to_dict(self):
         ontology_annotation = OntologyAnnotation(term='test_term', id_='test_id', term_source='term_source1',)
         expected_dict = {
-            '@id': '#ontology_annotation/test_id',
+            '@id': 'test_id',
             'annotationValue': 'test_term',
             'termSource': 'term_source1',
             'termAccession': '',
@@ -88,7 +88,7 @@ class TestOntologyAnnotation(TestCase):
         }
         self.assertTrue(ontology_annotation.to_dict() == expected_dict)
         ontology_annotation.id = 'test_id1'
-        expected_dict['@id'] = '#ontology_annotation/test_id1'
+        expected_dict['@id'] = 'test_id1'
         self.assertTrue(ontology_annotation.to_dict() == expected_dict)
 
         ontology_annotation.term_source = None

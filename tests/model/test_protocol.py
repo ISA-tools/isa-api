@@ -3,7 +3,6 @@ from unittest.mock import patch
 from isatools.model.protocol import Protocol, load_protocol_types_info
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
-from isatools.model.comments import Comment
 
 expected_ProtocolParameter_string = ("ProtocolParameter(\n\t"
                                      "parameter_name=test_parameters\n\t"
@@ -16,7 +15,7 @@ expected_repr_string = ("isatools.model.Protocol(name='', protocol_type=isatools
 class TestProtocol(TestCase):
 
     def setUp(self):
-        self.protocol = Protocol(id_='test_id')
+        self.protocol = Protocol(id_='#protocol/test_id')
 
     def test_init(self):
         parameter = ProtocolParameter(parameter_name='test_parameters')
@@ -184,20 +183,20 @@ class TestProtocol(TestCase):
 
     def test_to_dict(self):
         expected_dict = {
-            '@id': '#protocol/test_id',
+            '@id': 'test_id',
             'name': 'test_name', 'version': '', 'description': '', 'uri': '',
             'comments': [],
             'parameters': [
                 {
                     'parameterName': {
-                        '@id': '#ontology_annotation/protocol_name_id',
+                        '@id': 'protocol_name_id',
                         'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
                     },
-                    '@id': '#protocol_parameter/protocol_parameter_id'
+                    '@id': 'protocol_parameter_id'
                  }
             ],
             'protocolType': {
-                '@id': '#ontology_annotation/protocol_type_id',
+                '@id': 'protocol_type_id',
                 'annotationValue': 'test_protocol_type',
                 'termSource': '',
                 'termAccession': '',

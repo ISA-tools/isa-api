@@ -4,10 +4,11 @@ from isatools.model.comments import Commentable
 from isatools.model.mixins import MetadataMixin
 from isatools.model.ontology_annotation import OntologySource
 from isatools.model.study import Study
+from isatools.model.identifiable import Identifiable
 from isatools.graphQL.models import IsaSchema
 
 
-class Investigation(Commentable, MetadataMixin, object):
+class Investigation(Commentable, MetadataMixin, Identifiable, object):
     """An investigation maintains metadata about the project context and links
     to one or more studies. There can only be 1 Investigation in an ISA
     descriptor. Investigations have the following properties:
@@ -40,6 +41,7 @@ class Investigation(Commentable, MetadataMixin, object):
                                public_release_date=public_release_date,
                                publications=publications, contacts=contacts)
         Commentable.__init__(self, comments=comments)
+        Identifiable.__init__(self)
 
         self.id = id_
 

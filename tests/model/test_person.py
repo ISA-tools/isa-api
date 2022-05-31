@@ -7,7 +7,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 class TestPerson(TestCase):
 
     def setUp(self):
-        self.person = Person()
+        self.person = Person(id_='person1')
 
     def test_init(self):
         person = Person(roles=['test_role'])
@@ -18,7 +18,7 @@ class TestPerson(TestCase):
         self.assertTrue(person.roles == [role])
 
     def test_getters(self):
-        self.assertTrue(self.person.id == '')
+        self.assertEqual(self.person.id, 'person1')
         self.assertTrue(self.person.last_name == '')
 
     def test_last_name(self):
@@ -175,6 +175,7 @@ class TestPerson(TestCase):
             fax='fax',
             roles=[OntologyAnnotation(term='test_term', term_accession='test_term_accession')]
         )
+        self.assertEqual(person.id, '#person/mocked_UUID')
         expected_dict = {
             'address': 'test_address',
             'affiliation': 'affiliation',

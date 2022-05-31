@@ -90,7 +90,7 @@ class TestPublication(TestCase):
             'doi': 'doi', 'pubMedID':
                 'pubmed_id',
             'status': {
-                '@id': '#ontology_annotation/123',
+                '@id': '123',
                 'annotationValue': 'OA',
                 'termSource': '',
                 'termAccession': '',

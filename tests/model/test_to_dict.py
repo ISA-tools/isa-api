@@ -29,7 +29,7 @@ expected_contacts = [
         'midInitials': '', 'phone': '',
         'roles': [
             {
-                '@id': '#ontology_annotation/id1',
+                '@id': 'id1',
                 'annotationValue': 'role1',
                 'termSource': '',
                 'termAccession': '',
@@ -173,7 +173,7 @@ class TestSerialize(TestCase):
         ]
         expected_dict['studyDesignDescriptors'] = [
             {
-                '@id': '#ontology_annotation/id1',
+                '@id': 'id1',
                 'annotationValue': 'name1',
                 'termSource': 'source1',
                 'termAccession': 'accession1',
@@ -185,20 +185,20 @@ class TestSerialize(TestCase):
         # Test protocols
         expected_dict['protocols'] = [
             {
-                '@id': '#protocol/test_id',
+                '@id': 'test_id',
                 'name': 'test_name', 'version': '1.0', 'description': '', 'uri': '',
                 'comments': [{'name': 'test_comment', 'value': ''}],
                 'parameters': [
                     {
                         'parameterName': {
-                            '@id': '#ontology_annotation/protocol_name_id',
+                            '@id': 'protocol_name_id',
                             'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
                         },
-                        '@id': '#protocol_parameter/protocol_parameter_id'
+                        '@id': 'protocol_parameter_id'
                     }
                 ],
                 'protocolType': {
-                    '@id': '#ontology_annotation/protocol_type_id',
+                    '@id': 'protocol_type_id',
                     'annotationValue': 'test_protocol_type',
                     'termSource': '',
                     'termAccession': '',
@@ -207,7 +207,7 @@ class TestSerialize(TestCase):
             }
         ]
         protocol = Protocol(name='test_name', version='1.0',
-                            id_='#protocol/test_id',
+                            id_='test_id',
                             comments=[Comment(name='test_comment')],
                             parameters=[
                                 ProtocolParameter(

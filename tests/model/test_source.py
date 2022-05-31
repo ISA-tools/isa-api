@@ -20,7 +20,7 @@ class TestSource(TestCase):
 
     def test_getters(self):
         self.assertTrue(self.source.name == '')
-        self.assertTrue(self.source.id == '#source/test_id')
+        self.assertTrue(self.source.id == 'test_id')
 
     def test_name(self):
         self.assertTrue(self.source.name == '')
