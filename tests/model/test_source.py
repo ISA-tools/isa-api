@@ -9,7 +9,7 @@ expected_repr = "isatools.model.Source(name='', characteristics=[], comments=[])
 class TestSource(TestCase):
 
     def setUp(self):
-        self.source = Source()
+        self.source = Source(id_='test_id')
         self.ontology_annotation = OntologyAnnotation(term='test_term')
 
     def test_init(self):
@@ -20,7 +20,7 @@ class TestSource(TestCase):
 
     def test_getters(self):
         self.assertTrue(self.source.name == '')
-        self.assertTrue(self.source.id == '')
+        self.assertTrue(self.source.id == '#source/test_id')
 
     def test_name(self):
         self.assertTrue(self.source.name == '')

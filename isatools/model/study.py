@@ -331,11 +331,6 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 assay.shuffle_materials(target)
 
     def to_dict(self):
-        protocols = []
-        for protocol in self.protocols:
-            protocol_dict = protocol.to_dict()
-            protocol_dict['@id'] = "SET AN ID"
-            protocols.append(protocol_dict)
         return {
             "filename": self.filename,
             "identifier": self.identifier,
@@ -346,7 +341,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "publications": [publication.to_dict() for publication in self.publications],
             "people": [person.to_dict() for person in self.contacts],
             "studyDesignDescriptors": [descriptor.to_dict() for descriptor in self.design_descriptors],
-            "protocols": protocols,
+            "protocols": [protocol.to_dict() for protocol in self.protocols],
             "materials": {
                 "sources": [],
                 "samples": [],

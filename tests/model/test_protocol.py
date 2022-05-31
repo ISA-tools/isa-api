@@ -16,7 +16,7 @@ expected_repr_string = ("isatools.model.Protocol(name='', protocol_type=isatools
 class TestProtocol(TestCase):
 
     def setUp(self):
-        self.protocol = Protocol()
+        self.protocol = Protocol(id_='test_id')
 
     def test_init(self):
         parameter = ProtocolParameter(parameter_name='test_parameters')
@@ -34,7 +34,7 @@ class TestProtocol(TestCase):
         self.assertTrue(protocol.components == [ontology_annotation])
 
     def test_getters(self):
-        self.assertTrue(self.protocol.id == '')
+        self.assertTrue(self.protocol.id == '#protocol/test_id')
         self.assertTrue(self.protocol.version == '')
 
     def test_name(self):
@@ -185,31 +185,33 @@ class TestProtocol(TestCase):
     def test_to_dict(self):
         expected_dict = {
             '@id': '#protocol/test_id',
-            'name': 'test_name', 'version': '1.0', 'description': '', 'uri': '',
-            'comments': [{'name': 'test_comment', 'value': ''}],
+            'name': 'test_name', 'version': '', 'description': '', 'uri': '',
+            'comments': [],
             'parameters': [
                 {
                     'parameterName': {
-                        '@id': '#ontology_annotation/pm_id',
+                        '@id': '#ontology_annotation/protocol_name_id',
                         'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
                     },
-                    '@id': 'SET ID'
+                    '@id': '#protocol_parameter/protocol_parameter_id'
                  }
             ],
             'protocolType': {
-                '@id': '#ontology_annotation/oa_id',
+                '@id': '#ontology_annotation/protocol_type_id',
                 'annotationValue': 'test_protocol_type',
                 'termSource': '',
                 'termAccession': '',
                 'comments': []},
             'components': []}
-        protocol = Protocol(name='test_name', version='1.0',
-                            id_='#protocol/test_id',
-                            comments=[Comment(name='test_comment')],
+        protocol = Protocol(name='test_name',
+                            id_='test_id',
                             parameters=[
-                                ProtocolParameter(parameter_name=OntologyAnnotation(term='test_parameter', id_='pm_id'))
+                                ProtocolParameter(
+                                    parameter_name=OntologyAnnotation(term='test_parameter', id_='protocol_name_id'),
+                                    id_='protocol_parameter_id'
+                                ),
                             ],
-                            protocol_type=OntologyAnnotation(term='test_protocol_type', id_='oa_id'))
+                            protocol_type=OntologyAnnotation(term='test_protocol_type', id_='protocol_type_id'))
         self.assertEqual(protocol.to_dict(), expected_dict)
 
 

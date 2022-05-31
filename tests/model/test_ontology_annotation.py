@@ -15,15 +15,18 @@ class TestOntologyAnnotation(TestCase):
         self.assertTrue(isinstance(self.ontology_annotation, OntologyAnnotation))
         self.assertTrue(isinstance(self.ontology_annotation, Commentable))
 
-    @patch('isatools.model.ontology_annotation.uuid4', return_value="i am a mocked UUID")
+    @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
     def test_properties(self, mock_uuid):
         self.assertTrue(self.ontology_annotation.term == 'test_term')
         self.assertTrue(self.ontology_annotation.term_source == 'test_term_source')
         self.assertTrue(self.ontology_annotation.term_accession == 'test_term_accession')
-        ontology_annotation_with_id = OntologyAnnotation(id_='I am NOT an uuid')
-        self.assertTrue(ontology_annotation_with_id.id == 'I am NOT an uuid')
+
+        expected_value = '#ontology_annotation/' + mock_uuid.return_value
+        identifier = 'identifier'
+        ontology_annotation_with_id = OntologyAnnotation(id_=identifier)
+        self.assertTrue(ontology_annotation_with_id.id == '#ontology_annotation/' + identifier)
         ontology_annotation_mocked_id = OntologyAnnotation(term='test_term')
-        self.assertTrue(ontology_annotation_mocked_id.id == mock_uuid.return_value)
+        self.assertTrue(ontology_annotation_mocked_id.id == expected_value)
 
     def test_setters(self):
         self.ontology_annotation.term = None

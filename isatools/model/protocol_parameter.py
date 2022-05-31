@@ -1,8 +1,9 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.identifiable import Identifiable
 
 
-class ProtocolParameter(Commentable):
+class ProtocolParameter(Commentable, Identifiable):
     """A parameter used by a protocol.
 
     Attributes:
@@ -11,7 +12,7 @@ class ProtocolParameter(Commentable):
     """
 
     def __init__(self, id_='', parameter_name=None, comments=None):
-        super().__init__(comments)
+        super().__init__(comments=comments)
         self.id = id_
         self.__parameter_name = None
         self.parameter_name = parameter_name
@@ -55,3 +56,9 @@ class ProtocolParameter(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            'parameterName': self.parameter_name.to_dict()
+        }

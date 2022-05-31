@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import List, Any
-from uuid import uuid4
 from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_source import OntologySource
+from isatools.model.identifiable import Identifiable
 
 
-class OntologyAnnotation(Commentable):
+class OntologyAnnotation(Commentable, Identifiable):
     """An ontology annotation
 
     Attributes:
@@ -21,13 +21,13 @@ class OntologyAnnotation(Commentable):
                  term_source: OntologySource = None,
                  term_accession: str = '',
                  comments: List[Comment] = None,
-                 id_=None):
-        super().__init__(comments)
+                 id_: str = ''):
+        super().__init__(comments=comments)
 
         self.__term = term
         self.__term_source = term_source
         self.__term_accession = term_accession
-        self.id = str(uuid4()) if not id_ else id_
+        self.id = id_
 
     @property
     def term(self) -> str:
@@ -110,12 +110,8 @@ class OntologyAnnotation(Commentable):
         if self.term_source and isinstance(self.term_source, OntologySource):
             term_source = self.term_source.name
 
-        id_ = self.id
-        if not self.id.startswith('#ontology_annotation/'):
-            id_ = '#ontology_annotation/' + self.id
-
         return {
-            '@id': id_,
+            '@id': self.id,
             'annotationValue': self.term,
             'termSource': term_source,
             'termAccession': self.term_accession,

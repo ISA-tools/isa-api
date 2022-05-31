@@ -162,7 +162,7 @@ class TestPerson(TestCase):
         self.assertTrue(a_person == b_person)
         self.assertTrue(a_person != self.person)
 
-    @patch('isatools.model.ontology_annotation.uuid4', return_value="mocked_UUID")
+    @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
     def test_to_dict(self, mock_uuid4):
         person = Person(
             address='test_address',
