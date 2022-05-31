@@ -82,9 +82,10 @@ class TestSource(TestCase):
         self.assertTrue(source_a != self.source)
 
     def test_to_dict(self):
+        self.source.id = 'test_id'
         self.source.comments = [Comment(name='test_comment')]
         expected_dict = {
-            '@id': "gen me an ID",
+            '@id': "test_id",
             'name': '',
             'characteristics': [],
             'comments': [{'name': 'test_comment', 'value': ''}]

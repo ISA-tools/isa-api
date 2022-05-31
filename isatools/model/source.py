@@ -96,7 +96,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
 
     def to_dict(self):
         return {
-            '@id': "gen me an ID",
+            '@id': self.id,
             'name': self.name,
             'characteristics': [char.to_dict() for char in self.characteristics],
             'comments': [comment.to_dict() for comment in self.comments]
