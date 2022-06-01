@@ -344,7 +344,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "protocols": [protocol.to_dict() for protocol in self.protocols],
             "materials": {
                 "sources": [source.to_dict() for source in self.sources],
-                "samples": [],
+                "samples": [sample.to_dict() for sample in self.samples],
                 "otherMaterials": []
             },
             "processSequence": [],

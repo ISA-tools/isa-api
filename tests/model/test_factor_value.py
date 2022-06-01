@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.factor_value import FactorValue, StudyFactor
 from isatools.model.ontology_annotation import OntologyAnnotation
@@ -7,10 +8,10 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 class TestStudyFactor(TestCase):
 
     def setUp(self):
-        self.study_factor = StudyFactor()
+        self.study_factor = StudyFactor(id_='id')
 
     def test_init(self):
-        self.assertTrue(self.study_factor.id == '')
+        self.assertEqual(self.study_factor.id, 'id')
         study_factor = StudyFactor(id_='id', name='name', factor_type='term')
         self.assertTrue(study_factor.id == 'id')
         self.assertTrue(study_factor.name == 'name')
@@ -54,6 +55,32 @@ class TestStudyFactor(TestCase):
         third_study_factor = StudyFactor(id_='id', name='name', factor_type='term')
         self.assertTrue(second_study_factor == third_study_factor)
         self.assertTrue(second_study_factor != self.study_factor)
+
+    @patch('isatools.model.factor_value.uuid4', return_value='test_uuid')
+    def test_to_dict(self, mock_uuid):
+        first_factor_value = FactorValue(factor_name=StudyFactor(name='test_factor_name', id_="#factor/0"),
+                                         value=OntologyAnnotation(term='test_value', id_="#factor_value/0"),
+                                         unit=OntologyAnnotation(term='test_unit', id_="#unit/0"))
+        second_factor_value = FactorValue(factor_name=StudyFactor(name='factor_name1', id_="#factor/1"),
+                                          unit="unit1")
+        expected_dict = {
+            'category': {'@id': '#factor/0'},
+            'value': {
+                '@id': '#factor_value/0',
+                'annotationValue': 'test_value',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []},
+            'unit': {'@id': '#unit/0'}
+        }
+        self.assertEqual(first_factor_value.to_dict(), expected_dict)
+
+        expected_dict = {
+            'category': {'@id': '#factor/1'},
+            'value': '',
+            'unit': {'@id': '#unit/' + mock_uuid.return_value}
+        }
+        self.assertEqual(second_factor_value.to_dict(), expected_dict)
 
 
 class TestFactorValue(TestCase):

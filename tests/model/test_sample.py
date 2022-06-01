@@ -1,9 +1,11 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.sample import Sample
 from isatools.model.factor_value import FactorValue, StudyFactor
 from isatools.model.characteristic import Characteristic
 from isatools.model.source import Source
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
 class TestSample(TestCase):
@@ -105,3 +107,56 @@ class TestSample(TestCase):
         second_sample = Sample(name="sample1")
         self.assertEqual(first_sample, second_sample)
         self.assertNotEqual(first_sample, self.sample)
+
+    @patch('isatools.model.factor_value.uuid4', return_value='test_uuid')
+    def test_to_dict(self, mock_uuid):
+        self.sample.name = 'test_name'
+        self.sample.id = 'test_id'
+        expected_dict = {
+            '@id': 'test_id', 'name': 'test_name',
+            'characteristics': [], 'factorValues': [], 'derivesFrom': [], 'comments': []
+        }
+        self.assertEqual(self.sample.to_dict(), expected_dict)
+        category = OntologyAnnotation(term='test_category', id_="#characteristics/0")
+        unit = OntologyAnnotation(term='test_unit', id_="#unit/0")
+        characteristic = Characteristic(category=category, unit=unit)
+        self.sample.characteristics = [characteristic]
+        expected_dict['characteristics'] = [
+            {
+                'category': {'@id': '#characteristics/0'},
+                'value': None,
+                'unit': {'@id': '#unit/0'},
+                'comments': []
+            }
+        ]
+        self.assertEqual(self.sample.to_dict(), expected_dict)
+
+        first_factor_value = FactorValue(factor_name=StudyFactor(name='test_factor_name', id_="#factor/0"),
+                                         value=OntologyAnnotation(term='test_value', id_="#factor_value/0"),
+                                         unit=OntologyAnnotation(term='test_unit', id_="#unit/0"))
+        second_factor_value = FactorValue(factor_name=StudyFactor(name='factor_name1', id_="#factor/1"),
+                                          unit="unit1")
+        self.sample.factor_values = [first_factor_value, second_factor_value]
+        expected_dict['factorValues'] = [
+            {
+                'category': {'@id': '#factor/0'},
+                'value': {
+                    '@id': '#factor_value/0',
+                    'annotationValue': 'test_value',
+                    'termSource': '',
+                    'termAccession': '',
+                    'comments': []},
+                'unit': {'@id': '#unit/0'}
+            },
+            {
+                'category': {'@id': '#factor/1'},
+                'value': '',
+                'unit': {'@id': '#unit/' + mock_uuid.return_value}
+            }
+        ]
+        self.assertEqual(self.sample.to_dict(), expected_dict)
+
+        self.sample.derives_from = [Source(name='source0', id_="#source/0"),
+                                    Source(name='source1', id_="#source/1")]
+        expected_dict['derivesFrom'] = [{'@id': '#source/0'}, {'@id': '#source/1'}]
+        self.assertEqual(self.sample.to_dict(), expected_dict)

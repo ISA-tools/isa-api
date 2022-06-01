@@ -1,5 +1,7 @@
+from uuid import uuid4
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.identifiable import Identifiable
 
 
 class FactorValue(Commentable):
@@ -86,8 +88,26 @@ class FactorValue(Commentable):
     def __ne__(self, other):
         return not self == other
 
+    def to_dict(self):
+        category = ''
+        if self.factor_name:
+            category = {"@id": self.factor_name.id}
 
-class StudyFactor(Commentable):
+        value = self.value if self.value else ''
+        if isinstance(value, OntologyAnnotation):
+            value = value.to_dict()
+
+        unit = ''
+        if self.unit:
+            id_ = '#unit/' + str(uuid4())
+            if isinstance(self.unit, OntologyAnnotation):
+                id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
+            unit = {"@id": id_}
+
+        return {'category': category, 'value': value, 'unit': unit}
+
+
+class StudyFactor(Commentable, Identifiable):
     """A Study Factor corresponds to an independent variable manipulated by the
     experimentalist with the intention to affect biological systems in a way
     that can be measured by an assay.
@@ -99,7 +119,7 @@ class StudyFactor(Commentable):
     """
 
     def __init__(self, id_='', name='', factor_type=None, comments=None):
-        super().__init__(comments)
+        super().__init__(comments=comments)
 
         self.id = id_
         self.__name = name
