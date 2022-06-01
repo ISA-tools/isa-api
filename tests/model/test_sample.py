@@ -1,9 +1,10 @@
 from unittest import TestCase
-
-from isatools.model.sample import Sample
-from isatools.model.factor_value import FactorValue, StudyFactor
-from isatools.model.characteristic import Characteristic
 from isatools.model.source import Source
+from isatools.model.sample import Sample
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.characteristic import Characteristic
+from isatools.model.factor_value import FactorValue, StudyFactor
+from isatools.model.comments import Comment
 
 
 class TestSample(TestCase):
@@ -105,3 +106,50 @@ class TestSample(TestCase):
         second_sample = Sample(name="sample1")
         self.assertEqual(first_sample, second_sample)
         self.assertNotEqual(first_sample, self.sample)
+
+    def test_to_dict(self):
+        self.source = Source()
+        self.source.id = 'src_test_id'
+        self.factor = StudyFactor()
+        self.factor.name = 'test_factor_name'
+        self.fv = FactorValue()
+        self.fv.factor_name = self.factor
+        self.fv.value = 'fv_value'
+        self.fv.unit = 'fv_unit'
+        self.sample.id = 'test_id'
+        self.sample.derives_from = [self.source]
+        self.sample.comments = [Comment(name='test_comment')]
+        # self.sample.factor_values = [FactorValue(factor_name=StudyFactor(name='test_factor_name'), value='fv_value', unit='fv_unit')]
+        self.sample.factor_values = [self.fv]
+        # self.assertEqual(self.sample.to_dict(), expected_dict)
+
+        ontology_annotation = OntologyAnnotation(term='test_term', id_='test_id')
+        self.sample.characteristics = [Characteristic(category=ontology_annotation)]
+
+        expected_dict = {
+            '@id': "test_id",
+            'name': '',
+            'characteristics': [{
+                'category': {'@id': 'test_id'},
+                'comments': [],
+                'unit': '',
+                'value': None
+            }],
+            'factor_values':  [{'@id': '',
+                                'comments': [],
+                                'factor_name': 'test_factor_name',
+                                'unit': 'fv_unit',
+                                'value': 'fv_value'}],
+            'derives_from': ['src_test_id'],
+            'comments': [{'name': 'test_comment', 'value': ''}]
+        }
+
+        # expected_dict['characteristics'] = [
+        #     {
+        #         'category': {'@id': 'test_id'},
+        #         'comments': [],
+        #         'unit': '',
+        #         'value': None
+        #     }
+        # ]
+        self.assertEqual(self.sample.to_dict(), expected_dict)

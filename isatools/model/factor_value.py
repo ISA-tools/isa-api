@@ -12,8 +12,9 @@ class FactorValue(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, factor_name=None, value=None, unit=None, comments=None):
+    def __init__(self, id_='', factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.__factor_name = None
         self.__value = None
         self.__unit = None
@@ -86,6 +87,15 @@ class FactorValue(Commentable):
     def __ne__(self, other):
         return not self == other
 
+    def to_dict(self):
+        return {
+            "@id": self.id,
+            "factor_name": self.factor_name.name,
+            "value": self.value,
+            "unit": self.unit,
+            "comments": [comment.to_dict() for comment in self.comments]
+        }
+
 
 class StudyFactor(Commentable):
     """A Study Factor corresponds to an independent variable manipulated by the
@@ -156,3 +166,11 @@ class StudyFactor(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            'name': self.name,
+            'factor_type': self.factor_type.to_dict() if self.factor_type else {},
+            'comments': [comment.to_dict() for comment in self.comments]
+        }

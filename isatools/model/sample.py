@@ -141,3 +141,13 @@ class Sample(Commentable, ProcessSequenceNode):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            'name': self.name,
+            'characteristics': [char.to_dict() for char in self.characteristics],
+            'factor_values': [factor_value.to_dict() for factor_value in self.factor_values],
+            'derives_from': [source.id for source in self.derives_from],
+            'comments': [comment.to_dict() for comment in self.comments]
+        }

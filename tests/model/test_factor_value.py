@@ -55,6 +55,30 @@ class TestStudyFactor(TestCase):
         self.assertTrue(second_study_factor == third_study_factor)
         self.assertTrue(second_study_factor != self.study_factor)
 
+    def test_to_dict(self):
+        expected_dict = {
+            '@id': 'test_factor_id',
+            'name': 'test_name',
+            'comments': [],
+            'factor_type': {
+                '@id': 'factor_type_id',
+                'annotationValue': 'test_factor_type',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []
+            }
+        }
+
+        study_factor = StudyFactor(id_='test_factor_id',
+                                   name='test_name',
+                                   factor_type=OntologyAnnotation(term='test_factor_type',
+                                                                  id_='factor_type_id',
+                                                                  comments=[]),
+                                   comments=[]
+                                   )
+
+        self.assertEqual(study_factor.to_dict(), expected_dict)
+
 
 class TestFactorValue(TestCase):
 
@@ -116,3 +140,20 @@ class TestFactorValue(TestCase):
                                          unit=OntologyAnnotation(term='mg'))
         self.assertTrue(second_factor_value != third_factor_value)
         self.assertTrue(second_factor_value == self.factor_value)
+
+    def test_to_dict(self):
+        expected_str = {
+            "@id": '',
+            "factor_name": 'factor_test_name',
+            "value": 'test_value',
+            "unit": 'test_unit',
+            "comments": []
+        }
+        factor = StudyFactor(name='factor_test_name')
+        fv = FactorValue(id_='',
+                         factor_name=factor,
+                         value='test_value',
+                         unit='test_unit',
+                         comments=[])
+
+        self.assertTrue(fv.to_dict(), expected_str)
