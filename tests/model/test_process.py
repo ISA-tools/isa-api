@@ -158,8 +158,6 @@ class TestProcess(TestCase):
             'date': '',
             'performer': '',
             'parameterValues': [],
-            "previousProcess": '',
-            "nextProcess": '',
             'inputs': [],
             'outputs': [],
             'comments': []
