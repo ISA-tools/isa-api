@@ -10,6 +10,8 @@ class ISAJSONEncoder(JSONEncoder):
 
     def default(self, o):
 
+        return o.to_dict()
+
         def remove_nulls(d):
             return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}
 

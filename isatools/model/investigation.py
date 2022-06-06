@@ -232,6 +232,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         return {
             "identifier": self.identifier,
             "title": self.title,
+            "description": self.description,
             "publicReleaseDate": self.public_release_date,
             "submissionDate": self.submission_date,
             "comments": [comment.to_dict() for comment in self.comments],

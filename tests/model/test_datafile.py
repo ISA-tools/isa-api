@@ -131,7 +131,7 @@ class TestSubDataFile(TestCase):
             datafile = self.classes[filetype]
             expected_dict = {
                 '@id': 'id_' + filetype.lower(),
-                'filename': 'file_' + filetype.lower(),
+                'name': 'file_' + filetype.lower(),
                 'type': type_,
                 'comments': []
             }

@@ -154,7 +154,7 @@ class TestProcess(TestCase):
         expected_dict = {
             '@id': 'process_id',
             'name': '',
-            'executes_protocol': {"@id": '#protocol/' + mocked_uuid4.return_value},
+            'executesProtocol': {"@id": '#protocol/' + mocked_uuid4.return_value},
             'date': '',
             'performer': '',
             'parameterValues': [],

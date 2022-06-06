@@ -100,7 +100,7 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     def to_dict(self):
         return {
             "@id": self.id,
-            "filename": self.filename,
+            "name": self.filename,
             "type": self.label,
             "comments": [comment.to_dict() for comment in self.comments]
         }

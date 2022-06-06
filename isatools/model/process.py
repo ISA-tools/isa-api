@@ -241,7 +241,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             "name": self.name if self.name is not None else '',
             "performer": self.performer if self.performer is not None else '',
             "date": self.date if self.date is not None else '',
-            "executes_protocol": {"@id": self.executes_protocol.id},
+            "executesProtocol": {"@id": self.executes_protocol.id},
             "parameterValues": parameter_values,
             "inputs": [{'@id': x.id} for x in self.inputs],
             "outputs": [{'@id': x.id} for x in self.outputs],
