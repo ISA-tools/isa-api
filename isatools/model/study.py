@@ -362,7 +362,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "processSequence": [process.to_dict() for process in self.process_sequence],
             "factors": [factor.to_dict() for factor in self.factors],
             "characteristicCategories": characteristics_categories,
-            "unitCategories": [],
+            "unitCategories": [unit.to_dict() for unit in self.units],
             "comments": [comment.to_dict() for comment in self.comments],
             "assays": []
         }
