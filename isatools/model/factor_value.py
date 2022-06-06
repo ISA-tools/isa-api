@@ -176,3 +176,11 @@ class StudyFactor(Commentable, Identifiable):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            'factorName': self.name,
+            'factorType': self.factor_type.to_dict() if self.factor_type else '',
+            'comments': [comment.to_dict() for comment in self.comments]
+        }
