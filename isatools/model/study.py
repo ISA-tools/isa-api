@@ -347,7 +347,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 "samples": [sample.to_dict() for sample in self.samples],
                 "otherMaterials": [mat.to_dict() for mat in self.other_material],
             },
-            "processSequence": [],
+            "processSequence": [process.to_dict() for process in self.process_sequence],
             "factors": [],
             "characteristicCategories": [],
             "unitCategories": [],

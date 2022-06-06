@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from isatools.model.comments import Commentable
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.protocol import Protocol
@@ -6,9 +8,11 @@ from isatools.model.source import Source
 from isatools.model.sample import Sample
 from isatools.model.datafile import DataFile
 from isatools.model.parameter_value import ParameterValue
+from isatools.model.identifiable import Identifiable
+from isatools.model.ontology_annotation import OntologyAnnotation
 
 
-class Process(Commentable, ProcessSequenceNode):
+class Process(Commentable, ProcessSequenceNode, Identifiable):
     """Process nodes represent the application of a protocol to some input
     material (e.g. a Source) to produce some output (e.g.a Sample).
 
@@ -37,6 +41,7 @@ class Process(Commentable, ProcessSequenceNode):
                  outputs=None, comments=None):
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
+        Identifiable.__init__(self)
 
         self.id = id_
         self.__name = None
@@ -217,3 +222,28 @@ class Process(Commentable, ProcessSequenceNode):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        parameter_values = []
+        for param in self.parameter_values:
+            value = ''
+            if param.value:
+                value = param.value.to_dict() if isinstance(param.value, OntologyAnnotation) else param.value
+            parameter_values.append({
+                "category": {"@id": param.category.id} if param.category else '',
+                "value": value,
+                "unit": {"@id": param.unit.id} if param.unit else '',
+            })
+        return {
+            "@id": self.id,
+            "name": self.name if self.name is not None else '',
+            "performer": self.performer if self.performer is not None else '',
+            "date": self.date if self.date is not None else '',
+            "executes_protocol": {"@id": self.executes_protocol.id},
+            "previousProcess": {"@id": self.prev_process.id} if self.prev_process else '',
+            "nextProcess": {"@id": self.next_process.id} if self.next_process else '',
+            "parameterValues": parameter_values,
+            "inputs": [{'@id': x.id} for x in self.inputs],
+            "outputs": [{'@id': x.id} for x in self.outputs],
+            "comments": [comment.to_dict() for comment in self.comments]
+        }
