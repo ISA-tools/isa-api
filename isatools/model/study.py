@@ -331,18 +331,6 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 assay.shuffle_materials(target)
 
     def to_dict(self):
-        characteristics_categories = []
-        for characteristic in self.characteristic_categories:
-            id_ = characteristic.id
-            if id_.startswith('#ontology_annotation/'):
-                id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
-            else:
-                id_ = '#characteristic_category/' + id_
-            characteristics_categories.append({
-                '@id': id_,
-                'characteristicType': characteristic.to_dict()
-            })
-
         return {
             "filename": self.filename,
             "identifier": self.identifier,
@@ -361,8 +349,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             },
             "processSequence": [process.to_dict() for process in self.process_sequence],
             "factors": [factor.to_dict() for factor in self.factors],
-            "characteristicCategories": characteristics_categories,
+            "characteristicCategories": self.categories_to_dict(),
             "unitCategories": [unit.to_dict() for unit in self.units],
             "comments": [comment.to_dict() for comment in self.comments],
-            "assays": []
+            "assays": [assay.to_dict() for assay in self.assays]
         }

@@ -104,3 +104,37 @@ class TestAssay(TestCase):
         self.assertFalse(first_assay == third_assay)
         self.assertFalse(first_assay != second_assay)
         self.assertTrue(first_assay != third_assay)
+
+    def test_to_dict(self):
+        assay = Assay(
+            filename='file',
+            measurement_type=OntologyAnnotation(term='MT', id_='MT_ID'),
+            technology_type=OntologyAnnotation(term='TT', id_='TT_ID')
+        )
+        expected_dict = {
+            'measurementType': {
+                '@id': 'MT_ID',
+                'annotationValue': 'MT',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []},
+            'technologyType': {
+                '@id': 'TT_ID',
+                'annotationValue': 'TT',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []
+            },
+            'technologyPlatform': '',
+            'filename': 'file',
+            'characteristicCategories': [],
+            'unitCategories': [],
+            'comments': [],
+            'materials': {
+                'samples': [],
+                'otherMaterials': []
+            },
+            'dataFiles': [],
+            'processSequence': []
+        }
+        self.assertEqual(expected_dict, assay.to_dict())

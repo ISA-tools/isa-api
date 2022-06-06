@@ -1,9 +1,10 @@
 from isatools.model.comments import Commentable
 from isatools.model.sample import Sample
 from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.identifiable import Identifiable
 
 
-class DataFile(Commentable, ProcessSequenceNode):
+class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     """Represents a data file in an experimental graph.
 
     Attributes:
@@ -18,6 +19,7 @@ class DataFile(Commentable, ProcessSequenceNode):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
+        Identifiable.__init__(self)
 
         self.id = id_
         self.__filename = filename
@@ -94,6 +96,14 @@ class DataFile(Commentable, ProcessSequenceNode):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            "@id": self.id,
+            "filename": self.filename,
+            "type": self.label,
+            "comments": [comment.to_dict() for comment in self.comments]
+        }
 
 
 class RawDataFile(DataFile):

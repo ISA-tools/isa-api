@@ -8,11 +8,11 @@ from isatools.model.sample import Sample
 class TestDataFile(TestCase):
 
     def setUp(self):
-        self.datafile = DataFile()
+        self.datafile = DataFile(id_='id1')
 
     def test_init(self):
         self.assertTrue(isinstance(self.datafile, DataFile))
-        self.assertEqual(self.datafile.id, '')
+        self.assertEqual(self.datafile.id, 'id1')
         self.assertEqual(self.datafile.comments, [])
 
         sample = Sample()
@@ -87,16 +87,20 @@ class TestSubDataFile(TestCase):
         }
         self.classes = {}
         for filetype in self.types:
-            item = self.types[filetype]()
+            filename = 'file_' + filetype.lower()
+            id_ = 'id_' + filetype.lower()
+            item = self.types[filetype](filename=filename, id_=id_)
             self.classes[filetype] = item
 
     def test_repr(self):
         for filetype in self.types:
             datafile = self.classes[filetype]
             name = sub(r'(?<!^)(?=[A-Z])', ' ', filetype)
+            filename = 'file_' + filetype.lower()
             self.assertEqual(datafile.label, name)
 
-            expected_repr = "isatools.model.{0}(filename='', generated_from=[], comments=[])".format(filetype)
+            expected_repr = "isatools.model.{0}(filename='{1}', generated_from=[], comments=[])"\
+                .format(filetype, filename)
             self.assertEqual(repr(datafile), expected_repr)
             self.assertEqual(hash(datafile), hash(expected_repr))
 
@@ -104,13 +108,14 @@ class TestSubDataFile(TestCase):
         for filetype in self.types:
             datafile = self.classes[filetype]
             name = sub(r'(?<!^)(?=[A-Z])', ' ', filetype)
+            filename = 'file_' + filetype.lower()
             self.assertEqual(datafile.label, name)
 
             expected_str = """{0}(
-    filename=
+    filename={1}
     generated_from=0 Sample objects
     comments=0 Comment objects
-)""".format(filetype)
+)""".format(filetype, filename)
             self.assertEqual(str(datafile), expected_str)
 
     def test_equalities(self):
@@ -119,3 +124,15 @@ class TestSubDataFile(TestCase):
             second_datafile = self.types[filetype](filename='test_name', id_="id2")
             self.assertTrue(first_datafile == second_datafile)
             self.assertTrue(self.classes[filetype] != first_datafile)
+
+    def test_to_dict(self):
+        for filetype in self.types:
+            type_ = sub(r'(?<!^)(?=[A-Z])', ' ', filetype)
+            datafile = self.classes[filetype]
+            expected_dict = {
+                '@id': 'id_' + filetype.lower(),
+                'filename': 'file_' + filetype.lower(),
+                'type': type_,
+                'comments': []
+            }
+            self.assertEqual(datafile.to_dict(), expected_dict)
