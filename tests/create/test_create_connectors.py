@@ -53,7 +53,7 @@ class TestMappings(unittest.TestCase):
             file_path = os.path.abspath(
                 os.path.join(
                     os.path.dirname(__file__),
-                    'data', 'json', 'create', 'templates',
+                    '..', 'data', 'json', 'create', 'templates',
                     filename
                 )
             )
@@ -82,7 +82,7 @@ class TestMappings(unittest.TestCase):
     def _load_config(file_name):
         ds_design_config_file_path = os.path.abspath(
             os.path.join(
-                os.path.dirname(__file__), 'data', 'json', 'create', 'datascriptor',
+                os.path.dirname(__file__), '..', 'data', 'json', 'create', 'datascriptor',
                 file_name
             )
         )

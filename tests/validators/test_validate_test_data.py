@@ -305,7 +305,7 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
     def setUp(self):
         self._reporting_level = logging.ERROR
         self.v2_create_schemas_path = os.path.join(
-            os.path.dirname(__file__), '..', 'isatools', 'resources', 'schemas',
+            os.path.dirname(__file__), '../..', 'isatools', 'resources', 'schemas',
             'isa_model_version_2_0_schemas', 'create')
 
     def test_validate_testdata_sampleassayplan_json(self):
