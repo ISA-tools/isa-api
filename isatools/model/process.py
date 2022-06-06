@@ -229,11 +229,13 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             value = ''
             if param.value:
                 value = param.value.to_dict() if isinstance(param.value, OntologyAnnotation) else param.value
-            parameter_values.append({
+            parameter_value = {
                 "category": {"@id": param.category.id} if param.category else '',
-                "value": value,
-                "unit": {"@id": param.unit.id} if param.unit else '',
-            })
+                "value": value
+            }
+            if param.unit:
+                parameter_value["unit"] = {"@id": param.unit.id}
+            parameter_values.append(parameter_value)
         serialized = {
             "@id": self.id,
             "name": self.name if self.name is not None else '',

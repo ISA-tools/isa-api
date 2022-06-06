@@ -191,7 +191,7 @@ class TestProcess(TestCase):
         category = ProtocolParameter(id_='category_id')
         value = OntologyAnnotation(term='test_value', id_='value_id')
         process.parameter_values = [ParameterValue(value="abc", category=category)]
-        expected_dict['parameterValues'] = [{'category': {'@id': 'category_id'}, 'value': 'abc', 'unit': ''}]
+        expected_dict['parameterValues'] = [{'category': {'@id': 'category_id'}, 'value': 'abc'}]
         self.assertEqual(process.to_dict(), expected_dict)
         process.parameter_values = [ParameterValue(value=value, category=category)]
         expected_dict['parameterValues'] = [
@@ -200,8 +200,7 @@ class TestProcess(TestCase):
                 'value': {
                     '@id': 'value_id', 'annotationValue': 'test_value',
                     'termSource': '', 'termAccession': '', 'comments': []
-                },
-                'unit': ''
+                }
             }
         ]
         self.assertEqual(process.to_dict(), expected_dict)
