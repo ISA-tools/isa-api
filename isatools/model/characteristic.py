@@ -117,17 +117,16 @@ class Characteristic(Commentable):
 
     def to_dict(self):
         category = ''
-        unit = ''
         if self.category:
             category = {"@id": self.category.id.replace('#ontology_annotation/', '#characteristic_category/')}
+        characteristic = {
+            "category": category,
+            "value": self.value.to_dict() if isinstance(self.value, OntologyAnnotation) else self.value,
+            "comments": [comment.to_dict() for comment in self.comments]
+        }
         if self.unit:
             id_ = "#unit/" + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
-            unit = {"@id": id_}
-        return {
-            "category": category,
-            "value": self.value.to_dict() if isinstance(self.value, OntologyAnnotation) else self.value,
-            "unit": unit,
-            "comments": [comment.to_dict() for comment in self.comments]
-        }
+            characteristic['unit'] = {"@id": id_}
+        return characteristic

@@ -98,7 +98,6 @@ class TestSource(TestCase):
             {
                 'category': {'@id': 'test_id'},
                 'comments': [],
-                'unit': '',
                 'value': None
             }
         ]
