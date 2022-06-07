@@ -1775,7 +1775,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         # self.assertIsInstance(next_item, DataFile)
 
     def test_generate_isa_study_single_arm_single_cell_elements(self):
-        with open(os.path.join(os.path.dirname(__file__), '..', 'isatools', 'resources', 'config', 'yaml',
+        with open(os.path.join(os.path.dirname(__file__), '..', '..', 'isatools', 'resources', 'config', 'yaml',
                                'study-creator-config.yml')) as yaml_file:
             config = yaml.load(yaml_file, Loader=yaml.FullLoader)
         study_config = config['study']

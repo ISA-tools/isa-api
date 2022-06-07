@@ -1,12 +1,15 @@
+from uuid import uuid4
+
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
 from isatools.model.source import Source
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.factor_value import FactorValue
+from isatools.model.identifiable import Identifiable
 
 
-class Sample(Commentable, ProcessSequenceNode):
+class Sample(Commentable, ProcessSequenceNode, Identifiable):
     """Represents a Sample material in an experimental graph.
 
     Attributes:
@@ -22,9 +25,9 @@ class Sample(Commentable, ProcessSequenceNode):
 
     def __init__(self, name='', id_='', factor_values=None,
                  characteristics=None, derives_from=None, comments=None):
-        # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
+        Identifiable.__init__(self)
 
         self.id = id_
         self.__name = name
@@ -144,10 +147,10 @@ class Sample(Commentable, ProcessSequenceNode):
 
     def to_dict(self):
         return {
-            '@id': self.id,
-            'name': self.name,
-            'characteristics': [char.to_dict() for char in self.characteristics],
-            'factor_values': [factor_value.to_dict() for factor_value in self.factor_values],
-            'derives_from': [source.id for source in self.derives_from],
-            'comments': [comment.to_dict() for comment in self.comments]
+            "@id": self.id,
+            "name": self.name,
+            "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
+            "factorValues": [factor_values.to_dict() for factor_values in self.factor_values],
+            "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
+            "comments": [comment.to_dict() for comment in self.comments]
         }

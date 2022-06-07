@@ -31,7 +31,7 @@ class TestArrayExpressIO(unittest.TestCase):
     @patch('isatools.net.ax.get')
     def test_get_experiment_as_magetab(self, mock_ax_get):
         src = os.path.abspath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', 'E-AFMX-1')
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'magetab', 'E-AFMX-1')
         )
         dest = tempfile.mkdtemp()
         target = shutil.copytree(src, os.path.abspath(os.path.join(dest, 'E-AFMX-1')))
@@ -44,7 +44,7 @@ class TestArrayExpressIO(unittest.TestCase):
     @patch('isatools.net.ax.get')
     def test_get_experiment_as_isatab(self, mock_ax_get):
         src = os.path.abspath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', 'E-AFMX-1')
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'magetab', 'E-AFMX-1')
         )
         dest = tempfile.mkdtemp()
         target = shutil.copytree(src, os.path.abspath(os.path.join(dest, 'E-AFMX-1')))

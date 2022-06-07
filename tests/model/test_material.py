@@ -3,6 +3,7 @@ from unittest import TestCase
 from isatools.model.material import Material, Extract, LabeledExtract
 from isatools.model.characteristic import Characteristic
 from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.identifiable import Identifiable
 
 
 class TestMaterial(TestCase):
@@ -11,7 +12,7 @@ class TestMaterial(TestCase):
         self.material = Material()
 
     def test_init(self):
-        self.assertTrue(isinstance(self.material, (Material, ProcessSequenceNode)))
+        self.assertTrue(isinstance(self.material, (Material, ProcessSequenceNode, Identifiable)))
         characteristic = Characteristic()
         material = Material(name='test_name',
                             id_='test_id',
@@ -57,6 +58,15 @@ class TestMaterial(TestCase):
         self.assertEqual(str(context.exception),
                          "Material.characteristics must be iterable containing Characteristics")
 
+    def test_to_dict(self):
+        extract = Material(name='test_name', id_='id1')
+        expected_dict = {'@id': 'id1',
+                         'type': '',
+                         'name': 'test_name',
+                         'characteristics': [],
+                         'comments': []}
+        self.assertEqual(extract.to_dict(), expected_dict)
+
 
 class TestExtract(TestCase):
 
@@ -64,7 +74,7 @@ class TestExtract(TestCase):
         self.extract = Extract()
 
     def test_init(self):
-        self.assertTrue(isinstance(self.extract, (Extract, Material, ProcessSequenceNode)))
+        self.assertTrue(isinstance(self.extract, (Extract, Material, ProcessSequenceNode, Identifiable)))
         self.assertTrue(self.extract.type == "Extract Name")
 
     def test_repr(self):
@@ -86,6 +96,15 @@ class TestExtract(TestCase):
         self.assertTrue(first_extract == second_extract)
         self.assertTrue(first_extract != self.extract)
 
+    def test_to_dict(self):
+        extract = Extract(name='test_name', id_='id1', characteristics=[], comments=[])
+        expected_dict = {'@id': 'id1',
+                         'type': 'Extract Name',
+                         'name': 'test_name',
+                         'characteristics': [],
+                         'comments': []}
+        self.assertEqual(extract.to_dict(), expected_dict)
+
 
 class TestLabeledExtract(TestCase):
 
@@ -93,7 +112,8 @@ class TestLabeledExtract(TestCase):
         self.labeled_extract = LabeledExtract()
 
     def test_init(self):
-        self.assertTrue(isinstance(self.labeled_extract, (LabeledExtract, Extract, Material, ProcessSequenceNode)))
+        self.assertTrue(isinstance(self.labeled_extract,
+                                   (LabeledExtract, Extract, Material, ProcessSequenceNode, Identifiable)))
         self.assertTrue(self.labeled_extract.type == "Labeled Extract Name")
 
     def test_repr(self):
@@ -115,3 +135,12 @@ class TestLabeledExtract(TestCase):
         second_labeled_extract = LabeledExtract(name='test_name', id_='id2')
         self.assertTrue(first_labeled_extract == second_labeled_extract)
         self.assertTrue(first_labeled_extract != self.labeled_extract)
+
+    def test_to_dict(self):
+        extract = LabeledExtract(name='test_name', id_='id1', characteristics=[], comments=[])
+        expected_dict = {'@id': 'id1',
+                         'type': 'Labeled Extract Name',
+                         'name': 'test_name',
+                         'characteristics': [],
+                         'comments': []}
+        self.assertEqual(extract.to_dict(), expected_dict)

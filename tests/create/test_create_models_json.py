@@ -404,7 +404,7 @@ class CharacteristicDecoderTest(unittest.TestCase):
         )
         decoder = CharacteristicDecoder()
         with open(
-                os.path.join(os.path.dirname(__file__), 'data', 'json', 'create', 'characteristic-complete.json')
+                os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create', 'characteristic-complete.json')
         ) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_characteristic = decoder.loads(json_text)
@@ -423,7 +423,7 @@ class CharacteristicDecoderTest(unittest.TestCase):
         )
         decoder = CharacteristicDecoder()
         with open(
-                os.path.join(os.path.dirname(__file__), 'data', 'json', 'create', 'characteristic-no-unit.json')
+                os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create', 'characteristic-no-unit.json')
         ) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_characteristic = decoder.loads(json_text)
@@ -449,7 +449,7 @@ class StudyCellEncoderTest(BaseTestCase):
 
     def test_encode_single_treatment_cell(self):
         actual_json_cell = json.loads(json.dumps(self.cell_single_treatment_00, cls=StudyCellEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'single-treatment-cell.json')) as expected_json_fp:
             expected_json_cell = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_cell), ordered(expected_json_cell))
@@ -473,7 +473,7 @@ class StudyCellEncoderTest(BaseTestCase):
     def test_encode_multi_treatment_cell(self):
         self.maxDiff = None
         json_cell = json.loads(json.dumps(self.cell_multi_elements_padded, cls=StudyCellEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
             expected_json_cell = json.load(expected_json_fp)
         self.assertEqual(ordered(json_cell), ordered(expected_json_cell))
@@ -486,7 +486,7 @@ class StudyCellDecoderTest(BaseTestCase):
 
     def test_decode_single_treatment_cell(self):
         decoder = StudyCellDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'single-treatment-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
@@ -494,7 +494,7 @@ class StudyCellDecoderTest(BaseTestCase):
 
     def test_decode_multi_treatment_cell(self):
         decoder = StudyCellDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'multi-treatment-padded-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_cell = decoder.loads(json_text)
@@ -554,7 +554,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
     def test_encode_dna_rna_extraction_plan(self):
         actual_json_plan = json.loads(json.dumps(self.plan, cls=SampleAndAssayPlanEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             expected_json_plan = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_plan), ordered(expected_json_plan))
@@ -564,7 +564,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
     def test_decode_dna_rna_extraction_plan(self):
         decoder = SampleAndAssayPlanDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'dna-rna-extraction-sample-and-assay-plan.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_plan = decoder.loads(json_text)
@@ -627,7 +627,7 @@ class StudyArmEncoderTest(BaseTestCase):
 
     def test_encode_arm_with_single_element_cells(self):
         actual_json_arm = json.loads(json.dumps(self.single_treatment_cell_arm, cls=StudyArmEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
         log.debug('expected source type is {}'.format(expected_json_arm['sourceType']))
@@ -637,7 +637,7 @@ class StudyArmEncoderTest(BaseTestCase):
 
     def test_encode_arm_with_multi_element_cell(self):
         actual_json_arm = json.loads(json.dumps(self.multi_treatment_cell_arm, cls=StudyArmEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-arm-with-multi-element-cell.json')) as expected_json_fp:
             expected_json_arm = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_arm), ordered(expected_json_arm))
@@ -650,7 +650,7 @@ class StudyArmDecoderTest(BaseTestCase):
 
     def test_decode_arm_with_single_element_cells(self):
         decoder = StudyArmDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-arm-with-single-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
@@ -658,7 +658,7 @@ class StudyArmDecoderTest(BaseTestCase):
 
     def test_decode_arm_with_multi_element_cells(self):
         decoder = StudyArmDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-arm-with-multi-element-cell.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
@@ -666,7 +666,7 @@ class StudyArmDecoderTest(BaseTestCase):
 
     def test_decode_arm_with_multi_element_cells_mouse(self):
         decoder = StudyArmDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-arm-with-multi-element-cell-mouse.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
@@ -700,7 +700,7 @@ class StudyDesignEncoderTest(BaseTestCase):
 
     def test_encode_study_design_with_three_arms(self):
         actual_json_study_design = json.loads(json.dumps(self.three_arm_study_design, cls=StudyDesignEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
             expected_json_study_design = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_study_design), ordered(expected_json_study_design))
@@ -708,7 +708,7 @@ class StudyDesignEncoderTest(BaseTestCase):
     def test_encode_study_design_with_two_arms_with_multi_element_cells(self):
         actual_json_study_design = json.loads(json.dumps(self.multi_element_cell_two_arm_study_design,
                                                          cls=StudyDesignEncoder))
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-design-with-two-arms-multi-element-cells.json')) as expected_json_fp:
             expected_json_study_design = json.load(expected_json_fp)
         self.assertEqual(ordered(actual_json_study_design), ordered(expected_json_study_design))
@@ -731,7 +731,7 @@ class StudyDesignDecoderTest(BaseTestCase):
 
     def test_decode_study_design_with_three_arms(self):
         decoder = StudyDesignDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-design-with-three-arms-single-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)
@@ -769,7 +769,7 @@ class StudyDesignDecoderTest(BaseTestCase):
 
     def test_decode_study_design_with_two_arms_with_multi_element_cells(self):
         decoder = StudyDesignDecoder()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'json', 'create',
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'json', 'create',
                                'study-design-with-two-arms-multi-element-cells.json')) as expected_json_fp:
             json_text = json.dumps(json.load(expected_json_fp))
             actual_study_design = decoder.loads(json_text)

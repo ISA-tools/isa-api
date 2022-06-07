@@ -344,10 +344,10 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "protocols": [protocol.to_dict() for protocol in self.protocols],
             "materials": {
                 "sources": [source.to_dict() for source in self.sources],
-                "samples": [],
-                "otherMaterials": []
+                "samples": [sample.to_dict() for sample in self.samples],
+                "otherMaterials": [mat.to_dict() for mat in self.other_material],
             },
-            "processSequence": [],
+            "processSequence": [process.to_dict() for process in self.process_sequence],
             "factors": [],
             "characteristicCategories": [],
             "unitCategories": [],

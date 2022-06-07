@@ -2,17 +2,18 @@ from abc import ABCMeta
 from isatools.model.comments import Commentable
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.characteristic import Characteristic
+from isatools.model.identifiable import Identifiable
 
 
-class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
+class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta):
     """Represents a generic material in an experimental graph.
     """
 
     def __init__(self, name='', id_='', type_='', characteristics=None,
                  comments=None):
-        # super().__init__(comments)
-        Commentable.__init__(self, comments)
+        Commentable.__init__(self, comments=comments)
         ProcessSequenceNode.__init__(self)
+        Identifiable.__init__(self)
 
         self.id = id_
         self.__name = name
@@ -61,6 +62,15 @@ class Material(Commentable, ProcessSequenceNode, metaclass=ABCMeta):
         else:
             raise AttributeError('{}.characteristics must be iterable containing Characteristics'
                                  .format(type(self).__name__))
+
+    def to_dict(self):
+        return {
+            '@id': self.id,
+            "name": self.name,
+            "type": self.type,
+            "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
+            "comments": [comment.to_dict() for comment in self.comments]
+        }
 
 
 class Extract(Material):

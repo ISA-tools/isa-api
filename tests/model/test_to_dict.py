@@ -9,6 +9,9 @@ from isatools.model.comments import Comment
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol import Protocol
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.source import Source
+from isatools.model.sample import Sample
+from isatools.model.material import LabeledExtract, Extract
 
 
 comments = [Comment(name='comment'), Comment(name='comment1', value='value1')]
@@ -217,4 +220,29 @@ class TestSerialize(TestCase):
                             ],
                             protocol_type=OntologyAnnotation(term='test_protocol_type', id_='protocol_type_id'))
         study.protocols = [protocol]
+        self.assertEqual(study.to_dict(), expected_dict)
+
+        # Test materials
+        source = Source(name='source', id_='source_id')
+        sample = Sample(name='sample', id_='sample_id')
+        other_material = LabeledExtract(name='extract', id_='extract_id')
+        study.sources = [source]
+        study.samples = [sample]
+        study.other_material = [other_material]
+        expected_dict['materials'] = {
+            'sources': [{'@id': 'source_id', 'name': 'source', 'characteristics': [], 'comments': []}],
+            'samples': [
+                {
+                    '@id': 'sample_id', 'name': 'sample',
+                    'characteristics': [], 'factorValues': [], 'derivesFrom': [], 'comments': []
+                }
+            ],
+            'otherMaterials': [
+                {
+                    '@id': 'extract_id', 'name': 'extract', 'type': 'Labeled Extract Name',
+                    'characteristics': [], 'comments': []
+                }
+            ]
+        }
+
         self.assertEqual(study.to_dict(), expected_dict)
