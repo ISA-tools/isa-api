@@ -132,3 +132,14 @@ class Publication(Commentable):
             "title": self.title,
             "comments": [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, publication):
+        self.author_list = publication['authorList'] if 'authorList' in publication else ''
+        self.doi = publication['doi'] if 'doi' in publication else ''
+        self.pubmed_id = publication['pubMedID'] if 'pubMedID' in publication else ''
+        self.title = publication['title'] if 'title' in publication else ''
+        self.load_comments(publication.get('comments', []))
+
+        status = OntologyAnnotation()
+        status.from_dict(publication.get('status', {}))
+        self.status = status

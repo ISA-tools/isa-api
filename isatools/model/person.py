@@ -219,3 +219,23 @@ class Person(Commentable, Identifiable):
             "phone": self.phone,
             "roles": [role.to_dict() for role in self.roles]
         }
+
+    def from_dict(self, person):
+        self.address = person['address'] if 'address' in person else ''
+        self.affiliation = person['affiliation'] if 'affiliation' in person else ''
+        self.email = person['email'] if 'email' in person else ''
+        self.first_name = person['firstName'] if 'firstName' in person else ''
+        self.last_name = person['lastName'] if 'lastName' in person else ''
+        self.mid_initials = person['midInitials'] if 'midInitials' in person else ''
+        self.phone = person['phone'] if 'phone' in person else ''
+        self.fax = person['fax'] if 'fax' in person else ''
+
+        self.load_comments(person.get('comments', []))
+
+        # roles
+        roles = []
+        for role_data in person.get('roles', []):
+            role = OntologyAnnotation()
+            role.from_dict(role_data)
+            roles.append(role)
+        self.roles = roles

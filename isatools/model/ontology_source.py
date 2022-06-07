@@ -124,3 +124,10 @@ class OntologySource(Commentable):
             'description': self.description,
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, ontology_source):
+        self.name = ontology_source['name'] if 'name' in ontology_source else ''
+        self.file = ontology_source['file'] if 'file' in ontology_source else ''
+        self.version = ontology_source['version'] if 'version' in ontology_source else ''
+        self.description = ontology_source['description'] if 'description' in ontology_source else ''
+        self.load_comments(ontology_source.get('comments', []))

@@ -163,7 +163,7 @@ class TestPerson(TestCase):
         self.assertTrue(a_person != self.person)
 
     @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
-    def test_to_dict(self, mock_uuid4):
+    def test_dict(self, mock_uuid4):
         person = Person(
             address='test_address',
             last_name='last_name',
@@ -197,3 +197,7 @@ class TestPerson(TestCase):
             ]
         }
         self.assertTrue(person.to_dict() == expected_dict)
+
+        person = Person()
+        person.from_dict(expected_dict)
+        self.assertEqual(person.to_dict(), expected_dict)
