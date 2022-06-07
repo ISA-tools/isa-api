@@ -1,11 +1,10 @@
-import re
 from json import JSONEncoder
-
-from isatools.model import (
-    Investigation, OntologyAnnotation, OntologySource, Publication, Person, Study, Protocol, Characteristic, Material
-)
 
 
 class ISAJSONEncoder(JSONEncoder):
     def default(self, o):
-        return o.to_dict()
+        if hasattr(o, 'to_dict'):
+            method = getattr(o, 'to_dict')
+            if callable(method):
+                return o.to_dict()
+        return JSONEncoder.default(self, o)
