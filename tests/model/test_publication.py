@@ -82,7 +82,7 @@ class TestPublication(TestCase):
         self.assertTrue(second_publication == third_publication)
         self.assertTrue(second_publication != self.publication)
 
-    def test_to_dict(self):
+    def test_dict(self):
         publication = Publication(pubmed_id='pubmed_id', doi='doi', author_list='a, b, c',
                                   status=OntologyAnnotation(term='OA', id_='123'))
         expected_dict = {
@@ -98,6 +98,14 @@ class TestPublication(TestCase):
             'title': '',
             'comments': []}
         self.assertEqual(publication.to_dict(), expected_dict)
+        publication.from_dict(expected_dict)
+        self.assertEqual(publication.to_dict(), expected_dict)
+
         publication.status = None
         expected_dict['status'] = {"@id": ''}
         self.assertEqual(publication.to_dict(), expected_dict)
+
+        publication.from_dict(expected_dict)
+        self.assertIsInstance(publication.status, OntologyAnnotation)
+
+

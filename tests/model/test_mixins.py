@@ -375,3 +375,31 @@ class TestStudyAssayMixin(TestCase):
         self.assertNotEqual(original_input, self.study_assay_mixin.samples)
         self.study_assay_mixin.shuffle_materials('samples')
         self.assertNotEqual(original_input, self.study_assay_mixin.samples)
+
+    def test_categories_to_dict(self):
+        characteristic = OntologyAnnotation(term='Test term', id_='test_id')
+        characteristic2 = OntologyAnnotation(term='Test term2', id_='#ontology_annotation/test_id2')
+        self.study_assay_mixin.characteristic_categories = [characteristic, characteristic2]
+        expected_categories = [
+            {
+                '@id': '#characteristic_category/test_id',
+                'characteristicType': {
+                    '@id': 'test_id',
+                    'termSource': '',
+                    'termAccession': '',
+                    'annotationValue': 'Test term',
+                    'comments': []
+                }
+            },
+            {
+                '@id': '#characteristic_category/test_id2',
+                'characteristicType': {
+                    '@id': '#ontology_annotation/test_id2',
+                    'termSource': '',
+                    'termAccession': '',
+                    'annotationValue': 'Test term2',
+                    'comments': []
+                }
+            }
+        ]
+        self.assertEqual(self.study_assay_mixin.categories_to_dict(), expected_categories)

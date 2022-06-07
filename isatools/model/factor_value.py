@@ -98,14 +98,15 @@ class FactorValue(Commentable):
         if isinstance(value, OntologyAnnotation):
             value = value.to_dict()
 
-        unit = ''
+        factor_value = {'category': category, 'value': value}
+
         if self.unit:
             id_ = '#unit/' + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
-            unit = {"@id": id_}
+            factor_value['unit'] = {"@id": id_}
 
-        return {'category': category, 'value': value, 'unit': unit}
+        return factor_value
 
 
 class StudyFactor(Commentable, Identifiable):
@@ -181,7 +182,9 @@ class StudyFactor(Commentable, Identifiable):
     def to_dict(self):
         return {
             '@id': self.id,
-            'name': self.name,
-            'factor_type': self.factor_type.to_dict() if self.factor_type else {},
+
+            'factorName': self.name,
+            'factorType': self.factor_type.to_dict() if self.factor_type else '',
+
             'comments': [comment.to_dict() for comment in self.comments]
         }

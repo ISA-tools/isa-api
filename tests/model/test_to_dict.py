@@ -72,8 +72,10 @@ class TestSerialize(TestCase):
         self.investigation = Investigation()
 
     def test_investigation_to_dict(self):
-        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '', 'submissionDate': '', 'comments': [],
-                         'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []}
+        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '', 'submissionDate': '',
+                         'description': '',
+                         'comments': [], 'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []
+                         }
         self.assertEqual(self.investigation.to_dict(), expected_dict)
 
         # Test string fields

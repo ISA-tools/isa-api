@@ -586,3 +586,17 @@ class StudyAssayMixin(metaclass=ABCMeta):
             else:
                 mat.characteristics[char_index] = characteristic
             mat_index += 1
+
+    def categories_to_dict(self):
+        characteristics_categories = []
+        for characteristic in self.characteristic_categories:
+            id_ = characteristic.id
+            if id_.startswith('#ontology_annotation/'):
+                id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
+            else:
+                id_ = '#characteristic_category/' + id_
+            characteristics_categories.append({
+                '@id': id_,
+                'characteristicType': characteristic.to_dict()
+            })
+        return characteristics_categories

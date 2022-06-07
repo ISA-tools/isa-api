@@ -1,10 +1,12 @@
 import os
 
-from isatools.model.comments import Commentable
+from isatools.model.comments import Commentable, Comment
 from isatools.model.mixins import MetadataMixin
 from isatools.model.ontology_annotation import OntologySource
 from isatools.model.study import Study
 from isatools.model.identifiable import Identifiable
+from isatools.model.person import Person
+from isatools.model.publication import Publication
 from isatools.graphQL.models import IsaSchema
 
 
@@ -232,6 +234,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         return {
             "identifier": self.identifier,
             "title": self.title,
+            "description": self.description,
             "publicReleaseDate": self.public_release_date,
             "submissionDate": self.submission_date,
             "comments": [comment.to_dict() for comment in self.comments],
@@ -242,3 +245,41 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             "publications": [publication.to_dict() for publication in self.publications],
             "studies": [study.to_dict() for study in self.studies]
         }
+
+    def from_dict(self, investigation):
+        self.identifier = investigation['identifier'] if 'identifier' in investigation else ''
+        self.title = investigation['title'] if 'title' in investigation else ''
+        self.public_release_date = investigation['publicReleaseDate'] if 'publicReleaseDate' in investigation else ''
+        self.submission_date = investigation['submissionDate'] if 'submissionDate' in investigation else ''
+        self.description = investigation['description'] if 'description' in investigation else ''
+
+        self.load_comments(investigation.get('comments', []))
+
+        # ontology source references
+        ontology_sources_data = investigation.get('ontologySourceReferences', [])
+        ontology_sources = []
+        for ontology_source_data in ontology_sources_data:
+            ontology_source = OntologySource('')
+            ontology_source.from_dict(ontology_source_data)
+            ontology_sources.append(ontology_source)
+        self.ontology_source_references = ontology_sources
+
+        # people
+        people_data = investigation.get('people', [])
+        people = []
+        for person_data in people_data:
+            person = Person()
+            person.from_dict(person_data)
+            people.append(person)
+        self.contacts = people
+
+        # publications
+        publications_data = investigation.get('publications', [])
+        publications = []
+        for publication_data in publications_data:
+            publication = Publication()
+            publication.from_dict(publication_data)
+            publications.append(publication)
+        self.publications = publications
+
+

@@ -4,7 +4,7 @@ from logging import getLogger
 from isatools.model import (
     Investigation, OntologyAnnotation, Comment, OntologySource, Publication, Person, Study, Protocol, ProtocolParameter,
     ProtocolComponent, StudyFactor, Source, Characteristic, Sample, FactorValue, Process, ParameterValue, Assay,
-    DataFile, Material,
+    DataFile, Material
 )
 
 
@@ -63,12 +63,6 @@ def load(fp):
         except TypeError:
             res.value = p_val_dict["value"]
         return res
-
-    def get_jvalue(dict, key):
-        if key in dict.keys():
-            return dict[key]
-        else:
-            return None
 
     investigation_json = json.load(fp)
     investigation = Investigation(

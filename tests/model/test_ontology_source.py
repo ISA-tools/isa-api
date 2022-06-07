@@ -82,7 +82,7 @@ class TestOntologySource(TestCase):
         self.assertTrue("OntologySource.name must be a str; got 1:<class 'int'>" in str(context.exception))
         self.assertIsNone(self.ontology_source.validate_field('test_name', 'name'))
 
-    def test_to_dict(self):
+    def test_dict(self):
         ontology_source = OntologySource(name='name1',
                                          version='version1',
                                          file='file1',
@@ -95,4 +95,6 @@ class TestOntologySource(TestCase):
             'file': 'file1',
             'description': 'description1'
         }
+        self.assertEqual(ontology_source.to_dict(), expected_dict)
+        ontology_source.from_dict(expected_dict)
         self.assertEqual(ontology_source.to_dict(), expected_dict)

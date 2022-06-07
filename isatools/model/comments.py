@@ -57,6 +57,10 @@ class Comment(object):
             "value": self.value
         }
 
+    def from_dict(self, comment):
+        self.name = comment['name'] if 'name' in comment else ''
+        self.value = comment['value'] if 'value' in comment else ''
+
 
 class Commentable(metaclass=ABCMeta):
     """Abstract class to enable containment of Comments
@@ -122,3 +126,11 @@ class Commentable(metaclass=ABCMeta):
         """ Gets all the comments values
         """
         return [x.value for x in self.comments]
+
+    def load_comments(self, comments_data):
+        comments = []
+        for comment_data in comments_data:
+            comment = Comment()
+            comment.from_dict(comment_data)
+            comments.append(comment)
+        self.comments = comments

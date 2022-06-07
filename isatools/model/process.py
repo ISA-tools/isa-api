@@ -229,21 +229,26 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             value = ''
             if param.value:
                 value = param.value.to_dict() if isinstance(param.value, OntologyAnnotation) else param.value
-            parameter_values.append({
+            parameter_value = {
                 "category": {"@id": param.category.id} if param.category else '',
-                "value": value,
-                "unit": {"@id": param.unit.id} if param.unit else '',
-            })
-        return {
+                "value": value
+            }
+            if param.unit:
+                parameter_value["unit"] = {"@id": param.unit.id}
+            parameter_values.append(parameter_value)
+        serialized = {
             "@id": self.id,
             "name": self.name if self.name is not None else '',
             "performer": self.performer if self.performer is not None else '',
             "date": self.date if self.date is not None else '',
-            "executes_protocol": {"@id": self.executes_protocol.id},
-            "previousProcess": {"@id": self.prev_process.id} if self.prev_process else '',
-            "nextProcess": {"@id": self.next_process.id} if self.next_process else '',
+            "executesProtocol": {"@id": self.executes_protocol.id},
             "parameterValues": parameter_values,
             "inputs": [{'@id': x.id} for x in self.inputs],
             "outputs": [{'@id': x.id} for x in self.outputs],
             "comments": [comment.to_dict() for comment in self.comments]
         }
+        if self.prev_process:
+            serialized['previousProcess'] = {'@id': self.prev_process.id}
+        if self.next_process:
+            serialized['nextProcess'] = {'@id': self.next_process.id}
+        return serialized

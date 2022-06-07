@@ -77,7 +77,7 @@ class TestOntologyAnnotation(TestCase):
         self.assertTrue(self.ontology_annotation != 123)
         self.assertFalse(self.ontology_annotation == 123)
 
-    def test_to_dict(self):
+    def test_dict(self):
         ontology_annotation = OntologyAnnotation(term='test_term', id_='test_id', term_source='term_source1',)
         expected_dict = {
             '@id': 'test_id',
@@ -98,3 +98,17 @@ class TestOntologyAnnotation(TestCase):
         ontology_annotation.term_source = OntologySource(name='test_source_name', file='test_file')
         expected_dict['termSource'] = 'test_source_name'
         self.assertEqual(ontology_annotation.to_dict(), expected_dict)
+
+        ontology_annotation = OntologyAnnotation()
+        ontology_annotation.from_dict(expected_dict)
+        self.assertEqual(ontology_annotation.to_dict(), expected_dict)
+
+        expected_dict['termSource'] = {
+            'name': 'a source',
+            'file': 'a_file.txt',
+            'version': '1.0',
+            'description': "Hello world",
+            'comments': []
+        }
+        ontology_annotation.from_dict(expected_dict)
+        self.assertEqual(ontology_annotation.to_dict()['termSource'], expected_dict['termSource']['name'])

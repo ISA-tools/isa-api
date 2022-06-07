@@ -1762,7 +1762,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(len(nmr_processes), 8 * 2)
         self.assertEqual(len(processes), 1 + 8 * 2)
         self.assertEqual(len(other_materials), 2)
-        self.assertEqual(len(characteristic_categories), 2)
+        self.assertEqual(len(characteristic_categories), 1)
         self.assertEqual(len(data_files), 8 * 2)      # 16 raw data files
         for nmr_process in nmr_processes:
             self.assertIsInstance(nmr_process, Process)

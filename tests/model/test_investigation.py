@@ -125,7 +125,45 @@ class InvestigationTest(TestCase):
         self.assertNotEqual(
             hash(expected_other_investigation), hash(self.investigation))
 
-    def test_to_dict(self):
-        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '', 'submissionDate': '', 'comments': [],
-                         'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []}
+    def test_dict(self):
+        expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '',
+                         'submissionDate': '', 'description': '',
+                         'comments': [], 'ontologySourceReferences': [], 'people': [], 'publications': [], 'studies': []
+                         }
         self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        investigation = Investigation()
+        investigation.from_dict(expected_dict)
+        self.assertEqual(investigation, self.investigation)
+
+        expected_dict = {
+            'identifier': 'inv_identifier', 'title': 'inv_title', 'publicReleaseDate': '10/10/2022',
+            'submissionDate': '10/10/2022', 'description': 'inv_description',
+            'comments': [{"name": "comment", "value": "Hello world"}],
+            'ontologySourceReferences': [
+                {
+                    'name': 'an ontology source',
+                    'file': 'file.txt',
+                    'version': '0',
+                    'description': 'an ontology',
+                    'comments': []
+                }
+            ],
+            'people': [
+                {
+                    "address": "",
+                    "affiliation": "",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": "",
+                    "phone": "",
+                    "roles": [],
+                    "comments": []
+                }
+            ],
+            'publications': [], 'studies': []
+        }
+        investigation.from_dict(expected_dict)
+        self.assertEqual(investigation.to_dict(), expected_dict)

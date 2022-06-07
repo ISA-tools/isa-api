@@ -154,12 +154,10 @@ class TestProcess(TestCase):
         expected_dict = {
             '@id': 'process_id',
             'name': '',
-            'executes_protocol': {"@id": '#protocol/' + mocked_uuid4.return_value},
+            'executesProtocol': {"@id": '#protocol/' + mocked_uuid4.return_value},
             'date': '',
             'performer': '',
             'parameterValues': [],
-            "previousProcess": '',
-            "nextProcess": '',
             'inputs': [],
             'outputs': [],
             'comments': []
@@ -193,7 +191,7 @@ class TestProcess(TestCase):
         category = ProtocolParameter(id_='category_id')
         value = OntologyAnnotation(term='test_value', id_='value_id')
         process.parameter_values = [ParameterValue(value="abc", category=category)]
-        expected_dict['parameterValues'] = [{'category': {'@id': 'category_id'}, 'value': 'abc', 'unit': ''}]
+        expected_dict['parameterValues'] = [{'category': {'@id': 'category_id'}, 'value': 'abc'}]
         self.assertEqual(process.to_dict(), expected_dict)
         process.parameter_values = [ParameterValue(value=value, category=category)]
         expected_dict['parameterValues'] = [
@@ -202,8 +200,7 @@ class TestProcess(TestCase):
                 'value': {
                     '@id': 'value_id', 'annotationValue': 'test_value',
                     'termSource': '', 'termAccession': '', 'comments': []
-                },
-                'unit': ''
+                }
             }
         ]
         self.assertEqual(process.to_dict(), expected_dict)

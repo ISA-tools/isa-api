@@ -117,3 +117,19 @@ class OntologyAnnotation(Commentable, Identifiable):
             'termAccession': self.term_accession,
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, ontology_annotation):
+        self.id = ontology_annotation['@id'] if '@id' in ontology_annotation else ''
+        self.term = ontology_annotation['annotationValue'] if 'annotationValue' in ontology_annotation else ''
+        self.term_accession = ontology_annotation['termAccession'] if 'termAccession' in ontology_annotation else ''
+        self.load_comments(ontology_annotation.get('comments', []))
+
+        if 'termSource' in ontology_annotation:
+            source = ontology_annotation['termSource']
+            if isinstance(source, str):
+                self.term_source = OntologySource(name=source)
+            else:
+                term_source = OntologySource('')
+                term_source.from_dict(source)
+                self.term_source = term_source
+

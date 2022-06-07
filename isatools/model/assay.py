@@ -174,3 +174,20 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     def __ne__(self, other):
         return not self == other
+
+    def to_dict(self):
+        return {
+            "measurementType": self.measurement_type.to_dict() if self.measurement_type else '',
+            "technologyType": self.technology_type.to_dict() if self.technology_type else '',
+            "technologyPlatform": self.technology_platform,
+            "filename": self.filename,
+            "characteristicCategories": self.categories_to_dict(),
+            "unitCategories": [unit.to_dict() for unit in self.units],
+            "comments": [comment.to_dict() for comment in self.comments],
+            "materials": {
+                "samples": [sample.to_dict() for sample in self.samples],
+                "otherMaterials": [mat.to_dict() for mat in self.other_material]
+            },
+            "dataFiles": [file.to_dict() for file in self.data_files],
+            "processSequence": [process.to_dict() for process in self.process_sequence]
+        }

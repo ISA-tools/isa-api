@@ -241,3 +241,31 @@ class StudyTest(TestCase):
             "assays": []
         }
         self.assertEqual(self.study.to_dict(), expected_dict)
+
+        # Test characteristics categories
+        expected_dict['characteristicCategories'] = [
+            {
+                '@id': '#characteristic_category/first_id',
+                'characteristicType': {
+                    '@id': 'first_id',
+                    'annotationValue': 'first_category',
+                    'termSource': '',
+                    'termAccession': '',
+                    'comments': []
+                }
+            },
+            {
+                '@id': '#characteristic_category/second_id',
+                'characteristicType': {
+                    '@id': '#ontology_annotation/second_id',
+                    'annotationValue': 'second_category',
+                    'termSource': '',
+                    'termAccession': '',
+                    'comments': []
+                }
+            }
+        ]
+        first_category = OntologyAnnotation(term='first_category', id_='first_id')
+        second_category = OntologyAnnotation(term='second_category', id_='#ontology_annotation/second_id')
+        self.study.characteristic_categories = [first_category, second_category]
+        self.assertTrue(self.study.to_dict(), expected_dict)
