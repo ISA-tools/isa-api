@@ -102,3 +102,36 @@ class TestSource(TestCase):
             }
         ]
         self.assertEqual(self.source.to_dict(), expected_dict)
+
+    def test_from_dict(self):
+        expected_dict = {
+            "@id": "source_id",
+            "name": "source name",
+            "comments": [],
+            "characteristics": []
+        }
+        source = Source()
+        source.from_dict(expected_dict, {}, {})
+        self.assertEqual(source.to_dict(), expected_dict)
+
+        expected_dict["characteristics"] = [
+            {
+                "category": {'@id': 'category_id'},
+                "comments": [],
+                "value": "123",
+                'unit': ''
+            }
+        ]
+        characteristics_index = {
+            'category_id': OntologyAnnotation(term='my category', id_='my_cat_id')
+        }
+        source.from_dict(expected_dict, characteristics_index, {})
+        expected_characteristics = [
+           {
+               'category': {'@id': 'my_cat_id'},
+               'value': '123',
+               'comments': []
+           }
+        ]
+        self.assertIsInstance(source.characteristics[0], Characteristic)
+        self.assertEqual(source.to_dict()['characteristics'], expected_characteristics)

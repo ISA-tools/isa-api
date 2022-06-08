@@ -101,3 +101,22 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             'characteristics': [char.to_dict() for char in self.characteristics],
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, source, characteristics_index, units_index):
+        self.id = source.get('@id', '')
+        self.name = source.get('name', '')
+        self.load_comments(source.get('comments', []))
+
+        # characteristics
+        for characteristic_data in source.get('characteristics', []):
+            id_ = characteristic_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': characteristic_data.get('comments', []),
+                'category': characteristics_index[id_],
+                'value': characteristic_data['value'],
+                'unit': characteristic_data['unit']
+            }
+            characteristic = Characteristic()
+            characteristic.from_dict(data, units_index)
+            self.characteristics.append(characteristic)
+

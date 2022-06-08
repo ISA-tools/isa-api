@@ -343,7 +343,16 @@ class StudyTest(TestCase):
                     'components': []
                 }
             ],
-            'materials': {'sources': [], 'samples': [], 'otherMaterials': []},
+            'materials': {
+                'sources': [
+                    {
+                        "@id": "source_id",
+                        "name": "source name",
+                        "comments": [],
+                        "characteristics": []
+                    }
+                ],
+                'samples': [], 'otherMaterials': []},
             'processSequence': [],
             'factors': [
                 {
@@ -407,4 +416,5 @@ class StudyTest(TestCase):
         self.assertEqual(study_dict['people'], expected_dict['people'])
         self.assertEqual(study_dict['studyDesignDescriptors'], expected_dict['studyDesignDescriptors'])
         self.assertEqual(study_dict['factors'], expected_dict['factors'])
+        self.assertEqual(study_dict['materials'], expected_dict['materials'])
 

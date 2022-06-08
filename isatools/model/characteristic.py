@@ -130,3 +130,32 @@ class Characteristic(Commentable):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
             characteristic['unit'] = {"@id": id_}
         return characteristic
+
+    def from_dict(self, characteristic, units_index):
+        self.category = characteristic['category']
+        self.load_comments(characteristic['comments'])
+
+        # value / unit
+        value_data = characteristic['value']
+        if isinstance(value_data, dict):
+            try:
+                if isinstance(value_data['annotationValue'], (int, float)):
+                    value_data['annotationValue'] = str(value_data['annotationValue'])
+                value = OntologyAnnotation()
+                value.from_dict(value_data)
+                self.value = value
+                self.unit = None
+            except KeyError as ke:
+                raise IOError("Can't create value as annotation: " + str(ke) + " object: " + str(characteristic))
+        elif isinstance(value_data, (int, float)):
+            try:
+                unit = units_index[characteristic['unit']['@id']]
+                self.unit = unit
+            except KeyError:
+                self.unit = None
+        elif not isinstance(value_data, str):
+            raise IOError("Unexpected type in characteristic value")
+        else:
+            self.value = value_data
+            self.unit = None
+
