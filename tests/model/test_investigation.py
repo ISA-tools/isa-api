@@ -122,8 +122,7 @@ class InvestigationTest(TestCase):
             submission_date=datetime(day=2, month=1, year=2017),
             public_release_date=datetime(day=2, month=1, year=2017))
         self.assertNotEqual(expected_other_investigation, self.investigation)
-        self.assertNotEqual(
-            hash(expected_other_investigation), hash(self.investigation))
+        self.assertNotEqual(hash(expected_other_investigation), hash(self.investigation))
 
     def test_dict(self):
         expected_dict = {'identifier': '', 'title': '', 'publicReleaseDate': '',
@@ -163,7 +162,37 @@ class InvestigationTest(TestCase):
                     "comments": []
                 }
             ],
-            'publications': [], 'studies': []
+            'publications': [
+                {
+                    'authorList': 'a, b, c',
+                    'doi': 'doi',
+                    'pubMedID': 'pubmed_id',
+                    'status': {
+                        '@id': '123',
+                        'annotationValue': 'OA',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []},
+                    'title': '',
+                    'comments': []
+                }
+            ],
+            'studies': [
+                {
+                    'filename': '', 'identifier': '', 'title': '', 'description': '',
+                    'submissionDate': '', 'publicReleaseDate': '',
+                    'publications': [],
+                    'people': [],
+                    'studyDesignDescriptors': [],
+                    'protocols': [],
+                    'materials': {'sources': [], 'samples': [], 'otherMaterials': []},
+                    'processSequence': [], 'factors': [],
+                    'characteristicCategories': [],
+                    'unitCategories': [],
+                    'comments': [],
+                    'assays': []
+                }
+            ]
         }
         investigation.from_dict(expected_dict)
         self.assertEqual(investigation.to_dict(), expected_dict)

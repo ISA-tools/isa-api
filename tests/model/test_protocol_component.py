@@ -54,3 +54,30 @@ class TestProtocolComponent(TestCase):
         third_protocol_component = ProtocolComponent(name='name2')
         self.assertEqual(first_protocol_component, second_protocol_component)
         self.assertNotEqual(first_protocol_component, third_protocol_component)
+
+    def test_dict(self):
+        component_data = {
+            "componentName": 'component name',
+            "comments": [],
+            'componentType': {
+                "@id": "component_type_id",
+                "annotationValue": "component_type_value",
+                "termAccession": "1111",
+                "comments": []
+            }
+
+        }
+        component_type = OntologyAnnotation(
+            id_='component_type_id',
+            term='component_type_value',
+            term_accession='1111'
+        )
+        first_protocol_component = ProtocolComponent(name="component name", component_type=component_type)
+        second_protocol_component = ProtocolComponent()
+        second_protocol_component.from_dict(component_data)
+        self.assertEqual(first_protocol_component, second_protocol_component)
+
+        del component_data['componentType']
+        second_protocol_component = ProtocolComponent()
+        second_protocol_component.from_dict(component_data)
+        self.assertEqual(second_protocol_component.component_type, OntologyAnnotation())

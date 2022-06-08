@@ -62,3 +62,13 @@ class ProtocolParameter(Commentable, Identifiable):
             '@id': self.id,
             'parameterName': self.parameter_name.to_dict()
         }
+
+    def from_dict(self, protocol_parameter):
+        self.id = protocol_parameter.get('@id', '')
+        self.load_comments(protocol_parameter.get('comments', ''))
+
+        parameter_name_data = protocol_parameter.get('parameterName', None)
+        if parameter_name_data:
+            parameter_name = OntologyAnnotation()
+            parameter_name.from_dict(parameter_name_data)
+            self.parameter_name = parameter_name

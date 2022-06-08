@@ -5,6 +5,7 @@ from yaml import load, FullLoader
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.protocol_component import ProtocolComponent
 from isatools.model.identifiable import Identifiable
 
 
@@ -241,6 +242,35 @@ class Protocol(Commentable, Identifiable):
             'protocolType': self.protocol_type.to_dict() if self.protocol_type else {},
             'components': []
         }
+
+    def from_dict(self, protocol):
+        self.id = protocol.get('@id', '')
+        self.name = protocol.get('name', '')
+        self.description = protocol.get('description', '')
+        self.uri = protocol.get('uri', '')
+        self.version = protocol.get('version', '')
+        self.load_comments(protocol.get('comments', []))
+
+        # Protocol type
+        protocol_type_data = protocol.get('protocolType', None)
+        if protocol_type_data:
+            protocol_type = OntologyAnnotation()
+            protocol_type.from_dict(protocol_type_data)
+            self.protocol_type = protocol_type
+
+        # Parameters
+        parameters = {}
+        for parameter_data in protocol.get('parameters', []):
+            parameter = ProtocolParameter()
+            parameter.from_dict(parameter_data)
+            self.parameters.append(parameter)
+            parameters[parameter.id] = parameter
+
+        # Components
+        for component_data in protocol.get('components', []):
+            component = ProtocolComponent()
+            component.from_dict(component_data)
+            self.components.append(component)
 
 
 def load_protocol_types_info() -> dict:

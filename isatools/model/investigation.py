@@ -1,6 +1,6 @@
 import os
 
-from isatools.model.comments import Commentable, Comment
+from isatools.model.comments import Commentable
 from isatools.model.mixins import MetadataMixin
 from isatools.model.ontology_annotation import OntologySource
 from isatools.model.study import Study
@@ -247,39 +247,33 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         }
 
     def from_dict(self, investigation):
-        self.identifier = investigation['identifier'] if 'identifier' in investigation else ''
-        self.title = investigation['title'] if 'title' in investigation else ''
-        self.public_release_date = investigation['publicReleaseDate'] if 'publicReleaseDate' in investigation else ''
-        self.submission_date = investigation['submissionDate'] if 'submissionDate' in investigation else ''
-        self.description = investigation['description'] if 'description' in investigation else ''
-
+        self.identifier = investigation.get('identifier', '')
+        self.title = investigation.get('title', '')
+        self.public_release_date = investigation.get('publicReleaseDate', '')
+        self.submission_date = investigation.get('submissionDate', '')
+        self.description = investigation.get('description', '')
         self.load_comments(investigation.get('comments', []))
 
         # ontology source references
-        ontology_sources_data = investigation.get('ontologySourceReferences', [])
-        ontology_sources = []
-        for ontology_source_data in ontology_sources_data:
+        for ontology_source_data in investigation.get('ontologySourceReferences', []):
             ontology_source = OntologySource('')
             ontology_source.from_dict(ontology_source_data)
-            ontology_sources.append(ontology_source)
-        self.ontology_source_references = ontology_sources
+            self.ontology_source_references.append(ontology_source)
 
         # people
-        people_data = investigation.get('people', [])
-        people = []
-        for person_data in people_data:
+        for person_data in investigation.get('people', []):
             person = Person()
             person.from_dict(person_data)
-            people.append(person)
-        self.contacts = people
+            self.contacts.append(person)
 
         # publications
-        publications_data = investigation.get('publications', [])
-        publications = []
-        for publication_data in publications_data:
+        for publication_data in investigation.get('publications', []):
             publication = Publication()
             publication.from_dict(publication_data)
-            publications.append(publication)
-        self.publications = publications
+            self.publications.append(publication)
 
-
+        # studies
+        for study_data in investigation.get('studies', []):
+            study = Study()
+            study.from_dict(study_data)
+            self.studies.append(study)
