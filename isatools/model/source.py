@@ -101,3 +101,8 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             'characteristics': [char.to_dict() for char in self.characteristics],
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, source):
+        self.name = source["name"] if 'name' in source else ''
+        self.load_characteristics(source.get('characteristics', []))
+        self.load_comments(source.get('comments', []))

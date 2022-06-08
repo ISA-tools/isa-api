@@ -63,6 +63,25 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             raise AttributeError('{}.characteristics must be iterable containing Characteristics'
                                  .format(type(self).__name__))
 
+    def yield_characteristics(self, category: str = None) -> filter: \
+        """Gets an iterator of matching comments for a given name.
+    
+        Args:
+            name: Comment name
+    
+        Returns:
+            :obj:`filter` of :obj:`Comments` that can be iterated on.
+        """
+        return filter(lambda x: x.category == category if category else x, self.characteristics)
+
+    def load_characteristics(self, characteristics_data):
+        characteristics = []
+        for characteristic_data in characteristics_data:
+            characteristic = Characteristic()
+            characteristic.from_dict(characteristic_data)
+            characteristics.append(characteristic)
+        self.characteristics = characteristics
+
     def to_dict(self):
         return {
             '@id': self.id,

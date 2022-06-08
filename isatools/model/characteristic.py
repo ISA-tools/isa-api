@@ -115,6 +115,7 @@ class Characteristic(Commentable):
     def __ne__(self, other):
         return not self == other
 
+
     def to_dict(self):
         category = ''
         if self.category:
@@ -130,3 +131,6 @@ class Characteristic(Commentable):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
             characteristic['unit'] = {"@id": id_}
         return characteristic
+
+    def from_dict(self, characteristic):
+        self.category =
