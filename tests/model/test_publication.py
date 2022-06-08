@@ -87,8 +87,8 @@ class TestPublication(TestCase):
                                   status=OntologyAnnotation(term='OA', id_='123'))
         expected_dict = {
             'authorList': 'a, b, c',
-            'doi': 'doi', 'pubMedID':
-                'pubmed_id',
+            'doi': 'doi',
+            'pubMedID': 'pubmed_id',
             'status': {
                 '@id': '123',
                 'annotationValue': 'OA',
@@ -96,7 +96,8 @@ class TestPublication(TestCase):
                 'termAccession': '',
                 'comments': []},
             'title': '',
-            'comments': []}
+            'comments': []
+        }
         self.assertEqual(publication.to_dict(), expected_dict)
         publication.from_dict(expected_dict)
         self.assertEqual(publication.to_dict(), expected_dict)

@@ -3,6 +3,7 @@ from unittest.mock import patch
 from isatools.model.protocol import Protocol, load_protocol_types_info
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.protocol_component import ProtocolComponent
 
 expected_ProtocolParameter_string = ("ProtocolParameter(\n\t"
                                      "parameter_name=test_parameters\n\t"
@@ -181,7 +182,7 @@ class TestProtocol(TestCase):
         self.assertTrue(second_protocol == third_protocol)
         self.assertTrue(second_protocol != self.protocol)
 
-    def test_to_dict(self):
+    def test_dict(self):
         expected_dict = {
             '@id': 'test_id',
             'name': 'test_name', 'version': '', 'description': '', 'uri': '',
@@ -201,17 +202,43 @@ class TestProtocol(TestCase):
                 'termSource': '',
                 'termAccession': '',
                 'comments': []},
-            'components': []}
-        protocol = Protocol(name='test_name',
-                            id_='test_id',
-                            parameters=[
-                                ProtocolParameter(
-                                    parameter_name=OntologyAnnotation(term='test_parameter', id_='protocol_name_id'),
-                                    id_='protocol_parameter_id'
-                                ),
-                            ],
-                            protocol_type=OntologyAnnotation(term='test_protocol_type', id_='protocol_type_id'))
+            'components': []
+        }
+        protocol_parameter = ProtocolParameter(
+            parameter_name=OntologyAnnotation(term='test_parameter', id_='protocol_name_id'),
+            id_='protocol_parameter_id'
+        )
+        protocol_type = OntologyAnnotation(term='test_protocol_type', id_='protocol_type_id')
+        component_type = OntologyAnnotation(id_="component_type_id", term='component_type_value',
+                                            term_accession="1111", term_source="")
+        protocol_component = ProtocolComponent(name="component name", component_type=component_type)
+        protocol = Protocol(
+            name='test_name',
+            id_='test_id',
+            parameters=[protocol_parameter],
+            protocol_type=protocol_type
+        )
+        protocol.components.append(protocol_component)
         self.assertEqual(protocol.to_dict(), expected_dict)
+
+        expected_dict['components'] = [
+            {
+                "componentName": 'component name',
+                "comments": [],
+                'componentType': {
+                    "@id": "component_type_id",
+                    "annotationValue": "component_type_value",
+                    "termAccession": "1111",
+                    "comments": []
+                }
+
+            }
+        ]
+
+        protocol = Protocol()
+        protocol.from_dict(expected_dict)
+        protocol_dict = protocol.to_dict()
+        self.assertEqual(protocol_dict['protocolType'], expected_dict['protocolType'])
 
 
 class TestFunctions(TestCase):

@@ -74,3 +74,14 @@ class ProtocolComponent(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def from_dict(self, protocol_component):
+        self.name = protocol_component.get('componentName', '')
+        self.load_comments(protocol_component.get('comments', []))
+
+        # component type
+        component_type_data = protocol_component.get('componentType', None)
+        if component_type_data:
+            component_type = OntologyAnnotation()
+            component_type.from_dict(component_type_data)
+            self.component_type = component_type

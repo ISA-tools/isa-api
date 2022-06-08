@@ -47,3 +47,21 @@ class TestProtocolParameter(TestCase):
         self.assertTrue(protocol_parameter != another_protocol_parameter)
         self.assertFalse(protocol_parameter == another_protocol_parameter)
         self.assertEqual(protocol_parameter, ProtocolParameter(parameter_name='test_parameter_name'))
+
+    def test_dict(self):
+        expected_dict = {
+            "@id": "my_id",
+            "parameterName": {
+                '@id': 'parameterName_id',
+                'annotationValue': 'parameterName',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []
+            }
+        }
+        another_protocol_parameter = ProtocolParameter(
+            id_="my_id", parameter_name=OntologyAnnotation(id_="parameterName_id", term='parameterName')
+        )
+        self.assertEqual(another_protocol_parameter.to_dict(), expected_dict)
+        another_protocol_parameter.from_dict(expected_dict)
+        self.assertEqual(another_protocol_parameter.to_dict(), expected_dict)

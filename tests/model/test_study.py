@@ -216,7 +216,7 @@ class StudyTest(TestCase):
         self.study.shuffle_assays(["samples"])
         self.assertNotEqual(assay.samples, samples)
 
-    def test_to_dict(self):
+    def test_dict(self):
         expected_dict = {
             "filename": "",
             "identifier": "",
@@ -269,3 +269,128 @@ class StudyTest(TestCase):
         second_category = OntologyAnnotation(term='second_category', id_='#ontology_annotation/second_id')
         self.study.characteristic_categories = [first_category, second_category]
         self.assertTrue(self.study.to_dict(), expected_dict)
+
+        expected_dict = {
+            'filename': '', 'identifier': '', 'title': '', 'description': '',
+            'submissionDate': '', 'publicReleaseDate': '',
+            'publications': [
+                {
+                    "authorList": '',
+                    "doi": '',
+                    "pubMedID": '',
+                    "status": {
+                        '@id': '123',
+                        'annotationValue': 'OA',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []
+                    },
+                    "title": 'self.title',
+                    "comments": []
+                }
+            ],
+            'people': [
+                {
+                    'address': 'address',
+                    'affiliation': 'affiliation',
+                    'comments': [],
+                    'email': 'email@test.com',
+                    'fax': 'fax',
+                    'firstName': 'first_name',
+                    'lastName': 'last_name',
+                    'midInitials': 'mid_initials',
+                    'phone': 'test_phone',
+                    'roles': [
+                        {
+                            '@id': '#ontology_annotation/mocked_UUID',
+                            'annotationValue': 'test_term',
+                            'termSource': '',
+                            'termAccession': 'test_term_accession',
+                            'comments': []
+                        }
+                    ]
+                }
+            ],
+            'studyDesignDescriptors': [
+                {
+                    "@id": "design_descriptor_1",
+                    "annotationValue": "value5",
+                    "termAccession": "1111",
+                    'termSource': '',
+                    "comments": []
+                }
+            ],
+            'protocols': [
+                {
+                    '@id': 'test_id',
+                    'name': 'test_name', 'version': '', 'description': '', 'uri': '',
+                    'comments': [],
+                    'parameters': [
+                        {
+                            'parameterName': {
+                                '@id': 'protocol_name_id',
+                                'annotationValue': 'test_parameter', 'termSource': '', 'termAccession': '', 'comments': []
+                            },
+                            '@id': 'protocol_parameter_id'
+                        }
+                    ],
+                    'protocolType': {
+                        '@id': 'protocol_type_id',
+                        'annotationValue': 'test_protocol_type',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []},
+                    'components': []
+                }
+            ],
+            'materials': {'sources': [], 'samples': [], 'otherMaterials': []},
+            'processSequence': [], 'factors': [],
+            'characteristicCategories': [
+                {
+                    "@id": "my_cat3",
+                    "annotationValue": "value3",
+                    "termAccession": "1010",
+                    "comments": []
+                }
+            ],
+            'unitCategories': [
+                {
+                    "@id": "my_unit1",
+                    "annotationValue": "dosage",
+                    "termAccession": "1011",
+                    'termSource': '',
+                    "comments": []
+                }
+            ],
+            'comments': [],
+            'assays': [
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "my_cat",
+                            "annotationValue": "value",
+                            "termAccession": "123",
+                            "comments": []
+                        }
+                    ]
+                },
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "my_cat2",
+                            "annotationValue": "value2",
+                            "termAccession": "456",
+                            "comments": []
+                        }
+                    ]
+                }
+            ]
+        }
+        study = Study()
+        study.from_dict(expected_dict)
+        study_dict = study.to_dict()
+        self.assertEqual(study_dict['unitCategories'], expected_dict['unitCategories'])
+        self.assertEqual(study_dict['publications'], expected_dict['publications'])
+        self.assertEqual(study_dict['people'], expected_dict['people'])
+        self.assertEqual(study_dict['studyDesignDescriptors'], expected_dict['studyDesignDescriptors'])
+

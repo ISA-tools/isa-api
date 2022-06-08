@@ -8,6 +8,8 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol import Protocol
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.factor_value import StudyFactor
+from isatools.model.publication import Publication
+from isatools.model.person import Person
 from isatools.model.logger import log
 
 
@@ -354,3 +356,65 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "comments": [comment.to_dict() for comment in self.comments],
             "assays": [assay.to_dict() for assay in self.assays]
         }
+
+    def from_dict(self, study):
+        self.filename = study.get('filename', '')
+        self.identifier = study.get('identifier', '')
+        self.title = study.get('title', '')
+        self.description = study.get('description', '')
+        self.submission_date = study.get('submissionDate', '')
+        self.public_release_date = study.get('publicReleaseDate', '')
+        self.load_comments(study.get('comments', []))
+
+        # Build characteristic categories index
+        characteristic_categories = {}
+        for assay in study.get('assays', []):
+            for characteristic_category in assay['characteristicCategories']:
+                category = OntologyAnnotation()
+                category.from_dict(characteristic_category)
+                characteristic_categories[category.id] = category
+        for characteristic_category in study.get('characteristicCategories', []):
+            category = OntologyAnnotation()
+            category.from_dict(characteristic_category)
+            characteristic_categories[category.id] = category
+            self.characteristic_categories.append(category)
+
+        # Units
+        units = {}
+        for unit_data in study.get('unitCategories', []):
+            unit = OntologyAnnotation()
+            unit.from_dict(unit_data)
+            units[unit.id] = unit
+            self.units.append(unit)
+
+        # Publications
+        for publication_data in study.get('publications', []):
+            publication = Publication()
+            publication.from_dict(publication_data)
+            self.publications.append(publication)
+
+        # People
+        for person_data in study.get('people', []):
+            person = Person()
+            person.from_dict(person_data)
+            self.contacts.append(person)
+
+        # Design descriptors
+        for descriptor_data in study.get('studyDesignDescriptors', []):
+            descriptor = OntologyAnnotation()
+            descriptor.from_dict(descriptor_data)
+            self.design_descriptors.append(descriptor)
+
+        # Protocols
+        protocols = {}
+        for protocol_data in study.get('protocols', []):
+            protocol = Protocol()
+            protocol.from_dict(protocol_data)
+            self.protocols.append(protocol)
+            protocols[protocol.id] = protocol
+
+        # Factors
+        # Source
+        # Sample
+        # Process
+        # Assay

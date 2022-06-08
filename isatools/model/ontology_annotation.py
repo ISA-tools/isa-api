@@ -119,9 +119,9 @@ class OntologyAnnotation(Commentable, Identifiable):
         }
 
     def from_dict(self, ontology_annotation):
-        self.id = ontology_annotation['@id'] if '@id' in ontology_annotation else ''
-        self.term = ontology_annotation['annotationValue'] if 'annotationValue' in ontology_annotation else ''
-        self.term_accession = ontology_annotation['termAccession'] if 'termAccession' in ontology_annotation else ''
+        self.id = ontology_annotation.get('@id', '')
+        self.term = ontology_annotation.get('annotationValue', '')
+        self.term_accession = ontology_annotation.get('termAccession', '')
         self.load_comments(ontology_annotation.get('comments', []))
 
         if 'termSource' in ontology_annotation:
