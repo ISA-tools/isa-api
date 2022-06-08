@@ -414,6 +414,12 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             protocols[protocol.id] = protocol
 
         # Factors
+        factors = {}
+        for factor_data in study.get('factors', []):
+            factor = StudyFactor()
+            factor.from_dict(factor_data)
+            self.factors.append(factor)
+            factors[factor.id] = factor
         # Source
         # Sample
         # Process

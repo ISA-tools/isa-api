@@ -56,7 +56,7 @@ class TestStudyFactor(TestCase):
         self.assertTrue(second_study_factor == third_study_factor)
         self.assertTrue(second_study_factor != self.study_factor)
 
-    def test_to_dict(self):
+    def test_dict(self):
         factor_type = OntologyAnnotation(term='term', id_='factor_type_id')
         study_factor = StudyFactor(id_='study_factor_id', name='name', factor_type=factor_type)
         expected_dict = {
@@ -70,6 +70,9 @@ class TestStudyFactor(TestCase):
             },
             'comments': []
         }
+        self.assertEqual(study_factor.to_dict(), expected_dict)
+        study_factor = StudyFactor()
+        study_factor.from_dict(expected_dict)
         self.assertEqual(study_factor.to_dict(), expected_dict)
 
 

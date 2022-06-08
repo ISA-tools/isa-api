@@ -185,3 +185,15 @@ class StudyFactor(Commentable, Identifiable):
             'factorType': self.factor_type.to_dict() if self.factor_type else '',
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, factor):
+        self.id = factor.get('@id', '')
+        self.name = factor.get('factorName', '')
+        self.load_comments(factor.get('comments', []))
+
+        # factor type
+        factor_type_data = factor.get('factorType', None)
+        if factor_type_data:
+            factor_type = OntologyAnnotation()
+            factor_type.from_dict(factor_type_data)
+            self.factor_type = factor_type

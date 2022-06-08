@@ -344,7 +344,20 @@ class StudyTest(TestCase):
                 }
             ],
             'materials': {'sources': [], 'samples': [], 'otherMaterials': []},
-            'processSequence': [], 'factors': [],
+            'processSequence': [],
+            'factors': [
+                {
+                    '@id': 'study_factor_id', 'factorName': 'name',
+                    'factorType': {
+                        '@id': 'factor_type_id',
+                        'annotationValue': 'term',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []
+                    },
+                    'comments': []
+                }
+            ],
             'characteristicCategories': [
                 {
                     "@id": "my_cat3",
@@ -393,4 +406,5 @@ class StudyTest(TestCase):
         self.assertEqual(study_dict['publications'], expected_dict['publications'])
         self.assertEqual(study_dict['people'], expected_dict['people'])
         self.assertEqual(study_dict['studyDesignDescriptors'], expected_dict['studyDesignDescriptors'])
+        self.assertEqual(study_dict['factors'], expected_dict['factors'])
 
