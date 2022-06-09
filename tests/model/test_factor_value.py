@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from isatools.model.factor_value import FactorValue, StudyFactor
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class TestStudyFactor(TestCase):
@@ -171,10 +172,30 @@ class TestFactorValue(TestCase):
                 'annotationValue': 'test_value',
                 'termSource': '',
                 'termAccession': '',
-                'comments': []},
-            'unit': {'@id': '#unit/0'}
+                'comments': []
+            }
         }
-        factors_index = {
-            'factor0'
-        }
-        pass
+        indexes.factors = {'factor0': StudyFactor(id_='factor0')}
+        factor_value = FactorValue()
+        factor_value.from_dict(expected_dict)
+        self.assertEqual(factor_value.to_dict(), expected_dict)
+
+        expected_dict = {'category': {'@id': 'factor0'}, 'value': 123, 'unit': {'@id': 'unit1'}}
+        indexes.units = {'unit1': OntologyAnnotation(id_='unit1', term='mg')}
+        factor_value = FactorValue()
+        factor_value.from_dict(expected_dict)
+        self.assertEqual(factor_value.to_dict(), expected_dict)
+
+        expected_dict['unit'] = {}
+        factor_value.from_dict(expected_dict)
+        self.assertIsNone(factor_value.unit)
+
+        expected_dict = {'category': {'@id': 'factor0'}, 'value': [123], 'unit': {'@id': 'unit1'}}
+        with self.assertRaises(IOError) as context:
+            factor_value.from_dict(expected_dict)
+        self.assertEqual(str(context.exception), "Unexpected type in factor value")
+
+        expected_dict['value'] = "abc"
+        factor_value.from_dict(expected_dict)
+        self.assertEqual(factor_value.value, 'abc')
+        self.assertIsNone(factor_value.unit)

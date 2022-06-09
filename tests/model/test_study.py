@@ -352,7 +352,17 @@ class StudyTest(TestCase):
                         "characteristics": []
                     }
                 ],
-                'samples': [], 'otherMaterials': []},
+                'samples': [
+                    {
+                        "@id": "my_sample",
+                        "name": "source name",
+                        'factorValues': [],
+                        'derivesFrom': [],
+                        "comments": [],
+                        "characteristics": []
+                    }
+                ],
+                'otherMaterials': []},
             'processSequence': [],
             'factors': [
                 {

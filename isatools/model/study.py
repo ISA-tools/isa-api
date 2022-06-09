@@ -427,15 +427,13 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             self.sources.append(source)
             indexes.add_source(source)
 
-        '''
         # Sample
         samples = {}
         for sample_data in study.get('materials', {}).get('samples', []):
             sample = Sample()
-            sample.from_dict(sample_data, characteristic_categories, units, factors)
+            sample.from_dict(sample_data)
             self.samples.append(sample)
             samples[sample.id] = sample
-        '''
 
         # Process
         # Assay

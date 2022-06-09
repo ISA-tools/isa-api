@@ -3,6 +3,7 @@ from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
 from isatools.model.parameter_value import ParameterValue
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class FactorValue(Commentable):
@@ -108,19 +109,19 @@ class FactorValue(Commentable):
 
         return factor_value
 
-    def from_dict(self, factor_value, units_index, factor_value_index):
-        self.factor_name = factor_value_index[factor_value["category"]["@id"]]
+    def from_dict(self, factor_value):
+        self.factor_name = indexes.get_factor(factor_value["category"]["@id"])
         self.load_comments(factor_value.get('comments', []))
 
         value_data = factor_value.get('value', None)
         if value_data:
             if isinstance(value_data, dict):
-                value = ParameterValue()
+                value = OntologyAnnotation()
                 value.from_dict(value_data)
                 self.value = value
             elif isinstance(value_data, (int, float)):
                 try:
-                    self.unit = units_index[factor_value['unit']['@id']]
+                    self.unit = indexes.get_unit(factor_value['unit']['@id'])
                 except KeyError:
                     self.unit = None
                 self.value = value_data

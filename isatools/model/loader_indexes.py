@@ -44,8 +44,7 @@ def make_print():
                 "protocols: {indexes.protocols},\n\t"
                 "units: {indexes.units},\n\t"
                 "samples: {indexes.samples},\n\t"
-                "sources: {indexes.sources}\n\t"
-                "").format(indexes=self)
+                "sources: {indexes.sources}").format(indexes=self)
     return to_str
 
 
@@ -98,6 +97,10 @@ for field_name in FIELDS:
     methods['add_%s' % field_name] = make_add_resolver(field)
 
 # parameters of type are 1. class name 2. inheritance as tuple 3. methods and attributes
-store = type('LoaderStore', (), methods)
-loader_states = store()
+Store = type('LoaderStore', (), methods)
+loader_states = Store()
+
+
+def new_store():
+    return Store()
 

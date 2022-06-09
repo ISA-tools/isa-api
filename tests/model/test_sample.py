@@ -6,7 +6,7 @@ from isatools.model.factor_value import FactorValue, StudyFactor
 from isatools.model.characteristic import Characteristic
 from isatools.model.source import Source
 from isatools.model.ontology_annotation import OntologyAnnotation
-
+from isatools.model.loader_indexes import loader_states as indexes
 
 class TestSample(TestCase):
 
@@ -160,3 +160,48 @@ class TestSample(TestCase):
                                     Source(name='source1', id_="#source/1")]
         expected_dict['derivesFrom'] = [{'@id': '#source/0'}, {'@id': '#source/1'}]
         self.assertEqual(self.sample.to_dict(), expected_dict)
+
+    def test_from_dict(self):
+        expected_dict = {
+            "@id": "sampleID",
+            "name": "sample name",
+            "characteristics": [],
+            "factorValues": [],
+            'comments': [],
+            'derivesFrom': []
+        }
+        sample = Sample()
+        sample.from_dict(expected_dict)
+        self.assertEqual(sample.to_dict(), expected_dict)
+
+        indexes.characteristic_categories = {"cat_id": OntologyAnnotation(term='my_cat', id_='cat_id')}
+        expected_dict['characteristics'] = [
+            {
+                "category": {'@id': 'cat_id'},
+                "comments": [],
+                'value': 'val'
+            }
+        ]
+        sample.from_dict(expected_dict)
+        self.assertEqual(sample.to_dict(), expected_dict)
+        self.assertEqual(sample.characteristics[0].category, indexes.get_characteristic_category('cat_id'))
+
+        # indexes.reset_store()
+        factor_type = OntologyAnnotation(id_='factorTypeID')
+        indexes.factors = {'factor0': StudyFactor(id_='factor0', factor_type=factor_type)}
+        expected_dict['factorValues'] = [
+            {
+                'category': {'@id': 'factor0'},
+                'value': ''
+            }
+        ]
+        sample.from_dict(expected_dict)
+        self.assertEqual(sample.to_dict()['factorValues'], expected_dict['factorValues'])
+        self.assertIn(sample.factor_values[0].to_dict(), expected_dict['factorValues'])
+
+        indexes.sources = {
+            "my_source": Source(id_="my_source")
+        }
+        expected_dict['derivesFrom'] = [{"@id": "my_source"}]
+        sample.from_dict(expected_dict)
+        self.assertEqual(indexes.get_source("my_source"), sample.derives_from[0])
