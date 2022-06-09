@@ -388,6 +388,7 @@ def load(fp):
                 process.performer = study_process_json["performer"]
             except KeyError:
                 pass
+
             for parameter_value_json in study_process_json["parameterValues"]:
                 if isinstance(parameter_value_json["value"], int) or isinstance(parameter_value_json["value"], float):
                     parameter_value = ParameterValue(
@@ -400,6 +401,7 @@ def load(fp):
                 else:
                     parameter_value = get_parameter_value(parameter_value_json)
                     process.parameter_values.append(parameter_value)
+
             for input_json in study_process_json["inputs"]:
                 input_ = None
                 try:
@@ -414,6 +416,7 @@ def load(fp):
                 if input_ is None:
                     raise IOError("Could not find input node in sources or samples dicts: " + input_json["@id"])
                 process.inputs.append(input_)
+
             for output_json in study_process_json["outputs"]:
                 output = None
                 try:
@@ -428,6 +431,7 @@ def load(fp):
                 if output is None:
                     raise IOError("Could not find output node in sources or samples dicts: " + output_json["@id"])
                 process.outputs.append(output)
+
             study.process_sequence.append(process)
             process_dict[process.id] = process
 

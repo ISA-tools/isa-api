@@ -8,6 +8,8 @@ from isatools.model.datafile import DataFile
 from isatools.model.material import Material
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.sample import Sample
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class TestProcess(TestCase):
@@ -210,3 +212,65 @@ class TestProcess(TestCase):
             {'category': {'@id': 'category_id'}, 'value': 1, 'unit': {'@id': 'unit_id'}}
         ]
         self.assertEqual(process.to_dict(), expected_dict)
+
+    def test_from_dict(self):
+        expected_dict = {
+            '@id': 'processID',
+            'name': 'my process',
+            'performer': '',
+            'date': '',
+            'executesProtocol': {"@id": "a_protocol_id"},
+            'comments': [],
+            'inputs': [],
+            'outputs': [],
+            'parameterValues': []
+        }
+        indexes.protocols = {"a_protocol_id": Protocol(id_='a_protocol_id')}
+        process = Process()
+        process.from_dict(expected_dict)
+        self.assertEqual(process.to_dict(), expected_dict)
+        self.assertEqual(process.executes_protocol, indexes.get_protocol('a_protocol_id'))
+
+        expected_dict['parameterValues'] = [
+            {
+                'category': {"@id": 'mycat'},
+                'value': {
+                    '@id': "valueID",
+                    'annotationValue': '',
+                    'comments': [],
+                    'termAccession': '',
+                    'termSource': ''
+                }
+            }
+        ]
+        indexes.characteristic_categories = {
+            'mycat': ProtocolParameter(id_='mycat', parameter_name=OntologyAnnotation(id_='valueID'))
+        }
+        process.from_dict(expected_dict)
+        self.assertEqual(process.to_dict(), expected_dict)
+
+        expected_dict['inputs'] = [{"@id": "myInputID"}]
+        expected_dict['outputs'] = [{"@id": "myOutputID"}]
+        with self.assertRaises(IOError) as context:
+            process.from_dict(expected_dict)
+        self.assertEqual(str(context.exception), "Could not find input node in sources or samples dicts: myInputID")
+
+        indexes.samples = {'myInputID': Sample(id_='myInputID')}
+        with self.assertRaises(IOError) as context:
+            process.from_dict(expected_dict)
+        self.assertEqual(str(context.exception), "Could not find output node in sources or samples dicts: myOutputID")
+        self.assertEqual(process.to_dict()['inputs'], expected_dict['inputs'])
+
+        indexes.samples = {'myOutputID': Sample(id_='myOutputID'), 'myInputID': Sample(id_='myInputID')}
+        process.from_dict(expected_dict)
+        self.assertEqual(process.to_dict()['outputs'], expected_dict['outputs'])
+
+        process.inputs = []
+        process.outputs = []
+        indexes.sources = {
+            'myInputID': Sample(id_='myInputID'),
+            'myOutputID': Sample(id_='myOutputID')
+        }
+        process.from_dict(expected_dict)
+        self.assertEqual(process.to_dict()['inputs'], expected_dict['inputs'])
+        self.assertEqual(process.to_dict()['outputs'], expected_dict['outputs'])

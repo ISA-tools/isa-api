@@ -32,6 +32,7 @@ def make_init():
         self.units = {}
         self.samples = {}
         self.sources = {}
+        self.processes = {}
     return init
 
 
@@ -44,7 +45,8 @@ def make_print():
                 "protocols: {indexes.protocols},\n\t"
                 "units: {indexes.units},\n\t"
                 "samples: {indexes.samples},\n\t"
-                "sources: {indexes.sources}").format(indexes=self)
+                "sources: {indexes.sources},\n\t"
+                "processes: {indexes.processes}").format(indexes=self)
     return to_str
 
 
@@ -80,7 +82,8 @@ FIELDS = {
     "protocol": "protocols",
     "unit": "units",
     "sample": "samples",
-    "source": "sources"
+    "source": "sources",
+    'process': 'processes'
 }
 
 methods = {

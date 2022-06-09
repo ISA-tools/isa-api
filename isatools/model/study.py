@@ -12,6 +12,7 @@ from isatools.model.publication import Publication
 from isatools.model.person import Person
 from isatools.model.source import Source
 from isatools.model.sample import Sample
+from isatools.model.process import Process
 from isatools.model.logger import log
 from isatools.model.loader_indexes import loader_states as indexes
 
@@ -436,6 +437,23 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             samples[sample.id] = sample
 
         # Process
-        # Assay
+        for process_data in study.get('processSequence', []):
+            process = Process()
+            process.from_dict(process_data)
+            self.process_sequence.append(process)
+            indexes.add_process(process)
+        for process_data in study.get('processSequence', []):
+            try:
+                current_process = indexes.get_process(process_data['@id'])
+                previous_process_id = process_data['previousProcess']['@id']
+                previous_process = indexes.get_process(previous_process_id)
+                current_process.prev_process = previous_process
 
+                next_process_id = process_data['nextProcess']['@id']
+                next_process = indexes.get_process(next_process_id)
+                current_process.next_process = next_process
+            except KeyError:
+                pass
+
+        # Assay
         indexes.reset_store()
