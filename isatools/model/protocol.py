@@ -7,6 +7,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.protocol_component import ProtocolComponent
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states
 
 
 class Protocol(Commentable, Identifiable):
@@ -259,12 +260,11 @@ class Protocol(Commentable, Identifiable):
             self.protocol_type = protocol_type
 
         # Parameters
-        parameters = {}
         for parameter_data in protocol.get('parameters', []):
             parameter = ProtocolParameter()
             parameter.from_dict(parameter_data)
             self.parameters.append(parameter)
-            parameters[parameter.id] = parameter
+            loader_states.add_parameter(parameter)
 
         # Components
         for component_data in protocol.get('components', []):

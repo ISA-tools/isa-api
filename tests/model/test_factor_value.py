@@ -162,3 +162,19 @@ class TestFactorValue(TestCase):
             'unit': {'@id': '#unit/' + mock_uuid.return_value}
         }
         self.assertEqual(second_factor_value.to_dict(), expected_dict)
+
+    def test_from_dict(self):
+        expected_dict = {
+            'category': {'@id': 'factor0'},
+            'value': {
+                '@id': 'factor_value0',
+                'annotationValue': 'test_value',
+                'termSource': '',
+                'termAccession': '',
+                'comments': []},
+            'unit': {'@id': '#unit/0'}
+        }
+        factors_index = {
+            'factor0'
+        }
+        pass

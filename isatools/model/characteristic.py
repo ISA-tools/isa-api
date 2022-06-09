@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Characteristic(Commentable):
@@ -131,7 +132,7 @@ class Characteristic(Commentable):
             characteristic['unit'] = {"@id": id_}
         return characteristic
 
-    def from_dict(self, characteristic, units_index):
+    def from_dict(self, characteristic):
         self.category = characteristic['category']
         self.load_comments(characteristic['comments'])
 
@@ -149,7 +150,7 @@ class Characteristic(Commentable):
                 raise IOError("Can't create value as annotation: " + str(ke) + " object: " + str(characteristic))
         elif isinstance(value_data, (int, float)):
             try:
-                unit = units_index[characteristic['unit']['@id']]
+                unit = indexes.get_unit(characteristic['unit']['@id'])
                 self.unit = unit
             except KeyError:
                 self.unit = None

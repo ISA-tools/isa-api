@@ -154,3 +154,27 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
             "comments": [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, sample, characteristics_index, units_index, factors_index):
+        self.id = sample.get('@id', '')
+        self.name = sample.get('name', '')
+        self.load_comments(sample.get('comments', []))
+
+        # characteristics
+        for characteristic_data in sample.get('characteristics', []):
+            id_ = characteristic_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': characteristic_data.get('comments', []),
+                'category': characteristics_index[id_],
+                'value': characteristic_data['value'],
+                'unit': characteristic_data['unit']
+            }
+            characteristic = Characteristic()
+            characteristic.from_dict(data, units_index)
+            self.characteristics.append(characteristic)
+
+        # factor values
+        for factor_value_data in sample.get('factorValues', []):
+            factor = FactorValue()
+            factor.from_dict(factor_value_data, units_index, factors_index)
+            self.factor_values.append(factor)

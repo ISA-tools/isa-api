@@ -2,6 +2,7 @@ from uuid import uuid4
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
+from isatools.model.parameter_value import ParameterValue
 
 
 class FactorValue(Commentable):
@@ -106,6 +107,28 @@ class FactorValue(Commentable):
             factor_value['unit'] = {"@id": id_}
 
         return factor_value
+
+    def from_dict(self, factor_value, units_index, factor_value_index):
+        self.factor_name = factor_value_index[factor_value["category"]["@id"]]
+        self.load_comments(factor_value.get('comments', []))
+
+        value_data = factor_value.get('value', None)
+        if value_data:
+            if isinstance(value_data, dict):
+                value = ParameterValue()
+                value.from_dict(value_data)
+                self.value = value
+            elif isinstance(value_data, (int, float)):
+                try:
+                    self.unit = units_index[factor_value['unit']['@id']]
+                except KeyError:
+                    self.unit = None
+                self.value = value_data
+            elif not isinstance(value_data, str):
+                raise IOError("Unexpected type in factor value")
+            else:
+                self.value = value_data
+                self.unit = None
 
 
 class StudyFactor(Commentable, Identifiable):

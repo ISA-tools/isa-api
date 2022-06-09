@@ -364,11 +364,13 @@ def load(fp):
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
             study.samples.append(sample)
+
             try:
                 for source_id_ref_json in sample_json["derivesFrom"]:
                     sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
             except KeyError:
                 sample.derives_from = []
+
         for study_process_json in study_json["processSequence"]:
             process = Process(
                 id_=study_process_json["@id"],
@@ -632,5 +634,6 @@ def load(fp):
                         pass
 
             study.assays.append(assay)
+
         investigation.studies.append(study)
     return investigation

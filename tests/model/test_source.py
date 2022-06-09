@@ -3,6 +3,7 @@ from isatools.model.source import Source
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Comment
+from isatools.model.loader_indexes import loader_states as indexes
 
 expected_repr = "isatools.model.Source(name='', characteristics=[], comments=[])"
 
@@ -111,7 +112,7 @@ class TestSource(TestCase):
             "characteristics": []
         }
         source = Source()
-        source.from_dict(expected_dict, {}, {})
+        source.from_dict(expected_dict)
         self.assertEqual(source.to_dict(), expected_dict)
 
         expected_dict["characteristics"] = [
@@ -125,7 +126,8 @@ class TestSource(TestCase):
         characteristics_index = {
             'category_id': OntologyAnnotation(term='my category', id_='my_cat_id')
         }
-        source.from_dict(expected_dict, characteristics_index, {})
+        indexes.characteristic_categories = characteristics_index
+        source.from_dict(expected_dict)
         expected_characteristics = [
            {
                'category': {'@id': 'my_cat_id'},
