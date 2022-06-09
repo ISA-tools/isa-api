@@ -478,5 +478,3 @@ class StudyTest(TestCase):
         self.assertEqual(study_dict['factors'], expected_dict['factors'])
         self.assertEqual(study_dict['materials'], expected_dict['materials'])
         self.assertEqual(study_dict['processSequence'], expected_dict['processSequence'])
-        print(study.process_sequence)
-

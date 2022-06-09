@@ -429,12 +429,11 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             indexes.add_source(source)
 
         # Sample
-        samples = {}
         for sample_data in study.get('materials', {}).get('samples', []):
             sample = Sample()
             sample.from_dict(sample_data)
             self.samples.append(sample)
-            samples[sample.id] = sample
+            indexes.add_sample(sample)
 
         # Process
         for process_data in study.get('processSequence', []):
