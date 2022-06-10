@@ -10,6 +10,8 @@ from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.factor_value import StudyFactor
 from isatools.model.publication import Publication
 from isatools.model.person import Person
+from isatools.model.source import Source
+from isatools.model.sample import Sample
 from isatools.model.logger import log
 
 
@@ -414,7 +416,32 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             protocols[protocol.id] = protocol
 
         # Factors
+        factors = {}
+        for factor_data in study.get('factors', []):
+            factor = StudyFactor()
+            factor.from_dict(factor_data)
+            self.factors.append(factor)
+            factors[factor.id] = factor
+
         # Source
+        sources = {}
+        for source_data in study.get('materials', {}).get('sources', []):
+            source = Source()
+            source.from_dict(source_data, characteristic_categories, units)
+            self.sources.append(source)
+            sources[source.id] = source
+
         # Sample
+        samples = {}
+        for sample_data in study.get('materials', {}).get('samples', []):
+            sample = Sample()
+            sample.from_dict(sample_data, characteristic_categories, units)
+            self.samples.append(sample)
+            samples[sample.id] = sample
+
+        # Other Material
+        other_materials = {}
+
         # Process
+
         # Assay

@@ -108,6 +108,34 @@ class FactorValue(Commentable):
 
         return factor_value
 
+    def from_dict(self, factor_value, units_index):
+        self.category = factor_value['category']
+        self.load_comments(factor_value['comments'])
+
+        # value / unit
+        value_data = factor_value['value']
+        if isinstance(value_data, dict):
+            try:
+                if isinstance(value_data['annotationValue'], (int, float)):
+                    value_data['annotationValue'] = str(value_data['annotationValue'])
+                value = OntologyAnnotation()
+                value.from_dict(value_data)
+                self.value = value
+                self.unit = None
+            except KeyError as ke:
+                raise IOError("Can't create value as annotation: " + str(ke) + " object: " + str(factor_value))
+        elif isinstance(value_data, (int, float)):
+            try:
+                unit = units_index[factor_value['unit']['@id']]
+                self.unit = unit
+            except KeyError:
+                self.unit = None
+        elif not isinstance(value_data, str):
+            raise IOError("Unexpected type in characteristic value")
+        else:
+            self.value = value_data
+            self.unit = None
+
 
 class StudyFactor(Commentable, Identifiable):
     """A Study Factor corresponds to an independent variable manipulated by the
@@ -188,3 +216,15 @@ class StudyFactor(Commentable, Identifiable):
 
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, factor):
+        self.id = factor.get('@id', '')
+        self.name = factor.get('factorName', '')
+        self.load_comments(factor.get('comments', []))
+
+        # factor type
+        factor_type_data = factor.get('factorType', None)
+        if factor_type_data:
+            factor_type = OntologyAnnotation()
+            factor_type.from_dict(factor_type_data)
+            self.factor_type = factor_type

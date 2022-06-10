@@ -154,3 +154,39 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
             "comments": [comment.to_dict() for comment in self.comments]
         }
+
+    def from_dict(self, sample, characteristics_index, units_index):
+        self.id = sample.get('@id', '')
+        self.name = sample.get('name', '')
+        self.load_comments(sample.get('comments', []))
+
+        # characteristics
+        for characteristic_data in sample.get('characteristics', []):
+            id_ = characteristic_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': characteristic_data.get('comments', []),
+                'category': characteristics_index[id_],
+                'value': characteristic_data['value'],
+                'unit': characteristic_data['unit']
+            }
+            characteristic = Characteristic()
+            characteristic.from_dict(data, units_index)
+            self.characteristics.append(characteristic)
+
+        # derives_from
+        for source_data in sample.get("derivesFom", []):
+            id_ = source_data.get('id', '')
+            self.derives_from.append(id_)
+
+        # factor_values
+        for fv_data in sample.get("factorValues", []):
+            id_ = fv_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': fv_data.get('comments', []),
+                'category': id_,
+                'value': fv_data['value'],
+                'unit': fv_data['unit']
+            }
+            fv = FactorValue()
+            fv.from_dict(data, units_index)
+            self.factor_values.append(fv)

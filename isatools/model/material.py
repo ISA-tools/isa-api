@@ -63,7 +63,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             raise AttributeError('{}.characteristics must be iterable containing Characteristics'
                                  .format(type(self).__name__))
 
-    def yield_characteristics(self, category: str = None) -> filter: \
+    def yield_characteristics(self, category: str = None) -> filter:
         """Gets an iterator of matching comments for a given name.
     
         Args:

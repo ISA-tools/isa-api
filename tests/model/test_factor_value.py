@@ -56,7 +56,7 @@ class TestStudyFactor(TestCase):
         self.assertTrue(second_study_factor == third_study_factor)
         self.assertTrue(second_study_factor != self.study_factor)
 
-    def test_to_dict(self):
+    def test_dict(self):
         factor_type = OntologyAnnotation(term='term', id_='factor_type_id')
         study_factor = StudyFactor(id_='study_factor_id', name='name', factor_type=factor_type)
         expected_dict = {
@@ -70,6 +70,9 @@ class TestStudyFactor(TestCase):
             },
             'comments': []
         }
+        self.assertEqual(study_factor.to_dict(), expected_dict)
+        study_factor = StudyFactor()
+        study_factor.from_dict(expected_dict)
         self.assertEqual(study_factor.to_dict(), expected_dict)
 
 
@@ -134,7 +137,6 @@ class TestFactorValue(TestCase):
         self.assertTrue(second_factor_value != third_factor_value)
         self.assertTrue(second_factor_value == self.factor_value)
 
-
     @patch('isatools.model.factor_value.uuid4', return_value='test_uuid')
     def test_to_dict(self, mock_uuid):
         first_factor_value = FactorValue(factor_name=StudyFactor(name='test_factor_name', id_="#factor/0"),
@@ -161,3 +163,49 @@ class TestFactorValue(TestCase):
         }
         self.assertEqual(second_factor_value.to_dict(), expected_dict)
 
+    def test_from_dict(self):
+        input_dict = {
+            'factor_name': '',
+            'comments': [],
+            'value': {}
+        }
+        factor_value = FactorValue()
+        expected_error = ("Can't create value as annotation: 'annotationValue' "
+                          "object: {'factor_name': '', 'comments': [], 'value': {}}")
+        with self.assertRaises(IOError) as context:
+            factor_value.from_dict(input_dict, {})
+        self.assertEqual(expected_error, str(context.exception))
+
+        category = OntologyAnnotation(id_="cat")
+        input_dict = {
+            'category': category,
+            'comments': [],
+            'value': {
+                '@id': 'test_id',
+                'annotationValue': 123,
+                'termSource': '',
+                'termAccession': '',
+                'comments': []
+            }
+        }
+        factor_value.from_dict(input_dict, {})
+        self.assertIsInstance(factor_value.category, OntologyAnnotation)
+        self.assertEqual(factor_value.value.term, "123")
+        self.assertEqual(factor_value.category.id, 'cat')
+
+        input_dict = {'category': category, 'value': 123, 'comments': []}
+        factor_value.from_dict(input_dict, {})
+        self.assertIsNone(factor_value.unit)
+        units_index = {"unit1": OntologyAnnotation(term='my unit')}
+        input_dict['unit'] = {"@id": 'unit1'}
+        factor_value.from_dict(input_dict, units_index)
+        self.assertEqual(factor_value.unit, units_index['unit1'])
+
+        input_dict['value'] = []
+        with self.assertRaises(IOError) as context:
+            factor_value.from_dict(input_dict, units_index)
+        self.assertEqual("Unexpected type in factor_value value", str(context.exception))
+
+        input_dict = {'category': category, 'value': '123', 'comments': []}
+        factor_value.from_dict(input_dict, units_index)
+        self.assertEqual(factor_value.value, "123")

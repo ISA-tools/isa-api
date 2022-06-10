@@ -1,4 +1,4 @@
-{
+  {
   "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/study_schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Study JSON Schema",
