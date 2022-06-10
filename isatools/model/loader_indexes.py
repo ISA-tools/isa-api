@@ -34,6 +34,7 @@ def make_init():
         self.sources = {}
         self.processes = {}
         self.term_sources = {}
+        self.data_files = {}
     return init
 
 
@@ -48,7 +49,8 @@ def make_print():
                 "samples: {indexes.samples},\n\t"
                 "sources: {indexes.sources},\n\t"
                 "processes: {indexes.processes},\n\t"
-                "term_sources: {indexes.term_sources}").format(indexes=self)
+                "term_sources: {indexes.term_sources},\n\t"
+                "data_files: {indexes.data_files}").format(indexes=self)
     return to_str
 
 
@@ -85,7 +87,6 @@ def make_add_term_source():
 
 def make_get_term_source():
     def get_term_source(self, name):
-        print(self.term_sources.keys())
         return self.term_sources[name]
     return get_term_source
 
@@ -98,7 +99,8 @@ FIELDS = {
     "unit": "units",
     "sample": "samples",
     "source": "sources",
-    'process': 'processes'
+    'process': 'processes',
+    'data_file': 'data_files'
 }
 
 methods = {
@@ -117,10 +119,10 @@ for field_name in FIELDS:
     methods['add_%s' % field_name] = make_add_resolver(field)
 
 # parameters of type are 1. class name 2. inheritance as tuple 3. methods and attributes
-Store = type('LoaderStore', (), methods)
-loader_states = Store()
+LoaderStore = type('LoaderStore', (), methods)
+loader_states = LoaderStore()
 
 
 def new_store():
-    return Store()
+    return LoaderStore()
 

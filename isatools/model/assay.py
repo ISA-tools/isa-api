@@ -187,7 +187,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             "unitCategories": [unit.to_dict() for unit in self.units],
             "comments": [comment.to_dict() for comment in self.comments],
             "materials": {
-                "samples": [sample.to_dict() for sample in self.samples],
+                "samples": [{"@id": sample.id} for sample in self.samples],
                 "otherMaterials": [mat.to_dict() for mat in self.other_material]
             },
             "dataFiles": [file.to_dict() for file in self.data_files],
@@ -219,3 +219,22 @@ class Assay(Commentable, StudyAssayMixin, object):
             unit.from_dict(unit_data)
             self.units.append(unit)
             indexes.add_unit(unit)
+
+        # data files
+        indexes.data_files = {}
+        for data_file_data in assay.get('dataFiles', []):
+            data_file = DataFile()
+            data_file.from_dict(data_file_data)
+            self.data_files.append(data_file)
+            indexes.add_data_file(data_file)
+
+        # samples
+        for sample_data in assay.get('materials', {}).get('samples', []):
+            self.samples.append(indexes.get_sample(sample_data['@id']))
+
+        # characteristic categories
+        for characteristic_category_data in assay.get('characteristicCategories', []):
+            characteristic_category = OntologyAnnotation()
+            characteristic_category.from_dict(characteristic_category_data['characteristicType'])
+            self.characteristic_categories.append(characteristic_category)
+            indexes.add_characteristic_category(characteristic_category)

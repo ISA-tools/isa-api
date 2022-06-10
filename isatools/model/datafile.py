@@ -105,6 +105,14 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
             "comments": [comment.to_dict() for comment in self.comments]
         }
 
+    def from_dict(self, data_file):
+        self.id = data_file.get('@id', '')
+        self.filename = data_file.get('name', '')
+        self.label = data_file.get('type', '')
+        self.load_comments(data_file.get('comments', []))
+
+        # TODO : missing generated_from property in dump/load methods
+
 
 class RawDataFile(DataFile):
     """Represents a raw data file in an experimental graph."""
