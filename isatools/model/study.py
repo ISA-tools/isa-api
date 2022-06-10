@@ -455,4 +455,10 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 pass
 
         # Assay
+        for assay_data in study.get('assays', []):
+            indexes.processes = []
+            assay = Assay()
+            assay.from_dict(assay_data)
+            self.assays.append(assay)
+
         indexes.reset_store()

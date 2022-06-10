@@ -33,6 +33,7 @@ def make_init():
         self.samples = {}
         self.sources = {}
         self.processes = {}
+        self.term_sources = {}
     return init
 
 
@@ -46,7 +47,8 @@ def make_print():
                 "units: {indexes.units},\n\t"
                 "samples: {indexes.samples},\n\t"
                 "sources: {indexes.sources},\n\t"
-                "processes: {indexes.processes}").format(indexes=self)
+                "processes: {indexes.processes},\n\t"
+                "term_sources: {indexes.term_sources}").format(indexes=self)
     return to_str
 
 
@@ -70,9 +72,22 @@ def make_get_resolver(field_target):
 
 
 def make_add_resolver(field_target):
-    def resolve(self, id_):
-        self.add_item(field_target, id_)
+    def resolve(self, item):
+        self.add_item(field_target, item)
     return resolve
+
+
+def make_add_term_source():
+    def add_term_source(self, item):
+        self.term_sources[item.name] = item
+    return add_term_source
+
+
+def make_get_term_source():
+    def get_term_source(self, name):
+        print(self.term_sources.keys())
+        return self.term_sources[name]
+    return get_term_source
 
 
 FIELDS = {
@@ -91,7 +106,9 @@ methods = {
     'reset_store': make_init(),
     'add_item': make_add_method(),
     'get_item': make_get_method(),
-    '__str__': make_print()
+    '__str__': make_print(),
+    'get_term_source': make_get_term_source(),
+    'add_term_source': make_add_term_source()
 }
 
 for field_name in FIELDS:

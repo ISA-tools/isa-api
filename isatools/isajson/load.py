@@ -370,7 +370,6 @@ def load(fp):
                     sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
             except KeyError:
                 sample.derives_from = []
-
         for study_process_json in study_json["processSequence"]:
             process = Process(
                 id_=study_process_json["@id"],
@@ -434,7 +433,6 @@ def load(fp):
 
             study.process_sequence.append(process)
             process_dict[process.id] = process
-
         for study_process_json in study_json["processSequence"]:  # 2nd pass
             try:
                 prev_proc = study_process_json["previousProcess"]["@id"]

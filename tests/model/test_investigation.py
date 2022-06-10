@@ -170,7 +170,7 @@ class InvestigationTest(TestCase):
                     'status': {
                         '@id': '123',
                         'annotationValue': 'OA',
-                        'termSource': '',
+                        'termSource': 'an ontology source',
                         'termAccession': '',
                         'comments': []},
                     'title': '',
@@ -196,3 +196,4 @@ class InvestigationTest(TestCase):
         }
         investigation.from_dict(expected_dict)
         self.assertEqual(investigation.to_dict(), expected_dict)
+        self.assertIsInstance(investigation.publications[0].status.term_source, OntologySource)

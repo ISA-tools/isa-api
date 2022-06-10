@@ -8,6 +8,7 @@ from isatools.model.identifiable import Identifiable
 from isatools.model.person import Person
 from isatools.model.publication import Publication
 from isatools.graphQL.models import IsaSchema
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Investigation(Commentable, MetadataMixin, Identifiable, object):
@@ -259,6 +260,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             ontology_source = OntologySource('')
             ontology_source.from_dict(ontology_source_data)
             self.ontology_source_references.append(ontology_source)
+            indexes.add_term_source(ontology_source)
 
         # people
         for person_data in investigation.get('people', []):

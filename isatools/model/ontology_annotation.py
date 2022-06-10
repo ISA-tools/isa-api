@@ -3,6 +3,7 @@ from typing import List, Any
 from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_source import OntologySource
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class OntologyAnnotation(Commentable, Identifiable):
@@ -124,12 +125,6 @@ class OntologyAnnotation(Commentable, Identifiable):
         self.term_accession = ontology_annotation.get('termAccession', '')
         self.load_comments(ontology_annotation.get('comments', []))
 
-        if 'termSource' in ontology_annotation:
-            source = ontology_annotation['termSource']
-            if isinstance(source, str):
-                self.term_source = OntologySource(name=source)
-            else:
-                term_source = OntologySource('')
-                term_source.from_dict(source)
-                self.term_source = term_source
-
+        if 'termSource' in ontology_annotation and ontology_annotation['termSource']:
+            source = indexes.get_term_source(ontology_annotation['termSource'])
+            self.term_source = source

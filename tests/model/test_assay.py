@@ -138,3 +138,43 @@ class TestAssay(TestCase):
             'processSequence': []
         }
         self.assertEqual(expected_dict, assay.to_dict())
+
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['unitCategories'] = [{
+            '@id': 'unit_ID',
+            'annotationValue': 'my_unit',
+            'termSource': '',
+            'termAccession': '',
+            'comments': []
+        }]
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

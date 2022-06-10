@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from isatools.model import OntologySource, OntologyAnnotation, Commentable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class TestOntologyAnnotation(TestCase):
@@ -99,16 +100,10 @@ class TestOntologyAnnotation(TestCase):
         expected_dict['termSource'] = 'test_source_name'
         self.assertEqual(ontology_annotation.to_dict(), expected_dict)
 
+        indexes.term_sources = {
+            'test_source_name': OntologySource('test_source_name')
+        }
         ontology_annotation = OntologyAnnotation()
         ontology_annotation.from_dict(expected_dict)
         self.assertEqual(ontology_annotation.to_dict(), expected_dict)
-
-        expected_dict['termSource'] = {
-            'name': 'a source',
-            'file': 'a_file.txt',
-            'version': '1.0',
-            'description': "Hello world",
-            'comments': []
-        }
-        ontology_annotation.from_dict(expected_dict)
-        self.assertEqual(ontology_annotation.to_dict()['termSource'], expected_dict['termSource']['name'])
+        self.assertIsInstance(ontology_annotation.term_source, OntologySource)
