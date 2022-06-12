@@ -3,6 +3,7 @@ from unittest import TestCase
 from isatools.model.parameter_value import ParameterValue
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.loader_indexes import loader_states as indexes
 
 expected_repr = 'isatools.model.ParameterValue(category=None, value=None, unit=None, comments=[])'
 
@@ -72,4 +73,27 @@ class TestParameterValue(TestCase):
         third_parameter = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term='test')))
         self.assertTrue(second_parameter == third_parameter)
         self.assertTrue(second_parameter != self.parameter)
+
+    def test_from_dict(self):
+        expected_dict = {
+            'comments': [],
+            'category': {"@id": 'mycat'},
+            'value': {
+                '@id': "valueID"
+            },
+        }
+        indexes.characteristic_categories = {
+            'mycat': ProtocolParameter(id_='mycat', parameter_name=OntologyAnnotation(id_='valueID'))
+        }
+        parameter_value = ParameterValue()
+        parameter_value.from_dict(expected_dict)
+        self.assertEqual(parameter_value.category, indexes.get_characteristic_category('mycat'))
+
+        expected_dict['value'] = 123
+        expected_dict['unit'] = {"@id": 'myUnit'}
+        indexes.units = {
+            'myUnit': OntologyAnnotation(id_='myUnit')
+        }
+        parameter_value.from_dict(expected_dict)
+        self.assertEqual(parameter_value.category, indexes.get_characteristic_category('mycat'))
 

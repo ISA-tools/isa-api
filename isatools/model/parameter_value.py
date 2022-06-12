@@ -2,6 +2,7 @@ from numbers import Number
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class ParameterValue(Commentable):
@@ -98,3 +99,14 @@ class ParameterValue(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    def from_dict(self, parameter_value):
+        self.load_comments(parameter_value.get('comments', []))
+        self.category = indexes.get_characteristic_category(parameter_value['category']['@id'])
+        if isinstance(parameter_value['value'], (float, int)):
+            self.value = parameter_value['value']
+            self.unit = indexes.get_unit(parameter_value['unit']['@id'])
+        else:
+            self.value = OntologyAnnotation()
+            self.value.from_dict(parameter_value['value'])
+

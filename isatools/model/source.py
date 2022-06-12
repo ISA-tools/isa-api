@@ -3,6 +3,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Source(Commentable, ProcessSequenceNode, Identifiable):
@@ -102,7 +103,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             'comments': [comment.to_dict() for comment in self.comments]
         }
 
-    def from_dict(self, source, characteristics_index, units_index):
+    def from_dict(self, source):
         self.id = source.get('@id', '')
         self.name = source.get('name', '')
         self.load_comments(source.get('comments', []))
@@ -112,12 +113,12 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             id_ = characteristic_data.get('category', {}).get('@id', '')
             data = {
                 'comments': characteristic_data.get('comments', []),
-                'category': characteristics_index[id_],
+                'category': indexes.get_characteristic_category(id_),
                 'value': characteristic_data['value'],
                 'unit': characteristic_data['unit']
             }
             characteristic = Characteristic()
-            characteristic.from_dict(data, units_index)
+            characteristic.from_dict(data)
             self.characteristics.append(characteristic)
 
 

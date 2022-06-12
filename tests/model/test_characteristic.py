@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from isatools.model.characteristic import Characteristic
 from isatools.model.ontology_annotation import OntologyAnnotation
-
+from isatools.model.loader_indexes import loader_states as indexes
 
 class TestCharacteristic(TestCase):
 
@@ -114,7 +114,7 @@ class TestCharacteristic(TestCase):
         expected_error = ("Can't create value as annotation: 'annotationValue' "
                           "object: {'category': '', 'comments': [], 'value': {}}")
         with self.assertRaises(IOError) as context:
-            characteristic.from_dict(input_dict, {})
+            characteristic.from_dict(input_dict)
         self.assertEqual(expected_error, str(context.exception))
 
         category = OntologyAnnotation(id_="cat")
@@ -129,27 +129,30 @@ class TestCharacteristic(TestCase):
                 'comments': []
             }
         }
-        characteristic.from_dict(input_dict, {})
+        characteristic.from_dict(input_dict)
         self.assertIsInstance(characteristic.category, OntologyAnnotation)
         self.assertEqual(characteristic.value.term, "123")
         self.assertEqual(characteristic.category.id, 'cat')
 
         input_dict = {'category': category, 'value': 123, 'comments': []}
-        characteristic.from_dict(input_dict, {})
+        characteristic.from_dict(input_dict)
         self.assertIsNone(characteristic.unit)
         units_index = {"unit1": OntologyAnnotation(term='my unit')}
         input_dict['unit'] = {"@id": 'unit1'}
-        characteristic.from_dict(input_dict, units_index)
+
+        indexes.units = units_index
+        characteristic.from_dict(input_dict)
         self.assertEqual(characteristic.unit, units_index['unit1'])
 
         input_dict['value'] = []
         with self.assertRaises(IOError) as context:
-            characteristic.from_dict(input_dict, units_index)
+            characteristic.from_dict(input_dict)
         self.assertEqual("Unexpected type in characteristic value", str(context.exception))
 
         input_dict = {'category': category, 'value': '123', 'comments': []}
-        characteristic.from_dict(input_dict, units_index)
+        characteristic.from_dict(input_dict)
         self.assertEqual(characteristic.value, "123")
+        indexes.reset_store()
 
 
 

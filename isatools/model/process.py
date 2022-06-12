@@ -10,6 +10,7 @@ from isatools.model.datafile import DataFile
 from isatools.model.parameter_value import ParameterValue
 from isatools.model.identifiable import Identifiable
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Process(Commentable, ProcessSequenceNode, Identifiable):
@@ -252,3 +253,49 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         if self.next_process:
             serialized['nextProcess'] = {'@id': self.next_process.id}
         return serialized
+
+    def from_dict(self, process):
+        self.id = process.get('@id', '')
+        self.name = process.get('name', '')
+        self.performer = process.get('performer', '')
+        self.date = process.get('date', '')
+        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
+        self.load_comments(process.get('comments', []))
+
+        # parameter values
+        for parameter_value_data in process.get('parameterValues', []):
+            parameter_value = ParameterValue()
+            parameter_value.from_dict(parameter_value_data)
+            self.parameter_values.append(parameter_value)
+
+        # Inputs
+        for input_data in process.get('inputs', []):
+            input_ = None
+            try:
+                input_ = indexes.get_source(input_data["@id"])
+            except KeyError:
+                pass
+            finally:
+                try:
+                    input_ = indexes.get_sample(input_data["@id"])
+                except KeyError:
+                    pass
+            if input_ is None:
+                raise IOError("Could not find input node in sources or samples dicts: " + input_data["@id"])
+            self.inputs.append(input_)
+
+        # Outputs
+        for output_data in process.get('outputs', []):
+            output = None
+            try:
+                output = indexes.get_source(output_data["@id"])
+            except KeyError:
+                pass
+            finally:
+                try:
+                    output = indexes.get_sample(output_data["@id"])
+                except KeyError:
+                    pass
+            if output is None:
+                raise IOError("Could not find output node in sources or samples dicts: " + output_data["@id"])
+            self.outputs.append(output)
