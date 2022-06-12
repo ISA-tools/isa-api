@@ -105,7 +105,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
 
     def from_dict(self, source):
         self.id = source.get('@id', '')
-        self.name = source.get('name', '')
+        self.name = source.get('name', '').replace("source-", "")
         self.load_comments(source.get('comments', []))
 
         # characteristics

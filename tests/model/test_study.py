@@ -399,20 +399,28 @@ class StudyTest(TestCase):
                 {
                     "characteristicCategories": [
                         {
-                            "@id": "my_cat",
-                            "annotationValue": "value",
-                            "termAccession": "123",
-                            "comments": []
+                            '@id': '#characteristic_category/test_id',
+                            'characteristicType': {
+                                '@id': 'test_id',
+                                'annotationValue': 'test_term',
+                                'termSource': '',
+                                'termAccession': '',
+                                'comments': []
+                            }
                         }
                     ]
                 },
                 {
                     "characteristicCategories": [
                         {
-                            "@id": "my_cat2",
-                            "annotationValue": "value2",
-                            "termAccession": "456",
-                            "comments": []
+                            '@id': '#characteristic_category/test_id',
+                            'characteristicType': {
+                                '@id': 'my_cat2',
+                                'annotationValue': 'value2',
+                                'termSource': '',
+                                'termAccession': '456',
+                                'comments': []
+                            }
                         }
                     ]
                 }

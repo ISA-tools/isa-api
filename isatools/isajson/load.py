@@ -370,7 +370,6 @@ def load(fp):
                     sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
             except KeyError:
                 sample.derives_from = []
-
         for study_process_json in study_json["processSequence"]:
             process = Process(
                 id_=study_process_json["@id"],
@@ -434,7 +433,6 @@ def load(fp):
 
             study.process_sequence.append(process)
             process_dict[process.id] = process
-
         for study_process_json in study_json["processSequence"]:  # 2nd pass
             try:
                 prev_proc = study_process_json["previousProcess"]["@id"]
@@ -475,6 +473,7 @@ def load(fp):
                 )
                 units_dict[unit.id] = unit
                 assay.units.append(unit)
+
             data_dict = dict()
             for data_json in assay_json["dataFiles"]:
                 data_file = DataFile(
@@ -489,9 +488,11 @@ def load(fp):
                 except KeyError:
                     data_file.derives_from = None
                 assay.data_files.append(data_file)
+
             for sample_json in assay_json["materials"]["samples"]:
                 sample = samples_dict[sample_json["@id"]]
                 assay.samples.append(sample)
+
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category = OntologyAnnotation(
                     # id_=assay_characteristics_category_json["characteristicType"]["@id"],
@@ -503,6 +504,7 @@ def load(fp):
                 )
                 study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
+
             other_materials_dict = dict()
             for other_material_json in assay_json["materials"]["otherMaterials"]:
                 material_name = other_material_json["name"].replace("labeledextract-", "").replace("extract-", "")
@@ -544,6 +546,7 @@ def load(fp):
                     material.characteristics.append(characteristic)
                 assay.other_material.append(material)
                 other_materials_dict[material.id] = material
+
             for assay_process_json in assay_json["processSequence"]:
                 process = Process(
                     id_=assay_process_json["@id"],

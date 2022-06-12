@@ -157,7 +157,7 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
 
     def from_dict(self, sample, characteristics_index, units_index):
         self.id = sample.get('@id', '')
-        self.name = sample.get('name', '')
+        self.name = sample.get('name', '').replace('sample-', '-')
         self.load_comments(sample.get('comments', []))
 
         # characteristics

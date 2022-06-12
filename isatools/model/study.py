@@ -13,7 +13,7 @@ from isatools.model.person import Person
 from isatools.model.source import Source
 from isatools.model.sample import Sample
 from isatools.model.logger import log
-
+from isatools.model.loader_indexes import loader_states as indexes
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     """Study is the central unit, containing information on the subject under
@@ -445,3 +445,12 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         # Process
 
         # Assay
+
+        for assay_data in study.get('assays', []):
+            indexes.processes = []
+            assay = Assay()
+            assay.from_dict(assay_data)
+            self.assays.append(assay)
+
+        indexes.reset_store()
+

@@ -33,6 +33,8 @@ def make_init():
         self.samples = {}
         self.sources = {}
         self.processes = {}
+        self.term_sources = {}
+        self.data_files = {}
     return init
 
 
@@ -46,7 +48,9 @@ def make_print():
                 "units: {indexes.units},\n\t"
                 "samples: {indexes.samples},\n\t"
                 "sources: {indexes.sources},\n\t"
-                "processes: {indexes.processes}").format(indexes=self)
+                "processes: {indexes.processes},\n\t"
+                "term_sources: {indexes.term_sources},\n\t"
+                "data_files: {indexes.data_files}").format(indexes=self)
     return to_str
 
 
@@ -70,9 +74,21 @@ def make_get_resolver(field_target):
 
 
 def make_add_resolver(field_target):
-    def resolve(self, id_):
-        self.add_item(field_target, id_)
+    def resolve(self, item):
+        self.add_item(field_target, item)
     return resolve
+
+
+def make_add_term_source():
+    def add_term_source(self, item):
+        self.term_sources[item.name] = item
+    return add_term_source
+
+
+def make_get_term_source():
+    def get_term_source(self, name):
+        return self.term_sources[name]
+    return get_term_source
 
 
 FIELDS = {
@@ -83,7 +99,8 @@ FIELDS = {
     "unit": "units",
     "sample": "samples",
     "source": "sources",
-    'process': 'processes'
+    'process': 'processes',
+    'data_file': 'data_files'
 }
 
 methods = {
@@ -91,7 +108,9 @@ methods = {
     'reset_store': make_init(),
     'add_item': make_add_method(),
     'get_item': make_get_method(),
-    '__str__': make_print()
+    '__str__': make_print(),
+    'get_term_source': make_get_term_source(),
+    'add_term_source': make_add_term_source()
 }
 
 for field_name in FIELDS:
@@ -100,10 +119,10 @@ for field_name in FIELDS:
     methods['add_%s' % field_name] = make_add_resolver(field)
 
 # parameters of type are 1. class name 2. inheritance as tuple 3. methods and attributes
-Store = type('LoaderStore', (), methods)
-loader_states = Store()
+LoaderStore = type('LoaderStore', (), methods)
+loader_states = LoaderStore()
 
 
 def new_store():
-    return Store()
+    return LoaderStore()
 

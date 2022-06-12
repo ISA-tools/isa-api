@@ -1,5 +1,5 @@
 from unittest import TestCase
-from re import sub, compile
+from re import sub
 
 from isatools.model.datafile import *
 from isatools.model.sample import Sample
@@ -66,6 +66,23 @@ class TestDataFile(TestCase):
         second_datafile = DataFile(filename='test_name', id_="id2")
         self.assertTrue(first_datafile == second_datafile)
         self.assertTrue(self.datafile != first_datafile)
+
+    def test_from_dict(self):
+        expected_dict = {
+            "@id": 'my_data_file',
+            "name": "filename",
+            "type": "RawDataFile",
+            "comments": []
+        }
+        data_file = DataFile()
+        data_file.from_dict(expected_dict)
+        self.assertEqual(data_file.to_dict(), expected_dict)
+
+        raw_data_file = RawDataFile()
+        raw_data_file.from_dict(expected_dict)
+        self.assertEqual(raw_data_file.to_dict(), expected_dict)
+        self.assertEqual(raw_data_file.to_dict(), data_file.to_dict())
+        self.assertNotEqual(raw_data_file, data_file)
 
 
 class TestSubDataFile(TestCase):

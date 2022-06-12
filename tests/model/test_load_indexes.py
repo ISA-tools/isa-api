@@ -56,5 +56,7 @@ class TestLoaderIndexes(TestCase):
                            "units: {},\n\t"
                            "samples: {},\n\t"
                            "sources: {},\n\t"
-                           "processes: {}")
+                           "processes: {},\n\t"
+                           "term_sources: {},\n\t"
+                           "data_files: {}")
         self.assertEqual(expected_string, str(indexes))

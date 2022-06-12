@@ -3,6 +3,9 @@ from unittest import TestCase
 from isatools.model.assay import Assay
 from isatools.model.datafile import DataFile
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.ontology_source import OntologySource
+from isatools.model.sample import Sample
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class TestAssay(TestCase):
@@ -138,3 +141,55 @@ class TestAssay(TestCase):
             'processSequence': []
         }
         self.assertEqual(expected_dict, assay.to_dict())
+
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['unitCategories'] = [{
+            '@id': 'unit_ID',
+            'annotationValue': 'my_unit',
+            'termSource': '',
+            'termAccession': '',
+            'comments': []
+        }]
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['materials']['samples'] = [{"@id": 'my_sample'}]
+        indexes.samples = {'my_sample': Sample(id_='my_sample')}
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        # Data Files
+        expected_dict['dataFiles'] = [
+            {
+                "@id": 'my_data_file',
+                "name": "filename",
+                "type": "RawDataFile",
+                "comments": []
+            }
+        ]
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        # Characteristic Categories
+        expected_dict['characteristicCategories'] = [
+            {
+                '@id': '#characteristic_category/test_id',
+                'characteristicType': {
+                    '@id': 'test_id',
+                    'annotationValue': 'test_term',
+                    'termSource': 'term_source1',
+                    'termAccession': '',
+                    'comments': []
+                }
+            }
+        ]
+        indexes.term_sources = {'term_source1': OntologySource(name='term_source1')}
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+

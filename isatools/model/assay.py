@@ -2,6 +2,7 @@ from isatools.model.comments import Commentable
 from isatools.model.mixins import StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.datafile import DataFile
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Assay(Commentable, StudyAssayMixin, object):
@@ -185,9 +186,54 @@ class Assay(Commentable, StudyAssayMixin, object):
             "unitCategories": [unit.to_dict() for unit in self.units],
             "comments": [comment.to_dict() for comment in self.comments],
             "materials": {
-                "samples": [sample.to_dict() for sample in self.samples],
+                "samples": [{"@id": sample.id} for sample in self.samples],
                 "otherMaterials": [mat.to_dict() for mat in self.other_material]
             },
             "dataFiles": [file.to_dict() for file in self.data_files],
             "processSequence": [process.to_dict() for process in self.process_sequence]
         }
+
+    def from_dict(self, assay):
+        self.technology_platform = assay.get('technologyPlatform', '')
+        self.filename = assay.get('filename', '')
+        self.load_comments(assay.get('comments', []))
+
+        # measurement type
+        measurement_type_data = assay.get('measurementType', None)
+        if measurement_type_data:
+            measurement_type = OntologyAnnotation()
+            measurement_type.from_dict(measurement_type_data)
+            self.measurement_type = measurement_type
+
+        # technology type
+        technology_type_data = assay.get('technologyType', None)
+        if technology_type_data:
+            technology_type = OntologyAnnotation()
+            technology_type.from_dict(technology_type_data)
+            self.technology_type = technology_type
+
+        # units categories
+        for unit_data in assay.get('unitCategories', []):
+            unit = OntologyAnnotation()
+            unit.from_dict(unit_data)
+            self.units.append(unit)
+            indexes.add_unit(unit)
+
+        # data files
+        indexes.data_files = {}
+        for data_file_data in assay.get('dataFiles', []):
+            data_file = DataFile()
+            data_file.from_dict(data_file_data)
+            self.data_files.append(data_file)
+            indexes.add_data_file(data_file)
+
+        # samples
+        for sample_data in assay.get('materials', {}).get('samples', []):
+            self.samples.append(indexes.get_sample(sample_data['@id']))
+
+        # characteristic categories
+        for characteristic_category_data in assay.get('characteristicCategories', []):
+            characteristic_category = OntologyAnnotation()
+            characteristic_category.from_dict(characteristic_category_data['characteristicType'])
+            self.characteristic_categories.append(characteristic_category)
+            indexes.add_characteristic_category(characteristic_category)
