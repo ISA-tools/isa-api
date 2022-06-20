@@ -6,6 +6,7 @@ Getters are:
     - get_parameter(itemID)
     - get_protocol(itemID)
     - get_unit(itemID)
+    - get_other_material(itemID)
     - get_sample(itemID)
     - get_source(itemID)
 Setters are:
@@ -15,6 +16,7 @@ Setters are:
     - add_parameter(itemID)
     - add_protocol(itemID)
     - add_unit(itemID)
+    - add_other_material(itemID)
     - add_sample(itemID)
     - add_source(itemID)
 After loading a resource, reset the store with self.reset_store()
@@ -30,6 +32,7 @@ def make_init():
         self.parameters = {}
         self.protocols = {}
         self.units = {}
+        self.other_materials = {}
         self.samples = {}
         self.sources = {}
         self.processes = {}
@@ -46,6 +49,7 @@ def make_print():
                 "parameters: {indexes.parameters},\n\t"
                 "protocols: {indexes.protocols},\n\t"
                 "units: {indexes.units},\n\t"
+                "other_materials: {indexes.samples},\n\t"
                 "samples: {indexes.samples},\n\t"
                 "sources: {indexes.sources},\n\t"
                 "processes: {indexes.processes},\n\t"
@@ -97,6 +101,7 @@ FIELDS = {
     "parameter": "parameters",
     "protocol": "protocols",
     "unit": "units",
+    "other_material": "other_materials",
     "sample": "samples",
     "source": "sources",
     'process': 'processes',
@@ -125,4 +130,3 @@ loader_states = LoaderStore()
 
 def new_store():
     return LoaderStore()
-

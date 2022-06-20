@@ -116,7 +116,7 @@ class TestSubDataFile(TestCase):
             filename = 'file_' + filetype.lower()
             self.assertEqual(datafile.label, name)
 
-            expected_repr = "isatools.model.{0}(filename='{1}', generated_from=[], comments=[])"\
+            expected_repr = "isatools.model.{0}(filename='{1}', generated_from=[], comments=[])" \
                 .format(filetype, filename)
             self.assertEqual(repr(datafile), expected_repr)
             self.assertEqual(hash(datafile), hash(expected_repr))

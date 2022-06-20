@@ -72,8 +72,8 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
         return result
 
     def __repr__(self):
-        return("isatools.model.Source(name='{source.name}', " 
-               "characteristics={source.characteristics}, " 
+        return("isatools.model.Source(name='{source.name}', "
+               "characteristics={source.characteristics}, "
                "comments={source.comments})".format(source=self))
 
     def __str__(self):
@@ -120,5 +120,3 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             characteristic = Characteristic()
             characteristic.from_dict(data)
             self.characteristics.append(characteristic)
-
-

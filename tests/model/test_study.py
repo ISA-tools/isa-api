@@ -339,7 +339,21 @@ class StudyTest(TestCase):
                         'annotationValue': 'test_protocol_type',
                         'termSource': '',
                         'termAccession': '',
-                        'comments': []},
+                        'comments': []
+                    },
+                    'components': []
+                },
+                {
+                    "@id": 'a_protocol_id',
+                    'name': 'another name', 'version': '', 'description': '', 'uri': '',
+                    'comments': [],
+                    'protocolType': {
+                        '@id': 'protocol_type_id',
+                        'annotationValue': 'test_protocol_type',
+                        'termSource': '',
+                        'termAccession': '',
+                        'comments': []
+                    },
                     'components': []
                 }
             ],
@@ -354,16 +368,52 @@ class StudyTest(TestCase):
                 ],
                 'samples': [
                     {
-                        "@id": "sample_id",
-                        "name": "sample name",
+                        "@id": "my_sample",
+                        "name": "source name",
+                        'factorValues': [],
+                        'derivesFrom': [],
                         "comments": [],
-                        "characteristics": [],
-                        "derivesFrom": [],
-                        "factorValues": [],
+                        "characteristics": []
                     }
                 ],
                 'otherMaterials': []},
-            'processSequence': [],
+            'processSequence': [
+                {
+                    '@id': 'processID',
+                    'name': 'my process',
+                    'performer': '',
+                    'date': '',
+                    'executesProtocol': {"@id": "a_protocol_id"},
+                    'comments': [],
+                    'inputs': [],
+                    'outputs': [],
+                    'parameterValues': [],
+                    'previousProcess': {"@id": 'beforeID'},
+                    'nextProcess': {"@id": 'afterID'}
+                },
+                {
+                    "@id": 'beforeID',
+                    'name': 'my previous process',
+                    'performer': '',
+                    'date': '',
+                    'executesProtocol': {"@id": "a_protocol_id"},
+                    'comments': [],
+                    'inputs': [],
+                    'outputs': [],
+                    'parameterValues': []
+                },
+                {
+                    "@id": 'afterID',
+                    'name': 'my next process',
+                    'performer': '',
+                    'date': '',
+                    'executesProtocol': {"@id": "a_protocol_id"},
+                    'comments': [],
+                    'inputs': [],
+                    'outputs': [],
+                    'parameterValues': []
+                }
+            ],
             'factors': [
                 {
                     '@id': 'study_factor_id', 'factorName': 'name',
@@ -435,4 +485,4 @@ class StudyTest(TestCase):
         self.assertEqual(study_dict['studyDesignDescriptors'], expected_dict['studyDesignDescriptors'])
         self.assertEqual(study_dict['factors'], expected_dict['factors'])
         self.assertEqual(study_dict['materials'], expected_dict['materials'])
-
+        self.assertEqual(study_dict['processSequence'], expected_dict['processSequence'])

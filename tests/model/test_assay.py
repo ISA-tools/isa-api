@@ -192,4 +192,3 @@ class TestAssay(TestCase):
         assay = Assay()
         assay.from_dict(expected_dict)
         self.assertEqual(assay.to_dict(), expected_dict)
-

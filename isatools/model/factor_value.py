@@ -2,6 +2,8 @@ from uuid import uuid4
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
+from isatools.model.parameter_value import ParameterValue
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class FactorValue(Commentable):
@@ -14,9 +16,8 @@ class FactorValue(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', factor_name=None, value=None, unit=None, comments=None):
+    def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.id = id_
         self.__factor_name = None
         self.__value = None
         self.__unit = None
@@ -108,33 +109,27 @@ class FactorValue(Commentable):
 
         return factor_value
 
-    def from_dict(self, factor_value, units_index):
-        self.category = factor_value['category']
-        self.load_comments(factor_value['comments'])
+    def from_dict(self, factor_value):
+        self.factor_name = indexes.get_factor(factor_value["category"]["@id"])
+        self.load_comments(factor_value.get('comments', []))
 
-        # value / unit
-        value_data = factor_value['value']
-        if isinstance(value_data, dict):
-            try:
-                if isinstance(value_data['annotationValue'], (int, float)):
-                    value_data['annotationValue'] = str(value_data['annotationValue'])
+        value_data = factor_value.get('value', None)
+        if value_data:
+            if isinstance(value_data, dict):
                 value = OntologyAnnotation()
                 value.from_dict(value_data)
                 self.value = value
+            elif isinstance(value_data, (int, float)):
+                try:
+                    self.unit = indexes.get_unit(factor_value['unit']['@id'])
+                except KeyError:
+                    self.unit = None
+                self.value = value_data
+            elif not isinstance(value_data, str):
+                raise IOError("Unexpected type in factor value")
+            else:
+                self.value = value_data
                 self.unit = None
-            except KeyError as ke:
-                raise IOError("Can't create value as annotation: " + str(ke) + " object: " + str(factor_value))
-        elif isinstance(value_data, (int, float)):
-            try:
-                unit = units_index[factor_value['unit']['@id']]
-                self.unit = unit
-            except KeyError:
-                self.unit = None
-        elif not isinstance(value_data, str):
-            raise IOError("Unexpected type in characteristic value")
-        else:
-            self.value = value_data
-            self.unit = None
 
 
 class StudyFactor(Commentable, Identifiable):
@@ -210,10 +205,8 @@ class StudyFactor(Commentable, Identifiable):
     def to_dict(self):
         return {
             '@id': self.id,
-
             'factorName': self.name,
             'factorType': self.factor_type.to_dict() if self.factor_type else '',
-
             'comments': [comment.to_dict() for comment in self.comments]
         }
 

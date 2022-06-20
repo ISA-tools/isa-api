@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
@@ -7,6 +5,7 @@ from isatools.model.source import Source
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.factor_value import FactorValue
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Sample(Commentable, ProcessSequenceNode, Identifiable):
@@ -155,7 +154,7 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             "comments": [comment.to_dict() for comment in self.comments]
         }
 
-    def from_dict(self, sample, characteristics_index, units_index):
+    def from_dict(self, sample):
         self.id = sample.get('@id', '')
         self.name = sample.get('name', '').replace('sample-', '-')
         self.load_comments(sample.get('comments', []))
@@ -165,28 +164,19 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             id_ = characteristic_data.get('category', {}).get('@id', '')
             data = {
                 'comments': characteristic_data.get('comments', []),
-                'category': characteristics_index[id_],
+                'category': indexes.get_characteristic_category(id_),
                 'value': characteristic_data['value'],
-                'unit': characteristic_data['unit']
+                'unit': characteristic_data.get('unit', '')
             }
             characteristic = Characteristic()
-            characteristic.from_dict(data, units_index)
+            characteristic.from_dict(data)
             self.characteristics.append(characteristic)
 
-        # derives_from
-        for source_data in sample.get("derivesFom", []):
-            id_ = source_data.get('id', '')
-            self.derives_from.append(id_)
+        # factor values
+        for factor_value_data in sample.get('factorValues', []):
+            factor = FactorValue()
+            factor.from_dict(factor_value_data)
+            self.factor_values.append(factor)
 
-        # factor_values
-        for fv_data in sample.get("factorValues", []):
-            id_ = fv_data.get('category', {}).get('@id', '')
-            data = {
-                'comments': fv_data.get('comments', []),
-                'category': id_,
-                'value': fv_data['value'],
-                'unit': fv_data['unit']
-            }
-            fv = FactorValue()
-            fv.from_dict(data, units_index)
-            self.factor_values.append(fv)
+        for derives_data in sample.get('derivesFrom', []):
+            self.derives_from.append(indexes.get_source(derives_data["@id"]))

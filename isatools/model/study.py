@@ -12,8 +12,10 @@ from isatools.model.publication import Publication
 from isatools.model.person import Person
 from isatools.model.source import Source
 from isatools.model.sample import Sample
+from isatools.model.process import Process
 from isatools.model.logger import log
 from isatools.model.loader_indexes import loader_states as indexes
+
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     """Study is the central unit, containing information on the subject under
@@ -369,25 +371,23 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         self.load_comments(study.get('comments', []))
 
         # Build characteristic categories index
-        characteristic_categories = {}
         for assay in study.get('assays', []):
             for characteristic_category in assay['characteristicCategories']:
                 category = OntologyAnnotation()
                 category.from_dict(characteristic_category)
-                characteristic_categories[category.id] = category
+                indexes.add_characteristic_category(category)
         for characteristic_category in study.get('characteristicCategories', []):
             category = OntologyAnnotation()
             category.from_dict(characteristic_category)
-            characteristic_categories[category.id] = category
             self.characteristic_categories.append(category)
+            indexes.add_characteristic_category(category)
 
         # Units
-        units = {}
         for unit_data in study.get('unitCategories', []):
             unit = OntologyAnnotation()
             unit.from_dict(unit_data)
-            units[unit.id] = unit
             self.units.append(unit)
+            indexes.add_unit(unit)
 
         # Publications
         for publication_data in study.get('publications', []):
@@ -408,44 +408,53 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             self.design_descriptors.append(descriptor)
 
         # Protocols
-        protocols = {}
         for protocol_data in study.get('protocols', []):
             protocol = Protocol()
             protocol.from_dict(protocol_data)
             self.protocols.append(protocol)
-            protocols[protocol.id] = protocol
+            indexes.add_protocol(protocol)
 
         # Factors
-        factors = {}
         for factor_data in study.get('factors', []):
             factor = StudyFactor()
             factor.from_dict(factor_data)
             self.factors.append(factor)
-            factors[factor.id] = factor
+            indexes.add_factor(factor)
 
         # Source
-        sources = {}
         for source_data in study.get('materials', {}).get('sources', []):
             source = Source()
-            source.from_dict(source_data, characteristic_categories, units)
+            source.from_dict(source_data)
             self.sources.append(source)
-            sources[source.id] = source
+            indexes.add_source(source)
 
         # Sample
-        samples = {}
         for sample_data in study.get('materials', {}).get('samples', []):
             sample = Sample()
-            sample.from_dict(sample_data, characteristic_categories, units)
+            sample.from_dict(sample_data)
             self.samples.append(sample)
-            samples[sample.id] = sample
-
-        # Other Material
-        other_materials = {}
+            indexes.add_sample(sample)
 
         # Process
+        for process_data in study.get('processSequence', []):
+            process = Process()
+            process.from_dict(process_data)
+            self.process_sequence.append(process)
+            indexes.add_process(process)
+        for process_data in study.get('processSequence', []):
+            try:
+                current_process = indexes.get_process(process_data['@id'])
+                previous_process_id = process_data['previousProcess']['@id']
+                previous_process = indexes.get_process(previous_process_id)
+                current_process.prev_process = previous_process
+
+                next_process_id = process_data['nextProcess']['@id']
+                next_process = indexes.get_process(next_process_id)
+                current_process.next_process = next_process
+            except KeyError:
+                pass
 
         # Assay
-
         for assay_data in study.get('assays', []):
             indexes.processes = []
             assay = Assay()
@@ -453,4 +462,3 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             self.assays.append(assay)
 
         indexes.reset_store()
-

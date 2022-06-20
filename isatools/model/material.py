@@ -1,15 +1,17 @@
 from abc import ABCMeta
 from isatools.model.comments import Commentable
+from isatools.model.sample import Sample
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.characteristic import Characteristic
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta):
     """Represents a generic material in an experimental graph.
     """
 
-    def __init__(self, name='', id_='', type_='', characteristics=None,
+    def __init__(self, name='', id_='', type_='', characteristics=None, derives_from=None,
                  comments=None):
         Commentable.__init__(self, comments=comments)
         ProcessSequenceNode.__init__(self)
@@ -22,6 +24,9 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
         self.__characteristics = []
         if characteristics:
             self.__characteristics = characteristics
+        self.__derives_from = []
+        if derives_from:
+            self.__derives_from = derives_from
 
     @property
     def name(self):
@@ -82,12 +87,28 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             characteristics.append(characteristic)
         self.characteristics = characteristics
 
+    @property
+    def derives_from(self):
+        """:obj:`list` of :obj:`Sample or Material`: a list of references from this sample
+        material to a source material(s)"""
+        return self.__derives_from
+
+    @derives_from.setter
+    def derives_from(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Sample) or isinstance(x, Extract) for x in val):
+                self.__derives_from = list(val)
+        else:
+            raise AttributeError(
+                'Sample.derives_from must be iterable containing Sources')
+
     def to_dict(self):
         return {
             '@id': self.id,
             "name": self.name,
             "type": self.type,
             "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
+            "derivesFrom": [],
             "comments": [comment.to_dict() for comment in self.comments]
         }
 
@@ -95,8 +116,8 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
 class Extract(Material):
     """Represents a extract material in an experimental graph."""
 
-    def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
+    def __init__(self, name='', id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
                          comments=comments)
 
         self.type = 'Extract Name'
@@ -105,6 +126,7 @@ class Extract(Material):
         return ("isatools.model.Extract(name='{extract.name}', "
                 "type='{extract.type}', "
                 "characteristics={extract.characteristics}, "
+                "derivesFrom={extract.derivesFrom}"
                 "comments={extract.comments})").format(extract=self)
 
     def __str__(self):
@@ -112,9 +134,11 @@ class Extract(Material):
                 "name={extract.name}\n\t"
                 "type={extract.type}\n\t"
                 "characteristics={num_characteristics} Characteristic objects\n\t"
+                "derivesFrom={num_samples} Sample objects\n\t"
                 "comments={num_comments} Comment objects\n)"
                 ).format(extract=self,
                          num_characteristics=len(self.characteristics),
+                         num_samples=len(self.derives_from),
                          num_comments=len(self.comments))
 
     def __hash__(self):
@@ -125,25 +149,50 @@ class Extract(Material):
                and self.name == other.name \
                and self.characteristics == other.characteristics \
                and self.type == other.type \
+               and self.derives_from == other.derives_from \
                and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
 
+    def from_dict(self, other):
+        self.id = other.get('@id', '')
+        self.name = other.get('name', '').replace('extract-', '-')
+        if other.get('type', '') == "Extract Name":
+            self.type = other.get('type', '')
+        self.load_comments(other.get('comments', []))
+
+        # characteristics
+        for characteristic_data in other.get('characteristics', []):
+            id_ = characteristic_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': characteristic_data.get('comments', []),
+                'category': indexes.get_characteristic_category(id_),
+                'value': characteristic_data['value'],
+                'unit': characteristic_data.get('unit', '')
+            }
+            characteristic = Characteristic()
+            characteristic.from_dict(data)
+            self.characteristics.append(characteristic)
+
+        for derives_data in other.get('derivesFrom', []):
+            self.derives_from.append(indexes.get_sample(derives_data["@id"]))
+
 
 class LabeledExtract(Material):
     """Represents a labeled extract material in an experimental graph."""
 
-    def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
+    def __init__(self, name='', id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
                          comments=comments)
 
         self.type = 'Labeled Extract Name'
 
     def __repr__(self):
         return "isatools.model.LabeledExtract(name='{labeled_extract.name}'," \
-               " type='Labeled Extract Name', " \
+               "type='Labeled Extract Name', " \
                "characteristics={labeled_extract.characteristics}, " \
+               "derivesFrom={labeled_extract.derivesFrom}" \
                "comments={labeled_extract.comments})" \
             .format(labeled_extract=self)
 
@@ -152,6 +201,7 @@ class LabeledExtract(Material):
                 "name={labeled_extract.name}\n\t"
                 "type=Labeled Extract Name\n\t"
                 "characteristics={num_characteristics} Characteristic objects\n\t"
+                "derivesFrom={num_extracts} Extract objects\n\t"
                 "comments={num_comments} Comment objects\n)"
                 ).format(labeled_extract=self,
                          num_characteristics=len(self.characteristics),
@@ -164,8 +214,32 @@ class LabeledExtract(Material):
         return isinstance(other, LabeledExtract) \
                and self.name == other.name \
                and self.characteristics == other.characteristics \
+               and self.derives_from == other.derives_from \
                and self.type == other.type \
                and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
+
+    def from_dict(self, other):
+        self.id = other.get('@id', '')
+        self.name = other.get('name', '').replace('labeledextract-', '-')
+        if other.get('type', '') == "Labeled Extract Name":
+            self.type = other.get('type', '')
+        self.load_comments(other.get('comments', []))
+
+        # characteristics
+        for characteristic_data in other.get('characteristics', []):
+            id_ = characteristic_data.get('category', {}).get('@id', '')
+            data = {
+                'comments': characteristic_data.get('comments', []),
+                'category': indexes.get_characteristic_category(id_),
+                'value': characteristic_data['value'],
+                'unit': characteristic_data.get('unit', '')
+            }
+            characteristic = Characteristic()
+            characteristic.from_dict(data)
+            self.characteristics.append(characteristic)
+
+        for derives_data in other.get('derivesFrom', []):
+            self.derives_from.append(indexes.get_other_material(derives_data["@id"]))

@@ -98,8 +98,9 @@ class Assay(Commentable, StudyAssayMixin, object):
     @technology_platform.setter
     def technology_platform(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('Assay.technology_platform must be a str or None; got {0}:{1}'
-                                 .format(val, type(val)))
+            raise AttributeError(
+                'Assay.technology_platform must be a str or None; got {0}:{1}'
+                    .format(val, type(val)))
         else:
             self.__technology_platform = val
 
