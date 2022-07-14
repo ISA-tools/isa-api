@@ -279,3 +279,5 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             study = Study()
             study.from_dict(study_data)
             self.studies.append(study)
+
+        indexes.reset_store()

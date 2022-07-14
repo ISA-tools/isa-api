@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.assay import Assay
 from isatools.model.datafile import DataFile
@@ -108,7 +109,8 @@ class TestAssay(TestCase):
         self.assertFalse(first_assay != second_assay)
         self.assertTrue(first_assay != third_assay)
 
-    def test_to_dict(self):
+    @patch('isatools.model.identifiable.uuid4', return_value='test_uuid')
+    def test_to_dict(self, mock_uuid4):
         assay = Assay(
             filename='file',
             measurement_type=OntologyAnnotation(term='MT', id_='MT_ID'),
@@ -191,5 +193,47 @@ class TestAssay(TestCase):
         indexes.term_sources = {'term_source1': OntologySource(name='term_source1')}
         assay = Assay()
         assay.from_dict(expected_dict)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        # Other Materials
+        expected_dict['materials']['otherMaterials'] = [
+            {
+                '@id': 'my_other_material_id',
+                'name': 'extract-my_other_material_name', # add extract- for string replace test
+                'type': 'Extract Name',
+                'comments': [],
+                'characteristics': [
+                    {
+                        'category': {'@id': 'my_other_material_characteristic_id'},
+                        'value': 'my_other_material_characteristic_value',
+                        'comments': []
+                    },
+                    {
+                        'category': {'@id': 'my_other_material_characteristic_id2'},
+                        'value': {
+                            '@id': 'my_other_material_characteristic_value2_id',
+                            'annotationValue': 'my_other_material_characteristic_value2_term',
+                            'termAccession': 'term_accession_val',
+                            'comments': [],
+                            'termSource': ''
+                        },
+                        'comments': []
+                    }
+                ]
+            }
+        ]
+        assay = Assay()
+        assay.from_dict(expected_dict)
+        # Make sur the string 'extract-' is removed from the expected_dict material name before assertion
+        # And set the characteristic value as an ontology annotation output
+        expected_value = {
+            '@id': '#ontology_annotation/' + mock_uuid4.return_value,
+            'annotationValue': 'my_other_material_characteristic_value',
+            'comments': [],
+            'termAccession': '',
+            'termSource': ''
+        }
+        expected_dict['materials']['otherMaterials'][0]['name'] = 'my_other_material_name'
+        expected_dict['materials']['otherMaterials'][0]['characteristics'][0]['value'] = expected_value
         self.assertEqual(assay.to_dict(), expected_dict)
 

@@ -362,6 +362,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         }
 
     def from_dict(self, study):
+        indexes.reset_process()
         self.filename = study.get('filename', '')
         self.identifier = study.get('identifier', '')
         self.title = study.get('title', '')
@@ -460,5 +461,3 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             assay = Assay()
             assay.from_dict(assay_data)
             self.assays.append(assay)
-
-        indexes.reset_store()

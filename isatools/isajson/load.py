@@ -509,10 +509,6 @@ def load(fp):
             for other_material_json in assay_json["materials"]["otherMaterials"]:
                 material_name = other_material_json["name"].replace("labeledextract-", "").replace("extract-", "")
 
-                # if material_name.startswith("labeledextract-"):
-                #     material_name = material_name[15:]
-                # # else:
-                # #     material_name = material_name[8:]
                 material = Material(
                     id_=other_material_json["@id"],
                     name=material_name,

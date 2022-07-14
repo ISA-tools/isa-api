@@ -35,6 +35,7 @@ def make_init():
         self.processes = {}
         self.term_sources = {}
         self.data_files = {}
+        self.other_materials = {}
     return init
 
 
@@ -50,7 +51,8 @@ def make_print():
                 "sources: {indexes.sources},\n\t"
                 "processes: {indexes.processes},\n\t"
                 "term_sources: {indexes.term_sources},\n\t"
-                "data_files: {indexes.data_files}").format(indexes=self)
+                "data_files: {indexes.data_files},\n\t"
+                "other_materials: {indexes.other_materials}").format(indexes=self)
     return to_str
 
 
@@ -67,6 +69,12 @@ def make_get_method():
     return get_item
 
 
+def make_reset_method():
+    def reset_item(self, index):
+        setattr(self, index, {})
+    return reset_item
+
+
 def make_get_resolver(field_target):
     def resolve(self, id_):
         return self.get_item(field_target, id_)
@@ -76,6 +84,12 @@ def make_get_resolver(field_target):
 def make_add_resolver(field_target):
     def resolve(self, item):
         self.add_item(field_target, item)
+    return resolve
+
+
+def make_reset_resolver(field_target):
+    def resolve(self):
+        self.reset_item(field_target)
     return resolve
 
 
@@ -92,15 +106,16 @@ def make_get_term_source():
 
 
 FIELDS = {
-    "characteristic_category": 'characteristic_categories',
-    "factor": 'factors',
+    "characteristic_category": "characteristic_categories",
+    "factor": "factors",
     "parameter": "parameters",
     "protocol": "protocols",
     "unit": "units",
     "sample": "samples",
     "source": "sources",
-    'process': 'processes',
-    'data_file': 'data_files'
+    "process": "processes",
+    "data_file": "data_files",
+    "other_material": "other_materials",
 }
 
 methods = {
@@ -108,6 +123,7 @@ methods = {
     'reset_store': make_init(),
     'add_item': make_add_method(),
     'get_item': make_get_method(),
+    'reset_item': make_reset_method(),
     '__str__': make_print(),
     'get_term_source': make_get_term_source(),
     'add_term_source': make_add_term_source()
@@ -117,6 +133,7 @@ for field_name in FIELDS:
     field = FIELDS[field_name]
     methods['get_%s' % field_name] = make_get_resolver(field)
     methods['add_%s' % field_name] = make_add_resolver(field)
+    methods['reset_%s' % field_name] = make_reset_resolver(field)
 
 # parameters of type are 1. class name 2. inheritance as tuple 3. methods and attributes
 LoaderStore = type('LoaderStore', (), methods)

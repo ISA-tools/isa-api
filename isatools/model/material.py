@@ -72,6 +72,12 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             "comments": [comment.to_dict() for comment in self.comments]
         }
 
+    def from_dict(self, material):
+        self.id = material["@id"]
+        self.name = material['name']
+        self.type = material["type"]
+        self.load_comments(material.get("comments", []))
+
 
 class Extract(Material):
     """Represents a extract material in an experimental graph."""

@@ -2,6 +2,8 @@ from isatools.model.comments import Commentable
 from isatools.model.mixins import StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.datafile import DataFile
+from isatools.model.material import Material
+from isatools.model.characteristic import Characteristic
 from isatools.model.loader_indexes import loader_states as indexes
 
 
@@ -221,7 +223,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             indexes.add_unit(unit)
 
         # data files
-        indexes.data_files = {}
+        indexes.reset_data_file()
         for data_file_data in assay.get('dataFiles', []):
             data_file = DataFile()
             data_file.from_dict(data_file_data)
@@ -238,3 +240,26 @@ class Assay(Commentable, StudyAssayMixin, object):
             characteristic_category.from_dict(characteristic_category_data['characteristicType'])
             self.characteristic_categories.append(characteristic_category)
             indexes.add_characteristic_category(characteristic_category)
+
+        # other materials
+        for other_material_data in assay.get('materials', {}).get('otherMaterials', []):
+            other_material = Material()
+            other_material_data['name'] = (other_material_data['name']
+                                           .replace("labeledextract-", "")
+                                           .replace("extract-", ""))
+            other_material.from_dict(other_material_data)
+            for characteristics_data in other_material_data.get('characteristics', []):
+                if not isinstance(characteristics_data['value'], str):
+                    characteristic_value = OntologyAnnotation()
+                    characteristic_value.from_dict(characteristics_data['value'])
+                else:
+                    characteristic_value = OntologyAnnotation(term=characteristics_data['value'])
+                category = OntologyAnnotation(id_=characteristics_data['category']['@id'])
+                characteristic = Characteristic(
+                    category=category,
+                    value=characteristic_value
+                )
+                characteristic.load_comments(characteristics_data.get('comments', []))
+                other_material.characteristics.append(characteristic)
+            self.other_material.append(other_material)
+            indexes.add_other_material(other_material)
