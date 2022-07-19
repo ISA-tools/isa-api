@@ -1,8 +1,11 @@
 from abc import ABCMeta
+
 from isatools.model.comments import Commentable
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.characteristic import Characteristic
+from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta):
@@ -63,6 +66,13 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             raise AttributeError('{}.characteristics must be iterable containing Characteristics'
                                  .format(type(self).__name__))
 
+    def __eq__(self, other):
+        return isinstance(other, Material) \
+               and self.name == other.name \
+               and self.characteristics == other.characteristics \
+               and self.type == other.type \
+               and self.comments == other.comments
+
     def to_dict(self):
         return {
             '@id': self.id,
@@ -77,6 +87,13 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
         self.name = material['name']
         self.type = material["type"]
         self.load_comments(material.get("comments", []))
+
+        for characteristic_data in material["characteristics"]:
+            characteristic = Characteristic()
+            characteristic.value = OntologyAnnotation()
+            characteristic.value.from_dict(characteristic_data["value"])
+            characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+            self.characteristics.append(characteristic)
 
 
 class Extract(Material):

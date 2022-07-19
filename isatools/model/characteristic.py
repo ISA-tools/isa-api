@@ -134,7 +134,7 @@ class Characteristic(Commentable):
 
     def from_dict(self, characteristic):
         self.category = characteristic['category']
-        self.load_comments(characteristic['comments'])
+        self.load_comments(characteristic.get('comments', []))
 
         # value / unit
         value_data = characteristic['value']
@@ -154,6 +154,8 @@ class Characteristic(Commentable):
                 self.unit = unit
             except KeyError:
                 self.unit = None
+            finally:
+                self.value = value_data
         elif not isinstance(value_data, str):
             raise IOError("Unexpected type in characteristic value")
         else:

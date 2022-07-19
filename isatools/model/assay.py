@@ -4,6 +4,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.datafile import DataFile
 from isatools.model.material import Material
 from isatools.model.characteristic import Characteristic
+from isatools.model.process import Process
 from isatools.model.loader_indexes import loader_states as indexes
 
 
@@ -196,7 +197,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             "processSequence": [process.to_dict() for process in self.process_sequence]
         }
 
-    def from_dict(self, assay):
+    def from_dict(self, assay, isa_study):
         self.technology_platform = assay.get('technologyPlatform', '')
         self.filename = assay.get('filename', '')
         self.load_comments(assay.get('comments', []))
@@ -238,7 +239,8 @@ class Assay(Commentable, StudyAssayMixin, object):
         for characteristic_category_data in assay.get('characteristicCategories', []):
             characteristic_category = OntologyAnnotation()
             characteristic_category.from_dict(characteristic_category_data['characteristicType'])
-            self.characteristic_categories.append(characteristic_category)
+            characteristic_category.id = characteristic_category_data['@id']
+            isa_study.characteristic_categories.append(characteristic_category)
             indexes.add_characteristic_category(characteristic_category)
 
         # other materials
@@ -248,18 +250,27 @@ class Assay(Commentable, StudyAssayMixin, object):
                                            .replace("labeledextract-", "")
                                            .replace("extract-", ""))
             other_material.from_dict(other_material_data)
-            for characteristics_data in other_material_data.get('characteristics', []):
-                if not isinstance(characteristics_data['value'], str):
-                    characteristic_value = OntologyAnnotation()
-                    characteristic_value.from_dict(characteristics_data['value'])
-                else:
-                    characteristic_value = OntologyAnnotation(term=characteristics_data['value'])
-                category = OntologyAnnotation(id_=characteristics_data['category']['@id'])
-                characteristic = Characteristic(
-                    category=category,
-                    value=characteristic_value
-                )
-                characteristic.load_comments(characteristics_data.get('comments', []))
-                other_material.characteristics.append(characteristic)
+
             self.other_material.append(other_material)
             indexes.add_other_material(other_material)
+
+        # process sequence
+        for process_sequence_data in assay.get('processSequence', []):
+            process = Process()
+            process.from_assay_dict(process_sequence_data, technology_type=self.technology_type)
+            self.process_sequence.append(process)
+            indexes.add_process(process)
+
+            # link processes in process sequence
+            for assay_process_json in assay.get('processSequence', []):
+                try:
+                    previous_process_id = assay_process_json['previousProcess']['@id']
+                    indexes.get_process(assay_process_json["@id"]).prev_process = \
+                        indexes.get_process(previous_process_id)
+                except KeyError:
+                    pass
+                try:
+                    next_process_id = assay_process_json['nextProcess']['@id']
+                    indexes.get_process(assay_process_json["@id"]).next_process = indexes.get_process(next_process_id)
+                except KeyError:
+                    pass

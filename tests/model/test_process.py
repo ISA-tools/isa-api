@@ -40,7 +40,7 @@ class TestProcess(TestCase):
         self.assertTrue(process.outputs == [output_file])
 
     def test_name(self):
-        self.assertIsNone(self.process.name)
+        self.assertEqual(self.process.name, '')
         self.process.name = 'test'
         self.assertTrue(self.process.name == 'test')
 
@@ -137,13 +137,13 @@ class TestProcess(TestCase):
                                  "parameters=0 ProtocolParameter objects\n\t"
                                  "components=0 OntologyAnnotation objects\n\t"
                                  "comments=0 Comment objects\n)")
-        expected_str = ('isatools.model.process.Process(id="test". name="None", executes_protocol={0}, '
+        expected_str = ('isatools.model.process.Process(id="test". name="", executes_protocol={0}, '
                         'date="None", performer="None", inputs=[], outputs=[])').format(expected_protocol_str)
         self.assertEqual(expected_str, repr(self.process))
         self.assertEqual(hash(self.process), hash(repr(self.process)))
 
     def test_str(self):
-        self.assertTrue(str(self.process) == 'Process(name=None)')
+        self.assertEqual(str(self.process), 'Process(name='')')
 
     def test_equalities(self):
         self.assertEqual(Process(id_="1"), Process(id_="1"))

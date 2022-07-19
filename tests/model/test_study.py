@@ -432,7 +432,8 @@ class StudyTest(TestCase):
                     "@id": "my_cat3",
                     "annotationValue": "value3",
                     "termAccession": "1010",
-                    "comments": []
+                    "comments": [],
+                    "characteristicType": {'@id': 'test_id'}
                 }
             ],
             'unitCategories': [

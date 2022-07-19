@@ -1,4 +1,4 @@
-from uuid import uuid4
+from logging import getLogger
 
 from isatools.model.comments import Commentable
 from isatools.model.process_sequence import ProcessSequenceNode
@@ -11,6 +11,8 @@ from isatools.model.parameter_value import ParameterValue
 from isatools.model.identifiable import Identifiable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.loader_indexes import loader_states as indexes
+
+log = getLogger('isatools')
 
 
 class Process(Commentable, ProcessSequenceNode, Identifiable):
@@ -45,7 +47,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         Identifiable.__init__(self)
 
         self.id = id_
-        self.__name = None
+        self.name = ""
         if name:
             self.name = name
 
@@ -256,11 +258,11 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     def from_dict(self, process):
         self.id = process.get('@id', '')
+        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
+        self.load_comments(process.get('comments', []))
         self.name = process.get('name', '')
         self.performer = process.get('performer', '')
         self.date = process.get('date', '')
-        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
-        self.load_comments(process.get('comments', []))
 
         # parameter values
         for parameter_value_data in process.get('parameterValues', []):
@@ -299,3 +301,60 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             if output is None:
                 raise IOError("Could not find output node in sources or samples dicts: " + output_data["@id"])
             self.outputs.append(output)
+
+    def from_assay_dict(self, process, technology_type):
+        self.id = process.get('@id', '')
+        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
+        self.load_comments(process.get('comments', []))
+        allowed_protocol_type_terms = [
+            "nucleic acid sequencing", "nucleic acid hybridization", "data transformation", "data normalization"
+        ]
+        if self.executes_protocol.protocol_type.term in allowed_protocol_type_terms or (
+                self.executes_protocol.protocol_type.term == 'data collection'
+                and technology_type.term == 'DNA microarray'):
+            self.name = process['name']
+
+        # Inputs / Outputs
+        for io_data_target in ['inputs', 'outputs']:
+            for io_data in process.get(io_data_target, []):
+                io_value = None
+                try:
+                    io_value = indexes.get_sample(io_data["@id"])
+                except KeyError:
+                    pass
+                finally:
+                    try:
+                        io_value = indexes.get_other_material(io_data["@id"])
+                    except KeyError:
+                        pass
+                    finally:
+                        try:
+                            io_value = indexes.get_data_file(io_data["@id"])
+                        except KeyError:
+                            pass
+                if io_value is None:
+                    error_msg = "Could not find %s node in samples or materials or data " \
+                                "dicts: %s" % (io_data_target.replace('s', ''), io_data["@id"])
+                    raise IOError(error_msg)
+                getattr(self, io_data_target).append(io_value)
+
+        # Parameter values
+        for parameter_value_data in process.get('parameterValues', []):
+            if "category" not in parameter_value_data.keys():
+                log.warning("warning: parameter category not found for instance %s" % parameter_value_data)
+            else:
+                if parameter_value_data["category"]["@id"] == "#parameter/Array_Design_REF":  # Special case
+                    self.array_design_ref = parameter_value_data["value"]
+                elif isinstance(parameter_value_data["value"], int) or isinstance(parameter_value_data["value"], float):
+                    parameter_value = ParameterValue(
+                        category=indexes.get_parameter(parameter_value_data["category"]["@id"]),
+                        value=parameter_value_data["value"]
+                    )
+                    parameter_value.load_comments(parameter_value_data.get('comments', []))
+                    if 'unit' in parameter_value_data.keys():
+                        parameter_value.unit = indexes.get_unit(parameter_value_data['unit']['@id'])
+                    self.parameter_values.append(parameter_value)
+                else:
+                    parameter_value = ParameterValue()
+                    parameter_value.from_dict(parameter_value_data)
+                    self.parameter_values.append(parameter_value)

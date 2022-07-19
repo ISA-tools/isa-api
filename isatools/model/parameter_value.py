@@ -102,11 +102,14 @@ class ParameterValue(Commentable):
 
     def from_dict(self, parameter_value):
         self.load_comments(parameter_value.get('comments', []))
-        self.category = indexes.get_characteristic_category(parameter_value['category']['@id'])
+        self.category = indexes.get_parameter(parameter_value['category']['@id'])
         if isinstance(parameter_value['value'], (float, int)):
             self.value = parameter_value['value']
             self.unit = indexes.get_unit(parameter_value['unit']['@id'])
         else:
             self.value = OntologyAnnotation()
-            self.value.from_dict(parameter_value['value'])
+            if isinstance(parameter_value['value'], str):
+                self.value.term = parameter_value['value']
+            else:
+                self.value.from_dict(parameter_value['value'])
 

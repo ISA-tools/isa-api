@@ -594,7 +594,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if id_.startswith('#ontology_annotation/'):
                 id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
             else:
-                id_ = '#characteristic_category/' + id_
+                id_ = '#characteristic_category/' + id_ if not id_.startswith('#characteristic_category/') else id_
             characteristics_categories.append({
                 '@id': id_,
                 'characteristicType': characteristic.to_dict()

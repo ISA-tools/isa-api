@@ -82,18 +82,16 @@ class TestParameterValue(TestCase):
                 '@id': "valueID"
             },
         }
-        indexes.characteristic_categories = {
-            'mycat': ProtocolParameter(id_='mycat', parameter_name=OntologyAnnotation(id_='valueID'))
-        }
+        indexes.add_parameter(
+            ProtocolParameter(id_='mycat', parameter_name=OntologyAnnotation(id_='valueID'))
+        )
         parameter_value = ParameterValue()
         parameter_value.from_dict(expected_dict)
-        self.assertEqual(parameter_value.category, indexes.get_characteristic_category('mycat'))
+        self.assertEqual(parameter_value.category, indexes.get_parameter('mycat'))
 
         expected_dict['value'] = 123
         expected_dict['unit'] = {"@id": 'myUnit'}
-        indexes.units = {
-            'myUnit': OntologyAnnotation(id_='myUnit')
-        }
+        indexes.add_unit( OntologyAnnotation(id_='myUnit'))
         parameter_value.from_dict(expected_dict)
-        self.assertEqual(parameter_value.category, indexes.get_characteristic_category('mycat'))
+        self.assertEqual(parameter_value.category, indexes.get_parameter('mycat'))
 

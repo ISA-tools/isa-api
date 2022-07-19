@@ -6,6 +6,11 @@ from isatools.model.datafile import DataFile
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.ontology_source import OntologySource
 from isatools.model.sample import Sample
+from isatools.model.protocol import Protocol
+from isatools.model.material import Material
+from isatools.model.parameter_value import ProtocolParameter
+from isatools.model.process import Process
+from isatools.model.study import Study
 from isatools.model.loader_indexes import loader_states as indexes
 
 
@@ -75,9 +80,9 @@ class TestAssay(TestCase):
     def test_repr(self):
         expected_str = ("isatools.model.Assay(measurement_type="
                         "isatools.model.OntologyAnnotation(term='', "
-                        "term_source=None, term_accession='', comments=[]), "
+                        "term_source='', term_accession='', comments=[]), "
                         "technology_type=isatools.model.OntologyAnnotation("
-                        "term='', term_source=None, term_accession='', "
+                        "term='', term_source='', term_accession='', "
                         "comments=[]), technology_platform='', filename='', "
                         "data_files=[], samples=[], process_sequence=[], "
                         "other_material=[], characteristic_categories=[], "
@@ -111,6 +116,7 @@ class TestAssay(TestCase):
 
     @patch('isatools.model.identifiable.uuid4', return_value='test_uuid')
     def test_to_dict(self, mock_uuid4):
+        study = Study()
         assay = Assay(
             filename='file',
             measurement_type=OntologyAnnotation(term='MT', id_='MT_ID'),
@@ -145,7 +151,7 @@ class TestAssay(TestCase):
         self.assertEqual(expected_dict, assay.to_dict())
 
         assay = Assay()
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
 
         expected_dict['unitCategories'] = [{
@@ -155,13 +161,13 @@ class TestAssay(TestCase):
             'termAccession': '',
             'comments': []
         }]
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
 
         expected_dict['materials']['samples'] = [{"@id": 'my_sample'}]
         indexes.samples = {'my_sample': Sample(id_='my_sample')}
         assay = Assay()
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
 
         # Data Files
@@ -174,38 +180,30 @@ class TestAssay(TestCase):
             }
         ]
         assay = Assay()
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
-
-        # Characteristic Categories
-        expected_dict['characteristicCategories'] = [
-            {
-                '@id': '#characteristic_category/test_id',
-                'characteristicType': {
-                    '@id': 'test_id',
-                    'annotationValue': 'test_term',
-                    'termSource': 'term_source1',
-                    'termAccession': '',
-                    'comments': []
-                }
-            }
-        ]
         indexes.term_sources = {'term_source1': OntologySource(name='term_source1')}
         assay = Assay()
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
 
         # Other Materials
         expected_dict['materials']['otherMaterials'] = [
             {
                 '@id': 'my_other_material_id',
-                'name': 'extract-my_other_material_name', # add extract- for string replace test
+                'name': 'extract-my_other_material_name',  # add extract- for string replace test
                 'type': 'Extract Name',
                 'comments': [],
                 'characteristics': [
                     {
                         'category': {'@id': 'my_other_material_characteristic_id'},
-                        'value': 'my_other_material_characteristic_value',
+                        'value': {
+                            '@id': 'my_other_material_characteristic_value',
+                            'annotationValue': 'my_other_material_characteristic_value2_term',
+                            'termAccession': 'term_accession_val',
+                            'comments': [],
+                            'termSource': ''
+                        },
                         'comments': []
                     },
                     {
@@ -222,18 +220,173 @@ class TestAssay(TestCase):
                 ]
             }
         ]
+        indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id'))
+        indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id2'))
         assay = Assay()
-        assay.from_dict(expected_dict)
+        assay.from_dict(expected_dict, study)
         # Make sur the string 'extract-' is removed from the expected_dict material name before assertion
         # And set the characteristic value as an ontology annotation output
         expected_value = {
-            '@id': '#ontology_annotation/' + mock_uuid4.return_value,
-            'annotationValue': 'my_other_material_characteristic_value',
+            '@id': 'my_other_material_characteristic_value',
+            'annotationValue': 'my_other_material_characteristic_value2_term',
             'comments': [],
-            'termAccession': '',
+            'termAccession': 'term_accession_val',
             'termSource': ''
         }
         expected_dict['materials']['otherMaterials'][0]['name'] = 'my_other_material_name'
         expected_dict['materials']['otherMaterials'][0]['characteristics'][0]['value'] = expected_value
         self.assertEqual(assay.to_dict(), expected_dict)
 
+        # Process Sequence
+        expected_dict['processSequence'] = [
+            {
+                "@id": "my_process_sequence_id",
+                "executesProtocol": {"@id": "my_protocol_id"},
+                "name": "my process",
+                "comments": [],
+                "date": "",
+                'inputs': [],
+                'outputs': [],
+                'parameterValues': [],
+                'performer': ''
+            }
+        ]
+        protocol = Protocol(
+            id_="my_protocol_id",
+            protocol_type=OntologyAnnotation(term="nucleic acid sequencing")
+        )
+        indexes.add_protocol(protocol)
+        protocol = Protocol(
+            id_="my_protocol_id2",
+            protocol_type=OntologyAnnotation(term="data collection")
+        )
+        indexes.add_protocol(protocol)
+        expected_dict['technologyType']['annotationValue'] = 'DNA microarray'
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        # Process Inputs and outputs
+        expected_dict['processSequence'][0]['inputs'] = [{"@id": "sample_id"}]
+        assay = Assay()
+        indexes.add_sample(Sample(id_='sample_id'))
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+        expected_dict['processSequence'][0]['inputs'] = [{"@id": "assay_other_material_id"}]
+        assay = Assay()
+        indexes.add_sample(Material(id_='assay_other_material_id'))
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+        expected_dict['processSequence'][0]['inputs'] = [{"@id": "assay_data_file_id"}]
+        assay = Assay()
+        indexes.add_sample(DataFile(id_='assay_data_file_id'))
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+        expected_dict['processSequence'][0]['outputs'] = [
+            {"@id": "sample_id"},
+            {"@id": "assay_other_material_id"},
+            {"@id": "assay_data_file_id"}
+        ]
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        # Parameter Values
+        expected_dict['processSequence'][0]['parameterValues'] = [
+            {
+                "category": {"@id": "#parameter/Array_Design_REF"},
+                "value": "a value"
+            }
+        ]
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.process_sequence[0].array_design_ref, "a value")
+
+        expected_dict['processSequence'][0]['parameterValues'][0] = {
+            "category": {"@id": "parameter_id"},
+            "value": 123,
+        }
+        indexes.add_parameter(ProtocolParameter(id_='parameter_id', comments=[]))
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['processSequence'][0]['parameterValues'][0]['unit'] = {"@id": "unit_id"}
+        indexes.add_unit(OntologyAnnotation(id_='unit_id'))
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['processSequence'][0]['parameterValues'] = [
+            {
+                'category': {'@id': 'parameter_id'},
+                'value': {
+                    '@id': 'parameter_id',
+                    'annotationValue': '',
+                    'comments': [],
+                    'termAccession': '',
+                    'termSource': ''
+                }
+            }
+        ]
+        indexes.add_characteristic_category(ProtocolParameter(id_='parameter_id'))
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict(), expected_dict)
+
+        expected_dict['processSequence'][0]['parameterValues'] = [{"value": 123}]
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+
+        expected_dict['processSequence'][0] = {
+            "executesProtocol": {"@id": "my_protocol_id"},
+            "name": "my process",
+            "comments": [],
+            "date": "",
+            'inputs': [],
+            'outputs': [],
+            'parameterValues': [],
+            'performer': '',
+            "@id": "my_process_sequence_id",
+            'previousProcess': {'@id': 'previous_process_id'},
+            'nextProcess': {'@id': 'next_process_id'}
+        }
+        indexes.add_process(Process(id_='previous_process_id'))
+        indexes.add_process(Process(id_='next_process_id'))
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+        self.assertEqual(assay.to_dict()['processSequence'][0], expected_dict['processSequence'][0])
+
+    def test_io_errors_in_load(self):
+        error_msg = "Could not find input node in samples or materials or data dicts: error_id"
+        expected_dict = {
+            'measurementType': {},
+            'technologyType': {},
+            'technologyPlatform': '',
+            'filename': 'file',
+            'characteristicCategories': [],
+            'unitCategories': [],
+            'comments': [],
+            'materials': {
+                'samples': [],
+                'otherMaterials': []
+            },
+            'dataFiles': [],
+            'processSequence': [
+                {"executesProtocol": {"@id": "123"}, "inputs": [{"@id": "error_id"}]}
+            ]
+        }
+        indexes.add_protocol(Protocol(id_='123'))
+        assay = Assay()
+        study = Study()
+        with self.assertRaises(IOError) as context:
+            assay.from_dict(expected_dict, study)
+        self.assertEqual(str(context.exception), error_msg)
+
+        error_msg = "Could not find output node in samples or materials or data dicts: another_error_id"
+        expected_dict['processSequence'][0]['outputs'] = [{"@id": "another_error_id"}]
+        indexes.add_sample(Sample(id_='error_id'))
+        assay = Assay()
+        with self.assertRaises(IOError) as context:
+            assay.from_dict(expected_dict, study)
+        self.assertEqual(str(context.exception), error_msg)

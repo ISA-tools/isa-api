@@ -27,7 +27,7 @@ class TestProtocolParameter(TestCase):
         protocol_parameter.parameter_name = 'test_parameter_name'
         param_name = ("isatools.model.OntologyAnnotation("
                       "term='test_parameter_name', "
-                      "term_source=None, "
+                      "term_source='', "
                       "term_accession='', "
                       "comments=[])")
         expected_str = "isatools.model.ProtocolParameter(parameter_name={0}, comments=[])".format(param_name)

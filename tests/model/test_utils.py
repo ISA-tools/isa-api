@@ -45,13 +45,13 @@ class TestUtils(TestCase):
 
     def test__deep_copy(self):
         process = Process()
-        self.assertTrue(process == _deep_copy(process))
+        self.assertEqual(process, _deep_copy(process))
 
         extract = Extract()
-        self.assertTrue(extract == _deep_copy(extract))
+        self.assertEqual(extract, _deep_copy(extract))
 
         material = Material()
-        self.assertNotEqual(material, _deep_copy(material))
+        self.assertEqual(material, _deep_copy(material))
 
     def test_batch_create_materials(self):
         source = Source(name='source_material')

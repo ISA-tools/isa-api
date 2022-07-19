@@ -19,14 +19,16 @@ class OntologyAnnotation(Commentable, Identifiable):
 
     def __init__(self,
                  term: str = '',
-                 term_source: OntologySource = None,
+                 term_source: OntologySource = '',
                  term_accession: str = '',
                  comments: List[Comment] = None,
                  id_: str = ''):
         super().__init__(comments=comments)
 
         self.__term = term
-        self.__term_source = term_source
+        self.__term_source = ''
+        if term_source:
+            self.__term_source = term_source
         self.__term_accession = term_accession
         self.id = id_
 

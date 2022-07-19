@@ -9,7 +9,7 @@ expected_ProtocolParameter_string = ("ProtocolParameter(\n\t"
                                      "parameter_name=test_parameters\n\t"
                                      "comments=0 Comment objects\n)")
 expected_repr_string = ("isatools.model.Protocol(name='', protocol_type=isatools.model.OntologyAnnotation("
-                        "term='', term_source=None, term_accession='', comments=[]), uri='', version='', "
+                        "term='', term_source='', term_accession='', comments=[]), uri='', version='', "
                         "parameters=[], components=[], comments=[])")
 
 

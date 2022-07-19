@@ -11,6 +11,18 @@ from isatools.model import (
 log = getLogger('isatools')
 
 
+def loads(fp):
+    """Loads an ISA-JSON file and returns an Investigation object.
+
+    :param fp: A file-like object or a string containing the JSON data.
+    :return: An Investigation object.
+    """
+    investigation_json = json.load(fp)
+    investigation = Investigation()
+    investigation.from_dict(investigation_json)
+    return investigation
+
+
 def load(fp):
     def get_comments(commentable_dict):
         comments = [
@@ -28,7 +40,7 @@ def load(fp):
             for role_json in j["roles"]:
                 term = role_json["annotationValue"]
                 term_accession = role_json["termAccession"]
-                term_source = term_source_dict[role_json["termSource"]]
+                term_source = term_source_dict.get('role_json', {}).get("termSource", '')
                 role = OntologyAnnotation(term, term_source, term_accession)
                 roles.append(role)
         return roles
@@ -433,6 +445,7 @@ def load(fp):
 
             study.process_sequence.append(process)
             process_dict[process.id] = process
+
         for study_process_json in study_json["processSequence"]:  # 2nd pass
             try:
                 prev_proc = study_process_json["previousProcess"]["@id"]
@@ -561,6 +574,7 @@ def load(fp):
                     process.name = assay_process_json["name"]
                 elif process.executes_protocol.protocol_type.term == "data normalization":
                     process.name = assay_process_json["name"]
+
                 for input_json in assay_process_json["inputs"]:
                     input_ = None
                     try:

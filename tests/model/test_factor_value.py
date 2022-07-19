@@ -40,7 +40,7 @@ class TestStudyFactor(TestCase):
 
     def test_repr(self):
         expected_repr = ("isatools.model.StudyFactor(name='', factor_type=isatools.model.OntologyAnnotation(term='', "
-                         "term_source=None, term_accession='', comments=[]), comments=[])")
+                         "term_source='', term_accession='', comments=[]), comments=[])")
         self.assertTrue(repr(self.study_factor) == expected_repr)
         self.assertTrue(hash(self.study_factor) == hash(expected_repr))
 
@@ -113,9 +113,10 @@ class TestFactorValue(TestCase):
                         in str(context.exception))
 
     def test_repr(self):
+        self.maxDiff = None
         factor_name_str = ("isatools.model.StudyFactor(name='Control', factor_type=isatools.model.OntologyAnnotation("
-                           "term='', term_source=None, term_accession='', comments=[]), comments=[])")
-        unit_str = "isatools.model.OntologyAnnotation(term='mg', term_source=None, term_accession='', comments=[])"
+                           "term='', term_source='', term_accession='', comments=[]), comments=[])")
+        unit_str = "isatools.model.OntologyAnnotation(term='mg', term_source='', term_accession='', comments=[])"
         expected_str = "isatools.model.FactorValue(factor_name={0}, value=12, unit={1})".format(factor_name_str,
                                                                                                 unit_str)
         self.assertEqual(repr(self.factor_value), expected_str)

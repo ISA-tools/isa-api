@@ -379,7 +379,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 indexes.add_characteristic_category(category)
         for characteristic_category in study.get('characteristicCategories', []):
             category = OntologyAnnotation()
-            category.from_dict(characteristic_category)
+            category.from_dict(characteristic_category["characteristicType"])
+            category.id = characteristic_category["@id"]
             self.characteristic_categories.append(category)
             indexes.add_characteristic_category(category)
 
@@ -457,7 +458,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
         # Assay
         for assay_data in study.get('assays', []):
-            indexes.processes = []
+            indexes.processes = {}
             assay = Assay()
-            assay.from_dict(assay_data)
+            assay.from_dict(assay_data, self)
             self.assays.append(assay)

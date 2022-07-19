@@ -115,7 +115,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
                 'comments': characteristic_data.get('comments', []),
                 'category': indexes.get_characteristic_category(id_),
                 'value': characteristic_data['value'],
-                'unit': characteristic_data['unit']
+                'unit': characteristic_data.get('unit', None)
             }
             characteristic = Characteristic()
             characteristic.from_dict(data)
