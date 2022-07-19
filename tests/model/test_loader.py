@@ -2,7 +2,6 @@ from os import path
 from json import load
 from unittest import TestCase
 
-from isatools.model.investigation import Investigation
 from isatools.isajson import load as isa_load, loads as isa_loads
 
 

@@ -294,7 +294,7 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_and_dump_bii_i_1(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-I-1', 'BII-I-1.json')) as isajson_fp:
-            ISA = isajson.load(isajson_fp)
+            ISA = isajson.loads(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
             ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
@@ -359,7 +359,7 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_and_dump_bii_s_3(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-S-3', 'BII-S-3.json')) as isajson_fp:
-            ISA = isajson.load(isajson_fp)
+            ISA = isajson.loads(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
             ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
@@ -395,7 +395,7 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_and_dump_bii_s_7(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'BII-S-7', 'BII-S-7.json')) as isajson_fp:
-            ISA = isajson.load(isajson_fp)
+            ISA = isajson.loads(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
             ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
@@ -423,7 +423,7 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_from_file_and_create_isa_objects(self):
         # reading from file
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json')) as isajson_fp:
-            inv = isajson.load(isajson_fp)
+            inv = isajson.loads(isajson_fp)
 
             # Dump into ISA JSON from ISA objects
             ISA_J = json.loads(json.dumps(inv, cls=isajson.ISAJSONEncoder))
@@ -455,5 +455,5 @@ class TestIsaJson(unittest.TestCase):
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json'), 'w') as out_fp:
             out_fp.write(isa_j)
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json')) as in_fp:
-            reverse_test_isa_investigation = isajson.load(in_fp)
+            reverse_test_isa_investigation = isajson.loads(in_fp)
             self.assertIsInstance(reverse_test_isa_investigation, Investigation)
