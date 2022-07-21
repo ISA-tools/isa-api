@@ -463,7 +463,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             assay.from_dict(assay_data, self)
             self.assays.append(assay)
 
-        # Second sample pass
+        # Second sample pass to get the characteristic categories created during assay creation
         for sample in self.samples:
             for characteristic in sample.characteristics:
                 characteristic.category = indexes.get_characteristic_category(characteristic.category.id)
