@@ -2222,8 +2222,8 @@ class StudyDesign(object):
                                 derives_from=[source],
                                 comments=[is_treatment_comment]
                             )
-                            if sample_type not in characteristic_categories:
-                                characteristic_categories.append(sample_type)
+                            if sample_type.category not in characteristic_categories:
+                                characteristic_categories.append(sample_type.category)
 
                             sample_batches[sample_node].append(sample)
                             sample_count += 1
@@ -2320,8 +2320,8 @@ class StudyDesign(object):
             other_materials.append(item)
             # characteristic_categories.append(item.characteristics)
             for charx in item.characteristics:
-                if charx not in characteristic_categories:
-                    characteristic_categories.append(charx)
+                if charx.category not in characteristic_categories:
+                    characteristic_categories.append(charx.category)
 
         elif isinstance(item, DataFile):
             data_files.append(item)
@@ -2570,7 +2570,7 @@ class StudyDesign(object):
 
         # setting the `characteristic_categories` associated to study and required for isajson loading
         # study_charac_categories = []
-        study.characteristic_categories.append(DEFAULT_SOURCE_TYPE)
+        study.characteristic_categories.append(DEFAULT_SOURCE_TYPE.category)
         study.factors, new_protocols, study.samples, study_charac_categories, study.assays, study.process_sequence, \
             study.ontology_source_references = \
             self._generate_samples_and_assays(

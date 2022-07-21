@@ -90,7 +90,7 @@
       }
     },
     "unitCategories": {
-      "description": "List of all the unitsdefined in the study, used to avoid duplication of their declaration when each value is created. ",
+      "description": "List of all the units defined in the study, used to avoid duplication of their declaration when each value is created. ",
       "type": "array",
       "items": {
         "$ref": "ontology_annotation_schema.json#"

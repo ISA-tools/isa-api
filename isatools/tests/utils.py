@@ -132,8 +132,9 @@ def assert_tab_content_equal(fp_x, fp_y):
             if not is_cols_equal:
                 log.debug('x: ' + str(df_x.columns))
                 log.debug('y: ' + str(df_y.columns))
-                log.debug(diff(df_x.columns, df_y.columns))
-                raise AssertionError('Columns in x do not match those in y')
+                dif = diff(df_x.columns, df_y.columns)
+                log.debug(dif)
+                raise AssertionError('Columns in %s do not match those in %s' % (str(df_x.columns), str(df_y.columns)))
 
             # reindex to add contexts for duplicate named columns
             # (i.e. Term Accession Number, Unit, etc.)
