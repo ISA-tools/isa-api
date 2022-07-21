@@ -127,7 +127,7 @@ class TestPerson(TestCase):
 
         expected_string = ("OntologyAnnotation(\n\t"
                            "term=test_term\n\t"
-                           "term_source=\n\t"
+                           "term_source=None\n\t"
                            "term_accession=test_term_accession\n\t"
                            "comments=0 Comment objects\n)")
         self.assertEqual(str(self.person.roles[0]), expected_string)

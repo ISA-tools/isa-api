@@ -26,7 +26,7 @@ class OntologyAnnotation(Commentable, Identifiable):
         super().__init__(comments=comments)
 
         self.__term = term
-        self.__term_source = ''
+        self.__term_source = None
         if term_source:
             self.__term_source = term_source
         self.__term_accession = term_accession

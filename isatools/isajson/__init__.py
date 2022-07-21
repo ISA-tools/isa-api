@@ -4,6 +4,6 @@ Don't forget to read the ISA-JSON spec:
 https://isa-specs.readthedocs.io/en/latest/isajson.html
 """
 
-from isatools.isajson.load import load, loads
+from isatools.isajson.load import loads as load, load as isa_load
 from isatools.isajson.dump import ISAJSONEncoder
 from isatools.isajson.validate import validate, batch_validate, default_config_dir, load_config

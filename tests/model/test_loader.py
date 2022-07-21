@@ -2,7 +2,7 @@ from os import path
 from json import load
 from unittest import TestCase
 
-from isatools.isajson import load as isa_load, loads as isa_loads
+from isatools.isajson import load as isa_loads, isa_load
 
 
 class TestCompareLoaders(TestCase):
@@ -15,9 +15,12 @@ class TestCompareLoaders(TestCase):
         ]
 
     def test_compare_loaders(self):
+        self.maxDiff = None
         for use_case in self.use_cases:
             self.set_investigations(use_case)
-            self.assert_cases()
+            new_investigation = self.new_investigation
+            old_investigation = self.old_investigation
+            self.assertEqual(old_investigation, new_investigation)
 
     def set_investigations(self, filepath):
         with open(filepath) as f:
@@ -26,9 +29,3 @@ class TestCompareLoaders(TestCase):
             self.old_investigation = isa_load(f)
         with open(filepath) as f:
             self.new_investigation = isa_loads(f)
-
-    def assert_cases(self):
-        self.maxDiff = None
-        new_investigation = self.new_investigation
-        old_investigation = self.old_investigation
-        self.assertEqual(old_investigation, new_investigation)

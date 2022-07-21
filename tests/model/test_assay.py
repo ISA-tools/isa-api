@@ -80,9 +80,9 @@ class TestAssay(TestCase):
     def test_repr(self):
         expected_str = ("isatools.model.Assay(measurement_type="
                         "isatools.model.OntologyAnnotation(term='', "
-                        "term_source='', term_accession='', comments=[]), "
+                        "term_source=None, term_accession='', comments=[]), "
                         "technology_type=isatools.model.OntologyAnnotation("
-                        "term='', term_source='', term_accession='', "
+                        "term='', term_source=None, term_accession='', "
                         "comments=[]), technology_platform='', filename='', "
                         "data_files=[], samples=[], process_sequence=[], "
                         "other_material=[], characteristic_categories=[], "

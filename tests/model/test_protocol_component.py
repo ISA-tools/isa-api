@@ -36,7 +36,7 @@ class TestProtocolComponent(TestCase):
 
     def test_repr(self):
         expected_str = ("isatools.model.ProtocolComponent(name='', category=isatools.model.OntologyAnnotation(term='', "
-                        "term_source='', term_accession='', comments=[]), comments=[])")
+                        "term_source=None, term_accession='', comments=[]), comments=[])")
         self.assertEqual(repr(self.protocol_component), expected_str)
         self.assertEqual(hash(self.protocol_component), hash(expected_str))
 

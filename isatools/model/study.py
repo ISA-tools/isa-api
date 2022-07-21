@@ -462,3 +462,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             assay = Assay()
             assay.from_dict(assay_data, self)
             self.assays.append(assay)
+
+        # Second sample pass
+        for sample in self.samples:
+            for characteristic in sample.characteristics:
+                characteristic.category = indexes.get_characteristic_category(characteristic.category.id)

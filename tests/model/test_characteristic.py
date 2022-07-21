@@ -48,7 +48,7 @@ class TestCharacteristic(TestCase):
     def test_str(self):
         expected_str = ("isatools.model.Characteristic("
                         "category=isatools.model.OntologyAnnotation(term='test_category', "
-                        "term_source='', term_accession='', comments=[]), "
+                        "term_source=None, term_accession='', comments=[]), "
                         "value='test_value', unit='test_unit', comments=[])")
         self.assertEqual(self.characteristic.__repr__(), expected_str)
         self.assertTrue(hash(self.characteristic) == hash(expected_str))
