@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Factor": "sdo:Property",
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "factorName": {
+      "@id":"sdo:name",
+      "@type":  "sdo:Text"
+    },
+    "factorType" : {
+        "@id": "sdo:hasCategoryCode",
+        "@type": "sdo:DefinedTerm"
+    }
+  },
+  "comments": {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+}

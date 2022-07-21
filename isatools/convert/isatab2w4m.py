@@ -264,7 +264,7 @@ def make_names(u, uniq=False):
             v[i] = 'X' + ('' if j == 0 else ('.' + str(j)))
             j += 1
 
-        # Remove unvanted characters
+        # Remove unwanted characters
         else:
             v[i] = re.sub(r'[^A-Za-z0-9_.]', '.', v[i])
 

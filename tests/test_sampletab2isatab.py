@@ -7,6 +7,7 @@ import shutil
 
 SLOW_TESTS = int(os.getenv('SLOW_TESTS', '0'))
 
+
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "

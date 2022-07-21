@@ -1,0 +1,42 @@
+{
+  "@context": {
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person":   {"@id": "obo:NCBITaxon_9606"},
+    "identifier": {"@id": "obo:IAO_0000577"},
+    "firstName": {
+        "@id": "obo:IAO_0000235",
+        "@type":"obo:NCIT_C40974"
+        },
+    "lastName": {   
+         "@id": "obo:IAO_0000235",
+         "@type":"obo:NCIT_C40975"
+         },
+    "midInitials": {
+        "@id": "obo:IAO_0000235",
+        "@type": "obo:NCIT_C25536"
+        },
+    "email": {
+        "@id": "obo:IAO_0000235",
+        "@type": "obo:IAO_0000429"
+        },
+    "phone": {
+        "@id": "obo:IAO_0000235",
+        "@type": "obo:NCIT_C40978"
+        },
+    "fax" : {
+        "@id": "obo:IAO_0000235",
+        "@type": "obo:NCIT_C42879"
+        },
+    "affiliations":
+    {
+      "@id":"obo:BFO_0000050",
+      "@type":"obo:OBI_0000245"
+    } ,
+     "roles": {
+        "@id": "obo:RO_0000087",
+        "@type" : "obo:BFO_0000023"
+        }
+  }
+}

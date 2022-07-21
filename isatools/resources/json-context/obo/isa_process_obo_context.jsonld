@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@language": "en",
+    "obo": "http://purl.obolibrary.org/obo/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Process":  {"@id": "obo:BFO_0000015"},
+    "identifier": {
+      "@id": "obo:IAO_0000577",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000590"
+    },
+    "description": {
+      "@id": "obo:IAO_0000235",
+      "@type":"obo:IAO_0000300"
+    },
+    "startDate" : {"@id":"obo:RO_0002537",
+      "@type": "xsd:date"
+    },
+    "executesProtocol" : {
+        "@id":"obo:RO_0000059",
+      "@type" : "obo:OBI_0000272"
+    },
+    "parameterValues": {
+       "@id":"obo:OBI_0001933",
+        "@type" : ["obo:OBI_0001933", "obo:BFO_0000019", "obo:OBI_0000968"]
+    },
+    "previousProcess" : { 
+    "@id":"obo:BFO_0000062",
+      "@type" : "obo:OBI_0000011" 
+      },
+    "nextProcess" : {
+    "@id":"obo:BFO_0000063",
+      "@type" :  "obo:OBI_0000011" 
+      },
+    "input" : {
+      "@id":"obo:RO_0002233",
+      "@type" : ["obo:OBI_0001879","obo:BFO_0000040","obo:IAO_0000100"]
+    },
+    "output" :  {
+      "@id":"obo:RO_0002234",
+      "@type" : ["obo:OBI_0001879","obo:BFO_0000040","obo:IAO_0000100"]
+    },
+    "performer" :
+    {
+      "@id" : "obo:NCIT_C48206",
+      "@type":["obo:OBI_0000245","obo:NCBITaxon_9606"]
+    },
+    "comments" : {
+      "@id" : "obo:IAO_0000235",
+      "@type" : "obo:IAO_0000300"
+    }
+  }
+}

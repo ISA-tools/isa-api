@@ -168,4 +168,4 @@ class TestJsonToSra(TestCase):
         with open(os.path.join(self._tmp_dir, 'run_set.xml'), 'rb') as rs_fp:
             run_set_xml = rs_fp.read()
             actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)
-            self.assertTrue( utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))
+            self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))

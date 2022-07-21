@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+    "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "enm": "http://purl.enanomapper.org/onto/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "wdt:Q857525",
+    	"annotationValue" : {"@id":"wdtp:P527","@type":"rdfs:label"},
+    	"termSource" : {
+    		"@id":"wdtp:P5967",
+    		"@type": "wdt:Q324254"
+    	},
+    	"termAccession" : {
+    		"@id":"wdtp:P527",
+    		"@type": "wdt:Q1417099"
+    		},
+        "comments" : {
+             "@id" : "wdtp:P6607",
+             "@type" : "wdt:Q58897583"
+        }
+    }
+}

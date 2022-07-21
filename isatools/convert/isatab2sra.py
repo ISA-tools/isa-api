@@ -13,7 +13,7 @@ log = logging.getLogger('isatools')
 
 
 def zipdir(path, zip_file):
-    """utility function to zip only SRA xmls from a whole directory"""
+    """utility function to zip only SRA xml documents from a whole directory"""
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in [f for f in files if f in [

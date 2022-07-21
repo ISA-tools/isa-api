@@ -54,7 +54,7 @@ _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File',
                       'Free Induction Decay Data File',
                       'Derived Array Data Matrix File', 'Image File',
                       'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'NMR Assay Name',
                        'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -262,6 +262,7 @@ class StudyAssayParser:
             "Extract Name", "Labeled Extract Name",
             "Array Data File",
             "Raw Spectral Data File",
+            "Free Induction Decay Data File",
             "Protein Assignment File",
             "Peptide Assignment File",
             "Post Translational Modification Assignment File",
@@ -277,7 +278,8 @@ class StudyAssayParser:
         self._synonyms = {
             "Hybridization Assay Name": "Assay Name",
             "Scan Name": "Assay Name",
-            "MS Assay Name": "Assay Name"
+            "MS Assay Name": "Assay Name",
+            "NMR Assay Name": "Assay Name"
         }
 
     def parse(self, rec):

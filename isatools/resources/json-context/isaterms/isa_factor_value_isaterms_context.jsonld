@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "@language": "en",
+    "isa": "http://purl.org/isaterms",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "FactorValue": "isa:factor_value",
+    "category": {
+        "@id":"isa:has_part",
+        "@type": "isa:factor"
+    },
+     "value": {
+      "@id": "isa:has_value",
+      "@type" : "xsd:string"
+    },
+     "unit": {
+          "@id": "isa:has_value" ,
+          "@type" : "isa:unit"
+    }
+    
+  }
+}
