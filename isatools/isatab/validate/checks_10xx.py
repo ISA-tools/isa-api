@@ -126,11 +126,10 @@ def check_protocol_usage(i_df, dir_context):
                     protocol_refs_used = set([r for r in protocol_refs_used if notnull(r)])
                     diff = list(protocol_refs_used - protocols_declared)
                     if len(diff) > 0:
-                        spl = "protocols in study file {} are not declared in the investigation file: {}".format(
-                            study_filename, diff)
+                        spl = "protocols in study file {} are not declared in the investigation file: {}"
+                        spl = spl.format(study_filename, diff)
                         validator.add_error(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                        log.error("(E) Some protocols used in a study file {} are not declared in the investigation "
-                                  "file: {}".format(study_filename, diff))
+                        log.error("(E) {}".format(spl))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
@@ -144,11 +143,10 @@ def check_protocol_usage(i_df, dir_context):
                         protocol_refs_used = set([r for r in protocol_refs_used if notnull(r)])
                         diff = list(protocol_refs_used - protocols_declared)
                         if len(diff) > 0:
-                            spl = "protocols in study file {} are not declared in the investigation file: {}".format(
-                                study_filename, diff)
+                            spl = "protocols in study file {} are not declared in the investigation file: {}"
+                            spl = spl.format(study_filename, diff)
                             validator.add_error(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                            log.error("(E) Some protocols used in an assay file {} are not declared in the "
-                                      "investigation file: {}".format(assay_filename, diff))
+                            log.error("(E) {}".format(spl))
                 except FileNotFoundError:
                     pass
 
@@ -201,91 +199,64 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename != '':
             try:
                 protocol_parameters_used = set()
-                with utf8_text_file_open(path.join(
-                        dir_context, study_filename)) as s_fp:
+                with utf8_text_file_open(path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
-                    parameter_value_cols = [
-                        i for i in study_df.columns
-                        if _RX_PARAMETER_VALUE.match(i)]
+                    parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
                         pv = _RX_PARAMETER_VALUE.findall(col)
-                        protocol_parameters_used = \
-                            protocol_parameters_used.union(
-                                set(pv))
-                    if not protocol_parameters_used.issubset(
-                            protocol_parameters_declared):
-                        log.error("(E) Some protocol parameters referenced in "
-                                  "an study file {} are not declared in the "
-                                  "investigation file: {}".format(
-                            study_filename, list(
-                                protocol_parameters_used
-                                - protocol_parameters_declared)))
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                    if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                        remain = list(protocol_parameters_used - protocol_parameters_declared)
+                        error = ("(E) Some protocol parameters referenced in an study file {} are not declared in the "
+                                 "investigation file: {}").format(study_filename, remain)
+                        log.error(error)
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(
-                i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     protocol_parameters_used = set()
-                    with utf8_text_file_open(path.join(
-                            dir_context, assay_filename)) as a_fp:
+                    with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
-                        parameter_value_cols = [
-                            i for i in assay_df.columns
-                            if _RX_PARAMETER_VALUE.match(i)]
+                        parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
                             pv = _RX_PARAMETER_VALUE.findall(col)
-                            protocol_parameters_used = \
-                                protocol_parameters_used.union(set(pv))
-                        if not protocol_parameters_used.issubset(
-                                protocol_parameters_declared):
-                            log.error("(E) Some protocol parameters "
-                                      "referenced in an assay file {} are "
-                                      "not declared in the investigation "
-                                      "file: {}".format(assay_filename,
-                                                        list(protocol_parameters_used
-                                                             - protocol_parameters_declared)))
+                            protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                        if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                            remain = list(protocol_parameters_used - protocol_parameters_declared)
+                            error = ("(E) Some protocol parameters referenced in an assay file {} are not declared in "
+                                     "the investigation file: {}").format(assay_filename, remain)
+                            log.error(error)
                 except FileNotFoundError:
                     pass
-        # now collect all protocol parameters in all assays to compare to
-        # declared protocol parameters
+
+        # now collect all protocol parameters in all assays to compare to declared protocol parameters
         protocol_parameters_used = set()
         if study_filename != '':
             try:
-                with utf8_text_file_open(
-                        path.join(dir_context, study_filename)) as s_fp:
+                with utf8_text_file_open(path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
-                    parameter_value_cols = [
-                        i for i in study_df.columns
-                        if _RX_PARAMETER_VALUE.match(i)]
+                    parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
                         pv = _RX_PARAMETER_VALUE.findall(col)
-                        protocol_parameters_used = \
-                            protocol_parameters_used.union(set(pv))
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(
-                i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
-                    with utf8_text_file_open(path.join(
-                            dir_context, assay_filename)) as a_fp:
+                    with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
-                        parameter_value_cols = [
-                            i for i in assay_df.columns if
-                            _RX_PARAMETER_VALUE.match(i)]
+                        parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
                             pv = _RX_PARAMETER_VALUE.findall(col)
-                            protocol_parameters_used = \
-                                protocol_parameters_used.union(set(pv))
+                            protocol_parameters_used = protocol_parameters_used.union(set(pv))
                 except FileNotFoundError:
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
-            log.warning(
-                "(W) Some protocol parameters declared in the investigation "
-                "file are not used in any assay file: {}".format(
-                    list(protocol_parameters_declared
-                         - protocol_parameters_used)))
+            warning = ("(W) Some protocol parameters declared in the investigation file are not used in any assay file:"
+                       " {}").format(list(protocol_parameters_declared - protocol_parameters_used))
+            log.warning(warning)
 
 
 def check_protocol_names(i_df):
@@ -311,8 +282,7 @@ def check_protocol_parameter_names(i_df):
     :return: None
     """
     for study_protocols_df in i_df['s_protocols']:
-        for i, protocol_parameters_names in enumerate(
-                study_protocols_df['Study Protocol Parameters Name'].tolist()):
+        for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
             # There's an empty cell if no protocols
             if len(protocol_parameters_names.split(sep=';')) > 1:
                 for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
@@ -360,7 +330,7 @@ def check_unit_field(table, cfg):
         :return: True if the unit cells are OK, False if not
         """
         if cell_has_value(cell_value) or cell_has_value(unit_value):
-            local_spl = "Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'"
+            local_spl = "Field '{}' has a unit but not a value in the file '{}'".format(cfield.header, filename)
             validator.add_warning(message="Cell found has unit but no value", supplemental=local_spl, code=4999)
             log.warning("(W) {}".format(spl))
             return False
@@ -382,12 +352,12 @@ def check_unit_field(table, cfg):
             if rindx < len(table.columns):
                 rheader = table.columns[rindx]
             if rheader is None or rheader.lower() != 'unit':
-                spl = "The field '" + header + "' in the file '" + table.filename + "' misses a required 'Unit' column"
+                spl = "The field '{}' in the file '{}' misses a required 'Unit' column".format(header, table.filename)
                 validator.add_warning(message="Cell requires a Unit", supplemental=spl, code=4999)
                 log.warning("(W) {}".format(spl))
                 result = False
             else:
                 for irow in range(len(table.index)):
-                    result = (result and
-                              check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx], cfield, table.filename))
+                    check = check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx], cfield, table.filename)
+                    result = result and check
     return result

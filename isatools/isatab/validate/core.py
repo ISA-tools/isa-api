@@ -383,7 +383,6 @@ def validate_assays(investigation_dataframe: DataFrame,
 
                 check_sample_names(study_sample_table, assay_tables)
                 log.info("Finished checking study sample table against assay tables...")
-    pass
 
 
 def validate(fp, config_dir=default_config_dir, log_level=None):

@@ -14,8 +14,22 @@ def check_investigation_against_config(i_df, configs):
     :return: None
     """
 
+    code = 4003
+    message = "A required property is missing"
+
+    def add_warning(index, column, value_index):
+        if index > 0:
+            spl = "A property value in {}.{} of investigation file at column {} is required"
+            spl = spl.format(column, index + 1, value_index + 1)
+            validator.add_warning(message=message, supplemental=spl, code=code)
+            log.warning("(W) {}".format(spl))
+        else:
+            spl = "A property value in {} of investigation file at column {} is required"
+            spl = spl.format(column, value_index + 1)
+            validator.add_warning(message=message, supplemental=spl, code=code)
+            log.warning("(W) {}".format(spl))
+
     def check_section_against_required_fields_one_value(section, required, i=0):
-        code = 4003
         fields_required = [i for i in section.columns if i in required]
         for col in fields_required:
             required_values = section[col]
@@ -24,49 +38,13 @@ def check_investigation_against_config(i_df, configs):
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
                         if isnan(required_value):
-                            if i > 0:
-                                spl = "A property value in {}.{} of investigation file at column {} is required"
-                                spl = spl.format(col, i + 1, x + 1)
-                                warning = "(W) A property value in {}.{} of investigation file at column {} is required"
-                                warning = warning.format(col, i + 1, x + 1)
-                                validator.add_warning(message="A required property is missing",
-                                                      supplemental=spl,
-                                                      code=code)
-                                log.warning(warning)
-                            else:
-                                spl = "A property value in {} of investigation file at column {} is required"
-                                spl = spl.format(col, x + 1)
-                                warning = "(W) A property value in {} of  investigation file at column {} is required"
-                                warning = warning.format(col, x + 1)
-                                validator.add_warning(message="A required property is missing",
-                                                      supplemental=spl,
-                                                      code=code)
-                                log.warning(warning)
+                            add_warning(i, col, x)
                     else:
                         if required_value == '' or 'Unnamed: ' in required_value:
-                            if i > 0:
-                                spl = "A property value in {}.{} of investigation file at column {} is required"
-                                spl = spl.format(col, i + 1, x + 1)
-                                warning = "(W) A property value in {}.{} of investigation file at column {} is required"
-                                warning = warning.format(col, i + 1, x + 1)
-                                validator.add_warning(message="A required property is missing",
-                                                      supplemental=spl,
-                                                      code=code)
-                                log.warning(warning)
-                            else:
-                                spl = "A property value in {} of investigation file at column {} is required"
-                                spl = spl.format(col, x + 1)
-                                warning = "(W) A property value in {} of investigation file at column {} is required"
-                                warning = warning.format(col, x + 1)
-                                validator.add_warning(message="A required property is missing",
-                                                      supplemental=spl,
-                                                      code=code)
-                                log.warning(warning)
+                            add_warning(i, col, x)
 
-    required_fields = [
-        i.header for i in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
-        if i.is_required
-    ]
+    config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
+    required_fields = [i.header for i in config_fields if i.is_required]
     check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
     check_section_against_required_fields_one_value(i_df['i_publications'], required_fields)
     check_section_against_required_fields_one_value(i_df['i_contacts'], required_fields)
@@ -101,8 +79,7 @@ def load_config(config_dir):
     else:
         for k in configs.keys():
             message = "Loaded table configuration '{}' for measurement and technology {}"
-            message = message.format(str(configs[k].get_isatab_configuration()[0].table_name), str(k))
-            log.debug(message)
+            log.debug(message.format(str(configs[k].get_isatab_configuration()[0].table_name), str(k)))
     return configs
 
 
@@ -140,10 +117,9 @@ def check_factor_value_presence(table):
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
             if cell_value == '':
                 msg = "A required node factor value is missing value"
-                spl = "(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename
-                warning = "(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename
+                spl = "Missing value for '{}' at row {} in {}".format(factor_field, str(x), table.filename)
                 validator.add_warning(message=msg, supplemental=spl, code=4007)
-                log.warning(warning)
+                log.warning("(W) {}".format(spl))
 
 
 def check_required_fields(table, cfg):
@@ -157,15 +133,13 @@ def check_required_fields(table, cfg):
         found_field = [i for i in table.columns if i.lower() == fheader.lower()]
         if len(found_field) == 0:
             msg = "A required column in assay table is not present"
-            spl = "Required field '" + fheader + "' not found in the file '" + table.filename + "'"
-            warning = "(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'"
+            spl = "Required field '{}' not found in the file '{}'".format(fheader, table.filename)
             validator.add_warning(message=msg, supplemental=spl, code=4010)
-            log.warning(warning)
+            log.warning("(W) {}".format(spl))
         elif len(found_field) > 1:
-            spl = "Field '" + fheader + "' cannot have multiple values in the file '" + table.filename
-            warning = "(W) Field '" + fheader + "' cannot have multiple values in the file '" + table.filename
+            spl = "Field '{}' cannot have multiple values in the file '{}'".format(fheader, table.filename)
             validator.add_warning(message="Multiple columns found", supplemental=spl, code=4013)
-            log.warning(warning)
+            log.warning("(W) {}".format(spl))
 
 
 def check_field_values(table, cfg):
@@ -305,8 +279,8 @@ def check_protocol_fields(table, cfg, proto_map):
             if len(crights) == 1:
                 cright = crights[0]
             if cleft is not None and cright is not None:
-                cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field()
-                           if cleft.pos < i.pos < cright.pos]
+                protocols_fields = cfg.get_isatab_configuration()[0].get_protocol_field()
+                cprotos = [i.protocol_type for i in protocols_fields if cleft.pos < i.pos < cright.pos]
                 raw_headers = table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)]
                 fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
                 fprotos = list()

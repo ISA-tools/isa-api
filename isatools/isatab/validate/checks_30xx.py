@@ -1,3 +1,5 @@
+import iso8601
+
 from pandas import DataFrame
 
 from isatools.isatab.validate.store import validator
@@ -6,7 +8,7 @@ from isatools.isatab.utils import cell_has_value
 
 
 def check_filenames_present(i_df: DataFrame) -> None:
-    """Used for rule 3005
+    """ Used for rule 3005
 
     :param i_df: An investigation DataFrame
     :return: None
@@ -23,7 +25,7 @@ def check_filenames_present(i_df: DataFrame) -> None:
 
 
 def check_date_formats(i_df):
-    """Used for rule 3001
+    """ Used for rule 3001
 
     :param i_df: An investigation DataFrame
     :return: None
@@ -43,7 +45,6 @@ def check_date_formats(i_df):
                 validator.add_warning(message="Date is not ISO8601 formatted", supplemental=spl, code=3001)
                 log.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
 
-    import iso8601
     release_date_vals = i_df['investigation']['Investigation Public Release Date'].tolist()
     if len(release_date_vals) > 0:
         check_iso8601_date(release_date_vals[0])
@@ -60,7 +61,7 @@ def check_date_formats(i_df):
 
 
 def check_dois(i_df):
-    """Used for rule 3002
+    """ Used for rule 3002
 
     :param i_df: An investigation DataFrame
     :return: None
@@ -86,14 +87,14 @@ def check_dois(i_df):
 
 
 def check_pubmed_ids_format(i_df):
-    """Used for rule 3003
+    """ Used for rule 3003
 
     :param i_df: An investigation DataFrame
     :return: None
     """
 
     def check_pubmed_id(pubmed_id_str):
-        """Checks if a string is a valid PubMed ID
+        """ Checks if a string is a valid PubMed ID
 
         :param pubmed_id_str: String to check, expecting a PubMed ID
         :return: None
@@ -112,7 +113,7 @@ def check_pubmed_ids_format(i_df):
 
 
 def check_ontology_sources(i_df):
-    """Used for rule 3008
+    """ Used for rule 3008
 
     :param i_df: An investigation DataFrame
     :return: None
@@ -122,16 +123,15 @@ def check_ontology_sources(i_df):
         if ontology_source_name == '' or 'Unnamed: ' in ontology_source_name:
             spl = "pos={}".format(i)
             warn = "(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be referenced"
-            warn = warn.format(i)
             validator.add_warning(message="Ontology Source missing name ref", supplemental=spl, code=3008)
-            log.warning(warn)
+            log.warning(warn.format(i))
         else:
             term_source_refs.append(ontology_source_name)
     return term_source_refs
 
 
 def check_ontology_fields(table, cfg, tsrs):
-    """Checks ontology annotation columns are correct for a given configuration
+    """ Checks ontology annotation columns are correct for a given configuration
     in a table
 
     :param table: Table DataFrame
@@ -142,7 +142,7 @@ def check_ontology_fields(table, cfg, tsrs):
     """
 
     def check_single_field(cell_value, source, acc, cfield, filename):
-        """Checks ontology annotation columns are correct for a given
+        """ Checks ontology annotation columns are correct for a given
         configuration for a given cell value
 
         :param cell_value: Cell value
@@ -186,8 +186,7 @@ def check_ontology_fields(table, cfg, tsrs):
             rrheader = table.columns[rrindx]
         if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
             warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
-            warning = warning.format(header)
-            log.warning(warning)
+            log.warning(warning.format(header))
             result = False
             continue
 
