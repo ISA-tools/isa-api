@@ -88,8 +88,7 @@ def load_investigation(fp):
     # Read in investigation file into DataFrames first
     df_dict = read_investigation_file(fp)
     log.debug("Loading ONTOLOGY SOURCE REFERENCE section")
-    labels_expected = {'Term Source Name', 'Term Source File',
-                       'Term Source Version', 'Term Source Description'}
+    labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     check_labels('ONTOLOGY SOURCE REFERENCE', labels_expected, df_dict['ontology_sources'])
 
     log.debug("Loading INVESTIGATION section")
@@ -419,12 +418,23 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
             study_filename = study_df.iloc[0]['Study File Name']
             assay_tables = list()
             if study_filename != '':
-                protocol_names_and_types, study_sample_table = validate_study(i_df, study_filename, configs,
-                                                                              term_source_refs, i,
+                protocol_names_and_types, study_sample_table = validate_study(i_df,
+                                                                              study_filename,
+                                                                              configs,
+                                                                              term_source_refs,
+                                                                              i,
                                                                               path.dirname(fp.name),
                                                                               study_group_size_in_comment)
-                validate_assays(i_df, study_df, i, configs, term_source_refs, protocol_names_and_types, assay_tables,
-                                study_sample_table, path.dirname(fp.name))
+
+                validate_assays(i_df,
+                                study_df,
+                                i,
+                                configs,
+                                term_source_refs,
+                                protocol_names_and_types,
+                                assay_tables,
+                                study_sample_table,
+                                path.dirname(fp.name))
             if len(validator.errors) != 0:
                 log.info("Skipping pooling test as there are outstanding errors")
             else:

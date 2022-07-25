@@ -338,13 +338,11 @@ class ProcessSequenceFactory:
 
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                         category_key = next(iter(_RX_PARAMETER_VALUE.findall(pv_column)))
-                        if category_key in [x.category.parameter_name.term for x in process.parameter_values]:
-                            pass
-                        else:
+                        if category_key not in [x.category.parameter_name.term for x in process.parameter_values]:
                             try:
                                 protocol = protocol_map[protocol_ref]
                             except KeyError:
-                                raise ValueError('Could not find protocol matching ', protocol_ref)
+                                raise KeyError('Could not find protocol matching ', protocol_ref)
 
                             param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
 

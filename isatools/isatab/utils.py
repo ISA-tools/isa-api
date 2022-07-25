@@ -45,15 +45,13 @@ class IsaTabDataFrame(DataFrame):
         'Acquisition Parameter Data File', 'Free Induction Decay Data File',
         'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
         'Metabolite Assignment File', 'Raw Spectral Data File']
-    MATERIAL_LABELS = ['Source Name', 'Sample Name', 'Extract Name',
-                       'Labeled Extract Name']
+    MATERIAL_LABELS = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
     OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
     NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
     ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'NMR Assay Name', 'Hybridization Assay Name',
                     'Scan Name', 'Data Transformation Name',
                     'Normalization Name', 'Array Design REF']
-    QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF',
-                        'Term Accession Number', 'Unit']
+    QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF', 'Term Accession Number', 'Unit']
     ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
     ALL_LABELS.append('Protocol REF')
 
@@ -77,17 +75,13 @@ class IsaTabDataFrame(DataFrame):
             if clean_label.lower() in label.strip().lower():
                 return clean_label
             elif _RX_CHARACTERISTICS.match(label):
-                return 'Characteristics[{val}]'.format(
-                    val=next(iter(_RX_CHARACTERISTICS.findall(label))))
+                return 'Characteristics[{val}]'.format(val=next(iter(_RX_CHARACTERISTICS.findall(label))))
             elif _RX_PARAMETER_VALUE.match(label):
-                return 'Parameter Value[{val}]'.format(
-                    val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
+                return 'Parameter Value[{val}]'.format(val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
             elif _RX_FACTOR_VALUE.match(label):
-                return 'Factor Value[{val}]'.format(
-                    val=next(iter(_RX_FACTOR_VALUE.findall(label))))
+                return 'Factor Value[{val}]'.format(val=next(iter(_RX_FACTOR_VALUE.findall(label))))
             elif _RX_COMMENT.match(label):
-                return 'Comment[{val}]'.format(
-                    val=next(iter(_RX_COMMENT.findall(label))))
+                return 'Comment[{val}]'.format(val=next(iter(_RX_COMMENT.findall(label))))
 
     @property
     def isatab_header(self):
@@ -126,10 +120,7 @@ class TransposedTabParser(object):
             self.log_level = defaults.log_level
         else:
             if not isinstance(tab_options, dict):
-                raise TypeError(
-                    'tab_options must be dict, not {tab_options_type}'
-                        .format(tab_options_type=type(tab_options))
-                )
+                raise TypeError('tab_options must be dict, not {}'.format(type(tab_options)))
             self.log_level = log_level
 
         self._ttable_dict = dict(header=list(), table=dict())
@@ -144,9 +135,7 @@ class TransposedTabParser(object):
         """
         try:
             with utf8_text_file_open(filename) as unicode_file:
-                ttable_reader = csv_reader(
-                    filter(lambda r: r[0] != '#', unicode_file),
-                    dialect='excel-tab')
+                ttable_reader = csv_reader(filter(lambda r: r[0] != '#', unicode_file), dialect='excel-tab')
                 for row in ttable_reader:
                     if len(row) > 0:
                         key = get_squashed(key=row[0])
@@ -154,9 +143,7 @@ class TransposedTabParser(object):
                         self._ttable_dict['table'][key] = row[1:]
         except UnicodeDecodeError:
             with open(filename, encoding='ISO8859-2') as latin2_file:
-                ttable_reader = csv_reader(
-                    filter(lambda r: r[0] != '#', latin2_file),
-                    dialect='excel-tab')
+                ttable_reader = csv_reader(filter(lambda r: r[0] != '#', latin2_file), dialect='excel-tab')
                 for row in ttable_reader:
                     if len(row) > 0:
                         key = get_squashed(key=row[0])
@@ -186,8 +173,7 @@ def strip_comments(in_fp):
     return out_fp
 
 
-def process_keygen(protocol_ref, column_group,
-                   object_label_index, all_columns, series, series_index, DF):
+def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index, DF):
     """Generate the process key.
 
     This works by trying to find the relevant Name column, if available, that
@@ -214,8 +200,7 @@ def process_keygen(protocol_ref, column_group,
         return series[name_column_hits[0]]
 
     process_key = protocol_ref
-    node_cols = [i for i, c in enumerate(
-        all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+    node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
     input_node_value = ''
     output_node_value = ''
     output_node_index = find_gt(node_cols, object_label_index)
@@ -228,12 +213,9 @@ def process_keygen(protocol_ref, column_group,
         input_node_label = all_columns[input_node_index]
         input_node_value = str(series[input_node_label])
 
-    input_nodes_with_prot_keys = DF[[
-        all_columns[object_label_index],
-        all_columns[input_node_index]]].drop_duplicates()
-    output_nodes_with_prot_keys = DF[[
-        all_columns[object_label_index],
-        all_columns[output_node_index]]].drop_duplicates()
+    input_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[input_node_index]]].drop_duplicates()
+    output_nodes_with_prot_keys = DF[[all_columns[object_label_index],
+                                      all_columns[output_node_index]]].drop_duplicates()
 
     if len(input_nodes_with_prot_keys) > len(output_nodes_with_prot_keys):
         node_key = output_node_value
@@ -247,12 +229,9 @@ def process_keygen(protocol_ref, column_group,
     if len(pv_cols) > 0:
         # 2. else try use protocol REF + Parameter Values as key
         if node_key is not None:
-            process_key = node_key + \
-                          ':' + protocol_ref + \
-                          ':' + '/'.join([str(v) for v in series[pv_cols]])
+            process_key = node_key + ':' + protocol_ref + ':' + '/'.join([str(v) for v in series[pv_cols]])
         else:
-            process_key = protocol_ref + \
-                          ':' + '/'.join([str(v) for v in series[pv_cols]])
+            process_key = protocol_ref + ':' + '/'.join([str(v) for v in series[pv_cols]])
     else:
         # 3. else try use input + protocol REF as key
         # 4. else try use output + protocol REF as key
@@ -274,16 +253,14 @@ def find_gt(a, x):
     i = bisect_right(a, x)
     if i != len(a):
         return a[i]
-    else:
-        return -1
+    return -1
 
 
 def find_lt(a, x):
     i = bisect_left(a, x)
     if i:
         return a[i - 1]
-    else:
-        return -1
+    return -1
 
 
 def pairwise(iterable):
@@ -310,15 +287,13 @@ def cell_has_value(cell):
     if isinstance(cell, float):
         if isnan(cell):
             return True
-        else:
-            return False
+        return False
     else:
         if cell.strip() == '':
             return False
         elif 'Unnamed: ' in cell:
             return False
-        else:
-            return True
+        return True
 
 
 def get_num_study_groups(study_sample_table, study_filename):
@@ -330,11 +305,9 @@ def get_num_study_groups(study_sample_table, study_filename):
     :return: The computed number of study groups
     """
     num_study_groups = -1
-    factor_columns = [
-        x for x in study_sample_table.columns if x.startswith('Factor Value')]
+    factor_columns = [x for x in study_sample_table.columns if x.startswith('Factor Value')]
     if factor_columns:
-        num_study_groups = len(
-            study_sample_table[factor_columns].drop_duplicates())
+        num_study_groups = len(study_sample_table[factor_columns].drop_duplicates())
     else:
         log.debug("No study factors found in {}".format(study_filename))
     return num_study_groups
@@ -425,8 +398,7 @@ def get_pv_columns(label, pv):
     """
     columns = None
     try:
-        columns = ["{0}.Parameter Value[{1}]".format(
-            label, pv.category.parameter_name.term)]
+        columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
     except AttributeError:
         log.fatal(label, pv)
     columns.extend(get_value_columns(columns[0], pv))
@@ -467,25 +439,17 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
     except IndexError:
         return cell_value, None
 
-    if offset_1r_col.startswith('Term Source REF') \
-            and offset_2r_col.startswith('Term Accession Number'):
-
+    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
         value = OntologyAnnotation(term=str(cell_value))
-
         term_source_value = object_series[offset_1r_col]
-
         if term_source_value != '':
-
             try:
                 value.term_source = ontology_source_map[term_source_value]
             except KeyError:
                 log.debug('term source: ', term_source_value, ' not found')
-
         term_accession_value = object_series[offset_2r_col]
-
         if term_accession_value != '':
             value.term_accession = str(term_accession_value)
-
         return value, None
 
     try:
@@ -496,35 +460,23 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
     if offset_1r_col.startswith('Unit') \
             and offset_2r_col.startswith('Term Source REF') \
             and offset_3r_col.startswith('Term Accession Number'):
-
         category_key = object_series[offset_1r_col]
-
         try:
             unit_term_value = unit_categories[category_key]
         except KeyError:
             unit_term_value = OntologyAnnotation(term=category_key)
             unit_categories[category_key] = unit_term_value
-
             unit_term_source_value = object_series[offset_2r_col]
-
             if unit_term_source_value != '':
-
                 try:
-                    unit_term_value.term_source = \
-                        ontology_source_map[unit_term_source_value]
+                    unit_term_value.term_source = ontology_source_map[unit_term_source_value]
                 except KeyError:
-                    log.debug('term source: ',
-                              unit_term_source_value, ' not found')
-
+                    log.debug('term source: ', unit_term_source_value, ' not found')
             term_accession_value = object_series[offset_3r_col]
-
             if term_accession_value != '':
                 unit_term_value.term_accession = term_accession_value
-
         return cell_value, unit_term_value
-
-    else:
-        return cell_value, None
+    return cell_value, None
 
 
 def get_object_column_map(isatab_header, df_columns):
@@ -544,7 +496,6 @@ def get_object_column_map(isatab_header, df_columns):
     # group headers regarding objects delimited by object_index by slicing up the header list
     object_column_map = []
     prev_i = object_index[0]
-
     for curr_i in object_index:  # collect each object's columns
         if prev_i == curr_i:
             pass  # skip if there's no diff, i.e. first one
@@ -564,14 +515,11 @@ def get_column_header(protocol_type_term, protocol_types_dict):
             + protocol_types_dict["phenotyping"][SYNONYMS] \
             + protocol_types_dict["data acquisition"][SYNONYMS]:
         column_header = "Assay Name"
-    elif protocol_type_term.lower() in \
-            protocol_types_dict["data collection"][SYNONYMS]:
+    elif protocol_type_term.lower() in protocol_types_dict["data collection"][SYNONYMS]:
         column_header = "Scan Name"
-    elif protocol_type_term.lower() in \
-            protocol_types_dict["mass spectrometry"][SYNONYMS]:
+    elif protocol_type_term.lower() in protocol_types_dict["mass spectrometry"][SYNONYMS]:
         column_header = "MS Assay Name"
-    elif protocol_type_term.lower() in \
-            protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
+    elif protocol_type_term.lower() in protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
         column_header = "NMR Assay Name"
     elif protocol_type_term.lower() in \
             protocol_types_dict["data transformation"][SYNONYMS] \
@@ -579,11 +527,9 @@ def get_column_header(protocol_type_term, protocol_types_dict):
             + protocol_types_dict["metabolite identification"][SYNONYMS] \
             + protocol_types_dict["protein identification"][SYNONYMS]:
         column_header = "Data Transformation Name"
-    elif protocol_type_term.lower() in \
-            protocol_types_dict["normalization"][SYNONYMS]:
+    elif protocol_type_term.lower() in protocol_types_dict["normalization"][SYNONYMS]:
         column_header = "Normalization Name"
-    if protocol_type_term.lower() \
-            == "unknown protocol":
+    if protocol_type_term.lower() == "unknown protocol":
         column_header = "Unknown Protocol Name"
     return column_header
 
@@ -601,16 +547,12 @@ def get_value_columns(label, x):
     """
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
-            return map(lambda x: "{0}.{1}".format(label, x),
-                       ["Unit", "Unit.Term Source REF",
-                        "Unit.Term Accession Number"])
-        else:
-            return ["{0}.Unit".format(label)]
+            labels = ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
+            return map(lambda x: "{0}.{1}".format(label, x), labels)
+        return ["{0}.Unit".format(label)]
     elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda y: "{0}.{1}".format(label, y),
-                   ["Term Source REF", "Term Accession Number"])
-    else:
-        return []
+        return map(lambda y: "{0}.{1}".format(label, y), ["Term Source REF", "Term Accession Number"])
+    return []
 
 
 def get_fv_columns(label, fv):

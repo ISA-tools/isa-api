@@ -34,8 +34,7 @@ def check_table_files_read(i_df, dir_context):
 
 
 def check_sample_names(study_sample_table, assay_tables=None):
-    """Checks that samples in the assay tables also appear in the study-sample
-    table
+    """ Checks that samples in the assay tables also appear in the study-sample table
 
     :param study_sample_table: Study table DataFrame
     :param assay_tables: A list of Assay table DataFrames
