@@ -16,8 +16,8 @@ class Validator:
     def add_warning(self, code: int, message: str = '', supplemental: str = '') -> None:
         self.warnings.append({"message": message, "supplemental": supplemental, "code": code})
 
-    def add_info(self, info):
-        self.info.append(info)
+    def add_info(self, code: int, message: str = '', supplemental: str = ''):
+        self.info.append({"message": message, "supplemental": supplemental, "code": code})
 
     def __dict__(self):
         return {'errors': self.errors, 'warnings': self.warnings, 'info': self.info}
