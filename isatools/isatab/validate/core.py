@@ -9,7 +9,7 @@ from pandas.errors import ParserError
 
 from isatools.isatab.load import read_investigation_file
 from isatools.isatab.defaults import _RX_COMMENT, NUMBER_OF_STUDY_GROUPS, default_config_dir
-from isatools.isatab.validate.checks import *
+from isatools.isatab.validate.rules import *
 from isatools.isatab.validate.store import validator
 
 
