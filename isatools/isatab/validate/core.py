@@ -1,51 +1,15 @@
 from __future__ import absolute_import
 from typing import List, Dict
 
-from os import path
 from glob import glob
 from io import StringIO
 import logging
 
-from pandas import DataFrame
 from pandas.errors import ParserError
 
-from isatools.utils import utf8_text_file_open
-from isatools.isatab.load import read_investigation_file, load_table
-from isatools.isatab.defaults import (
-    log,
-    _RX_COMMENT,
-    NUMBER_OF_STUDY_GROUPS,
-    default_config_dir
-)
-from isatools.isatab.validate.checks_00xx import check_table_files_read, check_sample_names
-from isatools.isatab.validate.checks_10xx import (
-    check_samples_not_declared_in_study_used_in_assay,
-    check_study_factor_usage,
-    check_protocol_usage,
-    check_protocol_parameter_usage,
-    check_protocol_names,
-    check_protocol_parameter_names,
-    check_study_factor_names,
-    check_unit_field
-)
-from isatools.isatab.validate.checks_30xx import (
-    check_filenames_present,
-    check_date_formats,
-    check_dois,
-    check_pubmed_ids_format,
-    check_ontology_sources,
-    check_ontology_fields
-)
-from isatools.isatab.validate.checks_40xx import (
-    check_investigation_against_config,
-    load_config,
-    check_measurement_technology_types,
-    check_factor_value_presence,
-    check_required_fields,
-    check_field_values,
-    check_protocol_fields
-)
-from isatools.isatab.validate.checks_50xx import check_study_groups
+from isatools.isatab.load import read_investigation_file
+from isatools.isatab.defaults import _RX_COMMENT, NUMBER_OF_STUDY_GROUPS, default_config_dir
+from isatools.isatab.validate.checks import *
 from isatools.isatab.validate.store import validator
 
 
