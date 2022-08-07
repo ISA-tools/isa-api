@@ -1,9 +1,6 @@
 import unittest
 from os import path
 
-from cProfile import runctx
-from pstats import SortKey, Stats
-
 from isatools.tests import utils
 from isatools.isatab.validate.core import validate as o_validate
 from isatools.isatab.validate.rules.core import Rule, Rules, validate
@@ -40,7 +37,7 @@ class TestValidators(unittest.TestCase):
 
     def test_rules_error(self):
         rules_to_test = ('6006', )
-        rules = Rules(rules_to_run=INVESTIGATION_RULES_MAPPING, available_rules=rules_to_test)
+        rules = Rules(rules_to_run=rules_to_test, available_rules=INVESTIGATION_RULES_MAPPING)
         with self.assertRaises(ValueError) as context:
             rules.get_rule('6006')
         self.assertEqual(str(context.exception), 'Rule not found: 6006')
@@ -56,3 +53,31 @@ class TestValidators(unittest.TestCase):
         self.assertEqual(o_report['warnings'], n_report['warnings'])
         self.assertEqual(o_report['errors'], n_report['errors'])
         self.assertEqual(o_report['info'], n_report['info'])
+
+    def test_extend_rules(self):
+        from isatools.isatab.validate.rules.defaults import INVESTIGATION_RULES_MAPPING, DEFAULT_INVESTIGATION_RULES
+
+        def is_investigation(investigation_df):
+            return investigation_df.includes('investigation')
+
+        available_rules = [
+            *INVESTIGATION_RULES_MAPPING,
+            {
+                'rule': is_investigation,
+                'params': ['investigation_df'],
+                'identifier': '6000'
+            }
+        ]
+        rules_to_run = (*DEFAULT_INVESTIGATION_RULES, '6000')
+        rules = {
+            "investigation": {
+                "available_rules": available_rules,
+                "rules_to_run": rules_to_run
+            },
+            "studies": {},
+            "assays": {}
+        }
+
+        data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
+        with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
+            validate(data_file, rules=rules)
