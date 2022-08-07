@@ -58,7 +58,7 @@ class TestValidators(unittest.TestCase):
         from isatools.isatab.validate.rules.defaults import INVESTIGATION_RULES_MAPPING, DEFAULT_INVESTIGATION_RULES
 
         def is_investigation(investigation_df):
-            return investigation_df.includes('investigation')
+            return 'investigation' in investigation_df
 
         available_rules = [
             *INVESTIGATION_RULES_MAPPING,
@@ -80,4 +80,5 @@ class TestValidators(unittest.TestCase):
 
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
-            validate(data_file, rules=rules)
+            r = validate(data_file, rules=rules)
+        print(r)
