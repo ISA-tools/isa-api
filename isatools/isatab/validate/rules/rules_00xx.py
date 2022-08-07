@@ -29,7 +29,7 @@ def check_table_files_read(i_df, dir_context):
                         pass
                 except FileNotFoundError:
                     spl = "Assay File {} does not appear to exist".format(assay_filename)
-                    validator.add_error.append(message="Missing assay tab file(s)", supplemental=spl, code=8)
+                    validator.add_error(message="Missing assay tab file(s)", supplemental=spl, code=8)
                     log.error("(E) Assay File {} does not appear to exist".format(assay_filename))
 
 

@@ -80,6 +80,8 @@ def load_config(config_dir):
         for k in configs.keys():
             message = "Loaded table configuration '{}' for measurement and technology {}"
             log.debug(message.format(str(configs[k].get_isatab_configuration()[0].table_name), str(k)))
+    if configs is None:
+        raise SystemError("No configuration to load so cannot proceed with validation!")
     return configs
 
 
@@ -290,7 +292,7 @@ def check_protocol_fields(table, cfg, proto_map):
                         proto_type = proto_map[proto_name]
                         fprotos.append(proto_type)
                     except KeyError:
-                        spl = ("Could not find protocol type for protocol name '{}', trying to validate against name "
+                        spl = ("Could not find protocol type for protocol name '{}', trying to validate_rules against name "
                                "only").format(proto_name)
                         validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
                         log.warning("(W) {}".format(spl))

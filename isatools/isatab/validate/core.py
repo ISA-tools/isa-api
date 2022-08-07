@@ -1,14 +1,17 @@
 from __future__ import absolute_import
 from typing import List, Dict
 
+from os import path
 from glob import glob
 from io import StringIO
 import logging
 
 from pandas.errors import ParserError
+from pandas import DataFrame
 
-from isatools.isatab.load import read_investigation_file
-from isatools.isatab.defaults import _RX_COMMENT, NUMBER_OF_STUDY_GROUPS, default_config_dir
+from isatools.utils import utf8_text_file_open
+from isatools.isatab.load import read_investigation_file, load_table
+from isatools.isatab.defaults import _RX_COMMENT, NUMBER_OF_STUDY_GROUPS, default_config_dir, log
 from isatools.isatab.validate.rules import *
 from isatools.isatab.validate.store import validator
 
@@ -33,8 +36,9 @@ def load_investigation(fp):
 
         if not labels_expected.issubset(labels_found):
             missing_labels = labels_expected - labels_found
-            log.fatal("(F) In {} section, expected labels {} not found in {}"
-                      .format(section, missing_labels, labels_found))
+            spl = "In {} section, expected labels {} not found in {}".format(section, missing_labels, labels_found)
+            msg = "Label not found"
+            validator.add_error(msg=msg, spl=spl, code=5)
         if len(labels_found - labels_expected) > 0:
             # check extra labels, i.e. make sure they're all comments
             extra_labels = labels_found - labels_expected
@@ -42,12 +46,11 @@ def load_investigation(fp):
                 if _RX_COMMENT.match(label) is None:
                     msg = "Invalid label found in investigation file"
                     spl = "In {} section, label {} is not allowed".format(section, label)
-                    log.fatal("(F) {}".format(spl))
-                    validator.add_error(message=msg, supplemental=spl, code=5)
+                    validator.add_error({'message': msg, 'supplemental': spl, "code": 5})
                 elif len(_RX_COMMENT.findall(label)) == 0:
                     spl = "In {} section, label {} is missing a name".format(section, label)
-                    log.warning("(W) {}".format(spl))
-                    validator.add_error(message="Missing name in Comment[] label", supplemental=spl, code=4014)
+                    msg = "Missing name in Comment[] label"
+                    validator.add_error({'message': msg, 'supplemental': spl, "code": 5})
 
     # Read in investigation file into DataFrames first
     df_dict = read_investigation_file(fp)
@@ -162,12 +165,15 @@ def load_investigation(fp):
     return df_dict
 
 
-def validate_investigation(investigation_dataframe: DataFrame, filepath: str, config_dir: str) -> (List, Dict):
+def validate_investigation(investigation_dataframe: DataFrame,
+                           filepath: str,
+                           config_dir: str) -> (List, Dict):
     """ Validate the investigation data frame
 
     :param investigation_dataframe: DataFrame containing the investigation data
     :param filepath: Path to the investigation file
     :param config_dir: Path to the config directory
+    :param validation_config: Tuple of validation config rules identifiers
 
     :returns: a tuple containing a list of term source references and the configuration
     """
@@ -188,8 +194,6 @@ def validate_investigation(investigation_dataframe: DataFrame, filepath: str, co
     log.info("Finished prechecks...")
     log.info("Loading configurations found in {}".format(config_dir))
     configs = load_config(config_dir)  # Rule 4001
-    if configs is None:
-        raise SystemError("No configuration to load so cannot proceed with validation!")
     log.info("Using configurations found in {}".format(config_dir))
     check_measurement_technology_types(investigation_dataframe, configs)  # Rule 4002
     log.info("Checking investigation file against configuration...")
@@ -316,12 +320,13 @@ def validate_assays(investigation_dataframe: DataFrame,
                                                                (measurement_type, technology_type))
                             log.warning(warning)
                         log.info("Checking unit fields...")
-                        if not check_unit_field(assay_table, config):
+                        if not check_unit_field(assay_table, config): # Rule 1099
                             warning = ("(W) There are some unit value inconsistencies in {} against {} "
                                        "configuration").format(assay_table.filename,
                                                                (measurement_type, technology_type))
                             log.warning(warning)
                         log.info("Checking protocol fields...")
+
                         # Rule 4009
                         if not check_protocol_fields(assay_table, config, protocol_names_and_types):
                             warn = ("(W) There are some protocol inconsistencies in {} against {} "
@@ -399,15 +404,15 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                 assay_tables,
                                 study_sample_table,
                                 path.dirname(fp.name))
-            if len(validator.errors) != 0:
-                log.info("Skipping pooling test as there are outstanding errors")
-            else:
-                from isatools import utils
-                try:
-                    fp.seek(0)
-                    utils.detect_isatab_process_pooling(fp)
-                except BaseException:
-                    pass
+        if len(validator.errors) != 0:
+            log.info("Skipping pooling test as there are outstanding errors")
+        else:
+            from isatools import utils
+            try:
+                fp.seek(0)
+                utils.detect_isatab_process_pooling(fp)
+            except BaseException:
+                pass
         log.info("Finished validation...")
         validation_finished = True
     except (Exception, ParserError, SystemError, ValueError) as e:
@@ -427,7 +432,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
 
 def batch_validate(tab_dir_list):
     """Validate a batch of ISA-Tab archives
-    :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
+    :param tab_dir_list: List of file paths to the ISA-Tab archives to validate_rules
     :return: batch report as JSON
 
     Example:

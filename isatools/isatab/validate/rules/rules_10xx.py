@@ -4,7 +4,7 @@ from pandas import notnull
 
 from isatools.utils import utf8_text_file_open
 from isatools.isatab.load import load_table
-from isatools.isatab.defaults import log, _RX_FACTOR_VALUE, _RX_PARAMETER_VALUE
+from isatools.isatab.defaults import _RX_FACTOR_VALUE, _RX_PARAMETER_VALUE, log
 from isatools.isatab.validate.store import validator
 from isatools.isatab.utils import cell_has_value
 
@@ -32,8 +32,10 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df['Sample Name'])
                         if not assay_samples.issubset(study_samples):
-                            log.error("(E) Some samples in an assay file {} are not declared in the study file {}: "
-                                      "{}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
+                            spl = ("Some samples in an assay file {} are not declared in the study file {}: "
+                                   "{}").format(assay_filename, study_filename, list(assay_samples - study_samples))
+                            msg = "Some samples are not declared in the study"
+                            validator.add_error(message=msg, supplemental=spl, code=1013)
                 except FileNotFoundError:
                     pass
 
@@ -48,6 +50,8 @@ def check_study_factor_usage(i_df, dir_context):
     for i, study_df in enumerate(i_df['studies']):
         study_factors_declared = set(i_df['s_factors'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
+        error_spl = "Some factors used in an study file {} are not declared in the investigation file: {}"
+        error_msg = "Some factors are not declared in the investigation"
         if study_filename != '':
             try:
                 study_factors_used = set()
@@ -58,8 +62,8 @@ def check_study_factor_usage(i_df, dir_context):
                         fv = _RX_FACTOR_VALUE.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
                     if not study_factors_used.issubset(study_factors_declared):
-                        log.error("(E) Some factors used in an study file {} are not declared in the investigation "
-                                  "file: {}".format(study_filename, list(study_factors_used - study_factors_declared)))
+                        spl = error_spl.format(study_filename, list(study_factors_used - study_factors_declared))
+                        validator.add_error(message=error_msg, supplemental=spl, code=1008)
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
@@ -73,9 +77,8 @@ def check_study_factor_usage(i_df, dir_context):
                             fv = _RX_FACTOR_VALUE.findall(col)
                             study_factors_used = study_factors_used.union(set(fv))
                         if not study_factors_used.issubset(study_factors_declared):
-                            log.error("(E) Some factors used in an assay file {} are not declared in the investigation "
-                                      "file: {}".format(assay_filename,
-                                                        list(study_factors_used - study_factors_declared)))
+                            spl = error_spl.format(assay_filename, list(study_factors_used - study_factors_declared))
+                            validator.add_error(message=error_msg, supplemental=spl, code=1008)
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
@@ -101,6 +104,7 @@ def check_study_factor_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         if len(study_factors_declared - study_factors_used) > 0:
+            spl = "Some study factors declared in the investigation file  are not used in any assay file: "
             log.warning("(W) Some study factors declared in the investigation file  are not used in any assay file: {}"
                         .format(list(study_factors_declared - study_factors_used)))
 
