@@ -23,7 +23,8 @@ from isatools.isatab.validate.rules.rules_40xx import (
     check_required_fields,
     check_field_values,
     check_protocol_fields,
-    load_config
+    load_config,
+    load_table_checks
 )
 from isatools.isatab.validate.rules.rules_50xx import check_study_groups
 
@@ -56,6 +57,7 @@ INVESTIGATION_RULES_MAPPING = [
 ]
 
 STUDY_RULES_MAPPING = [
+
     {'rule': check_unit_field, 'params': ['study_sample_table', 'config'], 'identifier': '1099'},
 
     {
@@ -81,7 +83,8 @@ STUDY_RULES_MAPPING = [
 
     # copies
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'}
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
+    {'rule': load_table_checks, 'params': ['study_sample_table'], 'identifier': '4014'}
 ]
 
 ASSAY_RULES_MAPPING = [
@@ -103,6 +106,7 @@ ASSAY_RULES_MAPPING = [
     # copies
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
+    {'rule': load_table_checks, 'params': ['assay_table'], 'identifier': '4014'},
 
     {
         'rule': check_study_groups,
@@ -115,15 +119,7 @@ ASSAY_RULES_MAPPING = [
 # ORDER MATTERS IN THE DEFAULTS RULES!
 DEFAULT_INVESTIGATION_RULES = (
     '4001',
-    '0006',
-    '1003', '1007', '1008', '1009', '1010', '1011', '1012',
-    '3001', '3002', '3003', '3008',
-    '4002',
-    '4003'
+    '0006', '1003', '1007', '1008', '1009', '1010', '1011', '1012', '3001', '3002', '3003', '3008', '4002', '4003'
 )
-DEFAULT_STUDY_RULES = (
-    '4007', '4003', '4011', '1099', '4009', '3010', '5001'
-)
-DEFAULT_ASSAY_RULES = (
-    '4007', '4003', '4011', '1099', '4009', '3010', '0000', '5001'
-)
+DEFAULT_STUDY_RULES = ('4014', '4007', '4003', '4011', '1099', '4009', '3010', '5001')
+DEFAULT_ASSAY_RULES = ('4014', '4007', '4003', '4011', '1099', '4009', '3010', '0000', '5001')

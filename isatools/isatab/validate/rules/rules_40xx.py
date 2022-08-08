@@ -3,7 +3,14 @@ import iso8601
 
 from isatools.io import isatab_configurator
 from isatools.isatab.validate.store import validator
-from isatools.isatab.defaults import log
+from isatools.isatab.defaults import (
+    log,
+    _RX_INDEXED_COL,
+    _RX_CHARACTERISTICS,
+    _RX_PARAMETER_VALUE,
+    _RX_FACTOR_VALUE,
+    _RX_COMMENT
+)
 
 
 def check_investigation_against_config(i_df, configs):
@@ -306,3 +313,164 @@ def check_protocol_fields(table, cfg, proto_map):
                     log.warning("(W) {}".format(spl))
                     result = False
     return result
+
+
+def load_table_checks(df):
+    """Checks that a table can be loaded and returns the loaded table, if
+    successful
+
+    :param df: Study dataFrame
+    :return: DataFrame of the study or assay table
+    """
+    columns = df.columns
+    for x, column in enumerate(columns):  # check if columns have valid labels
+        if _RX_INDEXED_COL.match(column):
+            column = column[:column.rfind('.')]
+        if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
+                           'Protocol REF', 'Term Accession Number',
+                           'Unit', 'Assay Name', 'Extract Name',
+                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name'
+                                                                              'Raw Spectral Data File',
+                           'Labeled Extract Name',
+                           'Label', 'Hybridization Assay Name',
+                           'Array Design REF', 'Scan Name', 'Array Data File',
+                           'Protein Assignment File',
+                           'Peptide Assignment File',
+                           'Post Translational Modification Assignment File',
+                           'Data Transformation Name',
+                           'Derived Spectral Data File', 'Normalization Name',
+                           'Derived Array Data File', 'Image File',
+                           'Metabolite Assignment File',
+                           'Free Induction Decay File',
+                           'Acquisition Parameter Data File']) \
+                and not _RX_CHARACTERISTICS.match(column) \
+                and not _RX_PARAMETER_VALUE.match(column) \
+                and not _RX_FACTOR_VALUE.match(column) \
+                and not _RX_COMMENT.match(column):
+            log.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, ''))
+
+        if _RX_COMMENT.match(column):
+            if len(_RX_COMMENT.findall(column)) == 0:
+                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                warning = {
+                    "message": "Missing name in Comment[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "code": 4014
+                }
+                validator.add_warning(**warning)
+        if _RX_CHARACTERISTICS.match(column):
+            if len(_RX_CHARACTERISTICS.findall(column)) == 0:
+                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                warning = {
+                    "message": "Missing name in Characteristics[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "code": 4014
+                }
+                validator.add_warning(**warning)
+        if _RX_PARAMETER_VALUE.match(column):
+            if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
+                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                warning = {
+                    "message": "Missing name in Parameter Value[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "code": 4014
+                }
+                validator.add_warning(**warning)
+        if _RX_FACTOR_VALUE.match(column):
+            if len(_RX_FACTOR_VALUE.findall(column)) == 0:
+                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                warning = {
+                    "message": "Missing name in Factor Value[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "code": 4014
+                }
+                validator.add_warning(**warning)
+    norm_columns = list()
+    for x, column in enumerate(columns):
+        if _RX_INDEXED_COL.match(column):
+            norm_columns.append(column[:column.rfind('.')])
+        else:
+            norm_columns.append(column)
+    object_index = [i for i, x in enumerate(norm_columns)
+                    if x in ['Source Name', 'Sample Name', 'Protocol REF',
+                             'Extract Name', 'Labeled Extract Name',
+                             'Raw Data File',
+                             'Raw Spectral Data File', 'Array Data File',
+                             'Protein Assignment File',
+                             'Peptide Assignment File',
+                             'Post Translational Modification Assignment File',
+                             'Derived Spectral Data File',
+                             'Derived Array Data File']
+                    or _RX_FACTOR_VALUE.match(x)]
+    object_columns_list = list()
+    prev_i = object_index[0]
+    for curr_i in object_index:
+        if prev_i == curr_i:
+            pass
+        else:
+            object_columns_list.append(norm_columns[prev_i:curr_i])
+        prev_i = curr_i
+    object_columns_list.append(norm_columns[prev_i:])
+
+    for object_columns in object_columns_list:
+        prop_name = object_columns[0]
+        if prop_name in ['Sample Name', 'Source Name']:
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number',
+                               'Unit'] and not _RX_CHARACTERISTICS.match(col) \
+                        and not _RX_FACTOR_VALUE.match(col) \
+                        and not _RX_COMMENT.match(col):
+                    log.error("(E) Expected only Characteristics, "
+                              "Factor Values or Comments following {} "
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
+        elif prop_name == 'Protocol REF':
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number',
+                               'Unit', 'Assay Name',
+                               'Hybridization Assay Name', 'Array Design REF',
+                               'Scan Name'] \
+                        and not _RX_PARAMETER_VALUE.match(col) \
+                        and not _RX_COMMENT.match(col):
+                    log.error("(E) Unexpected column heading following {} "
+                              "column. Found {} at offset {}".format(prop_name, col, x + 1))
+        elif prop_name == 'Extract Name':
+            if len(object_columns) > 1:
+                log.error(
+                    "Unexpected column heading(s) following {} column. "
+                    "Found {} at offset {}".format(
+                        prop_name, object_columns[1:], 2))
+        elif prop_name == 'Labeled Extract Name':
+            if len(object_columns) > 1:
+                if object_columns[1] == 'Label':
+                    for x, col in enumerate(object_columns[2:]):
+                        if col not in ['Term Source REF',
+                                       'Term Accession Number']:
+                            log.error("(E) Unexpected column heading "
+                                      "following {} column. Found {} at "
+                                      "offset {}".format(prop_name, col, x + 1))
+                else:
+                    log.error("(E) Unexpected column heading following {} "
+                              "column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+            else:
+                log.error("Expected Label column after Labeled Extract Name "
+                          "but none found")
+        elif prop_name in ['Raw Data File', 'Derived Spectral Data File',
+                           'Derived Array Data File', 'Array Data File',
+                           'Raw Spectral Data File', 'Protein Assignment File',
+                           'Peptide Assignment File',
+                           'Post Translational Modification Assignment File']:
+            for x, col in enumerate(object_columns[1:]):
+                if not _RX_COMMENT.match(col):
+                    log.error("(E) Expected only Comments following {} "
+                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
+        elif _RX_FACTOR_VALUE.match(prop_name):
+            for x, col in enumerate(object_columns[2:]):
+                if col not in ['Term Source REF', 'Term Accession Number']:
+                    log.error(
+                        "(E) Unexpected column heading following {} column. "
+                        "Found {} at offset {}".format(prop_name, col, x + 1))
+        else:
+            log.debug("Need to implement a rule for... " + prop_name)
+            log.debug(object_columns)
+
+    return df

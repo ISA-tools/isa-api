@@ -56,12 +56,15 @@ class Rule:
         :param validator_params: parameters coming from one of the three validators
         """
         params = self.get_parameters(validator_params)
-        response = self.rule(*params)
-        if self.identifier == '3008':
-            validator_params['term_source_refs'] = response[0]
-        if self.identifier == '4001':
-            validator_params['configs'] = response
-        self.executed = True
+        try:
+            response = self.rule(*params)
+            if self.identifier == '3008':
+                validator_params['term_source_refs'] = response[0]
+            if self.identifier == '4001':
+                validator_params['configs'] = response
+            self.executed = True
+        except Exception as e:
+            print(e)
 
 
 class Rules:
@@ -281,7 +284,7 @@ def validate_mzml(fp: TextIO) -> None:
 
 
 def build_rules(user_rules: dict = None) -> dict:
-    """ Given a user-defined rules dictionary, build the rules' dictionary for the validators
+    """ Given a user-defined rules dictionary, build the rules dictionary for the validators
 
     :param user_rules: a dictionary of rules to run
     :return: a dictionary of rules to run
