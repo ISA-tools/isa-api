@@ -1,12 +1,9 @@
 import argparse
 import sys
 
-from performances.isatab.validate import profile_validation, profile_loader
 
-
-def isatab(filename=None, output_path=None):
-    profile_validation(filename, output_path)
-    profile_loader(filename, output_path)
+from performances.isatab.validate import profile_isatab
+from performances.isajson.load import profile_isajson
 
 
 def main(argv=None):
@@ -26,11 +23,10 @@ def main(argv=None):
         pass
 
     if args.tab:
-        isatab(args.tab, args.output)
+        profile_isatab(args.tab, args.output)
 
     if args.json:
-        print('Not implemented yet')
-        sys.exit(1)
+        profile_isajson(args.json, args.output)
 
 
 if __name__ == '__main__':

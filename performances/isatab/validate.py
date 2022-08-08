@@ -14,28 +14,33 @@ from isatools.isatab.validate.core import validate as o_validate
 from isatools.isatab.load import load
 
 HERE_PATH = path.dirname(path.abspath(__file__))
-OUTPUT_PATH = path.join(HERE_PATH, '..', 'profiles', 'isatab')
+OUTPUT_PATH = path.join(HERE_PATH, '..', 'profiles')
+DEFAULT_INPUT = path.join(HERE_PATH, '..', '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
 
 
-def profile_validation(filename=None, output_path=OUTPUT_PATH):
-    if filename is None:
-        input_data_path = path.join(HERE_PATH, '..', '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
-    else:
-        input_data_path = filename
+def profile_validation(filename=None, output_path=None):
+    input_data_path = filename if filename else DEFAULT_INPUT
+    if output_path is None:
+        output_path = OUTPUT_PATH
+
     with open(input_data_path, 'r') as data_file:
-        output_data_path = path.join(output_path, 'new_validation')
+        output_data_path = path.join(output_path, 'isatab_validation_new')
         runctx('n_validate(data_file, mzml=True)', globals(), locals(), output_data_path)
 
     with open(input_data_path, 'r') as data_file:
-        output_data_path = path.join(output_path, 'old_validation')
+        output_data_path = path.join(output_path, 'isatab_validation_old')
         runctx('o_validate(data_file)', globals(), locals(), output_data_path)
 
 
-def profile_loader(filename=None, output_path=OUTPUT_PATH):
-    if filename is None:
-        input_data_path = path.join(HERE_PATH, '..', '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
-    else:
-        input_data_path = filename
-    output_data_path = path.join(output_path, 'load')
+def profile_loader(filename=None, output_path=None):
+    input_data_path = filename if filename else DEFAULT_INPUT
+    if output_path is None:
+        output_path = OUTPUT_PATH
+    output_data_path = path.join(output_path, 'isatab_load')
     with open(input_data_path, 'r') as data_file:
         runctx('load(data_file)', globals(), locals(), output_data_path)
+
+
+def profile_isatab(filename=None, output_path=None):
+    profile_validation(filename, output_path)
+    profile_loader(filename, output_path)
