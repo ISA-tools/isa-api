@@ -365,7 +365,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
     :return: A JSON report containing validation messages of different levels,
     e.g. errors, warnings, info.
     """
-    validator.reset_store()
+    message_handler.reset_store()
     if log_level in (logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL):
         log.setLevel(log_level)
     log.debug("ISA tab Validator from ISA tools API v0.6")
@@ -405,7 +405,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                 assay_tables,
                                 study_sample_table,
                                 path.dirname(fp.name))
-        if len(validator.errors) != 0:
+        if len(message_handler.errors) != 0:
             log.info("Skipping pooling test as there are outstanding errors")
         else:
             from isatools import utils
@@ -418,15 +418,15 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         validation_finished = True
     except (Exception, ParserError, SystemError, ValueError) as e:
         spl = "The validator could not identify what the error is: {}".format(str(e))
-        validator.add_error(message="Unknown/System Error", supplemental=spl, code=0)
+        message_handler.add_error(message="Unknown/System Error", supplemental=spl, code=0)
         log.fatal("(F) Something went very very wrong! :(")
         log.fatal(e)
     finally:
         handler.flush()
         return {
-            "errors": validator.errors,
-            "warnings": validator.warnings,
-            "info": validator.info,
+            "errors": message_handler.errors,
+            "warnings": message_handler.warnings,
+            "info": message_handler.info,
             "validation_finished": validation_finished
         }
 
