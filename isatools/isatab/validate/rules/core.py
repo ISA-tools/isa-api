@@ -123,6 +123,7 @@ class ISAInvestigationValidator:
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
         """
+        message_handler.reset_store()
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
@@ -143,6 +144,15 @@ class ISAStudyValidator:
                  study_df: DataFrame,
                  available_rules: List = STUDY_RULES_MAPPING,
                  rules_to_run: tuple = DEFAULT_STUDY_RULES):
+        """
+        The ISA study validator class
+        :param validator: the investigation validator
+        :param study_index: the index of the study in the investigation dataframe to validate
+        :param study_filename: the filename of the study to validate
+        :param study_df: the study dataframe
+        :param available_rules: a customizable list of all available rules for investigation objects
+        :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
@@ -176,6 +186,16 @@ class ISAAssayValidator:
                  assay_df: DataFrame = None,
                  available_rules: List = ASSAY_RULES_MAPPING,
                  rules_to_run: tuple = DEFAULT_ASSAY_RULES):
+        """
+        The ISA assay validator class
+        :param assay_tables: list of assay tables
+        :param validator: the study validator
+        :param assay_index: the index of the assay in the study dataframe to validate
+        :param assay_filename: the filename of the assay to validate
+        :param assay_df: the assay dataframe
+        :param available_rules: a customizable list of all available rules for investigation objects
+        :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
@@ -201,29 +221,19 @@ class ISAAssayValidator:
 def validate(investigation_fp: TextIO,
              conf_dir: str = default_config_dir,
              mzml: bool = False,
-             rules: dict = None):
+             rules: dict = None) -> dict[str, dict[str, dict[str, list]]]:
+    """
+    A function to validate an ISA investigation tab file
+    :param investigation_fp: the investigation file handler
+    :param conf_dir: the XML configuration directory
+    :param mzml: extra rules for mzML
+    :param rules: optional rules to run (default: all rules)
+    :return: a dictionary of the validation results (errors, warnings and info)
+    """
     message_handler.reset_store()
     validated = False
 
-    investigation_rules = {}
-    study_rules = {}
-    assay_rules = {}
-    if rules:
-        if 'investigation' in rules:
-            investigation_rules = {
-                "available_rules": rules['investigation'].get('available_rules', INVESTIGATION_RULES_MAPPING),
-                "rules_to_run": rules['investigation'].get("rules_to_run", DEFAULT_INVESTIGATION_RULES)
-            }
-        if 'studies' in rules:
-            study_rules = {
-                "available_rules": rules['studies'].get('available_rules', STUDY_RULES_MAPPING),
-                "rules_to_run": rules['studies'].get("rules_to_run", DEFAULT_STUDY_RULES)
-            }
-        if 'assays' in rules:
-            assay_rules = {
-                "available_rules": rules['assays'].get('available_rules', ASSAY_RULES_MAPPING),
-                "rules_to_run": rules['assays'].get("rules_to_run", DEFAULT_ASSAY_RULES)
-            }
+    built_rules = build_rules(rules)
     try:
         i_df = load_investigation(fp=investigation_fp)
         params = {
@@ -231,17 +241,18 @@ def validate(investigation_fp: TextIO,
             "dir_context": path.dirname(investigation_fp.name),
             "configs": conf_dir,
         }
-        investigation_validator = ISAInvestigationValidator(**params, **investigation_rules)
+        investigation_validator = ISAInvestigationValidator(**params, **built_rules['investigation'])
 
         for i, study_df in enumerate(i_df['studies']):
             study_filename = study_df.iloc[0]['Study File Name']
             study_validator = ISAStudyValidator(validator=investigation_validator, study_index=i,
-                                                study_filename=study_filename, study_df=study_df, **study_rules)
+                                                study_filename=study_filename, study_df=study_df,
+                                                **built_rules['studies'])
             assay_tables = list()
             assay_df = study_validator.params['investigation_df']['s_assays'][i]
             for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                 ISAAssayValidator(assay_tables=assay_tables, validator=study_validator, assay_index=x,
-                                  assay_df=assay_df, assay_filename=assay_filename, **assay_rules)
+                                  assay_df=assay_df, assay_filename=assay_filename, **built_rules['assays'])
             if mzml:
                 validate_mzml(fp=investigation_fp)
         validated = True
@@ -256,10 +267,44 @@ def validate(investigation_fp: TextIO,
     }
 
 
-def validate_mzml(fp):
+def validate_mzml(fp: TextIO) -> None:
+    """
+    A function to validate an mzML file
+    :param fp: the investigation file handler
+    """
     from isatools import utils
     try:
         fp.seek(0)
         utils.detect_isatab_process_pooling(fp)
     except BaseException:
         pass
+
+
+def build_rules(user_rules: dict = None) -> dict:
+    """ Given a user-defined rules dictionary, build the rules' dictionary for the validators
+
+    :param user_rules: a dictionary of rules to run
+    :return: a dictionary of rules to run
+    """
+    rules = {
+        'investigation': {},
+        'studies': {},
+        'assays': {}
+    }
+    if user_rules:
+        if 'investigation' in rules:
+            rules['investigation'] = {
+                "available_rules": user_rules['investigation'].get('available_rules', INVESTIGATION_RULES_MAPPING),
+                "rules_to_run": user_rules['investigation'].get("rules_to_run", DEFAULT_INVESTIGATION_RULES)
+            }
+        if 'studies' in rules:
+            rules['studies'] = {
+                "available_rules": user_rules['studies'].get('available_rules', STUDY_RULES_MAPPING),
+                "rules_to_run": user_rules['studies'].get("rules_to_run", DEFAULT_STUDY_RULES)
+            }
+        if 'assays' in rules:
+            rules['assays'] = {
+                "available_rules": user_rules['assays'].get('available_rules', ASSAY_RULES_MAPPING),
+                "rules_to_run": user_rules['assays'].get("rules_to_run", DEFAULT_ASSAY_RULES)
+            }
+    return rules
