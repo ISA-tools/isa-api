@@ -2,8 +2,8 @@ import argparse
 import sys
 
 
-from performances.isatab.validate import profile_isatab
-from performances.isajson.load import profile_isajson
+from performances.isatab import profile_isatab
+from performances.isajson import profile_isajson
 
 
 def main(argv=None):
@@ -20,7 +20,8 @@ def main(argv=None):
     args = parser.parse_args(argv or sys.argv[1:])
 
     if not args.tab and not args.json:
-        pass
+        profile_isajson()
+        profile_isatab()
 
     if args.tab:
         profile_isatab(args.tab, args.output)

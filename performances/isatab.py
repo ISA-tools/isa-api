@@ -14,8 +14,8 @@ from isatools.isatab.validate.core import validate as o_validate
 from isatools.isatab.load import load
 
 HERE_PATH = path.dirname(path.abspath(__file__))
-OUTPUT_PATH = path.join(HERE_PATH, '..', 'profiles')
-DEFAULT_INPUT = path.join(HERE_PATH, '..', '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
+OUTPUT_PATH = path.join(HERE_PATH, 'profiles')
+DEFAULT_INPUT = path.join(HERE_PATH, '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
 
 
 def profile_validation(filename=None, output_path=None):
