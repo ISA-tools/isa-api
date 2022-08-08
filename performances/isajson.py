@@ -4,11 +4,7 @@ import json
 
 from isatools.isajson import load, validate
 from isatools.model import Investigation
-
-
-HERE_PATH = path.dirname(path.abspath(__file__))
-OUTPUT_PATH = path.join(HERE_PATH, 'profiles')
-DEFAULT_INPUT = path.join(HERE_PATH, '..', 'tests', 'data', 'json', 'BII-I-1/BII-I-1.json')
+from performances.defaults import OUTPUT_PATH, DEFAULT_JSON_INPUT as DEFAULT_INPUT
 
 
 def profile_json_load(filename=None, output_path=None):

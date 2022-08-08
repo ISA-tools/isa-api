@@ -12,10 +12,7 @@ from os import path
 from isatools.isatab.validate.rules.core import validate as n_validate
 from isatools.isatab.validate.core import validate as o_validate
 from isatools.isatab.load import load
-
-HERE_PATH = path.dirname(path.abspath(__file__))
-OUTPUT_PATH = path.join(HERE_PATH, 'profiles')
-DEFAULT_INPUT = path.join(HERE_PATH, '..', 'tests', 'data', 'tab', 'BII-I-1/i_investigation.txt')
+from performances.defaults import OUTPUT_PATH, DEFAULT_TAB_INPUT as DEFAULT_INPUT
 
 
 def profile_validation(filename=None, output_path=None):
