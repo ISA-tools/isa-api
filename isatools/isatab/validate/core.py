@@ -163,7 +163,6 @@ def load_investigation(fp):
         check_labels('STUDY CONTACTS', labels_expected,
                      df_dict['s_contacts'][i])
 
-    print(message_handler)
     return df_dict
 
 

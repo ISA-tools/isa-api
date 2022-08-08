@@ -126,7 +126,6 @@ class ISAInvestigationValidator:
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
         """
-        message_handler.reset_store()
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
