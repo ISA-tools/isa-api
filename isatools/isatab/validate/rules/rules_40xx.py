@@ -347,7 +347,14 @@ def load_table_checks(df):
                 and not _RX_PARAMETER_VALUE.match(column) \
                 and not _RX_FACTOR_VALUE.match(column) \
                 and not _RX_COMMENT.match(column):
-            log.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, ''))
+            error_msg = "Unrecognised column heading {} at column position {} in table file {}".format(column, x, '')
+            log.error(error_msg)
+            error = {
+                "message": "Unrecognised header",
+                "supplemental": error_msg,
+                "code": 4014
+            }
+            validator.add_error(**error)
 
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
