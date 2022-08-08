@@ -13,7 +13,7 @@ from isatools.utils import utf8_text_file_open
 from isatools.isatab.load import read_investigation_file, load_table
 from isatools.isatab.defaults import _RX_COMMENT, NUMBER_OF_STUDY_GROUPS, default_config_dir, log
 from isatools.isatab.validate.rules import *
-from isatools.isatab.validate.store import validator
+from isatools.isatab.validate.store import validator as message_handler
 
 
 def load_investigation(fp):
@@ -38,7 +38,7 @@ def load_investigation(fp):
             missing_labels = labels_expected - labels_found
             spl = "In {} section, expected labels {} not found in {}".format(section, missing_labels, labels_found)
             msg = "Label not found"
-            validator.add_error(msg=msg, spl=spl, code=5)
+            message_handler.add_error(message=msg, supplemental=spl, code=5)
         if len(labels_found - labels_expected) > 0:
             # check extra labels, i.e. make sure they're all comments
             extra_labels = labels_found - labels_expected
@@ -46,11 +46,11 @@ def load_investigation(fp):
                 if _RX_COMMENT.match(label) is None:
                     msg = "Invalid label found in investigation file"
                     spl = "In {} section, label {} is not allowed".format(section, label)
-                    validator.add_error({'message': msg, 'supplemental': spl, "code": 5})
+                    message_handler.add_error(message=msg, supplemental=spl, code= 5)
                 elif len(_RX_COMMENT.findall(label)) == 0:
                     spl = "In {} section, label {} is missing a name".format(section, label)
                     msg = "Missing name in Comment[] label"
-                    validator.add_error({'message': msg, 'supplemental': spl, "code": 5})
+                    message_handler.add_error(message=msg, supplemental=spl, code=5)
 
     # Read in investigation file into DataFrames first
     df_dict = read_investigation_file(fp)
@@ -162,6 +162,8 @@ def load_investigation(fp):
             'Study Person Roles Term Source REF'}
         check_labels('STUDY CONTACTS', labels_expected,
                      df_dict['s_contacts'][i])
+
+    print(message_handler)
     return df_dict
 
 

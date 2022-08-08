@@ -74,6 +74,7 @@ STUDY_RULES_MAPPING = [
         'identifier': '4009'
     },
     {'rule': check_field_values, 'params': ['study_sample_table', 'config'], 'identifier': '4011'},
+    {'rule': load_table_checks, 'params': ['study_sample_table'], 'identifier': '4014'},
 
     {
         'rule': check_study_groups,
@@ -84,7 +85,6 @@ STUDY_RULES_MAPPING = [
     # copies
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
-    {'rule': load_table_checks, 'params': ['study_sample_table'], 'identifier': '4014'}
 ]
 
 ASSAY_RULES_MAPPING = [
@@ -102,11 +102,11 @@ ASSAY_RULES_MAPPING = [
         'identifier': '4009'
     },
     {'rule': check_field_values, 'params': ['assay_table', 'config'], 'identifier': '4011'},
+    {'rule': load_table_checks, 'params': ['assay_table'], 'identifier': '4014'},
 
     # copies
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
     {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
-    {'rule': load_table_checks, 'params': ['assay_table'], 'identifier': '4014'},
 
     {
         'rule': check_study_groups,
