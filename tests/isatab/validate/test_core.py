@@ -2,7 +2,8 @@ import unittest
 from os import path
 
 from isatools.tests import utils
-from isatools.isatab.validate.rules.core import Rule, Rules, validate
+from isatools.isatab import validate
+from isatools.isatab.validate.rules.core import Rule, Rules
 from isatools.isatab.validate.rules.defaults import INVESTIGATION_RULES_MAPPING
 from isatools.isatab.validate.store import validator as message_handler
 

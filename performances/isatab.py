@@ -9,8 +9,7 @@ Author: D. Batista (@Terazus)
 from cProfile import runctx
 from os import path
 
-from isatools.isatab.validate.rules.core import validate as n_validate
-from isatools.isatab.validate.core import validate as o_validate
+from isatools.isatab.validate.core import validate as validate
 from isatools.isatab.load import load
 from performances.defaults import OUTPUT_PATH, DEFAULT_TAB_INPUT as DEFAULT_INPUT
 
@@ -22,11 +21,7 @@ def profile_validation(filename=None, output_path=None):
 
     with open(input_data_path, 'r') as data_file:
         output_data_path = path.join(output_path, 'isatab_validation_new')
-        runctx('n_validate(data_file, mzml=True)', globals(), locals(), output_data_path)
-
-    with open(input_data_path, 'r') as data_file:
-        output_data_path = path.join(output_path, 'isatab_validation_old')
-        runctx('o_validate(data_file)', globals(), locals(), output_data_path)
+        runctx('validate(data_file, mzml=True)', globals(), locals(), output_data_path)
 
 
 def profile_loader(filename=None, output_path=None):
