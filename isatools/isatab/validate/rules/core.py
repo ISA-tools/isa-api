@@ -160,7 +160,8 @@ class ISAStudyValidator:
         self.params = {
             **validator.params,
             'study_df': study_df,
-            'config': validator.params['configs'][('[sample]', '')]
+            'config': validator.params['configs'][('[sample]', '')],
+            'study_filename': study_filename
         }
         with utf8_text_file_open(path.join(self.params['dir_context'], study_filename)) as s_fp:
             self.params['study_sample_table'] = load_table(s_fp)

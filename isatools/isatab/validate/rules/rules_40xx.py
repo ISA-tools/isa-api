@@ -315,11 +315,12 @@ def check_protocol_fields(table, cfg, proto_map):
     return result
 
 
-def load_table_checks(df):
+def load_table_checks(df, filename):
     """Checks that a table can be loaded and returns the loaded table, if
     successful
 
     :param df: Study dataFrame
+    :param filename: Name of the file
     :return: DataFrame of the study or assay table
     """
     columns = df.columns
@@ -347,7 +348,8 @@ def load_table_checks(df):
                 and not _RX_PARAMETER_VALUE.match(column) \
                 and not _RX_FACTOR_VALUE.match(column) \
                 and not _RX_COMMENT.match(column):
-            error_msg = "Unrecognised column heading {} at column position {} in table file {}".format(column, x, '')
+            error_msg = "Unrecognised column heading {} at column position {} in table file {}".format(column, x,
+                                                                                                       filename)
             log.error(error_msg)
             error = {
                 "message": "Unrecognised header",
@@ -358,37 +360,37 @@ def load_table_checks(df):
 
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
                 warning = {
                     "message": "Missing name in Comment[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
                     "code": 4014
                 }
                 validator.add_warning(**warning)
         if _RX_CHARACTERISTICS.match(column):
             if len(_RX_CHARACTERISTICS.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
                 warning = {
                     "message": "Missing name in Characteristics[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
                     "code": 4014
                 }
                 validator.add_warning(**warning)
         if _RX_PARAMETER_VALUE.match(column):
             if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
                 warning = {
                     "message": "Missing name in Parameter Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
                     "code": 4014
                 }
                 validator.add_warning(**warning)
         if _RX_FACTOR_VALUE.match(column):
             if len(_RX_FACTOR_VALUE.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(df.filename, column))
+                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
                 warning = {
                     "message": "Missing name in Factor Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(df.filename, column),
+                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
                     "code": 4014
                 }
                 validator.add_warning(**warning)
