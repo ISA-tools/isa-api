@@ -10,14 +10,8 @@ from isatools.utils import utf8_text_file_open
 from isatools.isatab.load import read_investigation_file
 from isatools.isatab.defaults import _RX_COMMENT, default_config_dir, log
 from isatools.isatab.validate.store import validator as message_handler
-from isatools.isatab.validate.rules.core import ISAInvestigationValidator, ISAStudyValidator, ISAAssayValidator
-from isatools.isatab.validate.rules.defaults import (
-    DEFAULT_INVESTIGATION_RULES,
-    INVESTIGATION_RULES_MAPPING,
-    DEFAULT_STUDY_RULES,
-    STUDY_RULES_MAPPING,
-    DEFAULT_ASSAY_RULES,
-    ASSAY_RULES_MAPPING,
+from isatools.isatab.validate.rules.core import (
+    ISAInvestigationValidator, ISAStudyValidator, ISAAssayValidator, build_rules
 )
 
 
@@ -171,28 +165,32 @@ def load_investigation(fp):
     return df_dict
 
 
-def validate(investigation_fp: TextIO,
-             conf_dir: str = default_config_dir,
+def validate(fp: TextIO,
+             config_dir: str = default_config_dir,
              mzml: bool = False,
-             rules: dict = None) -> dict:
+             rules: dict = None,
+             log_level=None) -> dict:
     """
     A function to validate an ISA investigation tab file
-    :param investigation_fp: the investigation file handler
-    :param conf_dir: the XML configuration directory
+    :param fp: the investigation file handler
+    :param config_dir: the XML configuration directory
     :param mzml: extra rules for mzML
     :param rules: optional rules to run (default: all rules)
+    :param log_level: optional log level (default: INFO)
     :return: a dictionary of the validation results (errors, warnings and info)
     """
+    if not log_level:
+        log.disabled = True
     message_handler.reset_store()
     validated = False
 
     built_rules = build_rules(rules)
     try:
-        i_df = load_investigation(fp=investigation_fp)
+        i_df = load_investigation(fp=fp)
         params = {
             "investigation_df": i_df,
-            "dir_context": path.dirname(investigation_fp.name),
-            "configs": conf_dir,
+            "dir_context": path.dirname(fp.name),
+            "configs": config_dir,
         }
         investigation_validator = ISAInvestigationValidator(**params, **built_rules['investigation'])
 
@@ -207,7 +205,7 @@ def validate(investigation_fp: TextIO,
                 ISAAssayValidator(assay_tables=assay_tables, validator=study_validator, assay_index=x,
                                   assay_df=assay_df, assay_filename=assay_filename, **built_rules['assays'])
             if mzml:
-                validate_mzml(fp=investigation_fp)
+                validate_mzml(fp=fp)
         validated = True
     except (Exception, ParserError, SystemError, ValueError) as e:
         spl = "The validator could not identify what the error is: {}".format(str(e))
@@ -231,36 +229,6 @@ def validate_mzml(fp: TextIO) -> None:
         utils.detect_isatab_process_pooling(fp)
     except BaseException:
         pass
-
-
-def build_rules(user_rules: dict = None) -> dict:
-    """ Given a user-defined rules dictionary, build the rules dictionary for the validators
-
-    :param user_rules: a dictionary of rules to run
-    :return: a dictionary of rules to run
-    """
-    rules = {
-        'investigation': {},
-        'studies': {},
-        'assays': {}
-    }
-    if user_rules:
-        if 'investigation' in rules:
-            rules['investigation'] = {
-                "available_rules": user_rules['investigation'].get('available_rules', INVESTIGATION_RULES_MAPPING),
-                "rules_to_run": user_rules['investigation'].get("rules_to_run", DEFAULT_INVESTIGATION_RULES)
-            }
-        if 'studies' in rules:
-            rules['studies'] = {
-                "available_rules": user_rules['studies'].get('available_rules', STUDY_RULES_MAPPING),
-                "rules_to_run": user_rules['studies'].get("rules_to_run", DEFAULT_STUDY_RULES)
-            }
-        if 'assays' in rules:
-            rules['assays'] = {
-                "available_rules": user_rules['assays'].get('available_rules', ASSAY_RULES_MAPPING),
-                "rules_to_run": user_rules['assays'].get("rules_to_run", DEFAULT_ASSAY_RULES)
-            }
-    return rules
 
 
 def batch_validate(tab_dir_list):

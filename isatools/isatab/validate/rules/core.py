@@ -214,3 +214,33 @@ class ISAAssayValidator:
                     self.params['assay_table'].filename = assay_filename
                     self.params['assay_tables'].append(self.params['assay_table'])
             self.all_rules.validate_rules(validator=self)
+
+
+def build_rules(user_rules: dict = None) -> dict:
+    """ Given a user-defined rules dictionary, build the rules dictionary for the validators
+
+    :param user_rules: a dictionary of rules to run
+    :return: a dictionary of rules to run
+    """
+    rules = {
+        'investigation': {},
+        'studies': {},
+        'assays': {}
+    }
+    if user_rules:
+        if 'investigation' in rules:
+            rules['investigation'] = {
+                "available_rules": user_rules['investigation'].get('available_rules', INVESTIGATION_RULES_MAPPING),
+                "rules_to_run": user_rules['investigation'].get("rules_to_run", DEFAULT_INVESTIGATION_RULES)
+            }
+        if 'studies' in rules:
+            rules['studies'] = {
+                "available_rules": user_rules['studies'].get('available_rules', STUDY_RULES_MAPPING),
+                "rules_to_run": user_rules['studies'].get("rules_to_run", DEFAULT_STUDY_RULES)
+            }
+        if 'assays' in rules:
+            rules['assays'] = {
+                "available_rules": user_rules['assays'].get('available_rules', ASSAY_RULES_MAPPING),
+                "rules_to_run": user_rules['assays'].get("rules_to_run", DEFAULT_ASSAY_RULES)
+            }
+    return rules
