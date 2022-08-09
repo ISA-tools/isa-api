@@ -330,8 +330,8 @@ def load_table_checks(df, filename):
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name'
-                                                                              'Raw Spectral Data File',
+                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name',
+                           'Raw Spectral Data File',
                            'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File',
