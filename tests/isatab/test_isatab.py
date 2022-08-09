@@ -747,11 +747,6 @@ class TestIsaTabDump(unittest.TestCase):
             print("ERROR: ", ioe)
 
         print("in folder:", self._tmp_dir)
-        # with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as actual_file, \
-        #         open(os.path.join(self._tab_data_dir, 'TEST-ISA-investigation-comments',
-        #                           'i_test_investigation.txt')) as expected_file:
-        #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-        #     self.assertIsInstance(isatab.dumps(investigation), str)
 
 
     # def test_isatab_dump_investigation_with_assay_sample_sample(self):
@@ -1362,40 +1357,6 @@ source1\tsample collection\taliquoting\taliquot1"""
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
         self.assertIn(expected, isatab.dumps(i))
 
-#     def test_sample_protocol_ref_material_protocol_ref_data(self):
-#         i = Investigation()
-#         s = Study(
-#             filename='s_test.txt',
-#             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
-#         )
-#         sample1 = Sample(name='sample1')
-#         extract1 = Material(name='extract1', type_='Extract Name')
-#         data1 = DataFile(filename='datafile.raw', label='Raw Data File')
-#         extraction_process = Process(executes_protocol=s.protocols[0])
-#         scanning_process = Process(executes_protocol=s.protocols[1])
-#         extraction_process.inputs = [sample1]
-#         extraction_process.outputs = [extract1]
-#         scanning_process.inputs = [extract1]
-#         scanning_process.outputs = [data1]
-#         scanning_process.name = "assay-1"
-#         plink(extraction_process, scanning_process)
-#         a = Assay(filename='a_test.txt')
-#         a.process_sequence = [extraction_process, scanning_process]
-#         s.assays = [a]
-#         i.studies = [s]
-#         # expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
-# # sample1\textraction\textract1\tscanning\tassay-1\tdatafile.raw"""
-#
-#         # print("Expected:", expected)
-#         # print(isatab.dumps(i))
-#         dump_out = isatab.dumps(i)
-#         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tScan Name\tRaw Data File"""
-#         expected_line2 = """sample1\textraction\textract1\tscanning\tassay-1\tdatafile.raw"""
-#
-#         self.assertIn(expected_line1, dump_out)
-#         self.assertIn(expected_line2, dump_out)
-#         # self.assertIn(expected, isatab.dumps(i))
-
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
         i = Investigation()
         s = Study(
@@ -1422,15 +1383,6 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         i.studies = [s]
         expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
 sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
-
-        # print("Expected:", expected)
-        # print(isatab.dumps(i))
-        # dump_out = isatab.dumps(i)
-        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
-        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
-
-        # self.assertIn(expected_line1, dump_out)
-        # self.assertIn(expected_line2, dump_out)
         self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):

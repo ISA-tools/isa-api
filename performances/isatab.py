@@ -14,7 +14,7 @@ from isatools.isatab.validate.core import validate as validate
 from isatools.isatab.load import load
 from performances.defaults import OUTPUT_PATH, DEFAULT_TAB_INPUT as DEFAULT_INPUT
 
-log.disabled = True
+log.disabled = False
 
 
 def profile_validation(filename=None, output_path=None):
