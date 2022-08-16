@@ -177,7 +177,7 @@ class ProcessSequenceFactory:
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:
-
+                deja_vu = {}
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
@@ -198,7 +198,6 @@ class ProcessSequenceFactory:
                         except KeyError:
                             pass  # skip if object not found
 
-                    deja_vu = {}
                     if material is not None:
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
                             category_key = next(iter(_RX_CHARACTERISTICS.findall(charac_column)))
