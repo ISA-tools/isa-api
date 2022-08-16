@@ -40,7 +40,7 @@ DOI:
     xmlns:isa="http://www.isa-tools.org/"
     exclude-result-prefixes="isa" xpath-default-namespace="http://www.biocrates.com/metstat/result/xml_1.0"> 
  
-    <xsl:import href="../sra/isa-functions.xsl"/> 
+    <xsl:import href="../../sra/isa-functions.xsl"/>
    
     <xsl:output method="text" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
@@ -88,7 +88,7 @@ DOI:
     </xsl:template>      
     
 <xsl:template match="data">
-    <xsl:variable name="investigationfile" select="concat('output/isatab/',data,'i_inv_biocrates.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="investigationfile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',data,'i_inv_biocrates.txt')[normalize-space()]"/>
     <xsl:value-of select="$investigationfile[normalize-space()]"/>     
     <!-- this is used to generated separate output files -->
     <xsl:result-document href="{$investigationfile}">
@@ -337,7 +337,8 @@ DOI:
         <!-- <xsl:call-template name="generate-header-comments"/> -->
 
 </xsl:result-document>
-    
+<xsl:text>
+</xsl:text>
     <!-- template invocation to create ISA s_study table -->
     <xsl:call-template name="study"/>
 <xsl:text>
@@ -446,7 +447,7 @@ DOI:
 <!-- ****************************************************** -->
 <xsl:template match="metabolite" name="metabolite_desc_posi">
 
-    <xsl:variable name="datafile" select="concat('output/isatab/',data,'maf-positive.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="datafile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',data,'maf-positive.txt')[normalize-space()]"/>
     <xsl:value-of select="$datafile[normalize-space()]" /> 
     <xsl:result-document href="{$datafile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>  
@@ -769,7 +770,7 @@ DOI:
 <!-- ****************************************************** -->
 <xsl:template match="metabolite" name="metabolite_desc_nega">
     <xsl:variable name="usedOP" select="@usedOP"/>
-        <xsl:variable name="datafile" select="concat('output/isatab/',$usedOP,'-maf-negative.txt')[normalize-space()]"></xsl:variable>
+        <xsl:variable name="datafile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',$usedOP,'-maf-negative.txt')[normalize-space()]"/>
         <xsl:value-of select="$datafile[normalize-space()]" /> 
         <xsl:result-document href="{$datafile}">
             <xsl:copy-of select=".[normalize-space()]"/>
@@ -1037,8 +1038,8 @@ DOI:
 <!--     template to create ISA s_study table               -->
     <xsl:template name="study" match="sample"  priority="1">
     
-    <xsl:variable name="studyfile" select="concat('output/isatab/',data,'s_study_biocrates.txt')[normalize-space()]"/>
-    <xsl:value-of select="$studyfile[normalize-space()]" /> 
+    <xsl:variable name="studyfile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',data,'s_study_biocrates.txt')[normalize-space()]"/>
+    <xsl:value-of select="$studyfile[normalize-space()]"/>
     <xsl:result-document href="{$studyfile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
     
@@ -1205,7 +1206,7 @@ DOI:
  
 <xsl:template name="assay-negativeMode" match="plate"  priority="1">
 
-    <xsl:variable name="assaynegativefile" select="concat('output/isatab/',data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"></xsl:variable>
+    <xsl:variable name="assaynegativefile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',data,'a_biocrates_assay_negative_mode.txt')[normalize-space()]"/>
     <xsl:value-of select="$assaynegativefile[normalize-space()]" /> 
     <xsl:result-document href="{$assaynegativefile}">
     
@@ -1243,7 +1244,7 @@ DOI:
 </xsl:result-document>
 </xsl:template>
 
- <xsl:template name="wellnegative" match="//well" mode="negative">      
+ <xsl:template name="wellnegative" match="//well" mode="negative">
         <xsl:apply-templates select="injection" mode="polarity">
             <xsl:with-param name="polarity">negative</xsl:with-param>
         </xsl:apply-templates>
@@ -1251,8 +1252,8 @@ DOI:
 
 
 <xsl:template match="plate" name="assay-positiveMode" priority="1">
-    <xsl:variable name="assaypositivefile" select="concat('output/isatab/',data,'a_biocrates_assay_positive_mode.txt')[normalize-space()]"></xsl:variable>
-    <xsl:value-of select="$assaypositivefile[normalize-space()]" /> 
+    <xsl:variable name="assaypositivefile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',data,'a_biocrates_assay_positive_mode.txt')[normalize-space()]"/>
+    <xsl:value-of select="$assaypositivefile[normalize-space()]"/>
     <xsl:result-document href="{$assaypositivefile}">
         <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
         

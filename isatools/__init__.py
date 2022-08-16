@@ -32,9 +32,10 @@ from isatools.convert import (
     mzml2isa as mzml2isa_module,
     sampletab2isatab as sampletab2isatab_module,
     sampletab2json as sampletab2json_module,
+    experimental as biocrates2isatab_module
 )
 from isatools.net import (
-    biocrates2isatab as biocrates2isatab_module,
+
     mtbls as mtbls_module,
     mw2isa as mw2isa_module,
     ols as ols_module,
@@ -58,9 +59,9 @@ magetab2json = magetab2json_module
 mzml2isa = mzml2isa_module
 sampletab2isatab = sampletab2isatab_module
 sampletab2json = sampletab2json_module
+biocrates2isatab = biocrates2isatab_module
 
 # isatools.net packages
-biocrates2isatab = biocrates2isatab_module
 mtbls = mtbls_module
 mw2isa = mw2isa_module
 ols = ols_module

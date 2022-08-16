@@ -31,6 +31,10 @@ MAGETAB_DATA_DIR = os.path.join(DATA_DIR, 'magetab')
 
 MZML_DATA_DIR = os.path.join(DATA_DIR, 'mzml')
 
+BIOCRATES_DATA_DIR = os.path.join(DATA_DIR, 'biocrates')
+
+BIOCRATES_INPUT_XML = os.path.join(DATA_DIR, './resources/input-xml/shortened-example/biocrates-shortened-example.xml')
+
 NIH_DCC_DATA_DIR = os.path.join(DATA_DIR, 'nihdcc')
 
 SAMPLETAB_DATA_DIR = os.path.join(DATA_DIR, 'sampletab')

@@ -16,7 +16,7 @@
 		<xsl:variable name="distinct-column-names-with-metabolite" select="distinct-values(well/injection/measure/@*/name(.))"/>
 		<xsl:variable name="distinct-column-names" select="$distinct-column-names-with-metabolite[. != 'metabolite']"/>
 		<xsl:for-each-group select="." group-by="well/injection/@polarity">
-			<xsl:result-document href="{concat('output/DT_', @usedOP, '_', @plateBarcode, '_', lower-case(current-grouping-key()), '_maf.txt')}">
+			<xsl:result-document href="{concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/DT_', @usedOP, '_', @plateBarcode, '_', lower-case(current-grouping-key()), '_maf.txt')}">
 			
 				<xsl:for-each select="current-group()">
 					<xsl:call-template name="write-out-to-file">												

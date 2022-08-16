@@ -96,7 +96,7 @@ DOI:
                 <xsl:variable name="usedOP" select="@usedOP"/>
                 <xsl:variable name='plateBarcode' select="@plateBarcode"/> 
                 
-                <xsl:variable name="datafile" select="concat('output/',$usedOP,'-',$plateBarcode,'-maf.txt')[normalize-space()]"></xsl:variable>
+                <xsl:variable name="datafile" select="concat('../data/tab/TEST-ISA-BIOCRATES/output/isatab/',$usedOP,'-',$plateBarcode,'-maf.txt')[normalize-space()]"></xsl:variable>
                 <xsl:value-of select="$datafile[normalize-space()]" />
                 <xsl:result-document href="{$datafile}">
                     <xsl:copy-of select=".[normalize-space()]"></xsl:copy-of>
