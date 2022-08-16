@@ -22,25 +22,18 @@ from isatools.model import (
 )
 
 
-def convert(json_path, output_path):
+def nihdcc2isa_convert(json_path, output_path):
+    """
+
+    :param json_path:
+    :param output_path:
+    :return:
+    """
     print(json_path)
     print(output_path)
 
     with open(json_path, 'r') as f:
         dcc_json = json.load(f)
-
-    # print(array['protocol'])
-    # for element in array['protocol']:
-    #     array['protocol'][element]['id']
-    #     array['protocol'][element]['description']
-    #     array['protocol'][element]['type']
-    #     array['protocol'][element]['filename']
-
-    # for element in array['measurement']:
-    #     print(array['measurement'][element]['corrected_mz'])
-
-    # for element in array['subject']:
-    #     print(array['subject'][element]['species'])
 
     # Building the Investigation Object and its elements:
 
@@ -68,7 +61,7 @@ def convert(json_path, output_path):
         roles=[
             OntologyAnnotation(term="",
                                term_source=obi,
-                               term_accession="http://purl.org/obo/OBI_1")
+                               term_accession="https://purl.org/obo/OBI_1")
         ])
     investigation.contacts.append(inv_person)
 
@@ -82,7 +75,7 @@ def convert(json_path, output_path):
                       design_descriptors=[OntologyAnnotation(
                           term=study_json['type'],
                           term_source=obi,
-                          term_accession="http://purl.org/obo/OBI_1")],
+                          term_accession="https://purl.org/obo/OBI_1")],
                       filename='s_{study_id}.txt'.format(
                           study_id=study_json['id']))
 
@@ -101,7 +94,7 @@ def convert(json_path, output_path):
                 OntologyAnnotation(
                     term='principal investigator',
                     term_source=obi,
-                    term_accession="http://purl.org/obo/OBI_1")])
+                    term_accession="https://purl.org/obo/OBI_1")])
 
         study.contacts.append(study_person)
 
@@ -114,7 +107,7 @@ def convert(json_path, output_path):
             oa_protocol_type = OntologyAnnotation(
                 term=oat_p,
                 term_source=obi,
-                term_accession="http://purl.org/obo/OBI_1")
+                term_accession="https://purl.org/obo/OBI_1")
             study.protocols.append(
                 Protocol(name=protocol_json['id'],
                          protocol_type=oa_protocol_type,
@@ -126,11 +119,11 @@ def convert(json_path, output_path):
                     Assay(measurement_type=OntologyAnnotation(
                             term='mass isotopologue distribution analysis',
                             term_source=obi,
-                            term_accession="http://purl.org/obo/OBI_112"),
+                            term_accession="https://purl.org/obo/OBI_112"),
                           technology_type=OntologyAnnotation(
                             term='mass spectrometry',
                             term_source=obi,
-                            term_accession="http://purl.org/obo/OBI_1"),
+                            term_accession="https://purl.org/obo/OBI_1"),
                           filename='a_assay_ms_{count}.txt'.format(count=i)))
 
             if 'NMR' in protocol_json['type']:
@@ -138,11 +131,11 @@ def convert(json_path, output_path):
                     Assay(measurement_type=OntologyAnnotation(
                             term='isotopomer analysis',
                             term_source=obi,
-                            term_accession="http://purl.org/obo/OBI_111"),
+                            term_accession="https://purl.org/obo/OBI_111"),
                           technology_type=OntologyAnnotation(
                             term='nmr spectroscopy',
                             term_source=obi,
-                            term_accession="http://purl.org/obo/OBI_1"),
+                            term_accession="https://purl.org/obo/OBI_1"),
                           filename='a_assay_nmr.txt'))
 
         for subject_json in dcc_json['subject'].values():
@@ -159,7 +152,7 @@ def convert(json_path, output_path):
                                value=OntologyAnnotation(
                                    term=subject_json['species'],
                                    term_source=ncbitaxon,
-                                   term_accession='http://purl.bioontology.org'
+                                   term_accession='https://purl.bioontology.org'
                                                   '/ontology/NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
                 study.sources.append(source)
@@ -175,7 +168,7 @@ def convert(json_path, output_path):
                     value=OntologyAnnotation(
                         term=subject_json['species'],
                         term_source=ncbitaxon,
-                        term_accession='http://purl.bioontology.org/ontology/'
+                        term_accession='https://purl.bioontology.org/ontology/'
                                        'NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
 
@@ -187,7 +180,7 @@ def convert(json_path, output_path):
                     value=OntologyAnnotation(
                         term=subject_json['tissue_type'],
                         term_source=obi,
-                        term_accession="http://purl.org/obo/OBI_1"))
+                        term_accession="https://purl.org/obo/OBI_1"))
 
                 sample.characteristics.append(characteristic_organismpart)
                 study.samples.append(sample)
@@ -210,7 +203,7 @@ def convert(json_path, output_path):
                     value=OntologyAnnotation(
                         term=subject_json['species'],
                         term_source=ncbitaxon,
-                        term_accession='http://purl.bioontology.org/ontology/'
+                        term_accession='https://purl.bioontology.org/ontology/'
                                        'NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
                 study.sources.append(source)
@@ -250,7 +243,7 @@ def convert(json_path, output_path):
                     value=OntologyAnnotation(
                         term=sample_json['type'],
                         term_source=obi,
-                        term_accession="http://purl.org/obo/OBI_xxxxxxx"))
+                        term_accession="https://purl.org/obo/OBI_xxxxxxx"))
                 material_out.characteristics.append(material_type)
                 material_separation_process.outputs.append(material_out)
                 study.assays[0].samples.append(material_out)
@@ -260,13 +253,11 @@ def convert(json_path, output_path):
                     sample_collection_process = None
                 if sample_collection_process is None:
                     sample_collection_process = Process(executes_protocol="")
-                else:
+                # else:
                     # plink(protein_extraction_process, data_acq_process)
                     # plink(material_separation_process,
                     # protein_extraction_process)
-                    protein_extraction_process = None
-                    plink(sample_collection_process,
-                          protein_extraction_process)
+                    # plink(sample_collection_process, protein_extraction_process)
 
             if 'protein_extract' in sample_json['type']:
                 protein_extraction_process = Process(
@@ -274,15 +265,15 @@ def convert(json_path, output_path):
                         sample_json['protocol.id']))
                 protein_extraction_process.name = sample_json['id']
 
-                if len([x for x in study.samples
-                        if x.name == sample_json['parentID']]) == 0:
+                if len([x for x in study.samples if x.name == sample_json['parentID']]) == 0:
                     material_in = Sample(name=sample_json['parentID'])
                     protein_extraction_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
-                else:
+                # else:
+
                     # print([x for x in study.samples
                     # if x.name == sample_json['parentID']])
-                    protein_extraction_process.inputs.append(material_in)
+                    # protein_extraction_process.inputs.append(material_in)
 
                 # for material_in in study.samples:
                 #     # print("OHO:", material_in.name)
@@ -304,7 +295,7 @@ def convert(json_path, output_path):
                     value=OntologyAnnotation(
                         term=sample_json['type'],
                         term_source=obi,
-                        term_accession="http://purl.org/obo/OBI_1"))
+                        term_accession="https://purl.org/obo/OBI_1"))
                 material_out.characteristics.append(material_type)
 
                 study.assays[0].samples.append(material_in)
@@ -315,10 +306,9 @@ def convert(json_path, output_path):
                     material_separation_process = None
                 if material_separation_process is None:
                     material_separation_process = Process(executes_protocol="")
-                else:
+                # else:
                     #  plink(protein_extraction_process, data_acq_process)
-                    plink(material_separation_process,
-                          protein_extraction_process)
+                    # plink(material_separation_process, protein_extraction_process)
 
             if 'polar' in sample_json['type']:
 
@@ -350,8 +340,8 @@ def convert(json_path, output_path):
                     protein_extraction_process = None
                 if protein_extraction_process is None:
                     protein_extraction_process = Process(executes_protocol="")
-                else:
-                    plink(protein_extraction_process, data_acq_process)
+                # else:
+                #     plink(protein_extraction_process, data_acq_process)
 
             # else:
             #     material_in = Material(name=sample_json['parentID'])
@@ -385,8 +375,7 @@ def convert(json_path, output_path):
                     bulk_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-                    # print([x for x in study.samples if x.name ==
-                    # sample_json['parentID']])
+
                     bulk_process.inputs.append(material_in)
 
                     plink(sample_collection_process, bulk_process)
@@ -432,23 +421,24 @@ def convert(json_path, output_path):
         except IOError:
             print("Error: in main() method can't open file or write data")
 
+        return True
 
-if __name__ == '__main__':
-
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description='Converting NIH DCC Fluxomics JSON to ISA-Tab.')
-    parser.add_argument('-i', help='Input path to file to convert.',
-                        dest='json_path', required=True)
-    parser.add_argument('-o', help='Output path to write ISA-Tabs.',
-                        dest='output_path', required=True)
-
-    # args = parser.parse_args()
-    # args = vars(args)
-    # convert(args['json_path'], args['output_path'])
-    convert(
-        json_path='/Users/Philippe/Documents/git/isa-api/tests/'
-                  'nih-dcc-metadata4.json',
-        output_path='/Users/Philippe/Documents/tmp/'
-    )
+# if __name__ == '__main__':
+#
+#     import argparse
+#
+#     parser = argparse.ArgumentParser(
+#         description='Converting NIH DCC Fluxomics JSON to ISA-Tab.')
+#     parser.add_argument('-i', help='Input path to file to convert.',
+#                         dest='json_path', required=True)
+#     parser.add_argument('-o', help='Output path to write ISA-Tabs.',
+#                         dest='output_path', required=True)
+#
+#     # args = parser.parse_args()
+#     # args = vars(args)
+#     # convert(args['json_path'], args['output_path'])
+#     convert(
+#         json_path='/Users/Philippe/Documents/git/isa-api/tests/'
+#                   'nih-dcc-metadata4.json',
+#         output_path='/Users/Philippe/Documents/tmp/'
+#     )
