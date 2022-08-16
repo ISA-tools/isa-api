@@ -29,8 +29,6 @@ def nihdcc2isa_convert(json_path, output_path):
     :param output_path:
     :return:
     """
-    print(json_path)
-    print(output_path)
 
     with open(json_path, 'r') as f:
         dcc_json = json.load(f)
@@ -82,16 +80,13 @@ def nihdcc2isa_convert(json_path, output_path):
         investigation.studies = [study]
 
         studyid = study_json['id']
-        print(studyid)
         study_person = Person(
             first_name=study_json['PI_first_name'],
             last_name=study_json['PI_last_name'],
             email=study_json['PI_email'],
             address=study_json['address'],
-            affiliation=(', '.join(
-                [study_json['department'], study_json['institution']])),
-            roles=[
-                OntologyAnnotation(
+            affiliation=(', '.join([study_json['department'], study_json['institution']])),
+            roles=[OntologyAnnotation(
                     term='principal investigator',
                     term_source=obi,
                     term_accession="https://purl.org/obo/OBI_1")])
@@ -140,11 +135,9 @@ def nihdcc2isa_convert(json_path, output_path):
 
         for subject_json in dcc_json['subject'].values():
 
-            # print(array['subject'][element])
             if "organism" in subject_json['type']:
 
                 source = Source(name=subject_json['id'])
-
                 ncbitaxon = OntologySource(name='NCBITaxon',
                                            description="NCBI Taxonomy")
                 characteristic_organism = Characteristic(
@@ -158,7 +151,6 @@ def nihdcc2isa_convert(json_path, output_path):
                 study.sources.append(source)
 
             elif 'tissue_slice' in subject_json['type']:
-                # print(array['subject'][element]['type'])
                 source = Source(name=subject_json['id'])
                 study.sources.append(source)
                 ncbitaxon = OntologySource(name='NCBITaxon',
@@ -195,7 +187,6 @@ def nihdcc2isa_convert(json_path, output_path):
 
             else:
                 source = Source(name=subject_json['id'])
-
                 ncbitaxon = OntologySource(name='NCBITaxon',
                                            description="NCBI Taxonomy")
                 characteristic_organism = Characteristic(
@@ -207,9 +198,9 @@ def nihdcc2isa_convert(json_path, output_path):
                                        'NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
                 study.sources.append(source)
-                print(subject_json['id'])
-                print(subject_json['species'])
-                print(subject_json['type'])
+                print("BING: ", subject_json['id'])
+                print("BONG: ", subject_json['species'])
+                print("BANG: ", subject_json['type'])
         # for src in investigation.studies[0].materials:
         #
         # for sam in investigation.studies[0].materials:
@@ -221,8 +212,7 @@ def nihdcc2isa_convert(json_path, output_path):
                     executes_protocol=study.get_prot(
                         sample_json['protocol.id']))
                 material_separation_process.name = sample_json['id']
-                # dealing with input material, check that the parent material
-                # is already among known samples or sources
+                # dealing with input material, check that the parent material is already among known samples or sources
 
                 if len([x for x in study.samples
                         if x.name == sample_json['parentID']]) == 0:
@@ -230,8 +220,6 @@ def nihdcc2isa_convert(json_path, output_path):
                     material_separation_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-                    print([x for x in study.samples if x.name ==
-                           sample_json['parentID']])
                     material_separation_process.inputs.append(
                         [x for x in study.samples if x.name ==
                          sample_json['parentID']][0])
@@ -253,6 +241,7 @@ def nihdcc2isa_convert(json_path, output_path):
                     sample_collection_process = None
                 if sample_collection_process is None:
                     sample_collection_process = Process(executes_protocol="")
+                # TODO: review process
                 # else:
                     # plink(protein_extraction_process, data_acq_process)
                     # plink(material_separation_process,
@@ -269,12 +258,13 @@ def nihdcc2isa_convert(json_path, output_path):
                     material_in = Sample(name=sample_json['parentID'])
                     protein_extraction_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
+                # TODO: review process
                 # else:
 
                     # print([x for x in study.samples
                     # if x.name == sample_json['parentID']])
                     # protein_extraction_process.inputs.append(material_in)
-
+                # TODO: review process
                 # for material_in in study.samples:
                 #     # print("OHO:", material_in.name)
                 #     if material_in.name == sample_json['parentID']:
@@ -306,6 +296,7 @@ def nihdcc2isa_convert(json_path, output_path):
                     material_separation_process = None
                 if material_separation_process is None:
                     material_separation_process = Process(executes_protocol="")
+                # TODO: review process
                 # else:
                     #  plink(protein_extraction_process, data_acq_process)
                     # plink(material_separation_process, protein_extraction_process)
@@ -331,7 +322,6 @@ def nihdcc2isa_convert(json_path, output_path):
                                            sample_json['id']])),
                     label='Raw Data File')
                 data_acq_process.outputs.append(datafile)
-                # print(study.assays[0].technology_type.term)
 
                 study.assays[0].data_files.append(datafile)
                 try:
@@ -340,9 +330,10 @@ def nihdcc2isa_convert(json_path, output_path):
                     protein_extraction_process = None
                 if protein_extraction_process is None:
                     protein_extraction_process = Process(executes_protocol="")
+                # TODO: review process
                 # else:
                 #     plink(protein_extraction_process, data_acq_process)
-
+            # TODO: review process
             # else:
             #     material_in = Material(name=sample_json['parentID'])
             #     material_out = Material(name=sample_json['id'])
@@ -375,9 +366,7 @@ def nihdcc2isa_convert(json_path, output_path):
                     bulk_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-
                     bulk_process.inputs.append(material_in)
-
                     plink(sample_collection_process, bulk_process)
 
     data_rec_header = '\t'.join(
@@ -385,8 +374,6 @@ def nihdcc2isa_convert(json_path, output_path):
          'm/z', 'formula', 'adduct', 'isotopologue', 'sample identifier'))
     records = []
     for element in dcc_json['measurement']:
-        # metabolite_name: -> compound
-        # array['measurement'][element]['signal_intensity']
         record = '\t'.join((dcc_json['measurement'][element]['compound'],
                             dcc_json['measurement'][element]['assignment'],
                             dcc_json['measurement'][element]['raw_intensity'],
@@ -396,49 +383,19 @@ def nihdcc2isa_convert(json_path, output_path):
                             dcc_json['measurement'][element]['adduct'],
                             dcc_json['measurement'][element]['isotopologue'],
                             dcc_json['measurement'][element]['sample.id']))
-        # print(record)
         records.append(record)
 
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-        try:
-            with open(
-                    '{output_path}/{study_id}-maf-data-nih-dcc-json.txt'.
-                    format(
-                        output_path=output_path, study_id=studyid), 'w') as fh:
-                print("'writing 'maf file document' to file from "
-                      "'generate_maf_file' method:...")
-                fh.writelines(data_rec_header)
+    try:
+        with open('{output_path}/{study_id}-maf-data-nih-dcc-json.txt'.format(output_path=output_path,
+                                                                              study_id=studyid), 'w') as fh:
+            fh.writelines(data_rec_header)
+            fh.writelines('\n')
+            for item in records:
+                fh.writelines(item)
                 fh.writelines('\n')
-                for item in records:
-                    fh.writelines(item)
-                    fh.writelines('\n')
+        isatab.dump(investigation, output_path=output_path)
+    except IOError:
+        print("Error: in main() method can't open file or write data")
 
-            print("writing 'investigation information' to file...")
-            print(isatab.dumps(investigation))
+    return True
 
-            isatab.dump(investigation, output_path=output_path)
-        except IOError:
-            print("Error: in main() method can't open file or write data")
-
-        return True
-
-# if __name__ == '__main__':
-#
-#     import argparse
-#
-#     parser = argparse.ArgumentParser(
-#         description='Converting NIH DCC Fluxomics JSON to ISA-Tab.')
-#     parser.add_argument('-i', help='Input path to file to convert.',
-#                         dest='json_path', required=True)
-#     parser.add_argument('-o', help='Output path to write ISA-Tabs.',
-#                         dest='output_path', required=True)
-#
-#     # args = parser.parse_args()
-#     # args = vars(args)
-#     # convert(args['json_path'], args['output_path'])
-#     convert(
-#         json_path='/Users/Philippe/Documents/git/isa-api/tests/'
-#                   'nih-dcc-metadata4.json',
-#         output_path='/Users/Philippe/Documents/tmp/'
-#     )
