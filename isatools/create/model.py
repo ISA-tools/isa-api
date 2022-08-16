@@ -1096,6 +1096,7 @@ class AssayGraph(object):
                 for i, pv_combination in enumerate(pv_combinations):
                     log.debug('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
+                        protocol_pvs = []
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
@@ -1103,18 +1104,27 @@ class AssayGraph(object):
                             name='AT{}-{}'.format(assay_plan_dict.get('id', 0), node_name),
                             # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                             protocol_type=node_key,
-                            parameter_values=[
-                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                               value=pv)
-                                for ix, pv in enumerate(pv_combination)
-                            ],
+                            # parameter_values=[
+                            #     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                            #                    value=pv)
+                            #     for ix, pv in enumerate(pv_combination)
+                            # ],
                             replicates=replicates
                         )
+                        for ix, pv in enumerate(pv_combination):
+                            protocol_param = ProtocolParameter(parameter_name=pv_names[ix])
+                            protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
+                            pv = ParameterValue(category=protocol_param, value=pv)
+                            pv.id = "#parameter_value/" + str(id(pv))
+                            protocol_pvs.append(pv)
+
+                        protocol_node.parameter_values = protocol_pvs
                         res.add_node(protocol_node)
                         current_nodes.append(protocol_node)
                     else:
                         for j, prev_node in enumerate(previous_nodes):
                             # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
+                            protocol_pvs = []
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
@@ -1122,13 +1132,21 @@ class AssayGraph(object):
                                 name='AT{}-{}'.format(assay_plan_dict.get('id', 0), node_name),
                                 # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                                 protocol_type=node_key,
-                                parameter_values=[
-                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                                   value=pv)
-                                    for ix, pv in enumerate(pv_combination)
-                                ],
+                                # parameter_values=[
+                                #     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                #                    value=pv)
+                                #     for ix, pv in enumerate(pv_combination)
+                                # ],
                                 replicates=replicates
                             )
+                            for ix, pv in enumerate(pv_combination):
+                                protocol_param = ProtocolParameter(parameter_name=pv_names[ix])
+                                protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
+                                pv = ParameterValue(category=protocol_param, value=pv)
+                                pv.id = "#parameter_value/" + str(id(pv))
+                                protocol_pvs.append(pv)
+
+                            protocol_node.parameter_values = protocol_pvs
                             res.add_node(protocol_node)
                             res.add_link(prev_node, protocol_node)
                             current_nodes.append(protocol_node)
@@ -1607,11 +1625,14 @@ class SampleAndAssayPlanDecoder(object):
     @staticmethod
     def loads_parameter_value(pv_dict):
         pv_name = pv_dict["name"]
+        protocol_param = ProtocolParameter(
+            parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
+            if isinstance(pv_name, dict) else pv_name
+        )
+        protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
+
         return ParameterValue(
-            category=ProtocolParameter(
-                parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
-                if isinstance(pv_name, dict) else pv_name
-            ),
+            category=protocol_param,
             value=pv_dict["value"],
             unit=pv_dict.get('unit', None)
         )
@@ -2145,11 +2166,12 @@ class StudyDesign(object):
                                         if isinstance(sc.category, OntologyAnnotation) else sc.category
                                         )]
                 )
-                src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
-                                             s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
-                                             # start counting from 1
-                                             subj_n
-                                             )
+                src.id = "#source/" + str(id(src))
+                # src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
+                #                              s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
+                #                              # start counting from 1
+                #                              subj_n
+                #                              )
                 src.name = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
                                                s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
                                                # start counting from 1
@@ -2225,13 +2247,14 @@ class StudyDesign(object):
                                 derives_from=[source],
                                 comments=[is_treatment_comment]
                             )
+                            sample.id = "#sample/" + str(id(sample))
                             if sample_type.category not in characteristic_categories:
                                 characteristic_categories.append(sample_type.category)
 
                             sample_batches[sample_node].append(sample)
                             sample_count += 1
                             process = Process(
-                                id_=str(uuid.uuid4()),
+                                # id_=str(uuid.uuid4()),
                                 name="#sampling_process/" + str(sample_count),
                                 executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
                                 performer=performer,
@@ -2246,6 +2269,7 @@ class StudyDesign(object):
                                     )
                                 ]
                             )
+                            process.id = "#process/" + str(id(process))
                             process_sequence.append(process)
 
                 for sample_node in sample_assay_plan.sample_plan:
@@ -2462,7 +2486,7 @@ class StudyDesign(object):
         :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
         """
         if isinstance(node, ProtocolNode):
-            return Process(
+            process = Process(
 
                 name='{}_S{}_DAE_R{}'.format(  # DAE: DataAcquisitionEvent
                     assay_file_prefix,
@@ -2478,23 +2502,33 @@ class StudyDesign(object):
                 inputs=[],
                 outputs=[],
             )
+            process.id = "#process/" + str(id(process))
+            return process
+
         if isinstance(node, ProductNode):
             if node.type == SAMPLE:
                 return Sample(
+                    id_='{}_S{}_Sample-R{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
                     name='{}_S{}_Sample-R{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
                     characteristics=node.characteristics
                 )
 
             if node.type == EXTRACT:
-                return Extract(
+                extract = Extract(
                     name='{}_S{}_Extract-R{}'.format(assay_file_prefix, start_node_index, counter[EXTRACT]),
                     characteristics=node.characteristics
                 )
+                extract.id = "#extract/" + str(id(extract))
+                return extract
+
             if node.type == LABELED_EXTRACT:
-                return LabeledExtract(
+                labeled_extract = LabeledExtract(
                     name='{}_S{}_LE-R{}'.format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
                     characteristics=node.characteristics
                 )
+                labeled_extract.id = "#labeled_extract/" + str(id(labeled_extract))
+                return labeled_extract
+
             # under the hypothesis that we deal only with raw data files
             # derived data file would require a completely separate approach
             if node.type == DATA_FILE:
@@ -2522,7 +2556,7 @@ class StudyDesign(object):
                         PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile
                     }
                     file_extension = '.{}'.format(node.extension) if node.extension else ''
-                    return isa_class(
+                    isaclass = isa_class(
                         filename='{}_S{}_DAE_R{}_{}{}'.format(
                             assay_file_prefix,
                             start_node_index,
@@ -2531,9 +2565,12 @@ class StudyDesign(object):
                             file_extension
                         )
                     )
+                    isaclass.id = "#data_file/" + str(id(isaclass))
+                    return isaclass
+
                 except StopIteration:
                     file_extension = '.{}'.format(node.extension) if node.extension else ''
-                    return RawDataFile(
+                    raw_data_file = RawDataFile(
                         filename='{}_S{}_DAE_R{}_{}{}'.format(
                             assay_file_prefix,
                             start_node_index,
@@ -2542,6 +2579,8 @@ class StudyDesign(object):
                             file_extension
                         )
                     )
+                    raw_data_file.id = "#raw_data_file/" + str(id(raw_data_file))
+                    return raw_data_file
 
     def generate_isa_study(self, identifier=None):
         """
@@ -2641,6 +2680,7 @@ class QualityControlService(object):
         if not isinstance(study_design, StudyDesign):
             raise TypeError('study must be a valid StudyDesign object')
         qc_study = deepcopy(study) if in_place is False else study
+        all_samples = []
         for arm in study_design.study_arms:
             for cell, study_assay_plan in arm.arm_map.items():
                 if study_assay_plan:
@@ -2649,7 +2689,7 @@ class QualityControlService(object):
                         if assay_graph.quality_control:
                             # CHECK the assumption here is that an assay file can unequivocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
-                            # Such an assumption is correct as far a the Assay filename convention is not modified
+                            # Such an assumption is correct as far as the Assay filename convention is not modified
                             measurement_type, technology_type = assay_graph.measurement_type, \
                                                                 assay_graph.technology_type
                             assay_filename = urlify('a_{0}_{1}_{2}.txt'.format(
@@ -2669,23 +2709,32 @@ class QualityControlService(object):
                             log.debug('Number of input samples for assay {0} are {1}'.format(
                                 assay_filename, len(samples_in_assay_to_expand)
                             ))
+                            # qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
+                            #     = cls._generate_quality_control_samples(
+                            #         assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                            #         # FIXME? the assumption here is that the first protocol is the sampling protocol
+                            #         sampling_protocol=qc_study.protocols[0]
+                            #     )
                             qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
-                                = cls._generate_quality_control_samples(
-                                    assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
-                                    # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                    sampling_protocol=qc_study.protocols[0]
+                                = cls._generate_quality_control_samples_no_cell(
+                                 assay_graph.quality_control, sample_size=len(samples_in_assay_to_expand),
+                                 sampling_protocol=qc_study.protocols[0]
                                 )
+
                             qc_study.sources += qc_sources
-                            qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
+                            # qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
+                            qc_study.samples += qc_samples_pre_run + qc_samples_post_run
                             for qc_samples in qc_samples_interspersed.values():
                                 qc_study.samples.extend(qc_samples)
-                            qc_study.process_sequence.extend(qc_processes)
+                            # qc_study.process_sequence.extend(qc_processes)
+                            qc_study.process_sequence += qc_processes
                             augmented_samples = cls._augment_sample_batch_with_qc_samples(
-                                samples_in_assay_to_expand, pre_run_samples=qc_samples_post_run,
+                                samples_in_assay_to_expand, pre_run_samples=qc_samples_pre_run,
                                 post_run_samples=qc_samples_post_run,
                                 interspersed_samples=qc_samples_interspersed
                             )
-                            qc_study.assays[index] = StudyDesign.generate_assay(assay_graph, augmented_samples)
+                            all_samples = all_samples+augmented_samples
+                            qc_study.assays[index] = StudyDesign.generate_assay(assay_graph, all_samples)
         return qc_study
 
     @staticmethod
@@ -2744,8 +2793,8 @@ class QualityControlService(object):
             sample = QualityControlSample(
                 name='SMP-QC-PRE-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
-                characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
-                                 else qc_pre.characteristics[-1]],
+                # characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
+                #                  else qc_pre.characteristics[-1]],
                 derives_from=[dummy_source]
             )
             qc_samples_pre_run.append(sample)
@@ -2781,6 +2830,21 @@ class QualityControlService(object):
                     derives_from=[dummy_source],
                 )
                 qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
+                process = Process(
+                    executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                    performer=performer,
+                    date_=datetime.date.isoformat(datetime.date.today()),
+                    parameter_values=[
+                        ParameterValue(
+                            category=sampling_protocol.get_param(RUN_ORDER),
+                            value=-1
+                        ), ParameterValue(
+                            category=sampling_protocol.get_param(STUDY_CELL),
+                            value=str(study_cell.name)
+                        )
+                    ]
+                )
+                qc_processes.append(process)
         log.debug("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
@@ -2792,8 +2856,8 @@ class QualityControlService(object):
             sample = QualityControlSample(
                 name='SMP-QC-POST-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
-                characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
-                                 else qc_post.characteristics[-1]],
+                # characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
+                #                  else qc_post.characteristics[-1]],
                 derives_from=[dummy_source]
             )
             qc_samples_post_run.append(sample)
@@ -2808,6 +2872,119 @@ class QualityControlService(object):
                     ), ParameterValue(
                         category=sampling_protocol.get_param(STUDY_CELL),
                         value=str(study_cell.name)
+                    )
+                ]
+            )
+            qc_processes.append(process)
+            i += 1
+        log.debug("Completed post-batch samples")
+        return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
+
+    @staticmethod
+    def _generate_quality_control_samples_no_cell(quality_control,
+                                                  sample_size=0,
+                                                  sampling_protocol=Protocol(),
+                                                  performer=None):
+        """
+        This method generates all the QC samples for a specific quality_control plan
+        :param quality_control: A QualityControl object
+        :param sample_size:
+        :param sampling_protocol:
+        :param performer:
+        :return:
+        """
+        log.debug("Quality control sample size = {0}".format(sample_size))
+        qc_sources = []
+        qc_samples_pre_run = []
+        qc_samples_post_run = []
+        qc_samples_interspersed = {}
+        qc_processes = []
+        if not isinstance(quality_control, QualityControl):
+            raise TypeError()
+
+        qc_pre = quality_control.pre_run_sample_type
+        assert isinstance(qc_pre, ProductNode)
+        for i in range(qc_pre.size):
+            dummy_source = QualityControlSource(
+                name='SRC-QC-PRE-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+            )
+            qc_sources.append(dummy_source)
+            sample = QualityControlSample(
+                name='SMP-QC-PRE-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
+                factor_values=[],
+                # characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
+                #                  else qc_pre.characteristics[-1]],
+                derives_from=[dummy_source]
+            )
+            qc_samples_pre_run.append(sample)
+            process = Process(
+                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                performer=performer,
+                date_=datetime.date.isoformat(datetime.date.today()),
+                parameter_values=[
+                    ParameterValue(
+                        category=sampling_protocol.get_param(RUN_ORDER),
+                        value=-1
+                    )
+                ]
+            )
+            qc_processes.append(process)
+        log.debug("Completed pre-batch samples")
+
+        for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
+            log.debug("sample node is {0}".format(sample_node))
+            log.debug("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
+            qc_samples_interspersed[(sample_node, interspersing_interval)] = []
+            for i in range(interspersing_interval, sample_size, interspersing_interval):
+                dummy_source = QualityControlSource(
+                    name='SRC-QC-INT-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+                )
+                qc_sources.append(dummy_source)
+                sample = QualityControlSample(
+                    name='SMP-QC-INT-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
+                    factor_values=[],
+                    characteristics=sample_node.characteristics,
+                    derives_from=[dummy_source],
+                )
+                qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
+
+                process = Process(
+                    executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                    performer=performer,
+                    date_=datetime.date.isoformat(datetime.date.today()),
+                    parameter_values=[
+                        ParameterValue(
+                            category=sampling_protocol.get_param(RUN_ORDER),
+                            value=-1
+                        )
+                    ]
+                )
+                qc_processes.append(process)
+        log.debug("Completed interspersed samples")
+
+        qc_post = quality_control.post_run_sample_type
+        assert isinstance(qc_post, ProductNode)
+        for i in range(qc_post.size):
+            dummy_source = QualityControlSource(
+                name='SRC-QC-POST-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+            )
+            qc_sources.append(dummy_source)
+            sample = QualityControlSample(
+                name='SMP-QC-POST-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
+                factor_values=[],
+                # characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
+                #                  else qc_post.characteristics[-1]],
+                derives_from=[dummy_source]
+            )
+            qc_samples_post_run.append(sample)
+            process = Process(
+                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
+                performer=performer,
+                date_=datetime.date.isoformat(datetime.date.today()),
+                parameter_values=[
+                    ParameterValue(
+                        category=sampling_protocol.get_param(RUN_ORDER),
+                        value=-1
                     )
                 ]
             )
@@ -3032,8 +3209,7 @@ class StudyDesignFactory(object):
         return design
 
     @staticmethod
-    def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
-                                washout_map=None, follow_up_map=None):
+    def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None, follow_up_map=None):
         """
         Computes the parallel trial design on the basis of a number of
         treatments, each of them mapped to a SampleAndAssayPlans object. Optionally, NonTreatments can be provided
@@ -3048,8 +3224,6 @@ class StudyDesignFactory(object):
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type RUN-IN
-        :param washout_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
-                            must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the parallel design. It contains T study_arms, where T is the number of Treatments
