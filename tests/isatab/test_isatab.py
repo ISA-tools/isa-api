@@ -1812,6 +1812,25 @@ sample1\textraction\te2\tscanning\td2"""
             expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
             self.assertIn(expected_chained_protocol_snippet, dumps_out)
 
+    def test_isatab_charac_categories(self):
+        with self.assertRaises(ValueError) as context:
+            with open(os.path.join(self._tab_data_dir, 'TEST-ISA-charact-cat', 'i_Investigation.txt'),
+                      encoding='utf-8') as fp:
+                isatab.load(fp)
+            self.assertTrue("ValueError: Two simultaneous states for a given characteristics is not allowed for"
+                            "Material:MS_U_RPOS_SR in Characteristics[Organism part] : ['urine', 'blood']"
+                            in context.exception)
+
+    def test_isatab_characteristics_conflict(self):
+
+        with self.assertRaises(ValueError) as context:
+            with open(os.path.join(self._tab_data_dir, 'TEST-ISA-characteristic-conflicts', 'i_Investigation.txt'),
+                      encoding='utf-8') as fp:
+                isatab.load(fp)
+            self.assertTrue("ValueError: Two simultaneous states for a given characteristics is not allowed for"
+                            "Material:source2 in Characteristics[Organism] : ['a1', 'alpha']"
+                            in context.exception)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
