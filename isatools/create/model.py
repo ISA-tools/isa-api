@@ -543,20 +543,21 @@ class CharacteristicDecoder(object):
         )
 
     def loads_characteristic(self, characteristic_dict):
-        characteristic = Characteristic(
-            category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
-                characteristic_dict["category"], dict
-            ) else characteristic_dict['category'],
-            value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
-                characteristic_dict["value"], dict
-            ) else characteristic_dict['value']
-        )
+        category = characteristic_dict['category']
+        if isinstance(characteristic_dict["category"], dict):
+            category = self.loads_ontology_annotation(characteristic_dict["category"])
+
+        value = characteristic_dict['value']
+        if isinstance(characteristic_dict["value"], dict):
+            self.loads_ontology_annotation(characteristic_dict["value"])
+
+        characteristic = Characteristic(category=category, value=value)
         if 'unit' in characteristic_dict:
-            characteristic.unit = self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
-                characteristic_dict["unit"], dict
-            ) else characteristic_dict["unit"] if isinstance(
-                characteristic_dict["unit"], str
-            ) else None
+            characteristic.unit = None
+            if isinstance(characteristic_dict["unit"], dict):
+                characteristic.unit = self.loads_ontology_annotation(characteristic_dict["unit"])
+            elif isinstance(characteristic_dict["unit"], str):
+                characteristic.unit = characteristic_dict["unit"]
         return characteristic
 
     def loads(self, json_text):
