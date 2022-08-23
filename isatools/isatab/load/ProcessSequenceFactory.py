@@ -233,8 +233,6 @@ class ProcessSequenceFactory:
                                              ).format(material.name, str(characteristic.category.term),
                                                       str(deja_vu[characteristic.category.term]))
                                     raise ValueError(error)
-                            else:
-                                deja_vu[characteristic.category.term] = [characteristic.value.term]
 
                         for comment_column in [c for c in column_group if c.startswith('Comment[')]:
                             comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
