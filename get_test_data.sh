@@ -5,3 +5,5 @@ if [ "$TRAVIS_BRANCH" = "develop" ]; then
 else
   git clone -b tests --single-branch http://github.com/ISA-tools/ISAdatasets tests/data
 fi
+
+ls -la tests/data/mtbls

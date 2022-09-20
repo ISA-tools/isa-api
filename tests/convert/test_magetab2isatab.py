@@ -45,16 +45,15 @@ class TestMageTab2IsaTab(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671_study.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671_assay-RNA-Seq.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
+            v = isatab.validate(i_fp)
+            print(v)
 
     """Tests on datasets suggest from prs"""
     @patch('isatools.net.ax.get')
     @data('E-MTAB-20', 'E-MTAB-584', 'E-MTAB-621', 'E-MTAB-1073', 'E-MTAB-1443', 'E-MTAB-1653', 'E-MTAB-1677',
           'E-MTAB-1963', 'E-MTAB-2143', 'E-MTAB-3336', 'E-MTAB-3624', 'E-MTAB-4649', 'E-MTAB-5171')
     def test_get_experiment_as_isatab_mtab(self, value, mock_ax_get):
-        src = os.path.abspath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', value)
-        )
+        src = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'magetab', value))
         dest = tempfile.mkdtemp()
         target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
         mock_ax_get.return_value = target
@@ -65,9 +64,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
     @patch('isatools.net.ax.get')
     def test_get_experiment_as_isatab_mtab_3954(self, mock_ax_get):  # Tests assay splitting
         value = 'E-MTAB-3954'
-        src = os.path.abspath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'magetab', value)
-        )
+        src = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'magetab', value))
         dest = tempfile.mkdtemp()
         target = shutil.copytree(src, os.path.abspath(os.path.join(dest, value)))
         mock_ax_get.return_value = target
