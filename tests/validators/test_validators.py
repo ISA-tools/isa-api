@@ -6,6 +6,9 @@ import tempfile
 import shutil
 import logging
 
+from isatools.isatab.defaults import log
+log.disabled = True
+
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -28,12 +31,14 @@ class TestValidateIsaJson(unittest.TestCase):
         """Tests against 0002"""
         with open(os.path.join(self._unit_json_data_dir, 'minimal_syntax.json')) as fp:
             report = isajson.validate(fp)
-            if 2 in [e['code'] for e in report['errors']]:
-                self.fail("Error raised when trying to parse JSON, when it should have been fine!")
+        self.assertEqual(2, len(report['errors']))
+        for error in report['errors']:
+            self.assertIn(error['code'], [4002, 2])
         with open(os.path.join(self._unit_json_data_dir, 'invalid.json')) as fp:
             report = isajson.validate(fp)
-            if 2 not in [e['code'] for e in report['errors']]:
-                self.fail("NO error raised when trying to parse invalid formed JSON!")
+        self.assertEqual(1, len(report['errors']))
+        for error in report['errors']:
+            self.assertIn(error['code'], [2])
 
     def test_validate_isajson_isajson_schemas(self):
         """Tests against 0003"""
