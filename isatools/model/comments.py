@@ -1,5 +1,6 @@
 from typing import List, Any
 from abc import ABCMeta
+from isatools.model.utils import get_context_path
 
 
 class Comment(object):
@@ -56,6 +57,17 @@ class Comment(object):
             "name": self.name,
             "value": self.value
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("comment", context)
+
+        characteristic = self.to_dict()
+        characteristic["@type"] = "Comment"
+        characteristic["@context"] = context_path
+        characteristic["@id"] = "#comment/" + self.id
 
     def from_dict(self, comment):
         self.name = comment['name'] if 'name' in comment else ''

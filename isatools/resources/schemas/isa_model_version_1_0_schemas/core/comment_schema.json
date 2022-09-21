@@ -5,6 +5,9 @@
     "description": "JSON-schema representing a comment in the ISA model",
     "type": "object",
     "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "@context": { "type": "string", "format": "uri"},
+        "@type" : { "type": "string", "enum": ["Comment"] },
         "name": {
             "type": "string"
         },

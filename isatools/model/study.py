@@ -15,6 +15,7 @@ from isatools.model.sample import Sample
 from isatools.model.process import Process
 from isatools.model.logger import log
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.utils import get_context_path
 
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
@@ -360,6 +361,16 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "comments": [comment.to_dict() for comment in self.comments],
             "assays": [assay.to_dict() for assay in self.assays]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("study", context)
+        study = self.to_dict()
+        study["@type"] = "Study"
+        study["@context"] = context_path
+        study["@id"] = "#study/" + self.id
 
     def from_dict(self, study):
         indexes.reset_process()

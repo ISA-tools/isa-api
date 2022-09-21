@@ -1,5 +1,8 @@
+import os
+
 from typing import List, Any
 from isatools.model.comments import Commentable, Comment
+from isatools.model.utils import get_context_path
 
 
 class OntologySource(Commentable):
@@ -118,12 +121,23 @@ class OntologySource(Commentable):
 
     def to_dict(self):
         return {
+            '@id': self.id,
             'name': self.name,
             'file': self.file,
             'version': self.version,
             'description': self.description,
             'comments': [comment.to_dict() for comment in self.comments]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("ontology_source_reference", context)
+        ontology_source_reference = self.to_dict()
+        ontology_source_reference["@type"] = "OntologySourceReference"
+        ontology_source_reference["@context"] = context_path
+        ontology_source_reference["@id"] = "#ontology_source_reference/" + self.id
 
     def from_dict(self, ontology_source):
         self.name = ontology_source['name'] if 'name' in ontology_source else ''

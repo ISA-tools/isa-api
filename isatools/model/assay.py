@@ -6,6 +6,7 @@ from isatools.model.material import Material
 from isatools.model.characteristic import Characteristic
 from isatools.model.process import Process
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.utils import get_context_path
 
 
 class Assay(Commentable, StudyAssayMixin, object):
@@ -182,6 +183,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     def to_dict(self):
         return {
+
             "measurementType": self.measurement_type.to_dict() if self.measurement_type else '',
             "technologyType": self.technology_type.to_dict() if self.technology_type else '',
             "technologyPlatform": self.technology_platform,
@@ -196,6 +198,17 @@ class Assay(Commentable, StudyAssayMixin, object):
             "dataFiles": [file.to_dict() for file in self.data_files],
             "processSequence": [process.to_dict() for process in self.process_sequence]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("assay", context)
+
+        assay = self.to_dict()
+        assay["@type"] = "Assay"
+        assay["@context"] = context_path
+        assay["@id"] = "#assay/" + self.id
 
     def from_dict(self, assay, isa_study):
         self.technology_platform = assay.get('technologyPlatform', '')

@@ -11,6 +11,8 @@
   "type": "object",
   "properties": {
     "@id": { "type": "string", "format": "uri" },
+    "@context": { "type": "string", "format": "uri"},
+    "@type" : { "type": "string", "enum": ["Assay"] },
     "filename" : { "type" : "string" },
     "measurementType" : {
       "$ref": "ontology_annotation_schema.json#"

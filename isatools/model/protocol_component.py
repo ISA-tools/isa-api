@@ -1,6 +1,6 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
-
+from isatools.model.utils import get_context_path
 
 class ProtocolComponent(Commentable):
     """A component used in a protocol.
@@ -53,7 +53,7 @@ class ProtocolComponent(Commentable):
         return "isatools.model.ProtocolComponent(name='{component.name}', " \
                "category={component_type}, " \
                "comments={component.comments})".format(
-            component=self, component_type=repr(self.component_type))
+                component=self, component_type=repr(self.component_type))
 
     def __str__(self):
         return """ProtocolComponent(
@@ -74,6 +74,12 @@ class ProtocolComponent(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    #TODO
+    # def to_dict(self):
+
+    #TODO
+    # def to_ld(self):
 
     def from_dict(self, protocol_component):
         self.name = protocol_component.get('componentName', '')

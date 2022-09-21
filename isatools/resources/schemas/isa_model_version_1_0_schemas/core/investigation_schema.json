@@ -5,7 +5,9 @@
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
-         "@id": { "type": "string", "format": "uri" },
+        "@id": { "type": "string", "format": "uri" },
+        "@context": { "type": "string", "format": "uri"},
+        "@type" : { "type": "string", "enum": ["Investigation"] },
         "filename": { "type" : "string"},
         "identifier" : { "type" : "string" },
         "title" : { "type" : "string"},

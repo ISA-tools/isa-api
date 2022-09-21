@@ -6,6 +6,8 @@
     "type" : "object",
     "properties" : {
         "@id": { "type": "string", "format": "uri" },
+        "@context": { "type": "string", "format": "uri"},
+        "@type" : { "type": "string", "enum": ["MaterialAttributeValue"] },
         "category" : {
              "$ref": "material_attribute_schema.json#"
         },

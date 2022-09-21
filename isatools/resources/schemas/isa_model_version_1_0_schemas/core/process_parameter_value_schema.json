@@ -6,6 +6,8 @@
     "type" : "object",
     "properties" : {
         "@id": { "type": "string", "format": "uri" },
+        "@context": { "type": "string", "format": "uri"},
+        "@type" : { "type": "string", "enum": ["ParameterValue"] },
         "category" : {
              "$ref": "protocol_parameter_schema.json#"
             },

@@ -1,5 +1,6 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.utils import get_context_path
 
 
 class Publication(Commentable):
@@ -132,6 +133,16 @@ class Publication(Commentable):
             "title": self.title,
             "comments": [comment.to_dict() for comment in self.comments]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("publication", context)
+        publication = self.to_dict()
+        publication["@type"] = "Publication"
+        publication["@context"] = context_path
+        publication["@id"] = "#publication/" + self.id
 
     def from_dict(self, publication):
         self.author_list = publication['authorList'] if 'authorList' in publication else ''

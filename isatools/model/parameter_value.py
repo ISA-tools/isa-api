@@ -3,6 +3,7 @@ from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.utils import get_context_path
 
 
 class ParameterValue(Commentable):
@@ -99,6 +100,19 @@ class ParameterValue(Commentable):
 
     def __ne__(self, other):
         return not self == other
+
+    #TODO
+    # def to_dict(self):
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("parameter_value", context)
+        parameter_value = self.to_dict()
+        parameter_value["@type"] = "ParameterValue"
+        parameter_value["@context"] = context_path
+        parameter_value["@id"] = "#parameter_value/" + self.id
 
     def from_dict(self, parameter_value):
         self.load_comments(parameter_value.get('comments', []))

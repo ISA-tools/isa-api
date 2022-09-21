@@ -6,6 +6,7 @@ from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.factor_value import FactorValue
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.utils import get_context_path
 
 
 class Sample(Commentable, ProcessSequenceNode, Identifiable):
@@ -153,6 +154,16 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
             "comments": [comment.to_dict() for comment in self.comments]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("sample", context)
+        sample = self.to_dict()
+        sample["@type"] = "Sample"
+        sample["@context"] = context_path
+        sample["@id"] = "#sample/" + self.id
 
     def from_dict(self, sample):
         self.id = sample.get('@id', '')

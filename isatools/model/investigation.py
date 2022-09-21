@@ -9,6 +9,7 @@ from isatools.model.person import Person
 from isatools.model.publication import Publication
 from isatools.graphQL.models import IsaSchema
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.utils import get_context_path
 
 
 class Investigation(Commentable, MetadataMixin, Identifiable, object):
@@ -246,6 +247,17 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             "publications": [publication.to_dict() for publication in self.publications],
             "studies": [study.to_dict() for study in self.studies]
         }
+
+    def to_ld(self, context: str = "obo"):
+        if context not in ["obo", "sdo", "wdt"]:
+            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
+
+        context_path = get_context_path("investigation", context)
+        investigation = self.to_dict()
+        investigation["@type"] = "Investigation"
+        investigation["@context"] = context_path
+        investigation["@id"] = self.identifier
+        investigation["@id"] = "#investigation/" + self.id
 
     def from_dict(self, investigation):
         self.identifier = investigation.get('identifier', '')
