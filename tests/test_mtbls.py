@@ -32,55 +32,17 @@ class TestMtblsIO(unittest.TestCase):
         mock_ftp.cwd.assert_called_with('/pub/databases/metabolights/studies/public/MTBLS1')
         shutil.rmtree(tmp_dir)
 
-    """Tries to do actual call on MetaboLights; uses MTBLS2 as not so big"""
-    # def test_get_study_as_tab(self):
-    #     tmp_dir = MTBLS.getj('MTBLS2')  # gets MTBLS ISA-Tab files
-    #     self.assertEqual(len(os.listdir(tmp_dir)), 3)
-    #     self.assertSetEqual(set(os.listdir(tmp_dir)), {'a_mtbl2_metabolite profiling_mass spectrometry.txt',
-    #                                                'i_Investigation.txt', 's_MTBL2.txt'})
-    #     shutil.rmtree(tmp_dir)
-
-    # def test_get_study_as_json(self):
-    #     isa_json = MTBLS.get('MTBLS2')  # loads MTBLS study into ISA JSON
-    #     self.assertIsInstance(isa_json, dict)
-    #     self.assertEqual(isa_json['identifier'], 'MTBLS2')
-    #     self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'boettch@ipb-halle.de')
-
-    # def test_get_factor_names(self):
-    #     factors = MTBLS.get_factor_names('MTBLS2')
-    #     self.assertIsInstance(factors, set)
-    #     self.assertEqual(len(factors), 2)
-    #     self.assertSetEqual(factors, {'genotype', 'replicate'})
-
-    # def test_get_factor_values(self):
-    #     fvs = MTBLS.get_factor_values('MTBLS2', 'genotype')
-    #     self.assertIsInstance(fvs, set)
-    #     self.assertEqual(len(fvs), 2)
-    #     self.assertSetEqual(fvs, {'Col-0', 'cyp79'})
-
-    # def test_get_datafiles(self):
-    #     datafiles = MTBLS.get_data_files('MTBLS2')
-    #     self.assertIsInstance(datafiles, list)
-    #     self.assertEqual(len(datafiles), 16)
-    #     factor_selection = {"genotype": "Col-0"}
-    #     results = MTBLS.get_data_files('MTBLS2', factor_selection)
-    #     self.assertEqual(len(results), 8)
-    #     self.assertEqual(len(results[0]['data_files']), 1)
-
     @patch('isatools.net.mtbls.get')
     def test_get_datafiles_multiple_factors(self, mock_mtbls_get):
         value = 'MTBLS1'
-        src = os.path.abspath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'mtbls', value)
-        )
+        src = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'mtbls', value))
         targets = []
         for i in range(3):
             dest = tempfile.mkdtemp()
             targets.append(shutil.copytree(src, os.path.abspath(os.path.join(dest, value))))
         it = iter(targets)
         mock_mtbls_get.return_value = next(it)
-        factor_selection = {"Gender": "Male",
-                            "Metabolic syndrome": "Control Group"}
+        factor_selection = {"Gender": "Male", "Metabolic syndrome": "Control Group"}
         results = MTBLS.get_data_files(value, factor_selection)
         self.assertEqual(len(results), 56)
         self.assertEqual(len(results[0]['data_files']), 1)

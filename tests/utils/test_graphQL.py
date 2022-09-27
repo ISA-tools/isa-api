@@ -51,7 +51,8 @@ class TestGraphQLQueries(unittest.TestCase):
             "fileType": "Raw Data F",
             "protocol": "nucleic acid ext",
             "compound": "carbon diox",
-            "dose": "high"
+            "dose": "high",
+            "material": None
         }
         response = investigation.execute_query(self.query, variables)
         self.assertTrue(not response.errors)
