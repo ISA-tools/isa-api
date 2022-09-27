@@ -66,7 +66,7 @@ setup(
         'graphene==2.1',
         'wheel~=0.36.2',
         'setuptools~=57.1.0',
-        'numpy~=1.21.0',
+        'numpy~=1.23.3',
         'jsonschema~=3.2.0',
         'pandas==1.5.0',
         'openpyxl>=2.5.0',
