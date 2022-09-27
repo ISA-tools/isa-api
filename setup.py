@@ -71,7 +71,7 @@ setup(
         'pandas==1.5.0',
         'openpyxl>=2.5.0',
         'networkx~=2.5.1',
-        'lxml~=4.6.3',
+        'lxml~=4.9.1',
         'requests~=2.25.1',
         'iso8601~=0.1.14',
         'chardet~=4.0.0',
