@@ -1,0 +1,70 @@
+{
+  "@context":{
+     "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "sdo:MedicalStudy",
+    "filename" : {
+         "@id": "sdo:hasPart",
+         "@type" : "sdo:DataDownload"
+    },
+    "identifier" : {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    }, 
+    "title" : {
+        "@id": "sdo:title",
+        "@type": "sdo:Text"
+    },
+    "description" : {   
+         "@id": "sdo:description",
+         "@type":"sdo:Text"
+    } ,
+    "submissionDate" : {
+      "@id":"sdo:dateCreated",
+      "@type": "xsd:date"
+    } ,
+    "publicReleaseDate" : {
+      "@id":"sdo:datePublished",
+      "@type": "xsd:date"
+    } ,
+    "publications" : {
+                "@id":"sdo:citation",
+                "@type":"sdo:ScholarlyArticle"
+    },
+    "people" : {
+                "@id":"sdo:author",
+                "@type":"sdo:Person"
+    },
+    "studyDesignDescriptors": {
+        "@id":"sdo:trialDesign",
+        "@type":"sdo:MedicalTrialDesign"
+    },
+    "protocols" : {
+        "@id":"sdo:hasPart",
+      "@type":"sdo:HowTo"
+    },
+    "materials": {  
+        "@id":"sdo:participant",
+        "@type" : "sdo:Product"
+    },
+    "processSequence": {
+        "@id":"sdo:hasPart",
+        "@type" : "sdo:Action"
+    },
+    "assays" : {
+        "@id":"sdo:hasPart",
+        "@type" : "sdo:MedicalTest"
+    },
+    "factors": {
+        "@id":"sdo:hasPart",
+      "@type":"sdo:variableMeasured"
+    },
+    "characteristicCategories": {
+        "@id":"sdo:hasPart",
+      "@type":"sdo:PropertyValue"
+    },
+    "unitCategories": {},
+    "comments" : {}
+    }
+}

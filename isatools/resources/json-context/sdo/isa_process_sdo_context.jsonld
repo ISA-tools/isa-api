@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Process": "sdo:Action",
+    "identifier": {
+      "@id": "sdo:identifier",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "sdo:name",
+      "@type":"sdo:Text"
+    },
+    "description": {
+      "@id": "sdo:description",
+      "@type":"sdo:Text"
+    },
+    "startDate" : {"@id":"sdo:startDate",
+      "@type": "sdo:Date"
+    },
+    "executesProtocol" : {
+        "@id":"sdo:TERM_REQUEST-executesProtocol",
+        "@type" : "sdo:HowTo"
+    },
+    "parameterValues": {
+       "@id":"sdo:value",
+        "@type" : ["sdo:PropertyValue"]
+    },
+    "previousProcess" : { 
+    "@id":"sdo:TERM_REQUEST-PREVIOUS",
+      "@type" : "sdo:Action" 
+      },
+    "nextProcess" : {
+        "@id":"sdo:TERM_REQUEST-NEXT",
+      "@type" :  "sdo:Action" 
+      },
+    "input" : {
+      "@id":"sdo:participant",
+      "@type" : ["sdo:Product","sdo:DataDownload"]
+    },
+    "output" :  {
+      "@id":"sdo:result",
+      "@type" : ["sdo:Product","sdo:DataDownload"]
+    },
+    "performer" :
+    {
+      "@id" : "sdo:performer",
+      "@type": "sdo:Person"
+    },
+    "comments" : {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+  }
+}

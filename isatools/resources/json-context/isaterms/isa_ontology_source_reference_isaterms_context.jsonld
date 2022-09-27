@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "@language": "en",
+    "sdo": "http://schema.org",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologySourceReference": "sdo:DefinedTermSet",
+    "type" :{
+        "@id" : "sdo:",
+        "@type" : "sdo:DefinedTermSet"
+    },
+    "title" : {
+        "@id": "sdo:headline",
+        "@type":"sdo:Text"
+    },
+    "description" : {
+         "@id": "sdo:description",
+         "@type":"sdo:Text"
+    } ,
+    "name": {
+      "@id": "sdo:name",
+      "@type":"sdo:Text"
+    },
+    "file" :  {
+         "@id" : "sdo:url",
+         "@type": "sdo:DataDownload"
+    },  
+    "version" : {
+         "@id": "sdo:version",
+         "@type": "sdo:Text"
+         },
+    "comments": {
+      "@id" : "sdo:comment",
+      "@type" : "sdo:Comment"
+    }
+  }
+}

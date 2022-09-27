@@ -1,5 +1,7 @@
 [run]
 source = isatools
+relative_files = True
+
 omit =
     docs/*
     features/*

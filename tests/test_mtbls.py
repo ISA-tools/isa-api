@@ -1,24 +1,14 @@
 from __future__ import absolute_import
-import unittest
-from unittest.mock import patch, mock_open
+
+from unittest.mock import patch
 from isatools.net import mtbls as MTBLS
-import shutil
-import os
 
 import unittest
 import os
-import pandas as pd
+
 import shutil
 import tempfile
-from io import StringIO
-
-from isatools import isatab
-from isatools.io import isatab_parser
-from isatools.isatab import ProcessSequenceFactory
-from isatools.model import *
-from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
-from isatools.isatab import IsaTabDataFrame
 
 
 class TestMtblsIO(unittest.TestCase):

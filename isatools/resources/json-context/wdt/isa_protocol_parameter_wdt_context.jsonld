@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "@language": "en",
+    "wdt": "http://www.wikidata.org/wiki/",
+        "wdtp": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ProtocolParameter": "wdt:Q7247312",
+    "parameterName":    {
+       "@id": "wdtp:P1448",
+       "@type": "wdt:Q857525"
+    } 
+  }
+}

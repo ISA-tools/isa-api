@@ -1,4 +1,4 @@
-
+_build/
 old-tests/
 
 # Byte-compiled / optimized / DLL files
@@ -133,3 +133,6 @@ venv/
 
 # jupyter notebook output
 isa-cookbook/content/notebooks/notebook-output/
+
+# performance profiles output
+performances/profiles/*
