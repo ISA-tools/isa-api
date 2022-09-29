@@ -11,7 +11,8 @@ from isatools.model.protocol import Protocol
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.source import Source
 from isatools.model.sample import Sample
-from isatools.model.material import LabeledExtract, Extract
+from isatools.model.material import LabeledExtract
+from isatools.model.context import set_context
 
 
 comments = [Comment(name='comment'), Comment(name='comment1', value='value1')]
@@ -248,3 +249,45 @@ class TestSerialize(TestCase):
         }
 
         self.assertEqual(study.to_dict(), expected_dict)
+
+
+class LDTest(TestCase):
+
+    def setUp(self):
+        self.investigation = Investigation()
+
+    def test_to_ld(self):
+        from isatools.model import Comment, OntologySource
+
+        comment_1 = Comment(name='comment_1', value='value_1')
+        comment_2 = Comment(name='comment_2', value='value_2')
+        comment_3 = Comment(name='comment_3', value='value_3')
+        osr_1 = OntologySource(name='osr_1',
+                               file='file_1',
+                               version='version_1',
+                               description='description_1',
+                               comments=[comment_3])
+        role = OntologyAnnotation(term='term_1', id_='oa1', comments=[comment_2])
+        person = Person(first_name='first_name', last_name='last_name', mid_initials='mid_initials', roles=[role])
+        publication = Publication(title='title', status='status', doi='doi')
+
+        design_descriptor = OntologyAnnotation(term='term_2', id_='oa2')
+        protocol = Protocol(name='name', version='version', id_='protocol_id',
+                            parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term='term_3'))],
+                            protocol_type=OntologyAnnotation(term='protocolType', id_='oa4'))
+        study = Study(filename='filename', identifier='identifier', title='title', description='description',
+                      contacts=[person],
+                      publications=[publication],
+                      comments=[comment_1],
+                      design_descriptors=[design_descriptor],
+                      protocols=[protocol])
+
+        self.investigation.comments = [comment_1]
+        self.investigation.ontology_source_references = [osr_1]
+        self.investigation.contacts = [person]
+        self.investigation.publications = [publication]
+        self.investigation.studies = [study]
+
+        print(self.investigation.to_ld())
+        set_context('sdo', False, False)
+        print(self.investigation.to_ld()['studies'][0]['protocols'])

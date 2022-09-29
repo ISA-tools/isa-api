@@ -2,6 +2,8 @@ from os import path
 from re import sub
 from abc import ABCMeta
 
+from isatools.model.identifiable import Identifiable
+
 
 LOCAL_PATH = path.join(path.dirname(__file__), '..', 'resources', 'json-context')
 REMOTE_PATH = 'https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/json-context'
@@ -10,6 +12,12 @@ DEFAULT_CONTEXT = 'obo'
 EXCEPTIONS = {
     'OntologySource': 'OntologySourceReference'
 }
+
+
+def get_name(name):
+    if name in EXCEPTIONS:
+        return EXCEPTIONS[name]
+    return name
 
 
 def camelcase2snakecase(camelcase: str) -> str:
@@ -22,7 +30,7 @@ def gen_id(classname: str) -> str:
     return prefix + str(uuid4())
 
 
-class ContextPath(object):
+class ContextPath:
 
     def __init__(self):
         self.__context = 'obo'
@@ -42,6 +50,7 @@ class ContextPath(object):
         self.__context = val
 
     def get_context(self, classname: str = 'allinone'):
+        classname = get_name(classname)
         classname = camelcase2snakecase(classname)
         name = self.__context
         path_source = path.join(LOCAL_PATH, name) if self.local else REMOTE_PATH + '/%s/' % name
@@ -72,7 +81,22 @@ class LDSerializable(metaclass=ABCMeta):
         self.context = context
 
     def gen_id(self):
+        if isinstance(self, Identifiable):
+            return self.id
         return gen_id(self.__class__.__name__)
 
     def get_context(self):
         return self.context.get_context(classname=self.__class__.__name__)
+
+    def get_ld_attributes(self):
+        return {
+            '@type': get_name(self.__class__.__name__),
+            '@context': self.get_context(),
+            '@id': self.gen_id()
+        }
+
+    def update_isa_object(self, isa_object, ld=False):
+        if not ld:
+            return isa_object
+        isa_object.update(self.get_ld_attributes())
+        return isa_object

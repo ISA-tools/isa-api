@@ -108,18 +108,19 @@ class OntologyAnnotation(Commentable, Identifiable):
     def __ne__(self, other: Any) -> bool:
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         term_source = "" if not self.term_source else self.term_source
         if self.term_source and isinstance(self.term_source, OntologySource):
             term_source = self.term_source.name
 
-        return {
+        ontology_annotation = {
             '@id': self.id,
             'annotationValue': self.term,
             'termSource': term_source,
             'termAccession': self.term_accession,
-            'comments': [comment.to_dict() for comment in self.comments]
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, ontology_annotation):
         self.id = ontology_annotation.get('@id', '')

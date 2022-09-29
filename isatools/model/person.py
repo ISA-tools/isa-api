@@ -206,18 +206,25 @@ class Person(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        person = {
             "address": self.address,
             "affiliation": self.affiliation,
-            "comments": [comment.to_dict() for comment in self.comments],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
             "email": self.email,
             "fax": self.fax,
             "firstName": self.first_name,
             "lastName": self.last_name,
             "midInitials": self.mid_initials,
             "phone": self.phone,
-            "roles": [role.to_dict() for role in self.roles]
+            "roles": [role.to_dict(ld=ld) for role in self.roles]
+        }
+        return self.update_isa_object(person, ld=ld)
+
+    def to_ld(self):
+        return {
+            **self.to_ld_(),
+            "roles": [role.to_ld() for role in self.roles]
         }
 
     def from_dict(self, person):

@@ -231,28 +231,23 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        investigation = {
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
             "publicReleaseDate": self.public_release_date,
             "submissionDate": self.submission_date,
-            "comments": [comment.to_dict() for comment in self.comments],
-            "ontologySourceReferences": [osr.to_dict() for osr in self.ontology_source_references],
-            "people": [person.to_dict() for person in self.contacts],
-            "publications": [publication.to_dict() for publication in self.publications],
-            "studies": [study.to_dict() for study in self.studies]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
+            "ontologySourceReferences": [oS.to_dict(ld=ld) for oS in self.ontology_source_references],
+            "people": [person.to_dict(ld=ld) for person in self.contacts],
+            "publications": [publication.to_dict(ld=ld) for publication in self.publications],
+            "studies": [study.to_dict(ld=ld) for study in self.studies]
         }
+        return self.update_isa_object(investigation, ld=ld)
 
     def to_ld(self):
-        investigation = self.to_dict()
-        investigation["ontologySourceReferences"] = [osr.to_ld() for osr in self.ontology_source_references]
-        investigation["@type"] = "Investigation"
-        investigation["@context"] = self.get_context()
-        investigation["@id"] = self.gen_id()
-        investigation["comments"] = self.comments_ld()
-        return investigation
+        return self.to_dict(ld=True)
 
     def from_dict(self, investigation):
         self.identifier = investigation.get('identifier', '')

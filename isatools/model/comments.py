@@ -54,18 +54,12 @@ class Comment(LDSerializable, object):
     def __ne__(self, other: Any):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        ontology_annotation = {
             "name": self.name,
             "value": self.value
         }
-
-    def to_ld(self):
-        comment = self.to_dict()
-        comment['@id'] = self.gen_id()
-        comment['@type'] = 'Comment'
-        comment["@context"] = self.get_context()
-        return comment
+        return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, comment):
         self.name = comment['name'] if 'name' in comment else ''
@@ -146,5 +140,9 @@ class Commentable(LDSerializable, metaclass=ABCMeta):
             comments.append(comment)
         self.comments = comments
 
-    def comments_ld(self):
-        return [comment.to_ld() for comment in self.comments]
+    def to_ld_(self):
+        return {
+            **self.get_ld_attributes(),
+            **self.to_dict(ld=True),
+            "comments": [comment.to_dict(ld=True) for comment in self.comments]
+        }

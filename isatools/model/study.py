@@ -82,7 +82,6 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
-
         if design_descriptors is None:
             self.__design_descriptors = []
         else:
@@ -336,18 +335,20 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             for target in targets:
                 assay.shuffle_materials(target)
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        study = {
             "filename": self.filename,
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
             "submissionDate": self.submission_date,
             "publicReleaseDate": self.public_release_date,
-            "publications": [publication.to_dict() for publication in self.publications],
-            "people": [person.to_dict() for person in self.contacts],
-            "studyDesignDescriptors": [descriptor.to_dict() for descriptor in self.design_descriptors],
-            "protocols": [protocol.to_dict() for protocol in self.protocols],
+            "publications": [publication.to_dict(ld=ld) for publication in self.publications],
+            "people": [person.to_dict(ld=ld) for person in self.contacts],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
+            "studyDesignDescriptors": [descriptor.to_dict(ld=ld) for descriptor in self.design_descriptors],
+            "protocols": [protocol.to_dict(ld=ld) for protocol in self.protocols],
+
             "materials": {
                 "sources": [source.to_dict() for source in self.sources],
                 "samples": [sample.to_dict() for sample in self.samples],
@@ -357,9 +358,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "factors": [factor.to_dict() for factor in self.factors],
             "characteristicCategories": self.categories_to_dict(),
             "unitCategories": [unit.to_dict() for unit in self.units],
-            "comments": [comment.to_dict() for comment in self.comments],
             "assays": [assay.to_dict() for assay in self.assays]
         }
+        return self.update_isa_object(study, ld=ld)
 
     def from_dict(self, study):
         indexes.reset_process()

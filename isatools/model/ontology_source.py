@@ -116,22 +116,15 @@ class OntologySource(Commentable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        ontology_source_ref = {
             'name': self.name,
             'file': self.file,
             'version': self.version,
             'description': self.description,
-            'comments': [comment.to_dict() for comment in self.comments]
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
-
-    def to_ld(self):
-        ontology_source = self.to_dict()
-        ontology_source['@type'] = 'OntologySource'
-        ontology_source['@context'] = self.get_context()
-        ontology_source['@id'] = self.gen_id()
-        ontology_source["comments"] = self.comments_ld()
-        return ontology_source
+        return self.update_isa_object(ontology_source_ref, ld=ld)
 
     def from_dict(self, ontology_source):
         self.name = ontology_source['name'] if 'name' in ontology_source else ''
