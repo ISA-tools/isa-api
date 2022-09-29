@@ -1,6 +1,8 @@
 import unittest
+from unittest.mock import patch
 
 from isatools.model.comments import Commentable, Comment
+from isatools.model.context import set_context
 
 
 class TestComment(unittest.TestCase):
@@ -48,6 +50,20 @@ class TestComment(unittest.TestCase):
     def test_to_dict(self):
         expected_dict = {'name': 'test_name', 'value': 'test_value'}
         self.assertTrue(self.comment.to_dict() == expected_dict)
+
+    @patch('isatools.model.context.gen_id', return_value='test_id')
+    def test_to_ld(self, mocked_id=''):
+        set_context(local=False)
+        expected_ld = {
+            'name': 'test_name', 'value': 'test_value', '@id': 'test_id', '@type': 'Comment',
+            '@context': 'https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/json-context/'
+                        'obo/isa_allinone_obo_context.jsonld'
+        }
+        self.assertEqual(self.comment.to_ld(), expected_ld)
+        set_context(local=False, combine=False)
+        expected_ld['@context'] = ('https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools'
+                                   '/resources/json-context/obo/isa_comment_obo_context.jsonld')
+        self.assertEqual(self.comment.to_ld(), expected_ld)
 
 
 class TestCommentable(unittest.TestCase):

@@ -4,6 +4,7 @@ from unittest import TestCase
 from isatools.model.investigation import Investigation
 from isatools.model.ontology_source import OntologySource
 from isatools.model.study import Study
+from isatools.model.context import set_context
 
 
 class InvestigationTest(TestCase):
@@ -197,3 +198,41 @@ class InvestigationTest(TestCase):
         investigation.from_dict(expected_dict)
         self.assertEqual(investigation.to_dict(), expected_dict)
         self.assertIsInstance(investigation.publications[0].status.term_source, OntologySource)
+
+
+class LDTest(TestCase):
+
+    def setUp(self):
+        self.investigation = Investigation()
+
+    def test_to_ld(self):
+        from isatools.model import Comment, OntologySource
+
+        investigation = Investigation()
+        comment_1 = Comment(name='comment_1', value='value_1')
+        comment_2 = Comment(name='comment_2', value='value_2')
+        comment_3 = Comment(name='comment_3', value='value_3')
+        osr_1 = OntologySource(name='osr_1',
+                               file='file_1',
+                               version='version_1',
+                               description='description_1',
+                               comments=[comment_3])
+        osr_2 = OntologySource(name='osr_2', file='file_2', version='version_2', description='description_2')
+
+        self.investigation.comments = [comment_1]
+        self.investigation.ontology_source_references = [osr_1]
+        investigation.comments = [comment_2]
+        investigation.ontology_source_references = [osr_2]
+
+        print(investigation.to_ld())
+        print(self.investigation.to_ld())
+
+        set_context('sdo', False, False)
+        print(investigation.to_ld())
+        print(self.investigation.to_ld())
+
+        set_context('sdo', True, False)
+        print(investigation.to_ld())
+        print(self.investigation.to_ld())
+
+

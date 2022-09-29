@@ -7,8 +7,8 @@ from isatools.model.study import Study
 from isatools.model.identifiable import Identifiable
 from isatools.model.person import Person
 from isatools.model.publication import Publication
-from isatools.graphQL.models import IsaSchema
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.graphQL.models import IsaSchema
 
 
 class Investigation(Commentable, MetadataMixin, Identifiable, object):
@@ -239,13 +239,20 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             "publicReleaseDate": self.public_release_date,
             "submissionDate": self.submission_date,
             "comments": [comment.to_dict() for comment in self.comments],
-            "ontologySourceReferences": [
-                ontology_source.to_dict() for ontology_source in self.ontology_source_references
-            ],
+            "ontologySourceReferences": [osr.to_dict() for osr in self.ontology_source_references],
             "people": [person.to_dict() for person in self.contacts],
             "publications": [publication.to_dict() for publication in self.publications],
             "studies": [study.to_dict() for study in self.studies]
         }
+
+    def to_ld(self):
+        investigation = self.to_dict()
+        investigation["ontologySourceReferences"] = [osr.to_ld() for osr in self.ontology_source_references]
+        investigation["@type"] = "Investigation"
+        investigation["@context"] = self.get_context()
+        investigation["@id"] = self.gen_id()
+        investigation["comments"] = self.comments_ld()
+        return investigation
 
     def from_dict(self, investigation):
         self.identifier = investigation.get('identifier', '')
