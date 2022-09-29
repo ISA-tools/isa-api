@@ -157,9 +157,7 @@ def getj(mtbls_study_id):
 def get_data_files(mtbls_study_id, factor_selection=None):
     tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
-        raise IOError(
-            'There was a problem retrieving study {study_id}. Does it exist?'
-            .format(study_id=mtbls_study_id))
+        raise IOError('There was a problem retrieving study {study_id}. Does it exist?'.format(study_id=mtbls_study_id))
 
     else:
         result = slice_data_files(tmp_dir, factor_selection=factor_selection)
@@ -206,12 +204,9 @@ def slice_data_files(dir, factor_selection=None):
 
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-            df = df[[x for x in df.columns if
-                     'Factor Value' in x or 'Sample Name' in x]]
-            df.columns = ['sample' if 'Sample Name' in x else x for x in
-                          df.columns]
-            df.columns = [x[13:-1] if 'Factor Value' in x else x for x in
-                          df.columns]
+            df = df[[x for x in df.columns if 'Factor Value' in x or 'Sample Name' in x]]
+            df.columns = ['sample' if 'Sample Name' in x else x for x in df.columns]
+            df.columns = [x[13:-1] if 'Factor Value' in x else x for x in df.columns]
             df.columns = [x.replace(' ', '_') for x in df.columns]
             # build query
             sample_names_series = df['sample'].drop_duplicates()
@@ -226,18 +221,16 @@ def slice_data_files(dir, factor_selection=None):
                 for factor_name, factor_value in factor_selection.items():
                     factor_name = factor_name.replace(' ', '_')
                     factor_query += '{factor_name}=="{factor_value}" and '\
-                        .format(factor_name=factor_name,
-                                factor_value=factor_value)
+                        .format(factor_name=factor_name, factor_value=factor_value)
                 factor_query = factor_query[:-5]
                 try:
-                    query_results = df.query(factor_query)[
-                        'sample'].drop_duplicates()
+                    query_results = df.query(factor_query)['sample'].drop_duplicates()
                     results = query_results.apply(lambda x: {
                         'sample': x,
                         'data_files': [],
                         'query_used': factor_selection
                     }).tolist()
-                except pd.core.computation.ops.UndefinedVariableError:
+                except pd.errors.UndefinedVariableError:
                     pass
 
     # now collect the data files relating to the samples

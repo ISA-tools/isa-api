@@ -136,3 +136,4 @@ isa-cookbook/content/notebooks/notebook-output/
 
 # performance profiles output
 performances/profiles/*
+.github/workflows/_build.yml
