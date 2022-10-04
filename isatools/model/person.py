@@ -221,12 +221,6 @@ class Person(Commentable, Identifiable):
         }
         return self.update_isa_object(person, ld=ld)
 
-    def to_ld(self):
-        return {
-            **self.to_ld_(),
-            "roles": [role.to_ld() for role in self.roles]
-        }
-
     def from_dict(self, person):
         self.address = person['address'] if 'address' in person else ''
         self.affiliation = person['affiliation'] if 'affiliation' in person else ''

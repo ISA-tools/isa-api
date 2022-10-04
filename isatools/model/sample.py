@@ -144,15 +144,16 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        sample = {
             "@id": self.id,
             "name": self.name,
-            "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
-            "factorValues": [factor_values.to_dict() for factor_values in self.factor_values],
+            "characteristics": [characteristic.to_dict(ld=ld) for characteristic in self.characteristics],
+            "factorValues": [factor_values.to_dict(ld=ld) for factor_values in self.factor_values],
             "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
-            "comments": [comment.to_dict() for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(sample, ld)
 
     def from_dict(self, sample):
         self.id = sample.get('@id', '')

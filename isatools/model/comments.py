@@ -139,10 +139,3 @@ class Commentable(LDSerializable, metaclass=ABCMeta):
             comment.from_dict(comment_data)
             comments.append(comment)
         self.comments = comments
-
-    def to_ld_(self):
-        return {
-            **self.get_ld_attributes(),
-            **self.to_dict(ld=True),
-            "comments": [comment.to_dict(ld=True) for comment in self.comments]
-        }

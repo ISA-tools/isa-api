@@ -348,17 +348,17 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "comments": [comment.to_dict(ld=ld) for comment in self.comments],
             "studyDesignDescriptors": [descriptor.to_dict(ld=ld) for descriptor in self.design_descriptors],
             "protocols": [protocol.to_dict(ld=ld) for protocol in self.protocols],
-
             "materials": {
-                "sources": [source.to_dict() for source in self.sources],
-                "samples": [sample.to_dict() for sample in self.samples],
-                "otherMaterials": [mat.to_dict() for mat in self.other_material],
+                "sources": [source.to_dict(ld=ld) for source in self.sources],
+                "samples": [sample.to_dict(ld=ld) for sample in self.samples],
+                "otherMaterials": [mat.to_dict(ld=ld) for mat in self.other_material],
             },
-            "processSequence": [process.to_dict() for process in self.process_sequence],
-            "factors": [factor.to_dict() for factor in self.factors],
-            "characteristicCategories": self.categories_to_dict(),
-            "unitCategories": [unit.to_dict() for unit in self.units],
-            "assays": [assay.to_dict() for assay in self.assays]
+            "processSequence": [process.to_dict(ld=ld) for process in self.process_sequence],
+            "factors": [factor.to_dict(ld=ld) for factor in self.factors],
+            "characteristicCategories": self.categories_to_dict(ld=ld),
+            "unitCategories": [unit.to_dict(ld=ld) for unit in self.units],
+
+            "assays": [assay.to_dict(ld=ld) for assay in self.assays]
         }
         return self.update_isa_object(study, ld=ld)
 

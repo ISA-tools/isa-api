@@ -10,7 +10,9 @@ REMOTE_PATH = 'https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatoo
 DEFAULT_CONTEXT = 'obo'
 
 EXCEPTIONS = {
-    'OntologySource': 'OntologySourceReference'
+    'OntologySource': 'OntologySourceReference',
+    'Characteristic': 'MaterialAttributeValueNumber',
+    'StudyFactor': 'Factor'
 }
 
 
@@ -90,7 +92,7 @@ class LDSerializable(metaclass=ABCMeta):
 
     def get_ld_attributes(self):
         return {
-            '@type': get_name(self.__class__.__name__),
+            '@type': get_name(self.__class__.__name__).replace('Number', ''),
             '@context': self.get_context(),
             '@id': self.gen_id()
         }

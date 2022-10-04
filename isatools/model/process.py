@@ -226,12 +226,12 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         parameter_values = []
         for param in self.parameter_values:
             value = ''
             if param.value:
-                value = param.value.to_dict() if isinstance(param.value, OntologyAnnotation) else param.value
+                value = param.value.to_dict(ld=ld) if isinstance(param.value, OntologyAnnotation) else param.value
             parameter_value = {
                 "category": {"@id": param.category.id} if param.category else '',
                 "value": value
@@ -248,13 +248,13 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             "parameterValues": parameter_values,
             "inputs": [{'@id': x.id} for x in self.inputs],
             "outputs": [{'@id': x.id} for x in self.outputs],
-            "comments": [comment.to_dict() for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
         if self.prev_process:
             serialized['previousProcess'] = {'@id': self.prev_process.id}
         if self.next_process:
             serialized['nextProcess'] = {'@id': self.next_process.id}
-        return serialized
+        return self.update_isa_object(serialized, ld)
 
     def from_dict(self, process):
         self.id = process.get('@id', '')

@@ -90,14 +90,14 @@ class FactorValue(Commentable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         category = ''
         if self.factor_name:
             category = {"@id": self.factor_name.id}
 
         value = self.value if self.value else ''
         if isinstance(value, OntologyAnnotation):
-            value = value.to_dict()
+            value = value.to_dict(ld=ld)
 
         factor_value = {'category': category, 'value': value}
 
@@ -107,7 +107,7 @@ class FactorValue(Commentable):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
             factor_value['unit'] = {"@id": id_}
 
-        return factor_value
+        return self.update_isa_object(factor_value, ld=ld)
 
     def from_dict(self, factor_value):
         self.factor_name = indexes.get_factor(factor_value["category"]["@id"])
@@ -202,13 +202,14 @@ class StudyFactor(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        study_factor = {
             '@id': self.id,
             'factorName': self.name,
-            'factorType': self.factor_type.to_dict() if self.factor_type else '',
-            'comments': [comment.to_dict() for comment in self.comments]
+            'factorType': self.factor_type.to_dict(ld=ld) if self.factor_type else '',
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(study_factor, ld=ld)
 
     def from_dict(self, factor):
         self.id = factor.get('@id', '')

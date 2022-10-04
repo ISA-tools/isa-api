@@ -59,11 +59,11 @@ class TestComment(unittest.TestCase):
             '@context': 'https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/json-context/'
                         'obo/isa_allinone_obo_context.jsonld'
         }
-        self.assertEqual(self.comment.to_ld(), expected_ld)
+        self.assertEqual(self.comment.to_dict(ld=True), expected_ld)
         set_context(local=False, combine=False)
         expected_ld['@context'] = ('https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools'
                                    '/resources/json-context/obo/isa_comment_obo_context.jsonld')
-        self.assertEqual(self.comment.to_ld(), expected_ld)
+        self.assertEqual(self.comment.to_dict(ld=True), expected_ld)
 
 
 class TestCommentable(unittest.TestCase):
