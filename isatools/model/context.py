@@ -12,7 +12,9 @@ DEFAULT_CONTEXT = 'obo'
 EXCEPTIONS = {
     'OntologySource': 'OntologySourceReference',
     'Characteristic': 'MaterialAttributeValueNumber',
-    'StudyFactor': 'Factor'
+    'StudyFactor': 'Factor',
+    'DataFile': "Data",
+    'RawDataFile': "RawData"
 }
 
 
@@ -28,7 +30,7 @@ def camelcase2snakecase(camelcase: str) -> str:
 
 def gen_id(classname: str) -> str:
     from uuid import uuid4
-    prefix = '#' + camelcase2snakecase(classname) + '/'
+    prefix = 'https://isa.org/' + camelcase2snakecase(classname) + '#'
     return prefix + str(uuid4())
 
 
