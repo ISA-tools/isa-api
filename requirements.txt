@@ -13,7 +13,7 @@ iso8601~=0.1.14
 chardet~=4.0.0
 jinja2~=3.0.1
 beautifulsoup4~=4.9.3
-mzml2isa==1.0.3
+mzml2isa==1.0.4
 biopython~=1.79
 progressbar2~=3.53.1
 deepdiff~=5.5.0
