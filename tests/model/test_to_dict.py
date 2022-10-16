@@ -260,8 +260,6 @@ class LDTest(TestCase):
         self.investigation = Investigation()
 
     def test_to_ld(self):
-        from isatools.model import Comment, OntologySource
-        import json
 
         self.maxDiff = None
 
@@ -318,7 +316,7 @@ class LDTest(TestCase):
         investigation.from_dict(inv_ld)
         self.assertEqual(investigation.to_dict(), self.investigation.to_dict())
 
-        set_context('wdt', False, False)
+        set_context(vocab='wdt', all_in_one=False, local=False)
         inv_ld = self.investigation.to_ld()
         investigation = Investigation()
         investigation.from_dict(inv_ld)
