@@ -271,7 +271,10 @@ class Treatment(Element):
                     if factor_value.factor_name == DURATION_FACTOR)
 
     def update_duration(self, duration_value, duration_unit=None):
-        pass  # TODO
+        if not isinstance(duration_value, Number):
+            raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        self.__duration.value = duration_value
+        self.__duration.unit = duration_unit
 
 
 class StudyCell(object):
@@ -862,7 +865,7 @@ class ProductNode(SequenceNode):
             for characteristic in characteristics:
                 self.add_characteristic(characteristic)
         except TypeError as e:
-            raise AttributeError(e)
+            raise TypeError(e)
 
     def add_characteristic(self, characteristic):
         if not isinstance(characteristic, (str, Characteristic)):
@@ -1723,7 +1726,7 @@ class StudyArm(object):
                 )
 
     def __str__(self):
-        return """"{0}(
+        return """{0}(
                name={name},
                source_type={source_type},
                group_size={group_size}, 
@@ -2585,17 +2588,17 @@ class StudyDesign(object):
         return study
 
     def __repr__(self):
-        return '{0}.{1}(' \
-               'identifier={identifier}, ' \
-               'name={name}, ' \
-               'design_type={design_type}, ' \
-               'description={description} ' \
-               'source_type={source_type}, ' \
-               'study_arms={study_arms}' \
-               ')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
-                          identifier=self.identifier, name=self.name,
-                          design_type=self.design_type, description=self.description,
-                          source_type=self.source_type)
+        return '{0}.{1}('\
+'identifier={identifier}, '\
+'name={name}, '\
+'design_type={design_type}, '\
+'description={description} '\
+'source_type={source_type}, '\
+'study_arms={study_arms}'\
+')'.format(self.__class__.__module__, self.__class__.__name__, study_arms=self.study_arms,
+identifier=self.identifier, name=self.name,
+design_type=self.design_type, description=self.description,
+source_type=self.source_type)
 
     def __str__(self):
         return """{0}(
