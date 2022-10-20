@@ -74,9 +74,9 @@ __author__ = 'massi'
 def intersperse(lst, item):
     """
     Utility method to intersperse an item in a list
-    :param lst: 
+    :param lst:
     :param item: the item to be interspersed
-    :return: 
+    :return:
     """
     result = [item] * (len(lst) * 2 - 1)
     result[0::2] = lst
@@ -271,7 +271,10 @@ class Treatment(Element):
                     if factor_value.factor_name == DURATION_FACTOR)
 
     def update_duration(self, duration_value, duration_unit=None):
-        pass  # TODO
+        if not isinstance(duration_value, Number):
+            raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        self.__duration.value = duration_value
+        self.__duration.unit = duration_unit
 
 
 class StudyCell(object):
@@ -294,8 +297,8 @@ class StudyCell(object):
                'name={name}, ' \
                'elements={elements}, ' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=[
-                sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
-                ])
+            sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
+        ])
 
     def __str__(self):
         return """{0}(
@@ -348,7 +351,7 @@ class StudyCell(object):
         :param previous_elements: the list of previous elements
         :param new_element: the element to insert in the list of previous elements
         :param insertion_index: the position in the list where the new element will be inserted
-        :return: bool 
+        :return: bool
         """
         if insertion_index is None:
             insertion_index = len(previous_elements)
@@ -400,7 +403,7 @@ class StudyCell(object):
     @staticmethod
     def _treatment_check(previous_elements):
         """
-        :param previous_elements: the list of previous elements 
+        :param previous_elements: the list of previous elements
         :return: bool
         """
         not_allowed_elements = filter(lambda el: getattr(el, 'type', None) in [SCREEN, RUN_IN, FOLLOW_UP],
@@ -431,8 +434,8 @@ class StudyCell(object):
         - Run-in NonTreatments must either be in a 1-element StudyCell or in a 2-element if preceded by a Screen
         - A Follow-up NonTreatment must be in a 1-element StudyCell
         - Wash-out NonTreatments cannot be chained one after the other
-        - Concomitant Treatments (if provided in a set) must have the same duration 
-        :return: 
+        - Concomitant Treatments (if provided in a set) must have the same duration
+        :return:
         """
         index = len(self.elements) if not isinstance(element_index, int) else \
             element_index if abs(element_index) < len(self.elements) else len(self.elements)
@@ -440,7 +443,7 @@ class StudyCell(object):
             raise ValueError('element must be either an Element or a set of treatments')
         is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
             self._treatment_check(self.elements) if isinstance(element, Treatment) else \
-            self._concomitant_treatments_check(element) if isinstance(element, set) else False
+                self._concomitant_treatments_check(element) if isinstance(element, set) else False
         if is_valid:
             self.__elements.insert(index, element)
         else:
@@ -450,7 +453,7 @@ class StudyCell(object):
         """
         Evaluates whether the current cell contains a NonTreatment of a specific type
         :param non_treatment_type: str - specifies whether it is a SCREEN, RUN-IN, WASHOUT, or FOLLOW-UP
-        :return: bool 
+        :return: bool
         """
         return any(el for el in self.elements if isinstance(el, NonTreatment) and el.type == non_treatment_type)
 
@@ -543,23 +546,20 @@ class CharacteristicDecoder(object):
         )
 
     def loads_characteristic(self, characteristic_dict):
-
-        category = characteristic_dict['category']
-        if isinstance(characteristic_dict["category"], dict):
-            category = self.loads_ontology_annotation(characteristic_dict["category"])
-
-        value = characteristic_dict['value']
-        if isinstance(characteristic_dict["value"], dict):
-            value = self.loads_ontology_annotation(characteristic_dict["value"])
-
-        characteristic = Characteristic(category=category, value=value)
-
+        characteristic = Characteristic(
+            category=self.loads_ontology_annotation(characteristic_dict["category"]) if isinstance(
+                characteristic_dict["category"], dict
+            ) else characteristic_dict['category'],
+            value=self.loads_ontology_annotation(characteristic_dict["value"]) if isinstance(
+                characteristic_dict["value"], dict
+            ) else characteristic_dict['value']
+        )
         if 'unit' in characteristic_dict:
-            characteristic.unit = None
-            if isinstance(characteristic_dict["unit"], dict):
-                characteristic.unit = self.loads_ontology_annotation(characteristic_dict["unit"])
-            elif isinstance(characteristic_dict["unit"], str):
-                characteristic.unit = characteristic_dict["unit"]
+            characteristic.unit = self.loads_ontology_annotation(characteristic_dict["unit"]) if isinstance(
+                characteristic_dict["unit"], dict
+            ) else characteristic_dict["unit"] if isinstance(
+                characteristic_dict["unit"], str
+            ) else None
         return characteristic
 
     def loads(self, json_text):
@@ -810,7 +810,7 @@ class ProductNode(SequenceNode):
         return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
                'characteristics={2.characteristics}, size={2.size}, ' \
                'extension={2.extension})'.format(
-                self.__class__.__module__, self.__class__.__name__, self)
+            self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
         return """{0}(
@@ -865,7 +865,7 @@ class ProductNode(SequenceNode):
             for characteristic in characteristics:
                 self.add_characteristic(characteristic)
         except TypeError as e:
-            raise AttributeError(e)
+            raise TypeError(e)
 
     def add_characteristic(self, characteristic):
         if not isinstance(characteristic, (str, Characteristic)):
@@ -942,8 +942,8 @@ class QualityControl(object):
     def __repr__(self):
         return '{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, ' \
                'interspersed_sample_types={2.interspersed_sample_types})'.format(
-                self.__class__.__module__, self.__class__.__name__, self
-                )
+            self.__class__.__module__, self.__class__.__name__, self
+        )
 
     def __str__(self):
         return """{0}(
@@ -1096,7 +1096,6 @@ class AssayGraph(object):
                 for i, pv_combination in enumerate(pv_combinations):
                     log.debug('pv_combination: {0}'.format(pv_combination))
                     if not previous_nodes:
-                        protocol_pvs = []
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4()) if use_guids else '{0}_{1}'.format(
                                 re.sub(r'\s+', '_', node_name), str(i).zfill(ZFILL_WIDTH)
@@ -1104,27 +1103,18 @@ class AssayGraph(object):
                             name='AT{}-{}'.format(assay_plan_dict.get('id', 0), node_name),
                             # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                             protocol_type=node_key,
-                            # parameter_values=[
-                            #     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                            #                    value=pv)
-                            #     for ix, pv in enumerate(pv_combination)
-                            # ],
+                            parameter_values=[
+                                ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                               value=pv)
+                                for ix, pv in enumerate(pv_combination)
+                            ],
                             replicates=replicates
                         )
-                        for ix, pv in enumerate(pv_combination):
-                            protocol_param = ProtocolParameter(parameter_name=pv_names[ix])
-                            protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
-                            pv = ParameterValue(category=protocol_param, value=pv)
-                            pv.id = "#parameter_value/" + str(id(pv))
-                            protocol_pvs.append(pv)
-
-                        protocol_node.parameter_values = protocol_pvs
                         res.add_node(protocol_node)
                         current_nodes.append(protocol_node)
                     else:
                         for j, prev_node in enumerate(previous_nodes):
                             # log.debug('count: {0}, prev_node: {1}'.format(j, prev_node.id))
-                            protocol_pvs = []
                             protocol_node = ProtocolNode(
                                 id_=str(uuid.uuid4()) if use_guids else '{0}_{1}_{2}'.format(
                                     re.sub(r'\s+', '_', node_name), str(i).zfill(3), str(j).zfill(3)
@@ -1132,21 +1122,13 @@ class AssayGraph(object):
                                 name='AT{}-{}'.format(assay_plan_dict.get('id', 0), node_name),
                                 # protocol_type='assay{} - {}'.format(assay_plan_dict.get('id', 0), node_key),
                                 protocol_type=node_key,
-                                # parameter_values=[
-                                #     ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
-                                #                    value=pv)
-                                #     for ix, pv in enumerate(pv_combination)
-                                # ],
+                                parameter_values=[
+                                    ParameterValue(category=ProtocolParameter(parameter_name=pv_names[ix]),
+                                                   value=pv)
+                                    for ix, pv in enumerate(pv_combination)
+                                ],
                                 replicates=replicates
                             )
-                            for ix, pv in enumerate(pv_combination):
-                                protocol_param = ProtocolParameter(parameter_name=pv_names[ix])
-                                protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
-                                pv = ParameterValue(category=protocol_param, value=pv)
-                                pv.id = "#parameter_value/" + str(id(pv))
-                                protocol_pvs.append(pv)
-
-                            protocol_node.parameter_values = protocol_pvs
                             res.add_node(protocol_node)
                             res.add_link(prev_node, protocol_node)
                             current_nodes.append(protocol_node)
@@ -1208,9 +1190,9 @@ class AssayGraph(object):
 
     @property
     def links(self):
-        """ 
-        A private method generating the edges of the 
-        graph "graph". 
+        """
+        A private method generating the edges of the
+        graph "graph".
         """
         return set((node, target_node) for node, target_nodes in self.__graph_dict.items()
                    for target_node in target_nodes)
@@ -1340,9 +1322,9 @@ class AssayGraph(object):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return '{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, ' \
                'nodes={2.nodes}, links={3}, quality_control={2.quality_control})'.format(
-                self.__class__.__module__, self.__class__.__name__, self,
-                sorted(links, key=lambda link: (link[0], link[1]))
-                )
+            self.__class__.__module__, self.__class__.__name__, self,
+            sorted(links, key=lambda link: (link[0], link[1]))
+        )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
@@ -1523,8 +1505,8 @@ class SampleAndAssayPlan(object):
         sample_plan = sorted(self.sample_plan, key=lambda s_t: s_t.id)
         return '{0}.{1}(name={2.name}, sample_plan={4}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
-                self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
-                )
+            self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
+        )
 
     def __str__(self):
         return """{0}(
@@ -1625,14 +1607,11 @@ class SampleAndAssayPlanDecoder(object):
     @staticmethod
     def loads_parameter_value(pv_dict):
         pv_name = pv_dict["name"]
-        protocol_param = ProtocolParameter(
-            parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
-            if isinstance(pv_name, dict) else pv_name
-        )
-        protocol_param.id = "#protocol_parameter/" + str(id(protocol_param))
-
         return ParameterValue(
-            category=protocol_param,
+            category=ProtocolParameter(
+                parameter_name=CharacteristicDecoder.loads_ontology_annotation(pv_name)
+                if isinstance(pv_name, dict) else pv_name
+            ),
             value=pv_dict["value"],
             unit=pv_dict.get('unit', None)
         )
@@ -1736,18 +1715,18 @@ class StudyArm(object):
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
-                self.__class__.__module__, self.__class__.__name__,
-                name=self.name, source_type=self.source_type,
-                source_characteristics=[sc for sc in sorted(
-                    self.source_characteristics,
-                    key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
-                )],
-                group_size=self.group_size,
-                cells=self.cells, sample_assay_plans=self.sample_assay_plans
-                )
+            self.__class__.__module__, self.__class__.__name__,
+            name=self.name, source_type=self.source_type,
+            source_characteristics=[sc for sc in sorted(
+                self.source_characteristics,
+                key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
+            )],
+            group_size=self.group_size,
+            cells=self.cells, sample_assay_plans=self.sample_assay_plans
+        )
 
     def __str__(self):
-        return """"{0}(
+        return """{0}(
                name={name},
                source_type={source_type},
                group_size={group_size}, 
@@ -1866,14 +1845,14 @@ class StudyArm(object):
         There are a few insertion rules for cells
         - To insert a cell containing a SCREEN the arm_map *must* be empty
         - To insert a cell containing a RUN-IN alone the arm_map *must* contain a SCREEN-only cell and no other cells
-        - To insert a cell containing one or more Treatments (and washouts) the arm_map must not contain a FOLLOW-UP 
-            cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a 
+        - To insert a cell containing one or more Treatments (and washouts) the arm_map must not contain a FOLLOW-UP
+            cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a
             NonTreatment of any type as the latest element
         - To insert a cell containing a FOLLOW-UP the arm_map *must not* contain already a FOLLOW-UP cell
             Moreover, this cell cannot be inserted immediately after a SCREEN or a RUN-IN cell
         :param cell: (StudyCell)
         :param sample_assay_plan: (SampleAndAssayPlans/None)
-        :return: 
+        :return:
         """
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
@@ -2078,8 +2057,8 @@ class StudyDesign(object):
 
     def add_study_arm(self, study_arm):
         """
-        add a StudyArm object to the study_arm set. 
-        Arms of diff 
+        add a StudyArm object to the study_arm set.
+        Arms of diff
         :param study_arm: StudyArm
         """
         if not isinstance(study_arm, StudyArm):
@@ -2127,7 +2106,7 @@ class StudyDesign(object):
         :param cell_name: a cell name in a study arm
         :param sample_number: sample Number
         :param sample_type: sample Term
-        :return: 
+        :return:
         """
         idarr = []
         if source_name != '':
@@ -2147,7 +2126,7 @@ class StudyDesign(object):
     def _generate_sources(self):
         """
         Private method to be used in 'generate_isa_study'.
-        :return: 
+        :return:
         """
         src_map = dict()
         for s_ix, s_arm in enumerate(self.study_arms):
@@ -2162,16 +2141,15 @@ class StudyDesign(object):
                                             value=OntologyAnnotation(term=s_arm.source_type)
                                         )
                                     ] + [sc for sc in sorted(
-                                        s_arm.source_characteristics, key=lambda sc: sc.category.term
-                                        if isinstance(sc.category, OntologyAnnotation) else sc.category
-                                        )]
+                        s_arm.source_characteristics, key=lambda sc: sc.category.term
+                        if isinstance(sc.category, OntologyAnnotation) else sc.category
+                    )]
                 )
-                src.id = "#source/" + str(id(src))
-                # src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
-                #                              s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
-                #                              # start counting from 1
-                #                              subj_n
-                #                              )
+                src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
+                                             s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
+                                             # start counting from 1
+                                             subj_n
+                                             )
                 src.name = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
                                                s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
                                                # start counting from 1
@@ -2247,14 +2225,13 @@ class StudyDesign(object):
                                 derives_from=[source],
                                 comments=[is_treatment_comment]
                             )
-                            sample.id = "#sample/" + str(id(sample))
                             if sample_type.category not in characteristic_categories:
                                 characteristic_categories.append(sample_type.category)
 
                             sample_batches[sample_node].append(sample)
                             sample_count += 1
                             process = Process(
-                                # id_=str(uuid.uuid4()),
+                                id_=str(uuid.uuid4()),
                                 name="#sampling_process/" + str(sample_count),
                                 executes_protocol=sampling_protocol, inputs=[source], outputs=[sample],
                                 performer=performer,
@@ -2269,7 +2246,6 @@ class StudyDesign(object):
                                     )
                                 ]
                             )
-                            process.id = "#process/" + str(id(process))
                             process_sequence.append(process)
 
                 for sample_node in sample_assay_plan.sample_plan:
@@ -2486,7 +2462,7 @@ class StudyDesign(object):
         :return: either a Sample or a Material or a DataFile. So far only RawDataFile is supported among files
         """
         if isinstance(node, ProtocolNode):
-            process = Process(
+            return Process(
 
                 name='{}_S{}_DAE_R{}'.format(  # DAE: DataAcquisitionEvent
                     assay_file_prefix,
@@ -2502,33 +2478,23 @@ class StudyDesign(object):
                 inputs=[],
                 outputs=[],
             )
-            process.id = "#process/" + str(id(process))
-            return process
-
         if isinstance(node, ProductNode):
             if node.type == SAMPLE:
                 return Sample(
-                    id_='{}_S{}_Sample-R{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
                     name='{}_S{}_Sample-R{}'.format(assay_file_prefix, start_node_index, counter[SAMPLE]),
                     characteristics=node.characteristics
                 )
 
             if node.type == EXTRACT:
-                extract = Extract(
+                return Extract(
                     name='{}_S{}_Extract-R{}'.format(assay_file_prefix, start_node_index, counter[EXTRACT]),
                     characteristics=node.characteristics
                 )
-                extract.id = "#extract/" + str(id(extract))
-                return extract
-
             if node.type == LABELED_EXTRACT:
-                labeled_extract = LabeledExtract(
+                return LabeledExtract(
                     name='{}_S{}_LE-R{}'.format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
                     characteristics=node.characteristics
                 )
-                labeled_extract.id = "#labeled_extract/" + str(id(labeled_extract))
-                return labeled_extract
-
             # under the hypothesis that we deal only with raw data files
             # derived data file would require a completely separate approach
             if node.type == DATA_FILE:
@@ -2556,7 +2522,7 @@ class StudyDesign(object):
                         PostTranslationalModificationAssignmentFile, AcquisitionParameterDataFile
                     }
                     file_extension = '.{}'.format(node.extension) if node.extension else ''
-                    isaclass = isa_class(
+                    return isa_class(
                         filename='{}_S{}_DAE_R{}_{}{}'.format(
                             assay_file_prefix,
                             start_node_index,
@@ -2565,12 +2531,9 @@ class StudyDesign(object):
                             file_extension
                         )
                     )
-                    isaclass.id = "#data_file/" + str(id(isaclass))
-                    return isaclass
-
                 except StopIteration:
                     file_extension = '.{}'.format(node.extension) if node.extension else ''
-                    raw_data_file = RawDataFile(
+                    return RawDataFile(
                         filename='{}_S{}_DAE_R{}_{}{}'.format(
                             assay_file_prefix,
                             start_node_index,
@@ -2579,8 +2542,6 @@ class StudyDesign(object):
                             file_extension
                         )
                     )
-                    raw_data_file.id = "#raw_data_file/" + str(id(raw_data_file))
-                    return raw_data_file
 
     def generate_isa_study(self, identifier=None):
         """
@@ -2614,7 +2575,7 @@ class StudyDesign(object):
         # study_charac_categories = []
         study.characteristic_categories.append(DEFAULT_SOURCE_TYPE.category)
         study.factors, new_protocols, study.samples, study_charac_categories, study.assays, study.process_sequence, \
-            study.ontology_source_references = \
+        study.ontology_source_references = \
             self._generate_samples_and_assays(
                 sources_map, study.protocols[0], study_config['performers'][0]['name']
             )
@@ -2680,7 +2641,6 @@ class QualityControlService(object):
         if not isinstance(study_design, StudyDesign):
             raise TypeError('study must be a valid StudyDesign object')
         qc_study = deepcopy(study) if in_place is False else study
-        all_samples = []
         for arm in study_design.study_arms:
             for cell, study_assay_plan in arm.arm_map.items():
                 if study_assay_plan:
@@ -2689,7 +2649,7 @@ class QualityControlService(object):
                         if assay_graph.quality_control:
                             # CHECK the assumption here is that an assay file can unequivocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
-                            # Such an assumption is correct as far as the Assay filename convention is not modified
+                            # Such an assumption is correct as far a the Assay filename convention is not modified
                             measurement_type, technology_type = assay_graph.measurement_type, \
                                                                 assay_graph.technology_type
                             assay_filename = urlify('a_{0}_{1}_{2}.txt'.format(
@@ -2709,32 +2669,23 @@ class QualityControlService(object):
                             log.debug('Number of input samples for assay {0} are {1}'.format(
                                 assay_filename, len(samples_in_assay_to_expand)
                             ))
-                            # qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
-                            #     = cls._generate_quality_control_samples(
-                            #         assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
-                            #         # FIXME? the assumption here is that the first protocol is the sampling protocol
-                            #         sampling_protocol=qc_study.protocols[0]
-                            #     )
                             qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
-                                = cls._generate_quality_control_samples_no_cell(
-                                 assay_graph.quality_control, sample_size=len(samples_in_assay_to_expand),
-                                 sampling_protocol=qc_study.protocols[0]
-                                )
-
+                                = cls._generate_quality_control_samples(
+                                assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                                # FIXME? the assumption here is that the first protocol is the sampling protocol
+                                sampling_protocol=qc_study.protocols[0]
+                            )
                             qc_study.sources += qc_sources
-                            # qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
-                            qc_study.samples += qc_samples_pre_run + qc_samples_post_run
+                            qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
                             for qc_samples in qc_samples_interspersed.values():
                                 qc_study.samples.extend(qc_samples)
-                            # qc_study.process_sequence.extend(qc_processes)
-                            qc_study.process_sequence += qc_processes
+                            qc_study.process_sequence.extend(qc_processes)
                             augmented_samples = cls._augment_sample_batch_with_qc_samples(
-                                samples_in_assay_to_expand, pre_run_samples=qc_samples_pre_run,
+                                samples_in_assay_to_expand, pre_run_samples=qc_samples_post_run,
                                 post_run_samples=qc_samples_post_run,
                                 interspersed_samples=qc_samples_interspersed
                             )
-                            all_samples = all_samples+augmented_samples
-                            qc_study.assays[index] = StudyDesign.generate_assay(assay_graph, all_samples)
+                            qc_study.assays[index] = StudyDesign.generate_assay(assay_graph, augmented_samples)
         return qc_study
 
     @staticmethod
@@ -2793,8 +2744,8 @@ class QualityControlService(object):
             sample = QualityControlSample(
                 name='SMP-QC-PRE-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
-                # characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
-                #                  else qc_pre.characteristics[-1]],
+                characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
+                                 else qc_pre.characteristics[-1]],
                 derives_from=[dummy_source]
             )
             qc_samples_pre_run.append(sample)
@@ -2830,21 +2781,6 @@ class QualityControlService(object):
                     derives_from=[dummy_source],
                 )
                 qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
-                process = Process(
-                    executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
-                    performer=performer,
-                    date_=datetime.date.isoformat(datetime.date.today()),
-                    parameter_values=[
-                        ParameterValue(
-                            category=sampling_protocol.get_param(RUN_ORDER),
-                            value=-1
-                        ), ParameterValue(
-                            category=sampling_protocol.get_param(STUDY_CELL),
-                            value=str(study_cell.name)
-                        )
-                    ]
-                )
-                qc_processes.append(process)
         log.debug("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
         assert isinstance(qc_post, ProductNode)
@@ -2856,8 +2792,8 @@ class QualityControlService(object):
             sample = QualityControlSample(
                 name='SMP-QC-POST-{}_{}_{}'.format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
-                # characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
-                #                  else qc_post.characteristics[-1]],
+                characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
+                                 else qc_post.characteristics[-1]],
                 derives_from=[dummy_source]
             )
             qc_samples_post_run.append(sample)
@@ -2872,119 +2808,6 @@ class QualityControlService(object):
                     ), ParameterValue(
                         category=sampling_protocol.get_param(STUDY_CELL),
                         value=str(study_cell.name)
-                    )
-                ]
-            )
-            qc_processes.append(process)
-            i += 1
-        log.debug("Completed post-batch samples")
-        return qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes
-
-    @staticmethod
-    def _generate_quality_control_samples_no_cell(quality_control,
-                                                  sample_size=0,
-                                                  sampling_protocol=Protocol(),
-                                                  performer=None):
-        """
-        This method generates all the QC samples for a specific quality_control plan
-        :param quality_control: A QualityControl object
-        :param sample_size:
-        :param sampling_protocol:
-        :param performer:
-        :return:
-        """
-        log.debug("Quality control sample size = {0}".format(sample_size))
-        qc_sources = []
-        qc_samples_pre_run = []
-        qc_samples_post_run = []
-        qc_samples_interspersed = {}
-        qc_processes = []
-        if not isinstance(quality_control, QualityControl):
-            raise TypeError()
-
-        qc_pre = quality_control.pre_run_sample_type
-        assert isinstance(qc_pre, ProductNode)
-        for i in range(qc_pre.size):
-            dummy_source = QualityControlSource(
-                name='SRC-QC-PRE-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
-            )
-            qc_sources.append(dummy_source)
-            sample = QualityControlSample(
-                name='SMP-QC-PRE-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
-                factor_values=[],
-                # characteristics=[qc_pre.characteristics[i] if i < len(qc_pre.characteristics)
-                #                  else qc_pre.characteristics[-1]],
-                derives_from=[dummy_source]
-            )
-            qc_samples_pre_run.append(sample)
-            process = Process(
-                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
-                performer=performer,
-                date_=datetime.date.isoformat(datetime.date.today()),
-                parameter_values=[
-                    ParameterValue(
-                        category=sampling_protocol.get_param(RUN_ORDER),
-                        value=-1
-                    )
-                ]
-            )
-            qc_processes.append(process)
-        log.debug("Completed pre-batch samples")
-
-        for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
-            log.debug("sample node is {0}".format(sample_node))
-            log.debug("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
-            qc_samples_interspersed[(sample_node, interspersing_interval)] = []
-            for i in range(interspersing_interval, sample_size, interspersing_interval):
-                dummy_source = QualityControlSource(
-                    name='SRC-QC-INT-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
-                )
-                qc_sources.append(dummy_source)
-                sample = QualityControlSample(
-                    name='SMP-QC-INT-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
-                    factor_values=[],
-                    characteristics=sample_node.characteristics,
-                    derives_from=[dummy_source],
-                )
-                qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
-
-                process = Process(
-                    executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
-                    performer=performer,
-                    date_=datetime.date.isoformat(datetime.date.today()),
-                    parameter_values=[
-                        ParameterValue(
-                            category=sampling_protocol.get_param(RUN_ORDER),
-                            value=-1
-                        )
-                    ]
-                )
-                qc_processes.append(process)
-        log.debug("Completed interspersed samples")
-
-        qc_post = quality_control.post_run_sample_type
-        assert isinstance(qc_post, ProductNode)
-        for i in range(qc_post.size):
-            dummy_source = QualityControlSource(
-                name='SRC-QC-POST-{}_{}'.format(SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
-            )
-            qc_sources.append(dummy_source)
-            sample = QualityControlSample(
-                name='SMP-QC-POST-{}_{}'.format(QC_SAMPLE_NAME, str(i).zfill(4)),
-                factor_values=[],
-                # characteristics=[qc_post.characteristics if i < len(qc_post.characteristics)
-                #                  else qc_post.characteristics[-1]],
-                derives_from=[dummy_source]
-            )
-            qc_samples_post_run.append(sample)
-            process = Process(
-                executes_protocol=sampling_protocol, inputs=[dummy_source], outputs=[sample],
-                performer=performer,
-                date_=datetime.date.isoformat(datetime.date.today()),
-                parameter_values=[
-                    ParameterValue(
-                        category=sampling_protocol.get_param(RUN_ORDER),
-                        value=-1
                     )
                 ]
             )
@@ -3209,7 +3032,8 @@ class StudyDesignFactory(object):
         return design
 
     @staticmethod
-    def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None, follow_up_map=None):
+    def compute_parallel_design(treatments_map, group_sizes, screen_map=None, run_in_map=None,
+                                washout_map=None, follow_up_map=None):
         """
         Computes the parallel trial design on the basis of a number of
         treatments, each of them mapped to a SampleAndAssayPlans object. Optionally, NonTreatments can be provided
@@ -3224,6 +3048,8 @@ class StudyDesignFactory(object):
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type RUN-IN
+        :param washout_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
+                            must be of type WASHOUT. A WASHOUT cell will be added between each pair of Treatment cell
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the parallel design. It contains T study_arms, where T is the number of Treatments
@@ -3323,7 +3149,7 @@ class StudyDesignFactory(object):
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
-                            must be of type RUN-IN 
+                            must be of type RUN-IN
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. It contains 1 study arm
@@ -3369,7 +3195,7 @@ class StudyDesignFactory(object):
                                       If an integer is provided all the output arms will have the same group_size
                                       If a tuple/list of integers is provided its length must equal T! where
                                       T is the number of Treatments in the treatment map
-        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT.
                          A WASHOUT cell will be added between each pair of Treatment cell
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
@@ -3423,12 +3249,12 @@ class StudyDesignFactory(object):
         :param sample_assay_plan - SampleAndAssayPlans. This sample+assay plan will be applied to the multi-element
                                    cell built from the treatments provided a the first parameter
         :param group_size - int The size of the group of the study arm.
-        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT.
                          A WASHOUT cell will be added between each pair of Treatment cell
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
-                            must be of type RUN-IN 
+                            must be of type RUN-IN
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
