@@ -3,7 +3,6 @@ import os
 from functools import reduce
 import json
 
-import self as self
 import yaml
 import networkx as nx
 import uuid
