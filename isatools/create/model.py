@@ -74,9 +74,9 @@ __author__ = 'massi'
 def intersperse(lst, item):
     """
     Utility method to intersperse an item in a list
-    :param lst: 
+    :param lst:
     :param item: the item to be interspersed
-    :return: 
+    :return:
     """
     result = [item] * (len(lst) * 2 - 1)
     result[0::2] = lst
@@ -271,7 +271,10 @@ class Treatment(Element):
                     if factor_value.factor_name == DURATION_FACTOR)
 
     def update_duration(self, duration_value, duration_unit=None):
-        pass  # TODO
+        if not isinstance(duration_value, Number):
+            raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        self.__duration.value = duration_value
+        self.__duration.unit = duration_unit
 
 
 class StudyCell(object):
@@ -294,8 +297,8 @@ class StudyCell(object):
                'name={name}, ' \
                'elements={elements}, ' \
                ')'.format(self.__class__.__module__, self.__class__.__name__, name=self.name, elements=[
-                sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
-                ])
+            sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements
+        ])
 
     def __str__(self):
         return """{0}(
@@ -348,7 +351,7 @@ class StudyCell(object):
         :param previous_elements: the list of previous elements
         :param new_element: the element to insert in the list of previous elements
         :param insertion_index: the position in the list where the new element will be inserted
-        :return: bool 
+        :return: bool
         """
         if insertion_index is None:
             insertion_index = len(previous_elements)
@@ -400,7 +403,7 @@ class StudyCell(object):
     @staticmethod
     def _treatment_check(previous_elements):
         """
-        :param previous_elements: the list of previous elements 
+        :param previous_elements: the list of previous elements
         :return: bool
         """
         not_allowed_elements = filter(lambda el: getattr(el, 'type', None) in [SCREEN, RUN_IN, FOLLOW_UP],
@@ -431,8 +434,8 @@ class StudyCell(object):
         - Run-in NonTreatments must either be in a 1-element StudyCell or in a 2-element if preceded by a Screen
         - A Follow-up NonTreatment must be in a 1-element StudyCell
         - Wash-out NonTreatments cannot be chained one after the other
-        - Concomitant Treatments (if provided in a set) must have the same duration 
-        :return: 
+        - Concomitant Treatments (if provided in a set) must have the same duration
+        :return:
         """
         index = len(self.elements) if not isinstance(element_index, int) else \
             element_index if abs(element_index) < len(self.elements) else len(self.elements)
@@ -440,7 +443,7 @@ class StudyCell(object):
             raise ValueError('element must be either an Element or a set of treatments')
         is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
             self._treatment_check(self.elements) if isinstance(element, Treatment) else \
-            self._concomitant_treatments_check(element) if isinstance(element, set) else False
+                self._concomitant_treatments_check(element) if isinstance(element, set) else False
         if is_valid:
             self.__elements.insert(index, element)
         else:
@@ -450,7 +453,7 @@ class StudyCell(object):
         """
         Evaluates whether the current cell contains a NonTreatment of a specific type
         :param non_treatment_type: str - specifies whether it is a SCREEN, RUN-IN, WASHOUT, or FOLLOW-UP
-        :return: bool 
+        :return: bool
         """
         return any(el for el in self.elements if isinstance(el, NonTreatment) and el.type == non_treatment_type)
 
@@ -807,7 +810,7 @@ class ProductNode(SequenceNode):
         return '{0}.{1}(id={2.id}, type={2.type}, name={2.name}, ' \
                'characteristics={2.characteristics}, size={2.size}, ' \
                'extension={2.extension})'.format(
-                self.__class__.__module__, self.__class__.__name__, self)
+            self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
         return """{0}(
@@ -862,7 +865,7 @@ class ProductNode(SequenceNode):
             for characteristic in characteristics:
                 self.add_characteristic(characteristic)
         except TypeError as e:
-            raise AttributeError(e)
+            raise TypeError(e)
 
     def add_characteristic(self, characteristic):
         if not isinstance(characteristic, (str, Characteristic)):
@@ -939,8 +942,8 @@ class QualityControl(object):
     def __repr__(self):
         return '{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, ' \
                'interspersed_sample_types={2.interspersed_sample_types})'.format(
-                self.__class__.__module__, self.__class__.__name__, self
-                )
+            self.__class__.__module__, self.__class__.__name__, self
+        )
 
     def __str__(self):
         return """{0}(
@@ -1187,9 +1190,9 @@ class AssayGraph(object):
 
     @property
     def links(self):
-        """ 
-        A private method generating the edges of the 
-        graph "graph". 
+        """
+        A private method generating the edges of the
+        graph "graph".
         """
         return set((node, target_node) for node, target_nodes in self.__graph_dict.items()
                    for target_node in target_nodes)
@@ -1319,9 +1322,9 @@ class AssayGraph(object):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return '{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, ' \
                'nodes={2.nodes}, links={3}, quality_control={2.quality_control})'.format(
-                self.__class__.__module__, self.__class__.__name__, self,
-                sorted(links, key=lambda link: (link[0], link[1]))
-                )
+            self.__class__.__module__, self.__class__.__name__, self,
+            sorted(links, key=lambda link: (link[0], link[1]))
+        )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
@@ -1502,8 +1505,8 @@ class SampleAndAssayPlan(object):
         sample_plan = sorted(self.sample_plan, key=lambda s_t: s_t.id)
         return '{0}.{1}(name={2.name}, sample_plan={4}, assay_plan={2.assay_plan}, ' \
                'sample_to_assay_map={3})'.format(
-                self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
-                )
+            self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
+        )
 
     def __str__(self):
         return """{0}(
@@ -1712,18 +1715,18 @@ class StudyArm(object):
                'group_size={group_size}, ' \
                'cells={cells}, ' \
                'sample_assay_plans={sample_assay_plans})'.format(
-                self.__class__.__module__, self.__class__.__name__,
-                name=self.name, source_type=self.source_type,
-                source_characteristics=[sc for sc in sorted(
-                    self.source_characteristics,
-                    key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
-                )],
-                group_size=self.group_size,
-                cells=self.cells, sample_assay_plans=self.sample_assay_plans
-                )
+            self.__class__.__module__, self.__class__.__name__,
+            name=self.name, source_type=self.source_type,
+            source_characteristics=[sc for sc in sorted(
+                self.source_characteristics,
+                key=lambda sc: sc.category if isinstance(sc.category, str) else sc.category.term
+            )],
+            group_size=self.group_size,
+            cells=self.cells, sample_assay_plans=self.sample_assay_plans
+        )
 
     def __str__(self):
-        return """"{0}(
+        return """{0}(
                name={name},
                source_type={source_type},
                group_size={group_size}, 
@@ -1842,14 +1845,14 @@ class StudyArm(object):
         There are a few insertion rules for cells
         - To insert a cell containing a SCREEN the arm_map *must* be empty
         - To insert a cell containing a RUN-IN alone the arm_map *must* contain a SCREEN-only cell and no other cells
-        - To insert a cell containing one or more Treatments (and washouts) the arm_map must not contain a FOLLOW-UP 
-            cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a 
+        - To insert a cell containing one or more Treatments (and washouts) the arm_map must not contain a FOLLOW-UP
+            cell. Moreover if the cell contains a WASHOUT we must ensure that the previous cell does not contain a
             NonTreatment of any type as the latest element
         - To insert a cell containing a FOLLOW-UP the arm_map *must not* contain already a FOLLOW-UP cell
             Moreover, this cell cannot be inserted immediately after a SCREEN or a RUN-IN cell
         :param cell: (StudyCell)
         :param sample_assay_plan: (SampleAndAssayPlans/None)
-        :return: 
+        :return:
         """
         if not isinstance(cell, StudyCell):
             raise TypeError('{0} is not a StudyCell object'.format(cell))
@@ -2054,8 +2057,8 @@ class StudyDesign(object):
 
     def add_study_arm(self, study_arm):
         """
-        add a StudyArm object to the study_arm set. 
-        Arms of diff 
+        add a StudyArm object to the study_arm set.
+        Arms of diff
         :param study_arm: StudyArm
         """
         if not isinstance(study_arm, StudyArm):
@@ -2103,7 +2106,7 @@ class StudyDesign(object):
         :param cell_name: a cell name in a study arm
         :param sample_number: sample Number
         :param sample_type: sample Term
-        :return: 
+        :return:
         """
         idarr = []
         if source_name != '':
@@ -2123,7 +2126,7 @@ class StudyDesign(object):
     def _generate_sources(self):
         """
         Private method to be used in 'generate_isa_study'.
-        :return: 
+        :return:
         """
         src_map = dict()
         for s_ix, s_arm in enumerate(self.study_arms):
@@ -2138,9 +2141,9 @@ class StudyDesign(object):
                                             value=OntologyAnnotation(term=s_arm.source_type)
                                         )
                                     ] + [sc for sc in sorted(
-                                        s_arm.source_characteristics, key=lambda sc: sc.category.term
-                                        if isinstance(sc.category, OntologyAnnotation) else sc.category
-                                        )]
+                        s_arm.source_characteristics, key=lambda sc: sc.category.term
+                        if isinstance(sc.category, OntologyAnnotation) else sc.category
+                    )]
                 )
                 src.id = self._idgen_sources(DEFAULT_STUDY_IDENTIFIER,
                                              s_arm.numeric_id if s_arm.numeric_id > -1 else s_ix + 1,
@@ -2572,7 +2575,7 @@ class StudyDesign(object):
         # study_charac_categories = []
         study.characteristic_categories.append(DEFAULT_SOURCE_TYPE.category)
         study.factors, new_protocols, study.samples, study_charac_categories, study.assays, study.process_sequence, \
-            study.ontology_source_references = \
+        study.ontology_source_references = \
             self._generate_samples_and_assays(
                 sources_map, study.protocols[0], study_config['performers'][0]['name']
             )
@@ -2668,9 +2671,9 @@ class QualityControlService(object):
                             ))
                             qc_sources, qc_samples_pre_run, qc_samples_interspersed, qc_samples_post_run, qc_processes \
                                 = cls._generate_quality_control_samples(
-                                    assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
-                                    # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                    sampling_protocol=qc_study.protocols[0]
+                                assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
+                                # FIXME? the assumption here is that the first protocol is the sampling protocol
+                                sampling_protocol=qc_study.protocols[0]
                                 )
                             qc_study.sources += qc_sources
                             qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
@@ -3146,7 +3149,7 @@ class StudyDesignFactory(object):
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
-                            must be of type RUN-IN 
+                            must be of type RUN-IN
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. It contains 1 study arm
@@ -3192,7 +3195,7 @@ class StudyDesignFactory(object):
                                       If an integer is provided all the output arms will have the same group_size
                                       If a tuple/list of integers is provided its length must equal T! where
                                       T is the number of Treatments in the treatment map
-        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT.
                          A WASHOUT cell will be added between each pair of Treatment cell
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
@@ -3246,12 +3249,12 @@ class StudyDesignFactory(object):
         :param sample_assay_plan - SampleAndAssayPlans. This sample+assay plan will be applied to the multi-element
                                    cell built from the treatments provided a the first parameter
         :param group_size - int The size of the group of the study arm.
-        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT. 
+        :param washout - NonTreatment. The NonTreatment must be of type WASHOUT.
                          A WASHOUT cell will be added between each pair of Treatment cell
         :param screen_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type SCREEN
         :param run_in_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
-                            must be of type RUN-IN 
+                            must be of type RUN-IN
         :param follow_up_map - a tuple containing the pair (NonTreatment, SampleAndAssayPlans/None). The NonTreatment
                             must be of type FOLLOW-UP
         :return: StudyDesign - the single arm design. As the name surmises, it contains 1 study arm
