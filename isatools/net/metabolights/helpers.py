@@ -212,15 +212,6 @@ def get_study_command(isa_format, study_id, output) -> str:
 
 
 def get_factors_command(study_id: str, output: str) -> list:
-    """ This function gets the command to download a Metabolights study
-
-    :param study_id: The Metabolights ID
-    :param output: The file to write the results to
-    :return: The list of factors found
-
-    Example usage:
-        command = get_factors_command('MTBLS1')
-    """
     investigation = MTBLSInvestigation(study_id)
     with open(output, 'w+') as f:
         factors = investigation.get_factors_command(f)
