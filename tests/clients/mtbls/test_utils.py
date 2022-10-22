@@ -7,15 +7,15 @@ from isatools.net.metabolights.utils import MTBLSDownloader
 class TestMTBLSDownloader(unittest.TestCase):
 
     def test_singleton(self, mock_ftp):
-        expected_list = ['MTBLS1', 'MTBLS2']
         mock = mock_ftp.return_value
         mock.login.return_value = "230"
         mock.cwd.return_value = "123"
-        mock.nlst.return_value = expected_list
+        mock.nlst.return_value = ['MTBLS1', 'MTBLS2']
         a = MTBLSDownloader()
         b = MTBLSDownloader()
         self.assertEqual(id(a), id(b))
-        self.assertEqual(a.get_mtbls_list(), expected_list)
+        files = a.get_mtbls_list()
+        self.assertEqual(len(files), 2)
 
     def test_connection_error(self, mock_ftp):
         def mock_login(*args, **kwargs):

@@ -104,7 +104,7 @@ class TestMTBLSInvestigationBase(unittest.TestCase):
 
         with self.assertRaises(Exception) as context:
             investigation.get_investigation()
-        self.assertEqual(str(context.exception), "Could not download a file: Mock FTP Failure")
+        self.assertEqual(str(context.exception), "Could not download a file: Mock FTP Failure for MTBLS12")
 
         mock.nlst.return_value = ['a.txt', 'b.txt']
         with self.assertRaises(Exception) as context:
