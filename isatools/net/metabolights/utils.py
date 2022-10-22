@@ -34,6 +34,11 @@ class MTBLSDownloader:
         except Exception as e:
             raise Exception("Cannot contact the remote FTP server: %s" % e)
 
+    def get_mtbls_list(self) -> list:
+        """Get list of MTBLS studies from the FTP server"""
+        self.ftp.cwd(MTBLS_BASE_DIR)
+        return list(self.ftp.nlst())
+
     def __del__(self) -> None:
         if hasattr(self, 'ftp'):
             log.info("Closing FTP connection")

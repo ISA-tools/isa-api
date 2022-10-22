@@ -5,7 +5,7 @@ from logging import getLogger, CRITICAL
 from ftplib import error_perm
 
 from isatools.net.metabolights.core import MTBLSInvestigationBase, MTBLSInvestigation
-from isatools.net.metabolights.utils import MTBLSDownloader
+from isatools.model import DataFile
 
 log = getLogger('isatools')
 log.level = CRITICAL
@@ -21,6 +21,14 @@ with open(path.join(MTBLS_1_PATH, 's_MTBLS1.txt')) as mock_file:
     MTBLS_s = mock_file.read()
 with open(path.join(MTBLS_1_PATH, 'a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt')) as mock_file:
     MTBLS_a = mock_file.read()
+
+
+class TextIO:
+    def __init__(self):
+        self.name = "test"
+
+    def write(self, s):
+        pass
 
 
 class MockFTP:
@@ -104,9 +112,10 @@ class TestMTBLSInvestigationBase(unittest.TestCase):
         self.assertEqual(str(context.exception), "Could not find an investigation file for this study")
 
 
-@patch('isatools.net.metabolights.core.MTBLSDownloader', autospec=True)
 class TestMTBLSInvestigation(unittest.TestCase):
+    investigation = MTBLSInvestigation(mtbls_id="MTBLS1", output_format="tab", ftp_server=MockFTP)
 
+    @patch('isatools.net.metabolights.core.MTBLSDownloader', autospec=True)
     def test_constructor(self, mock_mtbls):
         mock = mock_mtbls.return_value
         mock.ftp = MockFTP
@@ -114,69 +123,91 @@ class TestMTBLSInvestigation(unittest.TestCase):
         self.assertIsInstance(investigation, MTBLSInvestigationBase)
         self.assertIsInstance(investigation, MTBLSInvestigation)
 
-    def test_load_dataframes(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS12", output_format="tab")
-        investigation.load_dataframes()
-        self.assertEqual(len(investigation.dataframes.keys()), 3)
+    def test_load_dataframes(self):
+        self.investigation.load_dataframes()
+        self.assertEqual(len(self.investigation.dataframes.keys()), 3)
+        self.investigation.get()
+        self.assertEqual(len(self.investigation.dataframes.keys()), 3)
+
+    def test_load_json(self):
+        self.investigation.load_json()
+        self.assertEqual(self.investigation.investigation.identifier, "MTBLS1")
 
         # hitting cache
-        investigation.get()
-        self.assertEqual(len(investigation.dataframes.keys()), 3)
+        self.investigation.get()
+        self.assertEqual(self.investigation.investigation.identifier, "MTBLS1")
 
-    def test_load_investigation(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS12", output_format="json")
-        investigation.load_investigation()
-        self.assertEqual(investigation.investigation.identifier, "MTBLS1")
+    def test_get_factor_names(self):
+        self.assertEqual(self.investigation.get_factor_names(), {'Gender', 'Metabolic syndrome'})
 
-        # hitting cache
-        investigation.get()
-        self.assertEqual(investigation.investigation.identifier, "MTBLS1")
+    def test_get_factor_values(self):
+        self.assertEqual(self.investigation.get_factor_values('Gender'), {'Male', 'Female'})
 
-    def test_get_factor_names(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        self.assertEqual(investigation.get_factor_names(), {'Gender', 'Metabolic syndrome'})
-
-    def test_get_factor_values(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        self.assertEqual(investigation.get_factor_values('Gender'), {'Male', 'Female'})
-
-    def test_get_data_files(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
+    def test_get_data_files(self):
         factor_selection = {"Gender": "Male", "Metabolic syndrome": "Control Group"}
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        data_files = investigation.get_data_files(factor_selection=factor_selection)
+        data_files = self.investigation.get_data_files(factor_selection=factor_selection)
         self.assertEqual(len(data_files), 56)
         self.assertEqual(len(data_files[0]['data_files']), 1)
-        self.assertEqual(len(investigation.get_data_files({"Gender": "Male"})), 78)
+        self.assertEqual(len(self.investigation.get_data_files({"Gender": "Male"})), 78)
 
-    def test_get_factors_summary(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        self.assertEqual(len(investigation.get_factors_summary()), 132)
+    def test_get_factors_summary(self):
+        self.assertEqual(len(self.investigation.get_factors_summary()), 132)
 
-    def test_get_study_groups(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        study_groups = investigation.get_study_groups()
+    def test_get_study_groups(self):
+        study_groups = self.investigation.get_study_groups()
         self.assertEqual(len(study_groups), 4)
 
-    def test_get_study_groups_samples_sizes(self, mock_mtbls):
-        mock = mock_mtbls.return_value
-        mock.ftp = MockFTP
-        investigation = MTBLSInvestigation(mtbls_id="MTBLS1")
-        study_groups = investigation.get_study_groups_samples_sizes()
+    def test_get_study_groups_samples_sizes(self):
+        study_groups = self.investigation.get_study_groups_samples_sizes()
         self.assertEqual(study_groups[0][1], 22)
         self.assertEqual(study_groups[1][1], 26)
         self.assertEqual(study_groups[2][1], 56)
         self.assertEqual(study_groups[3][1], 28)
+
+    def test_get_sources_for_sample(self):
+        sources_for_sample = self.investigation.get_sources_for_sample("ADG10003u_066")
+        self.assertEqual(sources_for_sample, ['ADG10003u'])
+
+    def test_get_data_for_sample(self):
+        data_for_sample = self.investigation.get_data_for_sample("ADG10003u_066")
+        for data in data_for_sample:
+            self.assertIsInstance(data, DataFile)
+
+    def test_get_study_groups_data_sizes(self):
+        study_groups_data_sizes = self.investigation.get_study_groups_data_sizes()
+        self.assertEqual(study_groups_data_sizes[0][1], 22)
+        self.assertEqual(study_groups_data_sizes[1][1], 26)
+        self.assertEqual(study_groups_data_sizes[2][1], 56)
+        self.assertEqual(study_groups_data_sizes[3][1], 28)
+
+    def test_get_characteristics_summary(self):
+        characteristics_summary = self.investigation.get_characteristics_summary()
+        self.assertEqual(len(characteristics_summary), 132)
+
+    def test_get_study_variable_summary(self):
+        study_variable_summary = self.investigation.get_study_variable_summary()
+        self.assertEqual(len(study_variable_summary), 132)
+
+    def test_get_study_group_factors(self):
+        study_group_factors = self.investigation.get_study_group_factors()
+        self.assertEqual(len(study_group_factors), 4)
+
+    @unittest.skip("get_filtered_df_on_factors_list is not working")
+    def test_get_filtered_df_on_factors_list(self):
+        from isatools.net.mtbls import get_filtered_df_on_factors_list
+        t = get_filtered_df_on_factors_list('MTBLS1')
+        filtered_df = self.investigation.get_filtered_df_on_factors_list()
+        self.assertEqual(t, filtered_df)
+
+    def test_get_factors_command(self):
+        output_file = TextIO()
+        factors = self.investigation.get_factors_command(output_file)
+        for factor in factors:
+            self.assertIn(factor, ['Metabolic syndrome', 'Gender'])
+
+    def test_get_factor_values_command(self):
+        output_file = TextIO()
+        factor_values = self.investigation.get_factor_values_command('Gender', output_file)
+        for fv in factor_values:
+            self.assertIn(fv, ['Male', 'Female'])
+
