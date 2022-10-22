@@ -108,7 +108,7 @@ class MTBLSInvestigationBase:
         file_val = line.split('\t')[1]
         if file_val.startswith('"') and file_val.endswith('"'):
             return file_val[1:-1]
-        return file_val
+        return file_val  # pragma: no cover
 
     def __download_file(self, filename):
         ftp_dir_path = EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + self.mtbls_id + '/' + filename
