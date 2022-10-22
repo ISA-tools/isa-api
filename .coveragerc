@@ -9,6 +9,7 @@ omit =
     isatools/convert/experimental/*
     isatools/net/storage_adapter.py
     isatools/io/isatab_configurator.py
+    isatools/net/metabolights/__init__.py
 
 [report]
 exclude_lines =
