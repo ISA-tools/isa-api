@@ -157,15 +157,6 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
             with open(glob.glob(path.join(self.output_dir, 'i_*.txt'))[0], encoding='utf-8') as fp:
                 self.investigation = isa_load(fp)
 
-    def get(self) -> str | object:
-        if self.format == 'json':
-            self.load_dataframes()
-            self.load_json()
-            return self.investigation
-        elif self.format == 'tab':
-            self.load_dataframes()
-            return self.output_dir
-
     def get_factor_names(self) -> set:
         self.load_dataframes()
         factors = set()
@@ -358,12 +349,15 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
                           (query[13:-2], list(df2['Raw_Spectral_Data_File'])))
         return queries
 
+    ''' Not implemented '''
+    def get_study_command(self, isa_format, output):
+        raise NotImplementedError()
+
     def get_factors_command(self, output_file: TextIO) -> list:
         log.info("Getting factors for study %s. Writing to %s." % (self.mtbls_id, output_file.name))
         factor_names = self.get_factor_names()
-        # pragma: no cover
         if factor_names is None:
-            raise RuntimeError("Error downloading factors.")
+            raise RuntimeError("Error downloading factors.")  # pragma: no cover
         dump(list(factor_names), output_file, indent=4)
         log.debug("Factor names written")
         return list(factor_names)
@@ -371,14 +365,19 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
     def get_factor_values_command(self, factor: str, output: TextIO) -> list:
         log.info("Getting values for factor %s in study %s. Writing to %s." % (factor, self.mtbls_id, output.name))
         fvs = self.get_factor_values(factor)
-        # pragma: no cover
         if fvs is None:
-            raise RuntimeError("Error downloading factor values.")
+            raise RuntimeError("Error downloading factor values.")  # pragma: no cover
         dump(list(fvs), output, indent=4)
         log.debug("Factor values written")
         return list(fvs)
 
-    def get_data_files_command(self, output: TextIO, json_query: str = None, galaxy_parameters_file: str = None):
+    ''' Not Tested '''
+    def get_data_files_command(
+            self,
+            output: TextIO,
+            json_query: str = None,
+            galaxy_parameters_file: str = None
+    ) -> None:
         log.info("Getting data files for study %s. Writing to %s." % (self.mtbls_id, output.name))
         if json_query:
             log.debug("This is the specified query:\n%s", json_query)
@@ -403,3 +402,25 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         dump(list(data_files), output, indent=4)
         log.info("Finished writing data files to {}".format(output))
 
+    ''' Not Tested '''
+    def get_summary_command(self, json_output: TextIO, html_output: str):
+        log.info("Getting summary for study %s. Writing to %s." % (self.mtbls_id, json_output.name))
+        summary = self.get_study_variable_summary()
+        if summary is not None:
+            dump(summary, json_output, indent=4)
+            log.debug("Summary dumped to JSON")
+            html_summary = build_html_summary(summary)
+            with html_output as html_fp:
+                html_fp.write(html_summary)
+            return summary
+        raise RuntimeError("Error getting study summary")
+
+    ''' Not Tested '''
+    def datatype_get_summary_command(self, output):
+        log.info("Getting summary for study %s. Writing to %s." % (self.mtbls_id, output.name))
+        summary = self.get_study_variable_summary()
+        if summary is not None:
+            dump(summary, output, indent=4)
+            log.debug("Summary dumped")
+            return summary
+        raise RuntimeError("Error getting study summary")

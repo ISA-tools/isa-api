@@ -201,3 +201,46 @@ def dl_all_mtbls_isatab(target_dir: str) -> int:
         i.get_investigation()
         download_count += 1
     return download_count
+
+
+########################################################################################################################
+# ISA commands for MTBLS
+########################################################################################################################
+
+def get_study_command(isa_format, study_id, output) -> str:
+    raise NotImplementedError('Not implemented yet')
+
+
+def get_factors_command(study_id: str, output: str) -> list:
+    """ This function gets the command to download a Metabolights study
+
+    :param study_id: The Metabolights ID
+    :param output: The file to write the results to
+    :return: The list of factors found
+
+    Example usage:
+        command = get_factors_command('MTBLS1')
+    """
+    investigation = MTBLSInvestigation(study_id)
+    with open(output, 'w+') as f:
+        factors = investigation.get_factors_command(f)
+    return factors
+
+
+def get_factor_values_command(study_id: str, factor: str, output: str) -> list:
+    investigation = MTBLSInvestigation(study_id)
+    with open(output, 'w+') as f:
+        factors = investigation.get_factor_values_command(factor, f)
+    return factors
+
+
+def get_data_files_command(study_id, output, json_query=None, galaxy_parameters_file=None):
+    pass
+
+
+def get_summary_command(study_id, json_output, html_output):
+    pass
+
+
+def datatype_get_summary_command(study_id, output):
+    pass

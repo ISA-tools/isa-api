@@ -124,9 +124,10 @@ class TestMTBLSInvestigation(unittest.TestCase):
         self.assertIsInstance(investigation, MTBLSInvestigation)
 
     def test_load_dataframes(self):
+        self.investigation.downloaded = False
         self.investigation.load_dataframes()
         self.assertEqual(len(self.investigation.dataframes.keys()), 3)
-        self.investigation.get()
+        self.investigation.load_dataframes()
         self.assertEqual(len(self.investigation.dataframes.keys()), 3)
 
     def test_load_json(self):
@@ -134,7 +135,7 @@ class TestMTBLSInvestigation(unittest.TestCase):
         self.assertEqual(self.investigation.investigation.identifier, "MTBLS1")
 
         # hitting cache
-        self.investigation.get()
+        self.investigation.load_json()
         self.assertEqual(self.investigation.investigation.identifier, "MTBLS1")
 
     def test_get_factor_names(self):

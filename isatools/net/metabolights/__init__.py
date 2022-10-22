@@ -17,4 +17,5 @@ from isatools.net.metabolights.helpers import (
     get_mtbls_list,
     dl_all_mtbls_isatab,
 )
+from isatools.net.metabolights.html import build_html_summary, build_html_data_files_list
 from isatools.net.metabolights.core import MTBLSInvestigation
