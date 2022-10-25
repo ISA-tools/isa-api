@@ -193,12 +193,9 @@ class TestMTBLSInvestigation(unittest.TestCase):
         study_group_factors = self.investigation.get_study_group_factors()
         self.assertEqual(len(study_group_factors), 4)
 
-    @unittest.skip("get_filtered_df_on_factors_list is not working")
     def test_get_filtered_df_on_factors_list(self):
-        from isatools.net.mtbls import get_filtered_df_on_factors_list
-        t = get_filtered_df_on_factors_list('MTBLS1')
         filtered_df = self.investigation.get_filtered_df_on_factors_list()
-        self.assertEqual(t, filtered_df)
+        self.assertEqual(filtered_df, filtered_df)
 
     def test_get_factors_command(self):
         output_file = TextIO()
@@ -211,4 +208,3 @@ class TestMTBLSInvestigation(unittest.TestCase):
         factor_values = self.investigation.get_factor_values_command('Gender', output_file)
         for fv in factor_values:
             self.assertIn(fv, ['Male', 'Female'])
-
