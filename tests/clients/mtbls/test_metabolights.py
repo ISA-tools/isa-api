@@ -6,7 +6,7 @@ from logging import getLogger, CRITICAL
 from ftplib import error_perm
 from json import loads as json_loads
 
-from isatools.net.metabolights.core import MTBLSInvestigationBase, MTBLSInvestigation
+from isatools.net.mtbls.core import MTBLSInvestigationBase, MTBLSInvestigation
 from isatools.model import DataFile
 
 log = getLogger('isatools')

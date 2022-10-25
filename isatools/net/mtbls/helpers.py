@@ -3,8 +3,8 @@ from tempfile import mkdtemp
 
 import progressbar
 
-from isatools.net.metabolights.core import MTBLSInvestigation
-from isatools.net.metabolights.utils import MTBLSDownloader
+from isatools.net.mtbls.core import MTBLSInvestigation
+from isatools.net.mtbls.utils import MTBLSDownloader
 
 
 def get(mtbls_study_id: str, target_dir: str = None) -> str:

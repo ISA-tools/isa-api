@@ -1,4 +1,4 @@
-from isatools.net.metabolights.helpers import (
+from isatools.net.mtbls.helpers import (
     get,
     getj,
     get_data_files,
@@ -22,5 +22,5 @@ from isatools.net.metabolights.helpers import (
     get_summary_command,
     datatype_get_summary_command
 )
-from isatools.net.metabolights.html import build_html_summary, build_html_data_files_list
-from isatools.net.metabolights.core import MTBLSInvestigation
+from isatools.net.mtbls.html import build_html_summary, build_html_data_files_list
+from isatools.net.mtbls.core import MTBLSInvestigation

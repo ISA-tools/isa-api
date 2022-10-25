@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from isatools.net.metabolights.utils import MTBLSDownloader
+from isatools.net.mtbls.utils import MTBLSDownloader
 
 
 @patch('isatools.net.metabolights.utils.FTP', autospec=True)

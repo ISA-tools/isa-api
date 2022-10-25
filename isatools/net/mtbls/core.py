@@ -14,8 +14,8 @@ import pandas as pd
 
 from isatools.isatab import load_table, load as isa_load
 from isatools.model import OntologyAnnotation
-from isatools.net.metabolights.utils import MTBLSDownloader, EBI_FTP_SERVER, MTBLS_BASE_DIR, slice_data_files
-from isatools.net.metabolights.html import build_html_summary
+from isatools.net.mtbls.utils import MTBLSDownloader, EBI_FTP_SERVER, MTBLS_BASE_DIR, slice_data_files
+from isatools.net.mtbls.html import build_html_summary
 
 log = logging.getLogger('isatools')
 _RX_FACTOR_VALUE = regex(r'Factor Value\[(.*?)\]')

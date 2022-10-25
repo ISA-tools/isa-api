@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from isatools.net.metabolights.html import build_html_summary, build_html_data_files_list
+from isatools.net.mtbls.html import build_html_summary, build_html_data_files_list
 
 
 class TestHtml(TestCase):
