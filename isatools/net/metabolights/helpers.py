@@ -212,9 +212,17 @@ def get_study_group_factors(mtbls_study_id: str) -> list:
     return investigation.get_study_group_factors()
 
 
-def get_filtered_df_on_factors_list(mtbls_study_id: str) -> None:
-    """ TODO: Need implementation """
-    raise NotImplementedError('Not implemented yet')
+def get_filtered_df_on_factors_list(mtbls_study_id: str) -> list:
+    """ Print the filtered dataframe on factors list and returns the applied queries
+
+    :param mtbls_study_id: Accession number of the Metabolights study
+    :return: a list of applied queries
+
+    Example usage:
+        queries = get_filtered_df_on_factors_list('MTBLS1')
+    """
+    investigation = MTBLSInvestigation(mtbls_study_id)
+    return investigation.get_filtered_df_on_factors_list()
 
 
 def get_mtbls_list() -> list:
@@ -263,10 +271,6 @@ def dl_all_mtbls_isatab(target_dir: str, mtbls_ids: list = None, limit: int = 0)
 ########################################################################################################################
 # ISA commands for MTBLS
 ########################################################################################################################
-
-def get_study_command(isa_format, study_id, output) -> str:
-    """ TODO: Need implementation """
-    raise NotImplementedError('Not implemented yet')
 
 
 def get_factors_command(study_id: str, output: str) -> list:

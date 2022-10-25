@@ -16,7 +16,6 @@ from isatools.net.metabolights.helpers import (
     get_filtered_df_on_factors_list,
     get_mtbls_list,
     dl_all_mtbls_isatab,
-    get_study_command,
     get_factors_command,
     get_factor_values_command,
     get_data_files_command,

@@ -311,7 +311,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
                 factors_list = df[factor_columns].drop_duplicates().to_dict(orient='records')
         return factors_list
 
-    def get_filtered_df_on_factors_list(self):
+    def get_filtered_df_on_factors_list(self) -> list:
         factors_list = self.get_study_group_factors()
         queries = []
 
@@ -320,8 +320,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
             for k, v in factor.items():
                 k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
                 if isinstance(v, str):
-                    v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
-                    query_str.append("{k} == '{v}' and ".format(k=k, v=v))
+                    query_str.append("(%s == '%s') and " % (k, v))
             query_str = ''.join(query_str)[:-4]
             queries.append(query_str)
         for table_file in glob.iglob(path.join(self.output_dir, '[s]_*')):
@@ -337,16 +336,12 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
                     print('Group: %s / Sample_Name: %s' % (query, list(df2['Sample_Name'])))
 
                 if 'Source_Name' in df.columns:
-                    print('Group: %s / Sources_Name: %s' % (query, list(df2['Source_Name'])))
+                    print('Group: %s / Source_Name: %s' % (query, list(df2['Source_Name'])))
 
                 if 'Raw_Spectral_Data_File' in df.columns:
                     print('Group: %s / Raw_Spectral_Data_File: %s' %
                           (query[13:-2], list(df2['Raw_Spectral_Data_File'])))
         return queries
-
-    ''' Not implemented '''
-    def get_study_command(self, isa_format, output):
-        raise NotImplementedError()
 
     def get_factors_command(self, output_file: TextIO) -> list:
         log.info("Getting factors for study %s. Writing to %s." % (self.mtbls_id, output_file.name))
@@ -366,7 +361,6 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         log.debug("Factor values written")
         return list(fvs)
 
-    ''' Not Tested '''
     def get_data_files_command(
             self,
             output: TextIO,
