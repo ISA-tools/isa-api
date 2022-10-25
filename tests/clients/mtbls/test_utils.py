@@ -3,7 +3,7 @@ from unittest.mock import patch
 from isatools.net.mtbls.utils import MTBLSDownloader
 
 
-@patch('isatools.net.metabolights.utils.FTP', autospec=True)
+@patch('isatools.net.mtbls.utils.FTP', autospec=True)
 class TestMTBLSDownloader(unittest.TestCase):
 
     def test_singleton(self, mock_ftp):

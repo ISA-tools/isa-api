@@ -67,7 +67,7 @@ class MockMTBLSDownloader:
 
 class TestMTBLSInvestigationBase(unittest.TestCase):
 
-    @patch('isatools.net.metabolights.core.MTBLSDownloader', returned_value=MockMTBLSDownloader)
+    @patch('isatools.net.mtbls.core.MTBLSDownloader', returned_value=MockMTBLSDownloader)
     def test_properties(self, mock_mtbls):
         with self.assertRaises(TypeError) as context:
             MTBLSInvestigationBase(mtbls_id=12)
@@ -82,14 +82,14 @@ class TestMTBLSInvestigationBase(unittest.TestCase):
         self.assertIsNotNone(investigation.output_dir)
         self.assertEqual(investigation.temp, True)
 
-    @patch('isatools.net.metabolights.core.MTBLSDownloader', autospec=True)
+    @patch('isatools.net.mtbls.core.MTBLSDownloader', autospec=True)
     def test_get_investigation_success(self, mock_mtbls):
         mock = mock_mtbls.return_value
         mock.ftp = MockFTP
         investigation = MTBLSInvestigationBase(mtbls_id="MTBLS12", output_format="tab")
         investigation.get_investigation()
 
-    @patch('isatools.net.metabolights.utils.FTP')
+    @patch('isatools.net.mtbls.utils.FTP')
     def test_get_investigations_failure(self, mock_ftp):
         def mock_retrbinary(filename, output_file):
             raise error_perm('Mock FTP Failure')
@@ -118,7 +118,7 @@ class TestMTBLSInvestigationBase(unittest.TestCase):
 class TestMTBLSInvestigation(unittest.TestCase):
     investigation = MTBLSInvestigation(mtbls_id="MTBLS1", output_format="tab", ftp_server=MockFTP)
 
-    @patch('isatools.net.metabolights.core.MTBLSDownloader', autospec=True)
+    @patch('isatools.net.mtbls.core.MTBLSDownloader', autospec=True)
     def test_constructor(self, mock_mtbls):
         mock = mock_mtbls.return_value
         mock.ftp = MockFTP
