@@ -1,8 +1,10 @@
+from abc import ABC
 from os import path
 import unittest
 from unittest.mock import patch
 from logging import getLogger, CRITICAL
 from ftplib import error_perm
+from json import loads as json_loads
 
 from isatools.net.metabolights.core import MTBLSInvestigationBase, MTBLSInvestigation
 from isatools.model import DataFile
@@ -26,9 +28,10 @@ with open(path.join(MTBLS_1_PATH, 'a_mtbls1_metabolite_profiling_NMR_spectroscop
 class TextIO:
     def __init__(self):
         self.name = "test"
+        self.val = ""
 
     def write(self, s):
-        pass
+        self.val += s
 
 
 class MockFTP:
@@ -196,7 +199,7 @@ class TestMTBLSInvestigation(unittest.TestCase):
 
     def test_get_filtered_df_on_factors_list(self):
         filtered_df = self.investigation.get_filtered_df_on_factors_list()
-        self.assertEqual(filtered_df, filtered_df)
+        self.assertEqual(len(filtered_df), 4)
 
     def test_get_factors_command(self):
         output_file = TextIO()
@@ -209,3 +212,44 @@ class TestMTBLSInvestigation(unittest.TestCase):
         factor_values = self.investigation.get_factor_values_command('Gender', output_file)
         for fv in factor_values:
             self.assertIn(fv, ['Male', 'Female'])
+
+    def test_get_data_files_command(self):
+        # No query
+        output_file = TextIO()
+        self.investigation.get_data_files_command(output=output_file)
+        self.assertEqual(len(json_loads(output_file.val)), 132)
+
+        # JSON query
+        output_file = TextIO()
+        query = '{"Gender": "Male", "Metabolic syndrome": "Control Group"}'
+        self.investigation.get_data_files_command(output=output_file, json_query=query)
+        results_1 = json_loads(output_file.val)
+        self.assertEqual(len(results_1), 56)
+
+        # Galaxy query
+        output_file = TextIO()
+        galaxy_file = path.join(HERE, '..', '..', 'data', 'mtbls', 'galaxy_parameters_file.json')
+        self.investigation.get_data_files_command(output=output_file, galaxy_parameters_file=galaxy_file)
+        results_2 = json_loads(output_file.val)
+        self.assertEqual(results_2, results_1)
+
+        # Testing error:
+        class Inv(MTBLSInvestigation, ABC):
+
+            def __init__(
+                    self,
+                    mtbls_id: str,
+                    output_directory: str = None,
+                    output_format: str = 'tab',
+                    ftp_server: object = None
+            ) -> None:
+                super().__init__(mtbls_id, output_directory, output_format, ftp_server)
+
+            def get_data_files(self, factor_selection: dict = None) -> None:
+                return None
+
+        output_file = TextIO()
+        investigation = Inv(mtbls_id="MTBLS1", output_format="tab", ftp_server=MockFTP)
+        with self.assertRaises(RuntimeError) as context:
+            investigation.get_data_files_command(output=output_file, json_query=query)
+        self.assertEqual(str(context.exception), "Error getting data files with isatools")
