@@ -1,0 +1,11 @@
+in isatools.net.mtbls some function are broken:
+    - Line 520: get_filtered_df_on_factors_list raises \lib\site-packages\pandas\core\computation\scope.py", line 211, in resolve
+    raise UndefinedVariableError(key, is_local) from err
+pandas.errors.UndefinedVariableError: name 'Factor_Value_Gender_' is not defined
+
+    - Line 618 : get_study_command: what is this ?
+
+
+TESTS TO DO:
+core.py get_data_files_command L380
+html.py

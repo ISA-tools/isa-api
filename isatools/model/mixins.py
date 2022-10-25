@@ -11,6 +11,8 @@ from isatools.model.sample import Sample
 from isatools.model.characteristic import Characteristic
 from isatools.model.material import Material
 from isatools.model.process import Process
+from isatools.model.context import LDSerializable
+from isatools.model.identifiable import Identifiable
 from isatools.model.utils import find as find_material, _build_assay_graph
 
 
@@ -587,7 +589,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 mat.characteristics[char_index] = characteristic
             mat_index += 1
 
-    def categories_to_dict(self):
+    def categories_to_dict(self, ld=False):
         characteristics_categories = []
         for characteristic in self.characteristic_categories:
             id_ = characteristic.id
@@ -595,8 +597,21 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
             else:
                 id_ = '#characteristic_category/' + id_ if not id_.startswith('#characteristic_category/') else id_
-            characteristics_categories.append({
+            characteristic_to_append = {
                 '@id': id_,
-                'characteristicType': characteristic.to_dict()
-            })
+                'characteristicType': characteristic.to_dict(ld=ld)
+            }
+            if ld:
+                characteristic_to_append = {**characteristic_to_append, **MaterialAttribute(id_=id_).to_dict()}
+            characteristics_categories.append(characteristic_to_append)
         return characteristics_categories
+
+
+class MaterialAttribute(LDSerializable, Identifiable):
+
+    def __init__(self, id_=None):
+        super().__init__()
+        self.id = id_
+
+    def to_dict(self):
+        return self.update_isa_object({}, ld=True)
