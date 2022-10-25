@@ -177,7 +177,7 @@ class ProcessSequenceFactory:
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:
-
+                deja_vu = {}
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
@@ -199,7 +199,6 @@ class ProcessSequenceFactory:
                             pass  # skip if object not found
 
                     if material is not None:
-
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
                             category_key = next(iter(_RX_CHARACTERISTICS.findall(charac_column)))
                             try:
@@ -207,25 +206,33 @@ class ProcessSequenceFactory:
                             except KeyError:
                                 category = OntologyAnnotation(term=category_key)
                                 characteristic_categories[category_key] = category
-
                             characteristic = Characteristic(category=category)
 
-                            v, u = get_value(
-                                charac_column, column_group, object_series,
-                                ontology_source_map, unit_categories)
+                            (characteristic.value,
+                             characteristic.unit) = get_value(charac_column, column_group,
+                                                              object_series, ontology_source_map, unit_categories)
 
-                            characteristic.value = v
-                            characteristic.unit = u
+                            characteristic_category_terms = [x.category.term for x in material.characteristics]
 
-                            if characteristic.category.term in [
-                                x.category.term
-                                for x in material.characteristics]:
-                                log.warning(
-                                    'Duplicate characteristic found for '
-                                    'material, skipping adding to material '
-                                    'object')
-                            else:
+                            if characteristic.category.term not in characteristic_category_terms:
                                 material.characteristics.append(characteristic)
+                                if isinstance(characteristic.value, OntologyAnnotation):
+                                    deja_vu[characteristic.category.term] = [characteristic.value.term]
+                                else:
+                                    deja_vu[characteristic.category.term] = [characteristic.value]
+
+                            if characteristic.category.term in deja_vu.keys():
+                                if isinstance(characteristic.value, OntologyAnnotation):
+                                    if characteristic.value.term not in deja_vu[characteristic.category.term]:
+                                        deja_vu[characteristic.category.term].append(characteristic.value.term)
+                                else:
+                                    deja_vu[characteristic.category.term] = [characteristic.value]
+                                if len(deja_vu[characteristic.category.term]) > 1:
+                                    error = ("Two simultaneous states for a given characteristics is not allowed "
+                                             "for Material: {} in Characteristics[{}] : {}"
+                                             ).format(material.name, str(characteristic.category.term),
+                                                      str(deja_vu[characteristic.category.term]))
+                                    raise ValueError(error)
 
                         for comment_column in [c for c in column_group if c.startswith('Comment[')]:
                             comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
