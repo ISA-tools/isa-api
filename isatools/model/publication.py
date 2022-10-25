@@ -120,18 +120,19 @@ class Publication(Commentable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         status = self.status if self.status else {"@id": ''}
         if isinstance(self.status, OntologyAnnotation):
             status = self.status.to_dict()
-        return {
+        publication = {
             "authorList": self.author_list,
             "doi": self.doi,
             "pubMedID": self.pubmed_id,
             "status": status,
             "title": self.title,
-            "comments": [comment.to_dict() for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(publication, ld=ld)
 
     def from_dict(self, publication):
         self.author_list = publication['authorList'] if 'authorList' in publication else ''

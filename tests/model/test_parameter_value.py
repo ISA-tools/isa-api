@@ -95,3 +95,8 @@ class TestParameterValue(TestCase):
         parameter_value.from_dict(expected_dict)
         self.assertEqual(parameter_value.category, indexes.get_parameter('mycat'))
 
+        expected_dict['value'] = "12"
+        parameter_value = ParameterValue()
+        parameter_value.from_dict(expected_dict)
+        self.assertEqual(parameter_value.category, indexes.get_parameter('mycat'))
+
