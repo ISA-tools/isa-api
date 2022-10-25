@@ -157,7 +157,7 @@ def getj(arrayexpress_id):
     This function downloads MAGE-TAB content as ISA-JSON from the ArrayExpress
     FTP site.
 
-    :param ax_experiment_id: Experiment identifier for ArrayExpress study to
+    :param arrayexpress_id: Experiment identifier for ArrayExpress study to
     get, as a str (e.g. E-GEOD-59671)
     :return: ISA-JSON representation of the MAGE-TAB content
 

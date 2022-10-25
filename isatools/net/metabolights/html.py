@@ -1,20 +1,21 @@
-def build_html_data_files_list(data_files_list):
+def build_html_data_files_list(data_files_list: list) -> str:
     data_files_table = '<table>'
     data_files_table += '<tr><th>Sample Name</th><th>Data File Names</th></tr>'
     for data_file in data_files_list:
         sample_name = data_file['sample']
         data_files = ', '.join(data_file['data_files'])
         data_files_table += '<tr><td>%s</td><td>%s</td>' % (sample_name, data_files)
+    data_files_table += '</table>'
     html_data_files_list = """
-        <html>
-        <head> <title>ISA-Tab Factors Summary</title> </head>
-        <body> %s </body>
-        </html>
+<html>
+<head> <title>ISA-Tab Factors Summary</title> </head>
+<body> %s </body>
+</html>
     """ % data_files_table
     return html_data_files_list
 
 
-def build_html_summary(summary):
+def build_html_summary(summary: list) -> str:
     study_groups = {}
     for item in summary:
         sample_name = item['sample_name']

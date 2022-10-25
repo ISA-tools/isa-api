@@ -22,10 +22,8 @@ from isatools import isatab
 from isatools.convert import isatab2json
 from isatools.model import OntologyAnnotation
 
-
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
-
 
 log = logging.getLogger('isatools')
 
@@ -51,14 +49,15 @@ def get(mtbls_study_id, target_dir=None):
 
     log.info('Logging in as anonymous user...')
     response = ftp.login()
+    remote_directory_path = EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id
 
     if '230' in response:  # 230 means Login successful
+        print(response)
         log.info('Log in successful!')
 
         try:
             log.info("Looking for study '{}'".format(mtbls_study_id))
-            ftp.cwd('{base_dir}/{study}'.format(
-                base_dir=MTBLS_BASE_DIR, study=mtbls_study_id))
+            ftp.cwd('%s/%s' % (MTBLS_BASE_DIR, mtbls_study_id))
 
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
@@ -67,53 +66,31 @@ def get(mtbls_study_id, target_dir=None):
             files = list(ftp.nlst())
             investigation_filename = None
             try:
-                investigation_filename = next(
-                    filter(lambda x: x.startswith('i_') and
-                           x.endswith('.txt'), files))
+                investigation_filename = next(filter(lambda x: x.startswith('i_') and x.endswith('.txt'), files))
             except StopIteration:
-                raise Exception(
-                    'Could not find an investigation file for this study')
+                raise Exception('Could not find an investigation file for this study')
 
             if investigation_filename is not None:
-                with open(os.path.join(
-                        target_dir, investigation_filename), 'wb') as out_file:
-                    log.info(
-                        "Retrieving file '{}'".format(
-                            EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' +
-                            mtbls_study_id + '/' + investigation_filename))
-                    ftp.retrbinary('RETR {i_file}'.format(
-                        i_file=investigation_filename), out_file.write)
+                with open(os.path.join(target_dir, investigation_filename), 'wb') as out_file:
+                    log.info("Retrieving file '{}'".format(remote_directory_path + '/' + investigation_filename))
+                    ftp.retrbinary('RETR {i_file}'.format(i_file=investigation_filename), out_file.write)
 
                 with open(out_file.name, encoding='utf-8') as i_fp:
                     i_bytes = i_fp.read()
-
                     lines = i_bytes.splitlines()
-                    s_filenames = [l.split('\t')[1][1:-1] for l in lines if
-                                   'Study File Name' in l]
+                    s_filenames = [line.split('\t')[1][1:-1] for line in lines if 'Study File Name' in line]
 
                     for s_filename in s_filenames:
-                        with open(os.path.join(target_dir, s_filename), 'wb') \
-                                as out_file:
-                            log.info("Retrieving file '{}'".format(
-                                EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' +
-                                mtbls_study_id + '/' + s_filename))
-                            ftp.retrbinary(
-                                'RETR {s_file}'.format(
-                                    s_file=s_filename), out_file.write)
+                        with open(os.path.join(target_dir, s_filename), 'wb') as out_file:
+                            log.info("Retrieving file '{}'".format(remote_directory_path + '/' + s_filename))
+                            ftp.retrbinary('RETR {s_file}'.format(s_file=s_filename), out_file.write)
 
-                    a_filenames_lines = [l.split('\t') for l in lines if
-                                         'Study Assay File Name' in l]
+                    a_filenames_lines = [l.split('\t') for l in lines if 'Study Assay File Name' in l]
                     for a_filename_line in a_filenames_lines:
-                        for a_filename in [f[1:-1] for f in
-                                           a_filename_line[1:]]:
-                            with open(os.path.join(target_dir, a_filename),
-                                      'wb') as out_file:
-                                log.info("Retrieving file '{}'".format(
-                                    EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' +
-                                    mtbls_study_id + '/' + a_filename))
-                                ftp.retrbinary(
-                                    'RETR {a_file}'.format(
-                                        a_file=a_filename), out_file.write)
+                        for a_filename in [f[1:-1] for f in a_filename_line[1:]]:
+                            with open(os.path.join(target_dir, a_filename), 'wb') as out_file:
+                                log.info("Retrieving file '{}'".format(remote_directory_path + '/' + a_filename))
+                                ftp.retrbinary('RETR {a_file}'.format(a_file=a_filename), out_file.write)
 
         except ftplib.error_perm as ftperr:
             raise Exception(
@@ -211,25 +188,20 @@ def slice_data_files(dir, factor_selection=None):
             # build query
             sample_names_series = df['sample'].drop_duplicates()
             if factor_selection is None:
-                results = sample_names_series.apply(lambda x: {
-                                'sample': x,
-                                'data_files': [],
-                                'query_used': ''
-                            }).tolist()
+                results = sample_names_series.apply(
+                    lambda x: {'sample': x, 'data_files': [], 'query_used': ''}
+                ).tolist()
             else:
                 factor_query = ''
                 for factor_name, factor_value in factor_selection.items():
                     factor_name = factor_name.replace(' ', '_')
-                    factor_query += '{factor_name}=="{factor_value}" and '\
-                        .format(factor_name=factor_name, factor_value=factor_value)
+                    factor_query += '%s=="%s" and ' % (factor_name, factor_value)
                 factor_query = factor_query[:-5]
                 try:
                     query_results = df.query(factor_query)['sample'].drop_duplicates()
-                    results = query_results.apply(lambda x: {
-                        'sample': x,
-                        'data_files': [],
-                        'query_used': factor_selection
-                    }).tolist()
+                    results = query_results.apply(
+                        lambda x: {'sample': x, 'data_files': [], 'query_used': factor_selection}
+                    ).tolist()
                 except pd.errors.UndefinedVariableError:
                     pass
 
@@ -237,19 +209,15 @@ def slice_data_files(dir, factor_selection=None):
     for table_file in glob.iglob(os.path.join(dir, 'a_*.txt')):
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-            df = df[[x for x in df.columns if
-                     'File' in x or 'Sample Name' in x]]
-            df.columns = ['sample' if 'Sample Name' in x else x for x in
-                          df.columns]
+            df = df[[x for x in df.columns if 'File' in x or 'Sample Name' in x]]
+            df.columns = ['sample' if 'Sample Name' in x else x for x in df.columns]
             for result in results:
                 sample_name = result['sample']
                 sample_rows = df.loc[df['sample'] == sample_name]
 
-                for data_col in [x for x in sample_rows.columns
-                                 if 'File' in x]:
+                for data_col in [x for x in sample_rows.columns if 'File' in x]:
                     data_files = sample_rows[data_col]
-                    result['data_files'] = [i for i in data_files if
-                                            str(i) != 'nan']
+                    result['data_files'] = [i for i in data_files if str(i) != 'nan']
     return results
 
 
@@ -270,12 +238,8 @@ def get_factor_names(mtbls_study_id):
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-
-            factors_headers = [header for header in list(df.columns.values)
-                               if _RX_FACTOR_VALUE.match(header)]
-
-            for header in factors_headers:
-                factors.add(header[13:-1])
+            factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
+            [factors.add(header[13:-1]) for header in factors_headers]
     return factors
 
 
@@ -297,12 +261,8 @@ def get_factor_values(mtbls_study_id, factor_name):
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-
-            if 'Factor Value[{factor}]'.format(factor=factor_name) in \
-                    list(df.columns.values):
-                for _, match in df[
-                    'Factor Value[{factor}]'.format(
-                        factor=factor_name)].iteritems():
+            if 'Factor Value[{factor}]'.format(factor=factor_name) in list(df.columns.values):
+                for _, match in df['Factor Value[{factor}]'.format(factor=factor_name)].iteritems():
                     try:
                         match = match.item()
                     except AttributeError:
@@ -366,9 +326,9 @@ def get_factors_summary(mtbls_study_id):
 
     for sample in all_samples:
         sample_and_fvs = {
-                'sources': ';'.join([x.name for x in sample.derives_from]),
-                'sample': sample.name,
-            }
+            'sources': ';'.join([x.name for x in sample.derives_from]),
+            'sample': sample.name,
+        }
 
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -477,8 +437,8 @@ def get_characteristics_summary(mtbls_study_id):
     samples_and_characs = []
     for sample in all_samples:
         sample_and_characs = {
-                'name': sample.name
-            }
+            'name': sample.name
+        }
 
         for source in sample.derives_from:
             for c in source.characteristics:
@@ -541,8 +501,7 @@ def get_study_group_factors(mtbls_study_id):
     factors_list = []
     tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
-        raise FileNotFoundError(
-            'Could not download {study_id}'.format(study_id=mtbls_study_id))
+        raise FileNotFoundError('Could not download {study_id}'.format(study_id=mtbls_study_id))
 
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -551,11 +510,12 @@ def get_study_group_factors(mtbls_study_id):
             factor_columns = [x for x in df.columns if x.startswith(
                 'Factor Value')]
             if len(factor_columns) > 0:
-                factors_list = df[factor_columns].drop_duplicates()\
+                factors_list = df[factor_columns].drop_duplicates() \
                     .to_dict(orient='records')
     return factors_list
 
 
+# TODO: this function is not working
 def get_filtered_df_on_factors_list(mtbls_study_id):
     factors_list = get_study_group_factors(mtbls_study_id=mtbls_study_id)
     queries = []
@@ -578,18 +538,15 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             df = isatab.load_table(fp)
 
             cols = df.columns
-            cols = cols.map(
-                lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
+            cols = cols.map(lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
             df.columns = cols
 
             cols = df.columns
-            cols = cols.map(
-                lambda x: x.replace('[', '_') if isinstance(x, str) else x)
+            cols = cols.map(lambda x: x.replace('[', '_') if isinstance(x, str) else x)
             df.columns = cols
 
             cols = df.columns
-            cols = cols.map(
-                lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
             df.columns = cols
 
         for query in queries:
@@ -647,13 +604,13 @@ def dl_all_mtbls_isatab(target_dir):
     print('Downloaded {count} ISA-Tab studies from MetaboLights'.format(
         count=download_count))
 
+
 # mtblisa commands
 
 
 def get_study_command(isa_format, study_id, output):
     if os.path.exists(output):
-        raise RuntimeError("Selected output path {} already exists!".format(
-            output))
+        raise RuntimeError("Selected output path %s already exists!" % output)
 
     if isa_format == "isa-tab":
         tmp_data = None
@@ -663,9 +620,7 @@ def get_study_command(isa_format, study_id, output):
             if tmp_data is None:
                 raise RuntimeError("Error downloading ISA study")
 
-            log.debug(
-                "Finished downloading data. Moving to final location %s",
-                output)
+            log.debug("Finished downloading data. Moving to final location %s" % output)
             shutil.move(tmp_data, output)
             log.info("ISA archive written to %s", output)
         finally:
@@ -677,9 +632,7 @@ def get_study_command(isa_format, study_id, output):
         isajson = getj(study_id)
         if isajson is None:
             raise RuntimeError("Error downloading ISA study")
-        log.debug(
-            "Finished downloading data. Dumping json to final location %s",
-            output)
+        log.debug("Finished downloading data. Dumping json to final location %s", output)
         os.makedirs(output)
         json_file = os.path.join(output, "{}.json".format(
             isajson['identifier']))
@@ -687,13 +640,11 @@ def get_study_command(isa_format, study_id, output):
             json.dump(isajson, fd)
         log.info("ISA-JSON written to %s", output)
     else:
-        raise ValueError("BUG! Got an invalid isa format '{}'".format(
-            isa_format))
+        raise ValueError("BUG! Got an invalid isa format '{}'".format(isa_format))
 
 
 def get_factors_command(study_id, output):
-    log.info("Getting factors for study %s. Writing to %s.",
-             study_id, output.name)
+    log.info("Getting factors for study %s. Writing to %s." % (study_id, output.name))
     factor_names = get_factor_names(study_id)
     if factor_names is not None:
         json.dump(list(factor_names), output, indent=4)
@@ -705,7 +656,7 @@ def get_factors_command(study_id, output):
 def get_factor_values_command(study_id, factor, output):
     log.info("Getting values for factor {factor} in study {study_id}. "
              "Writing to {output_file}.".format(
-                  factor=factor, study_id=study_id, output_file=output.name))
+        factor=factor, study_id=study_id, output_file=output.name))
     fvs = get_factor_values(study_id, factor)
     if fvs is not None:
         json.dump(list(fvs), output, indent=4)
@@ -714,10 +665,8 @@ def get_factor_values_command(study_id, factor, output):
         raise RuntimeError("Error getting factor values")
 
 
-def get_data_files_command(
-        study_id, output, json_query=None, galaxy_parameters_file=None):
-    log.info("Getting data files for study %s. Writing to %s.",
-             study_id, output.name)
+def get_data_files_command(study_id, output, json_query=None, galaxy_parameters_file=None):
+    log.info("Getting data files for study %s. Writing to %s." % (study_id, output.name))
     if json_query:
         log.debug("This is the specified query:\n%s", json_query)
         json_struct = json.loads(json_query)
@@ -750,18 +699,13 @@ def build_html_data_files_list(data_files_list):
     for data_file in data_files_list:
         sample_name = data_file['sample']
         data_files = ', '.join(data_file['data_files'])
-        data_files_table += '<tr><td>{sample_name}</td><td>{data_files}</td>' \
-            .format(sample_name=sample_name, data_files=data_files)
+        data_files_table += '<tr><td>%s</td><td>%s</td>' % (sample_name, data_files)
     html_data_files_list = """
-    <html>
-    <head>
-    <title>ISA-Tab Factors Summary</title>
-    </head>
-    <body>
-    {summary_table}
-    </body>
-    </html>
-""".format(summary_table=data_files_table)
+        <html>
+        <head> <title>ISA-Tab Factors Summary</title> </head>
+        <body> %s </body>
+        </html>
+    """ % data_files_table
     return html_data_files_list
 
 
@@ -798,8 +742,7 @@ def build_html_summary(summary):
 
 
 def get_summary_command(study_id, json_output, html_output):
-    log.info("Getting summary for study %s. Writing to %s.",
-             study_id, json_output.name)
+    log.info("Getting summary for study %s. Writing to %s." % (study_id, json_output.name))
     summary = get_study_variable_summary(study_id)
     if summary is not None:
         json.dump(summary, json_output, indent=4)

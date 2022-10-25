@@ -20,8 +20,7 @@ def get_pubmed_article(pubmed_id):
     # http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc126
     response = {}
     Entrez.email = "isatools@googlegroups.com"
-    handle = Entrez.efetch(db="pubmed", id=pubmed_id.strip(),
-                           rettype="medline", retmode="text")
+    handle = Entrez.efetch(db="pubmed", id=pubmed_id.strip(), rettype="medline", retmode="text")
     records = Medline.parse(handle)
     for record in records:
         response["pubmedid"] = pubmed_id

@@ -324,20 +324,15 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
                     query_str.append("{k} == '{v}' and ".format(k=k, v=v))
             query_str = ''.join(query_str)[:-4]
             queries.append(query_str)
-        for table_file in glob.iglob(path.join(self.output_dir, '[a|s]_*')):
+        for table_file in glob.iglob(path.join(self.output_dir, '[s]_*')):
             df = self.dataframes[table_file]
             cols = df.columns
-            cols = cols.map(lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
-            df.columns = cols
-            cols = df.columns
-            cols = cols.map(lambda x: x.replace('[', '_') if isinstance(x, str) else x)
-            df.columns = cols
-            cols = df.columns
-            cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            cols = cols.map(
+                lambda x: x.replace(' ', '_').replace('[', '_').replace(']', '_') if isinstance(x, str) else x
+            )
             df.columns = cols
             for query in queries:
-                df2 = df.query(query)  # query uses pandas.eval, which evaluates
-                # queries like pure Python notation
+                df2 = df.query(query)
                 if 'Sample_Name' in df.columns:
                     print('Group: %s / Sample_Name: %s' % (query, list(df2['Sample_Name'])))
 
@@ -403,7 +398,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         log.info("Finished writing data files to {}".format(output))
 
     ''' Not Tested '''
-    def get_summary_command(self, json_output: TextIO, html_output: str):
+    def get_summary_command(self, json_output: TextIO, html_output: str) -> list:
         log.info("Getting summary for study %s. Writing to %s." % (self.mtbls_id, json_output.name))
         summary = self.get_study_variable_summary()
         if summary is not None:
@@ -416,7 +411,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         raise RuntimeError("Error getting study summary")
 
     ''' Not Tested '''
-    def datatype_get_summary_command(self, output):
+    def datatype_get_summary_command(self, output: TextIO) -> list:
         log.info("Getting summary for study %s. Writing to %s." % (self.mtbls_id, output.name))
         summary = self.get_study_variable_summary()
         if summary is not None:
