@@ -190,7 +190,8 @@ class TestMTBLSInvestigation(unittest.TestCase):
         self.assertEqual(len(study_variable_summary), 132)
 
     def test_get_study_group_factors(self):
-        study_group_factors = self.investigation.get_study_group_factors()
+        investigation = MTBLSInvestigation(mtbls_id="MTBLS1", output_format="tab", ftp_server=MockFTP)
+        study_group_factors = investigation.get_study_group_factors()
         self.assertEqual(len(study_group_factors), 4)
 
     def test_get_filtered_df_on_factors_list(self):
