@@ -59,12 +59,10 @@ def _reverse_map_ontology_annotation(onto_annotation, compress_strings=False):
             if isinstance(onto_annotation.term_source, str):
                 res['source'] = onto_annotation.term_source
             elif isinstance(onto_annotation.term_source, OntologySource):
-                res['source'] = dict(
-                    name=onto_annotation.term_source.name,
-                    file=onto_annotation.term_source.file,
-                    version=onto_annotation.term_source.version,
-                    description=onto_annotation.term_source.description
-                )
+                res['source'] = dict(name=onto_annotation.term_source.name,
+                                     file=onto_annotation.term_source.file,
+                                     version=onto_annotation.term_source.version,
+                                     description=onto_annotation.term_source.description)
         else:
             res['source'] = None
         return res

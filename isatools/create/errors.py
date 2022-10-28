@@ -62,6 +62,8 @@ GET_EPOCH_INDEX_OUT_OR_BOUND_ERROR = 'The Epoch you asked for is out of the boun
 # ERROR MESSAGES: STUDY DESIGN FACTORY
 TREATMENT_MAP_ERROR = 'treatment_map must be a list containing tuples ' \
                       'with (Treatment, StudyAssayPlan) pairs.'
+NON_TREATMENT_MAP_ERROR = 'non_treatment_map must be a list containing tuples ' \
+                      'with (Non_Treatment, StudyAssayPlan) pairs.'
 GROUP_SIZES_ERROR = 'no group sizes have been provided. Group size(s) must be provided either as an integer or as' \
                     'a tuple or list of integers'
 GROUP_SIZE_ERROR = 'no group_size have been provided. Group size must be provided as an integer.'

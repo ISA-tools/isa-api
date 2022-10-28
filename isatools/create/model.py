@@ -440,7 +440,7 @@ class StudyCell(object):
         index = len(self.elements) if not isinstance(element_index, int) else \
             element_index if abs(element_index) < len(self.elements) else len(self.elements)
         if not isinstance(element, (Element, set)):
-            raise ValueError('element must be either an Element or a set of treatments')
+            raise AttributeError('element must be either an Element or a set of treatments')
         is_valid = self._non_treatment_check(self.elements, element, index) if isinstance(element, NonTreatment) else \
             self._treatment_check(self.elements) if isinstance(element, Treatment) else \
                 self._concomitant_treatments_check(element) if isinstance(element, set) else False
@@ -2038,7 +2038,7 @@ class StudyDesign(object):
     @source_type.setter
     def source_type(self, source_type):
         if not isinstance(source_type, Characteristic):
-            raise AttributeError('')
+            raise AttributeError(errors.CHARACTERISTIC_TYPE_ERROR)
         self.__source_type = source_type
 
     @property
@@ -2732,7 +2732,7 @@ class QualityControlService(object):
         qc_samples_interspersed = {}
         qc_processes = []
         if not isinstance(quality_control, QualityControl):
-            raise TypeError()
+            raise TypeError("wrong type")
         qc_pre = quality_control.pre_run_sample_type
         assert isinstance(qc_pre, ProductNode)
         cell_name = study_cell.name
@@ -2927,6 +2927,7 @@ class StudyDesignFactory(object):
     @staticmethod
     def _validate_maps(treatments_map, screen_map=None, run_in_map=None, washout_map=None, follow_up_map=None):
         """Validates Treatment and NonTreatment maps"""
+
         # TODO allow concomitant treatments as first element in a treatment map???
         if not isinstance(treatments_map, list):
             if not all(isinstance(el, tuple) for el in treatments_map):

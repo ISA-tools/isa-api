@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import unittest
 import os
+import logging
 
 import pandas as pd
 import shutil
@@ -14,11 +15,14 @@ from isatools.isatab.load.ProcessSequenceFactory import ProcessSequenceFactory
 from isatools.model import (
     Investigation, OntologySource, Study, Comment, Protocol, OntologyAnnotation, StudyFactor,
     Characteristic, Source, Sample, Process, Person, Publication, batch_create_materials, ProtocolParameter,
-    Assay, Material, DataFile, plink, ParameterValue, FactorValue, Extract, log
+    Assay, Material, DataFile, plink, ParameterValue, FactorValue, Extract
 )
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
 from isatools.isatab import IsaTabDataFrame
+
+log = logging.getLogger("isatools")
+log.level = logging.CRITICAL
 
 
 def setUpModule():
@@ -130,7 +134,6 @@ class TestIsaTabDump(unittest.TestCase):
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
         f.comments.append(Comment(name="Study Start Date", value="Moon"))
         s.factors.append(f)
-        print("Factors: ", f)
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='material type')
@@ -746,7 +749,6 @@ class TestIsaTabDump(unittest.TestCase):
         except IOError as ioe:
             print("ERROR: ", ioe)
 
-        print("in folder:", self._tmp_dir)
 
 
     # def test_isatab_dump_investigation_with_assay_sample_sample(self):
@@ -1006,11 +1008,9 @@ class TestIsaTabLoad(unittest.TestCase):
     def test_isatab_load_issue323(self):
         with open(os.path.join(self._tab_data_dir, 'issue323', 'i_05.txt')) as fp:
             ISA = isatab.load(fp)
-            print(ISA.studies[0].protocols[0].description)
             self.assertEqual(len(ISA.studies[0].protocols[0].description), 70)
 
         protocol = Protocol(description="some description containing a # character that should not be picked up", name="", protocol_type=OntologyAnnotation(term=""))
-        print("test protocol description", protocol.description)
 
         self.assertEqual(len(protocol.description), 70)
 
@@ -1748,7 +1748,6 @@ sample1\textraction\te2\tscanning\td2"""
     def test_isatab_load_issue210_on_MTBLS1(self):
         with open(os.path.join(self._tab_data_dir, 'MTBLS1', 'i_Investigation.txt'), encoding='utf-8') as fp:
             ISA = isatab.load(fp)
-            print("ISA loaded?", ISA.studies[0].assays[0].data_files)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 134)
 
     def test_isatab_load_issue210_on_Sacurine(self):
@@ -1780,7 +1779,6 @@ sample1\textraction\te2\tscanning\td2"""
                 self.assertGreater(len(sample.factor_values), 0)
 
     def test_isatab_protocol_chain_parsing(self):
-        log.info("Testing")
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'),
                   encoding='utf-8') as fp:
             investigation = isatab.load(fp)
