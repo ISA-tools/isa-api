@@ -197,3 +197,5 @@ class InvestigationTest(TestCase):
         investigation.from_dict(expected_dict)
         self.assertEqual(investigation.to_dict(), expected_dict)
         self.assertIsInstance(investigation.publications[0].status.term_source, OntologySource)
+
+

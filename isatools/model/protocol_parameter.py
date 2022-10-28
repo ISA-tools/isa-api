@@ -57,11 +57,12 @@ class ProtocolParameter(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        protocol_parameter = {
             '@id': self.id,
-            'parameterName': self.parameter_name.to_dict()
+            'parameterName': self.parameter_name.to_dict(ld=ld)
         }
+        return self.update_isa_object(protocol_parameter, ld=ld)
 
     def from_dict(self, protocol_parameter):
         self.id = protocol_parameter.get('@id', '')

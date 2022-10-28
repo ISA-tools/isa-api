@@ -95,13 +95,14 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        source = {
             '@id': self.id,
             'name': self.name,
-            'characteristics': [char.to_dict() for char in self.characteristics],
-            'comments': [comment.to_dict() for comment in self.comments]
+            'characteristics': [char.to_dict(ld=ld) for char in self.characteristics],
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(source, ld=ld)
 
     def from_dict(self, source):
         self.id = source.get('@id', '')

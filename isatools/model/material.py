@@ -73,14 +73,15 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
                and self.type == other.type \
                and self.comments == other.comments
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        material = {
             '@id': self.id,
             "name": self.name,
             "type": self.type,
-            "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
-            "comments": [comment.to_dict() for comment in self.comments]
+            "characteristics": [characteristic.to_dict(ld=ld) for characteristic in self.characteristics],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(material, ld)
 
     def from_dict(self, material):
         self.id = material["@id"]

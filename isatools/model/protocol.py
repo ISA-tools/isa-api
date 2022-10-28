@@ -231,18 +231,19 @@ class Protocol(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        protocol = {
             '@id': self.id,
             'name': self.name,
             'description': self.description,
             'uri': self.uri,
             'version': self.version,
-            'comments': [comment.to_dict() for comment in self.comments],
-            'parameters': [protocol_parameter.to_dict() for protocol_parameter in self.parameters],
-            'protocolType': self.protocol_type.to_dict() if self.protocol_type else {},
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments],
+            'parameters': [protocol_parameter.to_dict(ld=ld) for protocol_parameter in self.parameters],
+            'protocolType': self.protocol_type.to_dict(ld=ld) if self.protocol_type else {},
             'components': []
         }
+        return self.update_isa_object(protocol, ld=ld)
 
     def from_dict(self, protocol):
         self.id = protocol.get('@id', '')

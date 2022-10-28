@@ -7,8 +7,8 @@ from isatools.model.study import Study
 from isatools.model.identifiable import Identifiable
 from isatools.model.person import Person
 from isatools.model.publication import Publication
-from isatools.graphQL.models import IsaSchema
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.graphQL.models import IsaSchema
 
 
 class Investigation(Commentable, MetadataMixin, Identifiable, object):
@@ -231,21 +231,23 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        investigation = {
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
             "publicReleaseDate": self.public_release_date,
             "submissionDate": self.submission_date,
-            "comments": [comment.to_dict() for comment in self.comments],
-            "ontologySourceReferences": [
-                ontology_source.to_dict() for ontology_source in self.ontology_source_references
-            ],
-            "people": [person.to_dict() for person in self.contacts],
-            "publications": [publication.to_dict() for publication in self.publications],
-            "studies": [study.to_dict() for study in self.studies]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
+            "ontologySourceReferences": [oS.to_dict(ld=ld) for oS in self.ontology_source_references],
+            "people": [person.to_dict(ld=ld) for person in self.contacts],
+            "publications": [publication.to_dict(ld=ld) for publication in self.publications],
+            "studies": [study.to_dict(ld=ld) for study in self.studies]
         }
+        return self.update_isa_object(investigation, ld=ld)
+
+    def to_ld(self):
+        return self.to_dict(ld=True)
 
     def from_dict(self, investigation):
         self.identifier = investigation.get('identifier', '')
