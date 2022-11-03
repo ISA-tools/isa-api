@@ -2673,8 +2673,7 @@ class QualityControlService(object):
                                 = cls._generate_quality_control_samples(
                                 assay_graph.quality_control, cell, sample_size=len(samples_in_assay_to_expand),
                                 # FIXME? the assumption here is that the first protocol is the sampling protocol
-                                sampling_protocol=qc_study.protocols[0]
-                                )
+                                sampling_protocol=qc_study.protocols[0])
                             qc_study.sources += qc_sources
                             qc_study.samples.extend(qc_samples_pre_run + qc_samples_post_run)
                             for qc_samples in qc_samples_interspersed.values():

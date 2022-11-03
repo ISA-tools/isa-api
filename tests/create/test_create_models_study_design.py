@@ -29,6 +29,7 @@ from isatools.create.model import (
     StudyCell,
     ProductNode,
     ProtocolNode,
+    SequenceNode,
     AssayGraph,
     SampleAndAssayPlan,
     StudyArm,

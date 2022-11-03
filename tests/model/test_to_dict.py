@@ -11,8 +11,12 @@ from isatools.model.protocol import Protocol
 from isatools.model.protocol_parameter import ProtocolParameter
 from isatools.model.source import Source
 from isatools.model.sample import Sample
-from isatools.model.material import LabeledExtract, Extract
-
+from isatools.model.material import LabeledExtract
+from isatools.model.characteristic import Characteristic
+from isatools.model.factor_value import FactorValue, StudyFactor
+from isatools.model.process import Process
+from isatools.model.assay import Assay
+from isatools.model.context import set_context
 
 comments = [Comment(name='comment'), Comment(name='comment1', value='value1')]
 expected_comments = [{'name': 'comment', 'value': ''}, {'name': 'comment1', 'value': 'value1'}]
@@ -125,7 +129,7 @@ class TestSerialize(TestCase):
     def test_study_to_dict(self):
         study = Study()
         expected_dict = {
-            "filename": '', "identifier": '',  "title": '', "description": '',
+            "filename": '', "identifier": '', "title": '', "description": '',
             "submissionDate": '', "publicReleaseDate": '',
             "publications": [],
             "people": [],
@@ -248,3 +252,72 @@ class TestSerialize(TestCase):
         }
 
         self.assertEqual(study.to_dict(), expected_dict)
+
+
+class LDTest(TestCase):
+
+    def setUp(self):
+        self.investigation = Investigation()
+
+    def test_to_ld(self):
+
+        self.maxDiff = None
+
+        comment_1 = Comment(name='comment_1', value='value_1')
+        comment_2 = Comment(name='comment_2', value='value_2')
+        comment_3 = Comment(name='comment_3', value='value_3')
+        osr_1 = OntologySource(name='osr_1', file='file_1', version='version_1', description='description_1',
+                               comments=[comment_3])
+        role = OntologyAnnotation(term='term_1', id_='oa1', comments=[comment_2])
+        person = Person(first_name='first_name', last_name='last_name', mid_initials='mid_initials', roles=[role])
+        publication = Publication(title='title', status=OntologyAnnotation(term='status', id_='status_id'), doi='doi')
+        design_descriptor = OntologyAnnotation(term='term_2', id_='oa2')
+        protocol = Protocol(name='name', version='version', id_='protocol_id',
+                            parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term='term_3'))],
+                            protocol_type=OntologyAnnotation(term='protocolType', id_='oa4'))
+        category = OntologyAnnotation(term='term_4', id_='#characteristic_category/1234')
+        characteristic = Characteristic(category=category,
+                                        value=OntologyAnnotation(term='my characteristic value', id_='char_val_id'))
+        source = Source(name='source1', id_='source_id', comments=[comment_1], characteristics=[characteristic])
+        study_factor = StudyFactor(name='factor_name', factor_type=OntologyAnnotation(term='type'))
+        factor_value = FactorValue(factor_name=study_factor,
+                                   value=OntologyAnnotation(term='value'))
+        sample = Sample(name='sample1', id_='sample_id',
+                        comments=[comment_1], characteristics=[characteristic],
+                        factor_values=[factor_value], derives_from=[source])
+        process = Process(name='p1', id_='process_id_1',
+                          executes_protocol=protocol, inputs=[source], outputs=[sample])
+        next_process = Process(name='p3', id_='process_id_3', executes_protocol=protocol, inputs=[sample])
+
+        assay = Assay()
+
+        study = Study(filename='filename', identifier='identifier', title='title', description='description',
+                      contacts=[person],
+                      publications=[publication],
+                      comments=[comment_1],
+                      design_descriptors=[design_descriptor],
+                      protocols=[protocol],
+                      sources=[source],
+                      samples=[sample],
+                      factors=[study_factor],
+                      process_sequence=[process, next_process],
+                      characteristic_categories=[category],
+                      units=[OntologyAnnotation(term='unit', id_='unit_id')],
+                      assays=[assay])
+
+        self.investigation.comments = [comment_1]
+        self.investigation.ontology_source_references = [osr_1]
+        self.investigation.contacts = [person]
+        self.investigation.publications = [publication]
+        self.investigation.studies = [study]
+
+        inv_ld = self.investigation.to_ld()
+        investigation = Investigation()
+        investigation.from_dict(inv_ld)
+        self.assertEqual(investigation.to_dict(), self.investigation.to_dict())
+
+        set_context(vocab='wdt', all_in_one=False, local=False)
+        inv_ld = self.investigation.to_ld()
+        investigation = Investigation()
+        investigation.from_dict(inv_ld)
+        self.assertEqual(investigation.to_dict(), self.investigation.to_dict())
