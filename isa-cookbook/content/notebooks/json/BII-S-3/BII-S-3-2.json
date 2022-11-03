@@ -1,0 +1,3377 @@
+{
+    "publicReleaseDate": "",
+    "comments": [
+        {
+            "name": "Last Opened With Configuration",
+            "value": "GSC MIxS human gut"
+        },
+        {
+            "name": "Created With Configuration",
+            "value": ""
+        }
+    ],
+    "identifier": "BII-S-3",
+    "submissionDate": "",
+    "description": "",
+    "people": [],
+    "studies": [
+        {
+            "factors": [
+                {
+                    "factorType": {
+                        "annotationValue": "dose",
+                        "termSource": "EFO",
+                        "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000428"
+                    },
+                    "@id": "#factor/dose",
+                    "factorName": "dose"
+                },
+                {
+                    "factorType": {
+                        "annotationValue": "chemical substance",
+                        "termSource": "CHEBI",
+                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_59999"
+                    },
+                    "@id": "#factor/compound",
+                    "factorName": "compound"
+                },
+                {
+                    "factorType": {
+                        "annotationValue": "time",
+                        "termSource": "PATO",
+                        "termAccession": "http://purl.obolibrary.org/obo/PATO_0000165"
+                    },
+                    "@id": "#factor/collection_time",
+                    "factorName": "collection time"
+                }
+            ],
+            "assays": [
+                {
+                    "materials": {
+                        "samples": [
+                            {"@id": "#sample/sample-GSM255773"},
+                            {"@id": "#sample/sample-GSM255772"},
+                            {"@id": "#sample/sample-GSM255770"},
+                            {"@id": "#sample/sample-GSM255771"}
+                        ],
+                        "otherMaterials": [
+                            {
+                                "name": "extract-GSM255771.e1",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255771.e1",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "deoxyribonucleic acid",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16991"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255772.e1",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255772.e1",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "deoxyribonucleic acid",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16991"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255770.e1",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255770.e1",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "deoxyribonucleic acid",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16991"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255773.e1",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255773.e1",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "deoxyribonucleic acid",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16991"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "unitCategories": [],
+                    "technologyPlatform": "454 GS FLX",
+                    "dataFiles": [
+                        {
+                            "name": "EWOEPZA02.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EWOEPZA02.sff"
+                        },
+                        {
+                            "name": "EX398L101.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EX398L101.sff"
+                        },
+                        {
+                            "name": "EX398L102.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EX398L102.sff"
+                        },
+                        {
+                            "name": "EXHS9OF02.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF02.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EXHS9OF02.sff"
+                        },
+                        {
+                            "name": "EXHS9OF01.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF01.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EXHS9OF01.sff"
+                        },
+                        {
+                            "name": "EWOEPZA01.sff",
+                            "type": "Raw Data File",
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"
+                                }
+                            ],
+                            "@id": "#data/rawdatafile-EWOEPZA01.sff"
+                        }
+                    ],
+                    "processSequence": [
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF02.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay4.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EXHS9OF02.sff"}
+                            ],
+                            "@id": "#process/assay4.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_41"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_21",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255770"}
+                            ]
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction2"},
+                            "executesProtocol": {"@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255771.e1"}
+                            ],
+                            "@id": "#process/genomic_DNA_extraction_-_standard_procedure_42",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_22"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction1"},
+                            "executesProtocol": {"@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255770.e1"}
+                            ],
+                            "@id": "#process/genomic_DNA_extraction_-_standard_procedure_41",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_21"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EWOEPZA01.sff"}
+                            ],
+                            "@id": "#process/assay1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction3"},
+                            "executesProtocol": {"@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255772.e1"}
+                            ],
+                            "@id": "#process/genomic_DNA_extraction_-_standard_procedure_43",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_23"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction4"},
+                            "executesProtocol": {"@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255773.e1"}
+                            ],
+                            "@id": "#process/genomic_DNA_extraction_-_standard_procedure_44",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_24"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_43"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_23",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255772"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay4.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EX398L101.sff"}
+                            ],
+                            "@id": "#process/assay4.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EXHS9OF01.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay3.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EXHS9OF01.sff"}
+                            ],
+                            "@id": "#process/assay3.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay2"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction2",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": "WGS",
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": "RANDOM",
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_42"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255771.e1"}
+                            ]
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_42"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_22",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255771"}
+                            ]
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay3.2"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction3",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": "WGS",
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": "RANDOM",
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_43"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255772.e1"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA02.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EWOEPZA02.sff"}
+                            ],
+                            "@id": "#process/assay2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay1"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction1",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": "WGS",
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": "RANDOM",
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_41"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255770.e1"}
+                            ]
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_44"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_24",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255773"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L102.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay3.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EX398L102.sff"}
+                            ],
+                            "@id": "#process/assay3.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay4.2"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [
+                                {
+                                    "name": "TraceDB",
+                                    "value": "ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EX398L101.sff"
+                                }
+                            ],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction4",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": "WGS",
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": "RANDOM",
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/genomic_DNA_extraction_-_standard_procedure_44"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255773.e1"}
+                            ]
+                        }
+                    ],
+                    "filename": "a_gilbert-assay-Gx.txt",
+                    "characteristicCategories": [
+                        {
+                            "characteristicType": {
+                                "annotationValue": "Material Type",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#characteristic_category/Material_Type"
+                        }
+                    ],
+                    "@id": "#assay/a_gilbert-assay-Gx.txt",
+                    "measurementType": {
+                        "annotationValue": "metagenome sequencing",
+                        "termSource": "OBI",
+                        "termAccession": ""
+                    },
+                    "technologyType": {
+                        "annotationValue": "nucleotide sequencing",
+                        "termSource": "OBI",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "materials": {
+                        "samples": [
+                            {"@id": "#sample/sample-GSM255772"},
+                            {"@id": "#sample/sample-GSM255770"},
+                            {"@id": "#sample/sample-GSM255773"},
+                            {"@id": "#sample/sample-GSM255771"}
+                        ],
+                        "otherMaterials": [
+                            {
+                                "name": "extract-GSM255772.e2",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255772.e2",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "messenger RNA",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_33699"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255773.e2",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255773.e2",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "messenger RNA",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_33699"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255771.e2",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255771.e2",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "messenger RNA",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_33699"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "extract-GSM255770.e2",
+                                "type": "Extract Name",
+                                "@id": "#material/extract-GSM255770.e2",
+                                "characteristics": [
+                                    {
+                                        "value": {
+                                            "annotationValue": "messenger RNA",
+                                            "termSource": "CHEBI",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_33699"
+                                        },
+                                        "category": {"@id": "#characteristic_category/Material_Type"}
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "unitCategories": [],
+                    "technologyPlatform": "454 GS FLX",
+                    "dataFiles": [
+                        {
+                            "name": "EVHINN101.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN101.sff"
+                        },
+                        {
+                            "name": "EVNG8PH02.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVNG8PH02.sff"
+                        },
+                        {
+                            "name": "EVHINN103.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN103.sff"
+                        },
+                        {
+                            "name": "EVHINN116.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN116.sff"
+                        },
+                        {
+                            "name": "EVUSNDQ03.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVUSNDQ03.sff"
+                        },
+                        {
+                            "name": "EVNG8PH01.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVNG8PH01.sff"
+                        },
+                        {
+                            "name": "EVHINN109.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN109.sff"
+                        },
+                        {
+                            "name": "EVHINN102.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN102.sff"
+                        },
+                        {
+                            "name": "EVHINN111.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN111.sff"
+                        },
+                        {
+                            "name": "EVHINN104.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN104.sff"
+                        },
+                        {
+                            "name": "EVHINN113.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN113.sff"
+                        },
+                        {
+                            "name": "EVHINN106.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN106.sff"
+                        },
+                        {
+                            "name": "EVNG8PH03.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVNG8PH03.sff"
+                        },
+                        {
+                            "name": "EVHINN114.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN114.sff"
+                        },
+                        {
+                            "name": "EVHINN112.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN112.sff"
+                        },
+                        {
+                            "name": "EVHINN115.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN115.sff"
+                        },
+                        {
+                            "name": "EVHINN107.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN107.sff"
+                        },
+                        {
+                            "name": "EVNG8PH04.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVNG8PH04.sff"
+                        },
+                        {
+                            "name": "EVHINN110.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN110.sff"
+                        },
+                        {
+                            "name": "EVUSNDQ04.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVUSNDQ04.sff"
+                        },
+                        {
+                            "name": "EVHINN108.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN108.sff"
+                        },
+                        {
+                            "name": "EVUSNDQ02.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVUSNDQ02.sff"
+                        },
+                        {
+                            "name": "EVHINN105.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVHINN105.sff"
+                        },
+                        {
+                            "name": "EVUSNDQ01.sff",
+                            "type": "Raw Data File",
+                            "comments": [],
+                            "@id": "#data/rawdatafile-EVUSNDQ01.sff"
+                        }
+                    ],
+                    "processSequence": [
+                        {
+                            "nextProcess": {"@id": "#process/library_construction2"},
+                            "executesProtocol": {"@id": "#protocol/mRNA_extraction_-_standard_procedure_3"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255771.e2"}
+                            ],
+                            "@id": "#process/mRNA_extraction_-_standard_procedure_32",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_22"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction3"},
+                            "executesProtocol": {"@id": "#protocol/mRNA_extraction_-_standard_procedure_3"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255772.e2"}
+                            ],
+                            "@id": "#process/mRNA_extraction_-_standard_procedure_33",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_23"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay8.6"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction4",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RNA-Seq",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RANDOM",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_34"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255773.e2"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVNG8PH02.sff"}
+                            ],
+                            "@id": "#process/assay6.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.4",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN103.sff"}
+                            ],
+                            "@id": "#process/assay5.4",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_31"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_21",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255770"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN102.sff"}
+                            ],
+                            "@id": "#process/assay5.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVNG8PH03.sff"}
+                            ],
+                            "@id": "#process/assay7.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVUSNDQ03.sff"}
+                            ],
+                            "@id": "#process/assay7.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.5",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN111.sff"}
+                            ],
+                            "@id": "#process/assay7.5",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.3",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN108.sff"}
+                            ],
+                            "@id": "#process/assay6.3",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.5",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN116.sff"}
+                            ],
+                            "@id": "#process/assay8.5",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.1",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVNG8PH04.sff"}
+                            ],
+                            "@id": "#process/assay8.1",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay7.6"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction3",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RNA-Seq",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RANDOM",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_33"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255772.e2"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.5",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN106.sff"}
+                            ],
+                            "@id": "#process/assay6.5",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction1"},
+                            "executesProtocol": {"@id": "#protocol/mRNA_extraction_-_standard_procedure_3"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255770.e2"}
+                            ],
+                            "@id": "#process/mRNA_extraction_-_standard_procedure_31",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_21"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay5.6"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction1",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RNA-Seq",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RANDOM",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_31"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255770.e2"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.6",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN115.sff"}
+                            ],
+                            "@id": "#process/assay8.6",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.5",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVNG8PH01.sff"}
+                            ],
+                            "@id": "#process/assay5.5",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.3",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN110.sff"}
+                            ],
+                            "@id": "#process/assay7.3",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.3",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN114.sff"}
+                            ],
+                            "@id": "#process/assay8.3",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_32"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_22",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255771"}
+                            ]
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/library_construction4"},
+                            "executesProtocol": {"@id": "#protocol/mRNA_extraction_-_standard_procedure_3"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [
+                                {"@id": "#material/extract-GSM255773.e2"}
+                            ],
+                            "@id": "#process/mRNA_extraction_-_standard_procedure_34",
+                            "parameterValues": [],
+                            "previousProcess": {"@id": "#process/nucleic_acid_extraction_-_standard_procedure_24"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.6",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN105.sff"}
+                            ],
+                            "@id": "#process/assay6.6",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.6",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVUSNDQ01.sff"}
+                            ],
+                            "@id": "#process/assay5.6",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.3",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN104.sff"}
+                            ],
+                            "@id": "#process/assay5.3",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.6",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN112.sff"}
+                            ],
+                            "@id": "#process/assay7.6",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVUSNDQ02.sff"}
+                            ],
+                            "@id": "#process/assay6.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_33"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_23",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255772"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVUSNDQ04.sff"}
+                            ],
+                            "@id": "#process/assay8.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/assay6.6"},
+                            "executesProtocol": {"@id": "#protocol/library_construction"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/library_construction2",
+                            "parameterValues": [
+                                {
+                                    "value": "SINGLE",
+                                    "category": {"@id": "#parameter/library_layout"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RNA-Seq",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_strategy"}
+                                },
+                                {
+                                    "value": {
+                                        "annotationValue": "RANDOM",
+                                        "termSource": "",
+                                        "termAccession": ""
+                                    },
+                                    "category": {"@id": "#parameter/library_selection"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_32"},
+                            "inputs": [
+                                {"@id": "#material/extract-GSM255771.e2"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay6.4",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN107.sff"}
+                            ],
+                            "@id": "#process/assay6.4",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction2"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay7.4",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN109.sff"}
+                            ],
+                            "@id": "#process/assay7.4",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction3"},
+                            "inputs": []
+                        },
+                        {
+                            "nextProcess": {"@id": "#process/mRNA_extraction_-_standard_procedure_34"},
+                            "executesProtocol": {"@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "outputs": [],
+                            "@id": "#process/nucleic_acid_extraction_-_standard_procedure_24",
+                            "parameterValues": [],
+                            "inputs": [
+                                {"@id": "#sample/sample-GSM255773"}
+                            ]
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay5.2",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN101.sff"}
+                            ],
+                            "@id": "#process/assay5.2",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction1"},
+                            "inputs": []
+                        },
+                        {
+                            "executesProtocol": {"@id": "#protocol/pyrosequencing_-_standard_procedure_6"},
+                            "comments": [],
+                            "date": "",
+                            "performer": "",
+                            "name": "assay8.4",
+                            "outputs": [
+                                {"@id": "#data/rawdatafile-EVHINN113.sff"}
+                            ],
+                            "@id": "#process/assay8.4",
+                            "parameterValues": [
+                                {
+                                    "value": "454 GS FLX",
+                                    "category": {"@id": "#parameter/sequencing_instrument"}
+                                }
+                            ],
+                            "previousProcess": {"@id": "#process/library_construction4"},
+                            "inputs": []
+                        }
+                    ],
+                    "filename": "a_gilbert-assay-Tx.txt",
+                    "characteristicCategories": [],
+                    "@id": "#assay/a_gilbert-assay-Tx.txt",
+                    "measurementType": {
+                        "annotationValue": "transcription profiling",
+                        "termSource": "OBI",
+                        "termAccession": ""
+                    },
+                    "technologyType": {
+                        "annotationValue": "nucleotide sequencing",
+                        "termSource": "OBI",
+                        "termAccession": ""
+                    }
+                }
+            ],
+            "title": "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment",
+            "submissionDate": "2008-08-15",
+            "characteristicCategories": [
+                {
+                    "characteristicType": {
+                        "annotationValue": "small picoeukaryotes count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/small_picoeukaryotes_count"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "chl-c2 concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/chl-c2_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "neoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/neoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "particulate organic carbon concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/particulate_organic_carbon_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "hexfucoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/hexfucoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "water salinity",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/water_salinity"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "butfucoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/butfucoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "chl-c3 concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/chl-c3_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "diatoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/diatoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "nitrate concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/nitrate_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "geographic location (latitude)",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/geographic_location_(latitude)"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "geographic location (longitude)",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/geographic_location_(longitude)"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "alloxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/alloxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "chl-a concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/chl-a_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "large picoeukaryotes count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/large_picoeukaryotes_count"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "divinyl-chl-b concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/divinyl-chl-b_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "fucoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/fucoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "phosphate concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/phosphate_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "geographic location (country and/or sea,region)",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/geographic_location_(country_and/or_sea,region)"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "chl-b concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/chl-b_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "organism",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/organism"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "violaxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/violaxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "particulate organic nitrogen concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/particulate_organic_nitrogen_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "lutein concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/lutein_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "chlorophyll a concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/chlorophyll_a_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "peridinin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/peridinin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "zeaxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/zeaxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "fluorescence",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/fluorescence"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "nanoflagellates count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/nanoflagellates_count"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "BB carotene concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/BB_carotene_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "diadinoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/diadinoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "prasinoxanthin concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/prasinoxanthin_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "water temperature at 3 meter depth",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/water_temperature_at_3_meter_depth"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "synechococcus count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/synechococcus_count"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "divinyl-chl-a concentration",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/divinyl-chl-a_concentration"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "bacteria count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/bacteria_count"
+                },
+                {
+                    "characteristicType": {
+                        "annotationValue": "cryptophytes count",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "@id": "#characteristic_category/cryptophytes_count"
+                }
+            ],
+            "protocols": [
+                {
+                    "uri": "",
+                    "parameters": [
+                        {
+                            "parameterName": {
+                                "annotationValue": "filter pore size",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#parameter/filter_pore_size"
+                        }
+                    ],
+                    "components": [],
+                    "description": "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
+                    "name": "environmental material collection - standard procedure 1",
+                    "version": "",
+                    "@id": "#protocol/environmental_material_collection_-_standard_procedure_1",
+                    "protocolType": {
+                        "annotationValue": "sample collection",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [],
+                    "components": [],
+                    "description": "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
+                    "name": "nucleic acid extraction - standard procedure 2",
+                    "version": "",
+                    "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2",
+                    "protocolType": {
+                        "annotationValue": "nucleic acid extraction",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [],
+                    "components": [],
+                    "description": "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006.",
+                    "name": "mRNA extraction - standard procedure 3",
+                    "version": "",
+                    "@id": "#protocol/mRNA_extraction_-_standard_procedure_3",
+                    "protocolType": {
+                        "annotationValue": "nucleic acid extraction",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [],
+                    "components": [],
+                    "description": "",
+                    "name": "genomic DNA extraction - standard procedure 4",
+                    "version": "",
+                    "@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4",
+                    "protocolType": {
+                        "annotationValue": "nucleic acid extraction",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [],
+                    "components": [],
+                    "description": "superscript+random hexamer primer",
+                    "name": "reverse transcription - standard procedure 5",
+                    "version": "",
+                    "@id": "#protocol/reverse_transcription_-_standard_procedure_5",
+                    "protocolType": {
+                        "annotationValue": "reverse transcription",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [
+                        {
+                            "parameterName": {
+                                "annotationValue": "library strategy",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#parameter/library_strategy"
+                        },
+                        {
+                            "parameterName": {
+                                "annotationValue": "library layout",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#parameter/library_layout"
+                        },
+                        {
+                            "parameterName": {
+                                "annotationValue": "library selection",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#parameter/library_selection"
+                        }
+                    ],
+                    "components": [],
+                    "description": "",
+                    "name": "library construction",
+                    "version": "",
+                    "@id": "#protocol/library_construction",
+                    "protocolType": {
+                        "annotationValue": "library construction",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [
+                        {
+                            "parameterName": {
+                                "annotationValue": "sequencing instrument",
+                                "termSource": "",
+                                "termAccession": ""
+                            },
+                            "@id": "#parameter/sequencing_instrument"
+                        }
+                    ],
+                    "components": [],
+                    "description": "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
+                    "name": "pyrosequencing - standard procedure 6",
+                    "version": "",
+                    "@id": "#protocol/pyrosequencing_-_standard_procedure_6",
+                    "protocolType": {
+                        "annotationValue": "nucleic acid sequencing",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                },
+                {
+                    "uri": "",
+                    "parameters": [],
+                    "components": [],
+                    "description": "",
+                    "name": "sequence analysis - standard procedure 7",
+                    "version": "",
+                    "@id": "#protocol/sequence_analysis_-_standard_procedure_7",
+                    "protocolType": {
+                        "annotationValue": "data transformation",
+                        "termSource": "",
+                        "termAccession": ""
+                    }
+                }
+            ],
+            "comments": [
+                {
+                    "name": "Study Grant Number",
+                    "value": ""
+                },
+                {
+                    "name": "SRA Center Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "SRA Center Project Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "Study Funding Agency",
+                    "value": ""
+                },
+                {
+                    "name": "SRA Broker Name",
+                    "value": "OXFORD"
+                },
+                {
+                    "name": "SRA Lab Name",
+                    "value": "Oxford e-Research Centre"
+                },
+                {
+                    "name": "SRA Submission Action",
+                    "value": "ADD"
+                }
+            ],
+            "processSequence": [
+                {
+                    "executesProtocol": {"@id": "#protocol/environmental_material_collection_-_standard_procedure_1"},
+                    "comments": [],
+                    "date": "",
+                    "performer": "",
+                    "outputs": [
+                        {"@id": "#sample/sample-GSM255772"}
+                    ],
+                    "@id": "#process/environmental_material_collection_-_standard_procedure_13",
+                    "parameterValues": [
+                        {
+                            "value": 0.22,
+                            "unit": {"@id": "#Unit/micrometer"},
+                            "category": {"@id": "#parameter/filter_pore_size"}
+                        }
+                    ],
+                    "inputs": [
+                        {"@id": "#source/source-GSM255772"}
+                    ]
+                },
+                {
+                    "executesProtocol": {"@id": "#protocol/environmental_material_collection_-_standard_procedure_1"},
+                    "comments": [],
+                    "date": "",
+                    "performer": "",
+                    "outputs": [
+                        {"@id": "#sample/sample-GSM255773"}
+                    ],
+                    "@id": "#process/environmental_material_collection_-_standard_procedure_14",
+                    "parameterValues": [
+                        {
+                            "value": 0.22,
+                            "unit": {"@id": "#Unit/micrometer"},
+                            "category": {"@id": "#parameter/filter_pore_size"}
+                        }
+                    ],
+                    "inputs": [
+                        {"@id": "#source/source-GSM255773"}
+                    ]
+                },
+                {
+                    "executesProtocol": {"@id": "#protocol/environmental_material_collection_-_standard_procedure_1"},
+                    "comments": [],
+                    "date": "",
+                    "performer": "",
+                    "outputs": [
+                        {"@id": "#sample/sample-GSM255771"}
+                    ],
+                    "@id": "#process/environmental_material_collection_-_standard_procedure_12",
+                    "parameterValues": [
+                        {
+                            "value": 0.22,
+                            "unit": {"@id": "#Unit/micrometer"},
+                            "category": {"@id": "#parameter/filter_pore_size"}
+                        }
+                    ],
+                    "inputs": [
+                        {"@id": "#source/source-GSM255771"}
+                    ]
+                },
+                {
+                    "executesProtocol": {"@id": "#protocol/environmental_material_collection_-_standard_procedure_1"},
+                    "comments": [],
+                    "date": "",
+                    "performer": "",
+                    "outputs": [
+                        {"@id": "#sample/sample-GSM255770"}
+                    ],
+                    "@id": "#process/environmental_material_collection_-_standard_procedure_11",
+                    "parameterValues": [
+                        {
+                            "value": 0.22,
+                            "unit": {"@id": "#Unit/micrometer"},
+                            "category": {"@id": "#parameter/filter_pore_size"}
+                        }
+                    ],
+                    "inputs": [
+                        {"@id": "#source/source-GSM255770"}
+                    ]
+                }
+            ],
+            "publicReleaseDate": "2008-08-15",
+            "identifier": "BII-S-3",
+            "filename": "s_BII-S-3.txt",
+            "description": "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples.",
+            "materials": {
+                "sources": [
+                    {
+                        "name": "source-GSM255773",
+                        "@id": "#source/source-GSM255773",
+                        "characteristics": [
+                            {
+                                "value": 42927,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/small_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0.3,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c2_concentration"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/neoxanthin_concentration"}
+                            },
+                            {
+                                "value": 945,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_carbon_concentration"}
+                            },
+                            {
+                                "value": 0.27,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/hexfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 31.5,
+                                "unit": {"@id": "#Unit/psu"},
+                                "category": {"@id": "#characteristic_category/water_salinity"}
+                            },
+                            {
+                                "value": 0.03,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/butfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.07,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c3_concentration"}
+                            },
+                            {
+                                "value": 0.05,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diatoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.59,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/nitrate_concentration"}
+                            },
+                            {
+                                "value": 60.269444,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(latitude)"}
+                            },
+                            {
+                                "value": 5.222222,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(longitude)"}
+                            },
+                            {
+                                "value": 0.05,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/alloxanthin_concentration"}
+                            },
+                            {
+                                "value": 1.77,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-a_concentration"}
+                            },
+                            {
+                                "value": 2916,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/large_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-b_concentration"}
+                            },
+                            {
+                                "value": 0.19,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/fucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.25,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/phosphate_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "Norway, fjord, coastal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/geographic_location_(country_and/or_sea,region)"}
+                            },
+                            {
+                                "value": 0.43,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-b_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "marine metagenome",
+                                    "termSource": "NCBITAXON",
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172"
+                                },
+                                "category": {"@id": "#characteristic_category/organism"}
+                            },
+                            {
+                                "value": 0.1,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/violaxanthin_concentration"}
+                            },
+                            {
+                                "value": 166,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_nitrogen_concentration"}
+                            },
+                            {
+                                "value": 0.02,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/lutein_concentration"}
+                            },
+                            {
+                                "value": 1.77,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chlorophyll_a_concentration"}
+                            },
+                            {
+                                "value": 0.26,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/peridinin_concentration"}
+                            },
+                            {
+                                "value": 0.13,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/zeaxanthin_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": 4.1,
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/fluorescence"}
+                            },
+                            {
+                                "value": 283,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/nanoflagellates_count"}
+                            },
+                            {
+                                "value": 0.12,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/BB_carotene_concentration"}
+                            },
+                            {
+                                "value": 0.21,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diadinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 129.9,
+                                "unit": {"@id": "#Unit/mg/m2/d"},
+                                "category": {"@id": "#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/prasinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 8.9,
+                                "unit": {"@id": "#Unit/degree_celsius"},
+                                "category": {"@id": "#characteristic_category/water_temperature_at_3_meter_depth"}
+                            },
+                            {
+                                "value": 22049,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/synechococcus_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-a_concentration"}
+                            },
+                            {
+                                "value": 6143892,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/bacteria_count"}
+                            },
+                            {
+                                "value": 216,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/cryptophytes_count"}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "source-GSM255771",
+                        "@id": "#source/source-GSM255771",
+                        "characteristics": [
+                            {
+                                "value": 38513,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/small_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0.87,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c2_concentration"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/neoxanthin_concentration"}
+                            },
+                            {
+                                "value": 561,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_carbon_concentration"}
+                            },
+                            {
+                                "value": 1.15,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/hexfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 31.4,
+                                "unit": {"@id": "#Unit/psu"},
+                                "category": {"@id": "#characteristic_category/water_salinity"}
+                            },
+                            {
+                                "value": 0.17,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/butfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.65,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c3_concentration"}
+                            },
+                            {
+                                "value": 0.11,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diatoxanthin_concentration"}
+                            },
+                            {
+                                "value": 3.84,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/nitrate_concentration"}
+                            },
+                            {
+                                "value": 60.269444,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(latitude)"}
+                            },
+                            {
+                                "value": 5.222222,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(longitude)"}
+                            },
+                            {
+                                "value": 0.33,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/alloxanthin_concentration"}
+                            },
+                            {
+                                "value": 11.22,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-a_concentration"}
+                            },
+                            {
+                                "value": 12035,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/large_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-b_concentration"}
+                            },
+                            {
+                                "value": 1.43,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/fucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.19,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/phosphate_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "Norway, fjord, coastal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/geographic_location_(country_and/or_sea,region)"}
+                            },
+                            {
+                                "value": 5.97,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-b_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "marine metagenome",
+                                    "termSource": "NCBITAXON",
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172"
+                                },
+                                "category": {"@id": "#characteristic_category/organism"}
+                            },
+                            {
+                                "value": 0.99,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/violaxanthin_concentration"}
+                            },
+                            {
+                                "value": 104,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_nitrogen_concentration"}
+                            },
+                            {
+                                "value": 0.41,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/lutein_concentration"}
+                            },
+                            {
+                                "value": 11.22,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chlorophyll_a_concentration"}
+                            },
+                            {
+                                "value": 0.14,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/peridinin_concentration"}
+                            },
+                            {
+                                "value": 0.23,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/zeaxanthin_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": 23.6,
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/fluorescence"}
+                            },
+                            {
+                                "value": 4390,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/nanoflagellates_count"}
+                            },
+                            {
+                                "value": 0.83,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/BB_carotene_concentration"}
+                            },
+                            {
+                                "value": 0.64,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diadinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 938.1,
+                                "unit": {"@id": "#Unit/mg/m2/d"},
+                                "category": {"@id": "#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/prasinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 9.6,
+                                "unit": {"@id": "#Unit/degree_celsius"},
+                                "category": {"@id": "#characteristic_category/water_temperature_at_3_meter_depth"}
+                            },
+                            {
+                                "value": 13867,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/synechococcus_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-a_concentration"}
+                            },
+                            {
+                                "value": 4862861,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/bacteria_count"}
+                            },
+                            {
+                                "value": 1702,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/cryptophytes_count"}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "source-GSM255770",
+                        "@id": "#source/source-GSM255770",
+                        "characteristics": [
+                            {
+                                "value": 36257,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/small_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0.59,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c2_concentration"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/neoxanthin_concentration"}
+                            },
+                            {
+                                "value": 844,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_carbon_concentration"}
+                            },
+                            {
+                                "value": 0.82,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/hexfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 31.3,
+                                "unit": {"@id": "#Unit/psu"},
+                                "category": {"@id": "#characteristic_category/water_salinity"}
+                            },
+                            {
+                                "value": 0.14,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/butfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.29,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c3_concentration"}
+                            },
+                            {
+                                "value": 0.1,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diatoxanthin_concentration"}
+                            },
+                            {
+                                "value": 7.53,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/nitrate_concentration"}
+                            },
+                            {
+                                "value": 60.269444,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(latitude)"}
+                            },
+                            {
+                                "value": 5.222222,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(longitude)"}
+                            },
+                            {
+                                "value": 0.36,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/alloxanthin_concentration"}
+                            },
+                            {
+                                "value": 9.23,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-a_concentration"}
+                            },
+                            {
+                                "value": 5450,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/large_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-b_concentration"}
+                            },
+                            {
+                                "value": 0.54,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/fucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.23,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/phosphate_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "Norway, fjord, coastal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/geographic_location_(country_and/or_sea,region)"}
+                            },
+                            {
+                                "value": 5.25,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-b_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "marine metagenome",
+                                    "termSource": "NCBITAXON",
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172"
+                                },
+                                "category": {"@id": "#characteristic_category/organism"}
+                            },
+                            {
+                                "value": 0.64,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/violaxanthin_concentration"}
+                            },
+                            {
+                                "value": 143,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_nitrogen_concentration"}
+                            },
+                            {
+                                "value": 0.37,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/lutein_concentration"}
+                            },
+                            {
+                                "value": 9.23,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chlorophyll_a_concentration"}
+                            },
+                            {
+                                "value": 0.18,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/peridinin_concentration"}
+                            },
+                            {
+                                "value": 0.35,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/zeaxanthin_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": 17.6,
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/fluorescence"}
+                            },
+                            {
+                                "value": 2851,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/nanoflagellates_count"}
+                            },
+                            {
+                                "value": 0.72,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/BB_carotene_concentration"}
+                            },
+                            {
+                                "value": 0.46,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diadinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 591.4,
+                                "unit": {"@id": "#Unit/mg/m2/d"},
+                                "category": {"@id": "#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/prasinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 9.7,
+                                "unit": {"@id": "#Unit/degree_celsius"},
+                                "category": {"@id": "#characteristic_category/water_temperature_at_3_meter_depth"}
+                            },
+                            {
+                                "value": 7064,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/synechococcus_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-a_concentration"}
+                            },
+                            {
+                                "value": 4666004,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/bacteria_count"}
+                            },
+                            {
+                                "value": 660,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/cryptophytes_count"}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "source-GSM255772",
+                        "@id": "#source/source-GSM255772",
+                        "characteristics": [
+                            {
+                                "value": 21435,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/small_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0.31,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c2_concentration"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/neoxanthin_concentration"}
+                            },
+                            {
+                                "value": 783,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_carbon_concentration"}
+                            },
+                            {
+                                "value": 0.15,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/hexfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 31.5,
+                                "unit": {"@id": "#Unit/psu"},
+                                "category": {"@id": "#characteristic_category/water_salinity"}
+                            },
+                            {
+                                "value": 0.06,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/butfucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.05,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-c3_concentration"}
+                            },
+                            {
+                                "value": 0.04,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diatoxanthin_concentration"}
+                            },
+                            {
+                                "value": 3.94,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/nitrate_concentration"}
+                            },
+                            {
+                                "value": 60.269444,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(latitude)"}
+                            },
+                            {
+                                "value": 5.222222,
+                                "unit": {"@id": "#Unit/degree"},
+                                "category": {"@id": "#characteristic_category/geographic_location_(longitude)"}
+                            },
+                            {
+                                "value": 0.03,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/alloxanthin_concentration"}
+                            },
+                            {
+                                "value": 1.6,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-a_concentration"}
+                            },
+                            {
+                                "value": 878,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/large_picoeukaryotes_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-b_concentration"}
+                            },
+                            {
+                                "value": 0.21,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/fucoxanthin_concentration"}
+                            },
+                            {
+                                "value": 0.2,
+                                "unit": {"@id": "#Unit/umol/l"},
+                                "category": {"@id": "#characteristic_category/phosphate_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "Norway, fjord, coastal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/geographic_location_(country_and/or_sea,region)"}
+                            },
+                            {
+                                "value": 0.21,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chl-b_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "marine metagenome",
+                                    "termSource": "NCBITAXON",
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172"
+                                },
+                                "category": {"@id": "#characteristic_category/organism"}
+                            },
+                            {
+                                "value": 0.05,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/violaxanthin_concentration"}
+                            },
+                            {
+                                "value": 128,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/particulate_organic_nitrogen_concentration"}
+                            },
+                            {
+                                "value": 0.02,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/lutein_concentration"}
+                            },
+                            {
+                                "value": 1.6,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/chlorophyll_a_concentration"}
+                            },
+                            {
+                                "value": 0.41,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/peridinin_concentration"}
+                            },
+                            {
+                                "value": 0.13,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/zeaxanthin_concentration"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": 4.5,
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#characteristic_category/fluorescence"}
+                            },
+                            {
+                                "value": 138,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/nanoflagellates_count"}
+                            },
+                            {
+                                "value": 0.06,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/BB_carotene_concentration"}
+                            },
+                            {
+                                "value": 0.2,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/diadinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 118,
+                                "unit": {"@id": "#Unit/mg/m2/d"},
+                                "category": {"@id": "#characteristic_category/primary_production_depth_integrated_production_to_3_m_expressed_in_mgC_m-2_d-1"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/prasinoxanthin_concentration"}
+                            },
+                            {
+                                "value": 9,
+                                "unit": {"@id": "#Unit/degree_celsius"},
+                                "category": {"@id": "#characteristic_category/water_temperature_at_3_meter_depth"}
+                            },
+                            {
+                                "value": 16465,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/synechococcus_count"}
+                            },
+                            {
+                                "value": 0,
+                                "unit": {"@id": "#Unit/ug/l"},
+                                "category": {"@id": "#characteristic_category/divinyl-chl-a_concentration"}
+                            },
+                            {
+                                "value": 9516120,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/bacteria_count"}
+                            },
+                            {
+                                "value": 75,
+                                "unit": {"@id": "#Unit/number/ml"},
+                                "category": {"@id": "#characteristic_category/cryptophytes_count"}
+                            }
+                        ]
+                    }
+                ],
+                "samples": [
+                    {
+                        "name": "sample-GSM255773",
+                        "factorValues": [
+                            {
+                                "value": {
+                                    "annotationValue": "carbon dioxide",
+                                    "termSource": "CHEBI",
+                                    "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16526"
+                                },
+                                "category": {"@id": "#factor/compound"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "normal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/dose"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "may 19th, 2006",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/collection_time"}
+                            }
+                        ],
+                        "derivesFrom": [
+                            {"@id": "#source/source-GSM255773"}
+                        ],
+                        "@id": "#sample/sample-GSM255773",
+                        "characteristics": []
+                    },
+                    {
+                        "name": "sample-GSM255772",
+                        "factorValues": [
+                            {
+                                "value": {
+                                    "annotationValue": "carbon dioxide",
+                                    "termSource": "CHEBI",
+                                    "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16526"
+                                },
+                                "category": {"@id": "#factor/compound"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "high",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/dose"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "may 19th, 2006",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/collection_time"}
+                            }
+                        ],
+                        "derivesFrom": [
+                            {"@id": "#source/source-GSM255772"}
+                        ],
+                        "@id": "#sample/sample-GSM255772",
+                        "characteristics": []
+                    },
+                    {
+                        "name": "sample-GSM255770",
+                        "factorValues": [
+                            {
+                                "value": {
+                                    "annotationValue": "carbon dioxide",
+                                    "termSource": "CHEBI",
+                                    "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16526"
+                                },
+                                "category": {"@id": "#factor/compound"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "high",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/dose"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "may 13th, 2006",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/collection_time"}
+                            }
+                        ],
+                        "derivesFrom": [
+                            {"@id": "#source/source-GSM255770"}
+                        ],
+                        "@id": "#sample/sample-GSM255770",
+                        "characteristics": []
+                    },
+                    {
+                        "name": "sample-GSM255771",
+                        "factorValues": [
+                            {
+                                "value": {
+                                    "annotationValue": "carbon dioxide",
+                                    "termSource": "CHEBI",
+                                    "termAccession": "http://purl.obolibrary.org/obo/CHEBI_16526"
+                                },
+                                "category": {"@id": "#factor/compound"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "normal",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/dose"}
+                            },
+                            {
+                                "value": {
+                                    "annotationValue": "may 13th, 2006",
+                                    "termSource": "",
+                                    "termAccession": ""
+                                },
+                                "category": {"@id": "#factor/collection_time"}
+                            }
+                        ],
+                        "derivesFrom": [
+                            {"@id": "#source/source-GSM255771"}
+                        ],
+                        "@id": "#sample/sample-GSM255771",
+                        "characteristics": []
+                    }
+                ],
+                "otherMaterials": []
+            },
+            "studyDesignDescriptors": [
+                {
+                    "annotationValue": "time series design",
+                    "termSource": "OBI",
+                    "termAccession": "http://purl.obolibrary.org/obo/OBI_0500020"
+                }
+            ],
+            "@id": "#study/BII-S-3",
+            "people": [
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        },
+                        {
+                            "annotationValue": "SRA Inform On Status",
+                            "termSource": "",
+                            "termAccession": ""
+                        },
+                        {
+                            "annotationValue": "SRA Inform On Error",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Jack",
+                    "lastName": "Gilbert",
+                    "affiliation": "Plymouth Marine Laboratory",
+                    "address": "Prospect Place, Plymouth, United Kingdom",
+                    "@id": "#person/Gilbert",
+                    "email": "jagi@pml.ac.uk",
+                    "fax": "",
+                    "midInitials": "A"
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Dawn",
+                    "lastName": "Field",
+                    "affiliation": "NERC Centre for Ecology and Hydrology",
+                    "address": "CEH Oxford, Oxford, United Kingdom",
+                    "@id": "#person/Field",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Ying",
+                    "lastName": "Huang",
+                    "affiliation": "California Institute for Telecommunications and Information Technology",
+                    "address": "San Diego State University, San Diego, California, United States of America",
+                    "@id": "#person/Huang",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Rob",
+                    "lastName": "Edwards",
+                    "affiliation": "Department of Computer Science, Mathematics and Computer Science Division,",
+                    "address": "Argonne National Laboratory, Argonne, Illinois, United States of America",
+                    "@id": "#person/Edwards",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Weizhong",
+                    "lastName": "Li",
+                    "affiliation": "California Institute for Telecommunications and Information Technology",
+                    "address": "San Diego State University, San Diego, California, United States of America",
+                    "@id": "#person/Li",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Paul",
+                    "lastName": "Gilna",
+                    "affiliation": "California Institute for Telecommunications and Information Technology",
+                    "address": "San Diego State University, San Diego, California, United States of America",
+                    "@id": "#person/Gilna",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                },
+                {
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "annotationValue": "principal investigator role",
+                            "termSource": "",
+                            "termAccession": ""
+                        }
+                    ],
+                    "phone": "",
+                    "firstName": "Ian",
+                    "lastName": "Joint",
+                    "affiliation": "Plymouth Marine Laboratory",
+                    "address": "Prospect Place, Plymouth, United Kingdom",
+                    "@id": "#person/Joint",
+                    "email": "",
+                    "fax": "",
+                    "midInitials": ""
+                }
+            ],
+            "publications": [
+                {
+                    "pubMedID": "18725995",
+                    "title": "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.",
+                    "status": {
+                        "annotationValue": "indexed in PubMed",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "doi": "10.1371/journal.pone.0003042",
+                    "authorList": "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."
+                },
+                {
+                    "pubMedID": "18783384",
+                    "title": "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters.",
+                    "status": {
+                        "annotationValue": "indexed in PubMed",
+                        "termSource": "",
+                        "termAccession": ""
+                    },
+                    "doi": "10.1111/j.1462-2920.2008.01745.x",
+                    "authorList": "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."
+                }
+            ],
+            "unitCategories": [
+                {
+                    "@id": "#Unit/number/ml",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "number/ml"
+                },
+                {
+                    "@id": "#Unit/ug/l",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "ug/l"
+                },
+                {
+                    "@id": "#Unit/psu",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "psu"
+                },
+                {
+                    "@id": "#Unit/umol/l",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "umol/l"
+                },
+                {
+                    "@id": "#Unit/micrometer",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "micrometer"
+                },
+                {
+                    "@id": "#Unit/mg/m2/d",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "mg/m2/d"
+                },
+                {
+                    "@id": "#Unit/degree_celsius",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "degree celsius"
+                },
+                {
+                    "@id": "#Unit/degree",
+                    "termSource": "",
+                    "termAccession": "",
+                    "annotationValue": "degree"
+                }
+            ]
+        }
+    ],
+    "ontologySourceReferences": [
+        {
+            "name": "CHEBI",
+            "file": "http://data.bioontology.org/ontologies/CHEBI",
+            "version": "78",
+            "description": "Chemical Entities of Biological Interest Ontology"
+        },
+        {
+            "name": "EFO",
+            "file": "http://data.bioontology.org/ontologies/EFO",
+            "version": "111",
+            "description": "Experimental Factor Ontology"
+        },
+        {
+            "name": "OBI",
+            "file": "http://data.bioontology.org/ontologies/OBI",
+            "version": "21",
+            "description": "Ontology for Biomedical Investigations"
+        },
+        {
+            "name": "NCBITAXON",
+            "file": "http://data.bioontology.org/ontologies/NCBITAXON",
+            "version": "2",
+            "description": "National Center for Biotechnology Information (NCBI) Organismal Classification"
+        },
+        {
+            "name": "PATO",
+            "file": "http://data.bioontology.org/ontologies/PATO",
+            "version": "160",
+            "description": "Phenotypic Quality Ontology"
+        }
+    ],
+    "title": "",
+    "publications": []
+}

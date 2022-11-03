@@ -15,6 +15,7 @@ Todo:
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Commentable, Comment
+from isatools.model.context import set_context
 from isatools.model.datafile import (
     DataFile,
     RawDataFile,

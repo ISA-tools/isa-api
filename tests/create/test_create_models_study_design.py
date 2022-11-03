@@ -2,6 +2,7 @@ import unittest
 import os
 from functools import reduce
 import json
+
 import yaml
 import networkx as nx
 import uuid
@@ -28,6 +29,7 @@ from isatools.create.model import (
     StudyCell,
     ProductNode,
     ProtocolNode,
+    SequenceNode,
     AssayGraph,
     SampleAndAssayPlan,
     StudyArm,
@@ -95,8 +97,22 @@ class NonTreatmentTest(unittest.TestCase):
                                                                   value=self.DURATION_VALUE,
                                                                   unit=self.DURATION_UNIT))
 
+    def test_elements_property(self):
+        with self.assertRaises(ValueError, msg="element treatment type provided: -1") as er_msg:
+            self.non_treatment = NonTreatment(element_type=-1)
+        self.assertEqual(er_msg.exception.args[0], "element treatment type provided: -1")
+
+        with self.assertRaises(ValueError, msg="duration_value must be a Number. Value provided is string") as er_msg:
+            self.non_treatment = NonTreatment(duration_value="string")
+        self.assertEqual(er_msg.exception.args[0], "duration_value must be a Number. Value provided is string")
+
+    def test_string_(self):
+        self.assertEqual(str(self.non_treatment), """NonTreatment(
+            type='screen',
+            duration=isatools.model.FactorValue(factor_name=isatools.model.StudyFactor(name='DURATION', factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, term_accession='', comments=[]), comments=[]), value=10.0, unit=isatools.model.OntologyAnnotation(term='day', term_source=None, term_accession='', comments=[]))
+        )""")
+
     def test_repr(self):
-        # print(self.non_treatment.duration)
         self.assertEqual(repr(self.non_treatment),
                          "isatools.create.model.NonTreatment(type='screen', duration=isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='DURATION', "
@@ -104,6 +120,12 @@ class NonTreatmentTest(unittest.TestCase):
                          "term_accession='', comments=[]), comments=[]), value=10.0, "
                          "unit=isatools.model.OntologyAnnotation(term='day', term_source=None, term_accession='', "
                          "comments=[])))")
+
+    def test_type(self):
+        with self.assertRaises(ValueError, msg="invalid treatment type provided: ") as er_msg:
+            self.non_treatment = NonTreatment()
+            self.non_treatment.type = "toto"
+        self.assertEqual(er_msg.exception.args[0], "invalid treatment type provided: ")
 
     def test_hash(self):
         self.assertEqual(hash(self.non_treatment), hash(repr(self.non_treatment)))
@@ -116,6 +138,12 @@ class NonTreatmentTest(unittest.TestCase):
         other_non_treatment = NonTreatment(duration_value=self.OTHER_DURATION_VALUE,
                                            duration_unit=self.DURATION_UNIT)
         self.assertNotEqual(self.non_treatment, other_non_treatment)
+
+    def test_update(self):
+        with self.assertRaises(ValueError, msg="duration_value must be a Number. Value provided is toto") as er_msg:
+            self.non_treatment = NonTreatment()
+            self.non_treatment.update_duration("toto")
+        self.assertEqual(er_msg.exception.args[0], "duration_value must be a Number. Value provided is toto")
 
 
 class TreatmentTest(unittest.TestCase):
@@ -143,6 +171,28 @@ class TreatmentTest(unittest.TestCase):
                          "term_source=None, term_accession='', comments=[]), comments=[]), value=5, "
                          "unit=isatools.model.OntologyAnnotation(term='kg/m^3', term_source=None, term_accession='', "
                          "comments=[]))])")
+
+    def test_treatments_property(self):
+        with self.assertRaises(AttributeError, msg='Data supplied is not correctly formatted for Treatment') as er_msg:
+            self.test_treatment = Treatment(factor_values="toto")
+        self.assertEqual(er_msg.exception.args[0], "Data supplied is not correctly formatted for Treatment")
+
+    def test_element(self):
+        with self.assertRaises(ValueError, msg='intervention_type must be string or OntologyAnnotation. -1 was provided.') as er_msg:
+            self.bad_treatment_type = Treatment(element_type=-1)
+        self.assertEqual(er_msg.exception.args[0], "intervention_type must be string or OntologyAnnotation. -1 was provided.")
+
+    def test_type(self):
+        with self.assertRaises(ValueError, msg="invalid treatment type provided: ") as er_msg:
+            self.treatment = Treatment()
+            self.treatment.type = "toto"
+        self.assertEqual(er_msg.exception.args[0], "invalid treatment type provided: ")
+
+    def test_update(self):
+        with self.assertRaises(ValueError, msg="duration_value must be a Number. Value provided is toto") as er_msg:
+            self.treatment = Treatment()
+            self.treatment.update_duration("toto")
+        self.assertEqual(er_msg.exception.args[0], "duration_value must be a Number. Value provided is toto")
 
     def test_hash(self):
         self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
@@ -667,6 +717,17 @@ class StudyCellTest(unittest.TestCase):
         self.cell.elements = [self.screen, self.run_in]
         self.assertFalse(self.cell.has_treatments)
 
+    def test_string_(self):
+        self.assertEqual(str(self.cell), """StudyCell(
+               name=test epoch 0, 
+               elements=0 items, 
+               )""")
+
+    def test_cell_name(self):
+        with self.assertRaises(AttributeError, msg="") as er_msg:
+            self.cell.name = -1
+        self.assertEqual(er_msg.exception.args[0], "StudyCell name must be a string")
+
 
 class ProtocolNodeTest(unittest.TestCase):
 
@@ -702,6 +763,16 @@ class ProtocolNodeTest(unittest.TestCase):
         node.replicates = 3
         self.assertEqual(node.replicates, 3)
 
+        # with self.assertRaises(AttributeError, msg="The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue objects. -1 was supplied.") as er_msg:
+        #     bad_node = ProtocolNode(name="bad_node", parameter_values=-1)
+        #     self.assay_graph.add_node(bad_node)
+        # self.assertEqual(er_msg.exception.args[0], "The \'parameter_values\' property must be an iterable of isatools.model.ParameterValue objects. -1 was supplied.")
+
+        with self.assertRaises(AttributeError, msg="The \'parameters\' property cannot be set directly. Set parameter_values instead.") as er_msg:
+            param = -1
+            node.parameters = param
+        self.assertEqual(er_msg.exception.args[0], "The \'parameters\' property cannot be set directly. Set parameter_values instead.")
+
 
 class ProductNodeTest(unittest.TestCase):
 
@@ -718,6 +789,38 @@ class ProductNodeTest(unittest.TestCase):
     def test_labeled_extract_node(self):
         node = ProductNode(node_type=LABELED_EXTRACT)
         self.assertEqual(node.type, LABELED_EXTRACT)
+
+    def test_add_characteristics(self):
+        node = ProductNode(node_type=EXTRACT)
+        characteristic = Characteristic(category="toto")
+        node.add_characteristic(characteristic)
+        self.assertEqual(node.characteristics[0].category, OntologyAnnotation(term='toto',
+                                                                              term_source=None,
+                                                                              term_accession='',
+                                                                              comments=[]))
+
+    def test_add_characteristics_of_wrong_type(self):
+        node = ProductNode(node_type=EXTRACT)
+        protocol = ProtocolParameter()
+        with self.assertRaises(TypeError, msg="A characteristic must be either a string or a Characteristic,"
+                                              " <class 'isatools.model.protocol_parameter.ProtocolParameter'> supplied") \
+                as er_msg:
+            node.add_characteristic(protocol)
+        self.assertEqual(er_msg.exception.args[0],
+                         "A characteristic must be either a string or a Characteristic,"
+                         " <class 'isatools.model.protocol_parameter.ProtocolParameter'> supplied")
+
+    # def test_set_wrong_characteristic(self):
+    #     node = ProductNode()
+    #     protocol = ProtocolParameter()
+    #     characteristic = Characteristic(category="toto")
+    #     node.characteristics = [characteristic, protocol]
+    #     with self.assertRaises(TypeError, msg="A characteristic must be either a string or a Characteristic,"
+    #                                           " <class 'isatools.model.protocol_parameter.ProtocolParameter'> supplied") \
+    #             as er_msg:
+    #
+    #         self.assertEqual(er_msg.exception.args[0], "A characteristic must be either a string or a Characteristic,"
+    #                                                " <class 'isatools.model.protocol_parameter.ProtocolParameter'> supplied")
 
 
 class QualityControlSourceTest(unittest.TestCase):
@@ -899,6 +1002,9 @@ class AssayGraphTest(unittest.TestCase):
         with self.assertRaises(AttributeError, msg='An integer is not a valid measurement_type') as ex_cm:
             self.assay_graph.measurement_type = 120
         self.assertIsNotNone(ex_cm.exception.args[0])
+        with self.assertRaises(AttributeError, msg='An integer is not a valid technology_type') as ex_cm:
+            self.assay_graph.technology_type = 120
+        self.assertIsNotNone(ex_cm.exception.args[0])
         with self.assertRaises(AttributeError, msg='A string is not a valid quality_control') as ex_cm:
             self.assay_graph.quality_control = 'bao'
         self.assertEqual(ex_cm.exception.args[0], errors.QUALITY_CONTROL_ERROR.format(type('bao')))
@@ -908,6 +1014,40 @@ class AssayGraphTest(unittest.TestCase):
         self.assay_graph.add_node(first_node)
         self.assertEqual(len(self.assay_graph.nodes), 1)
         self.assertEqual(self.assay_graph.nodes.pop(), first_node)
+
+    def test_node_attributes(self):
+        with self.assertRaises(AttributeError, msg="Replicates must be a positive integer. -1 was supplied.") as er_msg:
+            bad_node = ProtocolNode(name="bad_node", replicates=-1)
+            self.assay_graph.add_node(bad_node)
+        self.assertEqual(er_msg.exception.args[0], "Replicates must be a positive integer. -1 was supplied.")
+
+        with self.assertRaises(AttributeError, msg="Replicates must be a positive integer. -1 was supplied.") as er_msg:
+            bad_node = ProtocolNode(name="bad_node", replicates="string")
+            self.assay_graph.add_node(bad_node)
+        self.assertEqual(er_msg.exception.args[0], "Replicates must be a positive integer. string was supplied.")
+
+        with self.assertRaises(AttributeError, msg="ProductNode name must be a string, -1 supplied of type <class 'int'>") as er_msg:
+            bad_node = ProductNode(name=-1)
+            self.assay_graph.add_node(bad_node)
+        self.assertEqual(er_msg.exception.args[0], "ProductNode name must be a string, -1 supplied of type <class 'int'>")
+
+        with self.assertRaises(AttributeError, msg="ProductNode size must be a natural number, i.e integer >= 0") as er_msg:
+            bad_node = ProductNode(name="bad size", size="string")
+            self.assay_graph.add_node(bad_node)
+        self.assertEqual(er_msg.exception.args[0], "ProductNode size must be a natural number, i.e integer >= 0")
+
+        with self.assertRaises(AttributeError, msg="The provided ProductNode is not one of the allowed values: {'labeled extract', 'sample', 'source', 'extract', 'data file'}") as er_msg:
+            BAD = "bad_type"
+            bad_node = ProductNode(name="bad type", node_type=BAD)
+            self.assay_graph.add_node(bad_node)
+        self.assertIsNotNone(er_msg.exception.args[0])
+
+        with self.assertRaises(TypeError, msg="__init__() got an unexpected keyword argument 'name'") as er_msg:
+            bad_node = ProductNode(name="bad size", size=1)
+            characteristic = Characteristic(name="char_test")
+            bad_node.add_characteristic(characteristic)
+            self.assay_graph.add_node(bad_node)
+        self.assertEqual(er_msg.exception.args[0], "__init__() got an unexpected keyword argument 'name'")
 
     def test_create_three_level_graph_success(self):
         self.assay_graph.add_node(self.sample_node)
@@ -1161,6 +1301,18 @@ class SampleAndAssayPlanTest(unittest.TestCase):
         for item in smp_ass_plan.sample_to_assay_map.values():
             self.assertIsInstance(item, set)
             self.assertEqual(len(item), len(assay_list))
+
+    def test_study_sample_plan_repr(self):
+        self.plan = SampleAndAssayPlan('test plan')
+        self.assertEqual(repr(self.plan), """isatools.create.model.SampleAndAssayPlan(name=test plan, sample_plan=[], assay_plan=set(), sample_to_assay_map={})""")
+
+    def test_study_sample_plan_str(self):
+        self.plan = SampleAndAssayPlan('test plan')
+        self.assertEqual(str(self.plan), """SampleAndAssayPlan(
+        name=test plan,
+        sample_plan=set(), 
+        assay_plan=set()
+        )""")
 
 
 class StudyArmTest(unittest.TestCase):
@@ -1501,6 +1653,38 @@ class StudyArmTest(unittest.TestCase):
         self.assertEqual(arm.numeric_id, 14)
         arm = StudyArm(name='Arm_no_number', group_size=10)
         self.assertEqual(arm.numeric_id, -1)
+
+    def test_study_arm_repr(self):
+        self.assertEqual(repr(self.arm), """isatools.create.model.StudyArm(name=test arm 0, source_type=Characteristic(
+	category=Study Subject
+	value=OntologyAnnotation(
+	term=Human
+	term_source=NCIT
+	term_accession=http://purl.obolibrary.org/obo/NCIT_C14225
+	comments=0 Comment objects
+)
+	unit=
+	comments=0 Comment objects
+), source_characteristics=[], group_size=10, cells=[], sample_assay_plans=[])""")
+
+    def test_study_arm_str(self):
+        self.assertEqual(str(self.arm), """StudyArm(
+               name=test arm 0,
+               source_type=Characteristic(
+	category=Study Subject
+	value=OntologyAnnotation(
+	term=Human
+	term_source=NCIT
+	term_accession=http://purl.obolibrary.org/obo/NCIT_C14225
+	comments=0 Comment objects
+)
+	unit=
+	comments=0 Comment objects
+),
+               group_size=10, 
+               no. cells=0,
+               no. sample_assay_plans=0
+               )""")
 
 
 class BaseStudyDesignTest(unittest.TestCase):
@@ -1867,7 +2051,7 @@ class StudyDesignTest(BaseStudyDesignTest):
             lambda acc_value, sample_node: acc_value + sample_node.size,
             self.nmr_sample_assay_plan.sample_plan, 0) * second_arm.group_size
         expected_num_of_samples_tot = 2 * expected_num_of_samples_nmr_plan_second_arm + \
-            expected_num_of_samples_ms_plan_first_arm + expected_num_of_samples_nmr_plan_first_arm
+                                      expected_num_of_samples_ms_plan_first_arm + expected_num_of_samples_nmr_plan_first_arm
         self.assertEqual(len(study.samples), expected_num_of_samples_tot)
         ms_assay = next(assay for assay in study.assays if assay.technology_type == ms_assay_dict['technology_type'])
         # print('MS Assay is: {0}'.format(ms_assay))
@@ -1930,6 +2114,27 @@ class StudyDesignTest(BaseStudyDesignTest):
             else:
                 self.assertEqual(source.characteristics, [treatment_source_type])
 
+    def test_study_design_repr(self):
+        self.assertEqual(repr(self.study_design), """isatools.create.model.StudyDesign(identifier=None, name=Study Design, design_type=None, description=None source_type=Characteristic(
+\tcategory=Study Subject
+\tvalue=OntologyAnnotation(
+\tterm=Human
+\tterm_source=NCIT
+\tterm_accession=http://purl.obolibrary.org/obo/NCIT_C14225
+\tcomments=0 Comment objects
+)
+\tunit=
+\tcomments=0 Comment objects
+), study_arms=[])""")
+
+    def test_study_design(self):
+        self.assertEqual(str(self.study_design), """StudyDesign(
+               identifier=None, 
+               name=Study Design,
+               description=None,
+               study_arms=[]
+               )""")
+
 
 class QualityControlServiceTest(BaseStudyDesignTest):
 
@@ -1947,7 +2152,6 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
             'mass spectrometry sample and assay plan', sample_list, ms_assay_dict, quality_controls=[self.qc]
         )
-        # print(self.ms_sample_assay_plan.assay_plan)
         first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
             (self.cell_screen, None), (self.cell_run_in, None),
             (self.cell_single_treatment_00, ms_sample_assay_plan),
@@ -2000,10 +2204,35 @@ class QualityControlServiceTest(BaseStudyDesignTest):
             (expected_num_of_samples_ms_plan_first_arm - 1) // self.interspersed_sample_types[0][1]
         log.debug('expected number of interspersed samples: {0}'.format(expected_num_of_interspersed_samples))
         qc_samples_size = self.qc.pre_run_sample_type.size + self.qc.post_run_sample_type.size + \
-            expected_num_of_interspersed_samples
+                          expected_num_of_interspersed_samples
         log.debug('expected qc_samples_size: {0}'.format(qc_samples_size))
         self.assertEqual(len(ms_processes), 2 * 2 * 2 * 2 *
                          (expected_num_of_samples_ms_plan_first_arm + qc_samples_size))
+
+    def test_augment_study(self):
+        ms_sample_assay_plan = SampleAndAssayPlan.from_sample_and_assay_plan_dict(
+            'mass spectrometry sample and assay plan', sample_list, ms_assay_dict, quality_controls=[self.qc]
+        )
+        first_arm = StudyArm(name=TEST_STUDY_ARM_NAME_00, group_size=20, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_00, ms_sample_assay_plan),
+            (self.cell_follow_up, self.nmr_sample_assay_plan)
+        ]))
+        second_arm = StudyArm(name=TEST_STUDY_ARM_NAME_01, group_size=10, arm_map=OrderedDict([
+            (self.cell_screen, None), (self.cell_run_in, None),
+            (self.cell_single_treatment_01, self.nmr_sample_assay_plan),
+            (self.cell_follow_up_01, self.nmr_sample_assay_plan)
+        ]))
+        study_design = StudyDesign(study_arms=(first_arm, second_arm))
+        sample = Sample()
+        with self.assertRaises(TypeError,  msg="study must be a valid Study object") as er_msg:
+            test_qc1 = QualityControlService.augment_study(sample, study_design)
+            self.assertEqual(test_qc1, er_msg.exception.args[0])
+
+        study_no_qc = study_design.generate_isa_study()
+        with self.assertRaises(TypeError,  msg="study must be a valid StudyDesign object") as er_msg:
+            test_qc2 = QualityControlService.augment_study(study_no_qc, sample)
+            self.assertEqual(test_qc2, er_msg.exception.args[0])
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -2030,6 +2259,13 @@ class TreatmentFactoryTest(unittest.TestCase):
         factor = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         self.factory.add_factor_value(factor, values_to_add)
         self.assertEqual(self.factory.factors.get(factor), set(values_to_add))
+
+    def test_add_factor_value_to_undeclared_factor(self):
+        values_to_add = ['agent_orange', 'agent_blue']
+        factor = StudyFactor()
+        with self.assertRaises(KeyError, msg="The factor toto is not present in the design") as er_msg:
+            self.factory.add_factor_value(factor, values_to_add)
+            self.assertEqual(self.factory, er_msg.exception.args[0])
 
     def test_add_factor_value_set(self):
         values_to_add = {'agent_orange', 'crack, cocaine'}
@@ -2166,6 +2402,12 @@ class TreatmentFactoryTest(unittest.TestCase):
         full_factorial = self.factory.compute_full_factorial_design()
         self.assertEqual(full_factorial, set())
 
+    def test_intervention_type(self):
+
+        with self.assertRaises(ValueError, msg="invalid treatment type provided: ") as er_msg:
+            self.factory = TreatmentFactory(intervention_type="toto")
+            self.assertEqual(self.factory, er_msg.exception.args[0])
+
 
 class StudyDesignFactoryTest(unittest.TestCase):
 
@@ -2236,11 +2478,11 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(crossover_design.study_arms[0],
                          StudyArm(name='ARM_00', group_size=10, arm_map=OrderedDict(
                              [
-                                (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
-                                (StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan),
-                                (StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None),
-                                (StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan),
-                                (StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
+                                 (StudyCell('ARM_00_CELL_00', elements=(self.screen,)), None),
+                                 (StudyCell('ARM_00_CELL_01', elements=(self.first_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_02', elements=(self.washout,)), None),
+                                 (StudyCell('ARM_00_CELL_03', elements=(self.second_treatment,)), self.sample_assay_plan),
+                                 (StudyCell('ARM_00_CELL_04', elements=(self.follow_up,)), self.sample_assay_plan)
                              ]
                          )))
         self.assertEqual(crossover_design.study_arms[1],
@@ -2447,10 +2689,10 @@ class StudyDesignFactoryTest(unittest.TestCase):
             concomitant_treatment_design.study_arms[0],
             StudyArm(name='ARM_00', group_size=30, arm_map=OrderedDict([
                 (StudyCell('ARM_00_CELL_00', elements=({
-                    self.fourth_treatment,
-                    self.second_treatment,
-                    self.first_treatment
-                },)), self.sample_assay_plan),
+                                                           self.fourth_treatment,
+                                                           self.second_treatment,
+                                                           self.first_treatment
+                                                       },)), self.sample_assay_plan),
                 (StudyCell('ARM_00_CELL_01', elements=(self.follow_up,)), self.sample_assay_plan)
             ]))
         )
