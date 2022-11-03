@@ -3,10 +3,8 @@ from isatools.model.mixins import StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.datafile import DataFile
 from isatools.model.material import Material
-from isatools.model.characteristic import Characteristic
 from isatools.model.process import Process
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class Assay(Commentable, StudyAssayMixin, object):
@@ -181,34 +179,23 @@ class Assay(Commentable, StudyAssayMixin, object):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
-
-            "measurementType": self.measurement_type.to_dict() if self.measurement_type else '',
-            "technologyType": self.technology_type.to_dict() if self.technology_type else '',
+    def to_dict(self, ld=False):
+        assay = {
+            "measurementType": self.measurement_type.to_dict(ld=ld) if self.measurement_type else '',
+            "technologyType": self.technology_type.to_dict(ld=ld) if self.technology_type else '',
             "technologyPlatform": self.technology_platform,
             "filename": self.filename,
-            "characteristicCategories": self.categories_to_dict(),
-            "unitCategories": [unit.to_dict() for unit in self.units],
-            "comments": [comment.to_dict() for comment in self.comments],
+            "characteristicCategories": self.categories_to_dict(ld=ld),
+            "unitCategories": [unit.to_dict(ld=ld) for unit in self.units],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
             "materials": {
                 "samples": [{"@id": sample.id} for sample in self.samples],
-                "otherMaterials": [mat.to_dict() for mat in self.other_material]
+                "otherMaterials": [mat.to_dict(ld=ld) for mat in self.other_material]
             },
-            "dataFiles": [file.to_dict() for file in self.data_files],
-            "processSequence": [process.to_dict() for process in self.process_sequence]
+            "dataFiles": [file.to_dict(ld=ld) for file in self.data_files],
+            "processSequence": [process.to_dict(ld=ld) for process in self.process_sequence]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("assay", context)
-
-        assay = self.to_dict()
-        assay["@type"] = "Assay"
-        assay["@context"] = context_path
-        assay["@id"] = "#assay/" + self.id
+        return self.update_isa_object(assay, ld)
 
     def from_dict(self, assay, isa_study):
         self.technology_platform = assay.get('technologyPlatform', '')

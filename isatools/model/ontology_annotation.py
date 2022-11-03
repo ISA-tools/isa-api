@@ -4,7 +4,6 @@ from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_source import OntologySource
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class OntologyAnnotation(Commentable, Identifiable):
@@ -109,31 +108,19 @@ class OntologyAnnotation(Commentable, Identifiable):
     def __ne__(self, other: Any) -> bool:
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         term_source = "" if not self.term_source else self.term_source
         if self.term_source and isinstance(self.term_source, OntologySource):
             term_source = self.term_source.name
 
-        return {
+        ontology_annotation = {
             '@id': self.id,
             'annotationValue': self.term,
             'termSource': term_source,
             'termAccession': self.term_accession,
-            'comments': [comment.to_dict() for comment in self.comments]
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("ontology_annotation", context)
-        ontology_annotation = self.to_dict()
-        ontology_annotation["@type"] = "OntologyAnnotation"
-        ontology_annotation["@context"] = context_path
-
-        ontology_annotation["@id"] = self.id
-        if not self.id.startswith("#ontology_annotation"):
-            ontology_annotation["@id"] = "#ontology_annotation/" + self.id
+        return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, ontology_annotation):
         self.id = ontology_annotation.get('@id', '')

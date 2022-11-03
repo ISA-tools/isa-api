@@ -15,7 +15,6 @@ from isatools.model.sample import Sample
 from isatools.model.process import Process
 from isatools.model.logger import log
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
@@ -83,7 +82,6 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
-
         if design_descriptors is None:
             self.__design_descriptors = []
         else:
@@ -337,40 +335,32 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             for target in targets:
                 assay.shuffle_materials(target)
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        study = {
             "filename": self.filename,
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
             "submissionDate": self.submission_date,
             "publicReleaseDate": self.public_release_date,
-            "publications": [publication.to_dict() for publication in self.publications],
-            "people": [person.to_dict() for person in self.contacts],
-            "studyDesignDescriptors": [descriptor.to_dict() for descriptor in self.design_descriptors],
-            "protocols": [protocol.to_dict() for protocol in self.protocols],
+            "publications": [publication.to_dict(ld=ld) for publication in self.publications],
+            "people": [person.to_dict(ld=ld) for person in self.contacts],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
+            "studyDesignDescriptors": [descriptor.to_dict(ld=ld) for descriptor in self.design_descriptors],
+            "protocols": [protocol.to_dict(ld=ld) for protocol in self.protocols],
             "materials": {
-                "sources": [source.to_dict() for source in self.sources],
-                "samples": [sample.to_dict() for sample in self.samples],
-                "otherMaterials": [mat.to_dict() for mat in self.other_material],
+                "sources": [source.to_dict(ld=ld) for source in self.sources],
+                "samples": [sample.to_dict(ld=ld) for sample in self.samples],
+                "otherMaterials": [mat.to_dict(ld=ld) for mat in self.other_material],
             },
-            "processSequence": [process.to_dict() for process in self.process_sequence],
-            "factors": [factor.to_dict() for factor in self.factors],
-            "characteristicCategories": self.categories_to_dict(),
-            "unitCategories": [unit.to_dict() for unit in self.units],
-            "comments": [comment.to_dict() for comment in self.comments],
-            "assays": [assay.to_dict() for assay in self.assays]
+            "processSequence": [process.to_dict(ld=ld) for process in self.process_sequence],
+            "factors": [factor.to_dict(ld=ld) for factor in self.factors],
+            "characteristicCategories": self.categories_to_dict(ld=ld),
+            "unitCategories": [unit.to_dict(ld=ld) for unit in self.units],
+
+            "assays": [assay.to_dict(ld=ld) for assay in self.assays]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("study", context)
-        study = self.to_dict()
-        study["@type"] = "Study"
-        study["@context"] = context_path
-        study["@id"] = "#study/" + self.id
+        return self.update_isa_object(study, ld=ld)
 
     def from_dict(self, study):
         indexes.reset_process()

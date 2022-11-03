@@ -1,7 +1,6 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
-from isatools.model.utils import get_context_path
 
 
 class Person(Commentable, Identifiable):
@@ -207,30 +206,20 @@ class Person(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
-            "@id": self.id,
+    def to_dict(self, ld=False):
+        person = {
             "address": self.address,
             "affiliation": self.affiliation,
-            "comments": [comment.to_dict() for comment in self.comments],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
             "email": self.email,
             "fax": self.fax,
             "firstName": self.first_name,
             "lastName": self.last_name,
             "midInitials": self.mid_initials,
             "phone": self.phone,
-            "roles": [role.to_dict() for role in self.roles]
+            "roles": [role.to_dict(ld=ld) for role in self.roles]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("person",  context)
-        person = self.to_dict()
-        person["@type"] = "Person"
-        person["@context"] = context_path
-        person["@id"] = "#person/" + self.id
+        return self.update_isa_object(person, ld=ld)
 
     def from_dict(self, person):
         self.address = person['address'] if 'address' in person else ''

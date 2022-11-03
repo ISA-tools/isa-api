@@ -8,7 +8,6 @@ from uuid import uuid4
 from isatools.model.comments import Commentable, Comment
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class Characteristic(Commentable):
@@ -117,32 +116,21 @@ class Characteristic(Commentable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
+    def to_dict(self, ld=False):
         category = ''
         if self.category:
             category = {"@id": self.category.id.replace('#ontology_annotation/', '#characteristic_category/')}
         characteristic = {
             "category": category,
-            "value": self.value.to_dict() if isinstance(self.value, OntologyAnnotation) else self.value,
-            "comments": [comment.to_dict() for comment in self.comments]
+            "value": self.value.to_dict(ld=ld) if isinstance(self.value, OntologyAnnotation) else self.value,
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
         if self.unit:
             id_ = "#unit/" + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
                 id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
             characteristic['unit'] = {"@id": id_}
-        return characteristic
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("material_attribute", context)
-
-        characteristic = self.to_dict()
-        characteristic["@type"] = "MaterialAttribute"
-        characteristic["@context"] = context_path
-        characteristic["@id"] = "#studyfactor/" + self.id
+        return self.update_isa_object(characteristic, ld)
 
     def from_dict(self, characteristic):
         self.category = characteristic['category']

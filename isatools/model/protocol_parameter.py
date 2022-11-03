@@ -1,7 +1,6 @@
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
-from isatools.model.utils import get_context_path
 
 
 class ProtocolParameter(Commentable, Identifiable):
@@ -58,21 +57,12 @@ class ProtocolParameter(Commentable, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        protocol_parameter = {
             '@id': self.id,
-            'parameterName': self.parameter_name.to_dict()
+            'parameterName': self.parameter_name.to_dict(ld=ld)
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("protocol_parameter", context)
-        protocol_parameter = self.to_dict()
-        protocol_parameter["@type"] = "ProtocolParameter"
-        protocol_parameter["@context"] = context_path
-        protocol_parameter["@id"] = "#parameter/" + self.id
+        return self.update_isa_object(protocol_parameter, ld=ld)
 
     def from_dict(self, protocol_parameter):
         self.id = protocol_parameter.get('@id', '')

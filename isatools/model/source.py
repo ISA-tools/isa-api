@@ -4,7 +4,6 @@ from isatools.model.characteristic import Characteristic
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class Source(Commentable, ProcessSequenceNode, Identifiable):
@@ -96,23 +95,14 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        source = {
             '@id': self.id,
             'name': self.name,
-            'characteristics': [char.to_dict() for char in self.characteristics],
-            'comments': [comment.to_dict() for comment in self.comments]
+            'characteristics': [char.to_dict(ld=ld) for char in self.characteristics],
+            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("source", context)
-        source = self.to_dict()
-        source["@type"] = "Source"
-        source["@context"] = context_path
-        source["@id"] = "#source/" + self.id
+        return self.update_isa_object(source, ld=ld)
 
     def from_dict(self, source):
         self.id = source.get('@id', '')

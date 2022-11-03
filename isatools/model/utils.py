@@ -1,5 +1,4 @@
 import networkx as nx
-import os
 
 from isatools.model.datafile import DataFile
 from isatools.model.process import Process
@@ -213,10 +212,3 @@ def _deep_copy(isa_object):
     if isinstance(isa_object, ProcessSequenceNode):
         new_obj.assign_identifier()
     return new_obj
-
-
-def get_context_path(isa_object_name: str, context_name: str = "obo"):
-    here_path = os.path.dirname(os.path.abspath(__file__))
-    filename = "isa_%s_%s_context.jsonld" % (isa_object_name, context_name)
-    return os.path.join(here_path, "..", "resources", "json-context", context_name, filename)
-

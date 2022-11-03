@@ -6,7 +6,6 @@ from isatools.model.characteristic import Characteristic
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
-from isatools.model.utils import get_context_path
 
 
 class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta):
@@ -74,31 +73,15 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
                and self.type == other.type \
                and self.comments == other.comments
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        material = {
             '@id': self.id,
             "name": self.name,
             "type": self.type,
-            "characteristics": [characteristic.to_dict() for characteristic in self.characteristics],
-            "comments": [comment.to_dict() for comment in self.comments]
+            "characteristics": [characteristic.to_dict(ld=ld) for characteristic in self.characteristics],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
-
-    def to_ld(self, context: str = "obo"):
-        if context not in ["obo", "sdo", "wdt"]:
-            raise ValueError("context should be obo, sdo or wdt but got %s" % context)
-
-        context_path = get_context_path("material", context)
-        material = self.to_dict()
-        if self.type == "Extract Name":
-            material["@type"] = "Extract"
-            material["@id"] = "#material/extract_" + self.id
-        elif self.type == "LabeledExtract Name":
-            material["@type"] = "LabeledExtract"
-            material["@id"] = "#material/labeledextract_" + self.id
-        else:
-            material["@type"] = "other material"
-
-        material["@context"] = context_path
+        return self.update_isa_object(material, ld)
 
     def from_dict(self, material):
         self.id = material["@id"]
