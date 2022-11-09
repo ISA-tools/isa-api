@@ -9,7 +9,9 @@ from isatools.database.models.relationships import (
     study_publications,
     study_design_descriptors,
     study_protocols,
-    study_sources
+    study_sources,
+    study_characteristic_categories,
+    study_unit_categories
 )
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -40,8 +42,12 @@ class Study(Base):
     publications: relationship = relationship('Publication', secondary=study_publications, back_populates='studies')
     protocols = relationship('Protocol', secondary=study_protocols, back_populates='studies')
     sources = relationship('Source', secondary=study_sources, back_populates='studies')
+    characteristic_categories = relationship(
+        'OntologyAnnotation', secondary=study_characteristic_categories, back_populates='characteristic_categories')
+    unit_categories = relationship(
+        'OntologyAnnotation', secondary=study_unit_categories, back_populates='unit_categories')
     study_design_descriptors = relationship(
-        'OntologyAnnotation', secondary=study_design_descriptors, back_populates='studies')
+        'OntologyAnnotation', secondary=study_design_descriptors, back_populates='design_descriptor')
 
     # Sample and otherMaterials attributes
 
@@ -58,6 +64,8 @@ class Study(Base):
             'publications': [p.to_json() for p in self.publications],
             'designDescriptors': [oa.to_json() for oa in self.study_design_descriptors],
             'protocols': [p.to_json() for p in self.protocols],
+            'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
+            'unitCategories': [oa.to_json() for oa in self.unit_categories],
             'sources': [s.to_json() for s in self.sources]
         }
 
@@ -83,6 +91,8 @@ def make_study_methods():
             publications=[publication.to_sql() for publication in self.publications],
             study_design_descriptors=[descriptor.to_sql(session) for descriptor in self.design_descriptors],
             protocols=[protocol.to_sql(session) for protocol in self.protocols],
+            characteristic_categories=[category.to_sql(session) for category in self.characteristic_categories],
+            unit_categories=[category.to_sql(session) for category in self.units],
             sources=[source.to_sql(session) for source in self.sources]
         )
 

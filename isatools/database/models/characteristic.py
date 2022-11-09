@@ -26,8 +26,7 @@ class Characteristic(Base):
     # Relationships many-to-one
     value_id: int = Column(Integer, ForeignKey('ontology_annotation.id'))
     value_oa: relationship = relationship(
-        'OntologyAnnotation', backref='characteristics_value', foreign_keys=[value_id]
-    )
+        'OntologyAnnotation', backref='characteristics_value', foreign_keys=[value_id])
     unit_id: int = Column(Integer, ForeignKey('ontology_annotation.id'))
     unit_oa: relationship = relationship('OntologyAnnotation', backref='characteristics_unit', foreign_keys=[unit_id])
     category_id = Column(Integer, ForeignKey('ontology_annotation.id'))
@@ -69,12 +68,14 @@ def make_characteristic_methods():
         if isinstance(self.unit, str):
             characteristic["unit_str"] = self.unit
         elif self.unit:
-            characteristic["unit_oa"] = self.unit.to_sql(session)
+            # change this later 'cause they already exist
+            characteristic["unit_id"] = self.unit.id
 
         if isinstance(self.category, str):
             characteristic["category_str"] = self.category
         else:
-            characteristic["category_oa"] = self.category.to_sql(session)
+            # check this later 'cause they already exist
+            characteristic["category_id"] = self.category.id
         return Characteristic(**characteristic)
 
     setattr(CharacteristicModel, 'to_sql', to_sql)

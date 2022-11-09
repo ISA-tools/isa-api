@@ -2,7 +2,11 @@ from sqlalchemy import Column, String, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 from isatools.model import OntologyAnnotation as OntologyAnnotationModel
-from isatools.database.models.relationships import study_design_descriptors
+from isatools.database.models.relationships import (
+    study_design_descriptors,
+    study_characteristic_categories,
+    study_unit_categories
+)
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
 
@@ -15,9 +19,12 @@ class OntologyAnnotation(Base):
     term_accession: str = Column(String)
 
     # Relationships back-ref
-    studies: relationship = relationship(
-        'Study', secondary=study_design_descriptors, back_populates='study_design_descriptors'
-    )
+    design_descriptor: relationship = relationship(
+        'Study', secondary=study_design_descriptors, back_populates='study_design_descriptors')
+    characteristic_categories = relationship(
+        'Study', secondary=study_characteristic_categories, back_populates='characteristic_categories')
+    unit_categories = relationship(
+        'Study', secondary=study_unit_categories, back_populates='unit_categories')
 
     # Relationships many-to-one
     term_source_id: int = Column(Integer, ForeignKey('ontology_source.id'))

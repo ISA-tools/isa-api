@@ -59,6 +59,22 @@ study_sources = Table(
     comment="Many to many relationship between Studies and Sources"
 )
 
+study_characteristic_categories = Table(
+    "study_characteristic_categories",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("ontology_annotation_id", ForeignKey("ontology_annotation.id"), primary_key=True),
+    comment="Many to many relationship between Studies and characteristic categories (Ontology Annotations)"
+)
+
+study_unit_categories = Table(
+    "study_unit_categories",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("ontology_annotation_id", ForeignKey("ontology_annotation.id"), primary_key=True),
+    comment="Many to many relationship between Studies and unit categories (Ontology Annotations)"
+)
+
 
 """ ---------------------------------  ---------------------------------- --------------------------------
                                                 PROTOCOLS
