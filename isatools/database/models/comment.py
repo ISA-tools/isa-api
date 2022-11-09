@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from isatools.model import Comment as CommentModel
 from isatools.database.utils import Base
-from isatools.database.constraints import build_comment_constraints
+from isatools.database.models.constraints import build_comment_constraints
 from isatools.database.models.utils import make_get_table_method
 
 
@@ -41,6 +41,9 @@ class Comment(Base):
     protocol_id = Column(Integer, ForeignKey('protocol.id'))
     protocol = relationship('Protocol', back_populates='comments')
 
+    source_id = Column(Integer, ForeignKey('source.id'))
+    source = relationship('Source', back_populates='comments')
+
     def to_json(self):
         return {'id': self.id, 'name': self.name, 'value': self.value}
 
@@ -51,5 +54,3 @@ def make_comment_methods() -> None:
 
     setattr(CommentModel, 'to_sql', to_sql)
     setattr(CommentModel, 'get_table', make_get_table_method(Comment))
-
-

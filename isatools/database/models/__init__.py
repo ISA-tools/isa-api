@@ -29,6 +29,9 @@ from isatools.database.models.process import (
 from isatools.database.models.protocol import (
     ProtocolModel as Protocol, Protocol as ProtocolTable, make_protocol_methods
 )
+from isatools.database.models.source import (
+    SourceModel as Source, Source as SourceTable, make_source_methods
+)
 
 
 def __make_methods():
@@ -41,6 +44,7 @@ def __make_methods():
     make_parameter_methods()
     make_process_methods()
     make_protocol_methods()
+    make_source_methods()
 
     make_study_methods()
     make_investigation_methods()

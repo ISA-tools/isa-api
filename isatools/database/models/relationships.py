@@ -51,6 +51,14 @@ study_protocols = Table(
     comment="Many to many relationship between Studies and Protocols"
 )
 
+study_sources = Table(
+    "study_sources",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("source_id", ForeignKey("source.id"), primary_key=True),
+    comment="Many to many relationship between Studies and Sources"
+)
+
 
 """ ---------------------------------  ---------------------------------- --------------------------------
                                                 PROTOCOLS

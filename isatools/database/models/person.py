@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from isatools.model import Person as PersonModel
 from isatools.database.utils import Base
-from isatools.database.constraints import build_person_constraints
+from isatools.database.models.constraints import build_person_constraints
 from isatools.database.models.utils import make_get_table_method
 
 
