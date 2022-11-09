@@ -44,6 +44,9 @@ class Comment(Base):
     source_id = Column(Integer, ForeignKey('source.id'))
     source = relationship('Source', back_populates='comments')
 
+    characteristic_id = Column(Integer, ForeignKey('characteristic.id'))
+    characteristic = relationship('Characteristic', back_populates='comments')
+
     def to_json(self):
         return {'id': self.id, 'name': self.name, 'value': self.value}
 

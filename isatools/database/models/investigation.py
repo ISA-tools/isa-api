@@ -62,7 +62,7 @@ class Investigation(Base):
 
 
 def make_investigation_methods() -> None:
-    def to_sql(self) -> dict:
+    def to_sql(self, session) -> dict:
         identifier: str = self.identifier
         isa_identifier: str = self.id
         title: str = self.title
@@ -84,7 +84,7 @@ def make_investigation_methods() -> None:
             isa_identifier=isa_identifier, identifier=identifier, title=title, description=description,
             submission_date=submission_date, public_release_date=publication_date,
             comments=[comment.to_sql() for comment in comments],
-            studies=[study.to_sql() for study in studies],
+            studies=[study.to_sql(session=session) for study in studies],
             contacts=[person.to_sql() for person in contacts],
             publications=[publication.to_sql() for publication in publications],
             ontology_source_reference=[ontology_source.to_sql() for ontology_source in ontology_source_references]

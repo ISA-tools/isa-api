@@ -63,7 +63,7 @@ class Study(Base):
 
 
 def make_study_methods():
-    def to_sql(self):
+    def to_sql(self, session):
         submission_date: datetime or None = None
         public_release_date: datetime or None = None
         if self.submission_date:
@@ -81,9 +81,9 @@ def make_study_methods():
             contacts=[person.to_sql() for person in self.contacts],
             comments=[comment.to_sql() for comment in self.comments],
             publications=[publication.to_sql() for publication in self.publications],
-            study_design_descriptors=[descriptor.to_sql() for descriptor in self.design_descriptors],
-            protocols=[protocol.to_sql() for protocol in self.protocols],
-            sources=[source.to_sql() for source in self.sources]
+            study_design_descriptors=[descriptor.to_sql(session) for descriptor in self.design_descriptors],
+            protocols=[protocol.to_sql(session) for protocol in self.protocols],
+            sources=[source.to_sql(session) for source in self.sources]
         )
 
     setattr(StudyModel, 'to_sql', to_sql)

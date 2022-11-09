@@ -71,3 +71,16 @@ protocol_parameters = Table(
     Column("parameter_id", ForeignKey("parameter.id"), primary_key=True),
     comment="Many to many relationship between Protocols and Parameters"
 )
+
+
+""" ---------------------------------  ---------------------------------- --------------------------------
+                                                MATERIALS
+---------------------------------  ---------------------------------- -------------------------------- """
+
+source_characteristics = Table(
+    "source_characteristics",
+    Base.metadata,
+    Column("source_id", ForeignKey("source.id"), primary_key=True),
+    Column("characteristic_id", ForeignKey("characteristic.id"), primary_key=True),
+    comment="Many to many relationship between Sources and Characteristics"
+)

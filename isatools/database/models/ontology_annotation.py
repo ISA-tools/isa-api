@@ -36,13 +36,18 @@ class OntologyAnnotation(Base):
 
 
 def make_ontology_annotation_methods() -> None:
-    def to_sql(self):
-        return OntologyAnnotation(
+    def to_sql(self, session):
+        oa = session.query(OntologyAnnotation).get(self.id)
+        if oa:
+            return oa
+        oa = OntologyAnnotation(
             id=self.id,
             annotation_value=self.term,
             term_accession=self.term_accession,
             term_source_id=self.term_source.name if self.term_source else None,
             comments=[comment.to_sql() for comment in self.comments]
         )
+        session.add(oa)
+        return oa
     setattr(OntologyAnnotationModel, 'to_sql', to_sql)
     setattr(OntologyAnnotationModel, 'get_table', make_get_table_method(OntologyAnnotation))

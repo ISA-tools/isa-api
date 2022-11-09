@@ -10,24 +10,27 @@ Authors: D. Batista (@Terazus)
 
 Example:
     >>> from isatools.database import Investigation, Base
-    Now load from a tab, a json or create the investigation manually.
     >>> investigation = Investigation()
     >>> to_insert = investigation.to_sql()
-    The to_insert object is an SQLAlchemy object ready to be added to an SQLAlchemy session using the shared Base.
+    Note: The to_insert object is an SQLAlchemy object ready to be added to an SQLAlchemy session using the shared Base.
+    >>> investigation_table = investigation.get_table()
+    Note: The investigation_table object is the SQLAlchemy table object derived for the investigation model.
 """
 
 from isatools.database.utils import Base
 from isatools.database.models import (
-    Comment, CommentTable,
-    Investigation, InvestigationTable,
-    Study, StudyTable,
-    Publication, PublicationTable,
-    OntologyAnnotation, OntologyAnnotationTable,
-    OntologySource, OntologySourceTable,
-    Parameter, ParameterTable,
-    Person, PersonTable,
-    Process, ProcessTable,
-    Protocol, ProtocolTable
+    Comment,
+    Investigation,
+    Study,
+    Publication,
+    OntologyAnnotation,
+    OntologySource,
+    Parameter,
+    Person,
+    Process,
+    Protocol,
+    Source,
+    Characteristic
 )
 
 

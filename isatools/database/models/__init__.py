@@ -32,20 +32,29 @@ from isatools.database.models.protocol import (
 from isatools.database.models.source import (
     SourceModel as Source, Source as SourceTable, make_source_methods
 )
+from isatools.database.models.characteristic import (
+    CharacteristicModel as Characteristic, Characteristic as CharacteristicTable, make_characteristic_methods
+)
 
 
 def __make_methods():
+    # base methods
     make_comment_methods()
     make_ontology_source_methods()
     make_ontology_annotation_methods()
     make_publication_methods()
     make_person_methods()
 
+    # studies methods
     make_parameter_methods()
     make_process_methods()
     make_protocol_methods()
+
+    # materials methods
+    make_characteristic_methods()
     make_source_methods()
 
+    # investigation methods
     make_study_methods()
     make_investigation_methods()
 

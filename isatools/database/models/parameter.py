@@ -29,10 +29,10 @@ class Parameter(Base):
 
 
 def make_parameter_methods() -> None:
-    def to_sql(self):
+    def to_sql(self, session):
         return Parameter(
             id=self.id,
-            ontology_annotation=self.parameter_name.to_sql()
+            ontology_annotation=self.parameter_name.to_sql(session)
         )
 
     setattr(ParameterModel, 'to_sql', to_sql)

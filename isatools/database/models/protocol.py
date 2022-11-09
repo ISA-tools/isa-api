@@ -46,7 +46,7 @@ class Protocol(Base):
 
 
 def make_protocol_methods():
-    def to_sql(self):
+    def to_sql(self, session):
         return Protocol(
             id=self.id,
             name=self.name,
@@ -54,7 +54,7 @@ def make_protocol_methods():
             uri=self.uri if self.uri else None,
             version=self.version if self.version else None,
             comments=[comment.to_sql() for comment in self.comments],
-            protocol_parameters=[parameter.to_sql() for parameter in self.parameters],
+            protocol_parameters=[parameter.to_sql(session) for parameter in self.parameters],
             protocol_type_id=self.protocol_type.id if self.protocol_type else None
         )
 
