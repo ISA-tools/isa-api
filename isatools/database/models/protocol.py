@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
+from isatools.model import Protocol as ProtocolModel
 from isatools.database.models.relationships import study_protocols, protocol_parameters
 from isatools.database.utils import Base
+from isatools.database.models.utils import make_get_table_method
 
 
 class Protocol(Base):
@@ -41,3 +43,21 @@ class Protocol(Base):
             'protocolType': self.protocol_type.to_json() if self.protocol_type else None,
             'components': []
         }
+
+
+def make_protocol_methods():
+    def to_sql(self):
+        return Protocol(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            uri=self.uri if self.uri else None,
+            version=self.version if self.version else None,
+            comments=[comment.to_sql() for comment in self.comments],
+            protocol_parameters=[parameter.to_sql() for parameter in self.parameters],
+            protocol_type_id=self.protocol_type.id if self.protocol_type else None
+        )
+
+    setattr(ProtocolModel, 'to_sql', to_sql)
+    setattr(ProtocolModel, 'get_table', make_get_table_method(Protocol))
+

@@ -1,8 +1,10 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
+from isatools.model import Publication as PublicationModel
 from isatools.database.models.relationships import investigation_publications, study_publications
 from isatools.database.utils import Base
+from isatools.database.models.utils import make_get_table_method
 
 
 class Publication(Base):
@@ -34,3 +36,18 @@ class Publication(Base):
             "title": self.title,
             "comments": [comment.to_json() for comment in self.comments]
         }
+
+
+def make_publication_methods():
+    def to_sql(self):
+        return Publication(
+            id=self.doi,
+            author_list=self.author_list,
+            doi=self.doi,
+            pubmed_id=self.pubmed_id,
+            title=self.title,
+            comments=[comment.to_sql() for comment in self.comments]
+        )
+
+    setattr(PublicationModel, 'to_sql', to_sql)
+    setattr(PublicationModel, 'get_table', make_get_table_method(Publication))

@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 
+from isatools.model import Process as ProcessModel
 from isatools.database.utils import Base
+from isatools.database.models.utils import make_get_table_method
 
 
 class Process(Base):
@@ -37,3 +41,17 @@ class Process(Base):
             'study_id': self.study_id,
             'comments': [c.to_json() for c in self.comments],
         }
+
+
+def make_process_methods():
+    def to_sql(self):
+        return Process(
+            id=self.id,
+            name=self.name,
+            performer=self.performer,
+            date=datetime.strptime(self.date) if self.date else None,
+            comments=[comment.to_sql() for comment in self.comments]
+        )
+
+    setattr(ProcessModel, 'to_sql', to_sql)
+    setattr(ProcessModel, 'get_table', make_get_table_method(Process))

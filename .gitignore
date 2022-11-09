@@ -142,6 +142,3 @@ bin/
 isa-reports/
 isaRDF/
 venv*/
-
-isatools/database/*
-isatools/database/

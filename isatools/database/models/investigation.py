@@ -1,10 +1,22 @@
+from typing import List
 from datetime import datetime
+import dateutil.parser as date
 
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 
+from isatools.model import (
+    Investigation as InvestigationModel,
+    Comment as CommentModel,
+    Study as StudyModel,
+    Person as PersonModel,
+    Publication as PublicationModel,
+    OntologySource as OntologySourceModel
+
+)
 from isatools.database.models.relationships import investigation_publications, investigation_ontology_source
 from isatools.database.utils import Base
+from isatools.database.models.utils import make_get_table_method
 
 
 class Investigation(Base):
@@ -49,7 +61,36 @@ class Investigation(Base):
         }
 
 
+def make_investigation_methods() -> None:
+    def to_sql(self) -> dict:
+        identifier: str = self.identifier
+        isa_identifier: str = self.id
+        title: str = self.title
+        description: str = self.description
+        submission_date: datetime or None = None
+        publication_date: datetime or None = None
+        comments: List[CommentModel] = self.comments
+        studies: List[StudyModel] = self.studies
+        contacts: List[PersonModel] = self.contacts
+        publications: List[PublicationModel] = self.publications
+        ontology_source_references: List[OntologySourceModel] = self.ontology_source_references
 
+        if self.submission_date:
+            submission_date = date.parse(self.submission_date)
+        if self.public_release_date:
+            publication_date = date.parse(self.public_release_date)
 
+        investigation: Investigation = Investigation(
+            isa_identifier=isa_identifier, identifier=identifier, title=title, description=description,
+            submission_date=submission_date, public_release_date=publication_date,
+            comments=[comment.to_sql() for comment in comments],
+            studies=[study.to_sql() for study in studies],
+            contacts=[person.to_sql() for person in contacts],
+            publications=[publication.to_sql() for publication in publications],
+            ontology_source_reference=[ontology_source.to_sql() for ontology_source in ontology_source_references]
+        )
 
+        return investigation
 
+    setattr(InvestigationModel, 'to_sql', to_sql)
+    setattr(InvestigationModel, 'get_table', make_get_table_method(Investigation))

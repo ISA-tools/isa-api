@@ -17,13 +17,18 @@ Example:
 """
 
 from isatools.database.utils import Base
-
-from isatools.database.models.wrappers import (
-    InvestigationModel as Investigation, InvestigationTable,
-    StudyModel as Study, StudyTable,
-    PersonModel as Person, PersonTable,
-    ProcessModel as Process, ProcessTable,
-    CommentModel as Comment, CommentTable,
-    PublicationModel as Publication, PublicationTable,
-    OntologySourceModel as OntologySource, OntologySourceTable,
+from isatools.database.models import (
+    Comment, CommentTable,
+    Investigation, InvestigationTable,
+    Study, StudyTable,
+    Publication, PublicationTable,
+    OntologyAnnotation, OntologyAnnotationTable,
+    OntologySource, OntologySourceTable,
+    Parameter, ParameterTable,
+    Person, PersonTable,
+    Process, ProcessTable,
+    Protocol, ProtocolTable
 )
+
+
+
