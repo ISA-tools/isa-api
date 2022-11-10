@@ -19,7 +19,7 @@ class OntologyAnnotation(Base):
     term_accession: str = Column(String)
 
     # Relationships back-ref
-    design_descriptor: relationship = relationship(
+    design_descriptors: relationship = relationship(
         'Study', secondary=study_design_descriptors, back_populates='study_design_descriptors')
     characteristic_categories = relationship(
         'Study', secondary=study_characteristic_categories, back_populates='characteristic_categories')

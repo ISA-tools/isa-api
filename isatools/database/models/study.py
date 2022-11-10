@@ -11,7 +11,8 @@ from isatools.database.models.relationships import (
     study_protocols,
     study_sources,
     study_characteristic_categories,
-    study_unit_categories
+    study_unit_categories,
+    study_factors
 )
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -47,7 +48,8 @@ class Study(Base):
     unit_categories = relationship(
         'OntologyAnnotation', secondary=study_unit_categories, back_populates='unit_categories')
     study_design_descriptors = relationship(
-        'OntologyAnnotation', secondary=study_design_descriptors, back_populates='design_descriptor')
+        'OntologyAnnotation', secondary=study_design_descriptors, back_populates='design_descriptors')
+    study_factor_values = relationship('StudyFactor', secondary=study_factors, back_populates='studies')
 
     # Sample and otherMaterials attributes
 
@@ -66,6 +68,7 @@ class Study(Base):
             'protocols': [p.to_json() for p in self.protocols],
             'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
             'unitCategories': [oa.to_json() for oa in self.unit_categories],
+            'factors': [fv.to_json() for fv in self.study_factor_values],
             'sources': [s.to_json() for s in self.sources]
         }
 
@@ -93,7 +96,8 @@ def make_study_methods():
             protocols=[protocol.to_sql(session) for protocol in self.protocols],
             characteristic_categories=[category.to_sql(session) for category in self.characteristic_categories],
             unit_categories=[category.to_sql(session) for category in self.units],
-            sources=[source.to_sql(session) for source in self.sources]
+            study_factor_values=[factor.to_sql(session) for factor in self.factors],
+            sources=[source.to_sql(session) for source in self.sources],
         )
 
     setattr(StudyModel, 'to_sql', to_sql)

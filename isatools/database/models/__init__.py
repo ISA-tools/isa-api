@@ -35,6 +35,9 @@ from isatools.database.models.source import (
 from isatools.database.models.characteristic import (
     CharacteristicModel as Characteristic, Characteristic as CharacteristicTable, make_characteristic_methods
 )
+from isatools.database.models.factor import (
+    StudyFactorModel as Factor, StudyFactor as FactorTable, make_factor_values_methods
+)
 
 
 def __make_methods():
@@ -49,6 +52,7 @@ def __make_methods():
     make_parameter_methods()
     make_process_methods()
     make_protocol_methods()
+    make_factor_values_methods()
 
     # materials methods
     make_characteristic_methods()

@@ -75,6 +75,13 @@ study_unit_categories = Table(
     comment="Many to many relationship between Studies and unit categories (Ontology Annotations)"
 )
 
+study_factors = Table(
+    "study_factors",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("factor_id", ForeignKey("factor.id"), primary_key=True),
+    comment="Many to many relationship between Studies and FactorsValues"
+)
 
 """ ---------------------------------  ---------------------------------- --------------------------------
                                                 PROTOCOLS
