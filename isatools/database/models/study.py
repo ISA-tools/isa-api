@@ -69,7 +69,7 @@ class Study(Base):
             'protocols': [p.to_json() for p in self.protocols],
             'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
             'unitCategories': [oa.to_json() for oa in self.unit_categories],
-            'factors': [fv.to_json() for fv in self.study_factor_values],
+            'factors': [fv.to_json() for fv in self.study_factors],
             'sources': [s.to_json() for s in self.sources],
             'samples': [s.to_json() for s in self.samples]
         }

@@ -19,6 +19,8 @@ class Comment(Base):
     # Back references
     characteristic_id = Column(Integer, ForeignKey('characteristic.id'))
     characteristic = relationship('Characteristic', back_populates='comments')
+    factor_value_id = Column(Integer, ForeignKey('factor_value.id'))
+    factor_value = relationship('FactorValue', back_populates='comments')
     investigation_id = Column(Integer, ForeignKey('investigation.id'))
     investigation = relationship('Investigation', back_populates='comments')
     ontology_source_id = Column(Integer, ForeignKey('ontology_source.id'))
