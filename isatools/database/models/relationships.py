@@ -131,3 +131,11 @@ sample_derives_from = Table(
     Column("source_id", ForeignKey("source.id"), primary_key=True),
     comment="Many to many relationship between Samples and Sources"
 )
+
+sample_factor_values = Table(
+    "sample_factor_values",
+    Base.metadata,
+    Column("sample_id", ForeignKey("sample.id"), primary_key=True),
+    Column("factor_value_id", ForeignKey("factor_value.id"), primary_key=True),
+    comment="Many to many relationship between Samples and FactorValues"
+)

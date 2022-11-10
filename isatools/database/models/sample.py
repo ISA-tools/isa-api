@@ -2,7 +2,12 @@ from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
 from isatools.model import Sample as SampleModel
-from isatools.database.models.relationships import study_samples, sample_characteristics, sample_derives_from
+from isatools.database.models.relationships import (
+    study_samples,
+    sample_characteristics,
+    sample_derives_from,
+    sample_factor_values
+)
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
 
@@ -24,6 +29,7 @@ class Sample(Base):
     derives_from: relationship = relationship(
         'Source', secondary=sample_derives_from, back_populates='samples'
     )
+    factor_values: relationship = relationship('FactorValue', secondary=sample_factor_values, back_populates='samples')
 
     # Factor values, derives from
     comments = relationship('Comment', back_populates='sample')
@@ -33,6 +39,7 @@ class Sample(Base):
             '@id': self.id,
             'name': self.name,
             'characteristics': [c.to_json() for c in self.characteristics],
+            'factorValues': [fv.to_json() for fv in self.factor_values],
             'derives_from': [{"@id": s.id} for s in self.derives_from],
             'comments': [c.to_json() for c in self.comments]
         }
@@ -45,6 +52,7 @@ def make_sample_methods():
             name=self.name,
             characteristics=[c.to_sql(session) for c in self.characteristics],
             derives_from=[s.to_sql(session) for s in self.derives_from],
+            factor_values=[fv.to_sql(session) for fv in self.factor_values],
             comments=[c.to_sql() for c in self.comments]
         )
 

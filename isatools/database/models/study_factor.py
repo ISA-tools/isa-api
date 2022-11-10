@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from isatools.model import StudyFactor as StudyFactorModel
@@ -12,11 +12,10 @@ class StudyFactor(Base):
 
     # Base fields
     id: str = Column(String, primary_key=True)
-    factor_name: str = Column(String)
+    name: str = Column(String)
 
     # Relationships back-ref
-    studies: relationship = relationship(
-        'Study', secondary=study_factors, back_populates='study_factors')
+    studies: relationship = relationship('Study', secondary=study_factors, back_populates='study_factors')
 
     # Relationships: one-to-many
     comments = relationship('Comment', back_populates='study_factor')
@@ -28,17 +27,20 @@ class StudyFactor(Base):
     def to_json(self):
         return {
             '@id': self.id,
-            'factorName': self.factor_name,
+            'factorName': self.name,
             'factorType': self.factor_type.to_json(),
             'comments': [c.to_json() for c in self.comments]
         }
 
 
-def make_factor_values_methods():
+def make_study_factor_methods():
     def to_sql(self, session):
+        factor = session.query(StudyFactor).filter(StudyFactor.id == self.id).first()
+        if factor:
+            return factor
         return StudyFactor(
             id=self.id,
-            factor_name=self.name,
+            name=self.name,
             factor_type=self.factor_type.to_sql(session),
             comments=[c.to_sql() for c in self.comments]
         )
