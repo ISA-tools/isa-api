@@ -139,3 +139,19 @@ sample_factor_values = Table(
     Column("factor_value_id", ForeignKey("factor_value.id"), primary_key=True),
     comment="Many to many relationship between Samples and FactorValues"
 )
+
+study_materials = Table(
+    "study_materials",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("material_id", ForeignKey("material.id"), primary_key=True),
+    comment="Many to many relationship between Studies and Materials"
+)
+
+materials_characteristics = Table(
+    "materials_characteristics",
+    Base.metadata,
+    Column("material_id", ForeignKey("material.id"), primary_key=True),
+    Column("characteristic_id", ForeignKey("characteristic.id"), primary_key=True),
+    comment="Many to many relationship between Materials and Characteristics"
+)

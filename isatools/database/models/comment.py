@@ -23,6 +23,8 @@ class Comment(Base):
     factor_value = relationship('FactorValue', back_populates='comments')
     investigation_id = Column(Integer, ForeignKey('investigation.id'))
     investigation = relationship('Investigation', back_populates='comments')
+    material_id = Column(Integer, ForeignKey('material.id'))
+    material = relationship('Material', back_populates='comments')
     ontology_source_id = Column(Integer, ForeignKey('ontology_source.id'))
     ontology_source = relationship('OntologySource', back_populates='comments')
     ontology_annotation_id = Column(Integer, ForeignKey('ontology_annotation.id'))

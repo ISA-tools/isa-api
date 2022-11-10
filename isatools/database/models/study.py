@@ -12,7 +12,7 @@ from isatools.database.models.relationships import (
     study_sources,
     study_characteristic_categories,
     study_unit_categories,
-    study_factors, study_samples
+    study_factors, study_samples, study_materials
 )
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -51,6 +51,7 @@ class Study(Base):
     study_factors = relationship('StudyFactor', secondary=study_factors, back_populates='studies')
     sources = relationship('Source', secondary=study_sources, back_populates='studies')
     samples = relationship('Sample', secondary=study_samples, back_populates='studies')
+    materials = relationship('Material', secondary=study_materials, back_populates='studies')
 
     # Sample and otherMaterials attributes
 
@@ -70,8 +71,11 @@ class Study(Base):
             'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
             'unitCategories': [oa.to_json() for oa in self.unit_categories],
             'factors': [fv.to_json() for fv in self.study_factors],
-            'sources': [s.to_json() for s in self.sources],
-            'samples': [s.to_json() for s in self.samples]
+            'materials:': {
+                'sources': [s.to_json() for s in self.sources],
+                'samples': [s.to_json() for s in self.samples],
+                'otherMaterials': [m.to_json() for m in self.materials],
+            }
         }
 
 
@@ -83,7 +87,6 @@ def make_study_methods():
             submission_date = date.parse(self.submission_date)
         if self.public_release_date:
             public_release_date = date.parse(self.public_release_date)
-
         return Study(
             title=self.title,
             description=self.description,
@@ -100,7 +103,8 @@ def make_study_methods():
             unit_categories=[category.to_sql(session) for category in self.units],
             study_factors=[factor.to_sql(session) for factor in self.factors],
             sources=[source.to_sql(session) for source in self.sources],
-            samples=[sample.to_sql(session) for sample in self.samples]
+            samples=[sample.to_sql(session) for sample in self.samples],
+            materials=[material.to_sql(session) for material in self.other_material]
         )
 
     setattr(StudyModel, 'to_sql', to_sql)

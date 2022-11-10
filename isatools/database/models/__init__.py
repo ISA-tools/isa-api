@@ -44,6 +44,10 @@ from isatools.database.models.sample import (
 from isatools.database.models.factor_value import (
     FactorValueModel as FactorValue, FactorValue as FactorValueTable, make_factor_value_methods
 )
+from isatools.database.models.material import (
+    MaterialModel as Material, Material as MaterialTable, make_material_methods,
+    ExtractModel as Extract, LabeledExtractModel as LabeledExtract
+)
 
 
 def __make_methods():
@@ -65,6 +69,7 @@ def __make_methods():
     make_characteristic_methods()
     make_source_methods()
     make_sample_methods()
+    make_material_methods()
 
     # investigation methods
     make_study_methods()

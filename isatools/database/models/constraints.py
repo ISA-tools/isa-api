@@ -5,7 +5,7 @@ def build_comment_constraints():
     fields = (
         'investigation_id', 'study_id', 'person_id', 'process_id', 'publication_id', 'ontology_source_id',
         'ontology_annotation_id', "protocol_id", "source_id", "characteristic_id", "study_factor_id", "sample_id",
-        "factor_value_id"
+        "factor_value_id", "material_id"
     )
     statement = make_must_have_one_only_statement(fields)
     return CheckConstraint(statement, name='comment_must_have_one_source_only')
@@ -33,6 +33,11 @@ def build_characteristic_constraints():
 def build_factor_value_constraints():
     statement = 'NOT (value_int IS NOT NULL AND value_oa_id IS NOT NULL AND value_str IS NOT NULL)'
     return CheckConstraint(statement, name='factor_value_must_have_one_value_only')
+
+
+def build_material_constraints():
+    statement = 'NOT (type IS NOT NULL AND type != "Extract Name" AND type != "Labeled Extract Name")'
+    return CheckConstraint(statement, name='material_type_must_be_extract_name_or_labeled_extract_name')
 
 
 def make_must_have_one_only_statement(fields):

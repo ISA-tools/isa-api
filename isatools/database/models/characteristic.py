@@ -2,7 +2,11 @@ from sqlalchemy import Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship
 
 from isatools.model import Characteristic as CharacteristicModel
-from isatools.database.models.relationships import source_characteristics, sample_characteristics
+from isatools.database.models.relationships import (
+    source_characteristics,
+    sample_characteristics,
+    materials_characteristics
+)
 from isatools.database.models.constraints import build_characteristic_constraints
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -25,6 +29,7 @@ class Characteristic(Base):
     samples: relationship = relationship(
         'Sample', secondary=sample_characteristics, back_populates='characteristics'
     )
+    materials = relationship('Material', secondary=materials_characteristics, back_populates='characteristics')
 
     # Relationships many-to-one
     value_id: int = Column(Integer, ForeignKey('ontology_annotation.id'))
@@ -59,7 +64,6 @@ class Characteristic(Base):
 def make_characteristic_methods():
     def to_sql(self, session):
         characteristic = {"comments": [c.to_sql() for c in self.comments]}
-
         if isinstance(self.value, int) or isinstance(self.value, float):
             value = self.value
             if isinstance(self.value, int):
