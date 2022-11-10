@@ -155,3 +155,32 @@ materials_characteristics = Table(
     Column("characteristic_id", ForeignKey("characteristic.id"), primary_key=True),
     comment="Many to many relationship between Materials and Characteristics"
 )
+
+
+""" ---------------------------------  ---------------------------------- --------------------------------
+                                                PROCESS
+---------------------------------  ---------------------------------- -------------------------------- """
+
+process_inputs = Table(
+    "process_inputs",
+    Base.metadata,
+    Column("process_id", ForeignKey("process.id"), primary_key=True),
+    Column("input_id", ForeignKey("input_output.id"), primary_key=True),
+    comment="Many to many relationship between Processes and Inputs"
+)
+
+process_outputs = Table(
+    "process_outputs",
+    Base.metadata,
+    Column("process_id", ForeignKey("process.id"), primary_key=True),
+    Column("output_id", ForeignKey("input_output.id"), primary_key=True),
+    comment="Many to many relationship between Processes and Outputs"
+)
+
+process_parameter_values = Table(
+    "process_parameter_values",
+    Base.metadata,
+    Column("process_id", ForeignKey("process.id"), primary_key=True),
+    Column("parameter_value_id", ForeignKey("parameter_value.id"), primary_key=True),
+    comment="Many to many relationship between Processes and ParameterValues"
+)

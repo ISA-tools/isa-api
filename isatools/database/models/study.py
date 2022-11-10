@@ -53,8 +53,6 @@ class Study(Base):
     samples = relationship('Sample', secondary=study_samples, back_populates='studies')
     materials = relationship('Material', secondary=study_materials, back_populates='studies')
 
-    # Sample and otherMaterials attributes
-
     def to_json(self):
         return {
             'title': self.title,
@@ -75,7 +73,8 @@ class Study(Base):
                 'sources': [s.to_json() for s in self.sources],
                 'samples': [s.to_json() for s in self.samples],
                 'otherMaterials': [m.to_json() for m in self.materials],
-            }
+            },
+            'processSequence': [p.to_json() for p in self.process_sequence]
         }
 
 
@@ -104,7 +103,8 @@ def make_study_methods():
             study_factors=[factor.to_sql(session) for factor in self.factors],
             sources=[source.to_sql(session) for source in self.sources],
             samples=[sample.to_sql(session) for sample in self.samples],
-            materials=[material.to_sql(session) for material in self.other_material]
+            materials=[material.to_sql(session) for material in self.other_material],
+            process_sequence=[process.to_sql(session) for process in self.process_sequence]
         )
 
     setattr(StudyModel, 'to_sql', to_sql)

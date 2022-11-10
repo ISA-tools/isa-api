@@ -3,12 +3,16 @@ from sqlalchemy.orm import relationship
 
 from isatools.model import Source as SourceModel
 from isatools.database.models.relationships import study_sources, source_characteristics, sample_derives_from
-from isatools.database.utils import Base
+from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
 
-class Source(Base):
+class Source(InputOutput):
     __tablename__: str = 'source'
+    __mapper_args__ = {
+        "polymorphic_identity": "source",
+        "concrete": True,
+    }
 
     # Base fields
     id: str = Column(String, primary_key=True)

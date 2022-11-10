@@ -8,12 +8,16 @@ from isatools.database.models.relationships import (
     sample_derives_from,
     sample_factor_values
 )
-from isatools.database.utils import Base
+from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
 
-class Sample(Base):
+class Sample(InputOutput):
     __tablename__: str = 'sample'
+    __mapper_args__ = {
+        "polymorphic_identity": "sample",
+        "concrete": True,
+    }
 
     # Base fields
     id: str = Column(String, primary_key=True)

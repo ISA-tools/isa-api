@@ -1,19 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
-from isatools.model import Material as MaterialModel, Extract as ExtractModel, LabeledExtract as LabeledExtractModel
+from isatools.model import Material as MaterialModel
 from isatools.database.models.relationships import study_materials, materials_characteristics
-from isatools.database.utils import Base
+from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
 
-class Material(Base):
+class Material(InputOutput):
     __tablename__: str = 'material'
+    __mapper_args__ = {
+        "polymorphic_identity": "material",
+        "concrete": True,
+    }
 
     # Base fields
     id: str = Column(String, primary_key=True)
     name: str = Column(String)
-    type: str = Column(String)
+    material_type: str = Column(String)
 
     # Relationships back-ref
     studies: relationship = relationship('Study', secondary=study_materials, back_populates='materials')
@@ -30,7 +34,7 @@ class Material(Base):
         return {
             '@id': self.id,
             'name': self.name,
-            'type': self.type,
+            'type': self.material_type,
             'characteristics': [c.to_json() for c in self.characteristics]
         }
 
@@ -40,7 +44,7 @@ def make_material_methods():
         return Material(
             id=self.id,
             name=self.name,
-            type=self.type,
+            material_type=self.type,
             characteristics=[c.to_sql(session) for c in self.characteristics]
         )
 

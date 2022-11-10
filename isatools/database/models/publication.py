@@ -19,6 +19,8 @@ class Publication(Base):
 
     # Relationships
     comments: relationship = relationship('Comment', back_populates='publication')
+
+    # Relationships: back-ref
     investigations: relationship = relationship(
         'Investigation', secondary=investigation_publications, back_populates='publications'
     )
