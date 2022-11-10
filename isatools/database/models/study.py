@@ -49,7 +49,7 @@ class Study(Base):
         'OntologyAnnotation', secondary=study_unit_categories, back_populates='unit_categories')
     study_design_descriptors = relationship(
         'OntologyAnnotation', secondary=study_design_descriptors, back_populates='design_descriptors')
-    study_factor_values = relationship('StudyFactor', secondary=study_factors, back_populates='studies')
+    study_factors = relationship('StudyFactor', secondary=study_factors, back_populates='studies')
 
     # Sample and otherMaterials attributes
 
@@ -96,7 +96,7 @@ def make_study_methods():
             protocols=[protocol.to_sql(session) for protocol in self.protocols],
             characteristic_categories=[category.to_sql(session) for category in self.characteristic_categories],
             unit_categories=[category.to_sql(session) for category in self.units],
-            study_factor_values=[factor.to_sql(session) for factor in self.factors],
+            study_factors=[factor.to_sql(session) for factor in self.factors],
             sources=[source.to_sql(session) for source in self.sources],
         )
 

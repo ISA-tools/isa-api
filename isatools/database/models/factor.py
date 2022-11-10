@@ -16,7 +16,10 @@ class StudyFactor(Base):
 
     # Relationships back-ref
     studies: relationship = relationship(
-        'Study', secondary=study_factors, back_populates='study_factor_values')
+        'Study', secondary=study_factors, back_populates='study_factors')
+
+    # Relationships: one-to-many
+    comments = relationship('Comment', back_populates='study_factor')
 
     # Relationships many-to-one
     factor_type_id: str = Column(String, ForeignKey('ontology_annotation.id'))
@@ -26,7 +29,8 @@ class StudyFactor(Base):
         return {
             '@id': self.id,
             'factorName': self.factor_name,
-            'factorType': self.factor_type.to_json()
+            'factorType': self.factor_type.to_json(),
+            'comments': [c.to_json() for c in self.comments]
         }
 
 
@@ -35,7 +39,8 @@ def make_factor_values_methods():
         return StudyFactor(
             id=self.id,
             factor_name=self.name,
-            factor_type=self.factor_type.to_sql(session)
+            factor_type=self.factor_type.to_sql(session),
+            comments=[c.to_sql() for c in self.comments]
         )
     setattr(StudyFactorModel, 'to_sql', to_sql)
     setattr(StudyFactorModel, 'get_table', make_get_table_method(StudyFactor))
