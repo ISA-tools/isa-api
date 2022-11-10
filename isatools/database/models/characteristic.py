@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship
 
 from isatools.model import Characteristic as CharacteristicModel
-from isatools.database.models.relationships import source_characteristics
+from isatools.database.models.relationships import source_characteristics, sample_characteristics
 from isatools.database.models.constraints import build_characteristic_constraints
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -21,6 +21,9 @@ class Characteristic(Base):
     # Relationships: back-ref
     sources: relationship = relationship(
         'Source', secondary=source_characteristics, back_populates='characteristics'
+    )
+    samples: relationship = relationship(
+        'Sample', secondary=sample_characteristics, back_populates='characteristics'
     )
 
     # Relationships many-to-one

@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint
 def build_comment_constraints():
     fields = (
         'investigation_id', 'study_id', 'person_id', 'process_id', 'publication_id', 'ontology_source_id',
-        'ontology_annotation_id', "protocol_id", "source_id", "characteristic_id"
+        'ontology_annotation_id', "protocol_id", "source_id", "characteristic_id", "study_factor_id", "sample_id",
     )
     statement = make_must_have_one_only_statement(fields)
     return CheckConstraint(statement, name='comment_must_have_one_source_only')

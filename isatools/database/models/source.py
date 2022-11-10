@@ -2,8 +2,7 @@ from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
 from isatools.model import Source as SourceModel
-from isatools.database.models.relationships import study_sources
-from isatools.database.models.relationships import source_characteristics
+from isatools.database.models.relationships import study_sources, source_characteristics, sample_derives_from
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
 
@@ -17,6 +16,7 @@ class Source(Base):
 
     # Relationships back-ref
     studies: relationship = relationship('Study', secondary=study_sources, back_populates='sources')
+    samples: relationship = relationship('Sample', secondary=sample_derives_from, back_populates='derives_from')
 
     # Relationships: many-to-many
     characteristics: relationship = relationship(
@@ -27,7 +27,8 @@ class Source(Base):
 
     def to_json(self) -> dict:
         return {
-            '@id': self.id, 'name': self.name,
+            '@id': self.id,
+            'name': self.name,
             'characteristics': [c.to_json() for c in self.characteristics],
             'comments': [c.to_json() for c in self.comments]
         }
@@ -35,6 +36,9 @@ class Source(Base):
 
 def make_source_methods():
     def to_sql(self, session):
+        source = session.query(Source).filter(Source.id == self.id).first()
+        if source:
+            return source
         return Source(
             id=self.id,
             name=self.name,

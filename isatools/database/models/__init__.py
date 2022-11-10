@@ -38,6 +38,9 @@ from isatools.database.models.characteristic import (
 from isatools.database.models.factor import (
     StudyFactorModel as Factor, StudyFactor as FactorTable, make_factor_values_methods
 )
+from isatools.database.models.sample import (
+    SampleModel as Sample, Sample as SampleTable, make_sample_methods
+)
 
 
 def __make_methods():
@@ -57,6 +60,7 @@ def __make_methods():
     # materials methods
     make_characteristic_methods()
     make_source_methods()
+    make_sample_methods()
 
     # investigation methods
     make_study_methods()

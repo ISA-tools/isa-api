@@ -59,6 +59,14 @@ study_sources = Table(
     comment="Many to many relationship between Studies and Sources"
 )
 
+study_samples = Table(
+    "study_samples",
+    Base.metadata,
+    Column("study_id", ForeignKey("study.id"), primary_key=True),
+    Column("sample_id", ForeignKey("sample.id"), primary_key=True),
+    comment="Many to many relationship between Studies and Samples"
+)
+
 study_characteristic_categories = Table(
     "study_characteristic_categories",
     Base.metadata,
@@ -106,4 +114,20 @@ source_characteristics = Table(
     Column("source_id", ForeignKey("source.id"), primary_key=True),
     Column("characteristic_id", ForeignKey("characteristic.id"), primary_key=True),
     comment="Many to many relationship between Sources and Characteristics"
+)
+
+sample_characteristics = Table(
+    "sample_characteristics",
+    Base.metadata,
+    Column("sample_id", ForeignKey("sample.id"), primary_key=True),
+    Column("characteristic_id", ForeignKey("characteristic.id"), primary_key=True),
+    comment="Many to many relationship between Samples and Characteristics"
+)
+
+sample_derives_from = Table(
+    "sample_derives_from",
+    Base.metadata,
+    Column("sample_id", ForeignKey("sample.id"), primary_key=True),
+    Column("source_id", ForeignKey("source.id"), primary_key=True),
+    comment="Many to many relationship between Samples and Sources"
 )

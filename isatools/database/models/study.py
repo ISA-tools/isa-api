@@ -12,7 +12,7 @@ from isatools.database.models.relationships import (
     study_sources,
     study_characteristic_categories,
     study_unit_categories,
-    study_factors
+    study_factors, study_samples
 )
 from isatools.database.utils import Base
 from isatools.database.models.utils import make_get_table_method
@@ -42,7 +42,6 @@ class Study(Base):
     # Relationships: many-to-many
     publications: relationship = relationship('Publication', secondary=study_publications, back_populates='studies')
     protocols = relationship('Protocol', secondary=study_protocols, back_populates='studies')
-    sources = relationship('Source', secondary=study_sources, back_populates='studies')
     characteristic_categories = relationship(
         'OntologyAnnotation', secondary=study_characteristic_categories, back_populates='characteristic_categories')
     unit_categories = relationship(
@@ -50,6 +49,8 @@ class Study(Base):
     study_design_descriptors = relationship(
         'OntologyAnnotation', secondary=study_design_descriptors, back_populates='design_descriptors')
     study_factors = relationship('StudyFactor', secondary=study_factors, back_populates='studies')
+    sources = relationship('Source', secondary=study_sources, back_populates='studies')
+    samples = relationship('Sample', secondary=study_samples, back_populates='studies')
 
     # Sample and otherMaterials attributes
 
@@ -69,7 +70,8 @@ class Study(Base):
             'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
             'unitCategories': [oa.to_json() for oa in self.unit_categories],
             'factors': [fv.to_json() for fv in self.study_factor_values],
-            'sources': [s.to_json() for s in self.sources]
+            'sources': [s.to_json() for s in self.sources],
+            'samples': [s.to_json() for s in self.samples]
         }
 
 
@@ -98,6 +100,7 @@ def make_study_methods():
             unit_categories=[category.to_sql(session) for category in self.units],
             study_factors=[factor.to_sql(session) for factor in self.factors],
             sources=[source.to_sql(session) for source in self.sources],
+            samples=[sample.to_sql(session) for sample in self.samples]
         )
 
     setattr(StudyModel, 'to_sql', to_sql)
