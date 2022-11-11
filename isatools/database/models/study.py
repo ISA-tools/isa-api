@@ -54,6 +54,18 @@ class Study(Base):
     materials = relationship('Material', secondary=study_materials, back_populates='studies')
 
     def to_json(self):
+        characteristics_categories = []
+        for characteristic in self.characteristic_categories:
+            id_ = characteristic.id
+            if id_.startswith('#ontology_annotation/'):
+                id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
+            else:
+                id_ = '#characteristic_category/' + id_ if not id_.startswith('#characteristic_category/') else id_
+            characteristic_to_append = {
+                '@id': id_,
+                'characteristicType': characteristic.to_json()
+            }
+            characteristics_categories.append(characteristic_to_append)
         return {
             'title': self.title,
             "filename": self.filename,
@@ -66,7 +78,7 @@ class Study(Base):
             'publications': [p.to_json() for p in self.publications],
             'designDescriptors': [oa.to_json() for oa in self.study_design_descriptors],
             'protocols': [p.to_json() for p in self.protocols],
-            'characteristicCategories': [oa.to_json() for oa in self.characteristic_categories],
+            'characteristicCategories': characteristics_categories,
             'unitCategories': [oa.to_json() for oa in self.unit_categories],
             'factors': [fv.to_json() for fv in self.study_factors],
             'materials:': {
@@ -74,7 +86,8 @@ class Study(Base):
                 'samples': [s.to_json() for s in self.samples],
                 'otherMaterials': [m.to_json() for m in self.materials],
             },
-            'processSequence': [p.to_json() for p in self.process_sequence]
+            'processSequence': [p.to_json() for p in self.process_sequence],
+            "assays": []
         }
 
 

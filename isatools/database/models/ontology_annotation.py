@@ -36,7 +36,7 @@ class OntologyAnnotation(Base):
     def to_json(self):
         return {
             'annotationValue': self.annotation_value,
-            'termSource': {"@id": self.term_source_id} if self.term_source_id else None,
+            'termSource': self.term_source_id if self.term_source_id else None,
             'termAccession': self.term_accession,
             'comments': [c.to_json() for c in self.comments]
         }
