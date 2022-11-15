@@ -61,34 +61,3 @@ class TestConvert(unittest.TestCase):
             "http://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Study&DataMode=MSData&StudyID=ST000367"
             "&StudyType=MS&ResultType=1#DataTabs"
         )
-
-    def test_parse_table_errors(self):
-        investigation = MW2ISA('ST000367')
-        investigation.analysis_type = 'MS'
-
-        # Testing no table
-        with self.assertRaises(KeyError) as context:
-            investigation.parse_table(MOCK_BS4_ERROR_NOTABLE)
-        self.assertEqual(str(context.exception), str(KeyError("No table found for ST000367")))
-
-        # Testing no ID
-        with self.assertRaises(KeyError) as context:
-            investigation.parse_table(MOCK_BS4_ERROR_NOID)
-        self.assertEqual(str(context.exception), str(KeyError("No analysis ID found for ST000367")))
-
-    def test_parse_table_success(self):
-        investigation = MW2ISA('ST000367')
-        investigation.analysis_type = 'MS'
-        study_assa_dict = investigation.parse_table(MOCK_BS4_SUCCESS)
-        self.assertEqual(study_assa_dict['assays'], [
-            {'techtype': 'mass spectrometry', 'analysis_id': 'AN000600'},
-            {'techtype': 'nmr spectrometry', 'analysis_id': 'AN000601'}
-        ])
-
-    def test_get_download_url(self):
-        assay_dict = {'assays': [{'analysis_id': 'AN000600'}]}
-        investigation = MW2ISA('ST000367')
-        investigation.analysis_type = 'MS'
-        url = investigation.get_download_url(assay_dict)
-        self.assertEqual(url, "http://www.metabolomicsworkbench.org/data/study_textformat_view.php"
-                              "?STUDY_ID=ST000367&ANALYSIS_ID=AN000600&MODE=d")
