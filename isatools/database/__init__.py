@@ -10,28 +10,19 @@ Authors: D. Batista (@Terazus)
 
 Example:
     >>> from isatools.database import Investigation, Base
+    >>> from sqlalchemy import create_engine
+    >>> from sqlalchemy.orm import sessionmaker
+    >>> engine = create_engine('sqlite:///:memory:')
+    >>> Base.metadata.create_all(engine)
+    >>> Session = sessionmaker(bind=engine)
+    >>> session = Session()
     >>> investigation = Investigation()
-    >>> to_insert = investigation.to_sql()
-    Note: The to_insert object is an SQLAlchemy object ready to be added to an SQLAlchemy session using the shared Base.
+    >>> to_insert = investigation.to_sql(session=session)
+    >>> session.add(to_insert)
+    >>> session.commit()
     >>> investigation_table = investigation.get_table()
-    Note: The investigation_table object is the SQLAlchemy table object derived for the investigation model.
+    >>> session.query(investigation_table).get(to_insert.id)  # returns the object from the database
 """
 
 from isatools.database.utils import Base
-from isatools.database.models import (
-    Comment,
-    Investigation,
-    Study,
-    Publication,
-    OntologyAnnotation,
-    OntologySource,
-    Parameter,
-    Person,
-    Process,
-    Protocol,
-    Source,
-    Characteristic
-)
-
-
-
+from isatools.database.models import Investigation

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, Float, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 
 from isatools.model import Characteristic as CharacteristicModel
 from isatools.database.models.relationships import (
@@ -13,37 +13,48 @@ from isatools.database.models.utils import make_get_table_method
 
 
 class Characteristic(Base):
+    """ The SQLAlchemy model for the Characteristic table """
+
     __tablename__: str = 'characteristic'
-    __table_args__ = build_characteristic_constraints()
+    __table_args__: tuple = (*build_characteristic_constraints(), {"comment": "Characteristic table"})
 
     # Base fields
-    id: int = Column(Integer, primary_key=True)
-    value_int: float = Column(Float)
-    unit_str: str = Column(String)
-    category_str: str = Column(String)
+    characteristic_id: int = Column(Integer, primary_key=True)
+    value_int: float = Column(Float, comment='Characteristic value as a float')
+    unit_str: str = Column(String, comment='Characteristic unit as a string')
+    category_str: str = Column(String, comment='Characteristic category as a string')
 
     # Relationships: back-ref
-    sources: relationship = relationship(
-        'Source', secondary=source_characteristics, back_populates='characteristics'
-    )
-    samples: relationship = relationship(
-        'Sample', secondary=sample_characteristics, back_populates='characteristics'
-    )
-    materials = relationship('Material', secondary=materials_characteristics, back_populates='characteristics')
+    sources: relationship = relationship('Source', secondary=source_characteristics, back_populates='characteristics')
+    samples: relationship = relationship('Sample', secondary=sample_characteristics, back_populates='characteristics')
+    materials: relationship = relationship(
+        'Material', secondary=materials_characteristics, back_populates='characteristics')
 
     # Relationships many-to-one
-    value_id: int = Column(Integer, ForeignKey('ontology_annotation.id'))
+    value_id: int = Column(Integer, ForeignKey(
+        'ontology_annotation.ontology_annotation_id'), comment='Value of the characteristic as an OntologyAnnotation')
     value_oa: relationship = relationship(
         'OntologyAnnotation', backref='characteristics_value', foreign_keys=[value_id])
-    unit_id: int = Column(Integer, ForeignKey('ontology_annotation.id'))
+
+    unit_id: int = Column(
+        Integer, ForeignKey('ontology_annotation.ontology_annotation_id'),
+        comment='Characteristic unit as an ontology annotation')
     unit_oa: relationship = relationship('OntologyAnnotation', backref='characteristics_unit', foreign_keys=[unit_id])
-    category_id = Column(Integer, ForeignKey('ontology_annotation.id'))
-    category_oa = relationship('OntologyAnnotation', backref='characteristics_category', foreign_keys=[category_id])
+
+    category_id: int = Column(
+        Integer, ForeignKey('ontology_annotation.ontology_annotation_id'),
+        comment='Characteristic category as an ontology annotation')
+    category_oa: relationship = relationship(
+        'OntologyAnnotation', backref='characteristics_category', foreign_keys=[category_id])
 
     # Relationships one-to-many
-    comments = relationship('Comment', back_populates='characteristic')
+    comments: relationship = relationship('Comment', back_populates='characteristic')
 
     def to_json(self) -> dict:
+        """ Convert the SQLAlchemy object to a dictionary
+
+        :return: The dictionary representation of the object taken from the database
+        """
         comments = [c.to_json() for c in self.comments]
 
         unit = self.unit_str
@@ -62,7 +73,18 @@ class Characteristic(Base):
 
 
 def make_characteristic_methods():
-    def to_sql(self, session):
+    """ This function will dynamically add the methods to the Characteristic class that are required to interact with
+    the database. This is done to avoid circular imports and to extra dependencies in the models package. It's called
+    in the init of the database models package.
+    """
+    def to_sql(self, session: Session) -> Characteristic:
+        """ Convert the Characteristic object to a SQLAlchemy object so that it can be added to the database.
+
+        :param self: the Characteristic object. Will be injected automatically.
+        :param session: The SQLAlchemy session to use.
+
+        :return: The SQLAlchemy object ready to be committed to the database session.
+        """
         characteristic = {"comments": [c.to_sql() for c in self.comments]}
         if isinstance(self.value, int) or isinstance(self.value, float):
             value = self.value
@@ -75,13 +97,11 @@ def make_characteristic_methods():
         if isinstance(self.unit, str):
             characteristic["unit_str"] = self.unit
         elif self.unit:
-            # change this later 'cause they already exist
             characteristic["unit_id"] = self.unit.id
 
         if isinstance(self.category, str):
             characteristic["category_str"] = self.category
         else:
-            # check this later 'cause they already exist
             characteristic["category_id"] = self.category.id
         return Characteristic(**characteristic)
 

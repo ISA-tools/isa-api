@@ -50,6 +50,9 @@ from isatools.database.models.material import (
 from isatools.database.models.parameter_value import (
     ParameterValueModel as ParameterValue, ParameterValue as ParameterValueTable, make_parameter_value_methods
 )
+from isatools.database.models.assay import (
+    AssayModel as Assay, Assay as AssayTable, make_assay_methods
+)
 
 
 def __make_methods():
@@ -62,17 +65,20 @@ def __make_methods():
 
     # studies methods
     make_parameter_methods()
+    make_parameter_value_methods()
     make_process_methods()
     make_protocol_methods()
     make_study_factor_methods()
     make_factor_value_methods()
-    make_parameter_value_methods()
 
     # materials methods
     make_characteristic_methods()
     make_source_methods()
     make_sample_methods()
     make_material_methods()
+
+    # assays
+    make_assay_methods()
 
     # investigation methods
     make_study_methods()
