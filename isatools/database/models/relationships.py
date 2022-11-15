@@ -128,6 +128,29 @@ assay_characteristic_categories = Table(
     comment="Many to many relationship between Assays and characteristic categories (Ontology Annotations)"
 )
 
+assay_samples = Table(
+    "assay_samples",
+    Base.metadata,
+    Column("assay_id", ForeignKey("assay.assay_id"), primary_key=True),
+    Column("sample_id", ForeignKey("sample.sample_id"), primary_key=True),
+    comment="Many to many relationship between Assays and Samples"
+)
+
+assay_materials = Table(
+    "assay_materials",
+    Base.metadata,
+    Column("assay_id", ForeignKey("assay.assay_id"), primary_key=True),
+    Column("material_id", ForeignKey("material.material_id"), primary_key=True),
+    comment="Many to many relationship between Assays and Materials"
+)
+
+assay_data_files = Table(
+    "assay_data_files",
+    Base.metadata,
+    Column("assay_id", ForeignKey("assay.assay_id"), primary_key=True),
+    Column("data_file_id", ForeignKey("datafile.datafile_id"), primary_key=True),
+    comment="Many to many relationship between Assays and Data Files"
+)
 
 """ ---------------------------------  ---------------------------------- --------------------------------
                                                 PROTOCOLS

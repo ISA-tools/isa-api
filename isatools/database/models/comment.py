@@ -23,6 +23,8 @@ class Comment(Base):
     assay: relationship = relationship('Assay', back_populates='comments')
     characteristic_id: int = Column(Integer, ForeignKey('characteristic.characteristic_id'))
     characteristic: relationship = relationship('Characteristic', back_populates='comments')
+    datafile_id: int = Column(Integer, ForeignKey('datafile.datafile_id'))
+    datafile: relationship = relationship('DataFile', back_populates='comments')
     factor_value_id: int = Column(Integer, ForeignKey('factor_value.factor_value_id'))
     factor_value: relationship = relationship('FactorValue', back_populates='comments')
     investigation_id: int = Column(Integer, ForeignKey('investigation.investigation_id'))

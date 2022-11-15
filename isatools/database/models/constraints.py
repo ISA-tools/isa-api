@@ -11,7 +11,7 @@ def build_comment_constraints() -> CheckConstraint:
     fields = (
         'investigation_id', 'study_id', 'person_id', 'process_id', 'publication_id', 'ontology_source_id',
         'ontology_annotation_id', "protocol_id", "source_id", "characteristic_id", "study_factor_id", "sample_id",
-        "factor_value_id", "material_id", "assay_id"
+        "factor_value_id", "material_id", "assay_id", "datafile_id"
     )
     statement_one = 'NOT (%s) ' % ' AND '.join([field + ' IS NOT NULL' for field in fields])
     statement_two = ' AND (%s) ' % ' OR '.join([field + ' IS NOT NULL' for field in fields])

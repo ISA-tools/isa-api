@@ -6,7 +6,8 @@ from isatools.database.models.relationships import (
     study_samples,
     sample_characteristics,
     sample_derives_from,
-    sample_factor_values
+    sample_factor_values,
+    assay_samples
 )
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
@@ -27,6 +28,7 @@ class Sample(InputOutput):
 
     # Relationships back-ref
     studies: relationship = relationship('Study', secondary=study_samples, back_populates='samples')
+    assays: relationship = relationship('Assay', secondary=assay_samples, back_populates='samples')
 
     # Relationships: many-to-many
     characteristics: relationship = relationship(

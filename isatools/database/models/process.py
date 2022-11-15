@@ -48,15 +48,13 @@ class Process(Base):
 
         :return: The dictionary representation of the object taken from the database
         """
-        inputs = [{"@id": data_input.id} for data_input in self.inputs if type(data_input).__name__ != 'InputOutput']
-        outputs = [{"@id": output.id} for output in self.outputs if type(output).__name__ != 'InputOutput']
         return {
             '@id': self.process_id,
             'name': self.name,
             'performer': self.performer,
             'date': str(self.date),
-            'input': inputs,
-            'output': outputs,
+            'input': [{"@id": data_input.io_id} for data_input in self.inputs],
+            'output': [{"@id": output.io_id} for output in self.outputs],
             'parameterValues': [pv.to_json() for pv in self.parameter_values],
             'previous_process': {"@id": self.previous_process_id} if self.previous_process_id else None,
             'next_process': {"@id": self.next_process_id} if self.next_process_id else None,
@@ -91,6 +89,7 @@ def make_process_methods():
                 inputs.append(input_)
             else:
                 inputs.append(InputOutput(io_id=data_input.id, io_type='input'))
+
         outputs = []
         for data_output in self.outputs:
             output_ = session.query(InputOutput).filter(InputOutput.io_id == data_output.id).first()

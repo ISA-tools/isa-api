@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship, Session
 
 from isatools.model import Material as MaterialModel
 from isatools.database.models.constraints import build_material_constraints
-from isatools.database.models.relationships import study_materials, materials_characteristics
+from isatools.database.models.relationships import study_materials, materials_characteristics, assay_materials
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
@@ -22,6 +22,7 @@ class Material(InputOutput):
 
     # Relationships back-ref
     studies: relationship = relationship('Study', secondary=study_materials, back_populates='materials')
+    assays: relationship = relationship('Assay', secondary=assay_materials, back_populates='materials')
 
     # Relationships: many-to-many
     characteristics: relationship = relationship(

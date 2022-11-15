@@ -53,6 +53,9 @@ from isatools.database.models.parameter_value import (
 from isatools.database.models.assay import (
     AssayModel as Assay, Assay as AssayTable, make_assay_methods
 )
+from isatools.database.models.datafile import (
+    DataFileModel as DataFile, DataFile as DataFileTable, make_datafile_methods
+)
 
 
 def __make_methods():
@@ -76,6 +79,7 @@ def __make_methods():
     make_source_methods()
     make_sample_methods()
     make_material_methods()
+    make_datafile_methods()
 
     # assays
     make_assay_methods()

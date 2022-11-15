@@ -20,7 +20,7 @@ def get_investigation(filename):
 
 
 def create_db():
-    engine = create_engine("sqlite:///test.db")
+    engine = create_engine("sqlite:///:memory:")
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     _Session = sessionmaker(bind=engine)
