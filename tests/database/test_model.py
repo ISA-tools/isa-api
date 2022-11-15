@@ -20,6 +20,7 @@ def get_investigation(filename):
 
 
 def create_db():
+    print("Creating database")
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -32,6 +33,7 @@ def create_db():
     _investigation = session_.query(Investigation.get_table()).first().to_json()
     another_investigation = Investigation()
     another_investigation.from_dict(_investigation)
+    print('Database created')
     return another_investigation.studies[0], investigation.studies[0], session_, investigation
 
 
