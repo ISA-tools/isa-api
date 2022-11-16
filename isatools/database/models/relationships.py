@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Table, ForeignKey
+from sqlalchemy import Column, ForeignKey
 
-from isatools.database.utils import Base
+from isatools.database.utils import Base, Table
 
 """ ---------------------------------  ---------------------------------- --------------------------------
                                                 INVESTIGATIONS

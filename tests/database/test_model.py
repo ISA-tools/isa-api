@@ -5,7 +5,7 @@ from json import loads as json_loads
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from isatools.database import Base, Investigation
+from isatools.database import app, db, Investigation
 
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -20,22 +20,22 @@ def get_investigation(filename):
 
 
 def create_db():
-    engine = create_engine("sqlite:///:memory:")
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    _Session = sessionmaker(bind=engine)
-    session_ = _Session()
     investigation = get_investigation("BII-S-3")
-    session_.add(investigation.to_sql(session=session_))
-    session_.commit()
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    db.init_app(app)
 
-    _investigation = session_.query(Investigation.get_table()).first().to_json()
-    another_investigation = Investigation()
-    another_investigation.from_dict(_investigation)
-    return another_investigation.studies[0], investigation.studies[0], session_, investigation
+    with app.app_context():
+        db.create_all()
+        db.session.add(investigation.to_sql(session=db.session))
+        _investigation = db.session.query(Investigation.get_table()).first().to_json()
+        another_investigation = Investigation()
+        another_investigation.from_dict(_investigation)
+        db.session.commit()
+
+    return another_investigation.studies[0], investigation.studies[0], investigation
 
 
-study_from_db, study_expected, session, initial_investigation = create_db()
+study_from_db, study_expected, initial_investigation = create_db()
 
 
 class TestStudyAssertions(TestCase):
@@ -115,20 +115,22 @@ class TestStudyAssertions(TestCase):
             self.assertIn(sequence, ps2)
 
     def test_load_more(self):
-        investigation = get_investigation("BII-S-3")
-        session.add(investigation.to_sql(session=session))
-        session.commit()
-        _investigation = session.query(Investigation.get_table()).all()
-        self.assertEqual(len(_investigation), 2)
+        with app.app_context():
+            session = db.session
+            investigation = get_investigation("BII-S-3")
+            session.add(investigation.to_sql(session=session))
+            session.commit()
+            _investigation = session.query(Investigation.get_table()).all()
+            self.assertEqual(len(_investigation), 2)
 
-        investigation = get_investigation("BII-S-7")
-        session.add(investigation.to_sql(session=session))
-        session.commit()
-        _investigation = session.query(Investigation.get_table()).all()
-        self.assertEqual(len(_investigation), 3)
+            investigation = get_investigation("BII-S-7")
+            session.add(investigation.to_sql(session=session))
+            session.commit()
+            _investigation = session.query(Investigation.get_table()).all()
+            self.assertEqual(len(_investigation), 3)
 
-        investigation = get_investigation("BII-I-1")
-        session.add(investigation.to_sql(session=session))
-        session.commit()
-        _investigation = session.query(Investigation.get_table()).all()
-        self.assertEqual(len(_investigation), 4)
+            investigation = get_investigation("BII-I-1")
+            session.add(investigation.to_sql(session=session))
+            session.commit()
+            _investigation = session.query(Investigation.get_table()).all()
+            self.assertEqual(len(_investigation), 4)

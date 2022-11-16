@@ -142,3 +142,5 @@ bin/
 isa-reports/
 isaRDF/
 venv*/
+instance/*
+instance/
