@@ -7,11 +7,11 @@ from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
 
-class DataFile(InputOutput):
+class Datafile(InputOutput):
     """ The SQLAlchemy model for the Material table """
 
     __tablename__: str = 'datafile'
-    __mapper_args__: dict = {"polymorphic_identity": "datafile", "concrete": True}
+    __mapper_args__: dict = {"polymorphic_identity": "Datafile", "concrete": True}
 
     # Base fields
     datafile_id: str = Column(String, primary_key=True)
@@ -27,22 +27,22 @@ class DataFile(InputOutput):
     def to_json(self):
         return {
             '@id': self.datafile_id,
-            'filename': self.filename,
+            'name': self.filename,
             'type': self.label,
             'comments': [comment.to_json() for comment in self.comments]
         }
 
 
 def make_datafile_methods():
-    def to_sql(self, session: Session) -> DataFile:
-        datafile = session.query(DataFile).get(self.id)
+    def to_sql(self, session: Session) -> Datafile:
+        datafile = session.query(Datafile).get(self.id)
         if datafile:
             return datafile
-        return DataFile(
+        return Datafile(
             datafile_id=self.id,
             filename=self.filename,
             label=self.label,
             comments=[comment.to_sql() for comment in self.comments]
         )
     setattr(DataFileModel, 'to_sql', to_sql)
-    setattr(DataFileModel, 'get_table', make_get_table_method(DataFile))
+    setattr(DataFileModel, 'get_table', make_get_table_method(Datafile))

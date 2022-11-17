@@ -63,7 +63,7 @@ def make_publication_methods():
         publication = session.query(Publication).get(self.doi)
         if publication:
             return publication
-        return Publication(
+        publication = Publication(
             publication_id=self.doi,
             author_list=self.author_list,
             doi=self.doi,
@@ -72,6 +72,9 @@ def make_publication_methods():
             status=self.status.to_sql(session),
             comments=[comment.to_sql() for comment in self.comments]
         )
+        session.add(publication)
+        session.commit()
+        return publication
 
     setattr(PublicationModel, 'to_sql', to_sql)
     setattr(PublicationModel, 'get_table', make_get_table_method(Publication))

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship, Session
 
 from isatools.model import ParameterValue as ParameterValueModel
@@ -23,13 +23,13 @@ class ParameterValue(Base):
     )
 
     # Relationships many-to-one
-    value_id: int = Column(Integer, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    value_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
     value_oa: relationship = relationship(
         'OntologyAnnotation', backref='parameter_values', foreign_keys=[value_id])
-    unit_id: int = Column(Integer, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    unit_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
     unit: relationship = relationship(
         'OntologyAnnotation', backref='parameter_values_unit', foreign_keys=[unit_id])
-    category_id: int = Column(Integer, ForeignKey('parameter.parameter_id'))
+    category_id: str = Column(String, ForeignKey('parameter.parameter_id'))
     category: relationship = relationship('Parameter', backref='parameter_values')
 
     def to_json(self) -> dict:

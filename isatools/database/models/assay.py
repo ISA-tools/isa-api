@@ -29,10 +29,10 @@ class Assay(Base):
     studies: relationship = relationship('Study', secondary=study_assays, back_populates='assays')
 
     # Relationship many-to-one
-    measurement_type_id: int = Column(Integer, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    measurement_type_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
     measurement_type: relationship = relationship(
         'OntologyAnnotation', backref='measurement_type', foreign_keys=[measurement_type_id])
-    technology_type_id: int = Column(Integer, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    technology_type_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
     technology_type: relationship = relationship(
         'OntologyAnnotation', backref='technology_type', foreign_keys=[technology_type_id])
 
@@ -44,7 +44,7 @@ class Assay(Base):
         'OntologyAnnotation', secondary=assay_characteristic_categories, back_populates='assays_characteristics')
     samples: relationship = relationship('Sample', secondary=assay_samples, back_populates='assays')
     materials: relationship = relationship('Material', secondary=assay_materials, back_populates='assays')
-    datafiles: relationship = relationship('DataFile', secondary=assay_data_files, back_populates='assays')
+    datafiles: relationship = relationship('Datafile', secondary=assay_data_files, back_populates='assays')
 
     # Relationships: one-to-many
     comments: relationship = relationship('Comment', back_populates='assay')

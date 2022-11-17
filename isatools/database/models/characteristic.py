@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship, Session
 
-from isatools.model import Characteristic as CharacteristicModel
+from isatools.model import Characteristic as CharacteristicModel, OntologyAnnotation as OntologyAnnotationModel
 from isatools.database.models.relationships import (
     source_characteristics,
     sample_characteristics,
@@ -31,18 +31,18 @@ class Characteristic(Base):
         'Material', secondary=materials_characteristics, back_populates='characteristics')
 
     # Relationships many-to-one
-    value_id: int = Column(Integer, ForeignKey(
+    value_id: str = Column(String, ForeignKey(
         'ontology_annotation.ontology_annotation_id'), comment='Value of the characteristic as an OntologyAnnotation')
     value_oa: relationship = relationship(
         'OntologyAnnotation', backref='characteristics_value', foreign_keys=[value_id])
 
-    unit_id: int = Column(
-        Integer, ForeignKey('ontology_annotation.ontology_annotation_id'),
+    unit_id: str = Column(
+        String, ForeignKey('ontology_annotation.ontology_annotation_id'),
         comment='Characteristic unit as an ontology annotation')
     unit_oa: relationship = relationship('OntologyAnnotation', backref='characteristics_unit', foreign_keys=[unit_id])
 
-    category_id: int = Column(
-        Integer, ForeignKey('ontology_annotation.ontology_annotation_id'),
+    category_id: str = Column(
+        String, ForeignKey('ontology_annotation.ontology_annotation_id'),
         comment='Characteristic category as an ontology annotation')
     category_oa: relationship = relationship(
         'OntologyAnnotation', backref='characteristics_category', foreign_keys=[category_id])
@@ -91,8 +91,11 @@ def make_characteristic_methods():
             if isinstance(self.value, int):
                 value = float(self.value)
             characteristic["value_int"] = value
-        else:
+        elif not isinstance(self.value, str):
             characteristic["value_oa"] = self.value.to_sql(session)
+        else:
+            value = OntologyAnnotationModel(term=self.value)
+            characteristic["value_oa"] = value.to_sql(session)
 
         if isinstance(self.unit, str):
             characteristic["unit_str"] = self.unit

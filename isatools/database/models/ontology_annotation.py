@@ -36,7 +36,7 @@ class OntologyAnnotation(Base):
         'Assay', secondary=assay_characteristic_categories, back_populates='characteristic_categories')
 
     # Relationships many-to-one
-    term_source_id: int = Column(Integer, ForeignKey('ontology_source.ontology_source_id'))
+    term_source_id: str = Column(String, ForeignKey('ontology_source.ontology_source_id'))
     term_source: relationship = relationship('OntologySource', backref='ontology_annotations')
 
     # References: one-to-many
@@ -73,11 +73,12 @@ def make_ontology_annotation_methods() -> None:
         oa = session.query(OntologyAnnotation).get(self.id)
         if oa:
             return oa
+        term_source_id = self.term_source.to_sql(session) if self.term_source else None
         oa = OntologyAnnotation(
             ontology_annotation_id=self.id,
             annotation_value=self.term,
             term_accession=self.term_accession,
-            term_source_id=self.term_source.name if self.term_source else None,
+            term_source_id=term_source_id.ontology_source_id if term_source_id else None,
             comments=[comment.to_sql() for comment in self.comments]
         )
         session.add(oa)

@@ -51,5 +51,5 @@ def build_material_constraints() -> CheckConstraint:
     :return: A CheckConstraint object used to validate the Material table.
     """
     statement = '''NOT (material_type IS NOT NULL 
-                AND material_type != "Extract Name" AND material_type != "Labeled Extract Name")'''
+                AND material_type != 'Extract Name' AND material_type != 'Labeled Extract Name')'''
     return CheckConstraint(statement, name='material_type_must_be_extract_name_or_labeled_extract_name')

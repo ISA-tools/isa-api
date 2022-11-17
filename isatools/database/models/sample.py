@@ -52,7 +52,7 @@ class Sample(InputOutput):
             'name': self.name,
             'characteristics': [c.to_json() for c in self.characteristics],
             'factorValues': [fv.to_json() for fv in self.factor_values],
-            'derives_from': [{"@id": source.source_id} for source in self.derives_from],
+            'derivesFrom': [{"@id": source.source_id} for source in self.derives_from],
             'comments': [c.to_json() for c in self.comments]
         }
 

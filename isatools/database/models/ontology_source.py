@@ -57,12 +57,15 @@ def make_ontology_source_methods() -> None:
         ontology_source = session.query(OntologySource).get(self.name)
         if ontology_source:
             return ontology_source
-        return OntologySource(
+        os = OntologySource(
             ontology_source_id=self.name,
             name=self.name,
             file=self.file,
             version=self.version,
             description=self.description,
         )
+        session.add(os)
+        session.commit()
+        return os
     setattr(OntologySourceModel, 'to_sql', to_sql)
     setattr(OntologySourceModel, 'get_table', make_get_table_method(OntologySource))

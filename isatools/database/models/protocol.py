@@ -30,7 +30,7 @@ class Protocol(Base):
         'Parameter', secondary=protocol_parameters, back_populates='protocols')
 
     # Relationships many-to-one
-    protocol_type_id: int = Column(Integer, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    protocol_type_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
     protocol_type: relationship = relationship('OntologyAnnotation', backref='protocols')
 
     def to_json(self) -> dict:

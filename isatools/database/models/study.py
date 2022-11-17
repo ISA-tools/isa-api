@@ -108,6 +108,15 @@ def make_study_methods():
             submission_date = date.parse(self.submission_date)
         if self.public_release_date:
             public_release_date = date.parse(self.public_release_date)
+
+        process_sequence = []
+        ps = []
+        for p in self.process_sequence:
+            ps.append(p.to_sql(session))
+            process_sequence.append(p)
+        for process in process_sequence:
+            process.update_plink(session)
+
         return Study(
             title=self.title,
             description=self.description,
@@ -126,7 +135,7 @@ def make_study_methods():
             sources=[source.to_sql(session) for source in self.sources],
             samples=[sample.to_sql(session) for sample in self.samples],
             materials=[material.to_sql(session) for material in self.other_material],
-            process_sequence=[process.to_sql(session) for process in self.process_sequence],
+            process_sequence=ps,
             assays=[assay.to_sql(session) for assay in self.assays]
         )
 

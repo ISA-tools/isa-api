@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer
 
 from isatools.database.utils import Base, Table
 
@@ -217,16 +217,17 @@ materials_characteristics = Table(
 process_inputs = Table(
     "process_inputs",
     Base.metadata,
-    Column("process_id", ForeignKey("process.process_id"), primary_key=True),
-    Column("input_id", ForeignKey("input_output.io_id"), primary_key=True),
+    Column("input_id_", ForeignKey("input_output.id_"), primary_key=True, unique=True),
+    Column("process_id", ForeignKey("process.process_id")),
     comment="Many to many relationship between Processes and Inputs"
 )
 
 process_outputs = Table(
     "process_outputs",
     Base.metadata,
+    Column("output_id_", ForeignKey("input_output.id_"), primary_key=True, unique=True),
     Column("process_id", ForeignKey("process.process_id"), primary_key=True),
-    Column("output_id", ForeignKey("input_output.io_id"), primary_key=True),
+    # Column("output_id", ForeignKey("input_output.io_id"), primary_key=True),
     comment="Many to many relationship between Processes and Outputs"
 )
 

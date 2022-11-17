@@ -49,7 +49,7 @@ class FactorValue(Base):
         elif self.value_str:
             value = self.value_str
         else:
-            value = self.value_oa.to_json()
+            value = self.value_oa.to_json() if self.value_oa else None
         if self.factor_name:
             category = {"@id": self.factor_name.factor_id}
         if self.factor_unit:
@@ -75,8 +75,8 @@ def make_factor_value_methods():
             'comments': [comment.to_sql(session) for comment in self.comments]
         }
         value = self.value if self.value else ''
-        if isinstance(value, int):
-            factor_value['value_int'] = value
+        if isinstance(value, int) or isinstance(value, float):
+            factor_value['value_int'] = float(value)
         elif isinstance(value, str):
             factor_value['value_str'] = value
         elif isinstance(value, OntologyAnnotationModel):

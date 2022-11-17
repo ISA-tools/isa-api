@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, update
 from sqlalchemy.orm import relationship, Session
 
 from isatools.model import Process as ProcessModel
@@ -21,8 +21,8 @@ class Process(Base):
     date: datetime = Column(Date)
 
     # Relationships self-referential
-    previous_process_id: int = Column(Integer, ForeignKey('process.process_id'))
-    next_process_id: int = Column(Integer, ForeignKey('process.process_id'))
+    previous_process_id: str = Column(String, ForeignKey('process.process_id'))
+    next_process_id: str = Column(String, ForeignKey('process.process_id'))
 
     # Relationships back reference
     study_id: int = Column(Integer, ForeignKey('study.study_id'))
@@ -31,7 +31,7 @@ class Process(Base):
     assay: relationship = relationship('Assay', back_populates='process_sequence')
 
     # Relationships: many-to-one
-    protocol_id: int = Column(Integer, ForeignKey('protocol.protocol_id'))
+    protocol_id: str = Column(String, ForeignKey('protocol.protocol_id'))
     protocol: relationship = relationship('Protocol', backref='processes')
 
     # Relationships: many-to-many
@@ -52,9 +52,9 @@ class Process(Base):
             '@id': self.process_id,
             'name': self.name,
             'performer': self.performer,
-            'date': str(self.date),
-            'input': [{"@id": data_input.io_id} for data_input in self.inputs],
-            'output': [{"@id": output.io_id} for output in self.outputs],
+            'date': str(self.date) if self.date else '',
+            'inputs': [{"@id": data_input.io_id} for data_input in self.inputs],
+            'outputs': [{"@id": data_output.io_id} for data_output in self.outputs],
             'parameterValues': [pv.to_json() for pv in self.parameter_values],
             'previous_process': {"@id": self.previous_process_id} if self.previous_process_id else None,
             'next_process': {"@id": self.next_process_id} if self.next_process_id else None,
@@ -77,26 +77,17 @@ def make_process_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-
         process = session.query(Process).get(self.id)
         if process:
             return process
 
         inputs = []
         for data_input in self.inputs:
-            input_ = session.query(InputOutput).filter(InputOutput.io_id == data_input.id).first()
-            if input_:
-                inputs.append(input_)
-            else:
-                inputs.append(InputOutput(io_id=data_input.id, io_type='input'))
+            inputs.append(InputOutput(io_id=data_input.id, io_type='input'))
 
         outputs = []
         for data_output in self.outputs:
-            output_ = session.query(InputOutput).filter(InputOutput.io_id == data_output.id).first()
-            if output_:
-                outputs.append(output_)
-            else:
-                outputs.append(InputOutput(io_id=data_output.id, io_type='output'))
+            outputs.append(InputOutput(io_id=data_output.id, io_type='output'))
 
         return Process(
             process_id=self.id,
@@ -104,13 +95,25 @@ def make_process_methods():
             performer=self.performer,
             date=datetime.strptime(self.date) if self.date else None,
             comments=[comment.to_sql() for comment in self.comments],
-            previous_process_id=self.prev_process.id if self.prev_process else None,
-            next_process_id=self.next_process.id if self.next_process else None,
             protocol_id=self.executes_protocol.id,
             inputs=inputs,
             outputs=outputs,
             parameter_values=[parameter_value.to_sql(session) for parameter_value in self.parameter_values]
         )
 
+    def update_plink(self, session: Session):
+        """ Update the previous and next process links for the process.
+
+        :param self: The Process object. Will be injected automatically.
+        :param session: The SQLAlchemy session to use.
+        """
+        statement = update(Process).where(Process.process_id == self.id).values(
+            previous_process_id=self.prev_process.id if self.prev_process else None,
+            next_process_id=self.next_process.id if self.next_process else None
+        )
+        session.execute(statement)
+        session.commit()
+
     setattr(ProcessModel, 'to_sql', to_sql)
+    setattr(ProcessModel, 'update_plink', update_plink)
     setattr(ProcessModel, 'get_table', make_get_table_method(Process))
