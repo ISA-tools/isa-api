@@ -97,13 +97,14 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     def __ne__(self, other):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        data_file = {
             "@id": self.id,
             "name": self.filename,
             "type": self.label,
-            "comments": [comment.to_dict() for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
+        return self.update_isa_object(data_file, ld)
 
     def from_dict(self, data_file):
         self.id = data_file.get('@id', '')

@@ -169,7 +169,7 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None) -> IsaTabDataFram
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)
-        csv = read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, memory_map=True, encoding='utf-8').fillna('')
+        csv = read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, encoding='utf-8').fillna('')
         tfile_df = IsaTabDataFrame(csv)
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)

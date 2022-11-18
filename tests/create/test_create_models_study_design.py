@@ -126,7 +126,6 @@ class NonTreatmentTest(unittest.TestCase):
             self.non_treatment = NonTreatment()
             self.non_treatment.type = "toto"
         self.assertEqual(er_msg.exception.args[0], "invalid treatment type provided: ")
-
         self.non_treatment.type = ELEMENT_TYPES['WASHOUT']
         self.assertEqual(self.non_treatment.type, 'washout')
 
@@ -186,6 +185,7 @@ class TreatmentTest(unittest.TestCase):
 
     def test_treatments_property(self):
         with self.assertRaises(AttributeError) as er_msg:
+
             self.test_treatment = Treatment(factor_values="toto")
         self.assertEqual(er_msg.exception.args[0], "Data supplied is not correctly formatted for Treatment")
 
@@ -195,6 +195,7 @@ class TreatmentTest(unittest.TestCase):
         self.assertEqual(er_msg.exception.args[0], "intervention_type must be string or OntologyAnnotation. -1 was provided.")
 
     def test_type(self):
+
         with self.assertRaises(ValueError) as er_msg:
             self.treatment = Treatment()
             self.treatment.type = "toto"
@@ -825,6 +826,7 @@ class ProtocolNodeTest(unittest.TestCase):
             param = -1
             node.parameters = param
         self.assertEqual(er_msg.exception.args[0], "The \'parameters\' property cannot be set directly. Set parameter_values instead.")
+
 
         with self.assertRaises(AttributeError) as er_msg:
             components = -1

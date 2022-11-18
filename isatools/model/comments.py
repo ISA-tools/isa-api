@@ -1,8 +1,10 @@
 from typing import List, Any
 from abc import ABCMeta
 
+from isatools.model.context import LDSerializable
 
-class Comment(object):
+
+class Comment(LDSerializable, object):
     """A Comment allows arbitrary annotation of all Commentable ISA classes
 
     Attributes:
@@ -11,6 +13,7 @@ class Comment(object):
     """
 
     def __init__(self, name: str = '', value: str = ''):
+        LDSerializable.__init__(self)
         self.__name = name
         self.__value = value
 
@@ -51,18 +54,19 @@ class Comment(object):
     def __ne__(self, other: Any):
         return not self == other
 
-    def to_dict(self):
-        return {
+    def to_dict(self, ld=False):
+        ontology_annotation = {
             "name": self.name,
             "value": self.value
         }
+        return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, comment):
         self.name = comment['name'] if 'name' in comment else ''
         self.value = comment['value'] if 'value' in comment else ''
 
 
-class Commentable(metaclass=ABCMeta):
+class Commentable(LDSerializable, metaclass=ABCMeta):
     """Abstract class to enable containment of Comments
 
     Attributes:
@@ -71,6 +75,7 @@ class Commentable(metaclass=ABCMeta):
 
     def __init__(self, comments: List[Comment] = None, **kwargs):
         self.__comments = [] if comments is None else comments
+        LDSerializable.__init__(self)
 
     @property
     def comments(self) -> List[Comment]:
@@ -104,7 +109,7 @@ class Commentable(metaclass=ABCMeta):
         """
         return filter(lambda x: x.name == name if name else x, self.comments)
 
-    def get_comment(self, name: str) -> Comment: 
+    def get_comment(self, name: str) -> Comment:
         """Gets the first matching comment for a given name
 
         Args:

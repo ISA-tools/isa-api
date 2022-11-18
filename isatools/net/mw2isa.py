@@ -41,22 +41,14 @@ def getblock(container, start_marker, end_marker):
         begin = False
         block = []
         lines = str(container).split('\\n')
-        # print("lines", str(lines),"\n")
-        # lineElements = []
         for line in lines:
-            # print("LINE:", line)
             line_elements = line.split('\\t')
-            # print("STUFF",line_elements)
             if start_marker in str(line):
-                # print("start", line)
                 begin = True
             elif end_marker in str(line):
-                # print("end", line)
                 begin = False
-
             if begin:
                 block.append(line_elements)
-        # print("BLOCK",block)
         return block
 
     except Exception as e:
@@ -64,10 +56,8 @@ def getblock(container, start_marker, end_marker):
         print("Error: in getblock() method, situation not recognized")
 
 
-# a method of download Metabolomics Workbench archived data from their
-# anonymous FTP site
-#  input: a valid Metabolomics Workbench study accession number that should
-# follow this pattern ^ST\d+[6]
+# a method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
+# Workbench study accession number that should follow this pattern ^ST\d+[6]
 
 def get_archived_file(mw_study_id):
     success = True
@@ -78,8 +68,7 @@ def get_archived_file(mw_study_id):
         ftp.login()
         ftp.cwd('Studies')
         ftp.retrlines('LIST')
-        ftp.retrbinary("RETR " + archive2download,
-                       open(archive2download, 'wb').write)
+        ftp.retrbinary("RETR " + archive2download, open(archive2download, 'wb').write)
         ftp.close()
         return success
 
@@ -87,10 +76,7 @@ def get_archived_file(mw_study_id):
         print("connection refused \n")
     except FileNotFoundError:
         print("file not found on server \n")
-    else:
-        success = False
-        # print("someone broke the internet")
-        return success
+    return False
 
 # a method to create an EBI Metabolights MAF file from Metabolomics Workbench
 # REST API over data and metabolites
@@ -100,12 +86,8 @@ def get_archived_file(mw_study_id):
 
 def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
     try:
-        data_url = \
-            "http://www.metabolomicsworkbench.org/rest/study/study_id/" \
-            + mw_study_id + "/data"
-        metabolites_url = \
-            "http://www.metabolomicsworkbench.org/rest/study/study_id/" \
-            + mw_study_id + "/metabolites"
+        data_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/data"
+        metabolites_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/metabolites"
 
         with urllib.request.urlopen(data_url) as url:
             try:
@@ -125,15 +107,11 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
         if len(metabolites) != 0 or len(data) != 0:
             print("generating  maf_file from json API")
             for d in (metabolites, data):
-                # you can list as many input dicts as you want here
                 for key, value in d.items():
-                    # print("KEY: ",key, ": ",value)
                     dd[key].append(value)
 
-            # merging the 2 json feeds and removing duplicated key, since
-            # values are always the same
+            # merging the 2 json feeds and removing duplicated key, since values are always the same
             for k, v in dd.items():
-                # print({k: {i: j for x in v for i, j in x.items()}})
                 dd[k] = {i: j for x in v for i, j in x.items()}
             try:
                 if not isinstance(dd["1"]["DATA"], list):
