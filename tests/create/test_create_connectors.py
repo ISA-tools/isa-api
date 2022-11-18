@@ -5,7 +5,9 @@ from isatools.create.connectors import (
     assay_template_to_ordered_dict,
     assay_ordered_dict_to_template,
     generate_study_design,
-    generate_assay_ord_dict_from_config
+    generate_assay_ord_dict_from_config,
+    _reverse_map_ontology_annotation,
+    _map_ontology_annotation
 )
 
 import unittest
@@ -14,7 +16,8 @@ import json
 
 from isatools.model import (
     Characteristic,
-    OntologyAnnotation
+    OntologyAnnotation,
+    OntologySource
 )
 from isatools.model import (
     Study,
@@ -47,7 +50,8 @@ class TestMappings(unittest.TestCase):
         filenames = (
             'metabolite-profiling-ms.json',
             'metabolite-profiling-ms-annotated.json',
-            'metabolite-profiling-nmr.json'
+            'metabolite-profiling-nmr.json',
+            'empty.json'
         )
         for filename in filenames:
             file_path = os.path.abspath(
@@ -59,6 +63,28 @@ class TestMappings(unittest.TestCase):
             )
             with open(file_path) as json_fp:
                 self.met_prof_jsons.append(json.load(json_fp))
+
+    def test_map_ontology_annotation(self):
+
+        source = {'iri': 'GO:2314',
+                  'source': {'description': 'toto', 'file': 'file', 'name': 'A', 'version': '1'},
+                  'term': 'toto'}
+        self.assertEqual(_map_ontology_annotation(source, False), OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=OntologySource(name='A', file="file", version="1", description="toto")))
+
+    def test_reverse_map_ontology_annotation(self):
+        ontosrc = OntologySource(name='A', file="file", version="1", description="toto")
+        ontology_annot_1 = OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=ontosrc)
+        expected = {'iri': 'GO:2314',
+                    'source': {'description': 'toto', 'file': 'file', 'name': 'A', 'version': '1'},
+                    'term': 'toto'}
+        self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_1, False), expected)
+
+        ontosrc_string = "onto"
+        ontology_annot_2 = OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=ontosrc_string)
+        expected_src_string = {'iri': 'GO:2314',
+                               'source': "onto",
+                               'term': 'toto'}
+        self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_2, False), expected_src_string)
 
     def test_assay_template_convert_json_to_ordered_dict_met_prof_mass_spec(self):
         actual_odict_mp_ms = assay_template_to_ordered_dict(self.met_prof_jsons[0])
@@ -77,6 +103,10 @@ class TestMappings(unittest.TestCase):
         self.assertEqual(actual_annotated_json_mp_ms, {
             key: value for key, value in self.met_prof_jsons[1].items() if key not in ['@context']
         })
+
+    def test_assay_template_convert_ordered_dict_empty_nodes(self):
+        empty_json = assay_ordered_dict_to_template(self.met_prof_jsons[3])
+        self.assertEqual(empty_json['workflow'][0], ['workflow', {}])
 
     @staticmethod
     def _load_config(file_name):
