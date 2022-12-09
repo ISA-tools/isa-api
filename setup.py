@@ -83,7 +83,7 @@ setup(
         'deepdiff~=5.5.0',
         'PyYAML~=5.4.1',
         'bokeh~=2.3.2',
-        'certifi==2021.5.30',
+        'certifi==2022.12.7',
         'flake8==3.9.2',
         'ddt==1.4.2',
         'behave==1.2.6',
