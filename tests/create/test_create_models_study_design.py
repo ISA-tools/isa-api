@@ -7,7 +7,7 @@ import yaml
 import networkx as nx
 import uuid
 import logging
-from collections import OrderedDict, Counter
+from collections import OrderedDict, Iterable, Counter
 
 from isatools.create import errors
 from isatools.model import (
@@ -126,6 +126,8 @@ class NonTreatmentTest(unittest.TestCase):
             self.non_treatment = NonTreatment()
             self.non_treatment.type = "toto"
         self.assertEqual(er_msg.exception.args[0], "invalid treatment type provided: ")
+        self.non_treatment.type = ELEMENT_TYPES['WASHOUT']
+        self.assertEqual(self.non_treatment.type, 'washout')
 
     def test_hash(self):
         self.assertEqual(hash(self.non_treatment), hash(repr(self.non_treatment)))
@@ -140,13 +142,22 @@ class NonTreatmentTest(unittest.TestCase):
         self.assertNotEqual(self.non_treatment, other_non_treatment)
 
     def test_update(self):
-        with self.assertRaises(ValueError, msg="duration_value must be a Number. Value provided is toto") as er_msg:
+        with self.assertRaises(ValueError) as er_msg:
             self.non_treatment = NonTreatment()
             self.non_treatment.update_duration("toto")
         self.assertEqual(er_msg.exception.args[0], "duration_value must be a Number. Value provided is toto")
 
+    def test_update_duration(self):
+        self.non_treatment.update_duration(10.0, None)
+        self.assertEqual(self.non_treatment.duration.value, 10.0)
+        self.assertEqual(self.non_treatment.duration.unit, None)
+
 
 class TreatmentTest(unittest.TestCase):
+
+    DURATION_VALUE = 10.0
+    DURATION_UNIT = OntologyAnnotation(term='day')
+    OTHER_DURATION_VALUE = 12.0
 
     def setUp(self):
         self.maxDiff = None
@@ -173,23 +184,25 @@ class TreatmentTest(unittest.TestCase):
                          "comments=[]))])")
 
     def test_treatments_property(self):
-        with self.assertRaises(AttributeError, msg='Data supplied is not correctly formatted for Treatment') as er_msg:
+        with self.assertRaises(AttributeError) as er_msg:
+
             self.test_treatment = Treatment(factor_values="toto")
         self.assertEqual(er_msg.exception.args[0], "Data supplied is not correctly formatted for Treatment")
 
     def test_element(self):
-        with self.assertRaises(ValueError, msg='intervention_type must be string or OntologyAnnotation. -1 was provided.') as er_msg:
+        with self.assertRaises(ValueError) as er_msg:
             self.bad_treatment_type = Treatment(element_type=-1)
         self.assertEqual(er_msg.exception.args[0], "intervention_type must be string or OntologyAnnotation. -1 was provided.")
 
     def test_type(self):
-        with self.assertRaises(ValueError, msg="invalid treatment type provided: ") as er_msg:
+
+        with self.assertRaises(ValueError) as er_msg:
             self.treatment = Treatment()
             self.treatment.type = "toto"
         self.assertEqual(er_msg.exception.args[0], "invalid treatment type provided: ")
 
     def test_update(self):
-        with self.assertRaises(ValueError, msg="duration_value must be a Number. Value provided is toto") as er_msg:
+        with self.assertRaises(ValueError) as er_msg:
             self.treatment = Treatment()
             self.treatment.update_duration("toto")
         self.assertEqual(er_msg.exception.args[0], "duration_value must be a Number. Value provided is toto")
@@ -222,6 +235,11 @@ class TreatmentTest(unittest.TestCase):
             FactorValue(factor_name=BASE_FACTORS[1], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
             FactorValue(factor_name=BASE_FACTORS[2], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         })
+
+    # def test_update_duration(self):
+    #     self.treatment.update_duration(10.0, None)
+    #     self.assertEqual(self.treatment.duration.value, 10.0)
+    #     # self.assertEqual(self.treatment.duration.unit, None)
 
 
 class StudyCellTest(unittest.TestCase):
@@ -259,8 +277,34 @@ class StudyCellTest(unittest.TestCase):
         self.potential_concomitant_washout = NonTreatment(element_type=WASHOUT, duration_value=FACTORS_2_VALUE,
                                                           duration_unit=FACTORS_2_UNIT)
 
+    def test_name(self):
+        self.assertEqual(self.cell.name, 'test epoch 0')
+        newname = "other_name"
+        self.cell.name = newname
+        self.assertEqual(self.cell.name, newname)
+
+    def test_ne(self):
+        other_cell = StudyCell(name="other")
+        self.assertTrue(self.cell.__ne__(other_cell))
+
     def test__init__(self):
         self.assertEqual(self.cell.name, TEST_EPOCH_0_NAME)
+
+    def test_elements_not_of_type(self):
+        cell_element = ""
+        with self.assertRaises(AttributeError, msg="'elements must be an Element, a list of Elements, or a tuple of Elements'") as er_msg:
+            self.assertEqual(er_msg.exception.args[0], self.elements(cell_element),
+                             "'elements must be an Element, a list of Elements, or a tuple of Elements'")
+
+    def test_element_duration(self):
+        other_cell = StudyCell(name="other")
+        self.assertEqual(other_cell.duration, None)
+
+    def test_insert_element(self):
+        element = ""
+        with self.assertRaises(AttributeError, msg="'element must be either an Element or a set of treatments'") as er_msg:
+            self.assertEqual(er_msg.exception.args[0], self.cell.insert_element(element, 1),
+                              "'element must be either an Element or a set of treatments'")
 
     def test_elements_property(self):
         elements = (self.first_treatment, self.second_treatment)
@@ -269,6 +313,13 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(self.cell.elements, list(elements), 'After assignment the elements list contains two elements')
 
     # _non_treatment_check() tests
+    def test_non_treatment_check_check_screen_false(self):
+        self.assertFalse(self.cell._non_treatment_check([self.run_in, self.first_treatment], self.screen))
+
+        # _non_treatment_check() tests
+    def test_non_treatment_check_check_run_in_false(self):
+        self.assertFalse(self.cell._non_treatment_check([self.screen, self.first_treatment], self.run_in))
+
     def test_non_treatment_check__empty_cell_00(self):
         self.assertTrue(self.cell._non_treatment_check([], self.screen),
                         'A SCREEN element can always be added to an empty cell')
@@ -411,6 +462,9 @@ class StudyCellTest(unittest.TestCase):
             self.first_treatment, self.washout, {self.fourth_treatment, self.second_treatment}
         ], self.washout, 0), 'A WASHOUT element can be added at the beginning of a cell with a treatment and a '
                              'treatment set interspersed by a washout')
+
+
+
 
     # _treatment_check() tests
     def test_treatment_check__screen_cell(self):
@@ -772,6 +826,34 @@ class ProtocolNodeTest(unittest.TestCase):
             param = -1
             node.parameters = param
         self.assertEqual(er_msg.exception.args[0], "The \'parameters\' property cannot be set directly. Set parameter_values instead.")
+
+
+        with self.assertRaises(AttributeError) as er_msg:
+            components = -1
+            node.components = components
+        self.assertEqual(er_msg.exception.args[0], errors.COMPONENTS_CANNOT_BE_SET_ERROR)
+
+#     def test_str(self):
+#         node = ProtocolNode(name='sampling', protocol_type='sampling', replicates=2)
+#         self.assertEqual(node.__str__(), "ProtocolNode(\n"
+#         "\t\tid=ce304797-398d-4a95-ba75-2007b38ea666,\n"
+#         "\t\tname=sampling,\n"
+#         "\t\tprotocol_type=OntologyAnnotation(\n"
+#     "\tterm=sampling\n"
+#     "\tterm_source=None\n"
+#     "\tterm_accession=\n"
+#     "\tcomments=0 Comment objects\n"
+# "),\n"
+#         "\t\turi=,\n"
+#         "\t\tdescription=,\n"
+#         "\t\tversion=,\n"
+#         "\t\tparameter_values=[])\n"
+#                          )
+
+    def test_ne(self):
+        node = ProtocolNode(name='sampling', protocol_type='sampling', replicates=2)
+        prot2 = ProtocolNode(name="prot-2")
+        self.assertTrue(node.__ne__(prot2))
 
 
 class ProductNodeTest(unittest.TestCase):
@@ -1374,6 +1456,12 @@ class StudyArmTest(unittest.TestCase):
     def test__init__(self):
         self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME_00)
 
+    def test_arm_name(self):
+        arm = StudyArm(name="TEST_STUDY_ARM_NAME_01")
+        arm.__name = 1
+        with self.assertRaises(AttributeError, msg="'StudyArm name must be a string'") as er_msg:
+            self.assertEqual(er_msg.exception.args[0], arm.name, "'StudyArm name must be a string'")
+
     def test_add_item_to_arm__single_unit_cells_00(self):
         self.arm.add_item_to_arm_map(self.cell_screen, None)
         cells, plans = zip(*self.arm.arm_map.items())
@@ -1824,13 +1912,52 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.study_design.description = test_study_description
         self.assertEqual(self.study_design.description, test_study_description)
 
+        wrong_study_description = 1
+        with self.assertRaises(AttributeError, msg="'The value assigned to \'description\' must be text (i.e. string)'") as er_msg:
+            self.study_design.description = wrong_study_description
+            self.assertEqual(er_msg.exception.args[0], self.study_design.description, 'The value assigned to \'description\' must be text (i.e. string)')
+
     def test_design_type_property(self):
         test_study_design_type = 'factorial design'
         self.study_design.design_type = test_study_design_type
         self.assertEqual(self.study_design.design_type, test_study_design_type)
 
+        wrong_study_design_type = 1
+        with self.assertRaises(AttributeError, msg="'The value assigned to \'design_type\' must be a string or OntologyAnnotation'") as er_msg:
+            self.__design_type = wrong_study_design_type
+            self.assertEqual(er_msg.exception.args[0],  self.__design_type, 'The value assigned to \'design_type\' must be a string or OntologyAnnotation')
+
+    def test_source_type_property(self):
+        test_source_type = Characteristic(
+            category=OntologyAnnotation(
+                term='Study Subject',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C41189'
+            ),
+            value=OntologyAnnotation(
+                term='Rat',
+                term_source=default_ontology_source_reference,
+                term_accession='http://purl.obolibrary.org/obo/NCIT_C14266'
+            )
+        )
+        self.study_design.source_type = test_source_type
+        self.assertEqual(self.study_design.source_type, test_source_type)
+
+        wrong_source_type = 1
+        with self.assertRaises(AttributeError, msg="'A characteristic must be either a string or a Characteristic, {0} supplied'") as er_msg:
+            self.__source_type = wrong_source_type
+            self.assertEqual(er_msg.exception.args[0],  self.__source_type, 'A characteristic must be either a string or a Characteristic, {0} supplied')
+
     def test_study_arms_property(self):
-        pass
+        study_arms = ["study_arm"]
+        with self.assertRaises(AttributeError, msg="'The value assigned to \'study_arms\' must be an iterable'") as er_msg:
+            self.study_design.study_arms = study_arms
+            self.assertEqual(er_msg.exception.args[0], isinstance(study_arms, Iterable), "Not a valid study arm: wrong type of arm")
+
+        study_arm = "wrong type of arm"
+        with self.assertRaises(AttributeError, msg="Not a valid study arm: wrong type of arm") as er_msg:
+            self.study_design.study_arms = study_arm
+            self.assertEqual(er_msg.exception.args[0], self.study_design.study_arms, "Not a valid study arm: wrong type of arm")
 
     def test_add_study_arm_00(self):
         self.study_design.add_study_arm(self.first_arm)
@@ -2135,11 +2262,26 @@ class StudyDesignTest(BaseStudyDesignTest):
                study_arms=[]
                )""")
 
+    def test_study_design_ne(self):
+        sd2 = StudyDesign()
+        self.assertFalse(self.study_design.__ne__(sd2))
+
+    def test_study_design_hash(self):
+        self.assertEqual(hash(self.study_design), hash(repr(self.study_design)))
+
 
 class QualityControlServiceTest(BaseStudyDesignTest):
 
     def setUp(self):
         return super(QualityControlServiceTest, self).setUp()
+
+    def test_init__(self):
+        pass
+
+    def test_qc_type(self):
+        fake_qc = "wrong qc type"
+        with self.assertRaises(AttributeError,  msg="wrong type") as er_msg:
+            self.assertEqual(isinstance(fake_qc, QualityControl), er_msg.exception.args[0])
 
     def test_expansion_of_single_mass_spectrometry_assay(self):
         """
@@ -2620,10 +2762,44 @@ class StudyDesignFactoryTest(unittest.TestCase):
         treatments_map = [(self.first_treatment, self.sample_assay_plan),
                           (self.second_treatment, self.sample_assay_plan),
                           (self.third_treatment, self.sample_assay_plan)]
-        with self.assertRaises(TypeError, msg='The group_sizes list has the wrong length') as ex_cm:
-            parallel_design = StudyDesignFactory.compute_parallel_design(treatments_map,
-                                                                         group_sizes=[10, 12])
+        with self.assertRaises(TypeError) as ex_cm:
+            StudyDesignFactory.compute_parallel_design(treatments_map, group_sizes=[10, 12])
         self.assertEqual(ex_cm.exception.args[0], errors.GROUP_SIZES_ERROR)
+
+    def test_compute_parallel_design_group_sizes_bad_treatment_error(self):
+        bad_treatments_map = "bad_treatments_map"
+        with self.assertRaises(TypeError) as ex_cm:
+            self.factory._validate_maps(bad_treatments_map)
+        self.assertEqual(str(ex_cm.exception), errors.TREATMENT_MAP_ERROR)
+
+    def test_compute_parallel_design_group_sizes_another_bad_treatment_error(self):
+        another_bad_treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                                      (self.second_treatment, self.sample_assay_plan),
+                                      ("toto")] #last element is not a tuple, not a treatment but a string
+        with self.assertRaises(TypeError) as ex_cm:
+            self.factory._validate_maps(another_bad_treatments_map)
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
+
+    def test_compute_parallel_design_group_sizes_non_treatment_map_error(self):
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        with self.assertRaises(TypeError) as ex_cm:
+            self.factory._validate_maps(treatments_map, screen_map="toto")
+        self.assertEqual(ex_cm.exception.args[0], "Map for NonTreatment screen is not correctly set.")
+
+    def test_1(self):
+        sample_assay_plan = {}
+        treatments_map = [(self.first_treatment, self.sample_assay_plan),
+                          (self.second_treatment, self.sample_assay_plan),
+                          (self.third_treatment, self.sample_assay_plan)]
+        incorrect_treatments = {},
+        not_a_washout = {}
+        not_a_screen_map = float
+
+        with self.assertRaises(TypeError) as ex_cm:
+            self.factory._validate_maps_multi_element_cell(treatments_map, incorrect_treatments, not_a_washout, not_a_screen_map )
+        self.assertEqual(ex_cm.exception.args[0], errors.TREATMENT_MAP_ERROR)
 
     def test_compute_single_arm_design_tree_treatments(self):
         treatments_map = [(self.second_treatment, self.sample_assay_plan),
@@ -2680,6 +2856,9 @@ class StudyDesignFactoryTest(unittest.TestCase):
                          StudyCell('ARM_00_CELL_00', elements=({self.fourth_treatment,
                                                                 self.second_treatment,
                                                                 self.first_treatment},)))
+        with self.assertRaises(TypeError) as ex_cm:
+            self.factory._validate_maps_multi_element_cell(treatments, self.sample_assay_plan, follow_up_map=("", self.sample_assay_plan) )
+        self.assertEqual(ex_cm.exception.args[0], "Map for NonTreatment follow-up is not correctly set.")
         """
         self.assertEqual(repr(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0].elements),
                          repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
@@ -2696,6 +2875,36 @@ class StudyDesignFactoryTest(unittest.TestCase):
                 (StudyCell('ARM_00_CELL_01', elements=(self.follow_up,)), self.sample_assay_plan)
             ]))
         )
+
+    def test_compute_concomitant_treatment_design_three_treatments_screen(self):
+
+        treatments = [self.first_treatment, self.second_treatment, self.fourth_treatment]
+        concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
+            treatments, self.sample_assay_plan, group_size=30, screen_map=(self.screen, self.sample_assay_plan)
+        )
+        self.assertEqual(len(concomitant_treatment_design.study_arms), 1)
+        self.assertEqual(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0],
+                         StudyCell('ARM_00_CELL_00', elements=(self.screen,)), self.sample_assay_plan)
+        """
+        self.assertEqual(repr(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0].elements),
+                         repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
+                                     key=lambda el: hash(el))))
+        """
+
+    def test_compute_concomitant_treatment_design_three_treatments_run_in(self):
+
+        treatments = [self.first_treatment, self.second_treatment, self.fourth_treatment]
+        concomitant_treatment_design = StudyDesignFactory.compute_concomitant_treatments_design(
+            treatments, self.sample_assay_plan, group_size=30,  run_in_map=(self.run_in, self.sample_assay_plan), screen_map=(self.screen, self.sample_assay_plan),
+        )
+        self.assertEqual(len(concomitant_treatment_design.study_arms), 1)
+        self.assertEqual(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[1],
+                         StudyCell('ARM_00_CELL_01', elements=(self.run_in,)), self.sample_assay_plan)
+        """
+        self.assertEqual(repr(list(concomitant_treatment_design.study_arms[0].arm_map.keys())[0].elements),
+                         repr(sorted({self.fourth_treatment, self.second_treatment, self.first_treatment},
+                                     key=lambda el: hash(el))))
+        """
 
     def test_compute_concomitant_treatment_design_group_size_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
