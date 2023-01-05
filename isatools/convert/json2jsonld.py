@@ -53,7 +53,7 @@ class ISALDSerializer:
         Resolves the network into self.schemas and self.contexts
         """
         schemas_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    "../resources/schemas/isa_model_version_1_0_schemas/core/")
+                                    "../resources/schemas/v1.0.1/")
         path = os.path.join('./', schemas_path)
         schemas_path = os.listdir(path)
         for schema_name in schemas_path:

@@ -80,7 +80,7 @@ class TestIsaTab2Sra(unittest.TestCase):
             actual_sample_set_xml_biis3 = etree.fromstring(sample_set_xml)
             self.assertTrue(utils.assert_xml_equal(self._expected_sample_set_xml_biis3, actual_sample_set_xml_biis3))
 
-    def test_isatab2sra_dump_experiment_set_xml_biis3(self):
+    def     test_isatab2sra_dump_experiment_set_xml_biis3(self):
         isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)
         with open(os.path.join(self._tmp_dir, 'experiment_set.xml'), 'rb') as es_fp:
             experiment_set_xml = es_fp.read()
