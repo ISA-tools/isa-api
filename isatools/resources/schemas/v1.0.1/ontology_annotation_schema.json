@@ -1,5 +1,5 @@
 {
-    "id": "https://raw.githubusercontent.com/ISA-tools/isa-model-json-schema/main/v1.0.1/ontology_annotation_schema.json",
+    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/v1.0.1/ontology_annotation_schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title" : "ISA ontology reference schema",
     "name" : "ISA ontology reference schema",
