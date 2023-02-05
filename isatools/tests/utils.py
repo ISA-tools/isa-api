@@ -76,8 +76,7 @@ def assert_tab_content_equal(fp_x, fp_y):
     def _assert_df_equal(x, y):
         # need to sort values to loosen up how equality is calculated
         try:
-            assert_frame_equal(
-                x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
+            assert_frame_equal(x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
             return True
         except AssertionError as e:
             lbl = datetime.datetime.now()

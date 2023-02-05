@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA quantitative value schema",
+    "description" : "JSON-schema representing a qualitative value in the ISA model v2.0. The model assumes that there is an external resource modeling the license (and what it allows, prevents, etc).  ",
+    "type": "object",
+    "properties" : {
+        "value": {
+            "type": "number"
+        },
+        "unit": {
+            "type" : "string",
+            "annotation" : {
+                "$ref": "resource_annotation_schema.json#"
+            }
+        }
+
+    }
+}
