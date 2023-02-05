@@ -1,16 +1,16 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Comment": "isa:comment",
-        "name": {
+    "name": {
         "@id": "isa:has_part",
         "@type":"isa:name"
-        },
-     "value": {
-      "@id": "isa:has_part",
-      "@type" : "isa:information"
+    },
+    "value": {
+        "@id": "isa:has_part",
+        "@type": "xsd:string"
     }
   }
 }

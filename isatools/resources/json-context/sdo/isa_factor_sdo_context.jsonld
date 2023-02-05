@@ -9,16 +9,16 @@
       "@type": "@id"
     },
     "factorName": {
-      "@id":"sdo:name",
-      "@type":  "sdo:Text"
+      "@id": "sdo:name",
+      "@type": "sdo:Text"
     },
-    "factorType" : {
-        "@id": "sdo:hasCategoryCode",
-        "@type": "sdo:DefinedTerm"
+    "factorType": {
+      "@id": "sdo:hasCategoryCode",
+      "@type": "sdo:DefinedTerm"
     }
   },
   "comments": {
-      "@id" : "sdo:comment",
-      "@type" : "sdo:Comment"
-    }
+    "@id": "sdo:comment",
+    "@type": "sdo:Comment"
+  }
 }

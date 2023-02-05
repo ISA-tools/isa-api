@@ -1,7 +1,7 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Organization": "isa:organization",
     "identifier": {
@@ -10,19 +10,19 @@
     },
     "name": {
         "@id": "isa:is_described_by",
-        "@type":"isa:name"
+        "@type": "isa:name"
     },
     "description": {
        "@id": "isa:is_described_by",
        "@type": "isa:description"
     },
     "postalAddress": {
-        "@id":"isa:TODO",
-        "@type":"isa:address"
+        "@id": "isa:TODO",
+        "@type": "isa:address"
     },
      "roles": {
-        "@id": "isa:TODO",
-        "@type" : "isa:TODO"
+        "@id": "isa:has_role",
+        "@type": "xsd:string"
         }
     }
 }

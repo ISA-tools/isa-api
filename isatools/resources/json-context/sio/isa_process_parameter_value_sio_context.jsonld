@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ParameterValue": "sio:001166",
+    "category": {
+        "@id": "sio:000552",
+        "@type": "sio:000144"
+    },
+     "value": {
+      "@id": "sio:000300",
+      "@type": "xsd:float"
+    },
+     "unit": {
+        "@id": "sio:000221" ,
+        "@type": "sio:000074"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ProtocolParameter": "wd:Q7247312",
+    "parameterName": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q857525"
+    }
+  }
+}

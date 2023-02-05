@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "enm": "http://purl.enanomapper.org/onto/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "sio:001166",
+    	"annotationValue": {
+    	    "@id": "sio:000028",
+    	    "@type": "rdfs:label"
+    	},
+    	"termSource": {
+    		"@id": "sio:000253",
+    		"@type": "sio:001391"
+    	},
+    	"termAccession": {
+    		"@id": "sio:000671",
+    		"@type": "sio:000115"
+    		},
+        "comments": {
+             "@id": "sio:000060",
+             "@type": "sio:001167"
+        }
+    }
+}
