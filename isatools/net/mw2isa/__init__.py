@@ -1042,21 +1042,14 @@ def mw2isa_convert(**kwargs):
         outputdir = options['outputdir']
         dl_option = options['dl_option']
         validate_option = options['validate_option']
-        # Retrieve DCC MW Webpage for an study entry and obtaining the
-        # list of associated 'analysis' (i.a. ISA assays)
-
-        # studyid = input('Enter a study ID name: ')
-        # dl_option = input('Download raw data file: yes/no')
 
         # checking MW study accession number is conform:
         if not re.match(r"(^ST\d{6})", studyid):
-
             print("this is not a MW accession number, please try again")
 
         else:
             study_url = "http://www.metabolomicsworkbench.org/rest/study/" \
                         "study_id/" + studyid + "/analysis"
-
             with urllib.request.urlopen(study_url) as url:
                 study_response = url.read().decode('utf8')
                 analyses = json.loads(study_response)
@@ -1069,11 +1062,6 @@ def mw2isa_convert(**kwargs):
                 else:
                     print("Technology is: ", analyses["analysis_type"])
                     tt = analyses["analysis_type"]
-
-            print("proceeding with MW study identifier: ", studyid,
-                  "and technology:", tt)
-            # studyid = "ST000367"
-            # tt = "MS"
             outputpath = outputdir + "/" + studyid + "/"
             if not os.path.exists(outputpath):
                 os.makedirs(outputpath)
@@ -1082,6 +1070,7 @@ def mw2isa_convert(**kwargs):
                       "DRCCMetadata.php?Mode=Study&DataMode="
             page_url = baseurl + tt + "Data&StudyID=" + studyid + \
                 "&StudyType=" + tt + "&ResultType=1#DataTabs"
+            print(page_url)
             page = urlopen(page_url).read()
             soup = BeautifulSoup(page, "html.parser")
             AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
