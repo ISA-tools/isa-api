@@ -13,7 +13,7 @@ def read(f_name):
 
 setup(
     name='isatools',
-    version='0.13.0-rc.2',
+    version='0.14.0',
     packages=['isatools',
               'isatools.model',
               'isatools.isatab',
