@@ -20,10 +20,10 @@ setup(
               'isatools.isajson',
               'isatools.convert',
               'isatools.create',
-              'isatools.errors',
               'isatools.io',
               'isatools.net',
-              'isatools.tests'
+              'isatools.tests',
+              'isatools.database'
               ],
     package_data={'isatools': [
         'resources/schemas/cedar/*.json',
