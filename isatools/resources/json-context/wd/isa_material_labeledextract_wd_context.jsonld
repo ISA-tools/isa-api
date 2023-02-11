@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Material": "wd:Q25615782",
+    "type": {
+      "@id": "wd:P527",
+      "@type": "wd:Q25615782"
+    },
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q82799"
+    },
+    "characteristics": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1207505"
+    },
+    "roles": {
+      "@id": "wd:P2868",
+      "@type": "wd:Q102293686"
+    },
+    "derivesFrom": {
+      "@id": "wd:P9072",
+      "@type": "wd:Q1259977"
+    }
+  }
+}

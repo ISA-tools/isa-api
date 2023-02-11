@@ -9,56 +9,56 @@
       "@type": "@id"
     },
     "name": {
-       "@id": "sdo:name",
+      "@id": "sdo:name",
       "@type": "sdo:Text"
     },
     "description": {
-        "@id":"sdo:description",
-        "@type":"sdo:Text"
+      "@id": "sdo:description",
+      "@type": "sdo:Text"
     },
-    "filename" :  {
-         "@id" : "sdo:url",
-         "@type": "sdo:DataDownload"
+    "filename": {
+      "@id": "sdo:url",
+      "@type": "sdo:DataDownload"
     },
-    "measurementType" :  {
-        "@id" : "sdo:variableMeasured",
-        "@type" : "sdo:Text"
-    },  
-    "technologyType" :  {
-        "@id" : "sdo:measurementTechnique",
-        "@type" : "sdo:Text"
-    }, 
-    "technologyPlatform" :  {
-        "@id" : "sdo:instrument",
-        "@type" : "sdo:MedicalDevice"
-    },     
-    "materials" : {
-          "@id" : "sdo:participant",
-        "@type" : "sdo:Product"
-     },
-     "othermaterials" : {
-        "@id" : "sdo:participant",
-        "@type" : "sdo:Product"
-     },   
-    "characteristicCategories" :{
-         "@id" : "sdo:measuredProperty",
-         "@type" : "sdo:StructuredValue"
+    "measurementType": {
+      "@id": "sdo:variableMeasured",
+      "@type": "sdo:Text"
     },
-    "dataFiles" : {
-        "@id" : "sdo:url",
-        "@type" : "sdo:DataDownload"
+    "technologyType": {
+      "@id": "sdo:measurementTechnique",
+      "@type": "sdo:Text"
     },
-    "processSequences" : {
-         "@id" : "sdo:hasPart",
-         "@type" : "sdo:Action"
+    "technologyPlatform": {
+      "@id": "sdo:instrument",
+      "@type": "sdo:MedicalDevice"
+    },
+    "materials": {
+      "@id": "sdo:participant",
+      "@type": "sdo:Product"
+    },
+    "othermaterials": {
+      "@id": "sdo:participant",
+      "@type": "sdo:Product"
+    },
+    "characteristicCategories": {
+      "@id": "sdo:measuredProperty",
+      "@type": "sdo:StructuredValue"
+    },
+    "dataFiles": {
+      "@id": "sdo:url",
+      "@type": "sdo:DataDownload"
+    },
+    "processSequences": {
+      "@id": "sdo:hasPart",
+      "@type": "sdo:Action"
     },
     "unitCategories": {
-          "@id": "sdo:unit" ,
-          "@type" : ["sdo:Text","sdo:URL"]
+      "@id": "sdo:unit",
+      "@type": "sdo:Text"
     },
     "comments": {
-      "@id" : "sdo:comment",
-      "@type" : "sdo:Comment"
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
     }
   }
 }

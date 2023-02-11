@@ -1,28 +1,32 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Sample": "isa:sample",
     "identifier": {
-      "@id": "isa:identifier",
-      "@type": "@id"
+        "@id": "isa:identifier",
+        "@type": "@id"
     },
     "name": {
-      "@id":"isa:is_described_by",
-      "@type":  "isa:name"
+        "@id": "isa:is_described_by",
+        "@type": "isa:name"
     },
     "characteristics": {
-      "@id" : "isa:is_described_by",
-      "@type" : "isa:characteristic"
+        "@id": "isa:qualified_by",
+        "@type": "isa:characteristic"
     },
-     "roles": {
-        "@id": "isa:TODO",
-        "@type" : "isa:TODO"
+    "roles": {
+        "@id": "isa:has_role",
+        "@type": "xsd:string"
         },
+    "factorValues": {
+        "@id": "isa:has_factor_level",
+        "@type": "isa:factor_value"
+    },
     "derivesFrom": {
-      "@id" : "isa:TODO",
-      "@type" : "isa:source"
+        "@id": "isa:derives_from",
+        "@type": "isa:source"
     }
   }
 }

@@ -1,16 +1,16 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "MaterialAttributeValue": "isa:characteristic_value",
     "category": {
-        "@id":"isa:has_part",
+        "@id": "isa:has_part",
         "@type": "isa:characteristic"
     },
      "value": {
       "@id": "isa:has_value",
-      "@type" : "xsd:string"
+      "@type": "isa:descriptor_value"
     },
      "unit": {
           "@id": "isa:has_value" ,

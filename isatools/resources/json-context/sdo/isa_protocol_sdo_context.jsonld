@@ -1,49 +1,48 @@
 {
-  "@context":{
-     "@language": "en",
+  "@context": {
+    "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Protocol": "sdo:HowTo",
-    "filename" : {
-         "@id": "sdo:distribution",
-         "@type": "sdo:DataDownload"
+    "filename": {
+      "@id": "sdo:distribution",
+      "@type": "sdo:DataDownload"
     },
-    "identifier" : {
+    "identifier": {
       "@id": "sdo:identifier",
       "@type": "@id"
-    }, 
-    "title" : {
-        "@id": "sdo:headline",
-        "@type": "sdo:Text"
     },
-    "description" : {
-         "@id":"sdo:description",
-         "@type":"sdo:Text"
+    "title": {
+      "@id": "sdo:headline",
+      "@type": "sdo:Text"
     },
-    "version" : {
-         "@id": "sdo:version",
-         "@type":["sdo:Text","sdo:Number"]
-         },   
-    "components" : {
-                "@id":"sdo:instrument",
-                "@type":["sdo:MedicalDevice","sdo:SoftwareApplication"]
+    "description": {
+      "@id": "sdo:description",
+      "@type": "sdo:Text"
     },
-    "parameters" : {
-                "@id":"sdo:",
-                "@type":["sdo:","sdo:","sdo:"]   
+    "version": {
+      "@id": "sdo:version",
+      "@type": "sdo:Text"
     },
-    "uri" :{
-       "@id": "sdo:url",
-      "@type": "sdo:URL"   
-    },  
-    "publications" : {
-                "@id":"sdo:citation",
-                "@type":"sdo:Article"
+    "components": {
+      "@id": "sdo:instrument",
+      "@type": "sdo:MedicalDevice"
     },
-    "comments" : {
-              "@id" : "sdo:comment",
-              "@type" : "sdo:Comment"
-        
+    "parameters": {
+      "@id": "sdo:PropertyValue",
+      "@type": "sdo:Text"
+    },
+    "uri": {
+      "@id": "sdo:url",
+      "@type": "sdo:URL"
+    },
+    "publications": {
+      "@id": "sdo:citation",
+      "@type": "sdo:Article"
+    },
+    "comments": {
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
     }
-    }
+  }
 }
