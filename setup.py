@@ -77,7 +77,7 @@ setup(
         'chardet~=4.0.0',
         'jinja2~=3.0.1',
         'beautifulsoup4~=4.9.3',
-        'mzml2isa==1.0.3',
+        'mzml2isa==1.1.1',
         'biopython~=1.79',
         'progressbar2~=3.53.1',
         'deepdiff~=5.5.0',
@@ -91,6 +91,8 @@ setup(
         'sure==2.0.0',
         'coveralls~=3.1.0',
         'rdflib~=6.0.2',
+        'Flask~=2.2.2',
+        'flask_sqlalchemy~=3.0.2'
     ],
     test_suite='tests'
 )
