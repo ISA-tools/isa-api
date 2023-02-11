@@ -1,7 +1,7 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "ParameterValue": "isa:parameter_value",
     "category": {
@@ -10,11 +10,11 @@
     },
       "value": {
       "@id": "isa:has_value",
-      "@type" : "xsd:string"
+      "@type": "xsd:string"
     },
      "unit": {
           "@id": "isa:has_value" ,
-          "@type" : "isa:unit"
+          "@type": "isa:unit"
     }
   }
 }

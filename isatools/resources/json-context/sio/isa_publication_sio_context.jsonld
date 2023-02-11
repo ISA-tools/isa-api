@@ -1,0 +1,14 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "Publication": "sio:000087",
+    "identifier": "sio:000671",
+    "pubMedID": "sio:000631",
+    "doi": "sio:000631",
+    "title": "sio:000185",
+    "status": "sio:000223",
+    "authorList": "sio:000028",
+    "comments": "sio:000060"
+  }
+}

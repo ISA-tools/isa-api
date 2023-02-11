@@ -64,6 +64,7 @@ class ContextPath:
         self.include_contexts = False
         self.contexts = {}
         self.get_context()
+        self.prepend_url = None
 
     @property
     def context(self) -> str:
@@ -71,7 +72,7 @@ class ContextPath:
 
     @context.setter
     def context(self, val: str) -> None:
-        allowed_context = ['obo', 'sdo', 'wdt']
+        allowed_context = ['obo', 'sdo', 'wdt', 'wd', 'sio']
         if val not in allowed_context:
             raise ValueError('Context name must be one in %s but got %s' % (allowed_context, val))
         self.__context = val
@@ -115,12 +116,14 @@ context = ContextPath()
 
 
 def set_context(
+        prepend_url: str = None,
         vocab: str = 'obo',
         all_in_one: bool = True,
         local: bool = True,
-        include_contexts: bool = False
+        include_contexts: bool = False,
 ) -> None:
     """ Set the context properties necessary for the serialization of the ISA model to JSON-LD.
+    :param prepend_url: the URL to prepend to the identifiers.
     :param vocab: the vocabulary to use for the serialization. Allowed values are 'obo', 'sdo' and 'wdt'.
     :param all_in_one: if True, combine all the contexts into one. If False, use the context for each class.
     :param local: if True, use the local context files. If False, use the remote context files.
@@ -130,6 +133,7 @@ def set_context(
     context.local = local
     context.context = vocab
     context.include_contexts = include_contexts
+    context.prepend_url = prepend_url
 
 
 class LDSerializable(metaclass=ABCMeta):
@@ -140,9 +144,10 @@ class LDSerializable(metaclass=ABCMeta):
 
     def gen_id(self) -> str:
         """ Generate an identifier for the object. """
+        prepend = self.context.prepend_url if self.context.prepend_url else ''
         if isinstance(self, Identifiable):
-            return self.id
-        return gen_id(self.__class__.__name__)
+            return self.id if self.id.startswith('http') else prepend + self.id
+        return prepend + gen_id(self.__class__.__name__)
 
     def get_context(self) -> str | dict:
         """ Get the context for the object. """

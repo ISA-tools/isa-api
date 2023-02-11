@@ -1,70 +1,72 @@
 {
-  "@context":{
-     "@language": "en",
+  "@context": {
+    "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Study":  {"@id": "obo:OBI_0000066"},
-    "filename" : {
-         "@id": "obo:IAO_0000235",
-         "@type" : ["obo:IAO:0000590","obo:STATO_0000002","obo:EFO_0004095"]
+    "Study": {
+      "@id": "obo:OBI_0000066"
     },
-    "identifier" : {
+    "filename": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:STATO_0000002"
+    },
+    "identifier": {
       "@id": "obo:IAO_0000577",
       "@type": "@id"
-    }, 
-    "title" : {
-        "@id": "obo:IAO_0000235",
-        "@type": "obo:OBI_0001622"
     },
-    "description" : {   
-         "@id": "obo:IAO_0000235",
-         "@type":"obo:IAO_0000300"
-    } ,
-    "submissionDate" : {
-      "@id":"obo:RO_0002537",
-      "@type": "xsd:date"
-    } ,
-    "publicReleaseDate" : {
-      "@id":"obo:RO_0002537",
-      "@type": "xsd:date"
-    } ,
-    "publications" : {
-                "@id":"obo:IAO_0000235",
-                "@type":"obo:IAO_0000013"
+    "title": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:OBI_0001622"
     },
-    "people" : {
-                "@id":"obo:NCIT_C48206",
-      "@type":"obo:AGRO_00000380"
+    "description": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000300"
+    },
+    "submissionDate": {
+      "@id": "obo:RO_0002537",
+      "@type": "xsd:date"
+    },
+    "publicReleaseDate": {
+      "@id": "obo:RO_0002537",
+      "@type": "xsd:date"
+    },
+    "publications": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000013"
+    },
+    "people": {
+      "@id": "obo:NCIT_C48206",
+      "@type": "obo:AGRO_00000380"
     },
     "studyDesignDescriptors": {
-        "@id":"obo:STATO_0000001",
-        "@type":"obo:OBI_0500000"
+      "@id": "obo:STATO_0000001",
+      "@type": "obo:OBI_0500000"
     },
-    "protocols" : {
-        "@id":"obo:BFO_0000055",
-      "@type":"obo:OBI_0000272"
+    "protocols": {
+      "@id": "obo:BFO_0000055",
+      "@type": "obo:OBI_0000272"
     },
-    "materials": {  
-        "@id":"obo:RO_0000057",
-        "@type" : "obo:BFO_0000040"
+    "materials": {
+      "@id": "obo:RO_0000057",
+      "@type": "obo:BFO_0000040"
     },
     "processSequence": {
-        "@id":"obo:RO_0002012",
-        "@type" : "obo:OBI_0000011"
+      "@id": "obo:RO_0002012",
+      "@type": "obo:OBI_0000011"
     },
-    "assays" : {
-        "@id":"obo:RO_0002012",
-        "@type" : "obo:OBI_0000070"
+    "assays": {
+      "@id": "obo:RO_0002012",
+      "@type": "obo:OBI_0000070"
     },
     "factors": {
-        "@id":"obo:STATO_0000001",
-      "@type":"obo:OBI_0000750"
+      "@id": "obo:STATO_0000001",
+      "@type": "obo:OBI_0000750"
     },
     "characteristicCategories": {
-        "@id":"obo:RO_0000086",
-      "@type":"obo:OBI_0000245"
+      "@id": "obo:RO_0000086",
+      "@type": "obo:OBI_0000245"
     },
     "unitCategories": {},
-    "comments" : {}
-    }
+    "comments": {}
+  }
 }

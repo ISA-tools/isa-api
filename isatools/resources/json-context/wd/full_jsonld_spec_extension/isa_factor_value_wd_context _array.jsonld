@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "FactorValue": "wd:Q951437",
+    "category": {
+      "@id": "wd:P527",
+      "@type": "wd:Q3707858"
+    },
+    "value": {
+      "@id": "wd:P111",
+      "@type": [
+        "wd:Q11563",
+        "wd:Q184754"
+      ]
+    },
+    "unit": {
+      "@id": "wd:P8111",
+      "@type": "wd:Q47574"
+    }
+  }
+}

@@ -5,10 +5,10 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Publication": "sdo:ScholarlyArticle",
     "identifier": "sdo:identifier",
-    "pubMedID" : "sdo:url",
-    "doi" :   "sdo:sameAs",
+    "pubMedID": "sdo:url",
+    "doi": "sdo:sameAs",
     "title": "sdo:Periodical",
-    "status"  : "sdo:creativeWorkStatus",
+    "status": "sdo:creativeWorkStatus",
     "authorList": "sdo:author",
     "comments": "sdo:Comment"
   }

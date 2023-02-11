@@ -1,0 +1,73 @@
+{
+  "@context": {
+    "@language": "en",
+    "materials": "@nest",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "wd:Q101965",
+    "filename": {
+      "@id": "wd:P7793",
+      "@type": "wd:Q1144928"
+    },
+    "identifier": "wd:Q853614",
+    "title": {
+      "@id": "wd:P1476",
+      "@type": "wd:Q783521"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "submissionDate": {
+      "@id": "wd:P585",
+      "@type": "xsd:date"
+    },
+    "publicReleaseDate": {
+      "@id": "wd:P577",
+      "@type": "xsd:date"
+    },
+    "publications": {
+      "@id": "wd:P527",
+      "@type": "wd:Q591041"
+    },
+    "people": {
+      "@id": "wd:P50",
+      "@type": "wd:Q215627"
+    },
+    "studyDesignDescriptors": {
+      "@id": "wd:P5422",
+      "@type": "wd:Q2334061"
+    },
+    "protocols": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q41689629"
+    },
+    "sources": "wd:Q53617407",
+    "samples": "wd:Q53617407",
+    "otherMaterials": "wd:Q53617407",
+    "processSequence": {
+      "@id": "wd:P527",
+      "@type": "wd:Q3249551"
+    },
+    "assays": {
+      "@id": "wd:P527",
+      "@type": "wd:Q739897"
+    },
+    "factors": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q2487752"
+    },
+    "characteristicCategories": {
+      "@id": "wd:P632",
+      "@type": "wd:Q937228"
+    },
+    "unitCategories": {
+      "@id": "wd:P8111",
+      "@type": "wd:Q47574"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

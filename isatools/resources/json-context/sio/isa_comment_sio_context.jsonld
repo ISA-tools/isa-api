@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Comment": "sio:001167",
+        "name": {
+            "@id": "sio:000008",
+            "@type": "sio:000116"
+        },
+        "value": {
+            "@id": "sio:000300",
+            "@type": "xsd:string"
+        }
+  }
+}

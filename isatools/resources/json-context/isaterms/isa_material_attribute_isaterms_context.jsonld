@@ -1,7 +1,7 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "MaterialAttribute": "isa:qualifies",
     "characteristicType": {

@@ -1,48 +1,48 @@
 {
-  "@context":{
+  "@context": {
     "@language": "en",
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Investigation": "sdo:ResearchProject",
-    "identifier" : {
+    "identifier": {
       "@id": "sdo:identifier",
       "@type": "@id"
-    }, 
-    "title" : {
-        "@id": "sdo:headline",
-        "@type":"sdo:Text"
     },
-    "description" : {
-         "@id": "sdo:description",
-         "@type":"sdo:Text"
-    } ,
-    "submissionDate" : {
-            "@id":"sdo:uploadDate",
-            "@type": "sdo:Date"
-    } ,
-    "publicReleaseDate" : {
-            "@id":"sdo:datePublished",
-            "@type": "sdo:Date"
-    } ,
-    "publications" : {
-                "@id":"sdo:citation",
-                "@type":"sdo:Article"
+    "title": {
+      "@id": "sdo:headline",
+      "@type": "sdo:Text"
     },
-    "people" : {
-                "@id":"sdo:creator",
-                "@type":"sdo:Person"
+    "description": {
+      "@id": "sdo:description",
+      "@type": "sdo:Text"
+    },
+    "submissionDate": {
+      "@id": "sdo:uploadDate",
+      "@type": "sdo:Date"
+    },
+    "publicReleaseDate": {
+      "@id": "sdo:datePublished",
+      "@type": "sdo:Date"
+    },
+    "publications": {
+      "@id": "sdo:citation",
+      "@type": "sdo:Article"
+    },
+    "people": {
+      "@id": "sdo:creator",
+      "@type": "sdo:Person"
     },
     "ontologySourceReferences": {
-        "@id":"sdo:?",
-        "@type":"sdo:DefinedTermSet"
+      "@id": "sdo:?",
+      "@type": "sdo:DefinedTermSet"
     },
-    "studies": { 
-            "@id":"sdo:hasPart",
-            "@type":"sdo:MedicalStudy"
+    "studies": {
+      "@id": "sdo:hasPart",
+      "@type": "sdo:MedicalStudy"
     },
-    "comments" : {
-             "@id" : "sdo:comment",
-             "@type" : "sdo:Comment"
+    "comments": {
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
     }
   }
 }

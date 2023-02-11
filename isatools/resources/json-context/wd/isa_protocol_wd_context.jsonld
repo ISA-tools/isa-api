@@ -1,0 +1,44 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Protocol": "wd:Q41689629",
+    "protocolType": {
+      "@id": "wd:P7793",
+      "@type": "wd:Q857525"
+    },
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q783521"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "version": {
+      "@id": "wd:P348",
+      "@type": "wd:Q3331189"
+    },
+    "components": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q1183543"
+    },
+    "parameters": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q7247312"
+    },
+    "uri": {
+      "@id": "wd:P2699",
+      "@type": "wd:Q42253"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

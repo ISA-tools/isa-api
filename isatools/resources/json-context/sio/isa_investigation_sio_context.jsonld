@@ -1,0 +1,48 @@
+{
+  "@context":{
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Investigation": "sio:Q170584",
+    "identifier": {
+      "@id": "sio:000671",
+      "@type": "@id"
+    }, 
+    "title": {
+        "@id": "sio:000060",
+        "@type": "sio:000185"
+    },
+    "description": {
+        "@id": "sio:000028",
+        "@type": "sio:000136"
+    } ,
+    "submissionDate": {
+            "@id": "sio:001083",
+            "@type": "xsd:date"
+    } ,
+    "publicReleaseDate": {
+            "@id": "sio:001314",
+            "@type": "xsd:date"
+    } ,
+    "publications": {
+             "@id": "sio:000628",
+             "@type": "sio:000087"
+    },
+    "people": {
+             "@id": "sio:000253",
+             "@type": "sio:000498"
+    },
+    "ontologySourceReferences": {
+        "@id": "sio:000628",
+        "@type": "sio:001391"
+    },
+    "studies": { 
+            "@id": "sio:000028",
+            "@type": "sio:001066"
+    },
+    "comments": {
+             "@id": "sio:000060",
+             "@type": "sio:001167"
+    }
+  }
+}

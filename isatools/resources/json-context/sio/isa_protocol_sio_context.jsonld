@@ -1,0 +1,44 @@
+{
+  "@context":{
+        "@language": "en",
+        "sio":"http://semanticscience.org/ontology/sio.owl#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "Protocol": "sio:001043",
+        "protocolType": {
+             "@id": "sio:000223",
+             "@type": "sio:000337"
+        },
+        "identifier": {
+          "@id": "sio:000671",
+          "@type": "@id"
+        },
+        "name": {
+            "@id": "sio:000008",
+            "@type": "sio:000116"
+        },
+        "description": {
+            "@id": "sio:000028",
+            "@type": "sio:000136"
+        },
+        "version": {
+             "@id": "sio:000205",
+             "@type": "sio:000186"
+         },
+        "components": {
+            "@id": "sio:000028",
+            "@type": "sio:000956"
+        },
+        "parameters": {
+            "@id": "sio:000028",
+            "@type": "sio:000144"
+        },
+        "uri": {
+            "@id": "sio:000673",
+            "@type": "sio:000811"
+        },
+        "comments": {
+            "@id" : "sio:000060",
+            "@type" : "sio:001167"
+        }
+    }
+}
