@@ -30,7 +30,6 @@ setup(
               'isatools.tests',
               'isatools.database',
               'isatools.database.models',
-              'isatools.database.roles',
               'isatools.graphQL',
               'isatools.graphQL.queries',
               'isatools.graphQL.utils',
