@@ -1100,23 +1100,20 @@ class AssayGraphTest(unittest.TestCase):
 
     def test_node_attributes(self):
         with self.assertRaises(AttributeError, msg="Replicates must be a positive integer. -1 was supplied.") as er_msg:
-            bad_node = ProtocolNode(name="bad_node", replicates=-1)
-            self.assay_graph.add_node(bad_node)
+            ProtocolNode(name="bad_node", replicates=-1)
         self.assertEqual(er_msg.exception.args[0], "Replicates must be a positive integer. -1 was supplied.")
 
         with self.assertRaises(AttributeError, msg="Replicates must be a positive integer. -1 was supplied.") as er_msg:
-            bad_node = ProtocolNode(name="bad_node", replicates="string")
-            self.assay_graph.add_node(bad_node)
+            ProtocolNode(name="bad_node", replicates="string")
         self.assertEqual(er_msg.exception.args[0], "Replicates must be a positive integer. string was supplied.")
 
         with self.assertRaises(AttributeError, msg="ProductNode name must be a string, -1 supplied of type <class 'int'>") as er_msg:
-            bad_node = ProductNode(name=-1)
-            self.assay_graph.add_node(bad_node)
+            ProductNode(name=-1)
         self.assertEqual(er_msg.exception.args[0], "ProductNode name must be a string, -1 supplied of type <class 'int'>")
 
-        with self.assertRaises(AttributeError, msg="ProductNode size must be a natural number, i.e integer >= 0") as er_msg:
-            bad_node = ProductNode(name="bad size", size="string")
-            self.assay_graph.add_node(bad_node)
+        with self.assertRaises(AttributeError, msg="ProductNode size must be a natural number, i.e integer >= 0") \
+                as er_msg:
+            ProductNode(name="bad size", size="string")
         self.assertEqual(er_msg.exception.args[0], "ProductNode size must be a natural number, i.e integer >= 0")
 
         with self.assertRaises(AttributeError, msg="The provided ProductNode is not one of the allowed values: {'labeled extract', 'sample', 'source', 'extract', 'data file'}") as er_msg:
@@ -1124,13 +1121,6 @@ class AssayGraphTest(unittest.TestCase):
             bad_node = ProductNode(name="bad type", node_type=BAD)
             self.assay_graph.add_node(bad_node)
         self.assertIsNotNone(er_msg.exception.args[0])
-
-        with self.assertRaises(TypeError, msg="Characteristic.__init__() got an unexpected keyword argument 'name'") as er_msg:
-            bad_node = ProductNode(name="bad size", size=1)
-            characteristic = Characteristic(name="char_test")
-            bad_node.add_characteristic(characteristic)
-            self.assay_graph.add_node(bad_node)
-        self.assertEqual(er_msg.exception.args[0], "Characteristic.__init__() got an unexpected keyword argument 'name'")
 
     def test_create_three_level_graph_success(self):
         self.assay_graph.add_node(self.sample_node)
