@@ -7,7 +7,8 @@ import yaml
 import networkx as nx
 import uuid
 import logging
-from collections import OrderedDict, Iterable, Counter
+from collections import OrderedDict, Counter
+from collections.abc import Iterable
 
 from isatools.create import errors
 from isatools.model import (
@@ -1129,7 +1130,7 @@ class AssayGraphTest(unittest.TestCase):
             characteristic = Characteristic(name="char_test")
             bad_node.add_characteristic(characteristic)
             self.assay_graph.add_node(bad_node)
-        self.assertEqual(er_msg.exception.args[0], "__init__() got an unexpected keyword argument 'name'")
+        self.assertEqual(er_msg.exception.args[0], "Characteristic.__init__() got an unexpected keyword argument 'name'")
 
     def test_create_three_level_graph_success(self):
         self.assay_graph.add_node(self.sample_node)
