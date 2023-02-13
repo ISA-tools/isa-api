@@ -13,18 +13,26 @@ def read(f_name):
 
 setup(
     name='isatools',
-    version='0.14.0',
+    version='0.14.2',
     packages=['isatools',
               'isatools.model',
               'isatools.isatab',
+              'isatools.isatab.dump',
+              'isatools.isatab.load',
+              'isatools.isatab.validate',
+              'isatools.isatab.validate.rules',
               'isatools.isajson',
               'isatools.convert',
               'isatools.create',
               'isatools.io',
               'isatools.net',
+              'isatools.net.mtbls',
+              'isatools.net.mw2isa',
               'isatools.tests',
               'isatools.database',
-              'isatools.graphQL'
+              'isatools.database.models',
+              'isatools.graphQL',
+              'isatools.graphQL.utils',
               ],
     package_data={'isatools': [
         'resources/schemas/cedar/*.json',
