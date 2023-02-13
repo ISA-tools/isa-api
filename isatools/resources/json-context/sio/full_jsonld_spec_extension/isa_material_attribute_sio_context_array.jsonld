@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "MaterialAttribute": "sio:000614",
+    "characteristicType": {
+      "@id": "sio:000223",
+      "@type": ["sio:000005"]
+    }   
+  }
+}

@@ -1,14 +1,14 @@
 {
   "@context": {
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Publication": "isa:publication",
     "identifier": "isa:identifier",
-    "pubMedID" : "isa:pubmed_identifier",
-    "doi" :   "isa:doi",
+    "pubMedID": "isa:pubmed_identifier",
+    "doi":   "isa:doi",
     "title": "isa:title",
-    "status"  : "isa:publication_status",
+    "status": "isa:publication_status",
     "authorList": "isa:author",
     "comments": "isa:comment"
   }

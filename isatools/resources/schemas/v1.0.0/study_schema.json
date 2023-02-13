@@ -1,0 +1,105 @@
+{
+  "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/v1.0.0/study_schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Study JSON Schema",
+  "description": "JSON Schema describing an Study",
+  "type": "object",
+  "properties": {
+    "@id": { "type": "string", "format": "uri" },
+    "@context": { "type": "string", "format": "uri"},
+    "@type" : { "type": "string", "enum": ["Study"] },
+    "filename" : { "type" : "string"},
+    "identifier" : { "type" : "string" },
+    "title" : { "type" : "string"},
+    "description" : { "type" : "string"},
+    "submissionDate" : { "type" : "string", "format" : "date-time"},
+    "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
+    "publications" : {
+      "type" : "array",
+      "items" : {
+        "$ref": "publication_schema.json#"
+      }
+    },
+    "people" : {
+      "type" : "array",
+      "items" : {
+        "$ref": "person_schema.json#"
+
+      }
+    },
+    "studyDesignDescriptors":{
+      "type": "array",
+      "items" : {
+        "$ref": "ontology_annotation_schema.json#"
+      }
+    },
+    "protocols" : {
+      "type": "array",
+      "items" : {
+        "$ref": "protocol_schema.json#"
+      }
+    },
+    "materials": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "source_schema.json#"
+          }
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "sample_schema.json#"
+          }
+        },
+        "otherMaterials": {
+          "type": "array",
+          "items": {
+            "$ref": "material_schema.json#"
+          }
+        }
+      }
+    },
+    "processSequence": {
+      "type": "array",
+      "items" : {
+        "$ref" : "process_schema.json#"
+      }
+    },
+    "assays" : {
+      "type": "array",
+      "items" : {
+        "$ref": "assay_schema.json#"
+      }
+    },
+    "factors": {
+      "type": "array",
+      "items": {
+        "$ref": "factor_schema.json#"
+      }
+    },
+    "characteristicCategories": {
+      "description": "List of all the characteristics categories (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
+      "type": "array",
+      "items": {
+        "$ref": "material_attribute_schema.json#"
+      }
+    },
+    "unitCategories": {
+      "description": "List of all the units defined in the study, used to avoid duplication of their declaration when each value is created. ",
+      "type": "array",
+      "items": {
+        "$ref": "ontology_annotation_schema.json#"
+      }
+    },
+    "comments" : {
+      "type": "array",
+      "items": {
+        "$ref": "comment_schema.json#"
+      }
+    }
+  },
+  "additionalProperties": false
+}

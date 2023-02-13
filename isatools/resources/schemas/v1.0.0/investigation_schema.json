@@ -1,0 +1,52 @@
+{
+    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/v1.0.0/investigation_schema.json",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA investigation schema",
+    "description" : "JSON-schema representing an investigation in the ISA model",
+    "type" : "object",
+    "properties" : {
+        "@id": { "type": "string", "format": "uri" },
+        "@context": { "type": "string", "format": "uri"},
+        "@type" : { "type": "string", "enum": ["Investigation"] },
+        "filename": { "type" : "string"},
+        "identifier" : { "type" : "string" },
+        "title" : { "type" : "string"},
+        "description" : { "type" : "string"},
+        "submissionDate" : { "type" : "string", "format" : "date-time"},
+        "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
+        "ontologySourceReferences" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "ontology_source_reference_schema.json#"
+            }
+        },
+        "publications" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "publication_schema.json#"
+
+            }
+        },
+        "people" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "person_schema.json#"
+
+            }
+        },
+        "studies" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "study_schema.json#"
+
+            }
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        }
+    },
+    "additionalProperties": false
+}

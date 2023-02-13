@@ -11,47 +11,47 @@
     },
     "name": {
       "@id": "sdo:name",
-      "@type":"sdo:Text"
+      "@type": "sdo:Text"
     },
     "description": {
       "@id": "sdo:description",
-      "@type":"sdo:Text"
+      "@type": "sdo:Text"
     },
-    "startDate" : {"@id":"sdo:startDate",
+    "startDate": {
+      "@id": "sdo:startDate",
       "@type": "sdo:Date"
     },
-    "executesProtocol" : {
-        "@id":"sdo:TERM_REQUEST-executesProtocol",
-        "@type" : "sdo:HowTo"
+    "executesProtocol": {
+      "@id": "sdo:usesDevice",
+      "@type": "sdo:HowTo"
     },
     "parameterValues": {
-       "@id":"sdo:value",
-        "@type" : ["sdo:PropertyValue"]
+      "@id": "sdo:value",
+      "@type": "sdo:PropertyValue"
     },
-    "previousProcess" : { 
-    "@id":"sdo:TERM_REQUEST-PREVIOUS",
-      "@type" : "sdo:Action" 
-      },
-    "nextProcess" : {
-        "@id":"sdo:TERM_REQUEST-NEXT",
-      "@type" :  "sdo:Action" 
-      },
-    "input" : {
-      "@id":"sdo:participant",
-      "@type" : ["sdo:Product","sdo:DataDownload"]
+    "previousProcess": {
+      "@id": "sdo:previousItem",
+      "@type": "sdo:Action"
     },
-    "output" :  {
-      "@id":"sdo:result",
-      "@type" : ["sdo:Product","sdo:DataDownload"]
+    "nextProcess": {
+      "@id": "sdo:nextItem",
+      "@type": "sdo:Action"
     },
-    "performer" :
-    {
-      "@id" : "sdo:performer",
+    "input": {
+      "@id": "sdo:participant",
+      "@type": "sdo:Thing"
+    },
+    "output": {
+      "@id": "sdo:result",
+      "@type": "sdo:Thing"
+    },
+    "performer": {
+      "@id": "sdo:agent",
       "@type": "sdo:Person"
     },
-    "comments" : {
-      "@id" : "sdo:comment",
-      "@type" : "sdo:Comment"
+    "comments": {
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
     }
   }
 }

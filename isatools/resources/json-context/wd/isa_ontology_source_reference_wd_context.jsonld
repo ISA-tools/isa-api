@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologySourceReference": "wd:Q324254",
+    "type": {
+      "@id": "wd:P527",
+      "@type": "wd:Q324254"
+    },
+    "title": {
+      "@id": "wd:P1476",
+      "@type": "wd:Q783521"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q82799"
+    },
+    "file": {
+      "@id": "wd:P7793",
+      "@type": "wd:Q1144928"
+    },
+    "version": {
+      "@id": "wd:P348",
+      "@type": "wd:Q3331189"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

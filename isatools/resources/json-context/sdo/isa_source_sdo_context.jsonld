@@ -9,17 +9,16 @@
       "@type": "@id"
     },
     "name": {
-        "@id": "sdo:name",
-        "@type": "sdo:Text"
+      "@id": "sdo:name",
+      "@type": "sdo:Text"
     },
-
     "characteristics": {
-      "@id" : "sdo:hasPart",
-      "@type" : "sdo:PropertyValue"
+      "@id": "sdo:hasPart",
+      "@type": "sdo:PropertyValue"
     },
-     "roles": {
-        "@id": "sdo:potentialAction",
-        "@type" : "sdo:Action"
-        }
+    "roles": {
+      "@id": "sdo:potentialAction",
+      "@type": "sdo:Action"
+    }
   }
 }

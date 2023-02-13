@@ -136,7 +136,7 @@ class ProcessSequenceFactory:
                 except KeyError:
                     category = OntologyAnnotation(term='Label')
                     characteristic_categories['Label'] = category
-                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
+                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().items():
                     if lextract_name != '':
                         lextract = Material(name=lextract_name, type_='Labeled Extract Name')
                         lextract.characteristics = [

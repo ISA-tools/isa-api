@@ -4,9 +4,9 @@
     "sdo": "http://schema.org",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Data": "sdo:DataDownload",
-    "type" :{
-        "@id" : "sdo:encoding",
-        "@type" :  "sdo:DataDownload"
+    "type": {
+      "@id": "sdo:encoding",
+      "@type": "sdo:DataDownload"
     },
     "identifier": {
       "@id": "sdo:identifier",
@@ -14,11 +14,11 @@
     },
     "name": {
       "@id": "sdo:name",
-      "@type":"sdo:Text"
+      "@type": "sdo:Text"
     },
     "comments": {
-      "@id" : "sdo:comment",
-      "@type" : "sdo:Comment"
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
     }
   }
 }

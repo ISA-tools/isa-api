@@ -1,0 +1,44 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person": "wd:Q215627",
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "firstName": {
+      "@id": "wd:P735",
+      "@type": "wd:Q202444"
+    },
+    "lastName": {
+      "@id": "wd:P734",
+      "@type": "wd:Q101352"
+    },
+    "midInitials": {
+      "@id": "wd:IAO_0000235",
+      "@type": "wd:Q105844397"
+    },
+    "email": {
+      "@id": "wd:P968",
+      "@type": "wd:Q1273217"
+    },
+    "phone": {
+      "@id": "wd:P1329",
+      "@type": "wd:Q7696507"
+    },
+    "fax": {
+      "@id": "wd:P2900",
+      "@type": "wd:Q7696507"
+    },
+    "affiliation": {
+      "@id": "wd:P361",
+      "@type": "wd:Q43229"
+    },
+    "roles": {
+      "@id": "wd:P2868",
+      "@type": "wd:Q102293686"
+    }
+  }
+}

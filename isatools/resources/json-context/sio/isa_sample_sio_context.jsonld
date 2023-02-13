@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Sample": "sio:010412",
+    "identifier": {
+        "@id": "sio:000671",
+        "@type": "@id"
+    },
+    "name": {
+        "@id": "sio:000008",
+        "@type": "sio:000116"
+    },
+    "characteristics": {
+        "@id": "sio:000223",
+        "@type": "sio:000005"
+    },
+    "roles": {
+        "@id": "sio:000228",
+        "@type": "sio:000016"
+    },
+    "derivesFrom": {
+        "@id": "sio:000244",
+        "@type": "sio:001050"
+    }
+  }
+}

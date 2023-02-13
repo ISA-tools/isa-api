@@ -1,0 +1,14 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "Publication": "wd:Q591041",
+    "identifier": "wd:Q853614",
+    "pubMedID": "wd:Q2082879",
+    "doi": "wd:Q25670",
+    "title": "wd:Q82799",
+    "status": "wd:Q77422468",
+    "authorList": "wd:Q57971547",
+    "comments": "wd:Q58897583"
+  }
+}
