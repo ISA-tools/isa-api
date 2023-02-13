@@ -23,7 +23,8 @@ setup(
               'isatools.io',
               'isatools.net',
               'isatools.tests',
-              'isatools.database'
+              'isatools.database',
+              'isatools.graphQL'
               ],
     package_data={'isatools': [
         'resources/schemas/cedar/*.json',
