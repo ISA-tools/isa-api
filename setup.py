@@ -31,7 +31,6 @@ setup(
               'isatools.database',
               'isatools.database.models',
               'isatools.graphQL',
-              'isatools.graphQL.queries',
               'isatools.graphQL.utils',
               ],
     package_data={'isatools': [
