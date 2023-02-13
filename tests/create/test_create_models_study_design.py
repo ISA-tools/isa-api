@@ -1125,7 +1125,7 @@ class AssayGraphTest(unittest.TestCase):
             self.assay_graph.add_node(bad_node)
         self.assertIsNotNone(er_msg.exception.args[0])
 
-        with self.assertRaises(TypeError, msg="__init__() got an unexpected keyword argument 'name'") as er_msg:
+        with self.assertRaises(TypeError, msg="Characteristic.__init__() got an unexpected keyword argument 'name'") as er_msg:
             bad_node = ProductNode(name="bad size", size=1)
             characteristic = Characteristic(name="char_test")
             bad_node.add_characteristic(characteristic)
