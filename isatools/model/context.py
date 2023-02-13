@@ -72,7 +72,7 @@ class ContextPath:
 
     @context.setter
     def context(self, val: str) -> None:
-        allowed_context = ['obo', 'sdo', 'wdt', 'wd', 'sio']
+        allowed_context = ['obo', 'sdo', 'wd', 'sio']
         if val not in allowed_context:
             raise ValueError('Context name must be one in %s but got %s' % (allowed_context, val))
         self.__context = val
