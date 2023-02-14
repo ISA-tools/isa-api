@@ -31,7 +31,7 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 ----
 ### Read the Publication...
 
-Read our **open access [publication](https://doi.org/10.1093/gigascience/giab060) "SA API: An open platform for interoperable life science experimental metadata", published in GigaScience** as a `technical note`
+Read our **open access [publication](https://doi.org/10.1093/gigascience/giab060) "ISA API: An open platform for interoperable life science experimental metadata", published in GigaScience** as a `technical note`
 
 *David Johnson, Dominique Batista, Keeva Cochrane, Robert P. Davey, Anthony Etuk, Alejandra Gonzalez-Beltran, Kenneth Haug, Massimiliano Izzo, Martin Larralde, Thomas N. Lawson, Alice Minotto, Pablo Moreno, Venkata Chandrasekhar Nainala, Claire O'Donovan, Luca Pireddu, Pierrick Roger, Felix Shaw, Christoph Steinbeck, Ralf J. M. Weber, Susanna-Assunta Sansone, Philippe Rocca-Serra.
 ISA API: An open platform for interoperable life science experimental metadata. 2020.11.13.382119; doi:
