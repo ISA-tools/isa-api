@@ -349,3 +349,16 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             validator = Draft4Validator(treatment_sequence_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
+
+
+class TestPerformerValidation(unittest.TestCase):
+    def test_ptx(self):
+        filepath = os.path.join(utils.TAB_DATA_DIR, 'TEST-PTX', 'i_investigation.txt')
+        with open(filepath) as fp:
+            investigation = isatab.load(fp)
+            print(investigation.title)
+            report = isatab.validate(fp)
+            print(report["errors"])
+
+        # self.assertTrue(len(report["errors"]) == 0)
+        # self.assertEqual(len(report["errors"]), 0)
