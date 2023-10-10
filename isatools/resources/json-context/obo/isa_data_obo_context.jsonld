@@ -3,10 +3,12 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Data":  {"@id": "obo:IAO_0000100"},
-    "type" :{
-        "@id" : "",
-        "@type" : ["obo:IAO_0000101","obo:NMR:1400119", "obo:NMR:1002006", "obo:MS_1000577", "obo:EFO_0004098", "obo:EFO_0004097", "obo:EFO_0004099", "obo:EFO_0004096"]
+    "Data": {
+      "@id": "obo:IAO_0000100"
+    },
+    "type": {
+      "@id": "",
+      "@type": "obo:IAO_0000100"
     },
     "identifier": {
       "@id": "obo:IAO_0000577",
@@ -14,11 +16,11 @@
     },
     "name": {
       "@id": "obo:IAO_0000590",
-      "@type":""
+      "@type": ""
     },
     "comments": {
-      "@id" : "obo:IAO_0000235",
-      "@type" : "obo:IAO_0000300"
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000300"
     }
   }
 }

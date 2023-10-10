@@ -60,7 +60,7 @@ class TestComment(unittest.TestCase):
                         'obo/isa_allinone_obo_context.jsonld'
         }
         self.assertEqual(self.comment.to_dict(ld=True), expected_ld)
-        set_context(local=False, combine=False)
+        set_context(local=False, all_in_one=False)
         expected_ld['@context'] = ('https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools'
                                    '/resources/json-context/obo/isa_comment_obo_context.jsonld')
         self.assertEqual(self.comment.to_dict(ld=True), expected_ld)

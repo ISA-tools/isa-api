@@ -1,13 +1,9 @@
 {
   "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/assay_schema.json",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Assay JSON Schema",
-  "name": "Assay JSON Schema",
-  "description": "JSON Schema describing an Assay",
-  "@context": {
-    "@base": "https://purl.org/isaterms/",
-    "xsd": "http://www.w3.org/2001/XMLSchema#"
-  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ISA Assay JSON Schema",
+  "name": "ISA Assay JSON Schema",
+  "description": "JSON Schema describing an ISA model Assay object",
   "type": "object",
   "properties": {
     "@id": { "type": "string", "format": "uri" },

@@ -1,0 +1,44 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person": "sio:000498",
+    "identifier": {
+      "@id": "sio:000671",
+      "@type": "@id"
+    },
+    "firstName": {
+        "@id": "sio:000008",
+        "@type": "sio:000181"
+        },
+    "lastName": {   
+         "@id": "sio:000008",
+         "@type": "sio:000182"
+         },
+    "midInitials": {
+        "@id": "sio:000008",
+        "@type": "sio:001318"
+        },
+    "email": {
+        "@id": "sio:000008",
+        "@type": "sio:000304"
+        },
+    "phone": {
+        "@id": "sio:000008",
+        "@type": "sio:001319"
+        },
+    "fax": {
+        "@id": "sio:000008",
+        "@type": "sio:001321"
+        },
+    "affiliation": {
+        "@id": "sio:000095",
+        "@type": "sio:000012"
+        } ,
+     "roles": {
+        "@id": "sio:000228",
+        "@type": "sio:000016"
+        }
+  }
+}

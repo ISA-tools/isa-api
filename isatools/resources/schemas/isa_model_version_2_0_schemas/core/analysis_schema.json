@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA model 2.0 analysis schema",
+    "description" : "JSON-schema representing an analysis or data transformation (protocol application of a data acquisition protocol) in the ISA model v2.0, subclass of process_schema.json",
+    "type" : "object",
+    "properties" : {
+        "allOf": {
+            "$ref": "process_schema.json#",
+            "inputs": {
+                "description": "a property to specify the dataset used as input",
+                "type": "array",
+                "oneOf": {
+                    "$ref": "digital_object_schema.json#"
+                },
+                "minItems": 1
+            },
+            "outputs": {
+                "description": "a property to specify the dataset resulting from applying the technology",
+                "type": "array",
+                "oneOf": {
+                    "$ref": "digital_object_schema.json#"
+                },
+                "minItems": 1
+            }
+        }
+    }
+}

@@ -5,17 +5,16 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "MaterialAttributeValue": "sdo:PropertyValue",
     "category": {
-        "@id":"sdo:name",
-        "@type": "sdo:Text"
+      "@id": "sdo:name",
+      "@type": "sdo:Text"
     },
-     "value": {
+    "value": {
       "@id": "sdo:value",
-      "@type" : "sdo:Text"
+      "@type": "sdo:Text"
     },
-     "unit": {
-          "@id": "sdo:unitCode" ,
-          "@type" : "sdo:Unit"
+    "unit": {
+      "@id": "sdo:unitCode",
+      "@type": "sdo:Unit"
     }
-    
   }
 }

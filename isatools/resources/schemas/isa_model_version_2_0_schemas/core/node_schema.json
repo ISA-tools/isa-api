@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA node schema",
+    "description" : "JSON-schema representing node in the ISA model v2.0.",
+    "type": "object",
+    "properties" : {
+        "name" : { "type" : "string" },
+        "node_type" : { "enum" :["material_object","data_object"] },
+        "identifierInfo" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "identifier_info_schema.json#"
+            }
+        }
+    }
+}

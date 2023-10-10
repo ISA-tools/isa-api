@@ -1,48 +1,48 @@
 {
-  "@context":{
-     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+  "@context": {
+    "@language": "en",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Protocol": "isa:protocol",
-    "filename" : {
-         "@id": "isa:has_part",
-         "@type": "isa:file"
-    },
     "identifier" : {
-      "@id": "isa:identified_by",
-      "@type": "@id"
+        "@id": "isa:identified_by",
+        "@type": "@id"
     }, 
-    "title" : {
+    "title": {
         "@id": "isa:is_described_by",
         "@type": "isa:title"
     },
-    "description" : {
-         "@id":"isa:is_described_by",
-         "@type":"isa:description"
+    "description": {
+        "@id": "isa:is_described_by",
+        "@type": "isa:description"
     },
-    "version" : {
-         "@id": "isa:version",
-         "@type":["isa:Text","isa:Number"]
-         },   
-    "components" : {
-                "@id":"isa:has_part",
-                "@type":"isa:instrument"
+    "protocolType": {
+        "@id": "isa:is_described_by",
+        "@type": "isa:annotation"
     },
-    "parameters" : {
-                "@id":"isa:has_part",
-                "@type":"isa:parameters"  
+    "version": {
+        "@id": "isa:has_version",
+        "@type": "xsd:string"
     },
-    "uri" :{
-      "@id": "isa:is_described_by",
-      "@type": "isa:TODO"   
-    },  
-    "publications" : {
-                "@id":"isa:has_part",
-                "@type":"isa:publication"
+    "components": {
+        "@id": "isa:has_part",
+        "@type": "isa:instrument"
     },
-    "comments" : {
-     "@id" : "isa:is_described_by",
-     "@type" : "isa:comment"     
+    "parameters": {
+        "@id": "isa:has_part",
+        "@type": "isa:parameter"
+    },
+    "uri": {
+        "@id": "isa:is_described_by",
+        "@type": "xsd:anyURL"
+    },
+    "publications": {
+        "@id": "isa:has_part",
+        "@type": "isa:publication"
+    },
+    "comments": {
+        "@id": "isa:is_described_by",
+        "@type": "isa:comment"
     }
-    }
+  }
 }

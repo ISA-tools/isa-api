@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologySourceReference": "sio:001391",
+    "type": {
+        "@id" : "sio:000223",
+        "@type" : "sio:001391"
+    },
+    "title" : {
+        "@id": "sio:000060",
+        "@type":"sio:000185"
+    },
+    "description" : {
+        "@id":"sio:000028",
+        "@type":"sio:000136"
+    } ,
+    "name": {
+      "@id": "sio:000008",
+      "@type": "sio:000116"
+    },
+    "file" :  {
+         "@id": "sio:001277",
+         "@type": "sio:000396"
+    },  
+    "version" : {
+         "@id": "sio:000060",
+         "@type":"sio:000653"
+         },
+    "comments": {
+             "@id" : "sio:000060",
+             "@type" : "sio:001167"
+    }
+  }
+}

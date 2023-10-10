@@ -6,7 +6,7 @@
     "MaterialAttribute": "sdo:Property",
     "characteristicType": {
       "@id": "sdo:property",
-      "@type" : "sdo:PropertyValue"
-    }   
+      "@type": "sdo:PropertyValue"
+    }
   }
 }

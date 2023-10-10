@@ -9,20 +9,24 @@
       "@type": "@id"
     },
     "name": {
-        "@id": "sdo:name",
-        "@type": "sdo:Text"
+      "@id": "sdo:name",
+      "@type": "sdo:Text"
     },
     "characteristics": {
-      "@id" : "sdo:Property",
-      "@type" : "sdo:PropertyValue"
+      "@id": "sdo:Property",
+      "@type": "sdo:PropertyValue"
     },
-     "roles": {
-        "@id": "sdo:potentialAction",
-        "@type" : "sdo:Action"
-        },
+    "roles": {
+      "@id": "sdo:potentialAction",
+      "@type": "sdo:Action"
+    },
+    "factorValues": {
+        "@id": "sdo:value",
+        "@type": "sdo:StructuredValue"
+    },
     "derivesFrom": {
-      "@id" : "sdo:isRelatedTo",
-      "@type" : "sdo:Product"
+      "@id": "sdo:isRelatedTo",
+      "@type": "sdo:Product"
     }
   }
 }

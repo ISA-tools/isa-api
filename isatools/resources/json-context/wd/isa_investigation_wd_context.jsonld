@@ -1,0 +1,48 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Investigation": "wd:Q170584",
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "title": {
+      "@id": "wd:P1476",
+      "@type": "wd:Q783521"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "submissionDate": {
+      "@id": "wd:P585",
+      "@type": "xsd:date"
+    },
+    "publicReleaseDate": {
+      "@id": "wd:P577",
+      "@type": "xsd:date"
+    },
+    "publications": {
+      "@id": "wd:P527",
+      "@type": "wd:Q591041"
+    },
+    "people": {
+      "@id": "wd:P50",
+      "@type": "wd:Q215627"
+    },
+    "ontologySourceReferences": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q324254"
+    },
+    "studies": {
+      "@id": "wd:P527",
+      "@type": "wd:Q1298668"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

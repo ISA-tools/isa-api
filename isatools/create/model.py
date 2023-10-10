@@ -7,7 +7,8 @@ import datetime
 import itertools
 import json
 import re
-from collections import OrderedDict, Iterable
+from collections import OrderedDict
+from collections.abc import Iterable
 from copy import deepcopy
 import logging
 from numbers import Number

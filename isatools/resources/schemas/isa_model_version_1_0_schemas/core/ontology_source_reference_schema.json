@@ -1,9 +1,9 @@
 {
-    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/prs-fix-isascreate/isatools/resources/schemas/isa_model_version_1_0_schemas/core/ontology_source_schema.json",
-    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/ontology_source_schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title" : "ISA ontology source reference schema",
     "name" : "ISA ontology source reference schema",
-    "description" : "JSON-schema representing an ontology reference in the ISA model",
+    "description" : "JSON-schema representing an ISA model ontology reference object",
     "type" : "object",
     "properties" : {
         "@id": { "type": "string", "format": "uri" },

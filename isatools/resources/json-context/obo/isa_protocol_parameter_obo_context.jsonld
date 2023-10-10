@@ -3,14 +3,16 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "ProtocolParameter":  {"@id": "obo:OBI_0000785"},
-    "type" :{
-        "@id" : "",
-        "@type" : ["obo:BFO_0000019","obo:OBI_0000968", "obo:IAO_0000010"]
+    "ProtocolParameter": {
+      "@id": "obo:OBI_0000785"
     },
-    "parameterName":    {
-        "@id": "obo:IAO_0000235",
-      "@type":"obo:IAO_0000590"
-    } 
+    "type": {
+      "@id": "",
+      "@type": "obo:BFO_0000019"
+    },
+    "parameterName": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
+    }
   }
 }

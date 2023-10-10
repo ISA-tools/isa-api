@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Organization": "sio:000012",
+    "identifier": {
+        "@id": "sio:000671",
+        "@type": "@id"
+    },
+    "name": {
+        "@id": "sio:000008",
+        "@type": "sio:000116"
+    },
+    "description": {
+        "@id": "sio:000028",
+        "@type": "sio:000136"
+    },
+    "postalAddress": {
+        "@id": "sio:000223",
+        "@type": "sio:000172"
+    },
+    "roles": {
+        "@id": "sio:000228",
+        "@type": "sio:000016"
+        }
+    }
+}
