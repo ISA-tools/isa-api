@@ -5,17 +5,16 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "FactorValue": "sdo:PropertyValue",
     "category": {
-        "@id":"sdo:",
-        "@type": ["sdo:Text","sdo:StructuredValue"]
+      "@id": "sdo:",
+      "@type": "sdo:Text"
     },
-     "value": {
+    "value": {
       "@id": "sdo:value",
-      "@type" : ["sdo:Text","sdo:Boolean","sdo:Number","sdo:StructuredValue"]
+      "@type": "sdo:Text"
     },
-     "unit": {
-          "@id": "sdo:unitCode" ,
-          "@type" : ["sdo:Text","sdo:URL"]
+    "unit": {
+      "@id": "sdo:unitCode",
+      "@type": "sdo:Text"
     }
-    
   }
 }

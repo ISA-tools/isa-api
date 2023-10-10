@@ -1,49 +1,51 @@
 {
-  "@context":{
+  "@context": {
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "enm": "http://purl.enanomapper.org/onto/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Investigation":  {"@id": "obo:OBI_0000066"},
-    "identifier" : {
+    "Investigation": {
+      "@id": "obo:OBI_0000066"
+    },
+    "identifier": {
       "@id": "obo:IAO_0000577",
       "@type": "@id"
-    }, 
-    "title" : {
-        "@id": "obo:IAO_0000235",
-        "@type":"obo:OBI_0001622"
     },
-    "description" : {
-         "@id": "obo:IAO_0000235",
-         "@type":"obo:IAO_0000300"
-    } ,
-    "submissionDate" : {
-            "@id":"obo:RO_0002537",
-            "@type": "xsd:date"
-    } ,
-    "publicReleaseDate" : {
-            "@id":"obo:RO_0002537",
-            "@type": "xsd:date"
-    } ,
-    "publications" : {
-                "@id":"obo:IAO_0000235",
-                "@type":"obo:IAO_0000013"
+    "title": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:OBI_0001622"
     },
-    "people" : {
-                "@id":"obo:NCIT_C48206",
-                "@type":"obo:AGRO_00000380"
+    "description": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000300"
+    },
+    "submissionDate": {
+      "@id": "obo:RO_0002537",
+      "@type": "xsd:date"
+    },
+    "publicReleaseDate": {
+      "@id": "obo:RO_0002537",
+      "@type": "xsd:date"
+    },
+    "publications": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000013"
+    },
+    "people": {
+      "@id": "obo:NCIT_C48206",
+      "@type": "obo:AGRO_00000380"
     },
     "ontologySourceReferences": {
-        "@id":"obo:STATO_0000001",
-      "@type":"enm:ENM_8000073"
+      "@id": "obo:STATO_0000001",
+      "@type": "enm:ENM_8000073"
     },
-    "studies": { 
-            "@id":"obo:BFO_0000051",
-            "@type":"obo:IAO_0000013"
+    "studies": {
+      "@id": "obo:BFO_0000051",
+      "@type": "obo:IAO_0000013"
     },
-    "comments" : {
-             "@id" : "obo:IAO_0000235",
-             "@type" : "obo:IAO_0000300"
+    "comments": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000300"
     }
   }
 }

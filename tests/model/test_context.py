@@ -27,7 +27,8 @@ class TestContextPath(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.context.context = 'test'
-        self.assertEqual(str(context.exception), "Context name must be one in ['obo', 'sdo', 'wdt'] but got test")
+        self.assertEqual(str(context.exception),
+                         "Context name must be one in ['obo', 'sdo', 'wd', 'sio'] but got test")
 
     def test_repr(self):
         self.context.context = 'sdo'

@@ -119,9 +119,9 @@ def assay_ordered_dict_to_template(assay_ord_dict):
     :return: dict, can be directly serialized to JSON
     """
     res = dict()
-    res['measurement_type'] = _reverse_map_ontology_annotation(assay_ord_dict['measurement_type'],
+    res['measurement_type'] = _reverse_map_ontology_annotation(assay_ord_dict.get('measurement_type', None),
                                                                compress_strings=True)
-    res['technology_type'] = _reverse_map_ontology_annotation(assay_ord_dict['technology_type'],
+    res['technology_type'] = _reverse_map_ontology_annotation(assay_ord_dict.get('technology_type', None),
                                                               compress_strings=True)
     res['workflow'] = []
     for name, nodes in assay_ord_dict.items():

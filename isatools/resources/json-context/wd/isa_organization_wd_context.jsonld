@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Organization": "wd:Q43229",
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q82799"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "postalAddress": {
+      "@id": "wd:P6375",
+      "@type": "wd:Q319608"
+    },
+    "roles": {
+      "@id": "wd:P2868",
+      "@type": "wd:Q102293686"
+    }
+  }
+}

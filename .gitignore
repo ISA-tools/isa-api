@@ -139,6 +139,8 @@ performances/profiles/*
 .github/workflows/_build.yml
 course/
 bin/
-isa-reports/
+isa-reports/*
 isaRDF/
 venv*/
+instance/*
+instance/

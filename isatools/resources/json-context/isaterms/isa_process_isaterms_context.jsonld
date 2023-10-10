@@ -2,7 +2,7 @@
   "@context": {
     "@version": 1.1,
     "@language": "en",
-    "isa": "http://purl.org/isaterms",
+    "isa": "https://purl.org/isaterms",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Process": "isa:process",
     "identifier": {
@@ -11,47 +11,47 @@
     },
     "name": {
         "@id": "isa:is_described_by",
-        "@type":"isa:name"
+        "@type": "isa:name"
     },
     "description": {
         "@id": "isa:is_described_by",
-        "@type":"isa:description"
+        "@type": "isa:description"
     },
-    "startDate" : {"@id":"isa:performed_on",
-      "@type": "isa:date"
+    "startDate": {
+        "@id": "isa:performed_on",
+        "@type": "isa:date"
     },
-    "executesProtocol" : {
-        "@id":"isa:executes",
-        "@type" : "isa:protocol"
+    "executesProtocol": {
+        "@id": "isa:executes",
+        "@type": "isa:protocol"
     },
     "parameterValues": {
-       "@id":"isa:has_parameter_value",
-        "@type" : "isa:parameter_value"
+       "@id": "isa:has_parameter_value",
+       "@type": "isa:parameter_value"
     },
-    "previousProcess" : { 
-    "@id":"isa:TODO-preceded_by",
-      "@type" : "isa:process" 
+    "previousProcess": {
+        "@id": "isa:is_preceded_by",
+        "@type": "isa:process"
       },
-    "nextProcess" : {
-        "@id":"isa:TODO-followed_by",
-      "@type" :  "isa:process" 
+    "nextProcess": {
+        "@id": "isa:is_followed_by",
+        "@type": "isa:process"
       },
-    "input" : {
-      "@id":"isa:has_input",
-      "@type" : ["isa:material","isa:file"]
+    "input": {
+        "@id": "isa:has_input",
+        "@type": ["isa:material","isa:file"]
     },
-    "output" :  {
-      "@id":"isa:has_output",
-      "@type" : ["isa:material","isa:file"]
+    "output": {
+        "@id": "isa:has_output",
+        "@type": ["isa:material","isa:file"]
     },
-    "performer" :
-    {
-      "@id" : "isa:performed_by",
-      "@type": "isa:person"
+    "performer": {
+        "@id": "isa:performed_by",
+        "@type": "isa:person"
     },
-    "comments" : {
-     "@id" : "isa:is_described_by",
-     "@type" : "isa:comment"
+    "comments": {
+        "@id": "isa:is_described_by",
+        "@type": "isa:comment"
     }
   }
 }
