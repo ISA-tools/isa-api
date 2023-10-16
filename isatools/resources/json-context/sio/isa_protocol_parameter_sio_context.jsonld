@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "@language": "en",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ProtocolParameter": "sio:000144",
+    "parameterName": {
+       "@id": "sio:000008",
+       "@type": "sio:000116"
+    } 
+  }
+}

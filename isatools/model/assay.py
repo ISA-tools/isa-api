@@ -240,7 +240,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             characteristic_category = OntologyAnnotation()
             characteristic_category.from_dict(characteristic_category_data['characteristicType'])
             characteristic_category.id = characteristic_category_data['@id']
-            isa_study.characteristic_categories.append(characteristic_category)
+            self.characteristic_categories.append(characteristic_category)
             indexes.add_characteristic_category(characteristic_category)
 
         # other materials

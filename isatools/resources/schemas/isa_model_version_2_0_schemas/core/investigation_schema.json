@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA investigation schema",
+    "description" : "JSON-schema representing an investigation in the ISA model",
+    "type" : "object",
+    "properties" : {
+        "identifier" : { "type" : "string" },
+        "title" : { "type" : "string"},
+        "description" : { "type" : "string"},
+        "submissionDate" : { "type" : "string", "format" : "date-time"},
+        "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
+        "commentCreatedWithConfiguration" : {
+            "type": "string",
+            "description" : "to remove?"
+        },
+        "commentLastOpenedWithConfiguration" : {
+            "type" : "string",
+            "description" : "to remove?"},
+        "resourceReference" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "resource_reference_schema.json#"
+            }
+        },
+        "isaDocumentLicenses" : {
+            "type" : "array",
+            "description" : "It specifies the licenses for the ISA document (investigation, study, assay, etc files). It could be one for commercial use, another one for academic use, etc.",
+            "items" : {
+                "$ref": "license_schema.json#"
+            }
+        },
+        "publications" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "publication_schema.json#"
+
+            }
+        },
+        "people" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "person_schema.json#"
+
+            }
+        },
+        "studies" : {
+            "type" : "array",
+            "items" : {
+                "$ref": "study_schema.json#"
+
+            }
+        }
+    }
+}

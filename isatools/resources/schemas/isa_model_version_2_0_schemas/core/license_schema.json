@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title" : "ISA license schema",
+  "description" : "JSON-schema representing a license in the ISA model v2.0. The model assumes that there is an external resource modeling the license (and what it allows, prevents, etc).  ",
+  "type": "object",
+  "properties" : {
+    "name" : { "type" : "string" },
+    "identifierInfo" : {
+      "type" : "array",
+      "items" : {
+        "$ref": "identifier_info_schema.json#"
+      }
+    },
+    "owners" : {
+      "type" : "array",
+      "items" :  {
+        "$ref": "person_schema.json#"
+      }
+    }
+  }
+}

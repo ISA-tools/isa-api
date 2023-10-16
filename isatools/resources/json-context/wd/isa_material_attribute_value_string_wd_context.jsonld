@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/wiki/",
+    "wd": "https://www.wikidata.org/wiki/Property:",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "MaterialAttributeValue": "wd:Q951437",
+    "category": {
+      "@id": "wd:P527",
+      "@type": "wd:Q3707858"
+    },
+    "value": {
+      "@id": "wd:P111",
+      "@type": "wd:Q184754"
+    }
+  }
+}

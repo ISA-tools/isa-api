@@ -1,0 +1,76 @@
+{
+  "@context":{
+    "@language": "en",
+    "materials": "@nest",
+    "sio":"http://semanticscience.org/ontology/sio.owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "sio:001066",
+    "filename": {
+        "@id": "sio:000008",
+        "@type": "sio:000396"
+    },
+    "identifier": {
+        "@id": "sio:000671",
+        "@type": "@id"
+    },
+    "title" : {
+        "@id": "sio:000060",
+        "@type": "sio:000185"
+    },
+    "description" : {   
+        "@id": "sio:000028",
+        "@type": "sio:000136"
+    } ,
+    "submissionDate" : {
+        "@id": "sio:001083",
+        "@type": "xsd:date"
+    } ,
+    "publicReleaseDate" : {
+        "@id": "sio:001314",
+        "@type": "xsd:date"
+    } ,
+    "publications" : {
+        "@id": "sio:000628",
+        "@type": "sio:000087"
+    },
+    "people": {
+        "@id": "sio:000253",
+        "@type": "sio:000498"
+    },
+    "studyDesignDescriptors": {
+        "@id": "sio:000255",
+        "@type": "sio:001041"
+    },
+    "protocols": {
+        "@id": "sio:000277",
+        "@type": "sio:001043"
+    },
+    "sources": "sio:000230",
+    "samples": "sio:000230",
+    "otherMaterials": "sio:000230",
+    "processSequence": {
+        "@id": "sio:000974",
+        "@type": "sio:000006"
+    },
+    "assays": {
+        "@id": "sio:000338",
+        "@type": "sio:001007"
+    },
+    "factors": {
+        "@id": "sio:000338",
+        "@type": "sio:000920"
+    },
+    "characteristicCategories": {
+        "@id": "sio:000008",
+        "@type": "sio:000614"
+    },
+    "unitCategories": {
+        "@id": "sio:000221" ,
+        "@type": "sio:000074"
+    },
+    "comments": {
+        "@id": "sio:000060",
+        "@type": "sio:001167"
+    }
+  }
+}

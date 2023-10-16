@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "OntologyAnnotation": "wd:Q857525",
+    "annotationValue": {
+      "@id": "wd:P527",
+      "@type": "rdfs:label"
+    },
+    "termSource": {
+      "@id": "wd:P5967",
+      "@type": "wd:Q324254"
+    },
+    "termAccession": {
+      "@id": "wd:P527",
+      "@type": "wd:Q1417099"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

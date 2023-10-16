@@ -1,0 +1,50 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Process": "wd:Q3249551",
+    "identifier": {
+      "@id": "wd:Q853614",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q82799"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "date": {
+      "@id": "wd:P1390",
+      "@type": "xsd:date"
+    },
+    "executesProtocol": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q41689629"
+    },
+    "parameterValues": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q2356542"
+    },
+    "previousProcess": {
+      "@id": "wd:P155",
+      "@type": "wd:Q3249551"
+    },
+    "nextProcess": {
+      "@id": "wd:P156",
+      "@type": "wd:Q3249551"
+    },
+    "inputs": "wd:P2283",
+    "outputs": "wd:P1056",
+    "performer": {
+      "@id": "wd:P137",
+      "@type": "wd:Q215627"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

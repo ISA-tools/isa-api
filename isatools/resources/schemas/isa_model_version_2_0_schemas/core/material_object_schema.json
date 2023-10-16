@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA material object schema",
+    "description": "JSON-schema representing a digital object (e.g. a file) in the ISA model v2.0.",
+    "type": "object",
+    "properties": {
+        "allOf": {
+            "$ref": "node_schema.json#",
+            "material_type": {
+                "enum": ["abiotic material", "biomaterial"]
+            },
+            "consent_or_accessrights": {
+                "type": "array",
+                "description": "specifies the licenses for individual file element, to provide granularity of access rights. Licenses may vary depending on whether commercial use is allowed or not, etc...",
+                "items": {
+                    "$ref": "license_schema.json#"
+                }
+            }
+        }
+    }
+}

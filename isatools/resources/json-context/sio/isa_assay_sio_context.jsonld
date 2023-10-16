@@ -1,0 +1,60 @@
+{
+  "@context": {
+    "@language": "en",
+    "@version" : 1.1,
+    "materials": "@nest",
+    "sio":"http://semanticscience.org/ontology/sio.owl",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "sio:001007",
+    "identifier": {
+        "@id": "sio:000671",
+        "@type": "@id"
+    },
+    "name": {
+        "@id": "sio:000008",
+        "@type": "sio:000116"
+    },
+    "description": {
+        "@id": "sio:000028",
+        "@type": "sio:000136"
+    },
+    "filename" :  {
+         "@id": "sio:000008",
+         "@type": "sio:000396"
+    },
+    "measurementType" :  {
+        "@id": "sio:000223",
+        "@type" : "sio:001054"
+    },  
+    "technologyType":  {
+        "@id": "sio:000223",
+        "@type": "sio:000999"
+    }, 
+    "technologyPlatform":  {
+        "@id": "sio:000139",
+        "@type": "sio:000956"
+    },     
+    "samples": "sio:000230",
+    "otherMaterials": "sio:000230",
+    "characteristicCategories" :{
+         "@id": "sio:000008",
+         "@type": "sio:000614"
+    },
+    "dataFiles": {
+        "@id": "sio:000029",
+        "@type": "sio:000396"
+    },
+    "processSequence": {
+         "@id": "sio:000974",
+         "@type": "sio:000006"
+    },
+    "unitCategories": {
+          "@id": "sio:000221" ,
+          "@type": "sio:000074"
+    },
+    "comments": {
+         "@id": "sio:000060",
+         "@type": "sio:001167"
+    }
+  }
+}

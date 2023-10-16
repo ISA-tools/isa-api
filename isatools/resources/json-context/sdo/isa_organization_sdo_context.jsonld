@@ -9,20 +9,20 @@
       "@type": "@id"
     },
     "name": {
-        "@id": "sdo:name",
-      "@type":"sdo:Text"
+      "@id": "sdo:name",
+      "@type": "sdo:Text"
     },
     "description": {
-       "@id": "sdo:description",
-       "@type": "sdo:Text"
+      "@id": "sdo:description",
+      "@type": "sdo:Text"
     },
     "postalAddress": {
-        "@id":"sdo:postalAddress",
-        "@type":"sdo:Place"
+      "@id": "sdo:postalAddress",
+      "@type": "sdo:Place"
     },
-     "roles": {
-        "@id": "sdo:roleName",
-        "@type" : "sdo:Role"
-        }
+    "roles": {
+      "@id": "sdo:roleName",
+      "@type": "sdo:Role"
     }
+  }
 }

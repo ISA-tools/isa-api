@@ -3,26 +3,32 @@
     "@language": "en",
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Sample":  {"@id": "obo:OBI_0100051"},
+    "Sample": {
+      "@id": "obo:OBI_0100051"
+    },
     "identifier": {
       "@id": "obo:IAO_0000577",
       "@type": "@id"
     },
     "name": {
-        "@id": "obo:IAO_0000235",
-        "@type": "obo:IAO_0000590"
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000590"
     },
     "characteristics": {
-      "@id" : "obo:RO_0000086",
-      "@type" : "obo:BFO_0000019"
+      "@id": "obo:RO_0000086",
+      "@type": "obo:BFO_0000019"
     },
-     "roles": {
-        "@id": "obo:RO_0000087",
-        "@type" : "obo:OBI_0000740"
-        },
+    "roles": {
+      "@id": "obo:RO_0000087",
+      "@type": "obo:OBI_0000740"
+    },
+    "factorValues": {
+      "@id": "obo:OBI_0001938",
+      "@type": "obo:STATO_0000265"
+    },
     "derivesFrom": {
-      "@id" : "obo:RO_0001000",
-      "@type" : "obo:OBI_0100026"
+      "@id": "obo:RO_0001000",
+      "@type": "obo:OBI_0100026"
     }
   }
 }

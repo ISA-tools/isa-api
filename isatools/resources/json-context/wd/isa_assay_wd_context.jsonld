@@ -1,0 +1,60 @@
+{
+  "@context": {
+    "@language": "en",
+    "@version": 1.1,
+    "materials": "@nest",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "wd:Q739897",
+    "identifier": {
+      "@id": "wd:Q6545185",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "wd:P1448",
+      "@type": "wd:Q82799"
+    },
+    "description": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q1200750"
+    },
+    "filename": {
+      "@id": "wd:P7793",
+      "@type": "wd:Q1144928"
+    },
+    "measurementType": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q12453"
+    },
+    "technologyType": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q11016"
+    },
+    "technologyPlatform": {
+      "@id": "wd:P2283",
+      "@type": "wd:Q11016"
+    },
+    "samples": "wd:Q53617407",
+    "otherMaterials": "wd:Q53617407",
+    "characteristicCategories": {
+      "@id": "wd:P1552",
+      "@type": "wd:Q937228"
+    },
+    "dataFiles": {
+      "@id": "wd:P527",
+      "@type": "wd:Q5227290"
+    },
+    "processSequence": {
+      "@id": "wd:P527",
+      "@type": "wd:Q3249551"
+    },
+    "unitCategories": {
+      "@id": "wd:P8111",
+      "@type": "wd:Q47574"
+    },
+    "comments": {
+      "@id": "wd:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}
