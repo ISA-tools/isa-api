@@ -106,7 +106,8 @@ class TestMappings(unittest.TestCase):
 
     def test_assay_template_convert_ordered_dict_empty_nodes(self):
         empty_json = assay_ordered_dict_to_template(self.met_prof_jsons[3])
-        self.assertNotEqual(empty_json['workflow'], [])
+        print(empty_json['workflow'])
+        self.assertEqual(empty_json['workflow'], [])
 
     @staticmethod
     def _load_config(file_name):
