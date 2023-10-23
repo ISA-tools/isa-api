@@ -354,9 +354,12 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
 class TestPerformerValidation(unittest.TestCase):
     def test_ptx(self):
         filepath = os.path.join(utils.TAB_DATA_DIR, 'TEST-PTX', 'i_investigation.txt')
+
         with open(filepath) as fp:
             investigation = isatab.load(fp)
             print(investigation.title)
+
+        with open(filepath) as fp:
             report = isatab.validate(fp)
             print(report["errors"])
 
