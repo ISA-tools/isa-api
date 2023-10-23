@@ -6,8 +6,8 @@
     "description" : "JSON-schema representing an ISA model Sample object (A sample represents a major output resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract)",
     "type": "object",
     "properties" : {
-        "@id": { "type": "string", "format": "uri" },
-        "@context": { "type": "string", "format": "uri"},
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference"},
         "@type" : { "type": "string", "enum": ["Sample"] },
         "name" : { "type" : "string" },
         "characteristics" : {

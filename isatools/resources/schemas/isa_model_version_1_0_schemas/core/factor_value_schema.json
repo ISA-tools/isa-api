@@ -6,9 +6,9 @@
     "description": "JSON-schema representing an ISA model Factor Value object",
     "type": "object",
     "properties": {
-        "@id": { "type": "string", "format": "uri" },
-        "@context": { "type": "string", "format": "uri"},
-        "@type" : { "type": "string", "enum": ["FactorValue"] },
+         "@id": { "type": "string", "format": "uri-reference" },
+         "@context": { "type": "string", "format": "uri-reference"},
+         "@type" : { "type": "string", "enum": ["FactorValue"] },
          "category" : {
              "$ref": "factor_schema.json#"
         },

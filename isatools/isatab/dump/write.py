@@ -62,8 +62,9 @@ def write_study_table_files(inv_obj, output_dir):
         log.warning(s_graph.nodes())
 
         sample_in_path_count = 0
+        protocol_in_path_count = 0
         longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
-
+        
         for node_index in longest_path:
             node = s_graph.indexes[node_index]
             if isinstance(node, Source):
@@ -76,8 +77,9 @@ def write_study_table_files(inv_obj, output_dir):
                     map(lambda x: get_comment_column(
                         olabel, x), node.comments))
             elif isinstance(node, Process):
-                olabel = "Protocol REF.{}".format(node.executes_protocol.name)
+                olabel = "Protocol REF.{}".format(protocol_in_path_count)
                 columns.append(olabel)
+                protocol_in_path_count += 1
                 if node.executes_protocol.name not in protnames.keys():
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
@@ -104,6 +106,7 @@ def write_study_table_files(inv_obj, output_dir):
                 columns += flatten(map(lambda x: get_fv_columns(olabel, x),
                                        node.factor_values))
 
+
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
@@ -113,6 +116,7 @@ def write_study_table_files(inv_obj, output_dir):
                 df_dict[k].extend([""])
 
             sample_in_path_count = 0
+            protocol_in_path_count = 0
             for node_index in path_:
                 node = s_graph.indexes[node_index]
                 if isinstance(node, Source):
@@ -129,8 +133,8 @@ def write_study_table_files(inv_obj, output_dir):
                         df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(
-                        node.executes_protocol.name)
+                    olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                    protocol_in_path_count += 1
                     df_dict[olabel][-1] = node.executes_protocol.name
                     for pv in node.parameter_values:
                         pvlabel = "{0}.Parameter Value[{1}]".format(
@@ -263,6 +267,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             if _longest_path_and_attrs(paths, a_graph.indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
+            
+            protocol_in_path_count = 0
             for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
                 node = a_graph.indexes[node_index]
                 if isinstance(node, Sample):
@@ -279,9 +285,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 node.factor_values))
 
                 elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(
-                        node.executes_protocol.name)
+                    olabel = "Protocol REF.{}".format(protocol_in_path_count)
                     columns.append(olabel)
+                    protocol_in_path_count += 1
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
@@ -338,12 +344,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
 
+                protocol_in_path_count = 0
                 for node_index in path_:
                     node = a_graph.indexes[node_index]
                     if isinstance(node, Process):
-                        olabel = "Protocol REF.{}".format(
-                            node.executes_protocol.name
-                        )
+                        olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                        protocol_in_path_count += 1
                         df_dict[olabel][-1] = node.executes_protocol.name
                         if node.executes_protocol.protocol_type:
                             oname_label = get_column_header(

@@ -5,8 +5,8 @@
     "name" : "ISA Source schema",
     "description" : "JSON-schema representing an ISA model Source object (Sources are considered as the starting biological material used in a study)",
       "properties" : {
-        "@id": { "type": "string", "format": "uri" },
-        "@context": { "type": "string", "format": "uri"},
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
         "@type" : { "type": "string", "enum": ["Source"] },
         "name" : { "type" : "string" },
         "characteristics" : {

@@ -6,8 +6,8 @@
   "description": "JSON Schema describing an ISA model Study object",
   "type": "object",
   "properties": {
-    "@id": { "type": "string", "format": "uri" },
-    "@context": { "type": "string", "format": "uri"},
+    "@id": { "type": "string", "format": "uri-reference" },
+    "@context": { "type": "string", "format": "uri-reference"},
     "@type" : { "type": "string", "enum": ["Study"] },
     "filename" : { "type" : "string"},
     "identifier" : { "type" : "string" },

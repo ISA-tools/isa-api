@@ -6,8 +6,8 @@
     "description" : "JSON-schema representing an ISA model material attribute (or characteristic) value object",
     "type" : "object",
     "properties" : {
-        "@id": { "type": "string", "format": "uri" },
-        "@context": { "type": "string", "format": "uri"},
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference"},
         "@type" : { "type": "string", "enum": ["MaterialAttributeValue"] },
         "category" : {
              "$ref": "material_attribute_schema.json#"
