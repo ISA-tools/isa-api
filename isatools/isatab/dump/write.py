@@ -269,6 +269,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     "Could not find any valid end-to-end paths in assay graph")
             
             protocol_in_path_count = 0
+            output_label_in_path_counts = {}
             for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
                 node = a_graph.indexes[node_index]
                 if isinstance(node, Sample):
@@ -314,9 +315,14 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             node.comments))
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
-                        columns.append(output.label)
+                        output_label = output.label
+                        if output_label not in output_label_in_path_counts:
+                            output_label_in_path_counts[output_label] = 0
+                        new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
+                        columns.append(new_output_label)
+                        output_label_in_path_counts[output_label] += 1
                         columns += flatten(
-                            map(lambda x: get_comment_column(output.label, x),
+                            map(lambda x: get_comment_column(new_output_label, x),
                                 output.comments))
 
                 elif isinstance(node, Material):
@@ -345,6 +351,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     df_dict[k].extend([""])
 
                 protocol_in_path_count = 0
+                output_label_in_path_counts = {}
                 for node_index in path_:
                     node = a_graph.indexes[node_index]
                     if isinstance(node, Process):
@@ -378,7 +385,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             df_dict[colabel][-1] = co.value
                         for output in [x for x in node.outputs if
                                        isinstance(x, DataFile)]:
-                            olabel = output.label
+                            output_label = output.label
+                            if output_label not in output_label_in_path_counts:
+                                output_label_in_path_counts[output_label] = 0
+                            new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
+                            output_label_in_path_counts[output_label] += 1
+                            olabel = new_output_label
                             df_dict[olabel][-1] = output.filename
                             for co in output.comments:
                                 colabel = "{0}.Comment[{1}]".format(
@@ -463,6 +475,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns[i] = "Protocol REF"
                 elif "." in col:
                     columns[i] = col[:col.rindex(".")]
+                for output_label in output_label_in_path_counts:
+                    if output_label in col:
+                        columns[i] = output_label
+                        break
 
             log.debug("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
