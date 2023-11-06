@@ -1021,6 +1021,15 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(ISA.studies[0].assays[0].other_material), 7)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 2)
             self.assertEqual(len(ISA.studies[0].assays[0].process_sequence), 11)
+            self.assertEqual(ISA.studies[0].assays[0].comments[0].value, "ena")
+            self.assertEqual(ISA.ontology_source_references[0].comments[0].name, "onto_comment")
+            self.assertEqual(ISA.ontology_source_references[0].comments[0].value, "onto_stuff")
+            self.assertEqual(ISA.studies[0].protocols[0].comments[0].value, "another protocol related comment")
+            self.assertEqual(ISA.studies[0].protocols[2].comments[0].value, "protocol related comment")
+            self.assertEqual(ISA.studies[0].protocols[3].comments[0].value, "")
+            self.assertEqual(ISA.studies[0].contacts[0].comments[0].name, "person comment")
+
+            self.assertEqual(ISA.studies[0].factors[0].comments[0].value, "stf_cmt")
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt'), encoding='utf-8') as fp:
@@ -1366,6 +1375,10 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         sample1 = Sample(name='sample1')
         extract1 = Material(name='extract1', type_='Extract Name')
         data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+        cs_comment1 = Comment(name="checksum type", value="md5")
+        cs_comment2 = Comment(name="checksum", value="123134214")
+        data1.comments.append(cs_comment1)
+        data1.comments.append(cs_comment2)
         extraction_process = Process(executes_protocol=s.protocols[0])
         sequencing_assay_process = Process(executes_protocol=s.protocols[1])
         extraction_process.inputs = [sample1]
@@ -1381,8 +1394,8 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         a.technology_type = OntologyAnnotation(term="nucleotide sequencing")
         s.assays = [a]
         i.studies = [s]
-        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File
-sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
+        expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File\tComment[checksum type]\tComment[checksum]
+sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw\tmd5\t123134214"""
         self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):

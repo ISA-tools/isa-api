@@ -1,4 +1,4 @@
-from isatools.model.comments import Commentable
+from isatools.model.comments import Commentable,Comment
 from isatools.model.sample import Sample
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.identifiable import Identifiable
@@ -28,6 +28,10 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         self.__generated_from = []
         if generated_from:
             self.__generated_from = generated_from
+
+        self._comments = [Comment(name="checksum type"),Comment(name="checksum")]
+            # if comments:
+            #     self.__comments = comments
 
     @property
     def filename(self):

@@ -1,4 +1,5 @@
 from isatools.model.comments import Commentable
+from isatools.model.comments import Comment
 from isatools.model.mixins import StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.datafile import DataFile
@@ -56,6 +57,11 @@ class Assay(Commentable, StudyAssayMixin, object):
             self.technology_type = technology_type
 
         self.__technology_platform = technology_platform
+
+        if comments is None:
+            self.__comments = []
+        else:
+            self.__comments = comments
 
         if data_files is None:
             self.__data_files = []

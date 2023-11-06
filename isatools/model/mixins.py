@@ -167,6 +167,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             the annotation of material characteristics.
         process_sequence: A list of Process objects representing the
             experimental graphs.
+        comments: Comments associated with instances of this class.
         graph: Graph representation of the experimental graph.
 
     """
