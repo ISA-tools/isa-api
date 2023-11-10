@@ -430,7 +430,6 @@ class TestIsaJson(unittest.TestCase):
             study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
             assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
 
-
     def test_json_load_and_dump_isa_le_test(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'TEST-ISA-LabeledExtract1', 'isa-test-le1.json')) as isajson_fp:
