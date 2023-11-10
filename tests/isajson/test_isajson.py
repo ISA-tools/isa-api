@@ -420,6 +420,28 @@ class TestIsaJson(unittest.TestCase):
             self.assertEqual(len(assay_gx['dataFiles']), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx['processSequence']), 116)  # 116 processes in in a_matteo-assay-Gx.txt
 
+    def test_json_load_and_dump_bii_s_test(self):
+        # Load into ISA objects
+        with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json')) as isajson_fp:
+            ISA = isajson.load(isajson_fp)
+
+            # Dump into ISA JSON from ISA objects
+            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
+            study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
+            assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
+
+
+    def test_json_load_and_dump_isa_le_test(self):
+        # Load into ISA objects
+        with open(os.path.join(utils.JSON_DATA_DIR, 'TEST-ISA-LabeledExtract1', 'isa-test-le1.json')) as isajson_fp:
+            ISA = isajson.load(isajson_fp)
+
+            # Dump into ISA JSON from ISA objects
+            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
+            study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
+            assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
+            self.assertEqual(assay_gx['materials']['otherMaterials'][3]["type"], "Labeled Extract Name")
+
     def test_json_load_from_file_and_create_isa_objects(self):
         # reading from file
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json')) as isajson_fp:

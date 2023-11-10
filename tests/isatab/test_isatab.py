@@ -1046,6 +1046,14 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(ISA.studies[0].contacts[1].comments), 5)  # 5 comments in contact
             self.assertListEqual([a.filename for a in ISA.studies[0].assays], ['a_chambers.txt'])  # 1 assays in s_chambers.txt
 
+    def test_isatab_load_bii_s_test(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-S-TEST', 'i_test.txt')) as fp:
+            ISA = isatab.load(fp)
+
+            self.assertEqual(len(ISA.studies[0].assays[0].other_material), 8)
+            self.assertEqual(ISA.studies[0].assays[0].other_material[1].type, "Labeled Extract Name")
+
+
     def test_isatab_load_bii_i_1(self):
         with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
             ISA = isatab.load(fp)

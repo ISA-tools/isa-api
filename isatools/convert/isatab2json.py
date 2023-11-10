@@ -36,6 +36,7 @@ def convert(work_dir, identifier_type=IdentifierType.name,
             validate_first=True, config_dir=isatab.default_config_dir,
             use_new_parser=False):
     i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
+
     if validate_first:
         log.info("Validating input ISA tab before conversion")
         if len(i_files) != 1:
@@ -120,6 +121,7 @@ class ISATab2ISAjson_v1:
             log.fatal("No ISA-Tab dataset found")
         else:
             isa_json = dict([])
+
             if isa_tab.metadata != {}:
                 isa_json = dict([
                     ("identifier",

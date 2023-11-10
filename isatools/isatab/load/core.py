@@ -201,7 +201,7 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                 file=row['Term Source File'],
                 version=row['Term Source Version'],
                 description=row['Term Source Description'])
-            ontology_source.comments = get_comments(df_dict['ontology_sources'])
+            ontology_source.comments = get_comments_row(df_dict['ontology_sources'].columns, row)
             investigation.ontology_source_references.append(ontology_source)
 
         ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
@@ -317,8 +317,7 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                     row['Study Assay Technology Type Term Source REF']
                 )
                 assay.technology_platform = row['Study Assay Technology Platform']
-                assay.comments = get_comments(df_dict['s_assays'][i])
-
+                assay.comments = get_comments_row(df_dict['s_assays'][i].columns, row)
                 if skip_load_tables:
                     pass
                 else:
