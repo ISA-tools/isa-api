@@ -1,6 +1,8 @@
 import networkx as nx
+import hashlib
+import os
 
-from isatools.model.datafile import DataFile
+from isatools.model.datafile import DataFile, Comment
 from isatools.model.process import Process
 from isatools.model.source import Source
 from isatools.model.sample import Sample
@@ -212,3 +214,35 @@ def _deep_copy(isa_object):
     if isinstance(isa_object, ProcessSequenceNode):
         new_obj.assign_identifier()
     return new_obj
+
+
+def update_hash(path, file, hash_func):
+    computed_hash = ""
+    with open(os.path.join(path, file), "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            hash_func.update(byte_block)
+    computed_hash = hash_func.hexdigest()
+    return computed_hash
+
+
+def compute_checksum(path, isa_file_object: DataFile, checksum_type):
+
+    global hash_type
+    if not checksum_type in ["md5", "sha1", "sha256"]:
+        raise ValueError("Invalid checksum type")
+    else:
+        file_checksum = None
+
+        if checksum_type == "md5":
+            hash_type = hashlib.md5()
+            file_checksum = update_hash(path, isa_file_object.filename, hash_type)
+            isa_file_object.comments.append(Comment(name="checksum type", value="md5"))
+
+        if checksum_type == "sha256":
+            hash_type = hashlib.sha256()
+            file_checksum = update_hash(path, isa_file_object.filename, hash_type)
+            isa_file_object.comments.append(Comment(name="checksum type", value="sha256"))
+
+        isa_file_object.comments.append(Comment(name="checksum", value=file_checksum))
+
+    return isa_file_object
