@@ -84,10 +84,10 @@ class TestOlsSearch(unittest.TestCase):
         self.assertEqual(ontology_source.name, 'efo')
         self.assertEqual(
             ontology_source.file,
-            'https://www.ebi.ac.uk/ols/api/ontologies/efo')
+            'https://www.ebi.ac.uk/ols4/api/ontologies/efo?lang=en')
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(
-            ontology_source.description, '')
+            ontology_source.description, 'Experimental Factor Ontology')
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')

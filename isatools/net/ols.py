@@ -3,7 +3,7 @@
 
 This module connects to the European Bioinformatics Institute's OLS.
 If you have problems with it, check that it's working at
-http://www.ebi.ac.uk/ols/
+https://www.ebi.ac.uk/ols4/
 """
 from __future__ import absolute_import
 import json
@@ -13,7 +13,7 @@ from urllib.request import urlopen
 from isatools.model import OntologyAnnotation, OntologySource
 
 
-OLS_API_BASE_URI = "http://www.ebi.ac.uk/ols/api"
+OLS_API_BASE_URI = "https://www.ebi.ac.uk/ols4/api"
 OLS_PAGINATION_SIZE = 500
 
 
