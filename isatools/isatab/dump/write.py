@@ -270,6 +270,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             
             protocol_in_path_count = 0
             output_label_in_path_counts = {}
+            protocol_to_output_labels = {}
             for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
                 node = a_graph.indexes[node_index]
                 if isinstance(node, Sample):
@@ -319,6 +320,14 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         if output_label not in output_label_in_path_counts:
                             output_label_in_path_counts[output_label] = 0
                         new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
+                        
+                        if olabel not in protocol_to_output_labels:
+                            protocol_to_output_labels[olabel] = {output_label: new_output_label}
+                        elif output_label in protocol_to_output_labels[olabel]:
+                            continue
+                        else:
+                            protocol_to_output_labels[olabel][output_label] = new_output_label
+                        
                         columns.append(new_output_label)
                         output_label_in_path_counts[output_label] += 1
                         columns += flatten(
@@ -346,12 +355,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             def pbar(x):
                 return x
 
+            columns_to_explode = set()
             for path_ in pbar(paths):
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
 
                 protocol_in_path_count = 0
-                output_label_in_path_counts = {}
                 for node_index in path_:
                     node = a_graph.indexes[node_index]
                     if isinstance(node, Process):
@@ -383,19 +392,23 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             colabel = "{0}.Comment[{1}]".format(
                                 olabel, co.name)
                             df_dict[colabel][-1] = co.value
+                        output_labels_in_the_protocol = []
                         for output in [x for x in node.outputs if
                                        isinstance(x, DataFile)]:
                             output_label = output.label
-                            if output_label not in output_label_in_path_counts:
-                                output_label_in_path_counts[output_label] = 0
-                            new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
-                            output_label_in_path_counts[output_label] += 1
-                            olabel = new_output_label
-                            df_dict[olabel][-1] = output.filename
+                            output_column = protocol_to_output_labels[olabel][output_label]
+                            columns_to_explode.add(output_column)
+                            if output_label not in output_labels_in_the_protocol:
+                                output_labels_in_the_protocol.append(output_label)
+                                df_dict[output_column][-1] = [output.filename]
+                            else:
+                                df_dict[output_column][-1].append(output.filename)
+                            
                             for co in output.comments:
                                 colabel = "{0}.Comment[{1}]".format(
-                                    olabel, co.name)
+                                    output_column, co.name)
                                 df_dict[colabel][-1] = co.value
+                        
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -432,6 +445,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             DF = DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)
             DF = DF[columns]  # reorder columns
+            for column in columns_to_explode:
+                DF = DF.explode(column)
             try:
                 DF = DF.sort_values(by=DF.columns[0], ascending=True)
             except ValueError as e:

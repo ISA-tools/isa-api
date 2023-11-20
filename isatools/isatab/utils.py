@@ -489,7 +489,7 @@ def get_object_column_map(isatab_header, df_columns):
     """
     labels = _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
     if set(isatab_header) == set(df_columns):
-        object_index = [i for i, x in enumerate(df_columns) if x in labels or 'Protocol REF' in x]
+        object_index = [i for i, x in enumerate(df_columns) if x in labels or 'Protocol REF' in x or ' File' in x]
     else:
         object_index = [i for i, x in enumerate(isatab_header) if x in labels + ['Protocol REF']]
 

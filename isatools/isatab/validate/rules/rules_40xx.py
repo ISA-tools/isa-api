@@ -331,6 +331,7 @@ def load_table_checks(df, filename):
                            'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name',
                            'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name',
+                           'Derived Data File',
                            'Raw Spectral Data File',
                            'Labeled Extract Name',
                            'Label', 'Hybridization Assay Name',
