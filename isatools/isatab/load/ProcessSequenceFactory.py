@@ -1,3 +1,5 @@
+import re
+
 from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise,  get_object_column_map, get_value
 from isatools.isatab.defaults import (
     log,
@@ -147,8 +149,9 @@ class ProcessSequenceFactory:
             pass
 
         for data_col in [x for x in DF.columns if " File" in x]:
+            label = re.match(r'(.* File)', data_col).group(0)
             filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
+            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=label)), filenames)))
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES or ' File' in c]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
