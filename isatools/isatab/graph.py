@@ -42,6 +42,8 @@ def _all_end_to_end_paths(G, start_nodes):
                 paths += list(algorithms.all_simple_paths(G, start, end))
         elif isinstance(node, Sample):
             # only look for Process ends if start is a Sample
+            # for end in [x for x in algorithms.descendants(G, start) if
+            #             (isinstance(G.indexes[x], Process) or isinstance(G.indexes[x], DataFile)) and len(G.out_edges(x)) == 0]:
             for end in [x for x in algorithms.descendants(G, start) if
                         isinstance(G.indexes[x], Process) and G.indexes[x].next_process is None]:
                 paths += list(algorithms.all_simple_paths(G, start, end))
