@@ -41,7 +41,7 @@ def dump(isa_obj, output_path,
         raise NameError('Investigation file must match pattern i_*.txt, got {}'.format(i_file_name))
 
     if path.exists(output_path):
-        fp = open(path.join(output_path, i_file_name), 'w', encoding='utf-8')
+        fp = open(path.join(output_path, i_file_name), 'wb', encoding='utf-8')
     else:
         log.debug('output_path=', i_file_name)
         raise FileNotFoundError("Can't find " + output_path)
