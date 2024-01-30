@@ -3,6 +3,7 @@ from typing import TextIO
 
 from os import path
 from glob import glob
+import logging
 
 from pandas.errors import ParserError
 
@@ -169,7 +170,7 @@ def validate(fp: TextIO,
              config_dir: str = default_config_dir,
              origin: str or None = None,
              rules: dict = None,
-             log_level=None) -> dict:
+             log_level: None|int = logging.INFO) -> dict:
     """
     A function to validate an ISA investigation tab file
     :param fp: the investigation file handler
@@ -179,8 +180,10 @@ def validate(fp: TextIO,
     :param log_level: optional log level (default: INFO)
     :return: a dictionary of the validation results (errors, warnings and info)
     """
-    if not log_level:
+    if log_level is None:
         log.disabled = True
+    else:
+        log.setLevel(log_level)
     message_handler.reset_store()
     validated = False
 

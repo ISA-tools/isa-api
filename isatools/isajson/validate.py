@@ -808,14 +808,14 @@ default_isa_json_schemas_dir = os.path.join(
 def validate(
         fp,
         config_dir=default_config_dir,
-        log_level=None,
+        log_level=logging.INFO,
         base_schemas_dir="isa_model_version_1_0_schemas"
 ):
     if config_dir is None:
         config_dir = default_config_dir
-    if log_level in (
-            logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
-            logging.ERROR, logging.CRITICAL):
+    if log_level is None:
+        log.disabled = True
+    else:
         log.setLevel(log_level)
     log.info("ISA JSON Validator from ISA tools API v0.12.")
     stream = StringIO()
