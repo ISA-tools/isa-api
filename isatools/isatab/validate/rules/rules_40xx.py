@@ -50,20 +50,21 @@ def check_investigation_against_config(i_df_dict, configs):
                         if required_value == '' or 'Unnamed: ' in required_value:
                             add_warning(i, col, x)
 
-    config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
-    required_fields = [i.header for i in config_fields if i.is_required]
-    check_section_against_required_fields_one_value(i_df_dict['investigation'], required_fields)
-    check_section_against_required_fields_one_value(i_df_dict['i_publications'], required_fields)
-    check_section_against_required_fields_one_value(i_df_dict['i_contacts'], required_fields)
+    if ('[investigation]', '') in configs:
+        config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
+        required_fields = [i.header for i in config_fields if i.is_required]
+        check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
+        check_section_against_required_fields_one_value(i_df['i_publications'], required_fields)
+        check_section_against_required_fields_one_value(i_df['i_contacts'], required_fields)
 
-    for x, study_df in enumerate(i_df_dict['studies']):
-        check_section_against_required_fields_one_value(i_df_dict['studies'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_design_descriptors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_publications'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_factors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_assays'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_protocols'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df_dict['s_contacts'][x], required_fields, x)
+        for x, study_df in enumerate(i_df['studies']):
+            check_section_against_required_fields_one_value(i_df['studies'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_design_descriptors'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_publications'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_factors'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_assays'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_protocols'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df['s_contacts'][x], required_fields, x)
 
 
 def load_config(config_dir):
@@ -79,16 +80,14 @@ def load_config(config_dir):
         spl = "On loading {}".format(config_dir)
         validator.add_error(message="Configurations could not be loaded", supplemental=spl, code=4001)
         log.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
-    if configs is None:
+    if not configs:
         spl = "On loading {}".format(config_dir)
-        validator.add_error(message="Configurations could not be loaded", supplemental=spl, code=4001)
-        log.error("(E) Could not load configurations from {}".format(config_dir))
+        validator.add_warning(message="Configurations could not be loaded", supplemental=spl, code=4001)
+        log.warning("(W) No configurations were loaded from the '{}' directory".format(config_dir))
     else:
         for k in configs.keys():
             message = "Loaded table configuration '{}' for measurement and technology {}"
             log.debug(message.format(str(configs[k].get_isatab_configuration()[0].table_name), str(k)))
-    if configs is None:
-        raise SystemError("No configuration to load so cannot proceed with validation!")
     return configs
 
 
@@ -138,17 +137,18 @@ def check_required_fields(table, cfg):
     :param cfg: A ISA Configuration object
     :return: None
     """
-    for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
-        found_field = [i for i in table.columns if i.lower() == fheader.lower()]
-        if len(found_field) == 0:
-            msg = "A required column in assay table is not present"
-            spl = "Required field '{}' not found in the file '{}'".format(fheader, table.filename)
-            validator.add_warning(message=msg, supplemental=spl, code=4010)
-            log.warning("(W) {}".format(spl))
-        elif len(found_field) > 1:
-            spl = "Field '{}' cannot have multiple values in the file '{}'".format(fheader, table.filename)
-            validator.add_warning(message="Multiple columns found", supplemental=spl, code=4013)
-            log.warning("(W) {}".format(spl))
+    if cfg.get_isatab_configuration():
+        for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
+            found_field = [i for i in table.columns if i.lower() == fheader.lower()]
+            if len(found_field) == 0:
+                msg = "A required column in assay table is not present"
+                spl = "Required field '{}' not found in the file '{}'".format(fheader, table.filename)
+                validator.add_warning(message=msg, supplemental=spl, code=4010)
+                log.warning("(W) {}".format(spl))
+            elif len(found_field) > 1:
+                spl = "Field '{}' cannot have multiple values in the file '{}'".format(fheader, table.filename)
+                validator.add_warning(message="Multiple columns found", supplemental=spl, code=4013)
+                log.warning("(W) {}".format(spl))
 
 
 def check_field_values(table, cfg):
@@ -233,10 +233,11 @@ def check_field_values(table, cfg):
     for irow in range(len(table.index)):
         ncols = len(table.columns)
         for icol in range(0, ncols):
-            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
-            if len(cfields) == 1:
-                cfield = cfields[0]
-                result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+            if cfg.get_isatab_configuration():
+                cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
+                if len(cfields) == 1:
+                    cfield = cfields[0]
+                    result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
     return result
 
 
@@ -254,7 +255,7 @@ def check_protocol_fields(table, cfg, proto_map):
         a, b = tee(iterable)
         next(b, None)
         return zip(a, b)
-    
+
     field_headers = [i for i in table.columns
                      if i.lower().endswith(' name')
                      or i.lower().endswith(' data file')
@@ -271,37 +272,41 @@ def check_protocol_fields(table, cfg, proto_map):
         log.warning(spl)
     if cfg.get_isatab_configuration():
         for left, right in pairwise(field_headers):
-            cleft = None
-            cright = None
-            clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
-            if len(clefts) == 1:
-                cleft = clefts[0]
-            crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == right.lower()]
-            if len(crights) == 1:
-                cright = crights[0]
-            if cleft is not None and cright is not None:
-                protocols_fields = cfg.get_isatab_configuration()[0].get_protocol_field()
-                cprotos = [i.protocol_type for i in protocols_fields if cleft.pos < i.pos < cright.pos]
-                raw_headers = table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)]
-                fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
-                fprotos = list()
-                for header in fprotos_headers:
-                    proto_names = list(table.loc[:, header].unique())
-                    for proto_name in proto_names:
-                        proto_type = proto_map.get(proto_name)
-                        if not proto_type and proto_name:
-                            spl = ("Could not find protocol type for protocol name '{}' in file '{}'" ).format(proto_name, table.filename)
-                            validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
-                            log.warning("(W) {}".format(spl))
-                        else:
+            if cfg.get_isatab_configuration():
+                cleft = None
+                cright = None
+                clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
+                if len(clefts) == 1:
+                    cleft = clefts[0]
+                crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == right.lower()]
+                if len(crights) == 1:
+                    cright = crights[0]
+                if cleft is not None and cright is not None:
+                    protocols_fields = cfg.get_isatab_configuration()[0].get_protocol_field()
+                    cprotos = [i.protocol_type for i in protocols_fields if cleft.pos < i.pos < cright.pos]
+                    raw_headers = table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)]
+                    fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
+                    fprotos = list()
+                    for header in fprotos_headers:
+                        proto_name = table.iloc[0][header]
+                        try:
+                            proto_type = proto_map[proto_name]
                             fprotos.append(proto_type)
-                invalid_protos = set(cprotos) - set(fprotos)
-                if len(invalid_protos) > 0:
-                    spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
-                           "'{}' but has not been found, in the file '{}'")
-                    spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
-                    validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                    log.warning("(W) {}".format(spl))
+                        except KeyError:
+                            spl = ("Could not find protocol type for protocol name '{}', trying to validate_rules against name "
+                                   "only").format(proto_name)
+                            validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
+                            log.warning("(W) {}".format(spl))
+                            fprotos.append(proto_name)
+                    invalid_protos = set(cprotos) - set(fprotos)
+                    if len(invalid_protos) > 0:
+                        spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
+                               "'{}' but has not been found, in the file '{}'")
+                        spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
+                        validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
+                        log.warning("(W) {}".format(spl))
+                        result = False
+    return result
 
 
 def load_table_checks(df, filename):

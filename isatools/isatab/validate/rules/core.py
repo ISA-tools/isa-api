@@ -5,6 +5,7 @@ from os import path
 
 from pandas import DataFrame
 
+from isatools.io import isatab_configurator
 from isatools.utils import utf8_text_file_open
 from isatools.isatab.defaults import NUMBER_OF_STUDY_GROUPS
 from isatools.isatab.load import load_table
@@ -155,7 +156,8 @@ class ISAStudyValidator:
         self.params = {
             **validator.params,
             'study_df': study_df,
-            'config': validator.params['configs'][('[sample]', '')],
+            'config': validator.params['configs'][('[sample]', '')] if ('[sample]', '') in validator.params['configs'] 
+                                                                    else isatab_configurator.IsaTabConfigFileType(),
             'study_filename': study_filename
         }
         with utf8_text_file_open(path.join(self.params['dir_context'], study_filename)) as s_fp:
@@ -207,7 +209,7 @@ class ISAAssayValidator:
         if assay_filename != '':
             lowered_mt = assay_df['Study Assay Measurement Type'].tolist()[assay_index].lower()
             lowered_tt = assay_df['Study Assay Technology Type'].tolist()[assay_index].lower()
-            self.params['config'] = self.params['configs'].get((lowered_mt, lowered_tt), None)
+            self.params['config'] = self.params['configs'].get((lowered_mt, lowered_tt), isatab_configurator.IsaTabConfigFileType())
             if self.params['config']:
                 with utf8_text_file_open(path.join(self.params['dir_context'], assay_filename)) as a_fp:
                     self.params['assay_table'] = load_table(a_fp)

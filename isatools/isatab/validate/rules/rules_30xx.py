@@ -170,31 +170,32 @@ def check_ontology_fields(table, cfg, tsrs):
     result = True
     nfields = len(table.columns)
     for icol, header in enumerate(table.columns):
-        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
-        if len(cfields) != 1:
-            continue
-        cfield = cfields[0]
-        if cfield.get_recommended_ontologies() is None:
-            continue
-        rindx = icol + 1
-        rrindx = icol + 2
-        rheader = ''
-        rrheader = ''
-        if rindx < nfields:
-            rheader = table.columns[rindx]
-        if rrindx < nfields:
-            rrheader = table.columns[rrindx]
-        if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
-            warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
-            log.warning(warning.format(header))
-            result = False
-            continue
-
-        for irow in range(len(table.index)):
-            result = result and check_single_field(table.iloc[irow][icol],
-                                                   table.iloc[irow][rindx],
-                                                   table.iloc[irow][rrindx],
-                                                   cfield,
-                                                   table.filename)
+        if cfg.get_isatab_configuration():
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+            if len(cfields) != 1:
+                continue
+            cfield = cfields[0]
+            if cfield.get_recommended_ontologies() is None:
+                continue
+            rindx = icol + 1
+            rrindx = icol + 2
+            rheader = ''
+            rrheader = ''
+            if rindx < nfields:
+                rheader = table.columns[rindx]
+            if rrindx < nfields:
+                rrheader = table.columns[rrindx]
+            if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
+                warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
+                log.warning(warning.format(header))
+                result = False
+                continue
+    
+            for irow in range(len(table.index)):
+                result = result and check_single_field(table.iloc[irow][icol],
+                                                       table.iloc[irow][rindx],
+                                                       table.iloc[irow][rrindx],
+                                                       cfield,
+                                                       table.filename)
 
     return result
