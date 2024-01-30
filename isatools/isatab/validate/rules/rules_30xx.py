@@ -152,6 +152,7 @@ def check_ontology_fields(table, cfg, tsrs):
         :param filename: Filename of the table
         :return: True if OK, False if not OK
         """
+        return_value = True
         if ((cell_has_value(cell_value) and not cell_has_value(source) and cell_has_value(acc))
                 or not cell_has_value(cell_value)):
             msg = "Missing Term Source REF in annotation or missing Term Source Name"
@@ -159,13 +160,14 @@ def check_ontology_fields(table, cfg, tsrs):
                    "label/accession/source are provided.").format(cfield.header, filename)
             validator.add_warning(message=msg, supplemental=spl, code=3008)
             log.warning("(W) {}".format(spl))
-            if source not in tsrs:
-                spl = ("Term Source REF, for the field '{}' in the file '{}' does not refer to a declared "
-                       "Ontology Source.").format(cfield.header, filename)
-                validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
-                log.warning("(W) {}".format(spl))
-            return False
-        return True
+            return_value = False
+        if cell_has_value(source) and source not in tsrs:
+            spl = ("Term Source REF, for the field '{}' in the file '{}' does not refer to a declared "
+                   "Ontology Source.").format(cfield.header, filename)
+            validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
+            log.warning("(W) {}".format(spl))
+            return_value = False
+        return return_value
 
     result = True
     nfields = len(table.columns)
