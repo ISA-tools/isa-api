@@ -472,7 +472,7 @@ def load_table_checks(df, filename):
                         and not _RX_COMMENT.match(col):
                     spl = ("(E) Expected only Characteristics, "
                            "Factor Values or Comments following {} "
-                           "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                     log.error(spl)
                     error = {
                         "message": "Unrecognised header",
@@ -489,7 +489,7 @@ def load_table_checks(df, filename):
                         and not _RX_PARAMETER_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
                     spl = ("(E) Unexpected column heading following {} "
-                           "column. Found {} at offset {}".format(prop_name, col, x + 1, filename))
+                           "column. Found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                     log.error(spl)
                     error = {
                         "message": "Unrecognised header",
@@ -532,7 +532,7 @@ def load_table_checks(df, filename):
                                        'Term Accession Number']:
                             spl = ("(E) Unexpected column heading "
                                    "following {} column. Found {} at "
-                                   "offset {}".format(prop_name, col, x + 1, filename))
+                                   "offset {} in file {}".format(prop_name, col, x + 1, filename))
                             log.error(spl)
                             error = {
                                 "message": "Unrecognised header",
@@ -594,9 +594,8 @@ def load_table_checks(df, filename):
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ['Term Source REF', 'Term Accession Number']:
-                    spl = (
-                        "(E) Unexpected column heading following {} column. "
-                        "Found {} at offset {}".format(prop_name, col, x + 1, filename))
+                    spl = ("(E) Unexpected column heading following {} column. "
+                           "Found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                     log.error(spl)
                     error = {
                         "message": "Unrecognised header",
