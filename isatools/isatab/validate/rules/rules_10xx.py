@@ -266,7 +266,7 @@ def check_protocol_parameter_usage(i_df_dict, dir_context):
 def check_protocol_names(i_df_dict):
     """Used for rule 1010
 
-    :param ii_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :return: None
     """
     for study_protocols_df in i_df_dict['s_protocols']:

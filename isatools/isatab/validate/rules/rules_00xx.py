@@ -8,7 +8,7 @@ from isatools.isatab.defaults import log
 def check_table_files_read(i_df_dict, dir_context):
     """Used for rules 0006 and 0008
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
