@@ -13,10 +13,10 @@ from isatools.isatab.defaults import (
 )
 
 
-def check_investigation_against_config(i_df, configs):
+def check_investigation_against_config(i_df_dict, configs):
     """Checks investigation file against the loaded configurations
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param configs: A dictionary of ISA Configuration objects
     :return: None
     """
@@ -52,18 +52,18 @@ def check_investigation_against_config(i_df, configs):
 
     config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
     required_fields = [i.header for i in config_fields if i.is_required]
-    check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
-    check_section_against_required_fields_one_value(i_df['i_publications'], required_fields)
-    check_section_against_required_fields_one_value(i_df['i_contacts'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['investigation'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['i_publications'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['i_contacts'], required_fields)
 
-    for x, study_df in enumerate(i_df['studies']):
-        check_section_against_required_fields_one_value(i_df['studies'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_design_descriptors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_publications'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_factors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_assays'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_protocols'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_contacts'][x], required_fields, x)
+    for x, study_df in enumerate(i_df_dict['studies']):
+        check_section_against_required_fields_one_value(i_df_dict['studies'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_design_descriptors'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_publications'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_factors'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_assays'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_protocols'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_contacts'][x], required_fields, x)
 
 
 def load_config(config_dir):
@@ -92,16 +92,16 @@ def load_config(config_dir):
     return configs
 
 
-def check_measurement_technology_types(i_df, configs):
+def check_measurement_technology_types(i_df_dict, configs):
     """Rule 4002
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param configs: A dictionary of ISA Configuration objects
     :return: None
     """
-    for i, assay_df in enumerate(i_df['s_assays']):
-        measurement_types = assay_df['Study Assay Measurement Type'].tolist()
-        technology_types = assay_df['Study Assay Technology Type'].tolist()
+    for i, study_assays_df in enumerate(i_df_dict['s_assays']):
+        measurement_types = study_assays_df['Study Assay Measurement Type'].tolist()
+        technology_types = study_assays_df['Study Assay Technology Type'].tolist()
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
                 lowered_mt = measurement_types[x].lower()
