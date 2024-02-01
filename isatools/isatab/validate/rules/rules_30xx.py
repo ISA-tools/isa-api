@@ -1,13 +1,11 @@
 import iso8601
 
-from pandas import DataFrame
-
 from isatools.isatab.validate.store import validator
 from isatools.isatab.defaults import log, _RX_DOI, _RX_PMID, _RX_PMCID
 from isatools.isatab.utils import cell_has_value
 
 
-def check_filenames_present(i_df_dict: DataFrame) -> None:
+def check_filenames_present(i_df_dict: dict) -> None:
     """ Used for rule 3005
 
     :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
