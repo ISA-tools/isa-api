@@ -107,10 +107,10 @@ def check_measurement_technology_types(i_df_dict, configs):
                 lowered_mt = measurement_types[x].lower()
                 lowered_tt = technology_types[x].lower()
                 if (lowered_mt, lowered_tt) not in configs.keys():
-                    spl = "Measurement {}/technology {}, STUDY ASSAY.{}"
-                    spl = spl.format(measurement_types[x], technology_types[x], i)
+                    spl = "Measurement {}/technology {}, STUDY.{}, STUDY ASSAY.{}"
+                    spl = spl.format(measurement_types[x], technology_types[x], i, x)
                     error = ("(E) Could not load configuration for measurement type '{}' and technology type '{}' "
-                             "for STUDY ASSAY.{}'").format(measurement_types[x], technology_types[x], i)
+                             "for STUDY.{}, STUDY ASSAY.{}'").format(measurement_types[x], technology_types[x], i, x)
                     validator.add_error(message="Measurement/technology type invalid", supplemental=spl, code=4002)
                     log.error(error)
 
