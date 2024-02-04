@@ -177,7 +177,9 @@ class TestSerialize(TestCase):
 
         # Test study design descriptors
         study.design_descriptors = [
-            OntologyAnnotation(term_accession='accession1', term_source='source1', term='name1', id_='id1',
+            OntologyAnnotation(term_accession='accession1',
+                               term_source=OntologySource(name='source1'),
+                               term='name1', id_='id1',
                                comments=comments)
         ]
         expected_dict['studyDesignDescriptors'] = [

@@ -217,18 +217,30 @@ def _deep_copy(isa_object):
 
 
 def update_hash(path, file, hash_func):
-    computed_hash = ""
+    """
+    a subfunction generating the hash using hashlib functions
+    :param path:
+    :param file:
+    :param hash_func:
+    :return:
+    """
+
     with open(os.path.join(path, file), "rb") as f:
         for byte_block in iter(lambda: f.read(4096), b""):
             hash_func.update(byte_block)
-    computed_hash = hash_func.hexdigest()
-    return computed_hash
+    return hash_func.hexdigest()
 
 
 def compute_checksum(path, isa_file_object: DataFile, checksum_type):
+    """
+    a helper function to compute file checksum given a file path, an isa data file name and a type of algorithm
+    :param path:
+    :param isa_file_object:
+    :param checksum_type: enum
+    :return:
+    """
 
-    global hash_type
-    if not checksum_type in ["md5", "sha1", "sha256"]:
+    if checksum_type not in ["md5", "sha1", "sha256", "blake2"]:
         raise ValueError("Invalid checksum type")
     else:
         file_checksum = None
@@ -242,6 +254,16 @@ def compute_checksum(path, isa_file_object: DataFile, checksum_type):
             hash_type = hashlib.sha256()
             file_checksum = update_hash(path, isa_file_object.filename, hash_type)
             isa_file_object.comments.append(Comment(name="checksum type", value="sha256"))
+
+        if checksum_type == "sha1":
+            hash_type = hashlib.sha1()
+            file_checksum = update_hash(path, isa_file_object.filename, hash_type)
+            isa_file_object.comments.append(Comment(name="checksum type", value="sha1"))
+
+        if checksum_type == "blake2":
+            hash_type = hashlib.blake2b()
+            file_checksum = update_hash(path, isa_file_object.filename, hash_type)
+            isa_file_object.comments.append(Comment(name="checksum type", value="blake2"))
 
         isa_file_object.comments.append(Comment(name="checksum", value=file_checksum))
 

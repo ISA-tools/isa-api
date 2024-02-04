@@ -304,20 +304,23 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                         process.executes_protocol = unknown_protocol
 
             for _, row in df_dict['s_assays'][i].iterrows():
-                assay = Assay()
-                assay.filename = row['Study Assay File Name']
-                assay.measurement_type = get_oa(
-                    row['Study Assay Measurement Type'],
-                    row['Study Assay Measurement Type Term Accession Number'],
-                    row['Study Assay Measurement Type Term Source REF']
-                )
-                assay.technology_type = get_oa(
-                    row['Study Assay Technology Type'],
-                    row['Study Assay Technology Type Term Accession Number'],
-                    row['Study Assay Technology Type Term Source REF']
-                )
-                assay.technology_platform = row['Study Assay Technology Platform']
-                assay.comments = get_comments_row(df_dict['s_assays'][i].columns, row)
+                assay_dict = {
+                    "filename": row['Study Assay File Name'],
+                    "measurement_type": get_oa(
+                        row['Study Assay Measurement Type'],
+                        row['Study Assay Measurement Type Term Accession Number'],
+                        row['Study Assay Measurement Type Term Source REF']
+                    ),
+                    "technology_type": get_oa(
+                        row['Study Assay Technology Type'],
+                        row['Study Assay Technology Type Term Accession Number'],
+                        row['Study Assay Technology Type Term Source REF']
+                    ),
+                    "technology_platform": row['Study Assay Technology Platform'],
+                    "comments": get_comments_row(df_dict['s_assays'][i].columns, row)
+                }
+                assay = Assay(**assay_dict)
+
                 if skip_load_tables:
                     pass
                 else:
@@ -407,6 +410,7 @@ def load_table(fp):
     labels = df.columns
     new_labels = []
     for label in labels:
+        # print("in load table", label)
         any_var_regex = compile(r'.*\[(.*?)\]')
         hits = any_var_regex.findall(label)
         if len(hits) > 0:

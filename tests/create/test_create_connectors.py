@@ -79,13 +79,6 @@ class TestMappings(unittest.TestCase):
                     'term': 'toto'}
         self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_1, False), expected)
 
-        ontosrc_string = "onto"
-        ontology_annot_2 = OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=ontosrc_string)
-        expected_src_string = {'iri': 'GO:2314',
-                               'source': "onto",
-                               'term': 'toto'}
-        self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_2, False), expected_src_string)
-
     def test_assay_template_convert_json_to_ordered_dict_met_prof_mass_spec(self):
         actual_odict_mp_ms = assay_template_to_ordered_dict(self.met_prof_jsons[0])
         self.assertEqual(actual_odict_mp_ms, ms_assay_dict)

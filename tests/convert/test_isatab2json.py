@@ -136,10 +136,10 @@ class TestIsaTab2Json(unittest.TestCase):
 
         with open(os.path.join(self._tmp_dir, 'isa.json')) as isa_json:
             isajson_read = json.load(isa_json)
-            self.assertEqual(isajson_read["studies"][0]["filename"], "s_Study id.txt")
-            self.assertEqual(isajson_read["studies"][0]["assays"][0]["comments"][0]["value"], "ena")
+            self.assertEqual(isajson_read["studies"][0]["filename"], ISA.studies[0].filename)
+            self.assertEqual(isajson_read["studies"][0]["assays"][0]["comments"][0]["value"], ISA.studies[0].assays[0].comments[0].value)
 
         with open(os.path.join(self._tmp_dir, 'isa.json')) as isa_json:
             isajson_read = isajson.load(isa_json)
-            self.assertEqual(isajson_read.studies[0].filename, "s_Study id.txt")
-            self.assertEqual(isajson_read.studies[0].assays[0].comments[0].value, "ena")
+            self.assertEqual(isajson_read.studies[0].filename,  ISA.studies[0].filename)
+            self.assertEqual(isajson_read.studies[0].assays[0].comments[0].value, ISA.studies[0].assays[0].comments[0].value)

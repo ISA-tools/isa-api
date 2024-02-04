@@ -1,7 +1,7 @@
 <isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
-    <isatab-configuration table-name="metaboliteprofiling_nmr" isatab-assay-type="nmr_spec_assay"
+    <isatab-configuration table-name="untargetedmetaboliteprofiling_nmr" isatab-assay-type="nmr_spec_assay"
         isatab-conversion-target="meda">
-        <measurement term-label="metabolite profiling"
+        <measurement term-label="untargeted metabolite profiling"
             term-accession="http://purl.obolibrary.org/obo/OBI_0000366" source-abbreviation="OBI"/>
         <technology term-label="NMR spectroscopy"
             term-accession="http://purl.obolibrary.org/obo/OBI_0000623" source-abbreviation="OBI"/>

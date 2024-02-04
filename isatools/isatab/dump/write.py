@@ -106,7 +106,6 @@ def write_study_table_files(inv_obj, output_dir):
                 columns += flatten(map(lambda x: get_fv_columns(olabel, x),
                                        node.factor_values))
 
-
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
@@ -303,6 +302,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             protocol_types_dict
                         )
                         if oname_label is not None:
+                            print("FROM TAB DUMPER: ",oname_label)
                             columns.append(oname_label)
                         elif node.executes_protocol.protocol_type.term.lower() \
                                 in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
@@ -312,18 +312,35 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
-                    for output in [x for x in node.outputs if
-                                   isinstance(x, DataFile)]:
-                        columns.append(output.label)
+                    # datafile_count = 0
+                    # for output in node.outputs:
+                    #     if isinstance(output, DataFile) and output.label not in columns:
+                    #         datafile_count = 1
+                    #         columns.append(output.label)
+                    #         columns += flatten(
+                    #             map(lambda x: get_comment_column(output.label, x),
+                    #                 output.comments))
+                    #     elif datafile_count > 0 and output.label in columns:
+                    #         datafile_count = 1
+                    #         columns += flatten(
+                    #             map(lambda x: get_comment_column(output.label, x),
+                    #                 output.comments))
+                    #     else:
+                    #         columns += flatten(
+                    #             map(lambda x: get_comment_column(output.label, x),
+                    #                 output.comments))
+                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                        if output.label not in columns:
+                          columns.append(output.label)
                         columns += flatten(
                             map(lambda x: get_comment_column(output.label, x),
                                 output.comments))
-
+                        # print(columns)
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
                     columns += flatten(
-                        map(lambda x: get_characteristic_columns(olabel, x),
+                        map(lambda x: get_characteristic_columns(olabel, x) ,
                             node.characteristics))
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -358,6 +375,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             )
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
+                                print("N from ISA-tab dump write", node.name)
                             elif node.executes_protocol.protocol_type.term.lower() in \
                                     protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 df_dict["Hybridization Assay Name"][-1] = \
@@ -376,14 +394,45 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             colabel = "{0}.Comment[{1}]".format(
                                 olabel, co.name)
                             df_dict[colabel][-1] = co.value
-                        for output in [x for x in node.outputs if
-                                       isinstance(x, DataFile)]:
-                            olabel = output.label
-                            df_dict[olabel][-1] = output.filename
+
+                        # datafile_count = 0
+                        # for output in node.outputs:
+                        #     if isinstance(output, DataFile) and datafile_count == 0 and output.label not in olabel:
+                        #         datafile_count = 1
+                        #         olabel = output.label
+                        #         df_dict[olabel][-1] = output.filename
+                        #         for co in output.comments:
+                        #             colabel = "{0}.Comment[{1}]".format(
+                        #                 olabel, co.name)
+                        #             df_dict[colabel][-1] = co.value
+                        #     elif isinstance(output, DataFile) and datafile_count > 0:
+                        #         df_dict[olabel][-1] = df_dict[olabel][-1] + ";" + output.filename
+                        #         for co in output.comments:
+                        #             colabel = "{0}.Comment[{1}]".format(
+                        #                 olabel, co.name)
+                        #             df_dict[colabel][-1] = co.value
+                        #     # else:
+
+                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                            output_by_type = []
+                            if output.label not in columns:
+                                columns.append(output.label)
+                                olabel = output.label
+                                output_by_type.append(output.filename)
+                                delim = ";"
+                                res = delim.join(map(str, output_by_type))
+                                df_dict[olabel][-1] = res
+                            else:
+                                olabel = output.label
+                                output_by_type.append(output.filename)
+                                delim = ";"
+                                res = delim.join(map(str, output_by_type))
+                                df_dict[olabel][-1] = res
+
                             for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(
-                                    olabel, co.name)
-                                df_dict[colabel][-1] = co.value
+                                    colabel = "{0}.Comment[{1}]".format(
+                                        olabel, co.name)
+                                    df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -403,16 +452,18 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     elif isinstance(node, Material):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
-                        for c in node.characteristics:
-                            category_label = c.category.term if isinstance(c.category.term, str) \
-                                else c.category.term["annotationValue"]
-                            clabel = "{0}.Characteristics[{1}]".format(
-                                olabel, category_label)
-                            write_value_columns(df_dict, clabel, c)
-                        for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(
-                                olabel, co.name)
-                            df_dict[colabel][-1] = co.value
+                        if node.characteristics != []:
+                            for c in node.characteristics:
+                                if c.category is not None:
+                                     category_label = c.category.term if isinstance(c.category.term, str) \
+                                        else c.category.term["annotationValue"]
+                                     clabel = "{0}.Characteristics[{1}]".format(
+                                        olabel, category_label)
+                                     write_value_columns(df_dict, clabel, c)
+                            for co in node.comments:
+                                colabel = "{0}.Comment[{1}]".format(
+                                    olabel, co.name)
+                                df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
                         pass  # handled in process

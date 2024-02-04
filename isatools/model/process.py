@@ -39,7 +39,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     # TODO: replace with above but need to debug where behaviour starts varying
 
-    def __init__(self, id_='', name='', executes_protocol=None, date_=None,
+    def __init__(self, id_='', name=None, executes_protocol=None, date_=None,
                  performer=None, parameter_values=None, inputs=None,
                  outputs=None, comments=None):
         Commentable.__init__(self, comments)
@@ -86,6 +86,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     def name(self, val):
         if val is not None and isinstance(val, str):
             self.__name = val
+            # print("Constructor", self.__name, val, type(val))
         else:
             raise AttributeError('Process.name must be a string')
 

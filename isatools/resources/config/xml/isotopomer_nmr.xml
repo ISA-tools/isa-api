@@ -1,7 +1,7 @@
 <isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
-    <isatab-configuration table-name="metaboliteprofiling_nmr" isatab-assay-type="nmr_spec_assay"
+    <isatab-configuration table-name="isotopomer_nmr" isatab-assay-type="nmr_spec_assay"
         isatab-conversion-target="meda">
-        <measurement term-label="metabolite profiling"
+        <measurement term-label="isotopomer analysis"
             term-accession="http://purl.obolibrary.org/obo/OBI_0000366" source-abbreviation="OBI"/>
         <technology term-label="NMR spectroscopy"
             term-accession="http://purl.obolibrary.org/obo/OBI_0000623" source-abbreviation="OBI"/>
@@ -19,6 +19,7 @@
             <default-value><![CDATA[]]></default-value>
             <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT]</generated-value-template>
         </field>
+
         <protocol-field protocol-type="labeling"/>
         <field header="Labeled Extract Name" data-type="String" is-file-field="false"
             is-multiple-value="false" is-required="false" is-hidden="false"
@@ -37,6 +38,7 @@
                     name="Chemical entities of biological interest" version="49736"/>
             </recommended-ontologies>
         </field>
+
         <protocol-field protocol-type="NMR spectroscopy"/>
         <field header="Parameter Value[instrument]" data-type="String" is-file-field="false"
             is-multiple-value="false" is-required="false" is-hidden="false"

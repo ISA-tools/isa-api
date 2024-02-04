@@ -1,7 +1,7 @@
 from isatools import isajson
 from isatools.model import (
     Investigation, Study, Comment, OntologySource, OntologyAnnotation, Person, Publication, Source, Characteristic,
-    Sample, batch_create_materials, Protocol, Process, StudyFactor, Assay, Material, DataFile, plink,
+    Sample, batch_create_materials, Protocol, ProtocolParameter,ParameterValue, Process, StudyFactor, Assay, Material, DataFile, plink,
 
 )
 from isatools.tests import utils
@@ -429,6 +429,7 @@ class TestIsaJson(unittest.TestCase):
             ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
             study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
             assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
+            self.assertEqual(assay_gx['materials']['otherMaterials'][1  ]["type"], "Extract Name")
 
     def test_json_load_and_dump_isa_le_test(self):
         # Load into ISA objects
@@ -463,7 +464,7 @@ class TestIsaJson(unittest.TestCase):
         )
 
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json'), 'w') as out_fp:
-            out_fp.write(isa_j)
+                out_fp.write(isa_j)
 
         out_fp.close()
 
@@ -478,3 +479,75 @@ class TestIsaJson(unittest.TestCase):
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test2.json')) as in_fp:
             reverse_test_isa_investigation = isajson.load(in_fp)
             self.assertIsInstance(reverse_test_isa_investigation, Investigation)
+
+    def test_isajson_char_quant_unit(self):
+        # Validates issue fix for #512
+        i = Investigation()
+
+        uo = OntologySource(name='UO')
+        obi = OntologySource(name='OBI')
+        uberon = OntologySource(name='UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON')
+
+        i.ontology_source_references.append(uberon)
+        i.ontology_source_references.append(ncbitaxon)
+        i.ontology_source_references.append(uo)
+
+        organism_category = OntologyAnnotation(term='organism')
+        material_type_category = OntologyAnnotation(term='material type')
+        quantity_descriptor_category = OntologyAnnotation(term='body weight')
+
+        s = Study(filename='s_TEST-Template1-Splitting.txt')
+        sample_collection_protocol = Protocol(
+            name='sample collection',
+            protocol_type=OntologyAnnotation(term='sample collection'),
+            parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term="vessel")),
+                        ProtocolParameter(parameter_name=OntologyAnnotation(term="storage temperature"))
+                        ]
+        )
+
+        s.protocols.append(sample_collection_protocol)
+
+        source1 = Source(name='source1')
+        source1.characteristics.append(Characteristic(category=material_type_category, value='specimen'))
+        source1.characteristics.append(Characteristic(category=organism_category,
+                                                      value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                                               term_accession='http://purl.bioontology.org/ontology/STY/T016')))
+        source1.characteristics.append(Characteristic(category=quantity_descriptor_category,
+                                                      value=72,
+                                                      unit=OntologyAnnotation(term="kilogram",
+                                                                              term_source=uo,
+                                                                              term_accession="http://purl.obolibrary.org/obo/UO_0000009")))
+
+        sample1 = Sample(name='sample1')
+        organism_part = OntologyAnnotation(term='organism part')
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+        sample1.characteristics.append(Characteristic(category=OntologyAnnotation(term="specimen mass"),
+                                                      value=450,
+                                                      unit=OntologyAnnotation(term='milligram',
+                                                                              term_source=uo,
+                                                                              term_accession='http://purl.obolibrary.org/obo/UO_0000022'
+                                                                              )))
+
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.parameter_values = [ParameterValue(category=s.protocols[0].parameters[0],
+                                                                     value=OntologyAnnotation(term="eppendorf tube",
+                                                                                              term_source=obi,
+                                                                                              term_accession="purl.org")),
+                                                      ParameterValue(category=s.protocols[0].parameters[1],
+                                                                     value=-20,
+                                                                     unit=OntologyAnnotation(term="degree Celsius",
+                                                                                             term_source=uo,
+                                                                                             term_accession="http://purl.obolibrary.org/obo/UO_0000027"))]
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        isa_j = json.dumps(
+            i, cls=isajson.ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')
+        )
+        self.assertIsInstance(isa_j, str)

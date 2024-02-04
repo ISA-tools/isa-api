@@ -339,6 +339,7 @@ def load_table_checks(df, filename):
                            'Peptide Assignment File',
                            'Post Translational Modification Assignment File',
                            'Data Transformation Name',
+                           'Derived Data File',
                            'Derived Spectral Data File', 'Normalization Name',
                            'Derived Array Data File', 'Image File', "Free Induction Decay Data File",
                            'Metabolite Assignment File', "Performer", "Date", "Array Data Matrix File",
@@ -408,6 +409,7 @@ def load_table_checks(df, filename):
                              'Protein Assignment File',
                              'Peptide Assignment File',
                              'Post Translational Modification Assignment File',
+                             'Derived Data File',
                              'Derived Spectral Data File',
                              'Derived Array Data File']
                     or _RX_FACTOR_VALUE.match(x)]
@@ -463,7 +465,9 @@ def load_table_checks(df, filename):
             else:
                 log.error("Expected Label column after Labeled Extract Name "
                           "but none found")
-        elif prop_name in ['Raw Data File', 'Derived Spectral Data File',
+        elif prop_name in ['Raw Data File',
+                           'Derived Data File',
+                           'Derived Spectral Data File',
                            'Derived Array Data File', 'Array Data File',
                            'Raw Spectral Data File', 'Protein Assignment File',
                            'Peptide Assignment File',

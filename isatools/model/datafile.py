@@ -15,7 +15,8 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
+    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None,
+                 checksum_type=None, checksum_value=None):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
@@ -29,9 +30,8 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         if generated_from:
             self.__generated_from = generated_from
 
-        self._comments = [Comment(name="checksum type"),Comment(name="checksum")]
-            # if comments:
-            #     self.__comments = comments
+        self.__comments = comments or []
+        self.__comments.extend([Comment(name="checksum type"), Comment(name="checksum")])
 
     @property
     def filename(self):

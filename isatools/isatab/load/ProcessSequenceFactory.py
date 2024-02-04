@@ -219,7 +219,8 @@ class ProcessSequenceFactory:
 
                             if characteristic.category.term in [
                                 x.category.term
-                                for x in material.characteristics]:
+                                for x in material.characteristics
+                            ]:
                                 log.warning(
                                     'Duplicate characteristic found for '
                                     'material, skipping adding to material '
@@ -335,7 +336,7 @@ class ProcessSequenceFactory:
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
                     if len(name_column_hits) == 1:
                         process.name = str(object_series[name_column_hits[0]])
-
+                        # print("process name at load:", process.name, name_column_hits[0])
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                         category_key = next(iter(_RX_PARAMETER_VALUE.findall(pv_column)))
                         if category_key not in [x.category.parameter_name.term for x in process.parameter_values]:
