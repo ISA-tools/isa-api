@@ -266,9 +266,9 @@ def check_protocol_fields(table, cfg, proto_map):
         last_proto_index = -1
     last_mat_or_dat_index = table.columns.get_loc(field_headers[len(field_headers) - 1])
     if last_proto_index > last_mat_or_dat_index:
-        spl = "Protocol REF column without output in file '" + table.filename + "'"
+        spl = "(W) Protocol REF column is not followed by a material or data node in file '" + table.filename + "'"
         validator.add_warning(message="Missing Protocol Value", supplemental=spl, code=1007)
-        log.warning("(W) Protocol REF column is not followed by a material or data node in file '" + table.filename + "'")
+        log.warning(spl)
     if cfg.get_isatab_configuration():
         for left, right in pairwise(field_headers):
             cleft = None
