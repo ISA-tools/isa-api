@@ -254,30 +254,22 @@ def check_protocol_fields(table, cfg, proto_map):
         a, b = tee(iterable)
         next(b, None)
         return zip(a, b)
-
-    proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
-    result = True
-    for each in proto_ref_index:
-        prots_found = set()
-        for cell in table[each]:
-            prots_found.add(cell)
-        if len(prots_found) > 1:
-            log.warning("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
-            log.warning("(W) Only one protocol reference should be used in a Protocol REF column.")
-            result = False
-    if result:
-        field_headers = [i for i in table.columns
-                         if i.lower().endswith(' name')
-                         or i.lower().endswith(' data file')
-                         or i.lower().endswith(' data matrix file')]
-        protos = [i for i in table.columns if i.lower() == 'protocol ref']
-        if len(protos) > 0:
-            last_proto_index = table.columns.get_loc(protos[len(protos) - 1])
-        else:
-            last_proto_index = -1
-        last_mat_or_dat_index = table.columns.get_loc(field_headers[len(field_headers) - 1])
-        if last_proto_index > last_mat_or_dat_index:
-            log.warning("(W) Protocol REF column without output in file '" + table.filename + "'")
+    
+    field_headers = [i for i in table.columns
+                     if i.lower().endswith(' name')
+                     or i.lower().endswith(' data file')
+                     or i.lower().endswith(' data matrix file')]
+    protos = [i for i in table.columns if i.lower() == 'protocol ref']
+    if len(protos) > 0:
+        last_proto_index = table.columns.get_loc(protos[len(protos) - 1])
+    else:
+        last_proto_index = -1
+    last_mat_or_dat_index = table.columns.get_loc(field_headers[len(field_headers) - 1])
+    if last_proto_index > last_mat_or_dat_index:
+        spl = "Protocol REF column without output in file '" + table.filename + "'"
+        validator.add_warning(message="Missing Protocol Value", supplemental=spl, code=1007)
+        log.warning("(W) Protocol REF column is not followed by a material or data node in file '" + table.filename + "'")
+    if cfg.get_isatab_configuration():
         for left, right in pairwise(field_headers):
             cleft = None
             cright = None
@@ -294,16 +286,15 @@ def check_protocol_fields(table, cfg, proto_map):
                 fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
                 fprotos = list()
                 for header in fprotos_headers:
-                    proto_name = table.iloc[0][header]
-                    try:
-                        proto_type = proto_map[proto_name]
-                        fprotos.append(proto_type)
-                    except KeyError:
-                        spl = ("Could not find protocol type for protocol name '{}', trying to validate_rules against name "
-                               "only").format(proto_name)
-                        validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                        log.warning("(W) {}".format(spl))
-                        fprotos.append(proto_name)
+                    proto_names = list(table.loc[:, header].unique())
+                    for proto_name in proto_names:
+                        proto_type = proto_map.get(proto_name)
+                        if not proto_type and proto_name:
+                            spl = ("Could not find protocol type for protocol name '{}' in file '{}'" ).format(proto_name, table.filename)
+                            validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
+                            log.warning("(W) {}".format(spl))
+                        else:
+                            fprotos.append(proto_type)
                 invalid_protos = set(cprotos) - set(fprotos)
                 if len(invalid_protos) > 0:
                     spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
@@ -311,8 +302,6 @@ def check_protocol_fields(table, cfg, proto_map):
                     spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
                     validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
                     log.warning("(W) {}".format(spl))
-                    result = False
-    return result
 
 
 def load_table_checks(df, filename):
