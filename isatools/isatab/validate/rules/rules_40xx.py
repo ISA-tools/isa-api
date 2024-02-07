@@ -24,17 +24,15 @@ def check_investigation_against_config(i_df, configs):
     code = 4003
     message = "A required property is missing"
 
-    def add_warning(index, column, value_index):
+    def add_error(index, column, value_index):
         if index > 0:
             spl = "A property value in {}.{} of investigation file at column {} is required"
             spl = spl.format(column, index + 1, value_index + 1)
-            validator.add_warning(message=message, supplemental=spl, code=code)
-            log.warning("(W) {}".format(spl))
         else:
             spl = "A property value in {} of investigation file at column {} is required"
             spl = spl.format(column, value_index + 1)
-            validator.add_warning(message=message, supplemental=spl, code=code)
-            log.warning("(W) {}".format(spl))
+        validator.add_error(message=message, supplemental=spl, code=code)
+        log.error("(E) {}".format(spl))
 
     def check_section_against_required_fields_one_value(section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
@@ -45,10 +43,10 @@ def check_investigation_against_config(i_df, configs):
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
                         if isnan(required_value):
-                            add_warning(i, col, x)
+                            add_error(i, col, x)
                     else:
                         if required_value == '' or 'Unnamed: ' in required_value:
-                            add_warning(i, col, x)
+                            add_error(i, col, x)
 
     config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
     required_fields = [i.header for i in config_fields if i.is_required]
