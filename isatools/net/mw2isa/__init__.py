@@ -494,7 +494,7 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
             "Parameter Value[binned increment]",
             "Parameter Value[binned data exclusion range ]",
             "NMR Assay Name",
-            "Free Induction Data File",
+            "Free Induction Decay Data File",
             "Protocol REF",
             "Parameter Value[software]",
             "Data Transformation Name",

@@ -32,7 +32,7 @@
         - Derived Spectral Data File
         - Metabolite Assignment File
 -
-    measurement type: isotopomer distribution analysis
+    measurement type: isotopomer analysis
     technology type: NMR spectroscopy
     protocol type: NMR spectroscopy
     parameter-like file: 

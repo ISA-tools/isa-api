@@ -280,13 +280,13 @@ class ProcessSequenceFactory:
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
 
-                    # TODO: Keep process key sequence here to reduce number of
-                    # passes on Protocol REF columns?
+                    # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
                     try:
                         process = processes[process_key]
                     except KeyError:
-                        process = Process(executes_protocol=protocol_ref)
+                        # TODO: Fix name formatting using protocol type or pattern
+                        process = Process(executes_protocol=protocol_ref, name="TOTO-{}-".format(_) + protocol_ref)
                         processes.update(dict([(process_key, process)]))
 
                     output_node_index = find_gt(node_cols, object_label_index)
@@ -336,7 +336,6 @@ class ProcessSequenceFactory:
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
                     if len(name_column_hits) == 1:
                         process.name = str(object_series[name_column_hits[0]])
-                        # print("process name at load:", process.name, name_column_hits[0])
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                         category_key = next(iter(_RX_PARAMETER_VALUE.findall(pv_column)))
                         if category_key not in [x.category.parameter_name.term for x in process.parameter_values]:
