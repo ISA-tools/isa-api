@@ -1528,7 +1528,8 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         extract1 = Material(name='extract1', type_='Extract Name')
         data1 = DataFile(filename='datafile.raw', label='Raw Data File')
         cs_comment1 = Comment(name="checksum type", value="md5")
-        cs_comment2 = Comment(name="checksum", value="123134214")
+        cmt_value = "123134214"
+        cs_comment2 = Comment(name="checksum", value=cmt_value)
 
         data1.comments.append(cs_comment1)
         data1.comments.append(cs_comment2)
