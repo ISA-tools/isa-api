@@ -341,7 +341,7 @@ def load_table_checks(df, filename):
                            'Data Transformation Name',
                            'Derived Spectral Data File', 'Normalization Name',
                            'Derived Array Data File', 'Image File', "Free Induction Decay Data File",
-                           'Metabolite Assignment File',  "Date", "Array Data Matrix File",
+                           'Metabolite Assignment File', "Performer", "Date", "Array Data Matrix File",
                            'Free Induction Decay File', "Derived Array Data Matrix File",
                            'Acquisition Parameter Data File']) \
                 and not _RX_CHARACTERISTICS.match(column) \

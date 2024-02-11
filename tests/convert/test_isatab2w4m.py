@@ -46,7 +46,7 @@ class TestIsatab2w4m(unittest.TestCase):
             output_file = os.path.join(self._tmp_dir, '.'.join(
                 ['-'.join([study, 'w4m', x]), 'tsv']))
             self.assertTrue(os.path.exists(output_file))
-            self.assertTrue(filecmp.cmp(output_file, ref_file),
+            self.assertTrue(filecmp.cmp(output_file, ref_file, shallow=False),
                             'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
 
     # Test MTBLS30

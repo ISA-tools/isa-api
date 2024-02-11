@@ -177,7 +177,10 @@ class TestSerialize(TestCase):
 
         # Test study design descriptors
         study.design_descriptors = [
-            OntologyAnnotation(term_accession='accession1', term_source='source1', term='name1', id_='id1',
+            OntologyAnnotation(term_accession='accession1',
+                               term_source=OntologySource(name='source1'),
+                               term='name1',
+                               id_='id1',
                                comments=comments)
         ]
         expected_dict['studyDesignDescriptors'] = [
@@ -311,13 +314,10 @@ class LDTest(TestCase):
         self.investigation.publications = [publication]
         self.investigation.studies = [study]
 
+        set_context(vocab='wd', all_in_one=False, local=False)
+
         inv_ld = self.investigation.to_ld()
         investigation = Investigation()
         investigation.from_dict(inv_ld)
         self.assertEqual(investigation.to_dict(), self.investigation.to_dict())
 
-        set_context(vocab='wd', all_in_one=False, local=False)
-        inv_ld = self.investigation.to_ld()
-        investigation = Investigation()
-        investigation.from_dict(inv_ld)
-        self.assertEqual(investigation.to_dict(), self.investigation.to_dict())

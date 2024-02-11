@@ -7,8 +7,8 @@
     "type": "object",
     "properties": {
         "@id": { "type": "string", "format": "uri-reference" },
-      "@context": { "type": "string", "format": "uri-reference"},
-      "@type" : { "type": "string", "enum": ["Process"] },
+        "@context": { "type": "string", "format": "uri-reference"},
+        "@type" : { "type": "string", "enum": ["Process"] },
         "name": {
             "type": "string"
         },

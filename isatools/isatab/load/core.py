@@ -25,9 +25,10 @@ from isatools.model import (
 )
 
 
-def load(isatab_path_or_ifile, skip_load_tables=False):
+def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> object:
     """Load an ISA-Tab into ISA Data Model objects
 
+    :rtype: object
     :param isatab_path_or_ifile: Full path to an ISA-Tab directory or file-like
     buffer object pointing to an investigation file
     :param skip_load_tables: Whether or not to skip loading the table files
