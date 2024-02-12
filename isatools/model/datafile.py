@@ -31,7 +31,10 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
             self.__generated_from = generated_from
 
         self.__comments = comments or []
-        self.__comments.extend([Comment(name="checksum type"), Comment(name="checksum")])
+        self.__comments.extend([
+            Comment(name="checksum type", value=checksum_type),
+            Comment(name="checksum", value=checksum_value)
+        ])
 
     @property
     def filename(self):
