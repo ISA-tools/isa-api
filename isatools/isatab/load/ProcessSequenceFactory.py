@@ -276,9 +276,16 @@ class ProcessSequenceFactory:
                 object_label_index = list(DF.columns).index(object_label)
 
                 # don't drop duplicates
-                for _, object_series in DF.iterrows():
+                for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = process_keygen(
+                        protocol_ref,
+                        column_group,
+                        _cg,
+                        DF.columns,
+                        object_series,
+                        object_index,
+                        DF)
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
@@ -286,7 +293,8 @@ class ProcessSequenceFactory:
                         process = processes[process_key]
                     except KeyError:
                         # TODO: Fix name formatting using protocol type or pattern
-                        process = Process(executes_protocol=protocol_ref, name="TOTO-{}-".format(_) + protocol_ref)
+                        process_name = "process-{}-{}".format(object_index, protocol_ref)
+                        process = Process(executes_protocol=protocol_ref, name=process_name)
                         processes.update(dict([(process_key, process)]))
 
                     output_node_index = find_gt(node_cols, object_label_index)
