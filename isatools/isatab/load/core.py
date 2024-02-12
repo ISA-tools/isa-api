@@ -410,7 +410,6 @@ def load_table(fp):
     labels = df.columns
     new_labels = []
     for label in labels:
-        # print("in load table", label)
         any_var_regex = compile(r'.*\[(.*?)\]')
         hits = any_var_regex.findall(label)
         if len(hits) > 0:
