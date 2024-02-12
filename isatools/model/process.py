@@ -86,7 +86,6 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     def name(self, val):
         if val is not None and isinstance(val, str):
             self.__name = val
-            # print("Constructor", self.__name, val, type(val))
         else:
             raise AttributeError('Process.name must be a string')
 
@@ -307,6 +306,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         self.id = process.get('@id', '')
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
+        # TODO: move to constants.py
         allowed_protocol_type_terms = [
             "nucleic acid sequencing",
             "nmr spectroscopy",
