@@ -364,21 +364,20 @@ def get_characteristic_columns(label, c):
     """
 
     columns = []
-    if c is None:
-        return
-    if c.category is not None:
-         if isinstance(c.category.term, str):
-            if c.category.term.startswith("{", ):
-                c_as_json = loads(c.category.term)
-                if "annotationValue" in c_as_json.keys():
-                    columns = ["{0}.Characteristics[{1}]".format(label, c_as_json["annotationValue"])]
-                    columns.extend(get_value_columns(columns[0], c))
-         if isinstance(c.category.term, dict):
-            columns = ["{0}.Characteristics[{1}]".format(label, c.category.term["annotationValue"])]
-            columns.extend(get_value_columns(columns[0], c))
-         else:
-            columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
-            columns.extend(get_value_columns(columns[0], c))
+    if c is None or c.category is None:
+        return columns
+    if isinstance(c.category.term, str):
+        if c.category.term.startswith("{", ):
+            c_as_json = loads(c.category.term)
+            if "annotationValue" in c_as_json.keys():
+                columns = ["{0}.Characteristics[{1}]".format(label, c_as_json["annotationValue"])]
+                columns.extend(get_value_columns(columns[0], c))
+    if isinstance(c.category.term, dict):
+        columns = ["{0}.Characteristics[{1}]".format(label, c.category.term["annotationValue"])]
+        columns.extend(get_value_columns(columns[0], c))
+    else:
+        columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
+        columns.extend(get_value_columns(columns[0], c))
 
     return columns
 
@@ -423,20 +422,17 @@ def convert_to_number(value):
     """Convert a value the type of which is a string to an integer or a flaot
 
     :param value:
-    :return: an int or a float or None an error
+    :return: an int or a float or None or an error
     """
     try:
         # Try converting to integer first
-        result = int(value)
+        return int(value)
     except ValueError:
         try:
             # If that fails, try converting to float
-            result = float(value)
+            return float(value)
         except ValueError:
-            # If both conversions fail, handle the error or return a default value
-            print(f"Unable to convert '{value}' to either int or float.")
-            result = None  # You can set a default value or handle the error differently
-    return result
+            return
 
 
 def get_value(object_column, column_group, object_series, ontology_source_map, unit_categories):
@@ -500,7 +496,6 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
             term_accession_value = object_series[offset_3r_col]
             if term_accession_value != '':
                 unit_term_value.term_accession = term_accession_value
-
         return convert_to_number(cell_value), unit_term_value
     return cell_value, None
 
