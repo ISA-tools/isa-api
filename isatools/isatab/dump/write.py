@@ -405,17 +405,16 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     elif isinstance(node, Material):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
-                        if node.characteristics:
-                            for c in node.characteristics:
-                                if c.category is not None:
-                                    category_label = c.category.term if isinstance(c.category.term, str) \
-                                       else c.category.term["annotationValue"]
-                                    clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
-                                    write_value_columns(df_dict, clabel, c)
-                            for co in node.comments:
-                                colabel = "{0}.Comment[{1}]".format(
-                                    olabel, co.name)
-                                df_dict[colabel][-1] = co.value
+                        for c in node.characteristics:
+                            if c.category is not None:
+                                category_label = c.category.term if isinstance(c.category.term, str) \
+                                   else c.category.term["annotationValue"]
+                                clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
+                                write_value_columns(df_dict, clabel, c)
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(
+                                olabel, co.name)
+                            df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
                         pass  # handled in process
