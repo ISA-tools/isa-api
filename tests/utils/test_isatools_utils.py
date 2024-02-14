@@ -14,7 +14,7 @@ from jsonschema.exceptions import ValidationError
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
 from isatools.net import mtbls as MTBLS
 from isatools.net import ols
 from isatools.net import pubmed
@@ -179,18 +179,33 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(
             J['title'], 'Semantically linking in silico cancer models.')
 
+        J1 = pubmed.get_pubmed_article('890406')
+        self.assertEqual(J1['doi'], '')
+
+        J2 = pubmed.get_pubmed_article('14909816')
+        self.assertEqual(J2['doi'], "")
+
+        J3 = pubmed.get_pubmed_article('2872386')
+        self.assertEqual(J3['doi'], "10.1016/s0025-7125(16)30931-2")
+
+        J4 = pubmed.get_pubmed_article('14870036')
+        self.assertEqual(J4['doi'], "")
+
     def test_set_pubmed_article(self):
         p = Publication(pubmed_id='25520553')
+        prs = Person(first_name="bob")
         pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, '10.4137/CIN.S13895')
         self.assertEqual(p.author_list, 'Johnson D, Connor AJ, McKeever S, '
                                         'Wang Z, Deisboeck TS, Quaiser T, '
                                         'Shochat E')
-        self.assertEqual(
-            p.title, 'Semantically linking in silico cancer models.')
+        self.assertEqual(p.title, 'Semantically linking in silico cancer models.')
         self.assertIsInstance(p.comments[0], Comment)
         self.assertEqual(p.comments[0].name, 'Journal')
         self.assertEqual(p.comments[0].value, 'Cancer Inform')
+        with self.assertRaises(Exception) as context:
+            pubmed.set_pubmed_article(prs)
+            self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
 
 
 class TestIsaTabFixer(unittest.TestCase):
