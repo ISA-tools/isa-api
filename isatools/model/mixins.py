@@ -343,10 +343,13 @@ class StudyAssayMixin(metaclass=ABCMeta):
         :param list factor_values: FactorValues
         """
 
-        s = Sample(name=name, characteristics=characteristics,
-                   factor_values=factor_values, derives_from=derives_from,
-                   comments=comments)
-        self.samples.append(s)
+        sample = Sample(
+            name=name,
+            characteristics=characteristics,
+            factor_values=factor_values,
+            derives_from=derives_from,
+            comments=comments)
+        self.samples.append(sample)
 
     def yield_samples(self, name=None):
         """Gets an iterator of matching samples for a given name.
@@ -461,7 +464,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         else:
             raise AttributeError(
                 '{}.other_material must be iterable containing Materials'
-                    .format(type(self).__name__))
+                .format(type(self).__name__))
 
     def yield_materials_by_characteristic(self, characteristic=None):
         """Gets an iterator of matching materials for a given characteristic.
@@ -519,7 +522,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         else:
             raise AttributeError(
                 '{}.process_sequence must be iterable containing Processes'
-                    .format(type(self).__name__))
+                .format(type(self).__name__))
 
     @property
     def characteristic_categories(self):
