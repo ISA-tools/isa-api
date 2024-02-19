@@ -49,10 +49,10 @@ SAMPLE_METADATA_INPUT_DIR = 'resources/biocrates/input-test/'
 logger = logging.getLogger('isatools')
 
 
-def replaceAll(file,searchExp,replaceExp):
+def replaceAll(file, searchExp, replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
+            line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
 
 
@@ -244,8 +244,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
             # it is assume that the rawdatafilename is unique in each of the
             # plate grouping and polarity
             myAttrs[pi.get('rawdatafilename').split('.')[0]] = myAttrList
-        myMetabolites[usedop + '-' + platebarcode + '-' + polarity.lower()] = \
-            myMetabolitesList
+        myMetabolites[usedop + '-' + platebarcode + '-' + polarity.lower()] = myMetabolitesList
     return myAttrs, mydict
 
 
@@ -352,7 +351,8 @@ def add_sample_metadata(sample_info_file, input_study_file):
                      'Factor value [cellNumber]', 'Factor value [replicate]', 'Factor value [extractionVolume, µl]'
                      ]]
 
-    result['cellosaurusID'] = result['cellosaurusID'].str.replace('cellosaurus:CVCL_',' https://web.expasy.org/cellosaurus/CVCL_')
+    result['cellosaurusID'] = result['cellosaurusID'].str.replace('cellosaurus:CVCL_',
+                                                                  ' https://web.expasy.org/cellosaurus/CVCL_')
 
     result = result.rename(columns={'internal_ID': 'Characteristics[internal_ID]',
                                     'resolute_ID': 'Characteristics[resolute_ID]',
@@ -360,14 +360,15 @@ def add_sample_metadata(sample_info_file, input_study_file):
                                     'cellLine': 'Characteristics[cell line]',
                                     'cellosaurusID': 'Term Accession Number',
                                     'Protocol REF_x': 'Protocol REF',
-                                    'Characteristics[Organism part]':'Characteristics[material type]',
+                                    'Characteristics[Organism part]': 'Characteristics[material type]',
                                     'Material Type': 'Characteristics[specimen type]',
                                     'Factor value [cellNumber]': 'Factor Value[cell seeding density]',
                                     'Factor value [replicate]': 'Factor Value[replicate number]',
                                     'Factor value [extractionVolume, µl]': 'Factor Value[extraction volume]'
                                     })
 
-    study_factor_names="Study Factor Name\"" + "\t" + "\"cell seeding density\"" + "\t" + "\"replicate number\"" + "\t" + "\"extraction volume"
+    study_factor_names = "Study Factor Name\"" + "\t" + "\"cell seeding density\"" + "\t" + "\"replicate number\"" + \
+                         "\t" + "\"extraction volume"
 
     replaceAll(DESTINATION_DIR+"i_inv_biocrates.txt", "Study Factor Name", study_factor_names)
 
@@ -428,5 +429,4 @@ if __name__ == "__main__":
 # parseSample(sys.argv[1])
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")
-
 # Conc_R100028_export_incl_information_20200309.xml
