@@ -30,22 +30,6 @@ def pbar(x):
     return x
 
 
-# column labels
-# _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name',
-#                           'Labeled Extract Name']
-# _LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File',
-#                       'Derived Spectral Data File', 'Derived Array Data File',
-#                       'Array Data File', 'Protein Assignment File',
-#                       'Peptide Assignment File',
-#                       'Post Translational Modification Assignment File',
-#                       'Acquisition Parameter Data File',
-#                       'Free Induction Decay Data File',
-#                       'Derived Array Data Matrix File', 'Image File',
-#                       'Derived Data File', 'Metabolite Assignment File']
-# _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', "NMR Assay Name",
-#                        'Hybridization Assay Name', 'Scan Name',
-#                        'Data Transformation Name', 'Normalization Name']
-
 # REGEXES
 _RX_I_FILE_NAME = compile(r'i_(.*?)\.txt')
 _RX_DATA = compile(r'data\[(.*?)\]')
