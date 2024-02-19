@@ -971,7 +971,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_transcriptome.samples), 48)  # 48 assay samples in a_transcriptome.txt
             self.assertEqual(len(assay_transcriptome.other_material), 96)  # 96 other materials in a_transcriptome.txt
             self.assertEqual(len(assay_transcriptome.data_files), 49)  # 49 data files  in a_transcriptome.txt
-            self.assertEqual(len(assay_transcriptome.process_sequence), 193)  # 193 processes in in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome.process_sequence), 194)  # 194 processes in in a_transcriptome.txt
 
             study_bii_s_2 = [s for s in ISA.studies if s.filename == 's_BII-S-2.txt'][0]
 

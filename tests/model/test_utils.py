@@ -12,7 +12,7 @@ from isatools.model.utils import (
     batch_create_materials,
     batch_create_assays,
     _deep_copy,
-    compute_checksum
+    update_checksum
 )
 
 import os
@@ -113,12 +113,12 @@ class TestUtils(TestCase):
 
     def test_checksum_md5(self):
         isa_data_file = DataFile(filename="EVHINN101.sff", label="RawDataFile")
-        updated_isa_data_file = compute_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "md5")
+        updated_isa_data_file = update_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "md5")
         self.assertEqual(updated_isa_data_file.comments[0].value, "md5")
         self.assertEqual(updated_isa_data_file.comments[1].value, "d41d8cd98f00b204e9800998ecf8427e")
 
     def test_checksum_sha2(self):
         isa_data_file = DataFile(filename="EVHINN101.sff", label="RawDataFile")
-        updated_isa_data_file = compute_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "sha256")
+        updated_isa_data_file = update_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "sha256")
         self.assertEqual(updated_isa_data_file.comments[0].value, "sha256")
         self.assertEqual(updated_isa_data_file.comments[1].value, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
