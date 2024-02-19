@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 from io import StringIO
 from bisect import bisect_left, bisect_right
 from itertools import tee
 from math import isnan
 from csv import reader as csv_reader
 from json import loads
-
 from pandas import DataFrame, Series
 
 from isatools.constants import SYNONYMS
+from isatools.constants import ALL_LABELS
+from isatools.constants import _LABELS_DATA_NODES, _LABELS_ASSAY_NODES, _LABELS_MATERIAL_NODES
+
 from isatools.utils import utf8_text_file_open
 from isatools.isatab.defaults import (
     log,
@@ -15,9 +19,9 @@ from isatools.isatab.defaults import (
     _RX_PARAMETER_VALUE,
     _RX_FACTOR_VALUE,
     _RX_COMMENT,
-    _LABELS_ASSAY_NODES,
-    _LABELS_MATERIAL_NODES,
-    _LABELS_DATA_NODES,
+    # _LABELS_ASSAY_NODES,
+    # _LABELS_MATERIAL_NODES,
+    # _LABELS_DATA_NODES,
     defaults
 )
 from isatools.model import OntologyAnnotation
@@ -37,24 +41,6 @@ class IsaTabDataFrame(DataFrame):
     needs them
     """
 
-    DATA_FILE_LABELS = [
-        'Raw Data File', 'Derived Spectral Data File',
-        'Derived Array Data File', 'Array Data File',
-        'Protein Assignment File', 'Peptide Assignment File',
-        'Post Translational Modification Assignment File',
-        'Acquisition Parameter Data File', 'Free Induction Decay Data File',
-        'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
-        'Metabolite Assignment File', 'Raw Spectral Data File']
-    MATERIAL_LABELS = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
-    OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
-    NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
-    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'NMR Assay Name', 'Hybridization Assay Name',
-                    'Scan Name', 'Data Transformation Name',
-                    'Normalization Name', 'Array Design REF']
-    QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF', 'Term Accession Number', 'Unit']
-    ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
-    ALL_LABELS.append('Protocol REF')
-
     def __init__(self, *args, **kw):
         super(IsaTabDataFrame, self).__init__(*args, **kw)
 
@@ -71,7 +57,7 @@ class IsaTabDataFrame(DataFrame):
         :param label: A string corresponding to a column header
         :return: A cleaned up ISA-Tab header label
         """
-        for clean_label in IsaTabDataFrame.ALL_LABELS:
+        for clean_label in ALL_LABELS:
             if clean_label.lower() in label.strip().lower():
                 return clean_label
             elif _RX_CHARACTERISTICS.match(label):
@@ -93,8 +79,7 @@ class IsaTabDataFrame(DataFrame):
 
 
 class TransposedTabParser(object):
-    """
-    Parser for transposed tables, such as the ISA-Tab investigation table,
+    """Parser for transposed tables, such as the ISA-Tab investigation table,
     or the MAGE-TAB IDF table. The headings are in column 0 with values,
     perhaps multiple, reading in columns towards the right. These tables do
     not necessarily have an even shape (row lengths may differ).
@@ -418,7 +403,7 @@ def get_ontology_source_refs(i_df):
     return i_df['ontology_sources']['Term Source Name'].tolist()
 
 
-def convert_to_number(value):
+def convert_to_number(value: str) -> int | float | None:
     """Convert a value the type of which is a string to an integer or a flaot
 
     :param value:
@@ -587,4 +572,3 @@ def get_fv_columns(label, fv):
     columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
     columns.extend(get_value_columns(columns[0], fv))
     return columns
-
