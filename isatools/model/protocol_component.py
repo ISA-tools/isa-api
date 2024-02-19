@@ -53,24 +53,24 @@ class ProtocolComponent(Commentable):
         return "isatools.model.ProtocolComponent(name='{component.name}', " \
                "category={component_type}, " \
                "comments={component.comments})".format(
-            component=self, component_type=repr(self.component_type))
+                component=self, component_type=repr(self.component_type))
 
     def __str__(self):
         return """ProtocolComponent(
     name={component.name}
     category={component_type}
     comments={num_comments} Comment objects
-)""".format(component=self, component_type=self.component_type.term if
-        self.component_type else '', num_comments=len(self.comments))
+)""".format(component=self, component_type=self.component_type.term if self.component_type else '',
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, ProtocolComponent) \
-               and self.name == other.name \
-               and self.component_type == other.component_type \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.component_type == other.component_type \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
