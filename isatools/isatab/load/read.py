@@ -39,8 +39,8 @@ def read_investigation_file(fp):
         :param next_sec_key: Delimiter key of end of section
         :return: A memory file of the section slice, as a string buffer object
         """
-        line = f.readline()
-        normed_line = line.rstrip()
+        fileline = f.readline()
+        normed_line = fileline.rstrip()
         if normed_line[0] == '"':
             normed_line = normed_line[1:]
         if normed_line[len(normed_line) - 1] == '"':
@@ -50,10 +50,10 @@ def read_investigation_file(fp):
                           + normed_line)
         memf = StringIO()
         while not _peek(f=f).rstrip() == next_sec_key:
-            line = f.readline()
-            if not line:
+            fileline = f.readline()
+            if not fileline:
                 break
-            memf.write(line.rstrip() + '\n')
+            memf.write(fileline.rstrip() + '\n')
         memf.seek(0)
         return memf
 
