@@ -1,14 +1,17 @@
-from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise,  get_object_column_map, get_value
+from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise, get_object_column_map, get_value
 from isatools.isatab.defaults import (
     log,
     _RX_COMMENT,
-    _LABELS_MATERIAL_NODES,
-    _LABELS_DATA_NODES,
+    # _LABELS_MATERIAL_NODES,
+    # _LABELS_DATA_NODES,
     _RX_CHARACTERISTICS,
     _RX_FACTOR_VALUE,
-    _LABELS_ASSAY_NODES,
+    # _LABELS_ASSAY_NODES,
     _RX_PARAMETER_VALUE
 )
+
+from isatools.constants import _LABELS_ASSAY_NODES, _LABELS_MATERIAL_NODES, _LABELS_DATA_NODES
+
 from isatools.model import (
     OntologyAnnotation,
     Comment,
