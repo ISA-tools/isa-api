@@ -18,23 +18,24 @@ def convert(json_fp, path, config_dir=None, sra_settings=None,
     :param datafilehashes: Data files with hashes, in a dict
     :param validate_first: a boolean flag to indicate whether to validate or not before converting
     """
+
     if validate_first:
         log.info("Validating input JSON before conversion")
-        report = isajson.validate(fp=json_fp,
-                                  config_dir=config_dir,
+        report = isajson.validate(fp=json_fp, config_dir=config_dir,
                                   log_level=logging.ERROR)
         if len(report.get('errors')) > 0:
-            log.fatal("Could not proceed with conversion as there are some validation errors. Check log.")
+            log.fatal("Could not proceed with conversion as there are some "
+                      "validation errors. Check log.")
             return
     log.info("Loading isajson {}".format(json_fp.name))
     isa = isajson.load(fp=json_fp)
     log.info("Exporting SRA to {}".format(path))
     log.debug("Using SRA settings ".format(sra_settings))
-    sra.export(isa, path, sra_settings=sra_settings, datafilehashes=datafilehashes)
+    sra.export(isa, path, sra_settings=sra_settings,
+               datafilehashes=datafilehashes)
 
 
-"""
-sra_settings = {
+"""sra_settings = {
  "sra_center": “EI",
   "sra_broker": “EI",
   "sra_action": “ADD”,
