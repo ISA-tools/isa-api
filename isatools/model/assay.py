@@ -8,7 +8,7 @@ from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Assay(Commentable, StudyAssayMixin, object):
-    """An Assay represents a test performed either on material taken from a
+    """ An Assay represents a test performed either on material taken from a
     subject or on a whole initial subject, producing qualitative or
     quantitative
     measurements. An Assay groups descriptions of provenance of sample
@@ -98,7 +98,7 @@ class Assay(Commentable, StudyAssayMixin, object):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
                 'Assay.technology_platform must be a str or None; got {0}:{1}'
-                    .format(val, type(val)))
+                .format(val, type(val)))
         else:
             self.__technology_platform = val
 
