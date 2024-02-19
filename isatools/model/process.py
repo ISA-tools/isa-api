@@ -39,7 +39,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     # TODO: replace with above but need to debug where behaviour starts varying
 
-    def __init__(self, id_='', name=None, executes_protocol=None, date_=None,
+    def __init__(self, id_='', name='', executes_protocol=None, date_=None,
                  performer=None, parameter_values=None, inputs=None,
                  outputs=None, comments=None):
         Commentable.__init__(self, comments)
@@ -49,7 +49,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         self.id = id_
         self.name = ''
         if name:
-            self.__name = name
+            self.name = name
 
         if executes_protocol is None:
             self.__executes_protocol = Protocol()
@@ -306,7 +306,6 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         self.id = process.get('@id', '')
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
-        # TODO: move to constants.py
         allowed_protocol_type_terms = [
             "nucleic acid sequencing",
             "nmr spectroscopy",
