@@ -64,7 +64,7 @@ def write_study_table_files(inv_obj, output_dir):
         sample_in_path_count = 0
         protocol_in_path_count = 0
         longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
-        
+
         for node_index in longest_path:
             node = s_graph.indexes[node_index]
             if isinstance(node, Source):
@@ -314,7 +314,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                         if output.label not in columns:
-                          columns.append(output.label)
+                            columns.append(output.label)
                         columns += flatten(
                             map(lambda x: get_comment_column(output.label, x),
                                 output.comments))
@@ -408,7 +408,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for c in node.characteristics:
                             if c.category is not None:
                                 category_label = c.category.term if isinstance(c.category.term, str) \
-                                   else c.category.term["annotationValue"]
+                                    else c.category.term["annotationValue"]
                                 clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
                                 write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
