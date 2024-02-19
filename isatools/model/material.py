@@ -95,7 +95,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
                 characteristic.value = OntologyAnnotation()
                 characteristic.value.from_dict(characteristic_data["value"])
                 characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
-            if isinstance(characteristic_data["value"], int or float):
+            if isinstance(characteristic_data["value"], (int, float)):
                 characteristic.value = characteristic_data["value"]
             if isinstance(characteristic_data["value"], str):
                 characteristic.value = characteristic_data["value"]
