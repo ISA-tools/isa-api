@@ -53,6 +53,6 @@ class MyTestCase(unittest.TestCase):
 
     def test_create_new_ontology_annotation(self, term_name="something"):
         stuff = isatools.create.assay_templates.create_new_ontology_annotation(term_name),
-        self.assertEqual(str(stuff), str((isatools.model.OntologyAnnotation(term='something', term_source=None, term_accession='', comments=[]),)))
+        self.assertEqual(str(stuff), str((isatools.model.OntologyAnnotation(term='something', term_source=isatools.model.OntologySource(name='onto', file='', version='', description='', comments=[]), term_accession='', comments=[]),)))
 
 

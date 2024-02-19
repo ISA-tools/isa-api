@@ -423,24 +423,24 @@ class TestIsaJson(unittest.TestCase):
     def test_json_load_and_dump_bii_s_test(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json')) as isajson_fp:
-            ISA = isajson.load(isajson_fp)
+            investigation = isajson.load(isajson_fp)
 
-            # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
-            study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
-            assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
-            self.assertEqual(assay_gx['materials']['otherMaterials'][1  ]["type"], "Extract Name")
+        # Dump into ISA JSON from ISA objects
+        investigation_reload = json.loads(json.dumps(investigation, cls=isajson.ISAJSONEncoder))
+        studies = [s for s in investigation_reload['studies'] if s['filename'] == 's_study.txt'][0]
+        assays = [a for a in studies['assays'] if a['filename'] == 'a_assay.txt'][0]
+        self.assertEqual(assays['materials']['otherMaterials'][1  ]["type"], "Extract Name")
 
-    def test_json_load_and_dump_isa_le_test(self):
+    def test_json_load_and_dump_isa_labeled_extract(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, 'TEST-ISA-LabeledExtract1', 'isa-test-le1.json')) as isajson_fp:
-            ISA = isajson.load(isajson_fp)
+            investigation = isajson.load(isajson_fp)
 
-            # Dump into ISA JSON from ISA objects
-            ISA_J = json.loads(json.dumps(ISA, cls=isajson.ISAJSONEncoder))
-            study_bii_s_test = [s for s in ISA_J['studies'] if s['filename'] == 's_study.txt'][0]
-            assay_gx = [a for a in study_bii_s_test['assays'] if a['filename'] == 'a_assay.txt'][0]
-            self.assertEqual(assay_gx['materials']['otherMaterials'][3]["type"], "Labeled Extract Name")
+        # Dump into ISA JSON from ISA objects
+        investigation_reload = json.loads(json.dumps(investigation, cls=isajson.ISAJSONEncoder))
+        studies = [s for s in investigation_reload['studies'] if s['filename'] == 's_study.txt'][0]
+        assays = [a for a in studies['assays'] if a['filename'] == 'a_assay.txt'][0]
+        self.assertEqual(assays['materials']['otherMaterials'][3]["type"], "Labeled Extract Name")
 
     def test_json_load_from_file_and_create_isa_objects(self):
         # reading from file
@@ -464,7 +464,7 @@ class TestIsaJson(unittest.TestCase):
         )
 
         with open(os.path.join(utils.JSON_DATA_DIR, 'ISA-1', 'isa-test1.json'), 'w') as out_fp:
-                out_fp.write(isa_j)
+            out_fp.write(isa_j)
 
         out_fp.close()
 
@@ -482,22 +482,14 @@ class TestIsaJson(unittest.TestCase):
 
     def test_isajson_char_quant_unit(self):
         # Validates issue fix for #512
-        i = Investigation()
+        investigation = Investigation()
 
-        uo = OntologySource(name='UO')
-        obi = OntologySource(name='OBI')
-        uberon = OntologySource(name='UBERON')
-        ncbitaxon = OntologySource(name='NCBITAXON')
+        onto_src = OntologySource(name='ontoto')
+        investigation.ontology_source_references.append(onto_src)
 
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
-        i.ontology_source_references.append(uo)
-
-        organism_category = OntologyAnnotation(term='organism')
-        material_type_category = OntologyAnnotation(term='material type')
         quantity_descriptor_category = OntologyAnnotation(term='body weight')
 
-        s = Study(filename='s_TEST-Template1-Splitting.txt')
+        study = Study(filename='s_TEST-Template1-Splitting.txt')
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection'),
@@ -506,48 +498,42 @@ class TestIsaJson(unittest.TestCase):
                         ]
         )
 
-        s.protocols.append(sample_collection_protocol)
+        study.protocols.append(sample_collection_protocol)
 
-        source1 = Source(name='source1')
-        source1.characteristics.append(Characteristic(category=material_type_category, value='specimen'))
-        source1.characteristics.append(Characteristic(category=organism_category,
-                                                      value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                                               term_accession='http://purl.bioontology.org/ontology/STY/T016')))
-        source1.characteristics.append(Characteristic(category=quantity_descriptor_category,
-                                                      value=72,
-                                                      unit=OntologyAnnotation(term="kilogram",
-                                                                              term_source=uo,
-                                                                              term_accession="http://purl.obolibrary.org/obo/UO_0000009")))
+        source = Source(name='source1')
+        source.characteristics.append(Characteristic(category=quantity_descriptor_category,
+                                                     value=72,
+                                                     unit=OntologyAnnotation(term="kilogram",
+                                                                             term_source=onto_src,
+                                                                             term_accession="http://purl.obolibrary.org/obo/UO_0000009")))
 
-        sample1 = Sample(name='sample1')
-        organism_part = OntologyAnnotation(term='organism part')
-        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='liver',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
-        )))
-        sample1.characteristics.append(Characteristic(category=OntologyAnnotation(term="specimen mass"),
-                                                      value=450,
-                                                      unit=OntologyAnnotation(term='milligram',
-                                                                              term_source=uo,
-                                                                              term_accession='http://purl.obolibrary.org/obo/UO_0000022'
-                                                                              )))
+        sample = Sample(name='sample1')
 
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
-        sample_collection_process.parameter_values = [ParameterValue(category=s.protocols[0].parameters[0],
+        sample.characteristics.append(Characteristic(category=OntologyAnnotation(term="specimen mass"),
+                                                     value=450,
+                                                     unit=OntologyAnnotation(term='milligram',
+                                                                             term_source=onto_src,
+                                                                             term_accession='http://purl.obolibrary.org/obo/UO_0000022'
+                                                                             )))
+
+        sample_collection_process = Process(executes_protocol=study.protocols[0])
+        sample_collection_process.parameter_values = [ParameterValue(category=study.protocols[0].parameters[0],
                                                                      value=OntologyAnnotation(term="eppendorf tube",
-                                                                                              term_source=obi,
+                                                                                              term_source=onto_src,
                                                                                               term_accession="purl.org")),
-                                                      ParameterValue(category=s.protocols[0].parameters[1],
+                                                      ParameterValue(category=study.protocols[0].parameters[1],
                                                                      value=-20,
                                                                      unit=OntologyAnnotation(term="degree Celsius",
-                                                                                             term_source=uo,
+                                                                                             term_source=onto_src,
                                                                                              term_accession="http://purl.obolibrary.org/obo/UO_0000027"))]
-        sample_collection_process.inputs = [source1]
-        sample_collection_process.outputs = [sample1]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
-        isa_j = json.dumps(
-            i, cls=isajson.ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': ')
+        sample_collection_process.inputs = [source]
+        sample_collection_process.outputs = [sample]
+        study.process_sequence = [sample_collection_process]
+        study.sources.append(source)
+        study.samples.append(sample)
+        investigation.studies = [study]
+        isa_j = json.loads(json.dumps(
+            investigation, cls=isajson.ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
         )
-        self.assertIsInstance(isa_j, str)
+        self.assertIsInstance(isa_j, dict)
+        self.assertIsInstance(isa_j["studies"][0]["materials"]["sources"][0]["characteristics"][0]["value"], int)

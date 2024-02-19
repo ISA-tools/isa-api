@@ -37,6 +37,29 @@ class TestUtils(unittest.TestCase):
         ]
     }
 
+    j1_no_id = {
+        "k1": "v1",
+        "k2": "v2",
+        "k3": [
+            {
+                "@id": "",
+                "k1": "v1"
+            },
+            {
+                "@id": "",
+                "k1": "v2"
+            }
+        ],
+        "k4": [
+            {
+                "@id": ""
+            },
+            {
+                "@id": ""
+            }
+        ]
+    }
+
     j2 = {
         "k3": [
             {
@@ -132,6 +155,12 @@ class TestUtils(unittest.TestCase):
             with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab2:
                 self.assertTrue(utils.assert_tab_content_equal(i_tab1, i_tab2))
 
+    def test_assert_tab_content_equal_investigation_except(self):
+        with self.assertRaises(OSError) as context:
+            with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab1:
+                with open(os.path.join(utils.TAB_DATA_DIR, 'BII-S-3', 'i_gilbert.txt')) as i_tab2:
+                    self.assertEqual(utils.assert_tab_content_equal(i_tab1, i_tab2), "Cannot save file into a non-existent directory: '/Users/philippe/Downloads/test-isa-for-release'")
+
     def test_assert_tab_content_equal_assay_table(self):
         with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab1:
             with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab2:
@@ -139,3 +168,6 @@ class TestUtils(unittest.TestCase):
 
     def test_assert_xml_equal(self):
         self.assertTrue(utils.assert_xml_equal(etree.fromstring(self.x1), etree.fromstring(self.x2)))
+
+    def test_strip_id(self):
+        self.assertEqual(utils.strip_ids(self.j1), None)
