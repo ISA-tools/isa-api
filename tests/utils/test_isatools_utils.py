@@ -205,7 +205,7 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(p.comments[0].value, 'Cancer Inform')
         with self.assertRaises(Exception) as context:
             pubmed.set_pubmed_article(prs)
-        self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
+            self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
 
 
 class TestIsaTabFixer(unittest.TestCase):
