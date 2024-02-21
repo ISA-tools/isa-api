@@ -15,7 +15,7 @@ from isatools import isajson
 from isatools import isatab
 from isatools import utils
 from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
-from isatools.net import mtbls as MTBLS
+from isatools.net import mtbls
 from isatools.net import ols
 from isatools.net import pubmed
 
@@ -54,7 +54,7 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                J = MTBLS.getj('MTBLS{}'.format(i))
+                J = mtbls.getj('MTBLS{}'.format(i))
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
                     utils.detect_graph_process_pooling(study.graph)
@@ -205,7 +205,7 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(p.comments[0].value, 'Cancer Inform')
         with self.assertRaises(Exception) as context:
             pubmed.set_pubmed_article(prs)
-            self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
+        self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
 
 
 class TestIsaTabFixer(unittest.TestCase):
