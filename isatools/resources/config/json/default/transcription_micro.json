@@ -42,6 +42,6 @@
     "data transformation"
   ],
   "description": [
-    "(Sample)->(chromatin immunoprecipitation assays)->(Material)->(labeling)->(Material)->(RNA extraction)->(Material)->(data collection)->(DataFiles)->(normalization data transformation)->(DerivedDataFile)->(data transformation)->(DataMatrixFile)"
+    "(Sample)->(nucleic acid extraction)->(Material)->(labeling)->(Material)->(RNA extraction)->(Material)->(data collection)->(DataFiles)->(normalization data transformation)->(DerivedDataFile)->(data transformation)->(DataMatrixFile)"
   ]
 }
