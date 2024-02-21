@@ -987,7 +987,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_microarray.samples), 2)  # 2 assay samples in a_microarray.txt
             self.assertEqual(len(assay_microarray.other_material), 28)  # 28 other materials in a_microarray.txt
             self.assertEqual(len(assay_microarray.data_files), 15)  # 15 data files  in a_microarray.txt
-            self.assertEqual(len(assay_microarray.process_sequence), 45)  # 45 processes in in a_microarray.txt
+            self.assertEqual(len(assay_microarray.process_sequence), 46)  # 46 processes in in a_microarray.txt
 
     def test_isatab_load_bii_s_3(self):
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
@@ -1575,7 +1575,6 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
-
 
     def test_sample_protocol_ref_material_protocol_multiple_output_data(self):
         investigation = Investigation()
