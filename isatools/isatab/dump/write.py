@@ -406,7 +406,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
                         for c in node.characteristics:
-                            if c.category is not None:
+                            if c.category:
                                 category_label = c.category.term if isinstance(c.category.term, str) \
                                     else c.category.term["annotationValue"]
                                 clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
