@@ -367,6 +367,12 @@ class ProcessSequenceFactory:
                         comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
                         if comment_key not in [x.name for x in process.comments]:
                             process.comments.append(Comment(name=comment_key, value=str(object_series[comment_column])))
+                    
+                    for performer in [c for c in column_group if c == 'Performer']:
+                        process.performer = str(object_series[performer])
+                    
+                    for date in [c for c in column_group if c == 'Date']:
+                        process.date = str(object_series[date])
 
         for _, object_series in DF.iterrows():  # don't drop duplicates
             process_key_sequence = list()
