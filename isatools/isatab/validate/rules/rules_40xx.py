@@ -13,11 +13,12 @@ from isatools.isatab.defaults import (
 )
 
 
-def check_investigation_against_config(i_df_dict, configs):
+def check_investigation_against_config(i_df, configs, no_config):
     """Checks investigation file against the loaded configurations
 
     :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param configs: A dictionary of ISA Configuration objects
+    :param no_config: whether or not to validate against configs
     :return: None
     """
 
@@ -50,7 +51,7 @@ def check_investigation_against_config(i_df_dict, configs):
                         if required_value == '' or 'Unnamed: ' in required_value:
                             add_warning(i, col, x)
 
-    if ('[investigation]', '') in configs:
+    if ('[investigation]', '') in configs and not no_config:
         config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
         required_fields = [i.header for i in config_fields if i.is_required]
         check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
@@ -67,12 +68,16 @@ def check_investigation_against_config(i_df_dict, configs):
             check_section_against_required_fields_one_value(i_df['s_contacts'][x], required_fields, x)
 
 
-def load_config(config_dir):
+def load_config(config_dir, no_config):
     """Rule 4001
 
     :param config_dir: Path to a directory containing ISA Configuration XMLs
+    :param no_config: whether or not to validate against configs
     :return: A dictionary of ISA Configuration objects
     """
+    if no_config:
+        return {}
+
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
@@ -91,16 +96,20 @@ def load_config(config_dir):
     return configs
 
 
-def check_measurement_technology_types(i_df_dict, configs):
+def check_measurement_technology_types(i_df, configs, no_config):
     """Rule 4002
 
     :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param configs: A dictionary of ISA Configuration objects
+    :param no_config: whether or not to validate against configs
     :return: None
     """
-    for i, study_assays_df in enumerate(i_df_dict['s_assays']):
-        measurement_types = study_assays_df['Study Assay Measurement Type'].tolist()
-        technology_types = study_assays_df['Study Assay Technology Type'].tolist()
+    if no_config:
+        return
+
+    for i, assay_df in enumerate(i_df['s_assays']):
+        measurement_types = assay_df['Study Assay Measurement Type'].tolist()
+        technology_types = assay_df['Study Assay Technology Type'].tolist()
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
                 lowered_mt = measurement_types[x].lower()
@@ -130,14 +139,15 @@ def check_factor_value_presence(table):
                 log.warning("(W) {}".format(spl))
 
 
-def check_required_fields(table, cfg):
+def check_required_fields(table, cfg, no_config):
     """Checks if the required fields by a configuration have empty cells
 
     :param table: Table as a DataFrame
     :param cfg: A ISA Configuration object
+    :param no_config: whether or not to validate against configs
     :return: None
     """
-    if cfg.get_isatab_configuration():
+    if cfg.get_isatab_configuration() and not no_config:
         for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
             found_field = [i for i in table.columns if i.lower() == fheader.lower()]
             if len(found_field) == 0:
@@ -151,11 +161,12 @@ def check_required_fields(table, cfg):
                 log.warning("(W) {}".format(spl))
 
 
-def check_field_values(table, cfg):
+def check_field_values(table, cfg, no_config):
     """Checks table fields against configuration
 
     :param table: Table DataFrame
     :param cfg: A ISA Configuration object
+    :param no_config: whether or not to validate against configs
     :return: None
     """
 
@@ -229,19 +240,17 @@ def check_field_values(table, cfg):
                 log.warning("(W) Value must be one of: " + cfg_field.list_values)
         return is_valid_value
 
-    result = True
-    for irow in range(len(table.index)):
-        ncols = len(table.columns)
-        for icol in range(0, ncols):
-            if cfg.get_isatab_configuration():
+    if cfg.get_isatab_configuration() and not no_config:
+        for irow in range(len(table.index)):
+            ncols = len(table.columns)
+            for icol in range(0, ncols):
                 cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
                 if len(cfields) == 1:
                     cfield = cfields[0]
-                    result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
-    return result
+                    check_single_field(table.iloc[irow][cfield.header], cfield)
 
 
-def check_protocol_fields(table, cfg, proto_map):
+def check_protocol_fields(table, cfg, proto_map, no_config):
     from itertools import tee
 
     def pairwise(iterable):
@@ -270,43 +279,39 @@ def check_protocol_fields(table, cfg, proto_map):
         spl = "(W) Protocol REF column is not followed by a material or data node in file '" + table.filename + "'"
         validator.add_warning(message="Missing Protocol Value", supplemental=spl, code=1007)
         log.warning(spl)
-    if cfg.get_isatab_configuration():
+    if cfg.get_isatab_configuration() and not no_config:
         for left, right in pairwise(field_headers):
-            if cfg.get_isatab_configuration():
-                cleft = None
-                cright = None
-                clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
-                if len(clefts) == 1:
-                    cleft = clefts[0]
-                crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == right.lower()]
-                if len(crights) == 1:
-                    cright = crights[0]
-                if cleft is not None and cright is not None:
-                    protocols_fields = cfg.get_isatab_configuration()[0].get_protocol_field()
-                    cprotos = [i.protocol_type for i in protocols_fields if cleft.pos < i.pos < cright.pos]
-                    raw_headers = table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)]
-                    fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
-                    fprotos = list()
-                    for header in fprotos_headers:
-                        proto_name = table.iloc[0][header]
-                        try:
-                            proto_type = proto_map[proto_name]
-                            fprotos.append(proto_type)
-                        except KeyError:
-                            spl = ("Could not find protocol type for protocol name '{}', trying to validate_rules against name "
-                                   "only").format(proto_name)
-                            validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
+            cleft = None
+            cright = None
+            clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
+            if len(clefts) == 1:
+                cleft = clefts[0]
+            crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == right.lower()]
+            if len(crights) == 1:
+                cright = crights[0]
+            if cleft is not None and cright is not None:
+                protocols_fields = cfg.get_isatab_configuration()[0].get_protocol_field()
+                cprotos = [i.protocol_type for i in protocols_fields if cleft.pos < i.pos < cright.pos]
+                raw_headers = table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)]
+                fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
+                fprotos = list()
+                for header in fprotos_headers:
+                    proto_names = list(table.loc[:, header].unique())
+                    for proto_name in proto_names:
+                        proto_type = proto_map.get(proto_name)
+                        if not proto_type and proto_name:
+                            spl = ("Could not find protocol type for protocol name '{}' in file '{}'" ).format(proto_name, table.filename)
+                            validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
                             log.warning("(W) {}".format(spl))
-                            fprotos.append(proto_name)
-                    invalid_protos = set(cprotos) - set(fprotos)
-                    if len(invalid_protos) > 0:
-                        spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
-                               "'{}' but has not been found, in the file '{}'")
-                        spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
-                        validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                        log.warning("(W) {}".format(spl))
-                        result = False
-    return result
+                        else:
+                            fprotos.append(proto_type)
+                invalid_protos = set(cprotos) - set(fprotos)
+                if len(invalid_protos) > 0:
+                    spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
+                           "'{}' but has not been found, in the file '{}'")
+                    spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
+                    validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
+                    log.warning("(W) {}".format(spl))
 
 
 def load_table_checks(df, filename):
