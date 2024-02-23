@@ -1,5 +1,5 @@
+import os
 from unittest import TestCase
-
 from isatools.tests import utils
 from isatools.model.datafile import DataFile
 from isatools.model.sample import Sample
@@ -15,14 +15,11 @@ from isatools.model.utils import (
     update_checksum
 )
 
-import os
-
 
 class TestUtils(TestCase):
 
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
-        # self._tmp_dir = tempfile.mkdtemp()
 
     def test_empty_process_sequence(self):
         graph = _build_assay_graph()
