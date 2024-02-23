@@ -69,7 +69,6 @@ _LABELS_ASSAY_NODES = [
     'Assay Name',
     'MS Assay Name',
     'NMR Assay Name',
-    'Array Design REF',
     'Hybridization Assay Name',
     'Scan Name',
     'Normalization Name',
