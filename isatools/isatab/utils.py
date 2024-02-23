@@ -19,9 +19,6 @@ from isatools.isatab.defaults import (
     _RX_PARAMETER_VALUE,
     _RX_FACTOR_VALUE,
     _RX_COMMENT,
-    # _LABELS_ASSAY_NODES,
-    # _LABELS_MATERIAL_NODES,
-    # _LABELS_DATA_NODES,
     defaults
 )
 from isatools.model import OntologyAnnotation
