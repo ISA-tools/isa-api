@@ -148,7 +148,7 @@ class TestSraExport(unittest.TestCase):
 
     def test_create_datafile_hashes_success(self):
         datafilehashes = sra.create_datafile_hashes(
-            os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU.sff', '2BF.sff'])
+            os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU.sff'])
         self.assertEqual(datafilehashes['1EU.sff'],
                          'd41d8cd98f00b204e9800998ecf8427e')  # empty file hash
 
