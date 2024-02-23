@@ -8,9 +8,13 @@ from csv import reader as csv_reader
 from json import loads
 from pandas import DataFrame, Series
 
-from isatools.constants import SYNONYMS
-from isatools.constants import ALL_LABELS
-from isatools.constants import _LABELS_DATA_NODES, _LABELS_ASSAY_NODES, _LABELS_MATERIAL_NODES
+from isatools.constants import (
+    SYNONYMS,
+    ALL_LABELS,
+    _LABELS_DATA_NODES,
+    _LABELS_ASSAY_NODES,
+    _LABELS_MATERIAL_NODES
+)
 
 from isatools.utils import utf8_text_file_open
 from isatools.isatab.defaults import (
@@ -346,7 +350,7 @@ def get_characteristic_columns(label, c):
     """
 
     columns = []
-    if c is None or c.category is None:
+    if not c or not c.category:
         return columns
     if isinstance(c.category.term, str):
         if c.category.term.startswith("{", ):
