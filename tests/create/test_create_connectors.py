@@ -69,7 +69,13 @@ class TestMappings(unittest.TestCase):
         source = {'iri': 'GO:2314',
                   'source': {'description': 'toto', 'file': 'file', 'name': 'A', 'version': '1'},
                   'term': 'toto'}
-        self.assertEqual(_map_ontology_annotation(source, False), OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=OntologySource(name='A', file="file", version="1", description="toto")))
+        self.assertEqual(_map_ontology_annotation(source, False),
+                         OntologyAnnotation(term="toto",
+                                            term_accession="GO:2314",
+                                            term_source=OntologySource(name='A',
+                                                                       file="file",
+                                                                       version="1",
+                                                                       description="toto")))
 
     def test_reverse_map_ontology_annotation(self):
         ontosrc = OntologySource(name='A', file="file", version="1", description="toto")
