@@ -159,7 +159,9 @@ class TestUtils(unittest.TestCase):
         with self.assertRaises(OSError) as context:
             with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab1:
                 with open(os.path.join(utils.TAB_DATA_DIR, 'BII-S-3', 'i_gilbert.txt')) as i_tab2:
-                    self.assertEqual(utils.assert_tab_content_equal(i_tab1, i_tab2), "Cannot save file into a non-existent directory: '/Users/philippe/Downloads/test-isa-for-release'")
+                    self.assertEqual(utils.assert_tab_content_equal(i_tab1, i_tab2),
+                                     "Cannot save file into a non-existent directory: \
+                                     '/Users/philippe/Downloads/test-isa-for-release'")
 
     def test_assert_tab_content_equal_assay_table(self):
         with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab1:
