@@ -1,7 +1,7 @@
 from isatools import isajson
 from isatools.model import (
     Investigation, Study, Comment, OntologySource, OntologyAnnotation, Person, Publication, Source, Characteristic,
-    Sample, batch_create_materials, Protocol, ProtocolParameter,ParameterValue, Process, StudyFactor, Assay, Material, DataFile, plink,
+    Sample, batch_create_materials, Protocol, ProtocolParameter, ParameterValue, Process, StudyFactor, Assay, Material, DataFile, plink,
 
 )
 from isatools.tests import utils
@@ -429,7 +429,7 @@ class TestIsaJson(unittest.TestCase):
         investigation_reload = json.loads(json.dumps(investigation, cls=isajson.ISAJSONEncoder))
         studies = [s for s in investigation_reload['studies'] if s['filename'] == 's_study.txt'][0]
         assays = [a for a in studies['assays'] if a['filename'] == 'a_assay.txt'][0]
-        self.assertEqual(assays['materials']['otherMaterials'][1  ]["type"], "Extract Name")
+        self.assertEqual(assays['materials']['otherMaterials'][1]["type"], "Extract Name")
 
     def test_json_load_and_dump_isa_labeled_extract(self):
         # Load into ISA objects
@@ -493,9 +493,10 @@ class TestIsaJson(unittest.TestCase):
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection'),
-            parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term="vessel")),
-                        ProtocolParameter(parameter_name=OntologyAnnotation(term="storage temperature"))
-                        ]
+            parameters=[
+                ProtocolParameter(parameter_name=OntologyAnnotation(term="vessel")),
+                ProtocolParameter(parameter_name=OntologyAnnotation(term="storage temperature"))
+            ]
         )
 
         study.protocols.append(sample_collection_protocol)
