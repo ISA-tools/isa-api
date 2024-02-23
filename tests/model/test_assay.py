@@ -223,7 +223,6 @@ class TestAssay(TestCase):
             }
         ]
 
-        print(expected_dict['materials']['otherMaterials'][0]['name'])
         indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id'))
         indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id2'))
 
