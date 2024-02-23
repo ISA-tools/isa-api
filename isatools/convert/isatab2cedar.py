@@ -44,8 +44,7 @@ class ISATab2CEDAR(object):
         if schema is None:
             raise IOError("Could not load schema from {}".format(
                 join(CEDAR_SCHEMA_PATH, schema_file)))
-        resolver = RefResolver(
-            'file://' + join(CEDAR_SCHEMA_PATH, schema_file), schema)
+        resolver = RefResolver('file://{}'.format(join(CEDAR_SCHEMA_PATH, schema_file)), schema)
         validator = Draft4Validator(schema, resolver=resolver)
 
         isa_tab = isatab_parser.parse(work_dir)
