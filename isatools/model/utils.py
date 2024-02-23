@@ -237,7 +237,8 @@ def update_checksum(path, isa_file_object: DataFile, checksum_type):
     :param path:
     :param isa_file_object:
     :param checksum_type: enum
-    :return:
+    :return: isa_file_object:
+    :raises ValueError: when the checksum is invalid
     """
     HASH_FUNCTIONS = {
         "md5": md5,
