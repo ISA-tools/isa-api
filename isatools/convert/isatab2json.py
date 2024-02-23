@@ -280,10 +280,10 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
-                ("annotationValue", object[inv_or_study + type]),
-                ("termSource", object[inv_or_study + type + " Term Source REF"]),
-                ("termAccession", object[
-                    inv_or_study + type + " Term Accession Number"])
+            ("annotationValue", object[inv_or_study + type]),
+            ("termSource", object[inv_or_study + type + " Term Source REF"]),
+            ("termAccession", object[
+                inv_or_study + type + " Term Accession Number"])
         ])
         return onto_ann
 
