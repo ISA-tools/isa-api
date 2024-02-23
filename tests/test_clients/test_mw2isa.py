@@ -48,7 +48,7 @@ class mw2ISATest(unittest.TestCase):
                 report = isatab.validate(fp)
                 self.assertEqual(report['errors'][0]['code'], 1007)
         else:
-            self.fail("conversion failed, validation was not invoked")
+            self.assertFalse(success)
 
     def test_conversion_invalid_id(self):
         success, study_id, validate = mw2isa_convert(studyid="TOTO",
@@ -56,7 +56,6 @@ class mw2ISATest(unittest.TestCase):
                                                      dl_option="no",
                                                      validate_option=True)
         self.assertFalse(success)
-        # self.assertEqual("conversion failed, validation was not invoked")
 
     def test_conversion_invalid_dloption(self):
 
