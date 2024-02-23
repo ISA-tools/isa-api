@@ -217,10 +217,16 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
     return buffer
 
 
-__author__ = 'alfie'
-
-
 def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
+    """
+
+    :param plate:
+    :param polarity:
+    :param myAttrs:
+    :param myMetabolites:
+    :param mydict:
+    :return:
+    """
     usedop = plate.get('usedop')
     platebarcode = plate.get('platebarcode')
     injection = plate.find_all('injection', {'polarity': polarity})
@@ -249,6 +255,11 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
 
 
 def generateAttrsDict(plate):
+    """
+
+    :param plate:
+    :return:
+    """
     # using dictionaries of lists
     posAttrs = defaultdict(list)
     negAttrs = defaultdict(list)
@@ -264,6 +275,18 @@ def generateAttrsDict(plate):
 
 def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
                    uniqueAttrs, uniqueMetaboliteIdentifiers, mydict):
+    """
+
+    :param plate:
+    :param polarity:
+    :param usedop:
+    :param platebarcode:
+    :param output_dir:
+    :param uniqueAttrs:
+    :param uniqueMetaboliteIdentifiers:
+    :param mydict:
+    :return:
+    """
     pos_injection = plate.find_all('injection', {'polarity': polarity})
     if len(pos_injection) > 0:
         filename = 'm_MTBLSXXX_' + usedop + '_' + platebarcode + '_' + polarity.lower() \
@@ -294,6 +317,11 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir,
 
 
 def complete_MAF(maf_stub):
+    """
+
+    :param maf_stub:
+    :return:
+    """
 
     # data = pd_modin.read_csv(maf_stub, sep='\t')
     data = pd.read_csv(maf_stub, sep='\t')
