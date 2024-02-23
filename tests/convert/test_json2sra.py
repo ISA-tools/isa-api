@@ -2,10 +2,8 @@ from unittest import TestCase
 import os
 import shutil
 import tempfile
-import json.decoder
 
 from isatools.convert import json2sra
-from isatools.model import Investigation
 from lxml import etree
 from isatools.tests import utils
 
@@ -173,23 +171,3 @@ class TestJsonToSra(TestCase):
             actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)
             self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))
 
-    # def test_sra_dump_run_set_xml_biis7_val(self):
-    #     sra_settings = self._sra_default_config
-    #     # with open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')) as json_fp:
-    #     isaj_sra = json2sra.convert(
-    #         os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json'),
-    #         self._tmp_dir,
-    #         sra_settings=sra_settings,
-    #         datafilehashes=None,
-    #         validate_first=True
-    #     )
-    #
-    #     # self.assertIsInstance(isaj_sra, Investigation)
-    #     with open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb') as out_fp:
-    #         actual_sub_set_xml_obj = etree.fromstring(out_fp.read())
-    #         # print(actual_sub_set_xml_obj)
-    #         # print(self._expected_submission_xml_biis7)
-    #         self.assertTrue(
-    #             utils.assert_xml_equal(self._expected_submission_xml_biis7,
-    #                                    actual_sub_set_xml_obj))
-    #
