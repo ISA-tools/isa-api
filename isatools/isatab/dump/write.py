@@ -406,11 +406,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
                         for c in node.characteristics:
-                            if c.category:
-                                category_label = c.category.term if isinstance(c.category.term, str) \
-                                    else c.category.term["annotationValue"]
-                                clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
-                                write_value_columns(df_dict, clabel, c)
+                            if not c.category:
+                                continue
+                            category_label = c.category.term if isinstance(c.category.term, str) \
+                                else c.category.term["annotationValue"]
+                            clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
+                            write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
                                 olabel, co.name)
