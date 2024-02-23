@@ -31,11 +31,10 @@ __author__ = 'proccaserra@gmail.com'
 
 
 def getblock(container, start_marker, end_marker):
-    """
-    # a method to obtain a block of line between a start and an end marker
-    # this will be invoked to obtain raw data, metabolite identification,metabolite
-    # annotation and possible study factors parameters are a filehandle and 2
-    # strings allowing the specify the section brackets
+    """A method to obtain a block of line between a start and an end marker
+    this will be invoked to obtain raw data, metabolite identification,metabolite
+    annotation and possible study factors parameters are a filehandle and 2
+    strings allowing the specify the section brackets
     :param container:
     :param start_marker:
     :param end_marker:
@@ -61,9 +60,8 @@ def getblock(container, start_marker, end_marker):
 
 
 def get_archived_file(mw_study_id):
-    """
-    # a method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
-    # Workbench study accession number that should follow this pattern ^ST\d+[6]
+    """ A method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
+    Workbench study accession number that should follow this pattern ^ST\d+[6]
     :param mw_study_id -> str
     :return: success -> boolean
     """
@@ -87,11 +85,10 @@ def get_archived_file(mw_study_id):
 
 
 def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
-    """
-    # a method to create an EBI Metabolights MAF file from Metabolomics Workbench
-    # REST API over data and metabolites
-    # input: a valid Metabolomics Workbench study accession number that should
-    # follow this pattern ^ST\d+[6]
+    """A method to create an EBI Metabolights MAF file from Metabolomics Workbench
+    REST API over data and metabolites
+    input: a valid Metabolomics Workbench study accession number that should
+    follow this pattern ^ST\d+[6]
     :param write_dir:
     :param mw_study_id:
     :param mw_analysis_id:
@@ -235,11 +232,10 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
 
 
 def get_assay_type(container):
-    """
-    # a method to obtain the nature of the technology used in the analysis from a
-    # Metabolomics Workbench Header line the method takes one parameter as
-    # input: a filehandle the method returns a string holding the ISA
-    # technology type
+    """A method to obtain the nature of the technology used in the analysis from a
+    Metabolomics Workbench Header line the method takes one parameter as
+    input: a filehandle the method returns a string holding the ISA
+    technology type
     :param container -> list
     :return: assay_type -> str
     """
@@ -259,7 +255,7 @@ def get_assay_type(container):
 
 
 def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, assay_wf_header):
-    """
+    """A method to write an ISA assay table
 
     :param write_dir:
     :param technotype:
@@ -267,16 +263,14 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, ass
     :param mw_analysis_nb:
     :param assayrecords:
     :param assay_wf_header:
-    :return:
+    :return: nothing
     """
     try:
-        # /Users/Philippe/Documents/git/MW2ISA/
         assayfileoutputpath = write_dir + "/" + accnum + "/"
         if not os.path.exists(assayfileoutputpath):
             os.makedirs(assayfileoutputpath)
 
-        assay_file = open(assayfileoutputpath + "a_" + accnum + "_"
-                          + mw_analysis_nb + '.txt', 'w')
+        assay_file = open(assayfileoutputpath + "a_" + accnum + "_" + mw_analysis_nb + '.txt', 'w')
         print("writing 'assay information' to file...")
 
         # DOC: writing header for ISA assay file:
@@ -330,19 +324,19 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, ass
 
 def create_raw_data_files(write_dir, input_techtype, f, input_study_id, input_analysis_id):
     """
-    # a method to create Metabolights formated data files which will be referenced
-    # in the ISA-Tab document the method takes 3 parameters as input: a filehandle,
-    # a MW identifier for the study, a MW identifier for the analysis the method
-    # return nothing but creates a raw signal quantification file and a metabolite
-    # assignment file.
+    a method to create Metabolights formated data files which will be referenced
+    in the ISA-Tab document the method takes 3 parameters as input: a filehandle,
+    a MW identifier for the study, a MW identifier for the analysis the method
+    return nothing but creates a raw signal quantification file and a metabolite
+    assignment file.
     :param write_dir: str
     :param input_techtype: str
     :param f: filehandle
     :param input_study_id: str
     :param input_analysis_id: str
-    :return:
+    :return: nothing
     """
-    # print("file to download: ", f)
+
     try:
         # dlurl = urlopen(f)
         # saving a remote file to local drive
@@ -453,18 +447,16 @@ def create_raw_data_files(write_dir, input_techtype, f, input_study_id, input_an
         print("Error in create_raw_data_files() methods, "
               "possibly when trying to write data files")
 
-# a method to create ISA assay tables from an Metabolomics Workbench Study
-# Identifier
-# the method takes 3 parameters as input: a filehandle, a MW identifier for
-# the study, a MW identifier for the analysis
-# the method return nothing but creates as many as ISA assay files.
-
-
-# a method to create an ISA assay table for NMR records
-# the method takes a filehandle as input
 
 def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
-
+    """ A method to create ISA assay tables from an Metabolomics Workbench Study
+    Identifier
+    the method takes 3 parameters as input: a filehandle, a MW identifier for
+    the study, a MW identifier for the analysis
+    the method return nothing but creates as many as ISA assay files.
+    a method to create an ISA assay table for NMR records
+    the method takes a filehandle as input
+    """
     try:
         # print(fv_records)
         # print("getting the nmr MWTab file: ", lol)
@@ -692,11 +684,15 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
         print("Error in create_nmr_assay_records() method.")
 
 
-# a method to create an ISA assay table for MS records
-# the method takes a filehandle as input
-
 def create_ms_assay_records(lol, input_study_id, input_analysis_id, fv_records):
-
+    """ a method to create an ISA assay table for MS records
+    the method takes a filehandle as input
+    :param lol:
+    :param input_study_id:
+    :param input_analysis_id:
+    :param fv_records:
+    :return:
+    """
     try:
         pv_ch_instrument = ""
         pv_ch_column = ""
@@ -751,8 +747,6 @@ def create_ms_assay_records(lol, input_study_id, input_analysis_id, fv_records):
 
         input_ms_file = urlopen(lol).read()
         input_ms_file = str(input_ms_file).split('\\n')
-
-        # print("content of ms file MS?: ", input_ms_file)
 
         for row_item in input_ms_file:
 
@@ -873,6 +867,11 @@ def create_ms_assay_records(lol, input_study_id, input_analysis_id, fv_records):
 
 
 def get_organism_with_taxid(lol):
+    """
+    a function to harvest the taxonomic information from MW file
+    :param lol: list of lists
+    :return: 2 strings
+    """
     that_species = ""
     that_taxid = ""
     try:
@@ -888,6 +887,11 @@ def get_organism_with_taxid(lol):
 
 
 def get_fv_records(lol):
+    """ a method to return a collection of study variables and their levels from a MW metadata file
+
+    :param lol: list of lists
+    :return:
+    """
     records = []
     factors = {}
     restofrecordheader = []
@@ -942,7 +946,7 @@ def get_mwfile_as_lol(input_url):
     """
     a method to metabolomics workbench tabular file as list of lists
     :param input_url:
-    :return:
+    :return: list of lists
     """
     try:
         input_file = urlopen(input_url).read()
@@ -1037,10 +1041,10 @@ def mw2isa_convert(**kwargs):
     :return: conversion success, boolean
 
     # TODO
-    # a function to iterate over a dictionary of study identifiers matched to a
-    # technology type: aim is to allow batch
-    #  processing/download from MW
-    # dictionary_of_input = {
+    a function to iterate over a dictionary of study identifiers matched to a
+    technology type: aim is to allow batch
+    processing/download from MW
+    dictionary_of_input = {
         "ST000102": "NMR",
         "ST000056": "NMR",
         "ST000282": "MS",
