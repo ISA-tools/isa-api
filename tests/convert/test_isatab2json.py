@@ -128,4 +128,5 @@ class TestIsaTab2Json(unittest.TestCase):
         self.assertIsInstance(actual_json, dict)
 
         self.assertEqual(actual_json["studies"][0]["filename"], investigation.studies[0].filename)
-        self.assertEqual(actual_json["studies"][0]["assays"][0]["comments"][0]["value"], investigation.studies[0].assays[0].comments[0].value)
+        self.assertEqual(actual_json["studies"][0]["assays"][0]["comments"][0]["value"],
+                         investigation.studies[0].assays[0].comments[0].value)
