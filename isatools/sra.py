@@ -214,7 +214,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                             enumerate(datafile.filename) if
                                             x == '.']
                             file_ext = datafile.filename[dot_indicies[-1] + 1:]
-                            if file_ext in '.gz':
+                            if '.gz' in file_ext:
                                 # if is compressed, look for the actual ftype
                                 try:
                                     filetype = datafile.filename[
