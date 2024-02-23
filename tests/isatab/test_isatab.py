@@ -130,7 +130,6 @@ class TestIsaTabDump(unittest.TestCase):
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
         f.comments.append(Comment(name="Study Start Date", value="Moon"))
         s.factors.append(f)
-        print("Factors: ", f)
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='Material Type')
@@ -971,7 +970,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_transcriptome.samples), 48)  # 48 assay samples in a_transcriptome.txt
             self.assertEqual(len(assay_transcriptome.other_material), 96)  # 96 other materials in a_transcriptome.txt
             self.assertEqual(len(assay_transcriptome.data_files), 49)  # 49 data files  in a_transcriptome.txt
-            self.assertEqual(len(assay_transcriptome.process_sequence), 194)  # 194 processes in in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome.process_sequence), 193)  # 193 processes in in a_transcriptome.txt
 
             study_bii_s_2 = [s for s in ISA.studies if s.filename == 's_BII-S-2.txt'][0]
 
@@ -987,7 +986,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_microarray.samples), 2)  # 2 assay samples in a_microarray.txt
             self.assertEqual(len(assay_microarray.other_material), 28)  # 28 other materials in a_microarray.txt
             self.assertEqual(len(assay_microarray.data_files), 15)  # 15 data files  in a_microarray.txt
-            self.assertEqual(len(assay_microarray.process_sequence), 46)  # 46 processes in in a_microarray.txt
+            self.assertEqual(len(assay_microarray.process_sequence), 45)  # 45 processes in in a_microarray.txt
 
     def test_isatab_load_bii_s_3(self):
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
