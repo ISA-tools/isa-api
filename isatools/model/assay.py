@@ -56,7 +56,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             self.technology_type = technology_type
 
         self.__technology_platform = technology_platform
-        self.__data_files = data_files or []
+        self.data_files = data_files or []
 
     @property
     def measurement_type(self):
