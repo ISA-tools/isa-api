@@ -55,7 +55,8 @@ class TestOntologyAnnotation(TestCase):
 
     def test_builtins(self):
         expected_str = ("isatools.model.OntologyAnnotation(term='test_term', "
-                        "term_source=isatools.model.OntologySource(name='test_term_source', file='', version='', description='', comments=[]), "
+                        "term_source=isatools.model.OntologySource(name='test_term_source',"
+                        "file='', version='', description='', comments=[]), "
                         "term_accession='test_term_accession', "
                         "comments=[])")
         expected_hash = hash(expected_str)
