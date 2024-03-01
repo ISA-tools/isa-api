@@ -563,7 +563,7 @@ def check_study_factor_names(isa_json):
                     "supplemental": "Study Factor @id={}".format(factor["@id"]),
                     "code": 1012
                 })
-                log.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
+                log.warning("(W) A Study Factor @id={} is missing name, so can't be referenced in ISA-tab."
                             .format(factor["@id"]))
 
 
@@ -687,8 +687,10 @@ def check_measurement_technology_types(assay_json, configs):
             "supplemental": "Measurement {}/technology {}".format(measurement_type, technology_type),
             "code": 4002
         })
-        log.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
-                  .format(measurement_type, technology_type))
+        log.error(
+            "(E) Could not load configuration for measurement type '{}' and technology type '{}'"
+            .format(measurement_type, technology_type)
+        )
 
 
 def check_study_and_assay_graphs(study_json, configs):
@@ -783,7 +785,7 @@ def check_study_groups(study_or_assay):
     if study_group_size_in_comment is not None:
         if study_group_size_in_comment != num_study_groups:
             warnings.append({
-                'message': 'Reported study group size does not match table'
+                'message': 'Reported study group size {} does not match table {}'
                     .format(num_study_groups,
                             study_or_assay.identifier),
                 'supplemental': 'Study group size reported as {} but found {} '

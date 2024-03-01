@@ -1,14 +1,14 @@
-from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise,  get_object_column_map, get_value
+from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise, get_object_column_map, get_value
 from isatools.isatab.defaults import (
     log,
     _RX_COMMENT,
-    _LABELS_MATERIAL_NODES,
-    _LABELS_DATA_NODES,
     _RX_CHARACTERISTICS,
     _RX_FACTOR_VALUE,
-    _LABELS_ASSAY_NODES,
     _RX_PARAMETER_VALUE
 )
+
+from isatools.constants import _LABELS_ASSAY_NODES, _LABELS_MATERIAL_NODES, _LABELS_DATA_NODES
+
 from isatools.model import (
     OntologyAnnotation,
     Comment,
@@ -219,7 +219,8 @@ class ProcessSequenceFactory:
 
                             if characteristic.category.term in [
                                 x.category.term
-                                for x in material.characteristics]:
+                                for x in material.characteristics
+                            ]:
                                 log.warning(
                                     'Duplicate characteristic found for '
                                     'material, skipping adding to material '
@@ -275,17 +276,25 @@ class ProcessSequenceFactory:
                 object_label_index = list(DF.columns).index(object_label)
 
                 # don't drop duplicates
-                for _, object_series in DF.iterrows():
+                for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = process_keygen(
+                        protocol_ref,
+                        column_group,
+                        _cg,
+                        DF.columns,
+                        object_series,
+                        object_index,
+                        DF)
 
-                    # TODO: Keep process key sequence here to reduce number of
-                    # passes on Protocol REF columns?
+                    # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
                     try:
                         process = processes[process_key]
                     except KeyError:
-                        process = Process(executes_protocol=protocol_ref)
+                        # TODO: Fix name formatting using protocol type or pattern
+                        process_name = "process-{}-{}".format(object_index, protocol_ref)
+                        process = Process(executes_protocol=protocol_ref, name=process_name)
                         processes.update(dict([(process_key, process)]))
 
                     output_node_index = find_gt(node_cols, object_label_index)
@@ -335,7 +344,6 @@ class ProcessSequenceFactory:
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
                     if len(name_column_hits) == 1:
                         process.name = str(object_series[name_column_hits[0]])
-
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                         category_key = next(iter(_RX_PARAMETER_VALUE.findall(pv_column)))
                         if category_key not in [x.category.parameter_name.term for x in process.parameter_values]:

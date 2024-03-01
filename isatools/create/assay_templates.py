@@ -1,5 +1,5 @@
 from isatools.create.model import *
-from isatools.model import OntologyAnnotation
+from isatools.model import OntologyAnnotation, OntologySource
 
 NAME = 'name'
 
@@ -8,13 +8,14 @@ processed_ontology_annotation = {}
 
 def create_new_ontology_annotation(term_name):
     """
-    creates a new ontology annotation object if the term name does not exist or returns a pointer that ontology\
+    creates a new ontology annotation object if the term name does not exist or returns a pointer to that ontology\
     annotation object
     :param term_name: a string to be cast as OntologyAnnotation
     :return: an ISA OntologyAnnotation object
     """
     if term_name not in processed_ontology_annotation:
-        ontology_annotation = OntologyAnnotation(term=term_name, term_accession="", term_source="")
+        onto_src = OntologySource(name="onto")
+        ontology_annotation = OntologyAnnotation(term=term_name, term_accession="", term_source=onto_src)
         processed_ontology_annotation[term_name] = ontology_annotation
         return ontology_annotation
     return processed_ontology_annotation[term_name]

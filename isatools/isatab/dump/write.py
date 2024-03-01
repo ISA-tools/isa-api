@@ -64,7 +64,7 @@ def write_study_table_files(inv_obj, output_dir):
         sample_in_path_count = 0
         protocol_in_path_count = 0
         longest_path = _longest_path_and_attrs(paths, s_graph.indexes)
-        
+
         for node_index in longest_path:
             node = s_graph.indexes[node_index]
             if isinstance(node, Source):
@@ -105,7 +105,6 @@ def write_study_table_files(inv_obj, output_dir):
                         olabel, x), node.comments))
                 columns += flatten(map(lambda x: get_fv_columns(olabel, x),
                                        node.factor_values))
-
 
         omap = get_object_column_map(columns, columns)
         # load into dictionary
@@ -312,13 +311,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
-                    for output in [x for x in node.outputs if
-                                   isinstance(x, DataFile)]:
-                        columns.append(output.label)
+
+                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                        if output.label not in columns:
+                            columns.append(output.label)
                         columns += flatten(
                             map(lambda x: get_comment_column(output.label, x),
                                 output.comments))
-
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
@@ -358,6 +357,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             )
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
+
                             elif node.executes_protocol.protocol_type.term.lower() in \
                                     protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 df_dict["Hybridization Assay Name"][-1] = \
@@ -369,20 +369,23 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         if node.performer is not None:
                             df_dict[olabel + ".Performer"][-1] = node.performer
                         for pv in node.parameter_values:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(
-                                olabel, pv.category.parameter_name.term)
+                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                             write_value_columns(df_dict, pvlabel, pv)
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(
-                                olabel, co.name)
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
-                        for output in [x for x in node.outputs if
-                                       isinstance(x, DataFile)]:
+
+                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                            output_by_type = []
+                            delim = ";"
                             olabel = output.label
-                            df_dict[olabel][-1] = output.filename
+                            if output.label not in columns:
+                                columns.append(output.label)
+                            output_by_type.append(output.filename)
+                            df_dict[olabel][-1] = delim.join(map(str, output_by_type))
+
                             for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(
-                                    olabel, co.name)
+                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                                 df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
@@ -396,18 +399,18 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             df_dict[colabel][-1] = co.value
                         if write_factor_values:
                             for fv in node.factor_values:
-                                fvlabel = "{0}.Factor Value[{1}]".format(
-                                    olabel, fv.factor_name.name)
+                                fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                                 write_value_columns(df_dict, fvlabel, fv)
 
                     elif isinstance(node, Material):
                         olabel = node.type
                         df_dict[olabel][-1] = node.name
                         for c in node.characteristics:
+                            if not c.category:
+                                continue
                             category_label = c.category.term if isinstance(c.category.term, str) \
                                 else c.category.term["annotationValue"]
-                            clabel = "{0}.Characteristics[{1}]".format(
-                                olabel, category_label)
+                            clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
                             write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(

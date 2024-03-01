@@ -1,0 +1,99 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	CHEBI	EFO	OBI	PATO	NCIBTaxon
+Term Source File					
+Term Source Version					
+Term Source Description	Chemical Entity of Biological Interest	Experimental Factor Ontology	Ontology for Biomedical Investigations	Phenotype and Trait Ontology	NCBI Taxonomy
+INVESTIGATION
+Investigation Identifier	
+Investigation Title	
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	MTBLS-XXXX-SIRM
+Study Title	[U-13C6]-D-glucose labeling experiment in MCF7 cancer cell line
+Study Description	Probing cancer pathways of MCF7 cell line using 13C stable isotope resolved metabolomics study using isotopologue distribution analysis with mass spectrometry and isotopomer analysis by 1D 1H NMR.
+Study Submission Date	15/08/2021
+Study Public Release Date	15/08/2021
+Study File Name	s_13C-SIRM-study.txt
+Comment[MTBLS Broker Name]	OXFORD
+Comment[MTBLS Center Name]	OXFORD
+Comment[MTBLS Center Project Name]	OXFORD
+Comment[MTBLS Lab Name]	Oxford e-Research Centre
+Comment[MTBLS Submission Action]	ADD
+Comment[Study Funding Agency]	
+Comment[Study Grant Number]	
+STUDY DESIGN DESCRIPTORS
+Study Design Type	intervention design	stable isotope resolved metabolomics study
+Study Design Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000115	http://purl.obolibrary.org/obo/MSIO_0000096
+Study Design Type Term Source REF	OBI	MSIO
+STUDY PUBLICATIONS
+Study PubMed ID	
+Study Publication DOI	10.1371/journal.pone.0000000
+Study Publication Author List	Min,W. and Everest H
+Study Publication Title	Decyphering new cancer pathways with stable isotope resolved metabolomics in MCF7 cell lines
+Study Publication Status	indexed in PubMed
+Study Publication Status Term Accession Number	
+Study Publication Status Term Source REF	
+STUDY FACTORS
+Study Factor Name	compound	dose	duration
+Study Factor Type	chemical substance	dose	time
+Study Factor Type Term Accession Number	http://purl.obolibrary.org/obo/CHEBI_59999	http://www.ebi.ac.uk/efo/EFO_0000428	http://purl.obolibrary.org/obo/PATO_0000165
+Study Factor Type Term Source REF	CHEBI	EFO	PATO
+STUDY ASSAYS
+Study Assay File Name	a_isotopologue-ms-assay.txt	a_isotopomer-nmr-assay.txt	a_metabolite-profiling-nmr-assay.txt
+Study Assay Measurement Type	isotopologue distribution analysis	isotopomer analysis	untargeted metabolite profiling
+Study Assay Measurement Type Term Accession Number	http://purl.obolibrary.org/obo/msio.owl#mass_isotopologue_distribution_analysis	http://purl.obolibrary.org/obo/msio.owl#isotopomer_analysis	http://purl.obolibrary.org/obo/MSIO_0000101
+Study Assay Measurement Type Term Source REF	MSIO	MSIO	MSIO
+Study Assay Technology Type	mass spectrometry	NMR spectroscopy	NMR spectroscopy
+Study Assay Technology Type Term Accession Number	http://purl.obolibrary.org/obo/CHMO_0000470	http://purl.obolibrary.org/obo/CHMO_0000591	http://purl.obolibrary.org/obo/CHMO_0000591
+Study Assay Technology Type Term Source REF	MSIO	MSIO	MSIO
+Study Assay Technology Platform			
+STUDY PROTOCOLS
+Study Protocol Name	cell culture and isotopic labeling	intracellular metabolite extraction	extracellular metabolite extraction	liquid chromatography mass spectrometry	1D 13C NMR spectroscopy for isotopomer analysis	1D 13C NMR spectroscopy for metabolite profiling	MS metabolite identification	NMR metabolite identification	13C SIRM MS and NMR integrative analysis
+Study Protocol Type	sample collection	metabolite extraction	metabolite extraction	mass spectrometry	nmr spectroscopy	nmr spectroscopy	metabolite identification	data transformation	data transformation
+Study Protocol Type Term Accession Number									
+Study Protocol Type Term Source REF									
+Study Protocol Description	SOP for growing MCF7 cells and incubating them with the tracer molecule	SOP for extracting metabolites from harvested cells	SOP for extracting metabolites from cell culture supernatant	SOP for LC-MS data acquisition	SOP for 1D 13C NMR data acquisition for isotopomer analysis	SOP for 1D 13C NMR data acquisition for metabolite profiling	SOP for MS signal processing and metabolite and isotopologue identification	SOP for NMR signal processing and metabolite and isotopomer identification	a workflow for integrating data from NMR and MS acquisition into a consolidated result
+Study Protocol URI								https://doi.org/10.1021/acs.analchem.1c01064	https://doi.org/10.1021/acs.analchem.1c01064
+Study Protocol Version									
+Study Protocol Parameters Name	tracer molecule			chromatography column;mass spectrometry instrument;mass analyzer	magnetic field strength;nmr tube;pulse sequence	magnetic field strength;nmr tube;pulse sequence	ms software	nmr software	software
+Study Protocol Parameters Name Term Accession Number				;;	;;	;;			
+Study Protocol Parameters Name Term Source REF				;;	;;	;;			
+Study Protocol Components Name									
+Study Protocol Components Type									
+Study Protocol Components Type Term Accession Number									
+Study Protocol Components Type Term Source REF									
+STUDY CONTACTS
+Study Person Last Name	Min	Everest
+Study Person First Name	Weng	Hillary
+Study Person Mid Initials		
+Study Person Email	weng.min@bim.edu.cn	
+Study Person Phone		
+Study Person Fax		
+Study Person Address	Prospect Street, Beijing, People's Republic of China	CCM, Edinborough, United Kingdom
+Study Person Affiliation	Beijing Institute of Metabolism	Centre for Cell Metabolism
+Study Person Roles	principal investigator role;SRA Inform On Status;SRA Inform On Error	principal investigator role
+Study Person Roles Term Accession Number	;;	
+Study Person Roles Term Source REF	;;	
+Comment[Study Person REF]		

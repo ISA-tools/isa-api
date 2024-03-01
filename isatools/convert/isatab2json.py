@@ -36,6 +36,7 @@ def convert(work_dir, identifier_type=IdentifierType.name,
             validate_first=True, config_dir=isatab.default_config_dir,
             use_new_parser=False):
     i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
+
     if validate_first:
         log.info("Validating input ISA tab before conversion")
         if len(i_files) != 1:
@@ -97,11 +98,11 @@ class ISATab2ISAjson_v1:
 
         if self.identifier_type == IdentifierType.counter:
             identifier = \
-                "http://data.isa-tools.org/"+type+"/"+str(self.counters[type])
+                "http://data.isa-tools.org/" + type + "/" + str(self.counters[type])
         elif self.identifier_type == IdentifierType.uuid:
-            identifier = "http://data.isa-tools.org/UUID/"+str(uuid4())
+            identifier = "http://data.isa-tools.org/UUID/" + str(uuid4())
         elif self.identifier_type == IdentifierType.name:
-            identifier = "#"+type+"/"+name.replace(" ", "_")
+            identifier = "#" + type + "/" + name.replace(" ", "_")
 
         self.setIdentifier(type, name, identifier)
         return identifier
@@ -120,6 +121,7 @@ class ISATab2ISAjson_v1:
             log.fatal("No ISA-Tab dataset found")
         else:
             isa_json = dict([])
+
             if isa_tab.metadata != {}:
                 isa_json = dict([
                     ("identifier",
@@ -173,7 +175,7 @@ class ISATab2ISAjson_v1:
     def createContacts(self, contacts, inv_or_study):
         people_json = []
         for contact in contacts:
-            person_last_name = contact[inv_or_study+" Person Last Name"]
+            person_last_name = contact[inv_or_study + " Person Last Name"]
             if not person_last_name:
                 continue
             person_identifier = self.generateIdentifier("person",
@@ -181,13 +183,13 @@ class ISATab2ISAjson_v1:
             person_json = dict([
                 ("@id", person_identifier),
                 ("lastName", person_last_name),
-                ("firstName", contact[inv_or_study+" Person First Name"]),
-                ("midInitials", contact[inv_or_study+" Person Mid Initials"]),
-                ("email", contact[inv_or_study+" Person Email"]),
-                ("phone", contact[inv_or_study+" Person Phone"]),
-                ("fax", contact[inv_or_study+" Person Fax"]),
-                ("address", contact[inv_or_study+" Person Address"]),
-                ("affiliation", contact[inv_or_study+" Person Affiliation"]),
+                ("firstName", contact[inv_or_study + " Person First Name"]),
+                ("midInitials", contact[inv_or_study + " Person Mid Initials"]),
+                ("email", contact[inv_or_study + " Person Email"]),
+                ("phone", contact[inv_or_study + " Person Phone"]),
+                ("fax", contact[inv_or_study + " Person Fax"]),
+                ("address", contact[inv_or_study + " Person Address"]),
+                ("affiliation", contact[inv_or_study + " Person Affiliation"]),
                 ("roles", self.createOntologyAnnotationsFromStringList(
                     contact, inv_or_study, " Person Roles")),
                 ("comments", self.createComments(contact))
@@ -200,10 +202,10 @@ class ISATab2ISAjson_v1:
         publications_json = []
         for pub in publications:
             publication_json = dict([
-                ("pubMedID", pub[inv_or_study+' PubMed ID']),
-                ("doi", pub[inv_or_study+' Publication DOI']),
-                ("authorList", pub[inv_or_study+' Publication Author List']),
-                ("title", pub[inv_or_study+' Publication Title']),
+                ("pubMedID", pub[inv_or_study + ' PubMed ID']),
+                ("doi", pub[inv_or_study + ' Publication DOI']),
+                ("authorList", pub[inv_or_study + ' Publication Author List']),
+                ("title", pub[inv_or_study + ' Publication Title']),
                 ("status", self.createOntologyAnnotationForInvOrStudy(
                     pub, inv_or_study, " Publication Status"))
             ]
@@ -219,21 +221,24 @@ class ISATab2ISAjson_v1:
         for assay in assays:
             for process_node in assay.process_nodes.values():
                 if self.ARRAY_DESIGN_REF in process_node.parameters:
-                    protocols_to_attach_parameter.append(
-                            process_node.protocol)
+                    protocols_to_attach_parameter.append(process_node.protocol)
         protocol_identifier = self.generateIdentifier("protocol", "unknown")
-        protocol_json = dict([
-                                 ("@id", protocol_identifier),
-                                 ("name", "unknown"),
-                                 ("protocolType", dict([
-                                     ("annotationValue", "")
-                                 ])),
-                                 ("description", ""),
-                                 ("uri", ""),
-                                 ("version", ""),
-                                 ("parameters", []),
-                                 ("components", [])
-                             ])
+        protocol_json = dict(
+            [
+                ("@id", protocol_identifier),
+                ("name", "unknown"),
+                ("protocolType", dict(
+                    [
+                        ("annotationValue", "")
+                    ]
+                )),
+                ("description", ""),
+                ("uri", ""),
+                ("version", ""),
+                ("parameters", []),
+                ("components", [])
+            ]
+        )
         protocols_json.append(protocol_json)
         for protocol in protocols:
             protocol_name = protocol['Study Protocol Name']
@@ -246,8 +251,7 @@ class ISATab2ISAjson_v1:
             protocol_json = dict([
                 ("@id", protocol_identifier),
                 ("name", protocol_name),
-                ("protocolType", self.createOntologyAnnotationForInvOrStudy(
-                    protocol, "Study", " Protocol Type")),
+                ("protocolType", self.createOntologyAnnotationForInvOrStudy(protocol, "Study", " Protocol Type")),
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
@@ -268,19 +272,18 @@ class ISATab2ISAjson_v1:
                 "parameter", parameters_json[i]["annotationValue"])
             json_item = dict([
                 ("@id", parameter_identifier),
-                ("parameterName",  parameter_json)
+                ("parameterName", parameter_json)
             ])
             json_list.append(json_item)
             i += 1
         return json_list
 
-    def createOntologyAnnotationForInvOrStudy(
-            self, object, inv_or_study, type):
+    def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
-                ("annotationValue", object[inv_or_study+type]),
-                ("termSource", object[inv_or_study+type+" Term Source REF"]),
-                ("termAccession", object[
-                    inv_or_study+type+" Term Accession Number"])
+            ("annotationValue", object[inv_or_study + type]),
+            ("termSource", object[inv_or_study + type + " Term Source REF"]),
+            ("termAccession", object[
+                inv_or_study + type + " Term Accession Number"])
         ])
         return onto_ann
 
@@ -294,11 +297,11 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotationsFromStringList(
             self, object, inv_or_study, type):
-        name_array = object[inv_or_study+type].split(";")
+        name_array = object[inv_or_study + type].split(";")
         term_source_array = object[
-            inv_or_study+type+" Term Source REF"].split(";")
+            inv_or_study + type + " Term Source REF"].split(";")
         term_accession_array = object[
-            inv_or_study+type+" Term Accession Number"].split(";")
+            inv_or_study+type + " Term Accession Number"].split(";")
         onto_annotations = []
         for i in range(0, len(name_array)):
             if not name_array[i]:
@@ -314,9 +317,9 @@ class ISATab2ISAjson_v1:
         onto_annotations = []
         for object in array:
             onto_ann = self.createOntologyAnnotation(
-                object[inv_or_study+type],
-                object[inv_or_study+type+" Term Source REF"],
-                object[inv_or_study+type+" Term Accession Number"])
+                object[inv_or_study + type],
+                object[inv_or_study + type + " Term Source REF"],
+                object[inv_or_study + type + " Term Accession Number"])
             onto_annotations.append(onto_ann)
         return onto_annotations
 
@@ -337,8 +340,7 @@ class ISATab2ISAjson_v1:
         for study in studies:
             study_name = study.metadata['Study Identifier']
             study_identifier = self.generateIdentifier("study", study_name)
-            characteristics_categories_list = \
-                self.createCharacteristicsCategories(study.nodes)
+            characteristics_categories_list = self.createCharacteristicsCategories(study.nodes)
             unit_categories_list = self.createUnitsCategories(study.nodes)
             factors_list = self.createStudyFactorsList(study.factors)
             source_dict = self.createSourcesDictionary(study.nodes)
@@ -415,7 +417,7 @@ class ISATab2ISAjson_v1:
             component_name = components_name[index]
             json_item = dict([
                 ("componentName", component_name),
-                ("componentType",  component_type_json)
+                ("componentType", component_type_json)
             ])
             json_list.append(json_item)
             index += 1
@@ -460,7 +462,7 @@ class ISATab2ISAjson_v1:
                 self.getIdentifier(
                     "process", process_node.next_process.name) if \
                 process_node.next_process else ""
-            if (process_node.assay_name):
+            if process_node.assay_name:
                 json_item = dict([
                     ("@id", process_identifier),
                     ("name", process_node.assay_name),
@@ -662,7 +664,7 @@ class ISATab2ISAjson_v1:
                 try:
                     json_list = []
                     for source_name in nodes[node_index].derivesFrom:
-                        source_index = "source-"+source_name
+                        source_index = "source-" + source_name
                         source_identifier = self.getIdentifier(
                             "source", source_index)
                         json_list.append(dict([("@id", source_identifier)]))
@@ -886,8 +888,8 @@ class ISATab2ISAjson_v1:
                     except AttributeError:
                         try:
                             value_json = dict([("category", dict([
-                                 ("@id", category_identifier)])),
-                             ("value", self.createOntologyAnnotation(
+                                ("@id", category_identifier)])),
+                                ("value", self.createOntologyAnnotation(
                                  value, value_attributes.Term_Source_REF,
                                  value_attributes.Term_Accession_Number))
                              ])

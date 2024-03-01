@@ -94,13 +94,13 @@ class TestCharacteristic(TestCase):
         expected_dict = {
             'category': '',
             'value': 12,
-            'unit': {'@id': '#unit/' + mock_uuid4.return_value},
+            'unit': {'@id': '#ontology_annotation/' + mock_uuid4.return_value},
             'comments': []
         }
         self.assertEqual(characteristic.to_dict(), expected_dict)
         characteristic.unit = unit
         characteristic.category = category
-        expected_dict['unit'] = {'@id': '#unit/characteristic_unit_1'}
+        expected_dict['unit'] = {'@id': '#ontology_annotation/characteristic_unit_1'}
         expected_dict['category'] = {'@id': '#characteristic_category/characteristic_category_1'}
         self.assertEqual(characteristic.to_dict(), expected_dict)
 

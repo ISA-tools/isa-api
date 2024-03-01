@@ -327,23 +327,43 @@ def load_table_checks(df, filename):
     for x, column in enumerate(columns):  # check if columns have valid labels
         if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
-        if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
-                           'Protocol REF', 'Term Accession Number',
-                           'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name',
-                           'Raw Spectral Data File',
-                           'Labeled Extract Name',
-                           'Label', 'Hybridization Assay Name',
-                           'Array Design REF', 'Scan Name', 'Array Data File',
-                           'Protein Assignment File',
-                           'Peptide Assignment File',
-                           'Post Translational Modification Assignment File',
-                           'Data Transformation Name',
-                           'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File', 'Image File', "Free Induction Decay Data File",
-                           'Metabolite Assignment File', "Performer", "Date", "Array Data Matrix File",
-                           'Free Induction Decay File', "Derived Array Data Matrix File",
-                           'Acquisition Parameter Data File']) \
+        if (column not in [
+            'Source Name',
+            'Sample Name',
+            'Term Source REF',
+            'Protocol REF',
+            'Term Accession Number',
+            'Unit',
+            'Assay Name',
+            'Extract Name',
+            'Raw Data File',
+            'Material Type',
+            'MS Assay Name',
+            'NMR Assay Name',
+            'Raw Spectral Data File',
+            'Labeled Extract Name',
+            'Label', 'Hybridization Assay Name',
+            'Array Design REF',
+            'Scan Name',
+            'Array Data File',
+            'Protein Assignment File',
+            'Peptide Assignment File',
+            'Post Translational Modification Assignment File',
+            'Data Transformation Name',
+            'Derived Data File',
+            'Derived Spectral Data File',
+            'Normalization Name',
+            'Derived Array Data File',
+            'Image File',
+            "Free Induction Decay Data File",
+            'Metabolite Assignment File',
+            "Performer",
+            "Date",
+            "Array Data Matrix File",
+            'Free Induction Decay File',
+            "Derived Array Data Matrix File",
+            'Acquisition Parameter Data File'
+        ]) \
                 and not _RX_CHARACTERISTICS.match(column) \
                 and not _RX_PARAMETER_VALUE.match(column) \
                 and not _RX_FACTOR_VALUE.match(column) \
@@ -400,16 +420,24 @@ def load_table_checks(df, filename):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
+    allowed_fields = [
+        'Source Name',
+        'Sample Name',
+        'Protocol REF',
+        'Extract Name',
+        'Labeled Extract Name',
+        'Raw Data File',
+        'Raw Spectral Data File',
+        'Array Data File',
+        'Protein Assignment File',
+        'Peptide Assignment File',
+        'Post Translational Modification Assignment File',
+        'Derived Data File',
+        'Derived Spectral Data File',
+        'Derived Array Data File'
+    ]
     object_index = [i for i, x in enumerate(norm_columns)
-                    if x in ['Source Name', 'Sample Name', 'Protocol REF',
-                             'Extract Name', 'Labeled Extract Name',
-                             'Raw Data File',
-                             'Raw Spectral Data File', 'Array Data File',
-                             'Protein Assignment File',
-                             'Peptide Assignment File',
-                             'Post Translational Modification Assignment File',
-                             'Derived Spectral Data File',
-                             'Derived Array Data File']
+                    if x in allowed_fields
                     or _RX_FACTOR_VALUE.match(x)]
     object_columns_list = list()
     prev_i = object_index[0]
@@ -463,11 +491,17 @@ def load_table_checks(df, filename):
             else:
                 log.error("Expected Label column after Labeled Extract Name "
                           "but none found")
-        elif prop_name in ['Raw Data File', 'Derived Spectral Data File',
-                           'Derived Array Data File', 'Array Data File',
-                           'Raw Spectral Data File', 'Protein Assignment File',
-                           'Peptide Assignment File',
-                           'Post Translational Modification Assignment File']:
+        elif prop_name in [
+            'Raw Data File',
+            'Derived Data File',
+            'Derived Spectral Data File',
+            'Derived Array Data File',
+            'Array Data File',
+            'Raw Spectral Data File',
+            'Protein Assignment File',
+            'Peptide Assignment File',
+            'Post Translational Modification Assignment File'
+        ]:
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     log.error("(E) Expected only Comments following {} "

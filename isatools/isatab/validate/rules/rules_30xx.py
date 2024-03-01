@@ -141,14 +141,14 @@ def check_ontology_fields(table, cfg, tsrs):
     :return: True if OK, False if not OK
     """
 
-    def check_single_field(cell_value, source, acc, cfield, filename):
+    def check_single_field(cell_value, source, acc, config_field, filename):
         """ Checks ontology annotation columns are correct for a given
         configuration for a given cell value
 
         :param cell_value: Cell value
         :param source: Term Source REF value
         :param acc: Term Accession Number value
-        :param cfield: The configuration specification from the ISA Config
+        :param config_field: The configuration specification from the ISA Config
         :param filename: Filename of the table
         :return: True if OK, False if not OK
         """
@@ -157,7 +157,7 @@ def check_ontology_fields(table, cfg, tsrs):
                 or not cell_has_value(cell_value)):
             msg = "Missing Term Source REF in annotation or missing Term Source Name"
             spl = ("Incomplete values for ontology headers, for the field '{}' in the file '{}'. Check that all the "
-                   "label/accession/source are provided.").format(cfield.header, filename)
+                   "label/accession/source are provided.").format(config_field.header, filename)
             validator.add_warning(message=msg, supplemental=spl, code=3008)
             log.warning("(W) {}".format(spl))
             return_value = False

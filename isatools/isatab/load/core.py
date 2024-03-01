@@ -201,6 +201,7 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                 file=row['Term Source File'],
                 version=row['Term Source Version'],
                 description=row['Term Source Description'])
+            ontology_source.comments = get_comments_row(df_dict['ontology_sources'].columns, row)
             investigation.ontology_source_references.append(ontology_source)
 
         ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
@@ -234,8 +235,7 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                     row['Study Design Type'],
                     row['Study Design Type Term Accession Number'],
                     row['Study Design Type Term Source REF'])
-                these_comments = get_comments_row(
-                    df_dict['s_design_descriptors'][i].columns, row)
+                these_comments = get_comments_row(df_dict['s_design_descriptors'][i].columns, row)
                 design_descriptor.comments = these_comments
                 study.design_descriptors.append(design_descriptor)
 
@@ -266,8 +266,7 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                 for param in params:
                     protocol_param = ProtocolParameter(parameter_name=param)
                     protocol.parameters.append(protocol_param)
-                protocol.comments = get_comments_row(
-                    df_dict['s_protocols'][i].columns, row)
+                protocol.comments = get_comments_row(df_dict['s_protocols'][i].columns, row)
                 study.protocols.append(protocol)
                 protocol_map[protocol.name] = protocol
             study.protocols = list(protocol_map.values())
@@ -305,19 +304,23 @@ def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> obje
                         process.executes_protocol = unknown_protocol
 
             for _, row in df_dict['s_assays'][i].iterrows():
-                assay = Assay()
-                assay.filename = row['Study Assay File Name']
-                assay.measurement_type = get_oa(
-                    row['Study Assay Measurement Type'],
-                    row['Study Assay Measurement Type Term Accession Number'],
-                    row['Study Assay Measurement Type Term Source REF']
-                )
-                assay.technology_type = get_oa(
-                    row['Study Assay Technology Type'],
-                    row['Study Assay Technology Type Term Accession Number'],
-                    row['Study Assay Technology Type Term Source REF']
-                )
-                assay.technology_platform = row['Study Assay Technology Platform']
+                assay_dict = {
+                    "filename": row['Study Assay File Name'],
+                    "measurement_type": get_oa(
+                        row['Study Assay Measurement Type'],
+                        row['Study Assay Measurement Type Term Accession Number'],
+                        row['Study Assay Measurement Type Term Source REF']
+                    ),
+                    "technology_type": get_oa(
+                        row['Study Assay Technology Type'],
+                        row['Study Assay Technology Type Term Accession Number'],
+                        row['Study Assay Technology Type Term Source REF']
+                    ),
+                    "technology_platform": row['Study Assay Technology Platform'],
+                    "comments": get_comments_row(df_dict['s_assays'][i].columns, row)
+                }
+                assay = Assay(**assay_dict)
+
                 if skip_load_tables:
                     pass
                 else:

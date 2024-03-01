@@ -15,13 +15,14 @@ def convert(json_fp, path, i_file_name='i_investigation.txt',
     """
     Converter for ISA JSON to ISA Tab. Currently only converts
     investigation file contents
-        :param json_fp: File pointer to ISA JSON input
-        :param path: Directory to ISA tab output
-        :param i_file_name: Investigation file name, default is
-                            i_investigation.txt
-        :param config_dir: Directory to config directory
-        :param validate_first: Validate JSON before conversion, default is True
-        :param write_factor_values_in_assay_table: Whether or not to write out Factor values in the Assay table, default is False
+    :param json_fp: File pointer to ISA JSON input
+    :param path: Directory to ISA tab output
+    :param i_file_name: Investigation file name, default is
+                        i_investigation.txt
+    :param config_dir: Directory to config directory
+    :param validate_first: Validate JSON before conversion, default is True
+    :param write_factor_values_in_assay_table: Whether or not to write out Factor values in the Assay table, default
+    is False
 
     Example usage:
         Read from a JSON and write to an investigation file, make sure to

@@ -4,12 +4,7 @@
   "protocols": [
     {
       "inputs": "#sample",
-      "protocol": "extraction",
-      "outputs": "#material"
-    },
-    {
-      "inputs": "#material",
-      "protocol": "labeling",
+      "protocol": "metabolite extraction",
       "outputs": "#material"
     },
     {
@@ -19,26 +14,15 @@
     },
     {
       "inputs": "#data",
-      "protocol": "nmr assay",
-      "outputs": "#data"
-    },
-    {
-      "inputs": "#data",
-      "protocol": "data normalization"
-    },
-    {
       "protocol": "data transformation",
       "outputs": "#data"
     }
   ],
   "protocolSequence": [
     "extraction",
-    "labeling",
     "NMR spectroscopy",
-    "nmr assay",
-    "data normalization",
     "data transformation"
   ],
   "description": [
-    "(Sample)->(extraction)->(Material)->(labeling)->(Material)->(NMR spectroscopy)->(DataFiles)->(nmr assay)->(DataFiles)->(data normalization)->(data transformation)->(DataFiles)" ]
+    "(Sample)->(extraction)->(Material)->(NMR spectroscopy)->(Files)->(data transformation)->(DataFiles)" ]
 }

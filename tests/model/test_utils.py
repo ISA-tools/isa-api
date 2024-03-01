@@ -1,5 +1,6 @@
+import os
 from unittest import TestCase
-
+from isatools.tests import utils
 from isatools.model.datafile import DataFile
 from isatools.model.sample import Sample
 from isatools.model.material import Material, Extract, LabeledExtract
@@ -10,11 +11,15 @@ from isatools.model.utils import (
     find, plink,
     batch_create_materials,
     batch_create_assays,
-    _deep_copy
+    _deep_copy,
+    update_checksum
 )
 
 
 class TestUtils(TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
 
     def test_empty_process_sequence(self):
         graph = _build_assay_graph()
@@ -103,3 +108,8 @@ class TestUtils(TestCase):
         self.assertFalse(first_batch == third_batch)
         self.assertFalse(first_batch == second_batch)
 
+    def test_checksum_md5(self):
+        isa_data_file = DataFile(filename="EVHINN101.sff", label="RawDataFile")
+        updated_isa_data_file = update_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "md5")
+        self.assertEqual(updated_isa_data_file.comments[0].value, "md5")
+        self.assertEqual(updated_isa_data_file.comments[1].value, "d41d8cd98f00b204e9800998ecf8427e")

@@ -47,7 +47,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         Identifiable.__init__(self)
 
         self.id = id_
-        self.name = ""
+        self.name = ''
         if name:
             self.name = name
 
@@ -307,7 +307,12 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
         allowed_protocol_type_terms = [
-            "nucleic acid sequencing", "nucleic acid hybridization", "data transformation", "data normalization"
+            "nucleic acid sequencing",
+            "nmr spectroscopy",
+            "mass spectrometry",
+            "nucleic acid hybridization",
+            "data transformation",
+            "data normalization"
         ]
         if self.executes_protocol.protocol_type.term in allowed_protocol_type_terms or (
                 self.executes_protocol.protocol_type.term == 'data collection'

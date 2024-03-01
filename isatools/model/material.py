@@ -91,9 +91,15 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
 
         for characteristic_data in material["characteristics"]:
             characteristic = Characteristic()
-            characteristic.value = OntologyAnnotation()
-            characteristic.value.from_dict(characteristic_data["value"])
-            characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+            if isinstance(characteristic_data["value"], dict):
+                characteristic.value = OntologyAnnotation()
+                characteristic.value.from_dict(characteristic_data["value"])
+                characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+            if isinstance(characteristic_data["value"], (int, float)):
+                characteristic.value = characteristic_data["value"]
+            if isinstance(characteristic_data["value"], str):
+                characteristic.value = characteristic_data["value"]
+
             self.characteristics.append(characteristic)
 
 
