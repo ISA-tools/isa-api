@@ -3,6 +3,7 @@
 import logging
 import os
 import shutil
+import pathlib
 
 from isatools import isajson, isatab
 
@@ -51,7 +52,7 @@ def convert(json_fp, path, i_file_name='i_investigation.txt',
                 write_factor_values_in_assay_table=write_factor_values_in_assay_table)
     #  copy data files across from source directory where JSON is located
     log.info("Copying data files from source to target")
-    for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
+    for file in [f for f in os.listdir(pathlib.Path(json_fp.name).resolve().parent)
                  if not (f.endswith('.txt') and (f.startswith('i_') or
                                                  f.startswith('s_') or
                                                  f.startswith('a_'))) and
