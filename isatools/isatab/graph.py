@@ -17,7 +17,6 @@ def _all_end_to_end_paths(G, start_nodes):
     num_start_nodes = len(start_nodes)
     message = 'Calculating for paths for {} start nodes: '.format(
         num_start_nodes)
-    # log.info(start_nodes)
     start_node = G.indexes[start_nodes[0]]
     if isinstance(start_node, Source):
         message = 'Calculating for paths for {} sources: '.format(
@@ -61,7 +60,6 @@ def _longest_path_and_attrs(paths, indexes):
     :return: The longest path and attributes
     """
     longest = (0, None)
-    # log.info(paths)
     for path in paths:
         length = len(path)
         for node in path:
