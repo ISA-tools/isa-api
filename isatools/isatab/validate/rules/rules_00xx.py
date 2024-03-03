@@ -5,14 +5,14 @@ from isatools.isatab.validate.store import validator
 from isatools.isatab.defaults import log
 
 
-def check_table_files_read(i_df, dir_context):
+def check_table_files_read(i_df_dict, dir_context):
     """Used for rules 0006 and 0008
 
     :param i_df: An investigation DataFrame
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df['studies']):
+    for i, study_df in enumerate(i_df_dict['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename != '':
             try:
@@ -22,7 +22,7 @@ def check_table_files_read(i_df, dir_context):
                 spl = "Study File {} does not appear to exist".format(study_filename)
                 validator.add_error(message="Missing study tab file(s)", supplemental=spl, code=6)
                 log.error("(E) Study File {} does not appear to exist".format(study_filename))
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)):
