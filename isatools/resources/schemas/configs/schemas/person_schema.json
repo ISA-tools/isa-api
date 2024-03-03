@@ -27,6 +27,6 @@
         }
     },
     "additionalProperties": false,
-    "required": [ "lastName", "firstName", "midInitials" ],
+    "required": [ "lastName", "firstName"],
     "commentsRequired": [ "{} Person REF" ]
 }
