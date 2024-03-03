@@ -9,6 +9,16 @@ from isatools.convert import isatab2w4m
 from isatools.tests import utils
 
 
+def universal_filecmp(f1, f2):
+    with open(f1, 'r') as fp1, open(f2, 'r') as fp2:
+        while True:
+            b1 = fp1.readline()
+            b2 = fp2.readline()
+            if b1 != b2:
+                return False
+            if not b1:
+                return True
+
 # Test presence of data folder
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -46,7 +56,7 @@ class TestIsatab2w4m(unittest.TestCase):
             output_file = os.path.join(self._tmp_dir, '.'.join(
                 ['-'.join([study, 'w4m', x]), 'tsv']))
             self.assertTrue(os.path.exists(output_file))
-            self.assertTrue(filecmp.cmp(output_file, ref_file, shallow=False),
+            self.assertTrue(universal_filecmp(output_file, ref_file),
                             'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
 
     # Test MTBLS30
@@ -89,7 +99,7 @@ class TestIsatab2w4m(unittest.TestCase):
                 'sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
             self.assertTrue(os.path.exists(output_files[x]))
         self.assertTrue(
-            filecmp.cmp(output_files[x], ref_files[x]),
+            universal_filecmp(output_files[x], ref_files[x]),
             'Output file "{0}" differs from reference file "{1}".'.format(
                 output_files[x], ref_files[x]))
 
@@ -140,5 +150,5 @@ class TestIsatab2w4m(unittest.TestCase):
                     ['-'.join([study, 'w4m', x, assay]), 'tsv']))
                 self.assertTrue(os.path.exists(output_file))
                 self.assertTrue(
-                    filecmp.cmp(output_file, ref_file),
+                    universal_filecmp(output_file, ref_file),
                     'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
