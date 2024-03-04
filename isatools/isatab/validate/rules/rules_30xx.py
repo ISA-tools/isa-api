@@ -21,7 +21,7 @@ def check_filenames_present(i_df_dict: dict) -> None:
             if filename == '':
                 spl = "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos)
                 validator.add_warning.append(message="Missing assay file name", supplemental=spl, code=3005)
-                log.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(a_pos))
+                log.warning("(W) An assay filename is missing for STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos))
 
 
 def check_date_formats(i_df_dict):

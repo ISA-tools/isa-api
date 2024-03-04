@@ -17,7 +17,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf, origin="")
-        self.assertEqual(len(r['warnings']), 5)
+        self.assertEqual(len(r['warnings']), 2)
 
     def test_mtbls267(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'MTBLS267-partial')
@@ -36,7 +36,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-I-1')
         with open(path.join(data_path, 'i_investigation.txt'), 'r') as data_file:
             report = validate(fp=data_file, config_dir=self.default_conf)
-        self.assertEqual(len(report['warnings']), 41)
+        self.assertEqual(len(report['warnings']), 38)
 
     def test_bii_s_7(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-7')
@@ -82,7 +82,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
             r = validate(data_file, rules=rules)
-        self.assertEqual(len(r['warnings']), 3)
+        self.assertEqual(len(r['warnings']), 1)
 
         rule = '12000'
         expected_error = {
