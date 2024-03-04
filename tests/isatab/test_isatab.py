@@ -444,7 +444,7 @@ class TestIsaTabDump(unittest.TestCase):
         s.process_sequence = [sample_collection_process]
         s.samples.append(sample1)
         i.studies = [s]
-        actual = replace_windows_newlines(isatab.dumps(i))
+        actual = isatab.dumps(i)
         expected = """Source Name\tMaterial Type\tCharacteristics[organism]\tTerm Source REF\tTerm Accession Number\tCharacteristics[body weight]\tUnit\tTerm Source REF\tTerm Accession Number\tProtocol REF\tParameter Value[vessel]\tTerm Source REF\tTerm Accession Number\tParameter Value[storage temperature]\tUnit\tTerm Source REF\tTerm Accession Number\tSample Name\tCharacteristics[organism part]\tTerm Source REF\tTerm Accession Number\tCharacteristics[specimen mass]\tUnit\tTerm Source REF\tTerm Accession Number
 source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T016\t72\tkilogram\tUO\thttp://purl.obolibrary.org/obo/UO_0000009\tsample collection\teppendorf tube\tOBI\tpurl.org\t-20\tdegree Celsius\tUO\thttp://purl.obolibrary.org/obo/UO_0000027\tsample1\tliver\tUBERON\thttp://purl.obolibrary.org/obo/UBERON_0002107\t450.5\tmilligram\tUO\thttp://purl.obolibrary.org/obo/UO_0000022"""
         self.assertIn(expected, actual)
@@ -1076,7 +1076,7 @@ class UnitTestIsaTabDump(unittest.TestCase):
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_source_protocol_ref_sample_x2(self):
         i = Investigation()
@@ -1174,7 +1174,7 @@ source1\tsample collection\tsample1"""
         i.studies = [s]
         expected = """Source Name\tCharacteristics[reference descriptor]\tProtocol REF\tSample Name\tCharacteristics[organism part]
 source1\tnot applicable\tsample collection\tsample1\tliver"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_source_protocol_ref_sample_with_parameter_values(self):
         i = Investigation()
@@ -1195,7 +1195,7 @@ source1\tnot applicable\tsample collection\tsample1\tliver"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tParameter Value[temperature]\tSample Name
 source1\tsample collection\t10\tsample1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_source_protocol_ref_sample_with_factor_values(self):
         i = Investigation()
@@ -1223,11 +1223,11 @@ source1\tsample collection\t10\tsample1"""
         s.assays = [a]
         expected_study_table = """Source Name\tProtocol REF\tSample Name\tFactor Value[study group]
 source1\tsample collection\tsample1\tStudy group 1"""
-        self.assertIn(expected_study_table, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected_study_table, isatab.dumps(i))
         expected_assay_table = """Sample Name\tFactor Value[study group]\tProtocol REF
 sample1\tStudy group 1\textraction"""
         self.assertIn(expected_assay_table,
-                      replace_windows_newlines(isatab.dumps(i, write_fvs_in_assay_table=True)))
+                      isatab.dumps(i, write_fvs_in_assay_table=True))
 
     def test_source_protocol_ref_protocol_ref_sample(self):
         i = Investigation()
@@ -1246,7 +1246,7 @@ sample1\tStudy group 1\textraction"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tProtocol REF\tSample Name
 source1\tsample collection\taliquoting\taliquot1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_source_protocol_ref_sample_protocol_ref_sample(self):
         i = Investigation()
@@ -1268,7 +1268,7 @@ source1\tsample collection\taliquoting\taliquot1"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tSample Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
         i = Investigation()
@@ -1302,7 +1302,7 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         i.studies = [s]
         expected = (f"""Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File\tComment[checksum type]\tComment[checksum]\n""" +
                     f"""sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw\t{cs_comment1.value}\t{cs_comment2.value}""")
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):
         i = Investigation()
@@ -1341,7 +1341,7 @@ sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
 
         # self.assertIn(expected_line1, dump_out)
         # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data4(self):
         i = Investigation()
@@ -1380,7 +1380,7 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
 
         # self.assertIn(expected_line1, dump_out)
         # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
         i = Investigation()
