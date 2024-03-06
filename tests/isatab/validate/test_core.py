@@ -17,6 +17,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf, origin="")
+        self.assertEqual(len(r['warnings']), 10)
         self.assertEqual(len(r['warnings']), 2)
 
     def test_mtbls267(self):
@@ -82,7 +83,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-S-3')
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
             r = validate(data_file, rules=rules)
-        self.assertEqual(len(r['warnings']), 1)
+        self.assertEqual(len(r['warnings']), 10)
 
         rule = '12000'
         expected_error = {
