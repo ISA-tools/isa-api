@@ -305,7 +305,7 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
 
     def setUp(self):
         self._reporting_level = logging.ERROR
-        self.v2_create_schemas_path = pathlib.PurePosixPath(
+        self.v2_create_schemas_path = pathlib.Path(
             pathlib.Path(__file__).parents[0], '..', '..', 'isatools', 'resources', 'schemas',
             'isa_model_version_2_0_schemas', 'create')
 
@@ -315,7 +315,7 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
-                res_path = pathlib.PurePosixPath("file://", self.v2_create_schemas_path,
+                res_path = pathlib.Path("file://", self.v2_create_schemas_path,
                              'sample_assay_plan_schema.json').as_uri()
                 resolver = RefResolver(res_path, sample_assay_plan_schema)
             validator = Draft4Validator(sample_assay_plan_schema,
@@ -342,7 +342,7 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'treatment_sequence_schema.json')) as fp:
                 treatment_sequence_schema = json.load(fp)
-            res_path = pathlib.PurePosixPath("file://", self.v2_create_schemas_path,
+            res_path = pathlib.Path("file://", self.v2_create_schemas_path,
                          'treatment_sequence_schema.json').as_uri()
             resolver = RefResolver(res_path, treatment_sequence_schema)
             validator = Draft4Validator(treatment_sequence_schema,
