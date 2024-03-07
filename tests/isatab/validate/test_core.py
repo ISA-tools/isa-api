@@ -47,7 +47,7 @@ class TestValidators(unittest.TestCase):
     def test_print_rule(self):
         raw_rule = INVESTIGATION_RULES_MAPPING[0]
         rule = Rule(**raw_rule)
-        expected_string = "rule=check_table_files_read, params=['investigation_df', 'dir_context'], identifier=0006"
+        expected_string = "rule=check_table_files_read, params=['investigation_df_dict', 'dir_context'], identifier=0006"
         self.assertEqual(str(rule), expected_string)
 
     def test_rules_error(self):
@@ -69,7 +69,7 @@ class TestValidators(unittest.TestCase):
                     *INVESTIGATION_RULES_MAPPING,
                     {
                         'rule': is_investigation,
-                        'params': ['investigation_df'],
+                        'params': ['investigation_df_dict'],
                         'identifier': '6000'
                     }
                 ],
