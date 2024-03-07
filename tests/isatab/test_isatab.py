@@ -28,6 +28,9 @@ def setUpModule():
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
 
+def replace_windows_newlines(input_string):
+    return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
+
 
 class TestIsaMerge(unittest.TestCase):
 
@@ -1069,7 +1072,7 @@ class UnitTestIsaTabDump(unittest.TestCase):
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1"""
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_source_protocol_ref_sample_x2(self):
         i = Investigation()
@@ -1167,7 +1170,7 @@ source1\tsample collection\tsample1"""
         i.studies = [s]
         expected = """Source Name\tCharacteristics[reference descriptor]\tProtocol REF\tSample Name\tCharacteristics[organism part]
 source1\tnot applicable\tsample collection\tsample1\tliver"""
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_source_protocol_ref_sample_with_parameter_values(self):
         i = Investigation()
@@ -1188,7 +1191,7 @@ source1\tnot applicable\tsample collection\tsample1\tliver"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tParameter Value[temperature]\tSample Name
 source1\tsample collection\t10\tsample1"""
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_source_protocol_ref_sample_with_factor_values(self):
         i = Investigation()
@@ -1216,11 +1219,11 @@ source1\tsample collection\t10\tsample1"""
         s.assays = [a]
         expected_study_table = """Source Name\tProtocol REF\tSample Name\tFactor Value[study group]
 source1\tsample collection\tsample1\tStudy group 1"""
-        self.assertIn(expected_study_table, isatab.dumps(i))
+        self.assertIn(expected_study_table, replace_windows_newlines(isatab.dumps(i)))
         expected_assay_table = """Sample Name\tFactor Value[study group]\tProtocol REF
 sample1\tStudy group 1\textraction"""
         self.assertIn(expected_assay_table,
-                      isatab.dumps(i, write_fvs_in_assay_table=True))
+                      replace_windows_newlines(isatab.dumps(i, write_fvs_in_assay_table=True)))
 
     def test_source_protocol_ref_protocol_ref_sample(self):
         i = Investigation()
@@ -1239,7 +1242,7 @@ sample1\tStudy group 1\textraction"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tProtocol REF\tSample Name
 source1\tsample collection\taliquoting\taliquot1"""
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_source_protocol_ref_sample_protocol_ref_sample(self):
         i = Investigation()
@@ -1261,7 +1264,7 @@ source1\tsample collection\taliquoting\taliquot1"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tSample Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
         i = Investigation()
@@ -1295,7 +1298,7 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         i.studies = [s]
         expected = (f"""Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File\tComment[checksum type]\tComment[checksum]\n""" +
                     f"""sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw\t{cs_comment1.value}\t{cs_comment2.value}""")
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):
         i = Investigation()
@@ -1334,7 +1337,7 @@ sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
 
         # self.assertIn(expected_line1, dump_out)
         # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_sample_protocol_ref_material_protocol_ref_data4(self):
         i = Investigation()
@@ -1373,7 +1376,7 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
 
         # self.assertIn(expected_line1, dump_out)
         # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, isatab.dumps(i))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
         i = Investigation()
@@ -1710,7 +1713,7 @@ sample1\textraction\te2\tscanning\td2"""
         test_isatab_str = b""""Sample Name"	"Protocol REF"	"Parameter Value[medium]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[serum]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[serum concentration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[medium volume]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[migration modulator]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[modulator concentration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[modulator distribution]"	"Term Source REF"	"Term Accession Number"	"Protocol REF"	"Parameter Value[imaging technique]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[imaging technique temporal feature]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[acquisition duration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[time interval]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective type]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective magnification]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective numerical aperture]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[acquisition channel count]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[reporter]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[voxel size]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Assay Name"	"Raw Data File"	"Protocol REF"	"Parameter Value[software]"	"Term Source REF"	"Term Accession Number"	"Data Transformation Name"	"Derived Data File"
 "culture1"	"migration assay"	"RPMI-1640"	""	""	"Heat Inactivated Fetal Bovine Serum "	""	""	"10"	"%"	"UO"	"http://purl.obolibrary.org/obo/UO_0000165"	"300"	"microliter"	"UO"	"http://purl.obolibrary.org/obo/UO_0000101"	""	""	""	""	""	""	""	"gradient"	""	""	"imaging"	"phase-contrast microscopy"	""	""	"dynamic"	""	""	"6"	"hour"	"UO"	"http://purl.obolibrary.org/obo/UO_0000032"	"15"	"minute"	"UO"	"http://purl.obolibrary.org/obo/UO_0000031"	""	""	""	"20"	""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	"culture1"	""	"data transformation"	"CELLMIA"	""	""	""	""
 """
-        with tempfile.NamedTemporaryFile() as tmp:
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp.write(test_isatab_str)
             tmp.seek(0)
             study_assay_parser = isatab_parser.StudyAssayParser('mock.txt')
@@ -1719,6 +1722,7 @@ sample1\textraction\te2\tscanning\td2"""
                 if """Protocol REF\tData Transformation Name""" in header:
                     self.fail('Incorrectly inserted Protocol REF before '
                               'Data Transformation Name')
+        os.remove(tmp.name)
 
     def test_isatab_factor_value_parsing_issue270(self):
         with open(os.path.join(self._tab_data_dir, 'issue270', 'i_matteo.txt'),

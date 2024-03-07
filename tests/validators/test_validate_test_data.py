@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import unittest
+import pathlib
 
 from jsonschema import Draft4Validator
 from jsonschema import RefResolver
@@ -304,8 +305,8 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
 
     def setUp(self):
         self._reporting_level = logging.ERROR
-        self.v2_create_schemas_path = os.path.join(
-            os.path.dirname(__file__), '../..', 'isatools', 'resources', 'schemas',
+        self.v2_create_schemas_path = pathlib.PurePosixPath(
+            pathlib.Path(__file__).parents[0], '..', '..', 'isatools', 'resources', 'schemas',
             'isa_model_version_2_0_schemas', 'create')
 
     def test_validate_testdata_sampleassayplan_json(self):
@@ -314,10 +315,9 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
-                resolver = RefResolver('file://{}'.format(
-                    os.path.join(self.v2_create_schemas_path,
-                                 'sample_assay_plan_schema.json')),
-                    sample_assay_plan_schema)
+                res_path = pathlib.PurePosixPath("file://", self.v2_create_schemas_path,
+                             'sample_assay_plan_schema.json').as_uri()
+                resolver = RefResolver(res_path, sample_assay_plan_schema)
             validator = Draft4Validator(sample_assay_plan_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
@@ -342,10 +342,9 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'treatment_sequence_schema.json')) as fp:
                 treatment_sequence_schema = json.load(fp)
-            resolver = RefResolver('file://{}'.format(
-                os.path.join(self.v2_create_schemas_path,
-                             'treatment_sequence_schema.json')),
-                                   treatment_sequence_schema)
+            res_path = pathlib.PurePosixPath("file://", self.v2_create_schemas_path,
+                         'treatment_sequence_schema.json').as_uri()
+            resolver = RefResolver(res_path, treatment_sequence_schema)
             validator = Draft4Validator(treatment_sequence_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
