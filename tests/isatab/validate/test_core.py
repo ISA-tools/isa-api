@@ -70,7 +70,7 @@ class TestValidators(unittest.TestCase):
                     *INVESTIGATION_RULES_MAPPING,
                     {
                         'rule': is_investigation,
-                        'params': ['investigation_df'],
+                        'params': ['investigation_df_dict'],
                         'identifier': '6000'
                     }
                 ],
