@@ -390,7 +390,7 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_
     log.info("Merging DataFrames...")
     merged_DF = merge(study_DF, assay_DF, on='Sample Name')
     log.info("Writing merged DataFrame to file %s", target_file_path)
-    with open(target_file_path, 'wb', encoding='utf-8') as fp:
+    with open(target_file_path, 'wb') as fp:
         merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])
 
 
