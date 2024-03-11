@@ -1,6 +1,5 @@
 # Test conversion to W4M format
 
-import filecmp
 import os
 import shutil
 import tempfile

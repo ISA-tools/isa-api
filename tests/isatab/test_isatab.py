@@ -28,6 +28,9 @@ def setUpModule():
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
 
+def replace_windows_newlines(input_string):
+    return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
+
 
 def replace_windows_newlines(input_string):
     return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
@@ -1723,6 +1726,7 @@ sample1\textraction\te2\tscanning\td2"""
                 if """Protocol REF\tData Transformation Name""" in header:
                     self.fail('Incorrectly inserted Protocol REF before '
                               'Data Transformation Name')
+        os.remove(tmp.name)
 
     def test_isatab_factor_value_parsing_issue270(self):
         with open(os.path.join(self._tab_data_dir, 'issue270', 'i_matteo.txt'),
