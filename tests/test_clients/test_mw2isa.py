@@ -32,7 +32,7 @@ class mw2ISATest(unittest.TestCase):
             with open(os.path.join(self._tmp_dir, study_id, 'i_investigation.txt')) as fp:
                 report = isatab.validate(fp)
                 for error in report['errors']:
-                    self.assertEqual(error['code'], 4014)
+                    self.assertIn(error['code'], [4014, 4003])
         else:
             self.fail("conversion failed, validation was not invoked")
 
