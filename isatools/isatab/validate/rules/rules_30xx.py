@@ -1,7 +1,5 @@
 import iso8601
 
-from pandas import DataFrame
-
 from isatools.isatab.validate.store import validator
 from isatools.isatab.defaults import log, _RX_DOI, _RX_PMID, _RX_PMCID
 from isatools.isatab.utils import cell_has_value

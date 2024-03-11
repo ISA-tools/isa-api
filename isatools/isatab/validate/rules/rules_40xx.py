@@ -12,6 +12,8 @@ from isatools.isatab.defaults import (
     _RX_COMMENT
 )
 
+from isatools.constants import ALL_LABELS, DATA_FILE_LABELS
+
 
 def check_investigation_against_config(i_df_dict, configs):
     """Checks investigation file against the loaded configurations
@@ -365,43 +367,44 @@ def load_table_checks(df, filename):
     for x, column in enumerate(columns):  # check if columns have valid labels
         if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
-        if (column not in [
-            'Source Name',
-            'Sample Name',
-            'Term Source REF',
-            'Protocol REF',
-            'Term Accession Number',
-            'Unit',
-            'Assay Name',
-            'Extract Name',
-            'Raw Data File',
-            'Material Type',
-            'MS Assay Name',
-            'NMR Assay Name',
-            'Raw Spectral Data File',
-            'Labeled Extract Name',
-            'Label', 'Hybridization Assay Name',
-            'Array Design REF',
-            'Scan Name',
-            'Array Data File',
-            'Protein Assignment File',
-            'Peptide Assignment File',
-            'Post Translational Modification Assignment File',
-            'Data Transformation Name',
-            'Derived Data File',
-            'Derived Spectral Data File',
-            'Normalization Name',
-            'Derived Array Data File',
-            'Image File',
-            "Free Induction Decay Data File",
-            'Metabolite Assignment File',
-            "Performer",
-            "Date",
-            "Array Data Matrix File",
-            'Free Induction Decay File',
-            "Derived Array Data Matrix File",
-            'Acquisition Parameter Data File'
-        ]) \
+            # [
+            #     'Source Name',
+            #     'Sample Name',
+            #     'Extract Name',
+            #     'Material Type',
+            #     'Labeled Extract Name',
+            #     'Label',
+            #     'Protocol REF',
+            #     'Performer',
+            #     'Date',
+            #     'Term Source REF',
+            #     'Term Accession Number',
+            #     'Unit',
+            #     'Assay Name',
+            #     'Hybridization Assay Name',
+            #     'Scan Name',
+            #     'Array Design REF',
+            #     'MS Assay Name',
+            #     'NMR Assay Name',
+            #     'Image File',
+            #     'Raw Data File',
+            #     'Free Induction Decay Data File',
+            #     'Raw Spectral Data File',
+            #     'Array Data File',
+            #     'Normalization Name',
+            #     'Data Transformation Name',
+            #     'Derived Data File',
+            #     'Derived Spectral Data File',
+            #     'Protein Assignment File',
+            #     'Peptide Assignment File',
+            #     'Post Translational Modification Assignment File',
+            #     'Metabolite Assignment File',
+            #     'Derived Array Data File',
+            #     'Array Data Matrix File',
+            #     'Derived Array Data Matrix File',
+            #     'Acquisition Parameter Data File'
+            # # ]
+        if (column not in ALL_LABELS) \
                 and not _RX_CHARACTERISTICS.match(column) \
                 and not _RX_PARAMETER_VALUE.match(column) \
                 and not _RX_FACTOR_VALUE.match(column) \
@@ -461,18 +464,24 @@ def load_table_checks(df, filename):
     allowed_fields = [
         'Source Name',
         'Sample Name',
-        'Protocol REF',
         'Extract Name',
         'Labeled Extract Name',
+        'Protocol REF',
         'Raw Data File',
         'Raw Spectral Data File',
+        'Free Induction Decay Data File',
+        'Image File',
+        'Derived Data File',
+        'Derived Spectral Data File',
+        'Derived Array Data File',
+        'Derived Array Data Matrix File',
         'Array Data File',
         'Protein Assignment File',
         'Peptide Assignment File',
         'Post Translational Modification Assignment File',
-        'Derived Data File',
-        'Derived Spectral Data File',
-        'Derived Array Data File'
+        'Acquisition Parameter Data File',
+        'Metabolite Assignment File',
+        'Metabolite Identification File'
     ]
     object_index = [i for i, x in enumerate(norm_columns)
                     if x in allowed_fields
@@ -508,9 +517,9 @@ def load_table_checks(df, filename):
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number',
-                               'Unit', 'Assay Name',
+                               'Unit', 'Assay Name', 'MS Assay Name', 'NMR Assay Name',
                                'Hybridization Assay Name', 'Array Design REF',
-                               'Scan Name'] \
+                               'Scan Name', 'Data Transformation Name'] \
                         and not _RX_PARAMETER_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
                     spl = ("(E) Unexpected column heading following {} "
@@ -523,18 +532,32 @@ def load_table_checks(df, filename):
                     }
                     validator.add_error(**error)
         elif prop_name == 'Extract Name':
-            if len(object_columns) > 1:
-
-                spl = ("Unexpected column heading(s) following {} column. "
-                       "Found {} at offset {}".format(
-                        prop_name, object_columns[1:], 2), filename)
-                log.error(spl)
-                error = {
-                    "message": "Unrecognised header",
-                    "supplemental": spl,
-                    "code": 4014
-                }
-                validator.add_error(**error)
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number',
+                               'Unit'] and not _RX_CHARACTERISTICS.match(col) \
+                        and not _RX_COMMENT.match(col):
+                    spl = ("(E) Expected only Characteristics, "
+                           "Comments following {} "
+                           "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
+            # if len(object_columns) > 1:
+            #
+            #     spl = ("Unexpected column heading(s) following {} column. "
+            #            "Found {} at offset {}".format(
+            #             prop_name, object_columns[1:], 2), filename)
+            #     log.error(spl)
+            #     error = {
+            #         "message": "Unrecognised header",
+            #         "supplemental": spl,
+            #         "code": 4014
+            #     }
+            #     validator.add_error(**error)
         elif prop_name == 'Labeled Extract Name':
             if len(object_columns) > 1:
                 if object_columns[1] == 'Label':
@@ -553,15 +576,20 @@ def load_table_checks(df, filename):
                             validator.add_error(**error)
 
                 else:
-                    spl = ("(E) Unexpected column heading following {} "
-                           "column. Found {} at offset {}".format(prop_name, object_columns[1:], 2, filename))
-                    log.error(spl)
-                    error = {
-                        "message": "Unrecognised header",
-                        "supplemental": spl,
-                        "code": 4014
-                    }
-                    validator.add_error(**error)
+                    for x, col in enumerate(object_columns[1:]):
+                        if col not in ['Term Source REF', 'Term Accession Number',
+                                       'Unit'] and not _RX_CHARACTERISTICS.match(col) \
+                                and not _RX_COMMENT.match(col):
+                            spl = ("(E) Expected only Characteristics, "
+                                   "Comments following {} "
+                                   "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                            log.error(spl)
+                            error = {
+                                "message": "Unrecognised header",
+                                "supplemental": spl,
+                                "code": 4014
+                            }
+                            validator.add_error(**error)
             else:
                 spl = ("Expected Label column after Labeled Extract Name "
                        "but none found")
@@ -572,17 +600,20 @@ def load_table_checks(df, filename):
                     "code": 4014
                 }
                 validator.add_error(**error)
-        elif prop_name in [
-            'Raw Data File',
-            'Derived Data File',
-            'Derived Spectral Data File',
-            'Derived Array Data File',
-            'Array Data File',
-            'Raw Spectral Data File',
-            'Protein Assignment File',
-            'Peptide Assignment File',
-            'Post Translational Modification Assignment File'
-        ]:
+        elif prop_name in DATA_FILE_LABELS:
+            # [
+            #     'Raw Data File',
+            #     'Raw Spectral Data File',
+            #     'Free Induction Decay Data File',
+            #     'Image File',
+            #     'Derived Data File',
+            #     'Derived Spectral Data File',
+            #     'Derived Array Data File',
+            #     'Array Data File',
+            #     'Protein Assignment File',
+            #     'Peptide Assignment File',
+            #     'Post Translational Modification Assignment File'
+            # ]
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     spl = ("(E) Expected only Comments following {} "
