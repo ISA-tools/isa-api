@@ -170,7 +170,7 @@ def validate(fp: TextIO,
              config_dir: str = default_config_dir,
              origin: str or None = None,
              rules: dict = None,
-             log_level: None | int = logging.INFO) -> dict:
+             log_level=None) -> dict:
     """
     A function to validate an ISA investigation tab file
     :param fp: the investigation file handler
