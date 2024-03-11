@@ -54,7 +54,7 @@ class Rule:
         try:
             response = self.rule(*params)
             if self.identifier == '3008':
-                validator_params['term_source_refs'] = response[0]
+                validator_params['term_source_refs'] = response
             if self.identifier == '4001':
                 validator_params['configs'] = response
             self.executed = True
