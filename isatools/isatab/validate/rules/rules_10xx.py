@@ -9,14 +9,14 @@ from isatools.isatab.validate.store import validator
 from isatools.isatab.utils import cell_has_value
 
 
-def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
+def check_samples_not_declared_in_study_used_in_assay(i_df_dict, dir_context):
     """Checks if samples found in assay tables are found in the study-sample table
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df['studies']):
+    for i, study_df in enumerate(i_df_dict['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename != '':
             try:
@@ -25,7 +25,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                     study_samples = set(study_df['Sample Name'])
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
@@ -40,15 +40,15 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                     pass
 
 
-def check_study_factor_usage(i_df, dir_context):
+def check_study_factor_usage(i_df_dict, dir_context):
     """Used for rules 1008 and 1021
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df['studies']):
-        study_factors_declared = set(i_df['s_factors'][i]['Study Factor Name'].tolist())
+    for i, study_df in enumerate(i_df_dict['studies']):
+        study_factors_declared = set(i_df_dict['s_factors'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
         error_spl = "Some factors used in an study file {} are not declared in the investigation file: {}"
         error_msg = "Some factors are not declared in the investigation"
@@ -66,7 +66,7 @@ def check_study_factor_usage(i_df, dir_context):
                         validator.add_error(message=error_msg, supplemental=spl, code=1008)
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     study_factors_used = set()
@@ -92,7 +92,7 @@ def check_study_factor_usage(i_df, dir_context):
                         study_factors_used = study_factors_used.union(set(fv))
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
@@ -109,15 +109,15 @@ def check_study_factor_usage(i_df, dir_context):
                         .format(list(study_factors_declared - study_factors_used)))
 
 
-def check_protocol_usage(i_df, dir_context):
+def check_protocol_usage(i_df_dict, dir_context):
     """Used for rules 1007 and 1019
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df['studies']):
-        protocols_declared = set(i_df['s_protocols'][i]['Study Protocol Name'].tolist())
+    for i, study_df in enumerate(i_df_dict['studies']):
+        protocols_declared = set(i_df_dict['s_protocols'][i]['Study Protocol Name'].tolist())
         protocols_declared.add('')
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename != '':
@@ -136,7 +136,7 @@ def check_protocol_usage(i_df, dir_context):
                         log.error("(E) {}".format(spl))
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     protocol_refs_used = set()
@@ -165,7 +165,7 @@ def check_protocol_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(
-                i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+                i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
@@ -183,16 +183,16 @@ def check_protocol_usage(i_df, dir_context):
             log.warning(warning)
 
 
-def check_protocol_parameter_usage(i_df, dir_context):
+def check_protocol_parameter_usage(i_df_dict, dir_context):
     """Used for rules 1009 and 1020
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df['studies']):
+    for i, study_df in enumerate(i_df_dict['studies']):
         protocol_parameters_declared = set()
-        protocol_parameters_per_protocol = set(i_df['s_protocols'][i]['Study Protocol Parameters Name'].tolist())
+        protocol_parameters_per_protocol = set(i_df_dict['s_protocols'][i]['Study Protocol Parameters Name'].tolist())
         for protocol_parameters in protocol_parameters_per_protocol:
             parameters_list = protocol_parameters.split(';')
             protocol_parameters_declared = protocol_parameters_declared.union(set(parameters_list))
@@ -216,7 +216,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         log.error(error)
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     protocol_parameters_used = set()
@@ -246,7 +246,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
             except FileNotFoundError:
                 pass
-        for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
+        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename != '':
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)) as a_fp:
@@ -263,13 +263,13 @@ def check_protocol_parameter_usage(i_df, dir_context):
             log.warning(warning)
 
 
-def check_protocol_names(i_df):
+def check_protocol_names(i_df_dict):
     """Used for rule 1010
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :return: None
     """
-    for study_protocols_df in i_df['s_protocols']:
+    for study_protocols_df in i_df_dict['s_protocols']:
         for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
             if protocol_name == '' or 'Unnamed: ' in protocol_name:
@@ -279,13 +279,13 @@ def check_protocol_names(i_df):
                 log.warning(warning)
 
 
-def check_protocol_parameter_names(i_df):
+def check_protocol_parameter_names(i_df_dict):
     """Used for rule 1011
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :return: None
     """
-    for study_protocols_df in i_df['s_protocols']:
+    for study_protocols_df in i_df_dict['s_protocols']:
         for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
             # There's an empty cell if no protocols
             if len(protocol_parameters_names.split(sep=';')) > 1:
@@ -298,13 +298,13 @@ def check_protocol_parameter_names(i_df):
                         log.warning(warning)
 
 
-def check_study_factor_names(i_df):
+def check_study_factor_names(i_df_dict):
     """Used for rule 1012
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
     :return: None
     """
-    for study_factors_df in i_df['s_factors']:
+    for study_factors_df in i_df_dict['s_factors']:
         for i, factor_name in enumerate(study_factors_df['Study Factor Name'].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
             if factor_name == '' or 'Unnamed: ' in factor_name:

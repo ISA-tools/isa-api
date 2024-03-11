@@ -108,14 +108,14 @@ class Rules:
 
 class ISAInvestigationValidator:
     def __init__(self,
-                 investigation_df: DataFrame,
+                 investigation_df_dict: dict,
                  dir_context: str,
                  configs: str,
                  available_rules: list = INVESTIGATION_RULES_MAPPING,
                  rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES):
         """ The ISA investigation validator class
 
-        :param investigation_df: the investigation dataframe
+        :param investigation_df_dict: a dictionary of DataFrames and lists of DataFrames representing the investigation file
         :param dir_context: the directory of the investigation
         :param configs: directory of the XML config files
         :param available_rules: a customizable list of all available rules for investigation objects
@@ -124,7 +124,7 @@ class ISAInvestigationValidator:
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
-            'investigation_df': investigation_df,
+            'investigation_df_dict': investigation_df_dict,
             'dir_context': dir_context,
             'configs': configs,
             'term_source_refs': None
@@ -162,8 +162,8 @@ class ISAStudyValidator:
             self.params['study_sample_table'] = load_table(s_fp)
             self.params['study_sample_table'].filename = study_filename
 
-        protocol_names = self.params['investigation_df']['s_protocols'][study_index]['Study Protocol Name'].tolist()
-        protocol_types = self.params['investigation_df']['s_protocols'][study_index]['Study Protocol Type'].tolist()
+        protocol_names = self.params['investigation_df_dict']['s_protocols'][study_index]['Study Protocol Name'].tolist()
+        protocol_types = self.params['investigation_df_dict']['s_protocols'][study_index]['Study Protocol Type'].tolist()
         self.params['protocol_names_and_types'] = dict(zip(protocol_names, protocol_types))
 
         self.params['study_group_size_in_comment'] = None
