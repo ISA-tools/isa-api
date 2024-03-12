@@ -186,21 +186,21 @@ def validate(fp: TextIO,
 
     built_rules = build_rules(rules)
     try:
-        i_df = load_investigation(fp=fp)
+        i_df_dict = load_investigation(fp=fp)
         params = {
-            "investigation_df": i_df,
+            "investigation_df_dict": i_df_dict,
             "dir_context": path.dirname(fp.name),
             "configs": config_dir,
         }
         investigation_validator = ISAInvestigationValidator(**params, **built_rules['investigation'])
 
-        for i, study_df in enumerate(i_df['studies']):
+        for i, study_df in enumerate(i_df_dict['studies']):
             study_filename = study_df.iloc[0]['Study File Name']
             study_validator = ISAStudyValidator(validator=investigation_validator, study_index=i,
                                                 study_filename=study_filename, study_df=study_df,
                                                 **built_rules['studies'])
             assay_tables = list()
-            assay_df = study_validator.params['investigation_df']['s_assays'][i]
+            assay_df = study_validator.params['investigation_df_dict']['s_assays'][i]
             for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                 ISAAssayValidator(assay_tables=assay_tables, validator=study_validator, assay_index=x,
                                   assay_df=assay_df, assay_filename=assay_filename, **built_rules['assays'])
