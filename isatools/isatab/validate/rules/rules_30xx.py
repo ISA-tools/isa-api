@@ -128,13 +128,14 @@ def check_ontology_sources(i_df_dict):
     return term_source_refs
 
 
-def check_ontology_fields(table, cfg, tsrs):
+def check_ontology_fields(table, cfg, tsrs, no_config):
     """ Checks ontology annotation columns are correct for a given configuration
     in a table
 
     :param table: Table DataFrame
     :param cfg: An ISA Configuration object
     :param tsrs: List of Term Source References from the Ontology Source
+    :param no_config: whether or not to validate against configs
     Reference section
     :return: True if OK, False if not OK
     """
@@ -167,34 +168,32 @@ def check_ontology_fields(table, cfg, tsrs):
             return_value = False
         return return_value
 
-    result = True
-    nfields = len(table.columns)
-    for icol, header in enumerate(table.columns):
-        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
-        if len(cfields) != 1:
-            continue
-        cfield = cfields[0]
-        if cfield.get_recommended_ontologies() is None:
-            continue
-        rindx = icol + 1
-        rrindx = icol + 2
-        rheader = ''
-        rrheader = ''
-        if rindx < nfields:
-            rheader = table.columns[rindx]
-        if rrindx < nfields:
-            rrheader = table.columns[rrindx]
-        if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
-            warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
-            log.warning(warning.format(header))
-            result = False
-            continue
+    if cfg.get_isatab_configuration() and not no_config:
+        nfields = len(table.columns)
+        for icol, header in enumerate(table.columns):
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+            if len(cfields) != 1:
+                continue
+            cfield = cfields[0]
+            if cfield.get_recommended_ontologies() is None:
+                continue
+            rindx = icol + 1
+            rrindx = icol + 2
+            rheader = ''
+            rrheader = ''
+            if rindx < nfields:
+                rheader = table.columns[rindx]
+            if rrindx < nfields:
+                rrheader = table.columns[rrindx]
+            if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
+                warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
+                log.warning(warning.format(header))
+                continue
+    
+            for irow in range(len(table.index)):
+                check_single_field(table.iloc[irow][icol],
+                                   table.iloc[irow][rindx],
+                                   table.iloc[irow][rrindx],
+                                   cfield,
+                                   table.filename)
 
-        for irow in range(len(table.index)):
-            result = result and check_single_field(table.iloc[irow][icol],
-                                                   table.iloc[irow][rindx],
-                                                   table.iloc[irow][rrindx],
-                                                   cfield,
-                                                   table.filename)
-
-    return result

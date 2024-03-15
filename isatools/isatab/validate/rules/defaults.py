@@ -45,9 +45,9 @@ INVESTIGATION_RULES_MAPPING = [
     {'rule': check_pubmed_ids_format, 'params': ['investigation_df_dict'], 'identifier': '3003'},
     {'rule': check_ontology_sources, 'params': ['investigation_df_dict'], 'identifier': '3008'},
 
-    {'rule': load_config, 'params': ['configs'], 'identifier': '4001'},
-    {'rule': check_measurement_technology_types, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4002'},
-    {'rule': check_investigation_against_config, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4003'},
+    {'rule': load_config, 'params': ['configs', 'no_config'], 'identifier': '4001'},
+    {'rule': check_measurement_technology_types, 'params': ['investigation_df_dict', 'configs', 'no_config'], 'identifier': '4002'},
+    {'rule': check_investigation_against_config, 'params': ['investigation_df_dict', 'configs', 'no_config'], 'identifier': '4003'},
 
     # copies
     {'rule': check_table_files_read, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '0008'},
@@ -58,22 +58,22 @@ INVESTIGATION_RULES_MAPPING = [
 
 STUDY_RULES_MAPPING = [
 
-    {'rule': check_unit_field, 'params': ['study_sample_table', 'config'], 'identifier': '1099'},
+    {'rule': check_unit_field, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '1099'},
 
     {
         'rule': check_ontology_fields,
-        'params': ['study_sample_table', 'config', 'term_source_refs'],
+        'params': ['study_sample_table', 'config', 'term_source_refs', 'no_config'],
         'identifier': '3010'
     },
 
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4003'},
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4003'},
     {'rule': check_factor_value_presence, 'params': ['study_sample_table'], 'identifier': '4007'},
     {
         'rule': check_protocol_fields,
-        'params': ['study_sample_table', 'config', 'protocol_names_and_types'],
+        'params': ['study_sample_table', 'config', 'protocol_names_and_types', 'no_config'],
         'identifier': '4009'
     },
-    {'rule': check_field_values, 'params': ['study_sample_table', 'config'], 'identifier': '4011'},
+    {'rule': check_field_values, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4011'},
     {'rule': load_table_checks, 'params': ['study_sample_table', 'study_filename'], 'identifier': '4014'},
 
     {
@@ -83,30 +83,30 @@ STUDY_RULES_MAPPING = [
     },
 
     # copies
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4008'},
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4010'},
 ]
 
 ASSAY_RULES_MAPPING = [
     {'rule': check_sample_names, 'params': ['study_sample_table', 'assay_tables'], 'identifier': '0000'},
 
-    {'rule': check_unit_field, 'params': ['assay_table', 'config'], 'identifier': '1099'},
+    {'rule': check_unit_field, 'params': ['assay_table', 'config', 'no_config'], 'identifier': '1099'},
 
-    {'rule': check_ontology_fields, 'params': ['assay_table', 'config', 'term_source_refs'], 'identifier': '3010'},
+    {'rule': check_ontology_fields, 'params': ['assay_table', 'config', 'term_source_refs', 'no_config'], 'identifier': '3010'},
 
-    {'rule': check_required_fields, 'params': ['assay_table', 'config'], 'identifier': '4003'},
+    {'rule': check_required_fields, 'params': ['assay_table', 'config', 'no_config'], 'identifier': '4003'},
     {'rule': check_factor_value_presence, 'params': ['assay_table'], 'identifier': '4007'},
     {
         'rule': check_protocol_fields,
-        'params': ['assay_table', 'config', 'protocol_names_and_types'],
+        'params': ['assay_table', 'config', 'protocol_names_and_types', 'no_config'],
         'identifier': '4009'
     },
-    {'rule': check_field_values, 'params': ['assay_table', 'config'], 'identifier': '4011'},
+    {'rule': check_field_values, 'params': ['assay_table', 'config', 'no_config'], 'identifier': '4011'},
     {'rule': load_table_checks, 'params': ['assay_table', 'assay_filename'], 'identifier': '4014'},
 
     # copies
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4008'},
-    {'rule': check_required_fields, 'params': ['study_sample_table', 'config'], 'identifier': '4010'},
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4008'},
+    {'rule': check_required_fields, 'params': ['study_sample_table', 'config', 'no_config'], 'identifier': '4010'},
 
     {
         'rule': check_study_groups,

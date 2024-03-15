@@ -315,11 +315,12 @@ def check_study_factor_names(i_df_dict):
                 log.warning(warning)
 
 
-def check_unit_field(table, cfg):
+def check_unit_field(table, cfg, no_config):
     """Checks if unit columns are valid against a configuration
 
     :param table: Table DataFrame
     :param cfg: An ISA Configuration object
+    :param no_config: whether or not to validate against configs
     :return: True if all unit columns in table are OK, False if not OK
     """
 
@@ -340,28 +341,25 @@ def check_unit_field(table, cfg):
             return False
         return True
 
-    result = True
-    for icol, header in enumerate(table.columns):
-        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
-        if len(cfields) != 1:
-            continue
-        cfield = cfields[0]
-        ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
-        if len(ucfields) != 1:
-            continue
-        ucfield = ucfields[0]
-        if ucfield.is_required:
-            rheader = None
-            rindx = icol + 1
-            if rindx < len(table.columns):
-                rheader = table.columns[rindx]
-            if rheader is None or rheader.lower() != 'unit':
-                spl = "The field '{}' in the file '{}' misses a required 'Unit' column".format(header, table.filename)
-                validator.add_warning(message="Cell requires a Unit", supplemental=spl, code=4999)
-                log.warning("(W) {}".format(spl))
-                result = False
-            else:
-                for irow in range(len(table.index)):
-                    check = check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx], cfield, table.filename)
-                    result = result and check
-    return result
+    if cfg.get_isatab_configuration() and not no_config:
+        for icol, header in enumerate(table.columns):
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+            if len(cfields) != 1:
+                continue
+            cfield = cfields[0]
+            ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
+            if len(ucfields) != 1:
+                continue
+            ucfield = ucfields[0]
+            if ucfield.is_required:
+                rheader = None
+                rindx = icol + 1
+                if rindx < len(table.columns):
+                    rheader = table.columns[rindx]
+                if rheader is None or rheader.lower() != 'unit':
+                    spl = "The field '{}' in the file '{}' misses a required 'Unit' column".format(header, table.filename)
+                    validator.add_warning(message="Cell requires a Unit", supplemental=spl, code=4999)
+                    log.warning("(W) {}".format(spl))
+                else:
+                    for irow in range(len(table.index)):
+                        check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx], cfield, table.filename)

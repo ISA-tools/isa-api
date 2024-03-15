@@ -5,6 +5,7 @@ from os import path
 
 from pandas import DataFrame
 
+from isatools.io import isatab_configurator
 from isatools.utils import utf8_text_file_open
 from isatools.isatab.defaults import NUMBER_OF_STUDY_GROUPS
 from isatools.isatab.load import load_table
@@ -112,7 +113,8 @@ class ISAInvestigationValidator:
                  dir_context: str,
                  configs: str,
                  available_rules: list = INVESTIGATION_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES):
+                 rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES,
+                 no_config: bool = False):
         """ The ISA investigation validator class
 
         :param investigation_df_dict: a dictionary of DataFrames and lists of DataFrames representing the investigation file
@@ -120,6 +122,7 @@ class ISAInvestigationValidator:
         :param configs: directory of the XML config files
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
@@ -127,7 +130,8 @@ class ISAInvestigationValidator:
             'investigation_df_dict': investigation_df_dict,
             'dir_context': dir_context,
             'configs': configs,
-            'term_source_refs': None
+            'term_source_refs': None,
+            "no_config": no_config
         }
         self.all_rules.validate_rules(validator=self)
 
@@ -140,7 +144,8 @@ class ISAStudyValidator:
                  study_filename: str,
                  study_df: DataFrame,
                  available_rules: List = STUDY_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_STUDY_RULES):
+                 rules_to_run: tuple = DEFAULT_STUDY_RULES,
+                 no_config: bool = False):
         """
         The ISA study validator class
         :param validator: the investigation validator
@@ -149,13 +154,15 @@ class ISAStudyValidator:
         :param study_df: the study dataframe
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
         self.params = {
             **validator.params,
             'study_df': study_df,
-            'config': validator.params['configs'][('[sample]', '')],
+            'config': validator.params['configs'][('[sample]', '')] if ('[sample]', '') in validator.params['configs'] 
+                                                                    else isatab_configurator.IsaTabConfigFileType(),
             'study_filename': study_filename
         }
         with utf8_text_file_open(path.join(self.params['dir_context'], study_filename)) as s_fp:
@@ -183,7 +190,8 @@ class ISAAssayValidator:
                  assay_filename: str = None,
                  assay_df: DataFrame = None,
                  available_rules: List = ASSAY_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_ASSAY_RULES):
+                 rules_to_run: tuple = DEFAULT_ASSAY_RULES,
+                 no_config: bool = False):
         """
         The ISA assay validator class
         :param assay_tables: list of assay tables
@@ -193,6 +201,7 @@ class ISAAssayValidator:
         :param assay_df: the assay dataframe
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
@@ -207,7 +216,7 @@ class ISAAssayValidator:
         if assay_filename != '':
             lowered_mt = assay_df['Study Assay Measurement Type'].tolist()[assay_index].lower()
             lowered_tt = assay_df['Study Assay Technology Type'].tolist()[assay_index].lower()
-            self.params['config'] = self.params['configs'].get((lowered_mt, lowered_tt), None)
+            self.params['config'] = self.params['configs'].get((lowered_mt, lowered_tt), isatab_configurator.IsaTabConfigFileType())
             if self.params['config']:
                 with utf8_text_file_open(path.join(self.params['dir_context'], assay_filename)) as a_fp:
                     self.params['assay_table'] = load_table(a_fp)
