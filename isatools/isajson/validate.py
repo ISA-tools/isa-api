@@ -693,11 +693,12 @@ def check_measurement_technology_types(assay_json, configs):
         )
 
 
-def check_study_and_assay_graphs(study_json, configs):
-    def check_assay_graph(process_sequence_json, config):
+def check_study_and_assay_graphs(study_json, configs, no_config):
+    def check_assay_graph(process_sequence_json, config, no_config):
         list_of_last_processes_in_sequence = [i for i in process_sequence_json if "nextProcess" not in i.keys()]
-        log.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
-        config_protocol_sequence = [i["protocol"] for i in config["protocols"]]
+        if not no_config:
+            log.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
+            config_protocol_sequence = [i["protocol"] for i in config["protocols"]]
         for process in list_of_last_processes_in_sequence:  # build graphs backwards
             assay_graph = list()
             try:
@@ -727,40 +728,48 @@ def check_study_and_assay_graphs(study_json, configs):
                         break
             except KeyError:  # this happens when we can"t find a previousProcess
                 pass
-            assay_graph.reverse()
-            assay_protocol_sequence = [[j for j in i if not j.startswith("#")] for i in assay_graph]
-            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
-            assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
-            #  filter out protocols in sequence that are not of interest (additional ones to required by config)
-            squished_assay_protocol_sequence_of_interest = list()
-            prev_prot = None
-            for prot in assay_protocol_sequence_of_interest:  # remove consecutive same protocols
-                if prev_prot != prot:
-                    squished_assay_protocol_sequence_of_interest.append(prot)
-                prev_prot = prot
-            from isatools.utils import contains
-            if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
-                warnings.append({
-                    "message": "Process sequence is not valid against configuration",
-                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(
-                        config_protocol_sequence,
-                        squished_assay_protocol_sequence_of_interest),
-                    "code": 4004
-                })
-                log.warning("Configuration protocol sequence {} does not match study graph found in {}"
-                            .format(config_protocol_sequence, assay_protocol_sequence))
+            
+            if not no_config:
+                assay_graph.reverse()
+                assay_protocol_sequence = [[j for j in i if not j.startswith("#")] for i in assay_graph]
+                assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+                assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
+                #  filter out protocols in sequence that are not of interest (additional ones to required by config)
+                squished_assay_protocol_sequence_of_interest = list()
+                prev_prot = None
+                for prot in assay_protocol_sequence_of_interest:  # remove consecutive same protocols
+                    if prev_prot != prot:
+                        squished_assay_protocol_sequence_of_interest.append(prot)
+                    prev_prot = prot
+                from isatools.utils import contains
+                if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
+                    warnings.append({
+                        "message": "Process sequence is not valid against configuration",
+                        "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(
+                            config_protocol_sequence,
+                            squished_assay_protocol_sequence_of_interest),
+                        "code": 4004
+                    })
+                    log.warning("Configuration protocol sequence {} does not match study graph found in {}"
+                                .format(config_protocol_sequence, assay_protocol_sequence))
 
     protocols_and_types = dict([(i["@id"], i["protocolType"]["annotationValue"]) for i in study_json["protocols"]])
     # first check study graph
-    log.info("Loading configuration (study)")
-    config = configs["study"]
-    check_assay_graph(study_json["processSequence"], config)
+    if not no_config:
+        log.info("Loading configuration (study)")
+        config = configs["study"]
+    else:
+        config = {}
+    check_assay_graph(study_json["processSequence"], config, no_config)
     for assay_json in study_json["assays"]:
         m = assay_json["measurementType"]["annotationValue"]
         t = assay_json["technologyType"]["annotationValue"]
-        log.info("Loading configuration ({}, {})".format(m, t))
-        config = configs[(m, t)]
-        check_assay_graph(assay_json["processSequence"], config)
+        if not no_config:
+            log.info("Loading configuration ({}, {})".format(m, t))
+            config = configs[(m, t)]
+        else:
+            config = {}
+        check_assay_graph(assay_json["processSequence"], config, no_config)
 
 
 def check_study_groups(study_or_assay):
@@ -811,7 +820,8 @@ def validate(
         fp,
         config_dir=default_config_dir,
         log_level=None,
-        base_schemas_dir="isa_model_version_1_0_schemas"
+        base_schemas_dir="isa_model_version_1_0_schemas",
+        no_config: bool = False
 ):
     if config_dir is None:
         config_dir = default_config_dir
@@ -887,10 +897,11 @@ def validate(
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
         log.info("Loading configurations from " + config_dir)
         configs = load_config(config_dir)  # Rule 4001
-        log.info("Checking measurement and technology types...")
-        for study_json in isa_json["studies"]:
-            for assay_json in study_json["assays"]:
-                check_measurement_technology_types(assay_json, configs)  # Rule 4002
+        if not no_config:
+            log.info("Checking measurement and technology types...")
+            for study_json in isa_json["studies"]:
+                for assay_json in study_json["assays"]:
+                    check_measurement_technology_types(assay_json, configs)  # Rule 4002
         log.info("Checking against configuration schemas...")
         check_isa_schemas(
             isa_json=isa_json,
@@ -907,7 +918,7 @@ def validate(
         fp.seek(0)  # reset file pointer
         log.info("Checking study and assay graphs...")
         for study_json in isa_json["studies"]:
-            check_study_and_assay_graphs(study_json, configs)  # Rule 4004
+            check_study_and_assay_graphs(study_json, configs, no_config)  # Rule 4004
         fp.seek(0)
         # try load and do study groups check
         log.info("Checking study groups...")

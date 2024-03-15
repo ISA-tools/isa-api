@@ -13,7 +13,7 @@ from isatools.isatab.defaults import (
 )
 
 
-def check_investigation_against_config(i_df, configs, no_config):
+def check_investigation_against_config(i_df_dict, configs, no_config):
     """Checks investigation file against the loaded configurations
 
     :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
@@ -54,18 +54,18 @@ def check_investigation_against_config(i_df, configs, no_config):
     if ('[investigation]', '') in configs and not no_config:
         config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
         required_fields = [i.header for i in config_fields if i.is_required]
-        check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
-        check_section_against_required_fields_one_value(i_df['i_publications'], required_fields)
-        check_section_against_required_fields_one_value(i_df['i_contacts'], required_fields)
+        check_section_against_required_fields_one_value(i_df_dict['investigation'], required_fields)
+        check_section_against_required_fields_one_value(i_df_dict['i_publications'], required_fields)
+        check_section_against_required_fields_one_value(i_df_dict['i_contacts'], required_fields)
 
-        for x, study_df in enumerate(i_df['studies']):
-            check_section_against_required_fields_one_value(i_df['studies'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_design_descriptors'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_publications'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_factors'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_assays'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_protocols'][x], required_fields, x)
-            check_section_against_required_fields_one_value(i_df['s_contacts'][x], required_fields, x)
+        for x, study_df in enumerate(i_df_dict['studies']):
+            check_section_against_required_fields_one_value(i_df_dict['studies'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_design_descriptors'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_publications'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_factors'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_assays'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_protocols'][x], required_fields, x)
+            check_section_against_required_fields_one_value(i_df_dict['s_contacts'][x], required_fields, x)
 
 
 def load_config(config_dir, no_config):
@@ -96,7 +96,7 @@ def load_config(config_dir, no_config):
     return configs
 
 
-def check_measurement_technology_types(i_df, configs, no_config):
+def check_measurement_technology_types(i_df_dict, configs, no_config):
     """Rule 4002
 
     :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
@@ -107,7 +107,7 @@ def check_measurement_technology_types(i_df, configs, no_config):
     if no_config:
         return
 
-    for i, assay_df in enumerate(i_df['s_assays']):
+    for i, assay_df in enumerate(i_df_dict['s_assays']):
         measurement_types = assay_df['Study Assay Measurement Type'].tolist()
         technology_types = assay_df['Study Assay Technology Type'].tolist()
         if len(measurement_types) == len(technology_types):
@@ -232,12 +232,12 @@ def check_field_values(table, cfg, no_config):
             return False
         if not is_valid_value:
             msg = "A value does not correspond to the correct data type"
-            spl = "Invalid value '{}' for type '{}' of the field '{}'"
-            spl = spl.format(cell_value, data_type, cfg_field.header)
+            spl = "Invalid value '{}' for type '{}' of the field '{}' in the file '{}'"
+            spl = spl.format(cell_value, data_type, cfg_field.header, table.filename)
+            if data_type == 'list':
+                spl = spl + ". Value must be one of: " + cfg_field.list_values
             validator.add_warning(message=msg, supplemental=spl, code=4011)
             log.warning("(W) {}".format(spl))
-            if data_type == 'list':
-                log.warning("(W) Value must be one of: " + cfg_field.list_values)
         return is_valid_value
 
     if cfg.get_isatab_configuration() and not no_config:

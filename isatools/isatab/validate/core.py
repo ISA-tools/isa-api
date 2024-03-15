@@ -169,7 +169,8 @@ def validate(fp: TextIO,
              config_dir: str = default_config_dir,
              origin: str or None = None,
              rules: dict = None,
-             log_level=None) -> dict:
+             log_level=None,
+             no_config: bool = False) -> dict:
     """
     A function to validate an ISA investigation tab file
     :param fp: the investigation file handler
@@ -177,6 +178,7 @@ def validate(fp: TextIO,
     :param origin: value accepted = mzml2isa or None
     :param rules: optional rules to run (default: all rules)
     :param log_level: optional log level (default: INFO)
+    :param no_config: whether or not to validate against configs (default: False)
     :return: a dictionary of the validation results (errors, warnings and info)
     """
     if not log_level:
@@ -191,6 +193,7 @@ def validate(fp: TextIO,
             "investigation_df_dict": i_df_dict,
             "dir_context": path.dirname(fp.name),
             "configs": config_dir,
+            "no_config": no_config
         }
         investigation_validator = ISAInvestigationValidator(**params, **built_rules['investigation'])
 

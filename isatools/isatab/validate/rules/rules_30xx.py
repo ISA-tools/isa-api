@@ -188,13 +188,12 @@ def check_ontology_fields(table, cfg, tsrs, no_config):
             if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
                 warning = "(W) The Field '{}' should have values from ontologies and has no ontology headers instead"
                 log.warning(warning.format(header))
-                result = False
                 continue
     
             for irow in range(len(table.index)):
-                result = result and check_single_field(table.iloc[irow][icol],
-                                                       table.iloc[irow][rindx],
-                                                       table.iloc[irow][rrindx],
-                                                       cfield,
-                                                       table.filename)
+                check_single_field(table.iloc[irow][icol],
+                                   table.iloc[irow][rindx],
+                                   table.iloc[irow][rrindx],
+                                   cfield,
+                                   table.filename)
 

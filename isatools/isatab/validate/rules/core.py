@@ -113,7 +113,8 @@ class ISAInvestigationValidator:
                  dir_context: str,
                  configs: str,
                  available_rules: list = INVESTIGATION_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES):
+                 rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES,
+                 no_config: bool = False):
         """ The ISA investigation validator class
 
         :param investigation_df_dict: a dictionary of DataFrames and lists of DataFrames representing the investigation file
@@ -121,6 +122,7 @@ class ISAInvestigationValidator:
         :param configs: directory of the XML config files
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
@@ -128,7 +130,8 @@ class ISAInvestigationValidator:
             'investigation_df_dict': investigation_df_dict,
             'dir_context': dir_context,
             'configs': configs,
-            'term_source_refs': None
+            'term_source_refs': None,
+            "no_config": no_config
         }
         self.all_rules.validate_rules(validator=self)
 
@@ -141,7 +144,8 @@ class ISAStudyValidator:
                  study_filename: str,
                  study_df: DataFrame,
                  available_rules: List = STUDY_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_STUDY_RULES):
+                 rules_to_run: tuple = DEFAULT_STUDY_RULES,
+                 no_config: bool = False):
         """
         The ISA study validator class
         :param validator: the investigation validator
@@ -150,6 +154,7 @@ class ISAStudyValidator:
         :param study_df: the study dataframe
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False
@@ -185,7 +190,8 @@ class ISAAssayValidator:
                  assay_filename: str = None,
                  assay_df: DataFrame = None,
                  available_rules: List = ASSAY_RULES_MAPPING,
-                 rules_to_run: tuple = DEFAULT_ASSAY_RULES):
+                 rules_to_run: tuple = DEFAULT_ASSAY_RULES,
+                 no_config: bool = False):
         """
         The ISA assay validator class
         :param assay_tables: list of assay tables
@@ -195,6 +201,7 @@ class ISAAssayValidator:
         :param assay_df: the assay dataframe
         :param available_rules: a customizable list of all available rules for investigation objects
         :param rules_to_run: a customizable tuple of rules identifiers to run for investigation objects
+        :param no_config: whether or not to validate against configs (default: False)
         """
         self.all_rules = Rules(rules_to_run=rules_to_run, available_rules=available_rules)
         self.has_validated = False

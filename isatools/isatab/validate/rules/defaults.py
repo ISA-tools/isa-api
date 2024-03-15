@@ -45,9 +45,9 @@ INVESTIGATION_RULES_MAPPING = [
     {'rule': check_pubmed_ids_format, 'params': ['investigation_df_dict'], 'identifier': '3003'},
     {'rule': check_ontology_sources, 'params': ['investigation_df_dict'], 'identifier': '3008'},
 
-    {'rule': load_config, 'params': ['configs'], 'identifier': '4001'},
-    {'rule': check_measurement_technology_types, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4002'},
-    {'rule': check_investigation_against_config, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4003'},
+    {'rule': load_config, 'params': ['configs', 'no_config'], 'identifier': '4001'},
+    {'rule': check_measurement_technology_types, 'params': ['investigation_df_dict', 'configs', 'no_config'], 'identifier': '4002'},
+    {'rule': check_investigation_against_config, 'params': ['investigation_df_dict', 'configs', 'no_config'], 'identifier': '4003'},
 
     # copies
     {'rule': check_table_files_read, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '0008'},
