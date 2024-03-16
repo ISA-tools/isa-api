@@ -16,6 +16,7 @@ from isatools.model import (
 )
 from isatools.isatab.defaults import log
 from isatools.isatab.graph import _all_end_to_end_paths, _longest_path_and_attrs
+from isatools.model.utils import _build_paths_and_indexes
 from isatools.isatab.utils import (
     get_comment_column,
     get_pv_columns,
@@ -256,20 +257,19 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
             columns = []
 
-            # start_nodes, end_nodes = _get_start_end_nodes(a_graph)
-            paths = _all_end_to_end_paths(
-                a_graph, [x for x in a_graph.nodes()
-                          if isinstance(a_graph.indexes[x], Sample)])
+            paths, indexes = _build_paths_and_indexes(assay_obj.process_sequence)
             if len(paths) == 0:
                 log.info("No paths found, skipping writing assay file")
                 continue
-            if _longest_path_and_attrs(paths, a_graph.indexes) is None:
+            if _longest_path_and_attrs(paths, indexes) is None:
                 raise IOError(
                     "Could not find any valid end-to-end paths in assay graph")
             
             protocol_in_path_count = 0
-            for node_index in _longest_path_and_attrs(paths, a_graph.indexes):
-                node = a_graph.indexes[node_index]
+            output_label_in_path_counts = {}
+            protocol_to_output_labels = {}
+            for node_index in _longest_path_and_attrs(paths, indexes):
+                node = indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     # olabel = "Sample Name.{}".format(sample_in_path_count)
@@ -312,12 +312,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
 
-                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                        if output.label not in columns:
-                            columns.append(output.label)
-                        columns += flatten(
-                            map(lambda x: get_comment_column(output.label, x),
-                                output.comments))
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
@@ -329,7 +323,18 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             node.comments))
 
                 elif isinstance(node, DataFile):
-                    pass  # handled in process
+                    # pass  # handled in process
+                    
+                    output_label = node.label
+                    if output_label not in output_label_in_path_counts:
+                        output_label_in_path_counts[output_label] = 0
+                    new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
+                    
+                    columns.append(new_output_label)
+                    output_label_in_path_counts[output_label] += 1
+                    columns += flatten(
+                        map(lambda x: get_comment_column(new_output_label, x),
+                            node.comments))
 
             omap = get_object_column_map(columns, columns)
 
@@ -344,8 +349,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     df_dict[k].extend([""])
 
                 protocol_in_path_count = 0
+                output_label_in_path_counts = {}
                 for node_index in path_:
-                    node = a_graph.indexes[node_index]
+                    node = indexes[node_index]
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(protocol_in_path_count)
                         protocol_in_path_count += 1
@@ -374,19 +380,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
-
-                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                            output_by_type = []
-                            delim = ";"
-                            olabel = output.label
-                            if output.label not in columns:
-                                columns.append(output.label)
-                            output_by_type.append(output.filename)
-                            df_dict[olabel][-1] = delim.join(map(str, output_by_type))
-
-                            for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                                df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -418,7 +411,19 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
-                        pass  # handled in process
+                        # pass  # handled in process
+                        
+                        output_label = node.label
+                        if output_label not in output_label_in_path_counts:
+                            output_label_in_path_counts[output_label] = 0
+                        new_output_label = output_label + "." + str(output_label_in_path_counts[output_label])
+                        df_dict[new_output_label][-1] = node.filename
+                        output_label_in_path_counts[output_label] += 1
+                        
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(
+                                new_output_label, co.name)
+                            df_dict[colabel][-1] = co.value
 
             DF = DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)
@@ -466,6 +471,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns[i] = "Protocol REF"
                 elif "." in col:
                     columns[i] = col[:col.rindex(".")]
+                else:
+                    for output_label in output_label_in_path_counts:
+                        if output_label in col:
+                            columns[i] = output_label
+                            break
 
             log.debug("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
@@ -505,8 +515,6 @@ def write_value_columns(df_dict, label, x):
                 elif x.unit.term_source.name:
                     df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source.name
 
-            # df_dict[label + ".Unit.Term Source REF"][-1] = \
-            #     x.unit.term_source.name if x.unit.term_source else ""
             df_dict[label + ".Unit.Term Accession Number"][-1] = \
                 x.unit.term_accession
         else:
