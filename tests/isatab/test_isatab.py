@@ -1614,6 +1614,59 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         self.assertIn(expected_line1, dumps_out)
         #self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
+        
+    def test_sample_protocol_ref_material_protocol_multiple_process_multiple_files(self):
+        investigation = Investigation()
+        study = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='protocol1'), 
+                       Protocol(name='protocol2'),
+                       Protocol(name='protocol3')]
+        )
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+        data3 = DataFile(filename='datafile3.raw', label='Raw Data File')
+        data4 = DataFile(filename='datafile4.raw', label='Raw Data File')
+        data5 = DataFile(filename='datafile5.raw', label='Raw Data File')
+        
+        process1 = Process(executes_protocol = study.protocols[0])
+        process1.inputs = [sample1]
+        process1.outputs = [data1]
+        
+        process2 = Process(executes_protocol = study.protocols[1])
+        process2.inputs = [data1]
+        process2.outputs = [data2]
+        plink(process1, process2)
+        
+        process3 = Process(executes_protocol = study.protocols[2])
+        process3.inputs = [data2]
+        process3.outputs = [data3]
+        plink(process2, process3)
+        
+        process4 = Process(executes_protocol = study.protocols[0])
+        process4.inputs = [sample2]
+        process4.outputs = [data4]
+        
+        process5 = Process(executes_protocol = study.protocols[2])
+        process5.inputs = [data4]
+        process5.outputs = [data5]
+        plink(process4, process5)
+
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [process1, process2, process3, process4, process5]
+        study.assays = [assay]
+        investigation.studies = [study]
+
+        expected_line1 = """Sample Name\tProtocol REF\tRaw Data File\tProtocol REF\tRaw Data File\tProtocol REF\tRaw Data File"""
+        expected_line2 = """sample1\tprotocol1\tdatafile1.raw\tprotocol2\tdatafile2.raw\tprotocol3\tdatafile3.raw"""
+        expected_line3 = """sample2\tprotocol1\tdatafile4.raw\tprotocol3\tdatafile5.raw"""
+        dumps_out = replace_windows_newlines(isatab.dumps(investigation))
+
+        self.assertIn(expected_line1, dumps_out)
+        self.assertIn(expected_line2, dumps_out)
+        self.assertIn(expected_line3, dumps_out)
 
 
 class UnitTestIsaTabLoad(unittest.TestCase):
