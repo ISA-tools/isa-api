@@ -4,7 +4,7 @@
   "protocols": [
     {
       "inputs": "#sample",
-      "protocol": "metabolite extraction",
+      "protocol": "extraction",
       "outputs": "#material"
     },
     {
@@ -24,5 +24,6 @@
     "data transformation"
   ],
   "description": [
-    "(Sample)->(extraction)->(Material)->(NMR spectroscopy)->(Files)->(data transformation)->(DataFiles)" ]
+    "(Sample)->(extraction)->(Material)->(NMR spectroscopy)->(DataFiles)->(data transformation)->(DataFiles)"
+  ]
 }

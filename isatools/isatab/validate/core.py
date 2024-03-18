@@ -3,6 +3,7 @@ from typing import TextIO
 
 from os import path
 from glob import glob
+import logging
 
 from pandas.errors import ParserError
 
@@ -45,7 +46,7 @@ def load_investigation(fp):
                 if _RX_COMMENT.match(label) is None:
                     msg = "Invalid label found in investigation file"
                     spl = "In {} section, label {} is not allowed".format(section, label)
-                    message_handler.add_error(message=msg, supplemental=spl, code= 5)
+                    message_handler.add_error(message=msg, supplemental=spl, code=5)
                 elif len(_RX_COMMENT.findall(label)) == 0:
                     spl = "In {} section, label {} is missing a name".format(section, label)
                     msg = "Missing name in Comment[] label"
@@ -179,8 +180,10 @@ def validate(fp: TextIO,
     :param log_level: optional log level (default: INFO)
     :return: a dictionary of the validation results (errors, warnings and info)
     """
-    if not log_level:
+    if log_level is None:
         log.disabled = True
+    else:
+        log.setLevel(log_level)
     message_handler.reset_store()
     validated = False
 

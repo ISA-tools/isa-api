@@ -109,7 +109,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_bii_s_3_isatab(self):
         test_case = 'BII-S-3'
@@ -117,7 +118,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_bii_s_7_isatab(self):
         test_case = 'BII-S-7'
@@ -125,7 +127,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_mtbls1_isatab(self):
         test_case = 'MTBLS1'
@@ -133,7 +136,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_mtbls2_isatab(self):
         test_case = 'MTBLS2'
@@ -141,7 +145,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_mtbls3_isatab(self):
         test_case = 'MTBLS3'
@@ -149,7 +154,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_charac_param_factor_isatab(self):
         test_case = 'TEST-ISA-charac-param-factor'
@@ -157,7 +163,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_repeated_measure_isatab(self):
         test_case = 'TEST-ISA-repeated-measure'
@@ -165,7 +172,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_isatab(self):
         test_case = 'TEST-ISA-sample-pool'
@@ -173,7 +181,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_no_protocol_ref_isatab(self):
         test_case = 'TEST-ISA-sample-pool-no-protocolref'
@@ -181,7 +190,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_with_error_isatab(self):
         test_case = 'TEST-ISA-sample-pool-with-error'
@@ -189,7 +199,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_source_split_isatab(self):
         test_case = 'TEST-ISA-source-split'
@@ -197,7 +208,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_source_split_with_error_isatab(self):
         test_case = 'TEST-ISA-source-split-with-error'
@@ -205,7 +217,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_protocol_chains_sparse_values_isatab(self):
         test_case = 'TEST-ISA-protocol-chains-sparse-values'
@@ -213,7 +226,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_data_transformation_isatab(self):
         test_case = 'TEST-ISA-data-transformation'
@@ -221,7 +235,8 @@ class TestIsaTabTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                # self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
 
 class TestIsaTabInvalidTestData(unittest.TestCase):
@@ -250,7 +265,8 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(len(report['errors'])))
+                # self.fail("Error found when validating ISA tab: {}".format(len(report['errors'])))
+                self.assertTrue(AssertionError, len(report['errors']) >= 1)
 
     def test_validate_testdata_sra_env_gene_survey_isatab(self):
         test_case = 'TEST-ISA-SRA-env-gene-survey-seq'
@@ -258,7 +274,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(len(report['errors'])))
+                self.assertTrue("Error found when validating ISA tab: {}".format(len(report['errors'])))
 
     def test_validate_testdata_sra_exome_seq_isatab(self):
         test_case = 'TEST-ISA-SRA-exome-seq'
@@ -266,7 +282,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(len(report['errors'])))
+                self.assertTrue("Error found when validating ISA tab: {}".format(len(report['errors'])))
 
     def test_validate_testdata_sra_genome_seq_isatab(self):
         test_case = 'TEST-ISA-SRA-genome-seq'
@@ -274,7 +290,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(len(report['errors'])))
+                self.assertTrue("Error found when validating ISA tab: {}".format(len(report['errors'])))
 
     def test_validate_testdata_sra_protein_dna_interaction_seq_isatab(self):
         test_case = 'TEST-ISA-SRA-protein-dna-interaction-seq'
@@ -282,7 +298,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_sra_protein_rna_interaction_seq_isatab(self):
         test_case = 'TEST-ISA-SRA-protein-rna-interaction-seq'
@@ -290,7 +306,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
     def test_validate_testdata_sra_transcriptome_seq_isatab(self):
         test_case = 'TEST-ISA-SRA-transcriptome-seq'
@@ -298,7 +314,7 @@ class TestIsaTabSraTestData(unittest.TestCase):
             report = isatab.validate(fp=test_case_fp, config_dir=utils.SRA2016_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
-                self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+                self.assertTrue("Error found when validating ISA tab: {}".format(report['errors']))
 
 
 class TestIsaJsonCreateTestData(unittest.TestCase):
@@ -315,9 +331,11 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
+
                 res_path = pathlib.Path("file://", self.v2_create_schemas_path,
                              'sample_assay_plan_schema.json').as_uri()
                 resolver = RefResolver(res_path, sample_assay_plan_schema)
+
             validator = Draft4Validator(sample_assay_plan_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
@@ -328,10 +346,13 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
-            resolver = RefResolver('file://{}'.format(
-                os.path.join(self.v2_create_schemas_path,
-                             'sample_assay_plan_schema.json')),
-                                   sample_assay_plan_schema)
+            # resolver = RefResolver('file://{}'.format(
+            #     os.path.join(self.v2_create_schemas_path,
+            #                  'sample_assay_plan_schema.json')),
+            #                        sample_assay_plan_schema)
+            res_path = str(pathlib.Path("file://", self.v2_create_schemas_path,
+                                                 'sample_assay_plan_schema.json'))
+            resolver = RefResolver(res_path, sample_assay_plan_schema)
             validator = Draft4Validator(sample_assay_plan_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))

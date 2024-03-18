@@ -8,7 +8,7 @@ from isatools.isatab.utils import cell_has_value
 def check_filenames_present(i_df_dict: dict) -> None:
     """ Used for rule 3005
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
     for s_pos, study_df in enumerate(i_df_dict['studies']):
@@ -25,7 +25,7 @@ def check_filenames_present(i_df_dict: dict) -> None:
 def check_date_formats(i_df_dict):
     """ Used for rule 3001
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -61,7 +61,7 @@ def check_date_formats(i_df_dict):
 def check_dois(i_df_dict):
     """ Used for rule 3002
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -87,7 +87,7 @@ def check_dois(i_df_dict):
 def check_pubmed_ids_format(i_df_dict):
     """ Used for rule 3003
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -113,7 +113,7 @@ def check_pubmed_ids_format(i_df_dict):
 def check_ontology_sources(i_df_dict):
     """ Used for rule 3008
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
     term_source_refs = []

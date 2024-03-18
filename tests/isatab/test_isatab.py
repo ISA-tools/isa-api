@@ -32,6 +32,14 @@ def replace_windows_newlines(input_string):
     return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
 
 
+def replace_windows_newlines(input_string):
+    return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
+
+
+def replace_windows_newlines(input_string):
+    return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
+
+
 class TestIsaMerge(unittest.TestCase):
 
     def setUp(self):
@@ -1265,6 +1273,7 @@ source1\tsample collection\taliquoting\taliquot1"""
         expected = """Source Name\tProtocol REF\tSample Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
         self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
         i = Investigation()
