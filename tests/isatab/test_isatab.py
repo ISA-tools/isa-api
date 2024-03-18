@@ -28,6 +28,9 @@ def setUpModule():
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
 
+def replace_windows_newlines(input_string):
+    return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
+
 
 def replace_windows_newlines(input_string):
     return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
@@ -445,7 +448,7 @@ class TestIsaTabDump(unittest.TestCase):
         s.process_sequence = [sample_collection_process]
         s.samples.append(sample1)
         i.studies = [s]
-        actual = isatab.dumps(i)
+        actual = replace_windows_newlines(isatab.dumps(i))
         expected = """Source Name\tMaterial Type\tCharacteristics[organism]\tTerm Source REF\tTerm Accession Number\tCharacteristics[body weight]\tUnit\tTerm Source REF\tTerm Accession Number\tProtocol REF\tParameter Value[vessel]\tTerm Source REF\tTerm Accession Number\tParameter Value[storage temperature]\tUnit\tTerm Source REF\tTerm Accession Number\tSample Name\tCharacteristics[organism part]\tTerm Source REF\tTerm Accession Number\tCharacteristics[specimen mass]\tUnit\tTerm Source REF\tTerm Accession Number
 source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T016\t72\tkilogram\tUO\thttp://purl.obolibrary.org/obo/UO_0000009\tsample collection\teppendorf tube\tOBI\tpurl.org\t-20\tdegree Celsius\tUO\thttp://purl.obolibrary.org/obo/UO_0000027\tsample1\tliver\tUBERON\thttp://purl.obolibrary.org/obo/UBERON_0002107\t450.5\tmilligram\tUO\thttp://purl.obolibrary.org/obo/UO_0000022"""
         self.assertIn(expected, actual)
@@ -1269,7 +1272,8 @@ source1\tsample collection\taliquoting\taliquot1"""
         i.studies = [s]
         expected = """Source Name\tProtocol REF\tSample Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
-        self.assertIn(expected, isatab.dumps(i).replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n'))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
         i = Investigation()
@@ -1727,6 +1731,7 @@ sample1\textraction\te2\tscanning\td2"""
                 if """Protocol REF\tData Transformation Name""" in header:
                     self.fail('Incorrectly inserted Protocol REF before '
                               'Data Transformation Name')
+        os.remove(tmp.name)
 
     def test_isatab_factor_value_parsing_issue270(self):
         with open(os.path.join(self._tab_data_dir, 'issue270', 'i_matteo.txt'),

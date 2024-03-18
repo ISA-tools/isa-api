@@ -115,7 +115,7 @@ class ISAInvestigationValidator:
                  rules_to_run: tuple = DEFAULT_INVESTIGATION_RULES):
         """ The ISA investigation validator class
 
-        :param investigation_df_dict: a dictionnary of DataFrames and list of dataframes representing sthe investigation
+        :param investigation_df_dict: a dictionary of DataFrames and lists of DataFrames representing the investigation file
         :param dir_context: the directory of the investigation
         :param configs: directory of the XML config files
         :param available_rules: a customizable list of all available rules for investigation objects
