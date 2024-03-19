@@ -84,3 +84,7 @@ protein identification:
   header: Data Transformation Name
   synonyms:
     - protein identification
+unknown protocol:
+  header: Unknown Protocol Name
+  synonyms:
+    - unknown protocol

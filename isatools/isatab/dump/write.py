@@ -3,7 +3,7 @@ from os import path
 from pandas import DataFrame
 from numpy import nan
 
-from isatools.constants import SYNONYMS
+from isatools.constants import SYNONYMS, HEADER
 from isatools.model import (
     OntologyAnnotation,
     Investigation,
@@ -21,8 +21,7 @@ from isatools.isatab.utils import (
     get_pv_columns,
     get_fv_columns,
     get_characteristic_columns,
-    get_object_column_map,
-    get_column_header
+    get_object_column_map
 )
 
 
@@ -296,17 +295,23 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
                     if node.executes_protocol.protocol_type:
-                        oname_label = get_column_header(
-                            node.executes_protocol.protocol_type.term,
-                            protocol_types_dict
-                        )
+                        if isinstance(node.executes_protocol.protocol_type, OntologyAnnotation):
+                            protocol_type = node.executes_protocol.protocol_type.term.lower()
+                        else:
+                            protocol_type = node.executes_protocol.protocol_type.lower()
+                        
+                        if protocol_type in protocol_types_dict:
+                            oname_label = protocol_types_dict[protocol_type][HEADER]
+                        else:
+                            oname_label = None
+                        
                         if oname_label is not None:
                             columns.append(oname_label)
-                        elif node.executes_protocol.protocol_type.term.lower() \
-                                in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
-                            columns.extend(
-                                ["Hybridization Assay Name",
-                                 "Array Design REF"])
+
+                            if node.executes_protocol.protocol_type.term.lower() in \
+                                    protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
+                                columns.append("Array Design REF")
+                    
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
@@ -350,19 +355,23 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         protocol_in_path_count += 1
                         df_dict[olabel][-1] = node.executes_protocol.name
                         if node.executes_protocol.protocol_type:
-                            oname_label = get_column_header(
-                                node.executes_protocol.protocol_type.term,
-                                protocol_types_dict
-                            )
+                            if isinstance(node.executes_protocol.protocol_type, OntologyAnnotation):
+                                protocol_type = node.executes_protocol.protocol_type.term.lower()
+                            else:
+                                protocol_type = node.executes_protocol.protocol_type.lower()
+                            
+                            if protocol_type in protocol_types_dict:
+                                oname_label = protocol_types_dict[protocol_type][HEADER]
+                            else:
+                                oname_label = None
+                            
                             if oname_label is not None:
                                 df_dict[oname_label][-1] = node.name
 
-                            elif node.executes_protocol.protocol_type.term.lower() in \
-                                    protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
-                                df_dict["Hybridization Assay Name"][-1] = \
-                                    node.name
-                                df_dict["Array Design REF"][-1] = \
-                                    node.array_design_ref
+                                if node.executes_protocol.protocol_type.term.lower() in \
+                                        protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
+                                    df_dict["Array Design REF"][-1] = node.array_design_ref
+                        
                         if node.date is not None:
                             df_dict[olabel + ".Date"][-1] = node.date
                         if node.performer is not None:
