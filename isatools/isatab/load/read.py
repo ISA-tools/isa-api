@@ -1,3 +1,4 @@
+from __future__ import annotations
 from io import StringIO
 
 from pandas import read_csv
@@ -69,7 +70,7 @@ def read_investigation_file(fp):
         df.replace(nan, '', regex=True, inplace=True)
         #  Strip out the nan entries
         df.reset_index(inplace=True)
-        #  Reset index so it is accessible as column
+        #  Reset study_index so it is accessible as column
         df.columns = df.iloc[0]
         #  If all was OK, promote this row to the column headers
         df = df.reindex(df.index.drop(0))
@@ -158,16 +159,13 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None) -> IsaTabDataFram
     """Read a table file into a DataFrame
 
     :param tfile_path: Path to a table file to load
-    :param index_col: The column to use as index
+    :param index_col: The column to use as study_index
     :param factor_filter: Factor filter tuple, e.g. ('Gender', 'Male') will
     filter on FactorValue[Gender] == Male
     :return: A table file DataFrame
     """
-    log.debug("Opening %s", tfile_path)
     with utf8_text_file_open(tfile_path) as tfile_fp:
-        log.debug("Reading file header")
         tfile_fp.seek(0)
-        log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)
         csv = read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, encoding='utf-8').fillna('')
         tfile_df = IsaTabDataFrame(csv)
