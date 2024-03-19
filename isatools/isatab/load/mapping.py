@@ -30,7 +30,7 @@ def get_investigation_base_output() -> dict[str, list]:
     }
 
 
-study_sections_mapping: dict[str, dict[str, str]] = {
+study_sections_mapping: dict = {
     'studies': {
         'current_section_key': 'STUDY',
         'next_section_key': 'STUDY DESIGN DESCRIPTORS'
