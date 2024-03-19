@@ -1,4 +1,4 @@
-investigation_sections_mapping: dict[str, dict[str, str]] = {
+investigation_sections_mapping: dict = {
     'ontology_sources': {
         'current_section_key': 'ONTOLOGY SOURCE REFERENCE',
         'next_section_key': 'INVESTIGATION'
@@ -18,7 +18,7 @@ investigation_sections_mapping: dict[str, dict[str, str]] = {
 }
 
 
-def get_investigation_base_output() -> dict[str, list]:
+def get_investigation_base_output() -> dict:
     return {
         'studies': [],
         's_design_descriptors': [],
