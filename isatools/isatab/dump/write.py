@@ -59,7 +59,6 @@ def write_study_table_files(inv_obj, output_dir):
         paths = _all_end_to_end_paths(
             s_graph,
             [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
-        log.warning(s_graph.nodes())
 
         sample_in_path_count = 0
         protocol_in_path_count = 0
@@ -220,7 +219,7 @@ def write_study_table_files(inv_obj, output_dir):
         DF = DF.replace('', nan)
         DF = DF.dropna(axis=1, how='all')
 
-        with open(path.join(output_dir, study_obj.filename), 'w') as out_fp:
+        with open(path.join(output_dir, study_obj.filename), 'wb') as out_fp:
             DF.to_csv(
                 path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
 
@@ -480,7 +479,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             DF = DF.dropna(axis=1, how='all')
 
             with open(path.join(
-                    output_dir, assay_obj.filename), 'w') as out_fp:
+                    output_dir, assay_obj.filename), 'wb') as out_fp:
                 DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                           encoding='utf-8')
 

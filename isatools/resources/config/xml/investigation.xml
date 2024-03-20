@@ -93,7 +93,7 @@
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Investigation Person Mid Initials" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="INVESTIGATION CONTACTS">
             <description><![CDATA[The mid initial of the contact.]]></description>
             <default-value><![CDATA[]]></default-value>
@@ -231,7 +231,7 @@
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Study Person Mid Initials" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="STUDY CONTACTS">
             <description><![CDATA[The mid initial of the contact.]]></description>
             <default-value><![CDATA[]]></default-value>

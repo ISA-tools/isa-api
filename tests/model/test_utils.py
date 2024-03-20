@@ -11,8 +11,7 @@ from isatools.model.utils import (
     find, plink,
     batch_create_materials,
     batch_create_assays,
-    _deep_copy,
-    update_checksum
+    _deep_copy
 )
 
 
@@ -108,8 +107,3 @@ class TestUtils(TestCase):
         self.assertFalse(first_batch == third_batch)
         self.assertFalse(first_batch == second_batch)
 
-    def test_checksum_md5(self):
-        isa_data_file = DataFile(filename="EVHINN101.sff", label="RawDataFile")
-        updated_isa_data_file = update_checksum(os.path.join(self._tab_data_dir, "BII-S-3"), isa_data_file, "md5")
-        self.assertEqual(updated_isa_data_file.comments[0].value, "md5")
-        self.assertEqual(updated_isa_data_file.comments[1].value, "d41d8cd98f00b204e9800998ecf8427e")

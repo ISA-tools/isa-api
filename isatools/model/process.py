@@ -258,9 +258,9 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     def from_dict(self, process):
         self.id = process.get('@id', '')
+        self.name = process.get('name', '')
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
-        self.name = process.get('name', '')
         self.performer = process.get('performer', '')
         self.date = process.get('date', '')
 
@@ -304,6 +304,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     def from_assay_dict(self, process, technology_type):
         self.id = process.get('@id', '')
+        self.name = process.get('name', '')
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
         allowed_protocol_type_terms = [
