@@ -19,7 +19,6 @@ class TestValidators(unittest.TestCase):
             r = validate(fp=data_file, config_dir=self.default_conf, origin="")
         self.assertEqual(len(r['warnings']), 2)
 
-
     def test_mtbls267(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'MTBLS267-partial')
         with open(path.join(data_path, 'i_Investigation.txt'), 'r') as data_file:
@@ -32,6 +31,7 @@ class TestValidators(unittest.TestCase):
         with open(path.join(data_path, 'i_Investigation.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf)
         self.assertEqual(len(r['errors']), 33)
+
 
     def test_bii_i_1(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-I-1')
@@ -84,7 +84,6 @@ class TestValidators(unittest.TestCase):
         with open(path.join(data_path, 'i_gilbert.txt'), 'r') as data_file:
             r = validate(data_file, rules=rules)
         self.assertEqual(len(r['warnings']), 2)
-
 
         rule = '12000'
         expected_error = {
