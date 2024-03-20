@@ -299,6 +299,7 @@ class ISATabLoaderStudyAssayMixin(metaclass=ABCMeta):
     """ A mixin for the Study and Assay loaders. Provides shared abstract methods to prevent code duplication """
 
     unknown_protocol_description: str = "This protocol was auto-generated where a protocol could not be determined."
+    protocol_map: dict[str, Protocol] = {}
 
     def update_protocols(self, process: Process, study: Study, protocol_map) -> None:
         """ Update the protocols in the process with the protocol map and binds it to the study in case of an
@@ -329,13 +330,13 @@ class ISATabLoaderStudyAssayMixin(metaclass=ABCMeta):
             characteristic_categories: dict,
             unit_categories: dict
     ) -> Study | Assay:
-        """ Loads misc data and update the target object with the given data. The data to be loaded includes:
+        """ Bind misc data to the target object (Study or Assay). The data to be loaded includes:
             - samples
             - process_sequence
             - characteristic_categories
-            - units in the study or assay
+            - units
 
-        :param target: The study or assay to updated
+        :param target: The study or assay to update
         :param samples: A dictionary of Sample objects
         :param processes: A dictionary of Process objects
         :param characteristic_categories: A dictionary of characteristic categories
@@ -466,10 +467,10 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
 
     def __init__(self, row: DataFrame, df_dict: dict, index: int) -> None:
         """ Constructor for the ISATabStudyLoader class """
+        ISATabLoaderStudyAssayMixin.protocol_map = {}
+
         self.__study_index: int = index
         self.__row: DataFrame = row
-        self.__protocol_map: dict[str, Protocol] = {}
-
         self.__publications: list[DataFrame] = df_dict['s_publications']
         self.__contacts: list[DataFrame] = df_dict['s_contacts']
         self.__comments: DataFrame = df_dict['studies']
@@ -477,7 +478,6 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
         self.__factors: list[DataFrame] = df_dict['s_factors']
         self.__protocols: list[DataFrame] = df_dict['s_protocols']
         self.__assays: list[DataFrame] = df_dict['s_assays']
-
         self.study: Study | None = None
 
     def __load_design_descriptors(self) -> list[OntologyAnnotation]:
@@ -538,7 +538,7 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
                 protocol.parameters.append(protocol_param)
             protocol.comments = self.get_comments_row(self.__protocols[self.__study_index].columns, row)
             protocols.append(protocol)
-            self.__protocol_map[protocol.name] = protocol
+            ISATabLoaderStudyAssayMixin.protocol_map[protocol.name] = protocol
         return protocols
 
     def __load_tables(self, filename: str) -> None:
@@ -557,13 +557,13 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
         self.study = self.load_misc(self.study, samples, processes, characteristic_categories, unit_categories)
 
         for process in self.study.process_sequence:
-            self.update_protocols(process, self.study, self.__protocol_map)
+            self.update_protocols(process, self.study, self.protocol_map)
 
     def __load_assays(self):
         """ Load the assays in the Study object """
         for _, row in self.__assays[self.__study_index].iterrows():
             assay_loader: ISATabAssayLoader = ISATabAssayLoader(
-                row, self.__assays, self.__study_index, self.study, self.__protocol_map
+                row, self.__assays[self.__study_index].columns, self.study
             )
             assay_loader.load()
             self.study.assays.append(assay_loader.assay)
@@ -598,21 +598,14 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
     """ A class to load an ISA-Tab assay file into an Assay object
 
     :param row: A row from the assay file
-    :param assays: A list of DataFrames containing the assays data
-    :param study_index: The index of this study in this investigation
     :param study: The Study object to which this assay belongs (required to add protocols to the study)
-    :param protocols: A dictionary of Protocol objects
     """
 
-    def __init__(
-            self, row: Series, assays: list[DataFrame], study_index: int, study: Study, protocols: dict[str, Protocol]
-    ) -> None:
+    def __init__(self, row: Series, columns: list[str], study: Study) -> None:
         """ Constructor for the ISATabAssayLoader class """
         self.__row: Series = row
-        self.__assays: list[DataFrame] = assays
-        self.__study_index: int = study_index
+        self.__columns: list[str] = columns
         self.__study: Study = study
-        self.__protocol_map: dict[str, Protocol] = protocols
         self.assay: Assay | None = None
 
     def load(self):
@@ -630,7 +623,7 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
                 self.__row['Study Assay Technology Type Term Source REF']
             ),
             "technology_platform": self.__row['Study Assay Technology Platform'],
-            "comments": self.get_comments_row(self.__assays[self.__study_index].columns, self.__row)
+            "comments": self.get_comments_row(self.__columns, self.__row)
         })
         if not self.skip_load_tables:
             self.__load_tables()
@@ -648,7 +641,7 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
         self.assay.data_files = sorted(list(data.values()), key=lambda x: x.filename)
         self.assay = self.load_misc(self.assay, samples, processes, characteristic_categories, unit_categories)
         for process in self.assay.process_sequence:
-            self.update_protocols(process, self.__study, self.__protocol_map)
+            self.update_protocols(process, self.__study, self.protocol_map)
 
 
 def load(isatab_path_or_ifile: object, skip_load_tables: object = False) -> object:
