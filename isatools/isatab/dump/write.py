@@ -240,7 +240,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
-    protocol_types_dict = load_protocol_types_info()
+    yaml_dict = load_protocol_types_info()
+    protocol_types_dict = {}
+    for protocol, attributes in yaml_dict.items():
+        protocol_types_dict[protocol] = attributes
+        for synonym in attributes[SYNONYMS]:
+            protocol_types_dict[synonym] = attributes
+    
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
             a_graph = assay_obj.graph
@@ -300,7 +306,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         else:
                             protocol_type = node.executes_protocol.protocol_type.lower()
                         
-                        if protocol_type in protocol_types_dict:
+                        if protocol_type in protocol_types_dict and\
+                            protocol_types_dict[protocol_type][HEADER]:
                             oname_label = protocol_types_dict[protocol_type][HEADER]
                         else:
                             oname_label = None
@@ -360,7 +367,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             else:
                                 protocol_type = node.executes_protocol.protocol_type.lower()
                             
-                            if protocol_type in protocol_types_dict:
+                            if protocol_type in protocol_types_dict and\
+                                protocol_types_dict[protocol_type][HEADER]:
                                 oname_label = protocol_types_dict[protocol_type][HEADER]
                             else:
                                 oname_label = None
