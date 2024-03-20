@@ -246,4 +246,4 @@ class TestFunctions(TestCase):
     def test_load_protocol_types_info(self):
         yaml_config = load_protocol_types_info()
         self.assertTrue(isinstance(yaml_config, dict))
-        self.assertTrue(len(yaml_config.keys()) == 15)
+        self.assertEqual(len(yaml_config.keys()), 16)

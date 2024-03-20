@@ -307,18 +307,6 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         self.name = process.get('name', '')
         self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
         self.load_comments(process.get('comments', []))
-        allowed_protocol_type_terms = [
-            "nucleic acid sequencing",
-            "nmr spectroscopy",
-            "mass spectrometry",
-            "nucleic acid hybridization",
-            "data transformation",
-            "data normalization"
-        ]
-        if self.executes_protocol.protocol_type.term in allowed_protocol_type_terms or (
-                self.executes_protocol.protocol_type.term == 'data collection'
-                and technology_type.term == 'DNA microarray'):
-            self.name = process['name']
 
         # Inputs / Outputs
         for io_data_target in ['inputs', 'outputs']:

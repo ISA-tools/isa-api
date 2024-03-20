@@ -515,32 +515,6 @@ def get_object_column_map(isatab_header, df_columns):
     return object_column_map
 
 
-def get_column_header(protocol_type_term, protocol_types_dict):
-    column_header = None
-    if protocol_type_term.lower() in \
-            protocol_types_dict["nucleic acid sequencing"][SYNONYMS] \
-            + protocol_types_dict["phenotyping"][SYNONYMS] \
-            + protocol_types_dict["data acquisition"][SYNONYMS]:
-        column_header = "Assay Name"
-    elif protocol_type_term.lower() in protocol_types_dict["data collection"][SYNONYMS]:
-        column_header = "Scan Name"
-    elif protocol_type_term.lower() in protocol_types_dict["mass spectrometry"][SYNONYMS]:
-        column_header = "MS Assay Name"
-    elif protocol_type_term.lower() in protocol_types_dict["nmr spectroscopy"][SYNONYMS]:
-        column_header = "NMR Assay Name"
-    elif protocol_type_term.lower() in \
-            protocol_types_dict["data transformation"][SYNONYMS] \
-            + protocol_types_dict["sequence analysis data transformation"][SYNONYMS] \
-            + protocol_types_dict["metabolite identification"][SYNONYMS] \
-            + protocol_types_dict["protein identification"][SYNONYMS]:
-        column_header = "Data Transformation Name"
-    elif protocol_type_term.lower() in protocol_types_dict["normalization"][SYNONYMS]:
-        column_header = "Normalization Name"
-    if protocol_type_term.lower() == "unknown protocol":
-        column_header = "Unknown Protocol Name"
-    return column_header
-
-
 def get_value_columns(label, x):
     """ Generates the appropriate columns based on the value of the object.
     For example, if the object's .value value is an OntologyAnnotation,
