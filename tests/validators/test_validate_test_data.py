@@ -315,9 +315,11 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
+
                 res_path = pathlib.Path("file://", self.v2_create_schemas_path,
                              'sample_assay_plan_schema.json').as_uri()
                 resolver = RefResolver(res_path, sample_assay_plan_schema)
+
             validator = Draft4Validator(sample_assay_plan_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
@@ -328,10 +330,13 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             with open(os.path.join(self.v2_create_schemas_path,
                                    'sample_assay_plan_schema.json')) as fp:
                 sample_assay_plan_schema = json.load(fp)
-            resolver = RefResolver('file://{}'.format(
-                os.path.join(self.v2_create_schemas_path,
-                             'sample_assay_plan_schema.json')),
-                                   sample_assay_plan_schema)
+            # resolver = RefResolver('file://{}'.format(
+            #     os.path.join(self.v2_create_schemas_path,
+            #                  'sample_assay_plan_schema.json')),
+            #                        sample_assay_plan_schema)
+            res_path = str(pathlib.Path("file://", self.v2_create_schemas_path,
+                                                 'sample_assay_plan_schema.json'))
+            resolver = RefResolver(res_path, sample_assay_plan_schema)
             validator = Draft4Validator(sample_assay_plan_schema,
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))

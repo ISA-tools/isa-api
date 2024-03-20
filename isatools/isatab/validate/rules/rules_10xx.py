@@ -12,7 +12,7 @@ from isatools.isatab.utils import cell_has_value
 def check_samples_not_declared_in_study_used_in_assay(i_df_dict, dir_context):
     """Checks if samples found in assay tables are found in the study-sample table
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
@@ -43,7 +43,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df_dict, dir_context):
 def check_study_factor_usage(i_df_dict, dir_context):
     """Used for rules 1008 and 1021
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
@@ -112,7 +112,7 @@ def check_study_factor_usage(i_df_dict, dir_context):
 def check_protocol_usage(i_df_dict, dir_context):
     """Used for rules 1007 and 1019
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
@@ -186,7 +186,7 @@ def check_protocol_usage(i_df_dict, dir_context):
 def check_protocol_parameter_usage(i_df_dict, dir_context):
     """Used for rules 1009 and 1020
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
@@ -282,7 +282,7 @@ def check_protocol_names(i_df_dict):
 def check_protocol_parameter_names(i_df_dict):
     """Used for rule 1011
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
     for study_protocols_df in i_df_dict['s_protocols']:
@@ -301,7 +301,7 @@ def check_protocol_parameter_names(i_df_dict):
 def check_study_factor_names(i_df_dict):
     """Used for rule 1012
 
-    :param i_df_dict: A dictionary of DataFrames and lists of DataFrames representing the investigation file
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
     for study_factors_df in i_df_dict['s_factors']:

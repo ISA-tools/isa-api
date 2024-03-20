@@ -1,8 +1,7 @@
 import networkx as nx
-from hashlib import md5, sha1, sha256, blake2b
 import os
 
-from isatools.model.datafile import DataFile, Comment
+from isatools.model.datafile import DataFile
 from isatools.model.process import Process
 from isatools.model.source import Source
 from isatools.model.sample import Sample
@@ -215,43 +214,3 @@ def _deep_copy(isa_object):
         new_obj.assign_identifier()
     return new_obj
 
-
-def compute_hash(path, file, hash_func):
-    """a subfunction generating the hash using hashlib functions
-
-    :param path:
-    :param file:
-    :param hash_func:
-    :return:
-    """
-
-    with open(os.path.join(path, file), "rb") as f:
-        for byte_block in iter(lambda: f.read(4096), b""):
-            hash_func.update(byte_block)
-    return hash_func.hexdigest()
-
-
-def update_checksum(path, isa_file_object: DataFile, checksum_type):
-    """ a helper function to compute file checksum given a file path, an isa data file name and a type of algorithm
-
-    :param path:
-    :param isa_file_object:
-    :param checksum_type: enum
-    :return: isa_file_object:
-    :raises ValueError: when the checksum is invalid
-    """
-    HASH_FUNCTIONS = {
-        "md5": md5,
-        "sha1": sha1,
-        "sha256": sha256,
-        "blake2": blake2b,
-    }
-    if checksum_type in HASH_FUNCTIONS.keys():
-        hash_type = HASH_FUNCTIONS[checksum_type]()
-        file_checksum = compute_hash(path, isa_file_object.filename, hash_type)
-        isa_file_object.comments.append(Comment(name="checksum type", value=checksum_type))
-    else:
-        raise ValueError("Invalid checksum type")
-    isa_file_object.comments.append(Comment(name="checksum", value=file_checksum))
-
-    return isa_file_object
