@@ -389,9 +389,9 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
 
         """
         ISATabLoaderMixin.skip_load_tables = skip_load_table
+        self.__investigation: Investigation
         self.__df_dict: dict = {}
         self.file: TextIO = file
-        self.__investigation: Investigation = Investigation()
         if run:
             self.load()
 
@@ -451,10 +451,11 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         ontology_source.comments = self.get_comments(self.__df_dict['ontology_sources'])
         self.__investigation.ontology_source_references.append(ontology_source)
 
-    def __set_investigation(self) -> None:
+    def __create_investigation(self) -> None:
         """ Loads all data regarding the investigation into the Investigation object. Studies and assays are
         loaded in a separate private method.
         """
+        self.__investigation = Investigation()
         self.__df_dict['ontology_sources'].apply(lambda r: self.__set_ontology_source(r), axis=1)
         ISATabLoaderMixin.ontology_source_map = dict(
             map(lambda x: (x.name, x), self.__investigation.ontology_source_references)
@@ -481,7 +482,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
 
     def load(self):
         """ Public wrapper to load the investigation file into the Investigation object. """
-        self.__set_investigation()
+        self.__create_investigation()
         self.__create_studies()
 
 
