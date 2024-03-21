@@ -504,7 +504,7 @@ def load_table_checks(df, filename):
                         and not _RX_COMMENT.match(col):
                     spl = ("(E) Expected only Characteristics, "
                            "Comments following {} "
-                           "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                     log.error(spl)
                     error = {
                         "message": "Unrecognised header",
@@ -512,18 +512,6 @@ def load_table_checks(df, filename):
                         "code": 4014
                     }
                     validator.add_error(**error)
-            # if len(object_columns) > 1:
-            #
-            #     spl = ("Unexpected column heading(s) following {} column. "
-            #            "Found {} at offset {}".format(
-            #             prop_name, object_columns[1:], 2), filename)
-            #     log.error(spl)
-            #     error = {
-            #         "message": "Unrecognised header",
-            #         "supplemental": spl,
-            #         "code": 4014
-            #     }
-            #     validator.add_error(**error)
         elif prop_name == 'Labeled Extract Name':
             if len(object_columns) > 1:
                 if object_columns[1] == 'Label':
@@ -548,7 +536,7 @@ def load_table_checks(df, filename):
                                 and not _RX_COMMENT.match(col):
                             spl = ("(E) Expected only Characteristics, "
                                    "Comments following {} "
-                                   "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                                   "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                             log.error(spl)
                             error = {
                                 "message": "Unrecognised header",
@@ -558,7 +546,7 @@ def load_table_checks(df, filename):
                             validator.add_error(**error)
             else:
                 spl = ("Expected Label column after Labeled Extract Name "
-                       "but none found")
+                       "but none found in file {}".format(filename))
                 log.error(spl)
                 error = {
                     "message": "Unrecognised header",
@@ -567,23 +555,10 @@ def load_table_checks(df, filename):
                 }
                 validator.add_error(**error)
         elif prop_name in DATA_FILE_LABELS:
-            # [
-            #     'Raw Data File',
-            #     'Raw Spectral Data File',
-            #     'Free Induction Decay Data File',
-            #     'Image File',
-            #     'Derived Data File',
-            #     'Derived Spectral Data File',
-            #     'Derived Array Data File',
-            #     'Array Data File',
-            #     'Protein Assignment File',
-            #     'Peptide Assignment File',
-            #     'Post Translational Modification Assignment File'
-            # ]
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     spl = ("(E) Expected only Comments following {} "
-                           "columns but found {} at offset {}".format(prop_name, col, x + 1, filename))
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
                     log.error(spl)
                     error = {
                         "message": "Unrecognised header",
