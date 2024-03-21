@@ -267,13 +267,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             
             protocol_in_path_count = 0
             output_label_in_path_counts = {}
-            protocol_to_output_labels = {}
+            name_label_in_path_counts = {}
             for node_index in _longest_path_and_attrs(paths, indexes):
                 node = indexes[node_index]
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
-                    # olabel = "Sample Name.{}".format(sample_in_path_count)
-                    # sample_in_path_count += 1
                     columns.append(olabel)
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
@@ -302,7 +300,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             protocol_types_dict
                         )
                         if oname_label is not None:
-                            columns.append(oname_label)
+                            if oname_label not in name_label_in_path_counts:
+                                name_label_in_path_counts[oname_label] = 0
+                            new_oname_label = oname_label + "." + str(name_label_in_path_counts[oname_label])
+                            
+                            columns.append(new_oname_label)
+                            name_label_in_path_counts[oname_label] += 1
                         elif node.executes_protocol.protocol_type.term.lower() \
                                 in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                             columns.extend(
@@ -350,6 +353,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                 protocol_in_path_count = 0
                 output_label_in_path_counts = {}
+                name_label_in_path_counts = {}
                 for node_index in path_:
                     node = indexes[node_index]
                     if isinstance(node, Process):
@@ -362,8 +366,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 protocol_types_dict
                             )
                             if oname_label is not None:
-                                df_dict[oname_label][-1] = node.name
-
+                                if oname_label not in name_label_in_path_counts:
+                                    name_label_in_path_counts[oname_label] = 0
+                                new_oname_label = oname_label + "." + str(name_label_in_path_counts[oname_label])
+                                
+                                df_dict[new_oname_label][-1] = node.name
+                                name_label_in_path_counts[oname_label] += 1
                             elif node.executes_protocol.protocol_type.term.lower() in \
                                     protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 df_dict["Hybridization Assay Name"][-1] = \
@@ -383,8 +391,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
-                        # olabel = "Sample Name.{}".format(sample_in_path_count)
-                        # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(
