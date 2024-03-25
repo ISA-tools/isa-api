@@ -32,7 +32,7 @@ __author__ = 'proccaserra@gmail.com'
 
 def getblock(container, start_marker, end_marker):
     """A method to obtain a block of line between a start and an end marker
-    this will be invoked to obtain raw data, metabolite identification,metabolite
+    this will be invoked to obtain raw data, metabolite identification, metabolite
     annotation and possible study factors parameters are a filehandle and 2
     strings allowing the specify the section brackets
     :param container:
@@ -447,7 +447,7 @@ def create_raw_data_files(write_dir, input_techtype, f, input_study_id, input_an
               "possibly when trying to write data files")
 
 
-def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
+def create_nmr_assay_records(list_of_lines, study_id, analysis_id, fv_records):
     """A method to create ISA assay tables from an Metabolomics Workbench Study
     Identifier
     the method takes 3 parameters as input: a filehandle, a MW identifier for
@@ -523,7 +523,7 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
             "Data Transformation Name",
             "Derived Spectral Data File"]
 
-        input_nmr_file = urlopen(lol).read()
+        input_nmr_file = urlopen(list_of_lines).read()
         input_nmr_file = str(input_nmr_file).split('\\n')
 
         maf_file = str(study_id) + "_" + str(analysis_id) + "_maf_data.txt"
@@ -1074,14 +1074,10 @@ def mw2isa_convert(**kwargs):
             with urllib.request.urlopen(study_url) as url:
                 study_response = url.read().decode('utf8')
                 analyses = json.loads(study_response)
-                # print("study analysis", analyses)
                 if "1" in analyses.keys():
-                    # print("several analysis")
                     for key in analyses.keys():
                         tt = analyses[key]["analysis_type"]
-                        # print("analysis_type:", tt)
                 else:
-                    # print("Technology is: ", analyses["analysis_type"])
                     tt = analyses["analysis_type"]
             outputpath = outputdir + "/" + studyid + "/"
             if not os.path.exists(outputpath):
@@ -1091,7 +1087,7 @@ def mw2isa_convert(**kwargs):
                       "DRCCMetadata.php?Mode=Study&DataMode="
             page_url = baseurl + tt + "Data&StudyID=" + studyid + \
                 "&StudyType=" + tt + "&ResultType=1#DataTabs"
-            # print(page_url)
+
             page = urlopen(page_url).read()
             soup = BeautifulSoup(page, "html.parser")
             AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
@@ -2282,7 +2278,7 @@ def mw2isa_convert(**kwargs):
                 print('user elected not to dowload raw data')
             else:
                 print('user input not recognized')
-                raise ValueError(dl_option, "invalid input, option not recognized")
+                raise ValueError("invalid input, option not recognized {}", dl_option)
 
     except Exception as e:
         logging.exception(e)

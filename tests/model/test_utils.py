@@ -106,4 +106,3 @@ class TestUtils(TestCase):
         first_batch = batch_create_assays(sample1, [process], source, n=2)
         self.assertFalse(first_batch == third_batch)
         self.assertFalse(first_batch == second_batch)
-
