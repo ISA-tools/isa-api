@@ -62,12 +62,12 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
     def get_sample(process):
         materials = process.inputs
-        sample = None
+        this_sample = None
         for material in materials:
             if isinstance(material, Sample):
-                sample = material
+                this_sample = material
                 break
-        return sample
+        return this_sample
 
     def get_pv(process, name):
         hits = [pv for pv in process.parameter_values if
@@ -214,7 +214,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                             enumerate(datafile.filename) if
                                             x == '.']
                             file_ext = datafile.filename[dot_indicies[-1] + 1:]
-                            if file_ext in ('.gz'):
+                            if '.gz' in file_ext:
                                 # if is compressed, look for the actual ftype
                                 try:
                                     filetype = datafile.filename[

@@ -24,11 +24,12 @@
     }
   ],
   "protocolSequence": [
-    "nucleic acid extraction",
-    "library construction",
-    "sequence assembly",
-    "sequence analysis data transformation"
+    "extraction",
+    "labeling",
+    "mass spectrometry",
+    "data transformation"
   ],
   "description": [
-    "(Sample)->(extraction)->(Material)->(labeling)->(Material)->(nmass spectrometry)->(DataFiles)->(data transformation)->(DataFiles)" ]
+    "(Sample)->(extraction)->(Material)->(labeling)->(Material)->(mass spectrometry)->(DataFiles)->(data transformation)->(DataFiles)"
+  ]
 }

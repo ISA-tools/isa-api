@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 #
 # Generated Thu Jan 21 10:45:32 2016 by generateDS.py version 2.18a.
 #
@@ -14,10 +13,8 @@ import logging
 import os
 import re as re_
 import sys
-import warnings as warnings_
 
 from lxml import etree as etree_
-
 
 log = logging.getLogger('isatools')
 
@@ -71,39 +68,52 @@ def parsexml_(infile, parser=None, **kwargs):
 # You can replace these methods by re-implementing the following class
 #   in a module named generatedssuper.py.
 
+
 try:
     from generatedssuper import GeneratedsSuper
 except ImportError as exp:
 
     class GeneratedsSuper(object):
         tzoff_pattern = re_.compile(r'(\+|-)((0\d|1[0-3]):[0-5]\d|14:00)$')
+
         class _FixedOffsetTZ(datetime_.tzinfo):
             def __init__(self, offset, name):
                 self.__offset = datetime_.timedelta(minutes=offset)
                 self.__name = name
+
             def utcoffset(self, dt):
                 return self.__offset
+
             def tzname(self, dt):
                 return self.__name
+
             def dst(self, dt):
                 return None
+
         def gds_format_string(self, input_data, input_name=''):
             return input_data
+
         def gds_validate_string(self, input_data, node=None, input_name=''):
             if not input_data:
                 return ''
             else:
                 return input_data
+
         def gds_format_base64(self, input_data, input_name=''):
             return base64.b64encode(input_data)
+
         def gds_validate_base64(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_integer(self, input_data, input_name=''):
             return '%d' % input_data
+
         def gds_validate_integer(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_integer_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_integer_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -113,12 +123,16 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of integers')
             return values
+
         def gds_format_float(self, input_data, input_name=''):
             return ('%.15f' % input_data).rstrip('0')
+
         def gds_validate_float(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_float_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_float_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -128,14 +142,17 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of floats')
             return values
+
         def gds_format_double(self, input_data, input_name=''):
             return '%e' % input_data
+
         def gds_validate_double(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_double_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
-        def gds_validate_double_list(
-                self, input_data, node=None, input_name=''):
+
+        def gds_validate_double_list(self, input_data, node=None, input_name=''):
             values = input_data.split()
             for value in values:
                 try:
@@ -143,12 +160,16 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of doubles')
             return values
+
         def gds_format_boolean(self, input_data, input_name=''):
             return ('%s' % input_data).lower()
+
         def gds_validate_boolean(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_boolean_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_boolean_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -159,8 +180,10 @@ except ImportError as exp:
                         'Requires sequence of booleans '
                         '("true", "1", "false", "0")')
             return values
+
         def gds_validate_datetime(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_datetime(self, input_data, input_name=''):
             if input_data.microsecond == 0:
                 _svalue = '%04d-%02d-%02dT%02d:%02d:%02d' % (
@@ -197,6 +220,7 @@ except ImportError as exp:
                         minutes = (total_seconds - (hours * 3600)) // 60
                         _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
             return _svalue
+
         @classmethod
         def gds_parse_datetime(cls, input_data):
             tz = None
@@ -224,8 +248,10 @@ except ImportError as exp:
                     input_data, '%Y-%m-%dT%H:%M:%S')
             dt = dt.replace(tzinfo=tz)
             return dt
+
         def gds_validate_date(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_date(self, input_data, input_name=''):
             _svalue = '%04d-%02d-%02d' % (
                 input_data.year,
@@ -251,6 +277,7 @@ except ImportError as exp:
             except AttributeError:
                 pass
             return _svalue
+
         @classmethod
         def gds_parse_date(cls, input_data):
             tz = None
@@ -270,8 +297,10 @@ except ImportError as exp:
             dt = datetime_.datetime.strptime(input_data, '%Y-%m-%d')
             dt = dt.replace(tzinfo=tz)
             return dt.date()
+
         def gds_validate_time(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_time(self, input_data, input_name=''):
             if input_data.microsecond == 0:
                 _svalue = '%02d:%02d:%02d' % (
@@ -302,6 +331,7 @@ except ImportError as exp:
                         minutes = (total_seconds - (hours * 3600)) // 60
                         _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
             return _svalue
+
         def gds_validate_simple_patterns(self, patterns, target):
             # pat is a list of lists of strings/patterns.  We should:
             # - AND the outer elements
@@ -317,6 +347,7 @@ except ImportError as exp:
                     found1 = False
                     break
             return found1
+
         @classmethod
         def gds_parse_time(cls, input_data):
             tz = None
@@ -339,8 +370,10 @@ except ImportError as exp:
                 dt = datetime_.datetime.strptime(input_data, '%H:%M:%S')
             dt = dt.replace(tzinfo=tz)
             return dt.time()
+
         def gds_str_lower(self, instring):
             return instring.lower()
+
         def get_path_(self, node):
             path_list = []
             self.get_path_list_(node, path_list)
@@ -348,6 +381,7 @@ except ImportError as exp:
             path = '/'.join(path_list)
             return path
         Tag_strip_pattern_ = re_.compile(r'\{.*\}')
+
         def get_path_list_(self, node, path_list):
             if node is None:
                 return
@@ -355,6 +389,7 @@ except ImportError as exp:
             if tag:
                 path_list.append(tag)
             self.get_path_list_(node.getparent(), path_list)
+
         def get_class_obj_(self, node, default_class=None):
             class_obj1 = default_class
             if 'xsi' in node.nsmap:
@@ -367,8 +402,10 @@ except ImportError as exp:
                     if class_obj2 is not None:
                         class_obj1 = class_obj2
             return class_obj1
+
         def gds_build_any(self, node, type_name=None):
             return None
+
         @classmethod
         def gds_reverse_node_mapping(cls, mapping):
             return dict(((v, k) for k, v in mapping.items()))
@@ -379,11 +416,11 @@ except ImportError as exp:
 # IPython is available from http://ipython.scipy.org/.
 #
 
-## from IPython.Shell import IPShellEmbed
-## args = ''
-## ipshell = IPShellEmbed(args,
-##     banner = 'Dropping into IPython',
-##     exit_msg = 'Leaving Interpreter, back to program.')
+# from IPython.Shell import IPShellEmbed
+# args = ''
+# ipshell = IPShellEmbed(args,
+#     banner = 'Dropping into IPython',
+#     exit_msg = 'Leaving Interpreter, back to program.')
 
 # Then use the following line where and when you want to drop into the
 # IPython shell:
@@ -518,19 +555,25 @@ class MixedContainer:
     TypeDouble = 6
     TypeBoolean = 7
     TypeBase64 = 8
+
     def __init__(self, category, content_type, name, value):
         self.category = category
         self.content_type = content_type
         self.name = name
         self.value = value
+
     def getCategory(self):
         return self.category
+
     def getContenttype(self, content_type):
         return self.content_type
+
     def getValue(self):
         return self.value
+
     def getName(self):
         return self.name
+
     def export(self, outfile, level, name, namespace, pretty_print=True):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.
@@ -540,6 +583,7 @@ class MixedContainer:
             self.exportSimple(outfile, level, name)
         else:    # category == MixedContainer.CategoryComplex
             self.value.export(outfile, level, namespace, name, pretty_print)
+
     def exportSimple(self, outfile, level, name):
         if self.content_type == MixedContainer.TypeString:
             outfile.write('<%s>%s</%s>' % (
@@ -558,6 +602,7 @@ class MixedContainer:
         elif self.content_type == MixedContainer.TypeBase64:
             outfile.write('<%s>%s</%s>' % (
                 self.name, base64.b64encode(self.value), self.name))
+
     def to_etree(self, element):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.
@@ -577,6 +622,7 @@ class MixedContainer:
             subelement.text = self.to_etree_simple()
         else:    # category == MixedContainer.CategoryComplex
             self.value.to_etree(element)
+
     def to_etree_simple(self):
         if self.content_type == MixedContainer.TypeString:
             text = self.value
@@ -591,6 +637,7 @@ class MixedContainer:
         elif self.content_type == MixedContainer.TypeBase64:
             text = '%s' % base64.b64encode(self.value)
         return text
+
     def exportLiteral(self, outfile, level, name):
         if self.category == MixedContainer.CategoryText:
             showIndent(outfile, level)
@@ -617,10 +664,12 @@ class MemberSpec_(object):
         self.name = name
         self.data_type = data_type
         self.container = container
+
     def set_name(self, name): self.name = name
     def get_name(self): return self.name
     def set_data_type(self, data_type): self.data_type = data_type
     def get_data_type_chain(self): return self.data_type
+
     def get_data_type(self):
         if isinstance(self.data_type, list):
             if len(self.data_type) > 0:
@@ -629,8 +678,12 @@ class MemberSpec_(object):
                 return 'xs:string'
         else:
             return self.data_type
-    def set_container(self, container): self.container = container
-    def get_container(self): return self.container
+
+    def set_container(self, container):
+        self.container = container
+
+    def get_container(self):
+        return self.container
 
 
 def _cast(typ, value):
@@ -642,10 +695,15 @@ def _cast(typ, value):
 # Data representation classes.
 #
 
+
 class FieldType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, is_file_field=None, section=None, is_forced_ontology=None, header=None, data_type=None, is_multiple_value=None, is_hidden=None, is_required=None, description=None, default_value=None, value_format=None, list_values=None, generated_value_template=None, recommended_ontologies=None, value_range=None):
+
+    def __init__(self, is_file_field=None, section=None, is_forced_ontology=None, header=None, data_type=None,
+                 is_multiple_value=None, is_hidden=None, is_required=None, description=None, default_value=None,
+                 value_format=None, list_values=None, generated_value_template=None, recommended_ontologies=None,
+                 value_range=None):
         self.original_tagname_ = None
         self.is_file_field = _cast(bool, is_file_field)
         self.section = _cast(None, section)
@@ -662,6 +720,7 @@ class FieldType(GeneratedsSuper):
         self.generated_value_template = generated_value_template
         self.recommended_ontologies = recommended_ontologies
         self.value_range = value_range
+
     def factory(*args_, **kwargs_):
         if FieldType.subclass:
             return FieldType.subclass(*args_, **kwargs_)
@@ -698,6 +757,7 @@ class FieldType(GeneratedsSuper):
     def set_is_hidden(self, is_hidden): self.is_hidden = is_hidden
     def get_is_required(self): return self.is_required
     def set_is_required(self, is_required): self.is_required = is_required
+
     def hasContent_(self):
         if (
             self.description is not None or
@@ -711,7 +771,14 @@ class FieldType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='FieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='FieldType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -729,55 +796,89 @@ class FieldType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='FieldType'):
         if self.is_file_field is not None and 'is_file_field' not in already_processed:
             already_processed.add('is_file_field')
-            outfile.write(' is-file-field="%s"' % self.gds_format_boolean(self.is_file_field, input_name='is-file-field'))
+            outfile.write(' is-file-field="%s"' % self.gds_format_boolean(self.is_file_field,
+                                                                          input_name='is-file-field'))
         if self.section is not None and 'section' not in already_processed:
             already_processed.add('section')
-            outfile.write(' section=%s' % (self.gds_format_string(quote_attrib(self.section).encode(ExternalEncoding), input_name='section'), ))
+            outfile.write(' section=%s' % (self.gds_format_string(quote_attrib(self.section).encode(ExternalEncoding),
+                                                                  input_name='section'), ))
         if self.is_forced_ontology is not None and 'is_forced_ontology' not in already_processed:
             already_processed.add('is_forced_ontology')
-            outfile.write(' is-forced-ontology="%s"' % self.gds_format_boolean(self.is_forced_ontology, input_name='is-forced-ontology'))
+            outfile.write(' is-forced-ontology="%s"' % self.gds_format_boolean(self.is_forced_ontology,
+                                                                               input_name='is-forced-ontology'))
         if self.header is not None and 'header' not in already_processed:
             already_processed.add('header')
-            outfile.write(' header=%s' % (self.gds_format_string(quote_attrib(self.header).encode(ExternalEncoding), input_name='header'), ))
+            outfile.write(' header=%s' % (self.gds_format_string(quote_attrib(self.header).encode(ExternalEncoding),
+                                                                 input_name='header'), ))
         if self.data_type is not None and 'data_type' not in already_processed:
             already_processed.add('data_type')
-            outfile.write(' data-type=%s' % (self.gds_format_string(quote_attrib(self.data_type).encode(ExternalEncoding), input_name='data-type'), ))
+            outfile.write(' data-type=%s' % (self.gds_format_string(
+                quote_attrib(self.data_type).encode(ExternalEncoding),
+                input_name='data-type'), ))
         if self.is_multiple_value is not None and 'is_multiple_value' not in already_processed:
             already_processed.add('is_multiple_value')
-            outfile.write(' is-multiple-value="%s"' % self.gds_format_boolean(self.is_multiple_value, input_name='is-multiple-value'))
+            outfile.write(' is-multiple-value="%s"' % self.gds_format_boolean(self.is_multiple_value,
+                                                                              input_name='is-multiple-value'))
         if self.is_hidden is not None and 'is_hidden' not in already_processed:
             already_processed.add('is_hidden')
             outfile.write(' is-hidden="%s"' % self.gds_format_boolean(self.is_hidden, input_name='is-hidden'))
         if self.is_required is not None and 'is_required' not in already_processed:
             already_processed.add('is_required')
             outfile.write(' is-required="%s"' % self.gds_format_boolean(self.is_required, input_name='is-required'))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='FieldType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='FieldType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.description is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_format_string(quote_xml(self.description).encode(ExternalEncoding), input_name='description'), namespace_, eol_))
+            outfile.write('<%sdescription>%s</%sdescription>%s' %
+                          (namespace_, self.gds_format_string(quote_xml(self.description).encode(ExternalEncoding),
+                                                              input_name='description'), namespace_, eol_))
         if self.default_value is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdefault-value>%s</%sdefault-value>%s' % (namespace_, self.gds_format_string(quote_xml(self.default_value).encode(ExternalEncoding), input_name='default-value'), namespace_, eol_))
+            outfile.write('<%sdefault-value>%s</%sdefault-value>%s' %
+                          (namespace_, self.gds_format_string(quote_xml(self.default_value).encode(ExternalEncoding),
+                                                              input_name='default-value'), namespace_, eol_))
         if self.value_format is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%svalue-format>%s</%svalue-format>%s' % (namespace_, self.gds_format_string(quote_xml(self.value_format).encode(ExternalEncoding), input_name='value-format'), namespace_, eol_))
+            outfile.write('<%svalue-format>%s</%svalue-format>%s' %
+                          (namespace_, self.gds_format_string(quote_xml(self.value_format).encode(ExternalEncoding),
+                                                              input_name='value-format'), namespace_, eol_))
         if self.list_values is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%slist-values>%s</%slist-values>%s' % (namespace_, self.gds_format_string(quote_xml(self.list_values).encode(ExternalEncoding), input_name='list-values'), namespace_, eol_))
+            outfile.write('<%slist-values>%s</%slist-values>%s' %
+                          (namespace_,
+                           self.gds_format_string(
+                               quote_xml(self.list_values).encode(ExternalEncoding),
+                               input_name='list-values'), namespace_, eol_))
         if self.generated_value_template is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sgenerated-value-template>%s</%sgenerated-value-template>%s' % (namespace_, self.gds_format_string(quote_xml(self.generated_value_template).encode(ExternalEncoding), input_name='generated-value-template'), namespace_, eol_))
+            outfile.write('<%sgenerated-value-template>%s</%sgenerated-value-template>%s' %
+                          (namespace_,
+                           self.gds_format_string(
+                               quote_xml(self.generated_value_template).encode(ExternalEncoding),
+                               input_name='generated-value-template'), namespace_, eol_))
         if self.recommended_ontologies is not None:
-            self.recommended_ontologies.export(outfile, level, namespace_='cfg:', name_='recommended-ontologies', pretty_print=pretty_print)
+            self.recommended_ontologies.export(outfile,
+                                               level,
+                                               namespace_='cfg:',
+                                               name_='recommended-ontologies',
+                                               pretty_print=pretty_print)
         if self.value_range is not None:
             self.value_range.export(outfile, level, namespace_, name_='value-range', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -785,6 +886,7 @@ class FieldType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('is-file-field', node)
         if value is not None and 'is-file-field' not in already_processed:
@@ -843,6 +945,7 @@ class FieldType(GeneratedsSuper):
                 self.is_required = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'description':
             description_ = child_.text
@@ -880,23 +983,27 @@ class FieldType(GeneratedsSuper):
 class RecommendedOntologiesType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, ontology=None):
         self.original_tagname_ = None
         if ontology is None:
             self.ontology = []
         else:
             self.ontology = ontology
+
     def factory(*args_, **kwargs_):
         if RecommendedOntologiesType.subclass:
             return RecommendedOntologiesType.subclass(*args_, **kwargs_)
         else:
             return RecommendedOntologiesType(*args_, **kwargs_)
     factory = staticmethod(factory)
+
     def get_ontology(self): return self.ontology
     def set_ontology(self, ontology): self.ontology = ontology
     def add_ontology(self, value): self.ontology.append(value)
     def insert_ontology_at(self, index, value): self.ontology.insert(index, value)
     def replace_ontology_at(self, index, value): self.ontology[index] = value
+
     def hasContent_(self):
         if (
             self.ontology
@@ -904,7 +1011,14 @@ class RecommendedOntologiesType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='RecommendedOntologiesType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='RecommendedOntologiesType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -922,15 +1036,24 @@ class RecommendedOntologiesType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='RecommendedOntologiesType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='RecommendedOntologiesType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='RecommendedOntologiesType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for ontology_ in self.ontology:
             ontology_.export(outfile, level, namespace_, name_='ontology', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -938,8 +1061,10 @@ class RecommendedOntologiesType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'ontology':
             obj_ = OntologyType.factory()
@@ -952,6 +1077,7 @@ class RecommendedOntologiesType(GeneratedsSuper):
 class OntologyType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, abbreviation=None, version=None, id=None, name=None, branch=None):
         self.original_tagname_ = None
         self.abbreviation = _cast(None, abbreviation)
@@ -962,6 +1088,7 @@ class OntologyType(GeneratedsSuper):
             self.branch = []
         else:
             self.branch = branch
+
     def factory(*args_, **kwargs_):
         if OntologyType.subclass:
             return OntologyType.subclass(*args_, **kwargs_)
@@ -981,6 +1108,7 @@ class OntologyType(GeneratedsSuper):
     def set_id(self, id): self.id = id
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
+
     def hasContent_(self):
         if (
             self.branch
@@ -988,7 +1116,14 @@ class OntologyType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='OntologyType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='OntologyType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1006,26 +1141,45 @@ class OntologyType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='OntologyType'):
+
+    def exportAttributes(self,
+                         outfile,
+                         level,
+                         already_processed,
+                         namespace_='cfg:',
+                         name_='OntologyType'):
         if self.abbreviation is not None and 'abbreviation' not in already_processed:
             already_processed.add('abbreviation')
-            outfile.write(' abbreviation=%s' % (self.gds_format_string(quote_attrib(self.abbreviation).encode(ExternalEncoding), input_name='abbreviation'), ))
+            outfile.write(' abbreviation=%s' % (self.gds_format_string(
+                quote_attrib(self.abbreviation).encode(ExternalEncoding), input_name='abbreviation'), ))
         if self.version is not None and 'version' not in already_processed:
             already_processed.add('version')
-            outfile.write(' version=%s' % (self.gds_format_string(quote_attrib(self.version).encode(ExternalEncoding), input_name='version'), ))
+            outfile.write(' version=%s' % (self.gds_format_string(
+                quote_attrib(self.version).encode(ExternalEncoding), input_name='version'), ))
         if self.id is not None and 'id' not in already_processed:
             already_processed.add('id')
-            outfile.write(' id=%s' % (self.gds_format_string(quote_attrib(self.id).encode(ExternalEncoding), input_name='id'), ))
+            outfile.write(' id=%s' % (self.gds_format_string(
+                quote_attrib(self.id).encode(ExternalEncoding), input_name='id'), ))
         if self.name is not None and 'name' not in already_processed:
             already_processed.add('name')
-            outfile.write(' name=%s' % (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding), input_name='name'), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='OntologyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' name=%s' %
+                          (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding),
+                                                  input_name='name'), ))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='OntologyType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for branch_ in self.branch:
             branch_.export(outfile, level, namespace_, name_='branch', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1033,6 +1187,7 @@ class OntologyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('abbreviation', node)
         if value is not None and 'abbreviation' not in already_processed:
@@ -1050,6 +1205,7 @@ class OntologyType(GeneratedsSuper):
         if value is not None and 'name' not in already_processed:
             already_processed.add('name')
             self.name = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'branch':
             obj_ = BranchType.factory()
@@ -1062,10 +1218,12 @@ class OntologyType(GeneratedsSuper):
 class BranchType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, id=None, name=None):
         self.original_tagname_ = None
         self.id = _cast(None, id)
         self.name = _cast(None, name)
+
     def factory(*args_, **kwargs_):
         if BranchType.subclass:
             return BranchType.subclass(*args_, **kwargs_)
@@ -1076,6 +1234,7 @@ class BranchType(GeneratedsSuper):
     def set_id(self, id): self.id = id
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
+
     def hasContent_(self):
         if (
 
@@ -1083,7 +1242,14 @@ class BranchType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='BranchType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='BranchType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1100,15 +1266,26 @@ class BranchType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='BranchType'):
         if self.id is not None and 'id' not in already_processed:
             already_processed.add('id')
-            outfile.write(' id=%s' % (self.gds_format_string(quote_attrib(self.id).encode(ExternalEncoding), input_name='id'), ))
+            outfile.write(' id=%s' % (self.gds_format_string(quote_attrib(self.id).encode(ExternalEncoding),
+                                                             input_name='id'), ))
         if self.name is not None and 'name' not in already_processed:
             already_processed.add('name')
-            outfile.write(' name=%s' % (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding), input_name='name'), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='BranchType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' name=%s' % (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding),
+                                                               input_name='name'), ))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='BranchType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1116,6 +1293,7 @@ class BranchType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('id', node)
         if value is not None and 'id' not in already_processed:
@@ -1125,6 +1303,7 @@ class BranchType(GeneratedsSuper):
         if value is not None and 'name' not in already_processed:
             already_processed.add('name')
             self.name = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
 # end class BranchType
@@ -1133,9 +1312,11 @@ class BranchType(GeneratedsSuper):
 class StructuredFieldType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, name=None):
         self.original_tagname_ = None
         self.name = _cast(None, name)
+
     def factory(*args_, **kwargs_):
         if StructuredFieldType.subclass:
             return StructuredFieldType.subclass(*args_, **kwargs_)
@@ -1144,6 +1325,7 @@ class StructuredFieldType(GeneratedsSuper):
     factory = staticmethod(factory)
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
+
     def hasContent_(self):
         if (
 
@@ -1151,7 +1333,14 @@ class StructuredFieldType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='StructuredFieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='StructuredFieldType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1164,16 +1353,32 @@ class StructuredFieldType(GeneratedsSuper):
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='StructuredFieldType')
         if self.hasContent_():
             outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='StructuredFieldType', pretty_print=pretty_print)
+            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='StructuredFieldType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='StructuredFieldType'):
+
+    def exportAttributes(self,
+                         outfile,
+                         level,
+                         already_processed,
+                         namespace_='cfg:',
+                         name_='StructuredFieldType'):
         if self.name is not None and 'name' not in already_processed:
             already_processed.add('name')
-            outfile.write(' name=%s' % (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding), input_name='name'), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='StructuredFieldType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' name=%s' % (self.gds_format_string(quote_attrib(self.name).encode(ExternalEncoding),
+                                                               input_name='name'), ))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='StructuredFieldType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1181,11 +1386,13 @@ class StructuredFieldType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('name', node)
         if value is not None and 'name' not in already_processed:
             already_processed.add('name')
             self.name = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
 # end class StructuredFieldType
@@ -1194,11 +1401,13 @@ class StructuredFieldType(GeneratedsSuper):
 class ProtocolFieldType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, data_type=None, protocol_type=None, is_required=None):
         self.original_tagname_ = None
         self.data_type = _cast(None, data_type)
         self.protocol_type = _cast(None, protocol_type)
         self.is_required = _cast(bool, is_required)
+
     def factory(*args_, **kwargs_):
         if ProtocolFieldType.subclass:
             return ProtocolFieldType.subclass(*args_, **kwargs_)
@@ -1211,6 +1420,7 @@ class ProtocolFieldType(GeneratedsSuper):
     def set_protocol_type(self, protocol_type): self.protocol_type = protocol_type
     def get_is_required(self): return self.is_required
     def set_is_required(self, is_required): self.is_required = is_required
+
     def hasContent_(self):
         if (
 
@@ -1218,7 +1428,14 @@ class ProtocolFieldType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='ProtocolFieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='ProtocolFieldType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1235,18 +1452,35 @@ class ProtocolFieldType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='ProtocolFieldType'):
+
+    def exportAttributes(self,
+                         outfile,
+                         level,
+                         already_processed,
+                         namespace_='cfg:',
+                         name_='ProtocolFieldType'):
         if self.data_type is not None and 'data_type' not in already_processed:
             already_processed.add('data_type')
-            outfile.write(' data-type=%s' % (self.gds_format_string(quote_attrib(self.data_type).encode(ExternalEncoding), input_name='data-type'), ))
+            outfile.write(' data-type=%s' % (self.gds_format_string(
+                quote_attrib(self.data_type).encode(ExternalEncoding),
+                input_name='data-type'), ))
         if self.protocol_type is not None and 'protocol_type' not in already_processed:
             already_processed.add('protocol_type')
-            outfile.write(' protocol-type=%s' % (self.gds_format_string(quote_attrib(self.protocol_type).encode(ExternalEncoding), input_name='protocol-type'), ))
+            outfile.write(' protocol-type=%s' % (self.gds_format_string(quote_attrib(
+                self.protocol_type).encode(ExternalEncoding), input_name='protocol-type'), ))
         if self.is_required is not None and 'is_required' not in already_processed:
             already_processed.add('is_required')
             outfile.write(' is-required="%s"' % self.gds_format_boolean(self.is_required, input_name='is-required'))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='ProtocolFieldType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='ProtocolFieldType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1254,6 +1488,7 @@ class ProtocolFieldType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('data-type', node)
         if value is not None and 'data-type' not in already_processed:
@@ -1272,6 +1507,7 @@ class ProtocolFieldType(GeneratedsSuper):
                 self.is_required = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
 # end class ProtocolFieldType
@@ -1280,7 +1516,16 @@ class ProtocolFieldType(GeneratedsSuper):
 class UnitFieldType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, is_multiple_value=None, data_type=None, is_required=None, is_forced_ontology=None, description=None, list_values=None, recommended_ontologies=None, default_value=None):
+
+    def __init__(self,
+                 is_multiple_value=None,
+                 data_type=None,
+                 is_required=None,
+                 is_forced_ontology=None,
+                 description=None,
+                 list_values=None,
+                 recommended_ontologies=None,
+                 default_value=None):
         self.original_tagname_ = None
         self.is_multiple_value = _cast(bool, is_multiple_value)
         self.data_type = _cast(None, data_type)
@@ -1290,6 +1535,7 @@ class UnitFieldType(GeneratedsSuper):
         self.list_values = list_values
         self.recommended_ontologies = recommended_ontologies
         self.default_value = default_value
+
     def factory(*args_, **kwargs_):
         if UnitFieldType.subclass:
             return UnitFieldType.subclass(*args_, **kwargs_)
@@ -1312,6 +1558,7 @@ class UnitFieldType(GeneratedsSuper):
     def set_is_required(self, is_required): self.is_required = is_required
     def get_is_forced_ontology(self): return self.is_forced_ontology
     def set_is_forced_ontology(self, is_forced_ontology): self.is_forced_ontology = is_forced_ontology
+
     def hasContent_(self):
         if (
             self.description is not None or
@@ -1322,7 +1569,15 @@ class UnitFieldType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='UnitFieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='UnitFieldType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
+
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1340,35 +1595,65 @@ class UnitFieldType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='UnitFieldType'):
+
+    def exportAttributes(self,
+                         outfile,
+                         level,
+                         already_processed,
+                         namespace_='cfg:',
+                         name_='UnitFieldType'):
         if self.is_multiple_value is not None and 'is_multiple_value' not in already_processed:
             already_processed.add('is_multiple_value')
-            outfile.write(' is-multiple-value="%s"' % self.gds_format_boolean(self.is_multiple_value, input_name='is-multiple-value'))
+            outfile.write(' is-multiple-value="%s"' % self.gds_format_boolean(self.is_multiple_value,
+                                                                              input_name='is-multiple-value'))
         if self.data_type is not None and 'data_type' not in already_processed:
             already_processed.add('data_type')
-            outfile.write(' data-type=%s' % (self.gds_format_string(quote_attrib(self.data_type).encode(ExternalEncoding), input_name='data-type'), ))
+            outfile.write(' data-type=%s' % (self.gds_format_string(
+                quote_attrib(self.data_type).encode(ExternalEncoding),
+                input_name='data-type'), ))
         if self.is_required is not None and 'is_required' not in already_processed:
             already_processed.add('is_required')
-            outfile.write(' is-required="%s"' % self.gds_format_boolean(self.is_required, input_name='is-required'))
+            outfile.write(' is-required="%s"' % self.gds_format_boolean(self.is_required,
+                                                                        input_name='is-required'))
         if self.is_forced_ontology is not None and 'is_forced_ontology' not in already_processed:
             already_processed.add('is_forced_ontology')
-            outfile.write(' is-forced-ontology="%s"' % self.gds_format_boolean(self.is_forced_ontology, input_name='is-forced-ontology'))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='UnitFieldType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' is-forced-ontology="%s"' % self.gds_format_boolean(self.is_forced_ontology,
+                                                                               input_name='is-forced-ontology'))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='UnitFieldType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.description is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_format_string(quote_xml(self.description).encode(ExternalEncoding), input_name='description'), namespace_, eol_))
+            outfile.write('<%sdescription>%s</%sdescription>%s' %
+                          (namespace_, self.gds_format_string(quote_xml(self.description).encode(ExternalEncoding),
+                                                              input_name='description'), namespace_, eol_))
         if self.list_values is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%slist-values>%s</%slist-values>%s' % (namespace_, self.gds_format_string(quote_xml(self.list_values).encode(ExternalEncoding), input_name='list-values'), namespace_, eol_))
+            outfile.write('<%slist-values>%s</%slist-values>%s' %
+                          (namespace_, self.gds_format_string(quote_xml(self.list_values).encode(ExternalEncoding),
+                                                              input_name='list-values'), namespace_, eol_))
         if self.recommended_ontologies is not None:
-            self.recommended_ontologies.export(outfile, level, namespace_='cfg:', name_='recommended-ontologies', pretty_print=pretty_print)
+            self.recommended_ontologies.export(outfile,
+                                               level,
+                                               namespace_='cfg:',
+                                               name_='recommended-ontologies',
+                                               pretty_print=pretty_print)
         if self.default_value is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdefault-value>%s</%sdefault-value>%s' % (namespace_, self.gds_format_string(quote_xml(self.default_value).encode(ExternalEncoding), input_name='default-value'), namespace_, eol_))
+            outfile.write('<%sdefault-value>%s</%sdefault-value>%s' %
+                          (namespace_,
+                           self.gds_format_string(quote_xml(self.default_value).encode(ExternalEncoding),
+                                                  input_name='default-value'), namespace_, eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1376,6 +1661,7 @@ class UnitFieldType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('is-multiple-value', node)
         if value is not None and 'is-multiple-value' not in already_processed:
@@ -1408,6 +1694,7 @@ class UnitFieldType(GeneratedsSuper):
                 self.is_forced_ontology = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'description':
             description_ = child_.text
@@ -1432,23 +1719,31 @@ class UnitFieldType(GeneratedsSuper):
 class ValueRangeType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, max=None, type_=None, min=None):
         self.original_tagname_ = None
         self.max = _cast(None, max)
         self.type_ = _cast(None, type_)
         self.min = _cast(None, min)
+
     def factory(*args_, **kwargs_):
         if ValueRangeType.subclass:
             return ValueRangeType.subclass(*args_, **kwargs_)
         else:
             return ValueRangeType(*args_, **kwargs_)
     factory = staticmethod(factory)
-    def get_max(self): return self.max
-    def set_max(self, max): self.max = max
+
+    def get_max(self):
+        return self.max
+
+    def set_max(self, max):
+        self.max = max
+
     def get_type(self): return self.type_
     def set_type(self, type_): self.type_ = type_
     def get_min(self): return self.min
     def set_min(self, min): self.min = min
+
     def hasContent_(self):
         if (
 
@@ -1456,7 +1751,14 @@ class ValueRangeType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='ValueRangeType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='ValueRangeType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1473,18 +1775,29 @@ class ValueRangeType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='ValueRangeType'):
         if self.max is not None and 'max' not in already_processed:
             already_processed.add('max')
-            outfile.write(' max=%s' % (self.gds_format_string(quote_attrib(self.max).encode(ExternalEncoding), input_name='max'), ))
+            outfile.write(' max=%s' % (self.gds_format_string(quote_attrib(self.max).encode(ExternalEncoding),
+                                                              input_name='max'), ))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
             outfile.write(' type=%s' % (quote_attrib(self.type_), ))
         if self.min is not None and 'min' not in already_processed:
             already_processed.add('min')
-            outfile.write(' min=%s' % (self.gds_format_string(quote_attrib(self.min).encode(ExternalEncoding), input_name='min'), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='ValueRangeType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' min=%s' % (self.gds_format_string(quote_attrib(self.min).encode(ExternalEncoding),
+                                                              input_name='min'), ))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='ValueRangeType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1492,6 +1805,7 @@ class ValueRangeType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('max', node)
         if value is not None and 'max' not in already_processed:
@@ -1505,6 +1819,7 @@ class ValueRangeType(GeneratedsSuper):
         if value is not None and 'min' not in already_processed:
             already_processed.add('min')
             self.min = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
 # end class ValueRangeType
@@ -1517,7 +1832,17 @@ class IsaTabConfigurationType(GeneratedsSuper):
     ena. More targets can be added by extending the converter."""
     subclass = None
     superclass = None
-    def __init__(self, table_name=None, isatab_conversion_target=None, isatab_assay_type=None, measurement=None, technology=None, field=None, protocol_field=None, structured_field=None, unit_field=None):
+
+    def __init__(self,
+                 table_name=None,
+                 isatab_conversion_target=None,
+                 isatab_assay_type=None,
+                 measurement=None,
+                 technology=None,
+                 field=None,
+                 protocol_field=None,
+                 structured_field=None,
+                 unit_field=None):
         self.original_tagname_ = None
         self.table_name = _cast(None, table_name)
         self.isatab_conversion_target = _cast(None, isatab_conversion_target)
@@ -1540,6 +1865,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
             self.unit_field = []
         else:
             self.unit_field = unit_field
+
     def factory(*args_, **kwargs_):
         if IsaTabConfigurationType.subclass:
             return IsaTabConfigurationType.subclass(*args_, **kwargs_)
@@ -1576,6 +1902,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
     def set_isatab_conversion_target(self, isatab_conversion_target): self.isatab_conversion_target = isatab_conversion_target
     def get_isatab_assay_type(self): return self.isatab_assay_type
     def set_isatab_assay_type(self, isatab_assay_type): self.isatab_assay_type = isatab_assay_type
+
     def hasContent_(self):
         if (
             self.measurement is not None or
@@ -1588,7 +1915,14 @@ class IsaTabConfigurationType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigurationType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='IsaTabConfigurationType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1601,22 +1935,35 @@ class IsaTabConfigurationType(GeneratedsSuper):
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='IsaTabConfigurationType')
         if self.hasContent_():
             outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='IsaTabConfigurationType', pretty_print=pretty_print)
+            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='IsaTabConfigurationType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='IsaTabConfigurationType'):
         if self.table_name is not None and 'table_name' not in already_processed:
             already_processed.add('table_name')
-            outfile.write(' table-name=%s' % (self.gds_format_string(quote_attrib(self.table_name).encode(ExternalEncoding), input_name='table-name'), ))
+            outfile.write(' table-name=%s' %
+                          (self.gds_format_string(quote_attrib(self.table_name).encode(ExternalEncoding),
+                                                  input_name='table-name'), ))
         if self.isatab_conversion_target is not None and 'isatab_conversion_target' not in already_processed:
             already_processed.add('isatab_conversion_target')
-            outfile.write(' isatab-conversion-target=%s' % (self.gds_format_string(quote_attrib(self.isatab_conversion_target).encode(ExternalEncoding), input_name='isatab-conversion-target'), ))
+            outfile.write(' isatab-conversion-target=%s' %
+                          (self.gds_format_string(quote_attrib(self.isatab_conversion_target).encode(ExternalEncoding),
+                                                  input_name='isatab-conversion-target'), ))
         if self.isatab_assay_type is not None and 'isatab_assay_type' not in already_processed:
             already_processed.add('isatab_assay_type')
             outfile.write(' isatab-assay-type=%s' % (quote_attrib(self.isatab_assay_type), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigurationType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='IsaTabConfigurationType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1633,6 +1980,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
             structured_field_.export(outfile, level, namespace_='cfg:', name_='structured-field', pretty_print=pretty_print)
         for unit_field_ in self.unit_field:
             unit_field_.export(outfile, level, namespace_='cfg:', name_='unit-field', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1643,6 +1991,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
             if not ((nodeName_ == 'measurement') or (nodeName_ == 'technology')):
                 pos += 1
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('table-name', node)
         if value is not None and 'table-name' not in already_processed:
@@ -1656,6 +2005,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
         if value is not None and 'isatab-assay-type' not in already_processed:
             already_processed.add('isatab-assay-type')
             self.isatab_assay_type = value
+
     def buildChildren(self, child_, node, nodeName_, pos, fromsubclass_=False):
         if nodeName_ == 'measurement':
             obj_ = OntologyEntryType.factory()
@@ -1697,12 +2047,14 @@ class IsaTabConfigurationType(GeneratedsSuper):
 class IsaTabConfigFileType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, isatab_configuration=None):
         self.original_tagname_ = None
         if isatab_configuration is None:
             self.isatab_configuration = []
         else:
             self.isatab_configuration = isatab_configuration
+
     def factory(*args_, **kwargs_):
         if IsaTabConfigFileType.subclass:
             return IsaTabConfigFileType.subclass(*args_, **kwargs_)
@@ -1714,6 +2066,7 @@ class IsaTabConfigFileType(GeneratedsSuper):
     def add_isatab_configuration(self, value): self.isatab_configuration.append(value)
     def insert_isatab_configuration_at(self, index, value): self.isatab_configuration.insert(index, value)
     def replace_isatab_configuration_at(self, index, value): self.isatab_configuration[index] = value
+
     def hasContent_(self):
         if (
             self.isatab_configuration
@@ -1721,7 +2074,14 @@ class IsaTabConfigFileType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigFileType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='IsaTabConfigFileType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1734,20 +2094,33 @@ class IsaTabConfigFileType(GeneratedsSuper):
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='IsaTabConfigFileType')
         if self.hasContent_():
             outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='IsaTabConfigFileType', pretty_print=pretty_print)
+            self.exportChildren(outfile, level + 1, namespace_='cfg:', name_='IsaTabConfigFileType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='IsaTabConfigFileType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigFileType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='IsaTabConfigFileType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for isatab_configuration_ in self.isatab_configuration:
-            isatab_configuration_.export(outfile, level, namespace_='cfg:', name_='isatab-configuration', pretty_print=pretty_print)
+            isatab_configuration_.export(outfile, level,
+                                         namespace_='cfg:',
+                                         name_='isatab-configuration',
+                                         pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1755,8 +2128,10 @@ class IsaTabConfigFileType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'isatab-configuration':
             obj_ = IsaTabConfigurationType.factory()
@@ -1769,7 +2144,14 @@ class IsaTabConfigFileType(GeneratedsSuper):
 class OntologyEntryType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, term_accession=None, term_label=None, source_version=None, source_title=None, source_abbreviation=None, source_uri=None):
+
+    def __init__(self,
+                 term_accession=None,
+                 term_label=None,
+                 source_version=None,
+                 source_title=None,
+                 source_abbreviation=None,
+                 source_uri=None):
         self.original_tagname_ = None
         self.term_accession = _cast(None, term_accession)
         self.term_label = _cast(None, term_label)
@@ -1777,6 +2159,7 @@ class OntologyEntryType(GeneratedsSuper):
         self.source_title = _cast(None, source_title)
         self.source_abbreviation = _cast(None, source_abbreviation)
         self.source_uri = _cast(None, source_uri)
+
     def factory(*args_, **kwargs_):
         if OntologyEntryType.subclass:
             return OntologyEntryType.subclass(*args_, **kwargs_)
@@ -1795,6 +2178,7 @@ class OntologyEntryType(GeneratedsSuper):
     def set_source_abbreviation(self, source_abbreviation): self.source_abbreviation = source_abbreviation
     def get_source_uri(self): return self.source_uri
     def set_source_uri(self, source_uri): self.source_uri = source_uri
+
     def hasContent_(self):
         if (
 
@@ -1802,7 +2186,14 @@ class OntologyEntryType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='cfg:', name_='OntologyEntryType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
+
+    def export(self,
+               outfile,
+               level,
+               namespace_='cfg:',
+               name_='OntologyEntryType',
+               namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"',
+               pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -1819,27 +2210,53 @@ class OntologyEntryType(GeneratedsSuper):
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='cfg:', name_='OntologyEntryType'):
+
+    def exportAttributes(self,
+                         outfile,
+                         level,
+                         already_processed,
+                         namespace_='cfg:',
+                         name_='OntologyEntryType'):
         if self.term_accession is not None and 'term_accession' not in already_processed:
             already_processed.add('term_accession')
-            outfile.write(' term-accession=%s' % (self.gds_format_string(quote_attrib(self.term_accession).encode(ExternalEncoding), input_name='term-accession'), ))
+            outfile.write(' term-accession=%s' %
+                          (self.gds_format_string(quote_attrib(self.term_accession).encode(ExternalEncoding),
+                                                  input_name='term-accession'), ))
         if self.term_label is not None and 'term_label' not in already_processed:
             already_processed.add('term_label')
-            outfile.write(' term-label=%s' % (self.gds_format_string(quote_attrib(self.term_label).encode(ExternalEncoding), input_name='term-label'), ))
+            outfile.write(' term-label=%s' %
+                          (self.gds_format_string(quote_attrib(self.term_label).encode(ExternalEncoding),
+                                                  input_name='term-label'), ))
         if self.source_version is not None and 'source_version' not in already_processed:
             already_processed.add('source_version')
-            outfile.write(' source-version=%s' % (self.gds_format_string(quote_attrib(self.source_version).encode(ExternalEncoding), input_name='source-version'), ))
+            outfile.write(' source-version=%s' %
+                          (self.gds_format_string(quote_attrib(self.source_version).encode(ExternalEncoding),
+                                                  input_name='source-version'), ))
         if self.source_title is not None and 'source_title' not in already_processed:
             already_processed.add('source_title')
-            outfile.write(' source-title=%s' % (self.gds_format_string(quote_attrib(self.source_title).encode(ExternalEncoding), input_name='source-title'), ))
+            outfile.write(' source-title=%s' %
+                          (self.gds_format_string(quote_attrib(self.source_title).encode(ExternalEncoding),
+                                                  input_name='source-title'), ))
         if self.source_abbreviation is not None and 'source_abbreviation' not in already_processed:
             already_processed.add('source_abbreviation')
-            outfile.write(' source-abbreviation=%s' % (self.gds_format_string(quote_attrib(self.source_abbreviation).encode(ExternalEncoding), input_name='source-abbreviation'), ))
+            outfile.write(' source-abbreviation=%s' %
+                          (self.gds_format_string(quote_attrib(self.source_abbreviation).encode(ExternalEncoding),
+                                                  input_name='source-abbreviation'), ))
         if self.source_uri is not None and 'source_uri' not in already_processed:
             already_processed.add('source_uri')
-            outfile.write(' source-uri=%s' % (self.gds_format_string(quote_attrib(self.source_uri).encode(ExternalEncoding), input_name='source-uri'), ))
-    def exportChildren(self, outfile, level, namespace_='cfg:', name_='OntologyEntryType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' source-uri=%s' %
+                          (self.gds_format_string(quote_attrib(self.source_uri).encode(ExternalEncoding),
+                                                  input_name='source-uri'), ))
+
+    def exportChildren(self,
+                       outfile,
+                       level,
+                       namespace_='cfg:',
+                       name_='OntologyEntryType',
+                       fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1847,6 +2264,7 @@ class OntologyEntryType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('term-accession', node)
         if value is not None and 'term-accession' not in already_processed:
@@ -1872,6 +2290,7 @@ class OntologyEntryType(GeneratedsSuper):
         if value is not None and 'source-uri' not in already_processed:
             already_processed.add('source-uri')
             self.source_uri = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
 # end class OntologyEntryType
@@ -2007,7 +2426,7 @@ def main():
 
 
 if __name__ == '__main__':
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     main()
 
 

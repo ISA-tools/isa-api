@@ -30,27 +30,11 @@ def pbar(x):
     return x
 
 
-# column labels
-_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name',
-                          'Labeled Extract Name']
-_LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File',
-                      'Derived Spectral Data File', 'Derived Array Data File',
-                      'Array Data File', 'Protein Assignment File',
-                      'Peptide Assignment File',
-                      'Post Translational Modification Assignment File',
-                      'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File',
-                      'Derived Array Data Matrix File', 'Image File',
-                      'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', "NMR Assay Name",
-                       'Hybridization Assay Name', 'Scan Name',
-                       'Data Transformation Name', 'Normalization Name']
-
 # REGEXES
 _RX_I_FILE_NAME = compile(r'i_(.*?)\.txt')
 _RX_DATA = compile(r'data\[(.*?)\]')
 _RX_COMMENT = compile(r'Comment\[(.*?)\]')
-_RX_DOI = compile(r'(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+_RX_DOI = compile(r'10.\d{4,9}/[-._;()/:a-z0-9A-Z]+')
 _RX_PMID = compile(r'[0-9]{8}')
 _RX_PMCID = compile(r'PMC[0-9]{8}')
 _RX_CHARACTERISTICS = compile(r'Characteristics\[(.*?)\]')
@@ -70,8 +54,8 @@ class _Defaults(object):
 
     def __init__(self):
         self._tab_options = {
-            'readCellQuotes': False, # read cell quotes as part of cell values
-            'writeCellQuotes': True, # write out cell values enclosed with quotes
+            'readCellQuotes': False,  # read cell quotes as part of cell values
+            'writeCellQuotes': True,  # write out cell values enclosed with quotes
             'forceFitColumns': True,
             'validateBeforeRead': False,
             'validateAfterWrite': False

@@ -1,5 +1,6 @@
+import os
 from unittest import TestCase
-
+from isatools.tests import utils
 from isatools.model.datafile import DataFile
 from isatools.model.sample import Sample
 from isatools.model.material import Material, Extract, LabeledExtract
@@ -15,6 +16,9 @@ from isatools.model.utils import (
 
 
 class TestUtils(TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
 
     def test_empty_process_sequence(self):
         graph = _build_assay_graph()
@@ -102,4 +106,3 @@ class TestUtils(TestCase):
         first_batch = batch_create_assays(sample1, [process], source, n=2)
         self.assertFalse(first_batch == third_batch)
         self.assertFalse(first_batch == second_batch)
-

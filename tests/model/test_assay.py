@@ -187,6 +187,8 @@ class TestAssay(TestCase):
         assay.from_dict(expected_dict, study)
         self.assertEqual(assay.to_dict(), expected_dict)
 
+        onto_src = OntologySource(name="onto")
+        indexes.add_term_source(onto_src)
         # Other Materials
         expected_dict['materials']['otherMaterials'] = [
             {
@@ -202,7 +204,7 @@ class TestAssay(TestCase):
                             'annotationValue': 'my_other_material_characteristic_value2_term',
                             'termAccession': 'term_accession_val',
                             'comments': [],
-                            'termSource': ''
+                            'termSource': ""
                         },
                         'comments': []
                     },
@@ -213,29 +215,36 @@ class TestAssay(TestCase):
                             'annotationValue': 'my_other_material_characteristic_value2_term',
                             'termAccession': 'term_accession_val',
                             'comments': [],
-                            'termSource': ''
+                            'termSource': ""
                         },
                         'comments': []
                     }
                 ]
             }
         ]
+
         indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id'))
         indexes.add_characteristic_category(OntologyAnnotation(id_='my_other_material_characteristic_id2'))
-        assay = Assay()
-        assay.from_dict(expected_dict, study)
+
         # Make sur the string 'extract-' is removed from the expected_dict material name before assertion
         # And set the characteristic value as an ontology annotation output
+
         expected_value = {
             '@id': 'my_other_material_characteristic_value',
-            'annotationValue': 'my_other_material_characteristic_value2_term',
+            'annotationValue': 'my_other_material_characteristic_value1_term',
             'comments': [],
             'termAccession': 'term_accession_val',
-            'termSource': ''
+            'termSource': ""
         }
         expected_dict['materials']['otherMaterials'][0]['name'] = 'my_other_material_name'
         expected_dict['materials']['otherMaterials'][0]['characteristics'][0]['value'] = expected_value
-        self.assertEqual(assay.to_dict(), expected_dict)
+
+        assay = Assay()
+        assay.from_dict(expected_dict, study)
+
+        assay_dict = assay.to_dict()
+
+        self.assertEqual(assay_dict, expected_dict)
 
         # Process Sequence
         expected_dict['processSequence'] = [

@@ -142,4 +142,3 @@ loader_states = LoaderStore()
 
 def new_store():
     return LoaderStore()
-

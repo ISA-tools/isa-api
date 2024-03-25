@@ -8,8 +8,9 @@ from isatools.model.loader_indexes import loader_states as indexes
 class TestOntologyAnnotation(TestCase):
 
     def setUp(self):
+        onto_src: OntologySource = OntologySource(name="test_term_source")
         self.ontology_annotation = OntologyAnnotation(term='test_term',
-                                                      term_source='test_term_source',
+                                                      term_source=onto_src,
                                                       term_accession='test_term_accession')
 
     def test_instance(self):
@@ -19,7 +20,8 @@ class TestOntologyAnnotation(TestCase):
     @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
     def test_properties(self, mock_uuid):
         self.assertTrue(self.ontology_annotation.term == 'test_term')
-        self.assertTrue(self.ontology_annotation.term_source == 'test_term_source')
+        self.assertEqual(self.ontology_annotation.term_source.name, 'test_term_source')
+        self.assertIsInstance(self.ontology_annotation.term_source, OntologySource)
         self.assertTrue(self.ontology_annotation.term_accession == 'test_term_accession')
 
         expected_value = '#ontology_annotation/' + mock_uuid.return_value
@@ -54,12 +56,13 @@ class TestOntologyAnnotation(TestCase):
 
     def test_builtins(self):
         expected_str = ("isatools.model.OntologyAnnotation(term='test_term', "
-                        "term_source='test_term_source', "
+                        "term_source=isatools.model.OntologySource(name='test_term_source', "
+                        "file='', version='', description='', comments=[]), "
                         "term_accession='test_term_accession', "
                         "comments=[])")
         expected_hash = hash(expected_str)
-        self.assertTrue(self.ontology_annotation.__repr__() == expected_str)
-        self.assertTrue(self.ontology_annotation.__hash__() == expected_hash)
+        self.assertEqual(self.ontology_annotation.__repr__(), expected_str)
+        self.assertEqual(self.ontology_annotation.__hash__(), expected_hash)
 
         expected_str = ("OntologyAnnotation(\n\t"
                         "term=test_term\n\t"
@@ -79,7 +82,10 @@ class TestOntologyAnnotation(TestCase):
         self.assertFalse(self.ontology_annotation == 123)
 
     def test_dict(self):
-        ontology_annotation = OntologyAnnotation(term='test_term', id_='test_id', term_source='term_source1',)
+        onto_src = OntologySource(name='term_source1')
+        ontology_annotation = OntologyAnnotation(term='test_term',
+                                                 id_='test_id',
+                                                 term_source=onto_src)
         expected_dict = {
             '@id': 'test_id',
             'annotationValue': 'test_term',

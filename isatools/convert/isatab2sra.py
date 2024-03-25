@@ -35,8 +35,7 @@ def convert(source_path, dest_path, sra_settings=None, validate_first=True):
     isa_json_fp.name = "BII-S-3.json"
     log.info("Converting JSON to SRA, writing to %s", dest_path)
     log.info("Using SRA settings %s", sra_settings)
-    json2sra.convert(isa_json_fp, dest_path, sra_settings=sra_settings,
-                     validate_first=False)
+    json2sra.convert(isa_json_fp, dest_path, sra_settings=sra_settings, validate_first=False)
     log.info("Conversion from ISA-Tab to SRA complete")
     buffer = BytesIO()
     if os.path.isdir(dest_path):

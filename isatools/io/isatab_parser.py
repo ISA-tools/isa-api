@@ -863,6 +863,7 @@ class ISATabStudyRecord:
             publications="\n".join(str(x) for x in self.publications),
             factors="\n".join(str(x) for x in self.factors),
             assays="\n".join(str(x) for x in self.assays),
+            contacts="\n".join(str(x) for x in self.contacts),
             protocols="\n".join(str(x) for x in self.protocols),
             nodes="\n".join(str(x) for x in self.nodes.values()),
             process_nodes="\n".join(str(x)

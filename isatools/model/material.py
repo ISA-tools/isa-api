@@ -13,7 +13,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     """
 
     def __init__(self, name='', id_='', type_='', characteristics=None,
-                 comments=None):
+                 comments=None):  # , derives_from=None
         Commentable.__init__(self, comments=comments)
         ProcessSequenceNode.__init__(self)
         Identifiable.__init__(self)
@@ -25,6 +25,9 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
         self.__characteristics = []
         if characteristics:
             self.__characteristics = characteristics
+
+        # if derives_from:
+        #     self.derives_from = derives_from
 
     @property
     def name(self):
@@ -66,12 +69,25 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             raise AttributeError('{}.characteristics must be iterable containing Characteristics'
                                  .format(type(self).__name__))
 
+    # @property
+    # def derives_from(self):
+    #     """ an identifier for an Extract or Labeled Extract Material.
+    #     """
+    #     return self.__derives_from
+    #
+    # @derives_from.setter
+    # def derives_from(self, val):
+    #     if not isinstance(val, str):
+    #         raise TypeError('{}.derives_from value must be a string')
+    #     self.__derives_from = val
+
     def __eq__(self, other):
         return isinstance(other, Material) \
                and self.name == other.name \
                and self.characteristics == other.characteristics \
                and self.type == other.type \
                and self.comments == other.comments
+               # and self.derives_from == other.derives_from
 
     def to_dict(self, ld=False):
         material = {
@@ -91,9 +107,15 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
 
         for characteristic_data in material["characteristics"]:
             characteristic = Characteristic()
-            characteristic.value = OntologyAnnotation()
-            characteristic.value.from_dict(characteristic_data["value"])
-            characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+            if isinstance(characteristic_data["value"], dict):
+                characteristic.value = OntologyAnnotation()
+                characteristic.value.from_dict(characteristic_data["value"])
+                characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+            if isinstance(characteristic_data["value"], (int, float)):
+                characteristic.value = characteristic_data["value"]
+            if isinstance(characteristic_data["value"], str):
+                characteristic.value = characteristic_data["value"]
+
             self.characteristics.append(characteristic)
 
 

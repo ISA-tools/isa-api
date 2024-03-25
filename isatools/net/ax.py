@@ -28,7 +28,7 @@ def get(arrayexpress_id, target_dir=None):
     """
     This function downloads MAGE-TAB content from the ArrayExpress FTP site.
 
-    :param ax_experiment_id: Experiment identifier for ArrayExpress study to
+    :param arrayexpress_id: Experiment identifier for ArrayExpress study to
     get, as a str (e.g. E-GEOD-59671)
     :param target_dir: Path to write MAGE-TAB files to. If None, writes to
     temporary directory (generated on the fly)
@@ -120,7 +120,7 @@ def get_isatab(arrayexpress_id, target_dir=None):
     This function downloads MAGE-TAB content as ISA-Tab from the
     ArrayExpress FTP site.
 
-    :param ax_experiment_id: Experiment identifier for ArrayExpress study to
+    :param arrayexpress_id: Experiment identifier for ArrayExpress study to
     get, as a str (e.g. E-GEOD-59671)
     :param target_dir: Path to write ISA-Tab files to. If None, writes to
     temporary directory (generated on the fly)

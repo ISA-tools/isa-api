@@ -126,9 +126,9 @@ class Characteristic(Commentable):
             "comments": [comment.to_dict(ld=ld) for comment in self.comments]
         }
         if self.unit:
-            id_ = "#unit/" + str(uuid4())
+            id_ = "#ontology_annotation/" + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
-                id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
+                id_ = self.unit.id
             characteristic['unit'] = {"@id": id_}
         return self.update_isa_object(characteristic, ld)
 
@@ -161,4 +161,3 @@ class Characteristic(Commentable):
         else:
             self.value = value_data
             self.unit = None
-

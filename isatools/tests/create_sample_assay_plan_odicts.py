@@ -4,30 +4,30 @@ from isatools.create.constants import SAMPLE, EXTRACT, LABELED_EXTRACT, DATA_FIL
 from isatools.model import OntologyAnnotation
 
 sample_list = [
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
-            'characteristics_value': 'liver',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
-            'characteristics_value': 'blood',
-            'size': 5,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        },
-        {
-            'node_type': SAMPLE,
-            'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
-            'characteristics_value': 'heart',
-            'size': 1,
-            'technical_replicates': None,
-            'is_input_to_next_protocols': True
-        }
+    {
+        'node_type': SAMPLE,
+        'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
+        'characteristics_value': 'liver',
+        'size': 1,
+        'technical_replicates': None,
+        'is_input_to_next_protocols': True
+    },
+    {
+        'node_type': SAMPLE,
+        'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
+        'characteristics_value': 'blood',
+        'size': 5,
+        'technical_replicates': None,
+        'is_input_to_next_protocols': True
+    },
+    {
+        'node_type': SAMPLE,
+        'characteristics_category': OntologyAnnotation(term=ORGANISM_PART),
+        'characteristics_value': 'heart',
+        'size': 1,
+        'technical_replicates': None,
+        'is_input_to_next_protocols': True
+    }
 ]
 
 ms_assay_dict = OrderedDict([
@@ -173,75 +173,75 @@ annotated_ms_assay_dict = OrderedDict([
 phti_assay_dict = OrderedDict([
     ('measurement_type', 'phenotyping'),
     ('technology_type', 'high-throughput imaging'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('phenotyping by high throughput imaging', {
-                'instrument': ['lemnatech gigant'],
-                'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
-                'camera position': ['top','120 degree','240 degree','360 degree'],
-                'imaging daily schedule': ['06.00','19.00']
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
+    ('extraction', {}),
+    ('extract', [
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'supernatant',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'pellet',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('phenotyping by high throughput imaging', {
+        'instrument': ['lemnatech gigant'],
+        'acquisition_mode': ['UV light', 'near-IR light', 'far-IR light', 'visible light'],
+        'camera position': ['top', '120 degree', '240 degree', '360 degree'],
+        'imaging daily schedule': ['06.00', '19.00']
+    }),
+    ('raw_spectral_data_file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 1,
+            'technical_replicates': 2,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
 
 lcdad_assay_dict = OrderedDict([
     ('measurement_type', 'metabolite identification'),
     ('technology_type', 'liquid chromatography diode-array detector'),
-            ('extraction', {}),
-            ('extract', [
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'supernatant',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                },
-                {
-                    'node_type': EXTRACT,
-                    'characteristics_category': 'extract type',
-                    'characteristics_value': 'pellet',
-                    'size': 1,
-                    'technical_replicates': None,
-                    'is_input_to_next_protocols': True
-                }
-            ]),
-            ('lcdad_spectroscopy', {
-                'instrument': ['Shimadzu DAD 400'],
-            }),
-            ('raw_spectral_data_file', [
-                {
-                    'node_type': DATA_FILE,
-                    'size': 1,
-                    'technical_replicates': 2,
-                    'is_input_to_next_protocols': False
-                }
-            ])
-        ])
+    ('extraction', {}),
+    ('extract', [
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'supernatant',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        },
+        {
+            'node_type': EXTRACT,
+            'characteristics_category': 'extract type',
+            'characteristics_value': 'pellet',
+            'size': 1,
+            'technical_replicates': None,
+            'is_input_to_next_protocols': True
+        }
+    ]),
+    ('lcdad_spectroscopy', {
+        'instrument': ['Shimadzu DAD 400'],
+    }),
+    ('raw_spectral_data_file', [
+        {
+            'node_type': DATA_FILE,
+            'size': 1,
+            'technical_replicates': 2,
+            'is_input_to_next_protocols': False
+        }
+    ])
+])
 
 nmr_assay_dict = OrderedDict([
     ('measurement_type', OntologyAnnotation(term='metabolite profiling')),

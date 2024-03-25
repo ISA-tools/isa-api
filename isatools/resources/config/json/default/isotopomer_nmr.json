@@ -1,0 +1,28 @@
+{
+  "measurementType": "isotopomer analysis",
+  "technologyType": "NMR spectroscopy",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "metabolite extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "NMR spectroscopy",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "extraction",
+    "NMR spectroscopy",
+    "data transformation"
+  ],
+  "description": [
+    "(Sample)->(extraction)->(Material)->(NMR spectroscopy)->(DataFiles)->(data transformation)->(DataFiles)" ]
+}

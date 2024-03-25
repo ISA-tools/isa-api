@@ -41,7 +41,7 @@ def dump(isa_obj, output_path,
         raise NameError('Investigation file must match pattern i_*.txt, got {}'.format(i_file_name))
 
     if path.exists(output_path):
-        fp = open(path.join(output_path, i_file_name), 'w', encoding='utf-8')
+        fp = open(path.join(output_path, i_file_name), 'wb')
     else:
         log.debug('output_path=', i_file_name)
         raise FileNotFoundError("Can't find " + output_path)
@@ -55,7 +55,7 @@ def dump(isa_obj, output_path,
 
     # Write ONTOLOGY SOURCE REFERENCE section
     ontology_source_references_df = _build_ontology_reference_section(investigation.ontology_source_references)
-    fp.write('ONTOLOGY SOURCE REFERENCE\n')
+    fp.write(bytearray('ONTOLOGY SOURCE REFERENCE\n', 'utf-8'))
     #  Need to set index_label as top left cell
     ontology_source_references_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                          index_label='Term Source Name')
@@ -80,7 +80,7 @@ def dump(isa_obj, output_path,
         inv_df_rows.append(comment.value)
     investigation_df.loc[0] = inv_df_rows
     investigation_df = investigation_df.set_index('Investigation Identifier').T
-    fp.write('INVESTIGATION\n')
+    fp.write(bytearray('INVESTIGATION\n', 'utf-8'))
     investigation_df.to_csv(
         path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
         index_label='Investigation Identifier')
@@ -90,14 +90,15 @@ def dump(isa_obj, output_path,
         prefix='Investigation',
         publications=investigation.publications
     )
-    fp.write('INVESTIGATION PUBLICATIONS\n')
+    fp.write(bytearray('INVESTIGATION PUBLICATIONS\n', 'utf-8'))
     investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                          index_label='Investigation PubMed ID')
 
     # Write INVESTIGATION CONTACTS section
     investigation_contacts_df = _build_contacts_section_df(
         contacts=investigation.contacts)
-    fp.write('INVESTIGATION CONTACTS\n')
+    fp.write(bytearray('INVESTIGATION CONTACTS\n', 'utf-8'))
+
     investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Investigation Person Last Name')
 
@@ -127,40 +128,40 @@ def dump(isa_obj, output_path,
                 study_df_row.append(comment.value)
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
-        fp.write('STUDY\n')
+        fp.write(bytearray('STUDY\n', 'utf-8'))
         study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
         study_design_descriptors_df = _build_design_descriptors_section(design_descriptors=study.design_descriptors)
-        fp.write('STUDY DESIGN DESCRIPTORS\n')
+        fp.write(bytearray('STUDY DESIGN DESCRIPTORS\n', 'utf-8'))
         study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                            index_label='Study Design Type')
 
         # Write STUDY PUBLICATIONS section
         study_publications_df = _build_publications_section_df(prefix='Study', publications=study.publications)
-        fp.write('STUDY PUBLICATIONS\n')
+        fp.write(bytearray('STUDY PUBLICATIONS\n', 'utf-8'))
         study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study PubMed ID')
 
         # Write STUDY FACTORS section
         study_factors_df = _build_factors_section_df(factors=study.factors)
-        fp.write('STUDY FACTORS\n')
+        fp.write(bytearray('STUDY FACTORS\n', 'utf-8'))
         study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                 index_label='Study Factor Name')
 
         study_assays_df = _build_assays_section_df(assays=study.assays)
-        fp.write('STUDY ASSAYS\n')
+        fp.write(bytearray('STUDY ASSAYS\n', 'utf-8'))
         study_assays_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                index_label='Study Assay File Name')
 
         # Write STUDY PROTOCOLS section
         study_protocols_df = _build_protocols_section_df(protocols=study.protocols)
-        fp.write('STUDY PROTOCOLS\n')
+        fp.write(bytearray('STUDY PROTOCOLS\n', 'utf-8'))
         study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                   index_label='Study Protocol Name')
 
         # Write STUDY CONTACTS section
         study_contacts_df = _build_contacts_section_df(
             prefix='Study', contacts=study.contacts)
-        fp.write('STUDY CONTACTS\n')
+        fp.write(bytearray('STUDY CONTACTS\n', 'utf-8'))
         study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                  index_label='Study Person Last Name')
 

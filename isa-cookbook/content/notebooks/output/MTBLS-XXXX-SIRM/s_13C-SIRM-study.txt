@@ -1,0 +1,9 @@
+Source Name	Characteristics[Organism]	Term Source REF	Term Accession Number	Characteristics[cell line]	Protocol REF	Parameter Value[tracer molecule]	Sample Name	Factor Value[compound]	Factor Value[dose]	Factor Value[duration]
+culture-1	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-1-sample-0	dioxygen	high	hour
+culture-1	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-1-sample-1	dioxygen	high	hour
+culture-1	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-1-sample-2	dioxygen	high	hour
+culture-1	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-1-sample-3	dioxygen	high	hour
+culture-2	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-2-sample-0	dioxygen	normal	hour
+culture-2	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-2-sample-1	dioxygen	normal	hour
+culture-2	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-2-sample-2	dioxygen	normal	hour
+culture-2	Homo sapiens	NCIBTaxon	http://purl.obolibrary.org/obo/NCBITaxon_9606	MCF-7	cell culture and isotopic labeling	80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose	culture-2-sample-3	dioxygen	normal	hour

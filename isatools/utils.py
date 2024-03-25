@@ -733,7 +733,7 @@ class IsaTabFixer(object):
         table_file_df.columns = self.clean_isatab_field_names(
             field_names_modified)
 
-        with open(self.path, 'w') as out_fp:
+        with open(self.path, 'wb') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')
 
@@ -856,7 +856,7 @@ class IsaTabFixer(object):
 
         with open(os.path.join(
                 os.path.dirname(self.path), '{s_filename}.fix'.format(
-                    s_filename=os.path.basename(self.path))), 'w') as out_fp:
+                    s_filename=os.path.basename(self.path))), 'wb') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')
 

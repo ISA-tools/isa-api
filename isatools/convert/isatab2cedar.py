@@ -28,7 +28,7 @@ class ISATab2CEDAR(object):
         self.primary_source = primary_source
 
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
-        log.info("Convert ISA datasets in folder ".format(work_dir))
+        log.info("Convert ISA datasets in folder {}.".format(work_dir))
         path = os.path.abspath(work_dir)
         folders = [f for f in listdir(path) if isdir(join(path, f))]
 
@@ -37,15 +37,14 @@ class ISATab2CEDAR(object):
                                  json_dir, inv_identifier)
 
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
-        log.info("Converting ISA to CEDAR model for ".format(work_dir))
+        log.info("Converting ISA to CEDAR model for {}".format(work_dir))
         schema_file = "investigation_template.json"
         with open(join(CEDAR_SCHEMA_PATH, schema_file)) as json_fp:
             schema = json.load(json_fp)
         if schema is None:
             raise IOError("Could not load schema from {}".format(
                 join(CEDAR_SCHEMA_PATH, schema_file)))
-        resolver = RefResolver(
-            'file://'+join(CEDAR_SCHEMA_PATH, schema_file), schema)
+        resolver = RefResolver('file://{}'.format(join(CEDAR_SCHEMA_PATH, schema_file)), schema)
         validator = Draft4Validator(schema, resolver=resolver)
 
         isa_tab = isatab_parser.parse(work_dir)
@@ -56,7 +55,7 @@ class ISATab2CEDAR(object):
             if isa_tab.metadata != {}:
                 investigationObject = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID/"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID/" + str(uuid4())),
                     ("_templateId", "http://example.org"),
                     ("@type",
                      "https://repo.metadatacenter.org/model/Investigation"),
@@ -95,7 +94,7 @@ class ISATab2CEDAR(object):
             else:
                 investigationObject = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("_templateId", "http://example.org"),
                     ("@type", "https://repo.metadatacenter.org/model/"
                               "Investigation"),
@@ -150,10 +149,10 @@ class ISATab2CEDAR(object):
 
             if inv_identifier:
                 file_name = os.path.join(
-                    json_dir, investigation_identifier+".json")
+                    json_dir, investigation_identifier + ".json")
             else:
                 file_name = os.path.join(
-                    json_dir, study_identifier+".json")
+                    json_dir, study_identifier + ".json")
             with open(file_name, "w") as outfile:
                 json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                 outfile.close()
@@ -167,7 +166,7 @@ class ISATab2CEDAR(object):
             sample_dict = self.createSamples(study.nodes)
             # data_dict = self.createDataFiles(study.nodes)
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),
                 ("title", dict([("_value", study.metadata['Study Title'])])),
                 ("description",
@@ -197,16 +196,18 @@ class ISATab2CEDAR(object):
 
     def createStudyGroupList(self, source_dict):
         json_list = []
-        json_item = dict([
-            ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-            ("@type", "http://purl.obolibrary.org/obo/STATO_0000193"),
-            ("name", dict([("_value", "population name")])),
-            ("type", dict([(
-                "_value", "http://bioportal.bioontology.org/ontologies/EFO/"
-                "3232")])),
-            ("selectionRule",  dict([("_value", "selection rule")])),
-            ("studySubject", list(source_dict.values()))
-            ])
+        json_item = dict(
+            [
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
+                ("@type", "http://purl.obolibrary.org/obo/STATO_0000193"),
+                ("name", dict([("_value", "population name")])),
+                ("type", dict([(
+                    "_value", "http://bioportal.bioontology.org/ontologies/EFO/"
+                    "3232")])),
+                ("selectionRule",  dict([("_value", "selection rule")])),
+                ("studySubject", list(source_dict.values()))
+            ]
+        )
         json_list.append(json_item)
         return json_list
 
@@ -238,7 +239,7 @@ class ISATab2CEDAR(object):
 
             json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type",
                      "https://repo.metadatacenter.org/model/Process"),
                     ("type", dict([("_value", process_node_name)])),
@@ -344,7 +345,7 @@ class ISATab2CEDAR(object):
                             len(parametersURIs) == len(
                                 parameters)) else "")]))),
                 ])
-                index = index+1
+                index = index + 1
                 json_list.append(json_item)
         return json_list
 
@@ -366,7 +367,7 @@ class ISATab2CEDAR(object):
             if header.startswith("Parameter Value"):
                 json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/"
                               "ProtocolParameter"),
                     ("value", dict([("_value", value)])),
@@ -384,7 +385,7 @@ class ISATab2CEDAR(object):
             if nodes[node_index].ntype.endswith("Data File"):
                 json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type",
                      "https://repo.metadatacenter.org/model/DataFile"),
                     ("name", dict([("_value", node_index)])),
@@ -402,7 +403,7 @@ class ISATab2CEDAR(object):
             if nodes[node_index].ntype == "Sample Name":
                 json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/Sample"),
                     ("name", dict([("_value", node_index)])),
                     ("type", dict([(
@@ -437,7 +438,7 @@ class ISATab2CEDAR(object):
     def createStudyTimeCollection(self):
         json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type", "http://purl.obolibrary.org/obo/OBI_0001619"),
                     ("durationValue", dict([("_value", "")])),
                     ("isBeforeEvent", dict([("_value", "")])),
@@ -453,7 +454,7 @@ class ISATab2CEDAR(object):
                 characteristic = header.replace("]", "").split("[")[-1]
                 json_item = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type",
                      "https://repo.metadatacenter.org/model/Characteristic"),
                     ("name", dict([("_value", characteristic)])),
@@ -479,7 +480,7 @@ class ISATab2CEDAR(object):
 
         if unitValue:
             characteristicValue = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type",
                  "https://repo.metadatacenter.org/model/CharacteristicValue"),
                 ("type", dict([("_value", "")])),
@@ -488,7 +489,7 @@ class ISATab2CEDAR(object):
                 ])
         else:
             characteristicValue = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type",
                  "https://repo.metadatacenter.org/model/CharacteristicValue"),
                 ("type", dict([("_value", typeValue)])),
@@ -511,7 +512,7 @@ class ISATab2CEDAR(object):
                     unit = ""
                 factorValue = dict([
                     ("@id",
-                     "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                     "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/"
                               "CharacteristicValue"),
                     ("type", dict([("_value", value_header)])),
@@ -526,7 +527,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for contact in contacts:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Contact"),
                 ("lastName", dict([("_value", contact[
                     'Investigation Person Last Name'])])),
@@ -554,7 +555,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for contact in contacts:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Contact"),
                 ("lastName", dict([("_value", contact[
                     'Study Person Last Name'])])),
@@ -579,7 +580,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for publication in publications:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Publication"),
                 ("title", dict([("_value", publication[
                     'Investigation Publication Title'])])),
@@ -599,7 +600,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for publication in publications:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Publication"),
                 ("title", dict([("_value", publication[
                     'Study Publication Title'])])),
@@ -619,7 +620,7 @@ class ISATab2CEDAR(object):
         json_list = []
         json_item = dict([
                 ("@context", ""),
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "https://metadatacenter.org/model/Organization"),
                 ("name", dict([("_value", affiliations)])),
                 ("department", dict([("_value", "")]))
@@ -631,7 +632,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for assay in assays:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type", "http://purl.obolibrary.org/obo/BFO_0000055"),
                 ("measurementType", dict([("_value", assay.metadata[
                     'Study Assay Measurement Type Term Accession Number'])])),
@@ -647,7 +648,7 @@ class ISATab2CEDAR(object):
         json_list = []
         for protocol in protocols:
             json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
                 ("@type",
                  "https://repo.metadatacenter.org/model/StudyProtocol"),
                 ("name", dict([("_value", protocol['Study Protocol Name'])])),
@@ -665,7 +666,7 @@ class ISATab2CEDAR(object):
 
     def createStudyFactor(self, factor_name, factor_desc):
         json_item = dict([
-            ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+            ("@id", "https://repo.metadatacenter.org/UUID" + str(uuid4())),
             ("@context", ""),
             ("@type", "http://www.ebi.ac.uk/efo/EFO_0000001"),
             ("name", dict([("_value", factor_name)])),

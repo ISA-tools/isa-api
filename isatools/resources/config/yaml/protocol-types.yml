@@ -10,6 +10,9 @@ extraction:
   iri: http://purl.obolibrary.org/obo/OBI_0302884
   synonyms:
     - extraction
+    - metabolite extraction
+    - intracellular metabolite extraction
+    - extracelluar metabolite extraction
 labeling:
   header: Labeled Extract Name
   iri: http://purl.obolibrary.org/obo/OBI_0600038
@@ -39,7 +42,7 @@ nmr spectroscopy:
   iri: http://purl.obolibrary.org/obo/OBI_0000623
   synonyms:
     - nmr spectroscopy
-    - nmr
+    - nmr assay
 nucleic acid hybridization:
   header: Hybridization Assay Name
   iri: http://purl.obolibrary.org/obo/OBI_0302903
@@ -56,6 +59,8 @@ data transformation:
   iri: http://purl.obolibrary.org/obo/OBI_0200000
   synonyms:
     - data transformation
+    - data normalization
+    - metabolite identification
 data collection:
   header: Scan Name
   synonyms:

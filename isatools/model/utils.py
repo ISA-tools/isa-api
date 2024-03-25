@@ -1,4 +1,5 @@
 import networkx as nx
+import os
 
 from isatools.model.datafile import DataFile
 from isatools.model.process import Process
@@ -51,8 +52,8 @@ def _build_assay_graph(process_sequence=None):
 
 
 def plink(p1, p2):
-    """
-    Function to create a link between two processes nodes of the isa graph
+    """Function to create a link between two processes nodes of the isa graph
+
     :param Process p1: node 1
     :param Process p2: node 2
     """
@@ -202,8 +203,8 @@ def batch_create_assays(*args, n=1):
 
 
 def _deep_copy(isa_object):
-    """
-    Re-implementation of the deepcopy function that also increases and sets the object identifiers for copied objects.
+    """Re-implementation of the deepcopy function that also increases and sets the object identifiers for copied objects.
+
     :param {Object} isa_object: the object to copy
     """
     from copy import deepcopy
@@ -212,3 +213,4 @@ def _deep_copy(isa_object):
     if isinstance(isa_object, ProcessSequenceNode):
         new_obj.assign_identifier()
     return new_obj
+

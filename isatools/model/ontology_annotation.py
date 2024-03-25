@@ -24,12 +24,11 @@ class OntologyAnnotation(Commentable, Identifiable):
                  comments: List[Comment] = None,
                  id_: str = ''):
         super().__init__(comments=comments)
-
-        self.__term = term
-        self.__term_source = None
+        self.term = term
+        self.term_source = None
         if term_source:
-            self.__term_source = term_source
-        self.__term_accession = term_accession
+            self.term_source = term_source
+        self.term_accession = term_accession
         self.id = id_
 
     @property

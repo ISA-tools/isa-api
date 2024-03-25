@@ -30,30 +30,30 @@ from isatools.isatab.validate.rules.rules_50xx import check_study_groups
 
 
 INVESTIGATION_RULES_MAPPING = [
-    {'rule': check_table_files_read, 'params': ['investigation_df', 'dir_context'], 'identifier': '0006'},
+    {'rule': check_table_files_read, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '0006'},
 
-    {'rule': sample_not_declared, 'params': ['investigation_df', 'dir_context'], 'identifier': '1003'},
-    {'rule': check_protocol_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1007'},
-    {'rule': check_study_factor_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1008'},
-    {'rule': check_protocol_parameter_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1009'},
-    {'rule': check_protocol_names, 'params': ['investigation_df'], 'identifier': '1010'},
-    {'rule': check_protocol_parameter_names, 'params': ['investigation_df'], 'identifier': '1011'},
-    {'rule': check_study_factor_names, 'params': ['investigation_df'], 'identifier': '1012'},
+    {'rule': sample_not_declared, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1003'},
+    {'rule': check_protocol_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1007'},
+    {'rule': check_study_factor_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1008'},
+    {'rule': check_protocol_parameter_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1009'},
+    {'rule': check_protocol_names, 'params': ['investigation_df_dict'], 'identifier': '1010'},
+    {'rule': check_protocol_parameter_names, 'params': ['investigation_df_dict'], 'identifier': '1011'},
+    {'rule': check_study_factor_names, 'params': ['investigation_df_dict'], 'identifier': '1012'},
 
-    {'rule': check_date_formats, 'params': ['investigation_df'], 'identifier': '3001'},
-    {'rule': check_dois, 'params': ['investigation_df'], 'identifier': '3002'},
-    {'rule': check_pubmed_ids_format, 'params': ['investigation_df'], 'identifier': '3003'},
-    {'rule': check_ontology_sources, 'params': ['investigation_df'], 'identifier': '3008'},
+    {'rule': check_date_formats, 'params': ['investigation_df_dict'], 'identifier': '3001'},
+    {'rule': check_dois, 'params': ['investigation_df_dict'], 'identifier': '3002'},
+    {'rule': check_pubmed_ids_format, 'params': ['investigation_df_dict'], 'identifier': '3003'},
+    {'rule': check_ontology_sources, 'params': ['investigation_df_dict'], 'identifier': '3008'},
 
     {'rule': load_config, 'params': ['configs'], 'identifier': '4001'},
-    {'rule': check_measurement_technology_types, 'params': ['investigation_df', 'configs'], 'identifier': '4002'},
-    {'rule': check_investigation_against_config, 'params': ['investigation_df', 'configs'], 'identifier': '4003'},
+    {'rule': check_measurement_technology_types, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4002'},
+    {'rule': check_investigation_against_config, 'params': ['investigation_df_dict', 'configs'], 'identifier': '4003'},
 
     # copies
-    {'rule': check_table_files_read, 'params': ['investigation_df', 'dir_context'], 'identifier': '0008'},
-    {'rule': check_protocol_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1019'},
-    {'rule': check_protocol_parameter_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1020'},
-    {'rule': check_study_factor_usage, 'params': ['investigation_df', 'dir_context'], 'identifier': '1021'},
+    {'rule': check_table_files_read, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '0008'},
+    {'rule': check_protocol_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1019'},
+    {'rule': check_protocol_parameter_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1020'},
+    {'rule': check_study_factor_usage, 'params': ['investigation_df_dict', 'dir_context'], 'identifier': '1021'},
 ]
 
 STUDY_RULES_MAPPING = [
