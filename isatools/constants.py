@@ -1,4 +1,5 @@
 SYNONYMS = 'synonyms'
+HEADER = 'header'
 
 MATERIAL_LABELS = [
     'Source Name',
