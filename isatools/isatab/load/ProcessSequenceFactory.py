@@ -148,12 +148,11 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        for data_col in [x for x in DF.columns if " File" in x]:
-            label = re.match(r'(.* File)', data_col).group(0)
+        for data_col in [x for x in DF.columns if x in _LABELS_DATA_NODES]:
             filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=label)), filenames)))
+            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
-        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES or ' File' in c]
+        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
 
         try:
@@ -170,7 +169,7 @@ class ProcessSequenceFactory:
                 n = samples[lk]
             elif labl in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
-            elif ' File' in labl:
+            elif labl in _LABELS_DATA_NODES:
                 n = data[lk]
             return n
 
@@ -263,7 +262,7 @@ class ProcessSequenceFactory:
                             fv_set.add(fv)
                             material.factor_values = list(fv_set)
 
-            elif object_label in _LABELS_DATA_NODES or ' File' in object_label:
+            elif object_label in _LABELS_DATA_NODES:
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     try:
                         data_file = get_node_by_label_and_key(object_label, str(object_series[object_label]))
@@ -407,7 +406,7 @@ class ProcessSequenceFactory:
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
                     process_key_sequence.append(process_key)
 
-                if object_label.endswith(' File'):
+                if object_label in _LABELS_DATA_NODES:
                     data_node = None
                     try:
                         data_node = get_node_by_label_and_key(object_label, str(object_series[object_label]))
