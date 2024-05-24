@@ -447,7 +447,10 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
             file=row['Term Source File'],
             version=row['Term Source Version'],
             description=row['Term Source Description'])
-        ontology_source.comments = self.get_comments(self.__df_dict['ontology_sources'])
+        for key in row.keys():
+            if _RX_COMMENT.match(str(key)) and row[key]:
+                source_name = next(iter(_RX_COMMENT.findall(str(key))))
+                ontology_source.comments.append(Comment(name=source_name, value=row[key]))
         self.__investigation.ontology_source_references.append(ontology_source)
 
     def __create_investigation(self) -> None:
