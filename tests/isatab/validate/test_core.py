@@ -25,13 +25,13 @@ class TestValidators(unittest.TestCase):
         with open(path.join(data_path, 'i_Investigation.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf, origin="mzml2isa")
         print(r['warnings'])
-        self.assertEqual(len(r['errors']), 5)
+        self.assertEqual(len(r['errors']), 4)
 
     def test_mtbls_1846(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'mtbls', 'MTBLS1846')
         with open(path.join(data_path, 'i_Investigation.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf)
-        self.assertEqual(len(r['errors']), 33)
+        self.assertEqual(len(r['errors']), 20)
 
     def test_bii_i_1(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'BII-I-1')

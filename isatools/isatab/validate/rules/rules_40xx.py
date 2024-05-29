@@ -26,18 +26,6 @@ def check_investigation_against_config(i_df_dict, configs):
     code = 4003
     message = "A required property is missing"
 
-    # def add_warning(index, column, value_index):
-    #     if index > 0:
-    #         spl = "A property value in {}.{} of investigation file at column {} is required"
-    #         spl = spl.format(column, index + 1, value_index + 1)
-    #         validator.add_warning(message=message, supplemental=spl, code=code)
-    #         log.warning("(W) {}".format(spl))
-    #     else:
-    #         spl = "A property value in {} of investigation file at column {} is required"
-    #         spl = spl.format(column, value_index + 1)
-    #         validator.add_warning(message=message, supplemental=spl, code=code)
-    #         log.warning("(W) {}".format(spl))
-
     def add_error(index, column, value_index):
         if index > 0:
             spl = "A property value in {}.{} of investigation file at column {} is required"
@@ -333,43 +321,6 @@ def load_table_checks(df, filename):
     for x, column in enumerate(columns):  # check if columns have valid labels
         if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
-            # [
-            #     'Source Name',
-            #     'Sample Name',
-            #     'Extract Name',
-            #     'Material Type',
-            #     'Labeled Extract Name',
-            #     'Label',
-            #     'Protocol REF',
-            #     'Performer',
-            #     'Date',
-            #     'Term Source REF',
-            #     'Term Accession Number',
-            #     'Unit',
-            #     'Assay Name',
-            #     'Hybridization Assay Name',
-            #     'Scan Name',
-            #     'Array Design REF',
-            #     'MS Assay Name',
-            #     'NMR Assay Name',
-            #     'Image File',
-            #     'Raw Data File',
-            #     'Free Induction Decay Data File',
-            #     'Raw Spectral Data File',
-            #     'Array Data File',
-            #     'Normalization Name',
-            #     'Data Transformation Name',
-            #     'Derived Data File',
-            #     'Derived Spectral Data File',
-            #     'Protein Assignment File',
-            #     'Peptide Assignment File',
-            #     'Post Translational Modification Assignment File',
-            #     'Metabolite Assignment File',
-            #     'Derived Array Data File',
-            #     'Array Data Matrix File',
-            #     'Derived Array Data Matrix File',
-            #     'Acquisition Parameter Data File'
-            # # ]
         if (column not in ALL_LABELS) \
                 and not _RX_CHARACTERISTICS.match(column) \
                 and not _RX_PARAMETER_VALUE.match(column) \
