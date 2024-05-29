@@ -86,7 +86,7 @@
             <description><![CDATA[raw data]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
-        <protocol-field protocol-type="sequence analysis data transformation        "/>
+        <protocol-field protocol-type="sequence analysis data transformation"/>
         <field header="Normalization Name" data-type="String" is-file-field="false" is-multiple-value="false"
                is-required="false" is-hidden="false" is-forced-ontology="false">
             <description><![CDATA[User-defined name for each normalization applied]]></description>

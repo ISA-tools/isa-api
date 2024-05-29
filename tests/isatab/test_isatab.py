@@ -28,6 +28,7 @@ def setUpModule():
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
 
+
 def replace_windows_newlines(input_string):
     return input_string.replace('\r\r\n', '\n').replace('\r\n', '\n').replace('\r', '\n')
 
@@ -98,7 +99,7 @@ class TestIsaTabDump(unittest.TestCase):
             isatab.dump(Investigation(), self._tmp_dir, i_file_name='investigation.txt')
 
     def test_isatab_dump_source_sample_split(self):
-        i = Investigation()
+        investigation = Investigation()
         uberon = OntologySource(name='UBERON',
                                 description="Uber Anatomy Ontology",
                                 version='216',
@@ -108,31 +109,31 @@ class TestIsaTabDump(unittest.TestCase):
                                    (NCBI) Organismal Classification",
                                    version='2',
                                    file='http://data.bioontology.org/ontologies/NCBITAXON')
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
+        investigation.ontology_source_references.append(uberon)
+        investigation.ontology_source_references.append(ncbitaxon)
 
-        s = Study(filename='s_pool.txt')
+        study = Study(filename='s_pool.txt')
 
         # testing if Study can receive comments[]
-        s.comments.append(Comment(name="Study Start Date", value="Sun"))
+        study.comments.append(Comment(name="Study Start Date", value="Sun"))
 
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection')
         )
 
-        s.protocols.append(sample_collection_protocol)
+        study.protocols.append(sample_collection_protocol)
         # testing if protocols can receive comments[]
         # s.protocols[0].comments()
-        s.protocols[0].comments.append(Comment(name="Study Start Date", value="Uranus"))
+        study.protocols[0].comments.append(Comment(name="Study Start Date", value="Uranus"))
 
-        s.design_descriptors.append(OntologyAnnotation(term="factorial design"))
-        s.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
+        study.design_descriptors.append(OntologyAnnotation(term="factorial design"))
+        study.design_descriptors[0].comments.append(Comment(name="Study Start Date", value="Moon"))
 
         # testing if study factors can receive comments[]
         f = StudyFactor(name="treatment['modality']", factor_type=OntologyAnnotation(term="treatment[modality]"))
         f.comments.append(Comment(name="Study Start Date", value="Moon"))
-        s.factors.append(f)
+        study.factors.append(f)
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='Material Type')
@@ -180,43 +181,43 @@ class TestIsaTabDump(unittest.TestCase):
 
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
+        study.process_sequence = [sample_collection_process]
+        investigation.studies = [study]
 
         # from isatools.model import _build_assay_graph
         # graph =_build_assay_graph(s.process_sequence)
 
-        isatab.dump(i, self._tmp_dir)
+        isatab.dump(investigation, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
                                   's_TEST-Template1-Splitting.txt')) as expected_file:
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
 
     def test_isatab_dump_source_sample_pool(self):
-        i = Investigation()
+        investigation = Investigation()
         uberon = OntologySource(name='UBERON')
         ncbitaxon = OntologySource(name='NCBITAXON')
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
+        investigation.ontology_source_references.append(uberon)
+        investigation.ontology_source_references.append(ncbitaxon)
 
-        s = Study(filename='s_pool.txt')
+        study = Study(filename='s_pool.txt')
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection')
         )
 
-        s.protocols.append(sample_collection_protocol)
-        s.protocols[0].comments.append(Comment(name="protocol comment", value="Jupiter"))
+        study.protocols.append(sample_collection_protocol)
+        study.protocols[0].comments.append(Comment(name="protocol comment", value="Jupiter"))
 
         researcher = Person(first_name="bob", last_name="morane", email="bob.morane@gmail.com")
-        s.contacts.append(researcher)
-        s.contacts[0].comments.append(Comment(name="astrological sign", value="Saturn"))
-        s.contacts[0].comments.append(Comment(name="chinese astrological sign", value="tiger"))
+        study.contacts.append(researcher)
+        study.contacts[0].comments.append(Comment(name="astrological sign", value="Saturn"))
+        study.contacts[0].comments.append(Comment(name="chinese astrological sign", value="tiger"))
 
         other_researcher = Person(first_name="toxic", last_name="avengers", email="toxic.avengers@gmail.com")
-        s.contacts.append(other_researcher)
-        s.contacts[1].comments.append(Comment(name="astrological sign", value="balance"))
-        s.contacts[1].comments.append(Comment(name="chinese astrological sign", value="pig"))
+        study.contacts.append(other_researcher)
+        study.contacts[1].comments.append(Comment(name="astrological sign", value="balance"))
+        study.contacts[1].comments.append(Comment(name="chinese astrological sign", value="pig"))
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='material type')
@@ -270,29 +271,29 @@ class TestIsaTabDump(unittest.TestCase):
 
         sample_collection_process.inputs = [source1, source2, source3, source4]
         sample_collection_process.outputs = [sample1]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
-        isatab.dump(i, self._tmp_dir)
+        study.process_sequence = [sample_collection_process]
+        investigation.studies = [study]
+        isatab.dump(investigation, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
                                   's_TEST-Template3-Splitting.txt')) as expected_file:
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-            self.assertIsInstance(isatab.dumps(i), str)
+            self.assertIsInstance(isatab.dumps(investigation), str)
 
     def test_isatab_dump_source_sample_sample(self):
         # Validates issue fix for #191
-        i = Investigation()
+        investigation = Investigation()
         uberon = OntologySource(name='UBERON')
         ncbitaxon = OntologySource(name='NCBITAXON')
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
+        investigation.ontology_source_references.append(uberon)
+        investigation.ontology_source_references.append(ncbitaxon)
 
-        s = Study(filename='s_pool.txt')
+        study = Study(filename='s_pool.txt')
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection')
         )
-        s.protocols.append(sample_collection_protocol)
+        study.protocols.append(sample_collection_protocol)
 
         reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
         material_type_category = OntologyAnnotation(term='material type')
@@ -351,42 +352,44 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.outputs = [sample1]
         sample_collection_process2.inputs = [sample1]
         sample_collection_process2.outputs = [sample2]
-        s.process_sequence = [sample_collection_process, sample_collection_process2]
-        i.studies = [s]
-        isatab.dump(i, self._tmp_dir)
+        study.process_sequence = [sample_collection_process, sample_collection_process2]
+        investigation.studies = [study]
+        isatab.dump(investigation, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool-sample-chain',
                                   's_TEST-Template3-Splitting.txt')) as expected_file:
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-            self.assertIsInstance(isatab.dumps(i), str)
+            self.assertIsInstance(isatab.dumps(investigation), str)
 
     def test_isatab_dump_source_sample_char_quant(self):
         # Validates issue fix for #191
-        i = Investigation()
+
+        investigation = Investigation()
 
         uo = OntologySource(name='UO')
         obi = OntologySource(name='OBI')
         uberon = OntologySource(name='UBERON')
         ncbitaxon = OntologySource(name='NCBITAXON')
 
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
-        i.ontology_source_references.append(uo)
+        investigation.ontology_source_references.append(uberon)
+        investigation.ontology_source_references.append(ncbitaxon)
+        investigation.ontology_source_references.append(uo)
 
         organism_category = OntologyAnnotation(term='organism')
         material_type_category = OntologyAnnotation(term='material type')
         quantity_descriptor_category = OntologyAnnotation(term='body weight')
 
-        s = Study(filename='s_TEST-quant_char.txt')
+        study = Study(filename='s_TEST-quant_char.txt')
         sample_collection_protocol = Protocol(
             name='sample collection',
             protocol_type=OntologyAnnotation(term='sample collection'),
-            parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term="vessel")),
-                        ProtocolParameter(parameter_name=OntologyAnnotation(term="storage temperature"))
-                        ]
+            parameters=[
+                ProtocolParameter(parameter_name=OntologyAnnotation(term="vessel")),
+                ProtocolParameter(parameter_name=OntologyAnnotation(term="storage temperature"))
+            ]
         )
 
-        s.protocols.append(sample_collection_protocol)
+        study.protocols.append(sample_collection_protocol)
 
         source1 = Source(name='source1')
         source1.characteristics.append(Characteristic(category=material_type_category, value='specimen'))
@@ -402,7 +405,7 @@ class TestIsaTabDump(unittest.TestCase):
                                     term_source=uo,
                                     term_accession="http://purl.obolibrary.org/obo/UO_0000009")))
 
-        s.sources.append(source1)
+        study.sources.append(source1)
 
         sample1 = Sample(name='sample1')
         organism_part = OntologyAnnotation(term='organism part')
@@ -421,31 +424,31 @@ class TestIsaTabDump(unittest.TestCase):
                                                           term_accession='http://purl.obolibrary.org/obo/UO_0000022'
         )))
 
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process = Process(executes_protocol=study.protocols[0])
         sample_collection_process.parameter_values = [
-            ParameterValue(category=s.protocols[0].parameters[0],
+            ParameterValue(category=study.protocols[0].parameters[0],
                            value=OntologyAnnotation(
                                 term="eppendorf tube",
                                 term_source=obi,
                                 term_accession="purl.org")),
-           ParameterValue(category=s.protocols[0].parameters[1],
-                          value=-20,
-                          unit=OntologyAnnotation(
+            ParameterValue(category=study.protocols[0].parameters[1],
+                           value=-20,
+                           unit=OntologyAnnotation(
                               term="degree Celsius",
                               term_source=uo,
                               term_accession="http://purl.obolibrary.org/obo/UO_0000027"))
         ]
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1]
-        s.process_sequence = [sample_collection_process]
-        s.samples.append(sample1)
-        i.studies = [s]
-        actual = replace_windows_newlines(isatab.dumps(i))
+        study.process_sequence = [sample_collection_process]
+        study.samples.append(sample1)
+        investigation.studies = [study]
+        actual = replace_windows_newlines(isatab.dumps(investigation))
         expected = """Source Name\tMaterial Type\tCharacteristics[organism]\tTerm Source REF\tTerm Accession Number\tCharacteristics[body weight]\tUnit\tTerm Source REF\tTerm Accession Number\tProtocol REF\tParameter Value[vessel]\tTerm Source REF\tTerm Accession Number\tParameter Value[storage temperature]\tUnit\tTerm Source REF\tTerm Accession Number\tSample Name\tCharacteristics[organism part]\tTerm Source REF\tTerm Accession Number\tCharacteristics[specimen mass]\tUnit\tTerm Source REF\tTerm Accession Number
 source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T016\t72\tkilogram\tUO\thttp://purl.obolibrary.org/obo/UO_0000009\tsample collection\teppendorf tube\tOBI\tpurl.org\t-20\tdegree Celsius\tUO\thttp://purl.obolibrary.org/obo/UO_0000027\tsample1\tliver\tUBERON\thttp://purl.obolibrary.org/obo/UBERON_0002107\t450.5\tmilligram\tUO\thttp://purl.obolibrary.org/obo/UO_0000022"""
         self.assertIn(expected, actual)
 
-        isatab.dump(i, self._tmp_dir)
+        isatab.dump(investigation, self._tmp_dir)
 
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as isa_reload:
             ISA = isatab.load(isa_reload)
@@ -889,13 +892,12 @@ class TestIsaTabLoad(unittest.TestCase):
     def test_isatab_load_issue323(self):
         with open(os.path.join(self._tab_data_dir, 'issue323', 'i_05.txt')) as fp:
             ISA = isatab.load(fp)
-            print(ISA.studies[0].protocols[0].description)
             self.assertEqual(len(ISA.studies[0].protocols[0].description), 70)
 
         protocol = Protocol(description="some description containing a # character that should not be picked up",
                             name="",
                             protocol_type=OntologyAnnotation(term=""))
-        print("test protocol description", protocol.description)
+
 
         self.assertEqual(len(protocol.description), 70)
 
@@ -1194,81 +1196,81 @@ source1\tsample collection\t10\tsample1"""
         self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
 
     def test_source_protocol_ref_sample_with_factor_values(self):
-        i = Investigation()
-        s = Study(filename='s_test.txt',
+        investigation = Investigation()
+        study = Study(filename='s_test.txt',
                   protocols=[Protocol(name='sample collection'),
                              Protocol(name='extraction')],
                   factors=[StudyFactor(name='study group')])
         source1 = Source(name='source1')
         sample1 = Sample(name='sample1')
-        s.sources = [source1]
-        s.samples = [sample1]
-        sample1.factor_values = [FactorValue(factor_name=s.factors[0], value="Study group 1")]
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        study.sources = [source1]
+        study.samples = [sample1]
+        sample1.factor_values = [FactorValue(factor_name=study.factors[0], value="Study group 1")]
+        sample_collection_process = Process(executes_protocol=study.protocols[0])
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
-        a = Assay(filename='a_test.txt')
-        a.samples = [sample1]
+        study.process_sequence = [sample_collection_process]
+        investigation.studies = [study]
+        assay = Assay(filename='a_test.txt')
+        assay.samples = [sample1]
         extract1 = Extract(name='extract1')
-        a.other_material = [extract1]
-        extraction_process = Process(executes_protocol=s.protocols[1])
+        assay.other_material = [extract1]
+        extraction_process = Process(executes_protocol=study.protocols[1])
         extraction_process.inputs = [sample1]
-        a.process_sequence = [extraction_process]
-        s.assays = [a]
+        assay.process_sequence = [extraction_process]
+        study.assays = [assay]
         expected_study_table = """Source Name\tProtocol REF\tSample Name\tFactor Value[study group]
 source1\tsample collection\tsample1\tStudy group 1"""
-        self.assertIn(expected_study_table, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected_study_table, replace_windows_newlines(isatab.dumps(investigation)))
         expected_assay_table = """Sample Name\tFactor Value[study group]\tProtocol REF
 sample1\tStudy group 1\textraction"""
         self.assertIn(expected_assay_table,
-                      replace_windows_newlines(isatab.dumps(i, write_fvs_in_assay_table=True)))
+                      replace_windows_newlines(isatab.dumps(investigation, write_fvs_in_assay_table=True)))
 
     def test_source_protocol_ref_protocol_ref_sample(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
         )
         source1 = Source(name='source1')
         aliquot1 = Sample(name='aliquot1')
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
-        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process = Process(executes_protocol=study.protocols[0])
+        aliquoting_process = Process(executes_protocol=study.protocols[1])
         sample_collection_process.inputs = [source1]
         aliquoting_process.outputs = [aliquot1]
         plink(sample_collection_process, aliquoting_process)
-        s.process_sequence = [sample_collection_process, aliquoting_process]
-        i.studies = [s]
+        study.process_sequence = [sample_collection_process, aliquoting_process]
+        investigation.studies = [study]
         expected = """Source Name\tProtocol REF\tProtocol REF\tSample Name
 source1\tsample collection\taliquoting\taliquot1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(investigation)))
 
     def test_source_protocol_ref_sample_protocol_ref_sample(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
         )
         source1 = Source(name='source1')
         sample1 = Sample(name='sample1')
         aliquot1 = Sample(name='aliquot1')
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
-        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process = Process(executes_protocol=study.protocols[0])
+        aliquoting_process = Process(executes_protocol=study.protocols[1])
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1]
         aliquoting_process.inputs = [sample1]
         aliquoting_process.outputs = [aliquot1]
         plink(sample_collection_process, aliquoting_process)
-        s.process_sequence = [sample_collection_process, aliquoting_process]
-        i.studies = [s]
+        study.process_sequence = [sample_collection_process, aliquoting_process]
+        investigation.studies = [study]
         expected = """Source Name\tProtocol REF\tSample Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1\taliquoting\taliquot1"""
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(investigation)))
 
     def test_sample_protocol_ref_material_protocol_ref_data2(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')), Protocol(name='nucleic acid sequencing', protocol_type=OntologyAnnotation(term='nucleic acid sequencing'))]
         )
@@ -1281,8 +1283,8 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
 
         data1.comments.append(cs_comment1)
         data1.comments.append(cs_comment2)
-        extraction_process = Process(executes_protocol=s.protocols[0])
-        sequencing_assay_process = Process(executes_protocol=s.protocols[1])
+        extraction_process = Process(executes_protocol=study.protocols[0])
+        sequencing_assay_process = Process(executes_protocol=study.protocols[1])
         extraction_process.inputs = [sample1]
         extraction_process.outputs = [extract1]
         sequencing_assay_process.inputs = [extract1]
@@ -1290,18 +1292,18 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         sequencing_assay_process.name = "assay-1"
 
         plink(extraction_process, sequencing_assay_process)
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process, sequencing_assay_process]
-        a.measurement_type = OntologyAnnotation(term="gene sequencing")
-        a.technology_type = OntologyAnnotation(term="nucleotide sequencing")
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process, sequencing_assay_process]
+        assay.measurement_type = OntologyAnnotation(term="gene sequencing")
+        assay.technology_type = OntologyAnnotation(term="nucleotide sequencing")
+        study.assays = [assay]
+        investigation.studies = [study]
         expected = (f"""Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File\tComment[checksum type]\tComment[checksum]\n""" +
                     f"""sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw\t{cs_comment1.value}\t{cs_comment2.value}""")
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(investigation)))
 
     def test_sample_protocol_ref_material_protocol_ref_data3(self):
-        i = Investigation()
+        investigation = Investigation()
         s = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
@@ -1320,28 +1322,20 @@ source1\tsample collection\tsample1\taliquoting\taliquot1"""
         sequencing_assay_process.name = "assay-1"
 
         plink(extraction_process, sequencing_assay_process)
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process, sequencing_assay_process]
-        a.measurement_type = OntologyAnnotation(term="metabolite profiling")
-        a.technology_type = OntologyAnnotation(term="mass spectrometry")
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process, sequencing_assay_process]
+        assay.measurement_type = OntologyAnnotation(term="metabolite profiling")
+        assay.technology_type = OntologyAnnotation(term="mass spectrometry")
+        s.assays = [assay]
+        investigation.studies = [s]
         expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tMS Assay Name\tRaw Spectral Data File
 sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
 
-        # print("Expected:", expected)
-        # print(isatab.dumps(i))
-        # dump_out = isatab.dumps(i)
-        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
-        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
-
-        # self.assertIn(expected_line1, dump_out)
-        # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(investigation)))
 
     def test_sample_protocol_ref_material_protocol_ref_data4(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction', protocol_type=OntologyAnnotation(term='extraction')),
                        Protocol(name='NMR spectroscopy',
@@ -1350,8 +1344,8 @@ sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
         sample1 = Sample(name='sample1')
         extract1 = Material(name='extract1', type_='Extract Name')
         data1 = DataFile(filename='datafile.raw', label='Free Induction Decay Data File')
-        extraction_process = Process(executes_protocol=s.protocols[0])
-        nmr_assay_process = Process(executes_protocol=s.protocols[1])
+        extraction_process = Process(executes_protocol=study.protocols[0])
+        nmr_assay_process = Process(executes_protocol=study.protocols[1])
         extraction_process.inputs = [sample1]
         extraction_process.outputs = [extract1]
         nmr_assay_process.inputs = [extract1]
@@ -1359,36 +1353,28 @@ sample1\textraction\textract1\tmass spectrometry\tassay-1\tdatafile.raw"""
         nmr_assay_process.name = "assay-1"
 
         plink(extraction_process, nmr_assay_process)
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process, nmr_assay_process]
-        a.measurement_type = OntologyAnnotation(term="metabolite profiling")
-        a.technology_type = OntologyAnnotation(term="NMR spectroscopy")
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process, nmr_assay_process]
+        assay.measurement_type = OntologyAnnotation(term="metabolite profiling")
+        assay.technology_type = OntologyAnnotation(term="NMR spectroscopy")
+        study.assays = [assay]
+        investigation.studies = [study]
         expected = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tNMR Assay Name\tFree Induction Decay Data File
 sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
 
-        # print("Expected:", expected)
-        # print(isatab.dumps(i))
-        # dump_out = isatab.dumps(i)
-        # expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
-        # expected_line2 = """sample1\textraction\textract1\tnucleic acid sequencing\tassay-1\tdatafile.raw"""
-
-        # self.assertIn(expected_line1, dump_out)
-        # self.assertIn(expected_line2, dump_out)
-        self.assertIn(expected, replace_windows_newlines(isatab.dumps(i)))
+        self.assertIn(expected, replace_windows_newlines(isatab.dumps(investigation)))
 
     def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
         )
         sample1 = Sample(name='sample1')
         extract1 = Material(name='extract1', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
-        extraction_process1 = Process(executes_protocol=s.protocols[0])
-        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1 = Process(executes_protocol=study.protocols[0])
+        scanning_process1 = Process(executes_protocol=study.protocols[1])
         extraction_process1.inputs = [sample1]
         extraction_process1.outputs = [extract1]
         scanning_process1.inputs = [extract1]
@@ -1398,75 +1384,75 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         sample2 = Sample(name='sample2')
         extract2 = Material(name='extract2', type_='Extract Name')
         data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
-        extraction_process2 = Process(executes_protocol=s.protocols[0])
-        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        extraction_process2 = Process(executes_protocol=study.protocols[0])
+        scanning_process2 = Process(executes_protocol=study.protocols[1])
         extraction_process2.inputs = [sample2]
         extraction_process2.outputs = [extract2]
         scanning_process2.inputs = [extract2]
         scanning_process2.outputs = [data2]
         plink(extraction_process2, scanning_process2)
 
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2, extraction_process2]
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [scanning_process1, extraction_process1, scanning_process2, extraction_process2]
+        study.assays = [assay]
+        investigation.studies = [study]
 
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File"""
         expected_line2 = """sample1\textraction\textract1\tscanning\tdatafile1.raw"""
         expected_line3 = """sample2\textraction\textract2\tscanning\tdatafile2.raw"""
-        dumps_out = isatab.dumps(i)
+        dumps_out = isatab.dumps(investigation)
 
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
 
     def test_sample_split_protocol_ref_material_protocol_ref_data(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction'), Protocol(name='scanning'), Protocol(name="sampling")]
         )
 
         source = Source(name="source1")
         sample1 = Sample(name='sample1')
-        sampling_process = Process(executes_protocol=s.protocols[2])
+        sampling_process = Process(executes_protocol=study.protocols[2])
         sampling_process.inputs = [source]
         sampling_process.outputs = [sample1]
-        s.process_sequence = [sampling_process]
+        study.process_sequence = [sampling_process]
         extract1 = Material(name='extract1', type_='Extract Name')
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
         data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
 
-        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1 = Process(executes_protocol=study.protocols[0])
         extraction_process1.inputs = [sample1]
         extraction_process1.outputs = [extract1, extract2]
 
-        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1 = Process(executes_protocol=study.protocols[1])
         scanning_process1.inputs = [extract1]
         scanning_process1.outputs = [data1]
 
-        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        scanning_process2 = Process(executes_protocol=study.protocols[1])
         scanning_process2.inputs = [extract2]
         scanning_process2.outputs = [data2]
         plink(extraction_process1, scanning_process1)
         plink(extraction_process1, scanning_process2)
 
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2]
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [scanning_process1, extraction_process1, scanning_process2]
+        study.assays = [assay]
+        investigation.studies = [study]
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File"""
         expected_line2 = """sample1\textraction\textract1\tscanning\tdatafile1.raw"""
         expected_line3 = """sample1\textraction\textract2\tscanning\tdatafile2.raw"""
-        dumps_out = isatab.dumps(i)
+        dumps_out = isatab.dumps(investigation)
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
 
     def test_sample_protocol_ref_material_protocol_split_ref_data(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
         )
@@ -1475,38 +1461,38 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
         data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
 
-        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1 = Process(executes_protocol=study.protocols[0])
         extraction_process1.inputs = [sample1]
         extraction_process1.outputs = [extract1]
 
-        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1 = Process(executes_protocol=study.protocols[1])
         scanning_process1.inputs = [extract1]
         scanning_process1.outputs = [data1]
 
-        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        scanning_process2 = Process(executes_protocol=study.protocols[1])
         scanning_process2.inputs = [extract1]
         scanning_process2.outputs = [data2]
 
         plink(extraction_process1, scanning_process1)
         plink(extraction_process1, scanning_process2)
 
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process1, scanning_process1, scanning_process2]
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process1, scanning_process1, scanning_process2]
+        study.assays = [assay]
+        investigation.studies = [study]
 
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File"""
         expected_line2 = """sample1\textraction\textract1\tscanning\tdatafile1.raw"""
         expected_line3 = """sample1\textraction\textract1\tscanning\tdatafile2.raw"""
-        dumps_out = isatab.dumps(i)
+        dumps_out = isatab.dumps(investigation)
 
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
 
     def test_sample_pool_protocol_ref_material_protocol_ref_data(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
         )
@@ -1514,8 +1500,8 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         sample2 = Sample(name='sample2')
         extract1 = Material(name='extract1', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
-        extraction_process1 = Process(executes_protocol=s.protocols[0])
-        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1 = Process(executes_protocol=study.protocols[0])
+        scanning_process1 = Process(executes_protocol=study.protocols[1])
         extraction_process1.inputs = [sample1, sample2]
         extraction_process1.outputs = [extract1]
 
@@ -1523,23 +1509,23 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         scanning_process1.outputs = [data1]
         plink(extraction_process1, scanning_process1)
 
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process1, scanning_process1]
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process1, scanning_process1]
+        study.assays = [assay]
+        investigation.studies = [study]
 
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File"""
         expected_line2 = """sample1\textraction\textract1\tscanning\tdatafile1.raw"""
         expected_line3 = """sample2\textraction\textract1\tscanning\tdatafile1.raw"""
-        dumps_out = isatab.dumps(i)
+        dumps_out = isatab.dumps(investigation)
 
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
 
     def test_sample_protocol_ref_material_pool_protocol_ref_data(self):
-        i = Investigation()
-        s = Study(
+        investigation = Investigation()
+        study = Study(
             filename='s_test.txt',
             protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
         )
@@ -1549,30 +1535,30 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
         extract2 = Material(name='extract2', type_='Extract Name')
         data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
 
-        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1 = Process(executes_protocol=study.protocols[0])
         extraction_process1.inputs = [sample1]
         extraction_process1.outputs = [extract1]
 
-        extraction_process2 = Process(executes_protocol=s.protocols[0])
+        extraction_process2 = Process(executes_protocol=study.protocols[0])
         extraction_process2.inputs = [sample2]
         extraction_process2.outputs = [extract2]
 
-        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1 = Process(executes_protocol=study.protocols[1])
         scanning_process1.name = "assay-name-1"
         scanning_process1.inputs = [extract1, extract2]
         scanning_process1.outputs = [data1]
         plink(extraction_process1, scanning_process1)
         plink(extraction_process2, scanning_process1)
 
-        a = Assay(filename='a_test.txt')
-        a.process_sequence = [extraction_process1, extraction_process2, scanning_process1]
-        s.assays = [a]
-        i.studies = [s]
+        assay = Assay(filename='a_test.txt')
+        assay.process_sequence = [extraction_process1, extraction_process2, scanning_process1]
+        study.assays = [assay]
+        investigation.studies = [study]
 
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File"""
         expected_line2 = """sample1\textraction\textract1\tscanning\tdatafile1.raw"""
         expected_line3 = """sample2\textraction\textract2\tscanning\tdatafile1.raw"""
-        dumps_out = isatab.dumps(i)
+        dumps_out = isatab.dumps(investigation)
 
         self.assertIn(expected_line1, dumps_out)
         self.assertIn(expected_line2, dumps_out)
@@ -1606,13 +1592,11 @@ sample1\textraction\textract1\tNMR spectroscopy\tassay-1\tdatafile.raw"""
 
         expected_line1 = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tAssay Name\tRaw Data File"""
 
-       # @skip # TODO: requires new test:
-        # expected_line2 = """sample1\textraction\textract1\tdata acquisition\tAssay_1\tdatafile1.raw;datafile2.raw"""
+       # @skip # TODO: requires new test to test more than one data output:
         expected_line3 = """sample1\textraction\textract1\tdata acquisition\tAssay_1\tdatafile2.raw"""
         dumps_out = isatab.dumps(investigation)
 
         self.assertIn(expected_line1, dumps_out)
-        #self.assertIn(expected_line2, dumps_out)
         self.assertIn(expected_line3, dumps_out)
         
     def test_sample_protocol_ref_material_protocol_multiple_process_multiple_files(self):

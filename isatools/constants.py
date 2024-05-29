@@ -1,4 +1,5 @@
 SYNONYMS = 'synonyms'
+HEADER = 'header'
 
 MATERIAL_LABELS = [
     'Source Name',
@@ -19,6 +20,9 @@ OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
 DATA_FILE_LABELS = [
     'Raw Data File',
     'Raw Spectral Data File',
+    'Free Induction Decay Data File',
+    'Image File',
+    'Derived Data File',
     'Derived Spectral Data File',
     'Derived Array Data File',
     'Derived Array Data Matrix File',
@@ -27,9 +31,6 @@ DATA_FILE_LABELS = [
     'Peptide Assignment File',
     'Post Translational Modification Assignment File',
     'Acquisition Parameter Data File',
-    'Free Induction Decay Data File',
-    'Image File',
-    'Derived Data File',
     'Metabolite Assignment File',
     'Metabolite Identification File'
 ]
@@ -37,6 +38,9 @@ DATA_FILE_LABELS = [
 _LABELS_DATA_NODES = [
     'Raw Data File',
     'Raw Spectral Data File',
+    'Free Induction Decay Data File',
+    'Image File',
+    'Derived Data File',
     'Derived Spectral Data File',
     'Derived Array Data File',
     'Derived Array Data Matrix File',
@@ -45,9 +49,6 @@ _LABELS_DATA_NODES = [
     'Peptide Assignment File',
     'Post Translational Modification Assignment File',
     'Acquisition Parameter Data File',
-    'Free Induction Decay Data File',
-    'Image File',
-    'Derived Data File',
     'Metabolite Assignment File',
     'Metabolite Identification File'
 ]
@@ -65,6 +66,21 @@ ASSAY_LABELS = [
     'Data Transformation Name'
 ]
 
+QUALIFIER_LABELS = [
+    'Protocol REF',
+    'Material Type',
+    'Term Source REF',
+    'Term Accession Number',
+    'Unit'
+]
+
+ALLOWED_NODES = NODE_LABELS.append('Protocol REF')
+
+ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
+
+ALL_LABELS.append('Protocol REF')
+ALL_LABELS.append('Label')
+
 _LABELS_ASSAY_NODES = [
     'Assay Name',
     'MS Assay Name',
@@ -74,15 +90,3 @@ _LABELS_ASSAY_NODES = [
     'Normalization Name',
     'Data Transformation Name'
 ]
-
-QUALIFIER_LABELS = [
-    'Protocol REF',
-    'Material Type',
-    'Term Source REF',
-    'Term Accession Number',
-    'Unit'
-]
-
-ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
-
-ALL_LABELS.append('Protocol REF')

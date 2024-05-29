@@ -458,3 +458,4 @@ if __name__ == "__main__":
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")
 # Conc_R100028_export_incl_information_20200309.xml
+

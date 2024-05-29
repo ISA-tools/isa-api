@@ -20,7 +20,8 @@ class TestOntologyAnnotation(TestCase):
     @patch('isatools.model.identifiable.uuid4', return_value="mocked_UUID")
     def test_properties(self, mock_uuid):
         self.assertTrue(self.ontology_annotation.term == 'test_term')
-        self.assertFalse(self.ontology_annotation.term_source == 'test_term_source')
+        self.assertEqual(self.ontology_annotation.term_source.name, 'test_term_source')
+        self.assertIsInstance(self.ontology_annotation.term_source, OntologySource)
         self.assertTrue(self.ontology_annotation.term_accession == 'test_term_accession')
 
         expected_value = '#ontology_annotation/' + mock_uuid.return_value
