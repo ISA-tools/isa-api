@@ -299,7 +299,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x),
                                            node.parameter_values))
                     if node.executes_protocol.protocol_type:
-                        # print(node.executes_protocol.protocol_type)
                         if isinstance(node.executes_protocol.protocol_type, OntologyAnnotation):
                             protocol_type = node.executes_protocol.protocol_type.term.lower()
                         else:
@@ -318,22 +317,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             if protocol_type in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 columns.append("Array Design REF")
                         
-                        # if protocol_type in protocol_types_dict and\
-                        #     protocol_types_dict[protocol_type][HEADER]:
-                        #     oname_label = protocol_types_dict[protocol_type][HEADER]
-                        # else:
-                        #     oname_label = None
-                        
-                        # if oname_label is not None:
-                        #     if oname_label not in name_label_in_path_counts:
-                        #         name_label_in_path_counts[oname_label] = 0
-                        #     new_oname_label = oname_label + "." + str(name_label_in_path_counts[oname_label])
-                            
-                        #     columns.append(new_oname_label)
-                        #     name_label_in_path_counts[oname_label] += 1
-                        #     if protocol_type in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
-                        #         columns.append("Array Design REF")
-                    
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
@@ -400,24 +383,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 if protocol_type in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                     df_dict["Array Design REF"][-1] = \
                                         node.array_design_ref
-                            
-                            
-                            # if protocol_type in protocol_types_dict and\
-                            #    protocol_types_dict[protocol_type][HEADER]:
-                            #     oname_label = protocol_types_dict[protocol_type][HEADER]
-                            # else:
-                            #     oname_label = None
-                            
-                            # if oname_label is not None:
-                            #     if oname_label not in name_label_in_path_counts:
-                            #         name_label_in_path_counts[oname_label] = 0
-                            #     new_oname_label = oname_label + "." + str(name_label_in_path_counts[oname_label])
-                                
-                            #     df_dict[new_oname_label][-1] = node.name
-                            #     name_label_in_path_counts[oname_label] += 1
-                            #     if protocol_type in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
-                            #         df_dict["Array Design REF"][-1] = \
-                            #             node.array_design_ref
 
                         if node.date is not None:
                             df_dict[olabel + ".Date"][-1] = node.date
