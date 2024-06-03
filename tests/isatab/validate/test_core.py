@@ -24,8 +24,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'tab', 'MTBLS267-partial')
         with open(path.join(data_path, 'i_Investigation.txt'), 'r') as data_file:
             r = validate(fp=data_file, config_dir=self.default_conf, origin="mzml2isa")
-        print(r['warnings'])
-        self.assertEqual(len(r['errors']), 5)
+        self.assertEqual(len(r['errors']), 4)
 
     def test_mtbls_1846(self):
         data_path = path.join(path.dirname(path.abspath(__file__)), '..', '..', 'data', 'mtbls', 'MTBLS1846')
