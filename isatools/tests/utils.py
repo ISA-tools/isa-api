@@ -103,12 +103,13 @@ def assert_tab_content_equal(fp_x, fp_y):
                     break
             else:
                 try:
-                    for x, y in zip(sorted(dfx), sorted(dfy)):
+                    for x, y in zip(dfx, dfy):
                         if not _assert_df_equal(x, y):
                             eq = False
                             break
                 except ValueError as e:
                     log.error(e)
+                    return False
         return eq
     else:
 
