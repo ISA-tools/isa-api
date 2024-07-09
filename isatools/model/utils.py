@@ -1,3 +1,5 @@
+import itertools
+
 import networkx as nx
 import os
 
@@ -16,6 +18,193 @@ def find(predictor, iterable):
         it += 1
     return None, it
 
+
+def _compute_combinations(identifier_list, identifiers_to_objects):
+    """Compute the combinations of identifiers in identifier_list.
+
+    Return a list of the combinations of identifiers in identifier_list based
+    on the input/output type.
+
+    :param list identifier_list: a list of identifiers to create combinations out of.
+    :param dict identifiers_to_objects: a dictionary mapping the identifiers to objects, used to determine IO type.
+    :returns: a list of tuples where each tuple is a combination of the identifiers.
+    """
+    io_types = {}
+    for identifier in identifier_list:
+        io_object = identifiers_to_objects[identifier]
+        if isinstance(io_object, DataFile):
+            label = io_object.label
+            if label not in io_types:
+                io_types[label] = [identifier]
+            else:
+                io_types[label].append(identifier)
+        else:
+            if "Material" not in io_types:
+                io_types["Material"] = [identifier]
+            else:
+                io_types["Material"].append(identifier)
+    combinations = [item for item in list(itertools.product(*[values for values in io_types.values()])) if item]
+    return combinations
+
+
+def _expand_path(path, identifiers_to_objects, dead_end_outputs):
+    """Expand the path by adding additional nodes if possible.
+
+    :param list path: a list of identifiers representing a path to be expanded.
+    :param dict identifiers_to_objects: a dictionary mapping the identifiers to objects, used to determine IO type.
+    :param set dead_end_outputs: a set of identifiers that are outputs which are not correspondingly inputs.
+    :returns: a list of lists where each list is an expansion of the path, and a boolean that is true if the path was able to be expanded.
+    """
+    new_paths = []
+    path_len = len(path)
+    path_modified = False
+    for i, identifier in enumerate(path):
+        node = identifiers_to_objects[identifier]
+
+        # If the node is a process at beginning of the path, add a path for each of its inputs.
+        if i == 0 and isinstance(node, Process):
+            identifier_list = [input_.sequence_identifier for input_ in node.inputs]
+            combinations = _compute_combinations(identifier_list, identifiers_to_objects)
+            for combo in combinations:
+                new_path = list(combo) + path
+                path_modified = True
+                if new_path not in new_paths:
+                    new_paths.append(new_path)
+            continue
+
+        # If the node is a process at the end of the path, add a path for each of its outputs.
+        if i == path_len - 1 and isinstance(node, Process):
+            identifier_list = [output.sequence_identifier for output in node.outputs]
+            combinations = _compute_combinations(identifier_list, identifiers_to_objects)
+            for combo in combinations:
+                new_path = path + list(combo)
+                path_modified = True
+                if new_path not in new_paths:
+                    new_paths.append(new_path)
+            continue
+
+        # If the node is a process in the middle of the path and the next node in the path is also a process,
+        # add paths for each output that is also an input to the next process.
+        if i + 1 < path_len and isinstance(identifiers_to_objects[path[i + 1]], Process) and i > 0 and isinstance(node,
+                                                                                                                  Process):
+            output_sequence_identifiers = {output.sequence_identifier for output in node.outputs}
+            input_sequence_identifiers = {input_.sequence_identifier for input_ in
+                                          identifiers_to_objects[path[i + 1]].inputs}
+            identifier_intersection = output_sequence_identifiers.intersection(input_sequence_identifiers)
+
+            combinations = _compute_combinations(identifier_intersection, identifiers_to_objects)
+            for combo in combinations:
+                new_path = path[0:i + 1] + list(combo) + path[i + 1:]
+                path_modified = True
+                if new_path not in new_paths:
+                    new_paths.append(new_path)
+
+            # Add outputs that aren't later used as inputs.
+            for output in output_sequence_identifiers.intersection(dead_end_outputs):
+                new_path = path[:i + 1] + [output]
+                path_modified = True
+                if new_path not in new_paths:
+                    new_paths.append(new_path)
+            continue
+    return new_paths, path_modified
+
+
+def _build_paths_and_indexes(process_sequence=None):
+    """Find all the paths within process_sequence and all the nodes.
+
+    :param list process_sequence: a list of processes.
+    :returns: The paths from source/sample to end points and a mapping of sequence_identifier to object.
+    """
+    # Determining paths depends on processes having next and prev sequence, so add
+    # them if they aren't there based on inputs and outputs.
+    inputs_to_process = {id(p_input): {"process": process, "input": p_input} for process in process_sequence for p_input
+                         in process.inputs}
+    outputs_to_process = {id(output): {"process": process, "output": output} for process in process_sequence for output
+                          in process.outputs}
+    for output, output_dict in outputs_to_process.items():
+        if output in inputs_to_process:
+            if not inputs_to_process[output]["process"].prev_process:
+                inputs_to_process[output]["process"].prev_process = output_dict["process"]
+            if not output_dict["process"].next_process:
+                output_dict["process"].next_process = inputs_to_process[output]["process"]
+
+    paths = []
+    identifiers_to_objects = {}
+    all_inputs = set()
+    all_outputs = set()
+    # For each process in the process sequence create a list of sequence identifiers representing
+    # the path obtained by simply following the next and prev sequences. Also create a dictionary,
+    # identifiers_to_objects to be able to easily reference an object from its identifier later.
+    for process in process_sequence:
+
+        identifiers_to_objects[process.sequence_identifier] = process
+        for output in process.outputs:
+            identifiers_to_objects[output.sequence_identifier] = output
+            all_outputs.add(output.sequence_identifier)
+        for input_ in process.inputs:
+            identifiers_to_objects[input_.sequence_identifier] = input_
+            all_inputs.add(input_.sequence_identifier)
+
+        original_process = process
+
+        right_processes = []
+        while next_process := process.next_process:
+            right_processes.append(next_process.sequence_identifier)
+            process = next_process
+
+        left_processes = []
+        process = original_process
+        while prev_process := process.prev_process:
+            left_processes.append(prev_process.sequence_identifier)
+            process = prev_process
+        left_processes = list(reversed(left_processes))
+
+        paths.append(left_processes + [original_process.sequence_identifier] + right_processes)
+
+    # Trim paths down to only the unique paths.
+    unique_paths = [list(x) for x in set(tuple(x) for x in paths)]
+    paths = unique_paths
+    dead_end_outputs = all_outputs - all_inputs
+
+    # Paths have to be expanded out combinatorially based on inputs and outputs.
+    # paths is only processes, so expand them out to include inputs and outputs.
+    str_path_to_path = {}
+    was_path_modified = {}
+    paths_seen = []
+    paths_seen_twice = []
+    # Keep looping until there are no new paths created.
+    while True:
+        new_paths = []
+        paths_seen_changed = False
+        for path in paths:
+            str_path = str(path)
+            str_path_to_path[str_path] = path
+            if path not in paths_seen:
+                paths_seen.append(path)
+                paths_seen_changed = True
+            else:
+                paths_seen_twice.append(path)
+                continue
+            expanded_paths, path_modified = _expand_path(path, identifiers_to_objects, dead_end_outputs)
+            new_paths += expanded_paths
+            # This is supposed to catch different length paths.
+            if not path_modified and path not in new_paths:
+                new_paths.append(path)
+
+            # Keep track of which paths are modified to use as a filter later.
+            if str_path in was_path_modified:
+                if path_modified:
+                    was_path_modified[str_path] = path_modified
+            else:
+                was_path_modified[str_path] = path_modified
+        if not paths_seen_changed:
+            break
+        paths = new_paths
+
+    # Ultimately only keep the paths created in the loop that were never modified.
+    paths = [str_path_to_path[path] for path, was_modified in was_path_modified.items() if not was_modified]
+
+    return paths, identifiers_to_objects
 
 def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a

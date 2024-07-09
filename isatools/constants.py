@@ -68,6 +68,8 @@ ASSAY_LABELS = [
 
 QUALIFIER_LABELS = [
     'Protocol REF',
+    'Performer',
+    'Date',
     'Material Type',
     'Term Source REF',
     'Term Accession Number',
@@ -80,6 +82,8 @@ ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
 
 ALL_LABELS.append('Protocol REF')
 ALL_LABELS.append('Label')
+ALL_LABELS.append('Performer')
+ALL_LABELS.append('Date')
 
 _LABELS_ASSAY_NODES = [
     'Assay Name',

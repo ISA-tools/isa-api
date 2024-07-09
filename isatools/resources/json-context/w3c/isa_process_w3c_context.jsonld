@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Process": "prov:Activity",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "rdfls:Label",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "dcterms:description",
+      "@type": "xsd:string"
+    },
+    "date": {
+      "@id": "prov:wasStartedate",
+      "@type": "xsd:date"
+    },
+    "executesProtocol": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "prov:Plan"
+    },
+    "parameterValues": {
+      "@id": "w3c:?",
+      "@type": "w3c:?"
+    },
+    "previousProcess": {
+      "@id": "w3c:?",
+      "@type": "w3c:?"
+    },
+    "nextProcess": {
+      "@id": "w3c:?",
+      "@type": "w3c:?"
+    },
+    "inputs": "prov:used",
+    "outputs": "prov:generated",
+    "performer": {
+      "@id": "prov:wasAttributedTo",
+      "@type": "prov:Person"
+    },
+    "comments": {
+      "@id": "rdfs:comment",
+      "@type": "xsd:string"
+    }
+  }
+}

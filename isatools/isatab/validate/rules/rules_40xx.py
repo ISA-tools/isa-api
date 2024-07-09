@@ -384,6 +384,8 @@ def load_table_checks(df, filename):
         'Extract Name',
         'Labeled Extract Name',
         'Protocol REF',
+        'Performer',
+        'Date',
         'Raw Data File',
         'Raw Spectral Data File',
         'Free Induction Decay Data File',

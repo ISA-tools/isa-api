@@ -146,7 +146,7 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        for data_col in [x for x in DF.columns if x.endswith(" File")]:
+        for data_col in [x for x in DF.columns if x in _LABELS_DATA_NODES]:
             filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
             data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
@@ -167,7 +167,7 @@ class ProcessSequenceFactory:
                 n = samples[lk]
             elif labl in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
-            elif labl.endswith(' File'):
+            elif labl in _LABELS_DATA_NODES:
                 n = data[lk]
             return n
 
@@ -410,7 +410,7 @@ class ProcessSequenceFactory:
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
                     process_key_sequence.append(process_key)
 
-                if object_label.endswith(' File'):
+                if object_label in _LABELS_DATA_NODES:
                     data_node = None
                     try:
                         data_node = get_node_by_label_and_key(object_label, str(object_series[object_label]))

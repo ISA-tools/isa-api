@@ -383,5 +383,5 @@ class TestPerformerValidation(unittest.TestCase):
             report = isatab.validate(fp)
             print(report["errors"])
 
-        # self.assertTrue(len(report["errors"]) == 0)
-        # self.assertEqual(len(report["errors"]), 0)
+        self.assertTrue(len(report["errors"]) == 0)
+        self.assertEqual(len(report["errors"]), 0)

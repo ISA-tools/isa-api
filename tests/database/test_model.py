@@ -162,6 +162,7 @@ class TestAssertions(TestCase):
             self.assertEqual(len(_investigation), 3)
 
             investigation = get_investigation("BII-S-3")
+            print(type(investigation))
             session.add(investigation.to_sql(session=session))
             session.commit()
             _investigation = session.query(Investigation.get_table()).all()
