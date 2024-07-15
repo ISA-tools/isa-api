@@ -362,8 +362,7 @@ def write_idf_file(inv_obj, output_path):
     idf_df = idf_df.replace('', np.nan)
     with open(os.path.join(output_path, "{}.idf.txt".format(
             investigation.identifier if investigation.identifier != ""
-            else investigation.filename[2:-3])), "w",
-            encoding='utf-8') as idf_fp:
+            else investigation.filename[2:-3])), "wb") as idf_fp:
         idf_df.to_csv(
             path_or_buf=idf_fp,
             index=True,

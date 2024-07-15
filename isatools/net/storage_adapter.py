@@ -22,7 +22,7 @@ __author__ = 'massi'
 DIR_NAME = os.path.dirname(__file__)
 
 INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join(
-    DIR_NAME, '..', 'resources', 'schemas',  'isa_model_version_1_0_schemas', 'core', 'investigation_schema.json'
+    DIR_NAME, '..', 'resources', 'schemas', 'isa_model_version_1_0_schemas', 'core', 'investigation_schema.json'
 ))
 CONFIGURATION_SCHEMA_FILE = os.path.join(DIR_NAME, '..', 'resources', 'schemas', 'isatab_configurator.xsd')
 
@@ -135,7 +135,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     requests.delete(auths[0]['url'], headers=headers, auth=(username, password))
 
                 # require a new authorization
-                res = requests.post(self.AUTH_ENDPOINT,  json=payload, headers=headers, auth=(username, password))
+                res = requests.post(self.AUTH_ENDPOINT, json=payload, headers=headers, auth=(username, password))
 
                 if res.status_code == requests.codes.created:
                     self._authorization = json.loads(res.text or res.content)
@@ -385,7 +385,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             json_content = json.loads(decoded_content)
             if validate_json:
                 validate_json_against_schema(json_content, INVESTIGATION_SCHEMA_FILE)
-            return { 'json': json_content, 'text': decoded_content }
+            return {'json': json_content, 'text': decoded_content}
 
         # if file is XML
         elif file_ext == 'xml':

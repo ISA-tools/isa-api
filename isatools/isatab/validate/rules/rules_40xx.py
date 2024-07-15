@@ -12,11 +12,13 @@ from isatools.isatab.defaults import (
     _RX_COMMENT
 )
 
+from isatools.constants import ALL_LABELS, DATA_FILE_LABELS
 
-def check_investigation_against_config(i_df, configs):
+
+def check_investigation_against_config(i_df_dict, configs):
     """Checks investigation file against the loaded configurations
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param configs: A dictionary of ISA Configuration objects
     :return: None
     """
@@ -24,17 +26,17 @@ def check_investigation_against_config(i_df, configs):
     code = 4003
     message = "A required property is missing"
 
-    def add_warning(index, column, value_index):
+    def add_error(index, column, value_index):
         if index > 0:
             spl = "A property value in {}.{} of investigation file at column {} is required"
             spl = spl.format(column, index + 1, value_index + 1)
-            validator.add_warning(message=message, supplemental=spl, code=code)
-            log.warning("(W) {}".format(spl))
+            validator.add_error(message=message, supplemental=spl, code=code)
+            log.error("(E) {}".format(spl))
         else:
             spl = "A property value in {} of investigation file at column {} is required"
             spl = spl.format(column, value_index + 1)
-            validator.add_warning(message=message, supplemental=spl, code=code)
-            log.warning("(W) {}".format(spl))
+            validator.add_error(message=message, supplemental=spl, code=code)
+            log.error("(E) {}".format(spl))
 
     def check_section_against_required_fields_one_value(section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
@@ -45,25 +47,25 @@ def check_investigation_against_config(i_df, configs):
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
                         if isnan(required_value):
-                            add_warning(i, col, x)
+                            add_error(i, col, x)
                     else:
                         if required_value == '' or 'Unnamed: ' in required_value:
-                            add_warning(i, col, x)
+                            add_error(i, col, x)
 
     config_fields = configs[('[investigation]', '')].get_isatab_configuration()[0].get_field()
     required_fields = [i.header for i in config_fields if i.is_required]
-    check_section_against_required_fields_one_value(i_df['investigation'], required_fields)
-    check_section_against_required_fields_one_value(i_df['i_publications'], required_fields)
-    check_section_against_required_fields_one_value(i_df['i_contacts'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['investigation'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['i_publications'], required_fields)
+    check_section_against_required_fields_one_value(i_df_dict['i_contacts'], required_fields)
 
-    for x, study_df in enumerate(i_df['studies']):
-        check_section_against_required_fields_one_value(i_df['studies'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_design_descriptors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_publications'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_factors'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_assays'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_protocols'][x], required_fields, x)
-        check_section_against_required_fields_one_value(i_df['s_contacts'][x], required_fields, x)
+    for x, study_df in enumerate(i_df_dict['studies']):
+        check_section_against_required_fields_one_value(i_df_dict['studies'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_design_descriptors'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_publications'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_factors'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_assays'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_protocols'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df_dict['s_contacts'][x], required_fields, x)
 
 
 def load_config(config_dir):
@@ -92,25 +94,27 @@ def load_config(config_dir):
     return configs
 
 
-def check_measurement_technology_types(i_df, configs):
+def check_measurement_technology_types(i_df_dict, configs):
     """Rule 4002
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :param configs: A dictionary of ISA Configuration objects
     :return: None
     """
-    for i, assay_df in enumerate(i_df['s_assays']):
+    for i, assay_df in enumerate(i_df_dict['s_assays']):
         measurement_types = assay_df['Study Assay Measurement Type'].tolist()
         technology_types = assay_df['Study Assay Technology Type'].tolist()
+
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
                 lowered_mt = measurement_types[x].lower()
                 lowered_tt = technology_types[x].lower()
                 if (lowered_mt, lowered_tt) not in configs.keys():
-                    spl = "Measurement {}/technology {}, STUDY ASSAY.{}"
-                    spl = spl.format(measurement_types[x], technology_types[x], i)
+
+                    spl = "Measurement {}/technology {}, STUDY.{}, STUDY ASSAY.{}"
+                    spl = spl.format(measurement_types[x], technology_types[x], i, x)
                     error = ("(E) Could not load configuration for measurement type '{}' and technology type '{}' "
-                             "for STUDY ASSAY.{}'").format(measurement_types[x], technology_types[x], i)
+                             "for STUDY.{}, STUDY ASSAY.{}'").format(measurement_types[x], technology_types[x], i, x)
                     validator.add_error(message="Measurement/technology type invalid", supplemental=spl, code=4002)
                     log.error(error)
 
@@ -255,29 +259,21 @@ def check_protocol_fields(table, cfg, proto_map):
         next(b, None)
         return zip(a, b)
 
-    proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
-    result = True
-    for each in proto_ref_index:
-        prots_found = set()
-        for cell in table[each]:
-            prots_found.add(cell)
-        if len(prots_found) > 1:
-            log.warning("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
-            log.warning("(W) Only one protocol reference should be used in a Protocol REF column.")
-            result = False
-    if result:
-        field_headers = [i for i in table.columns
-                         if i.lower().endswith(' name')
-                         or i.lower().endswith(' data file')
-                         or i.lower().endswith(' data matrix file')]
-        protos = [i for i in table.columns if i.lower() == 'protocol ref']
-        if len(protos) > 0:
-            last_proto_index = table.columns.get_loc(protos[len(protos) - 1])
-        else:
-            last_proto_index = -1
-        last_mat_or_dat_index = table.columns.get_loc(field_headers[len(field_headers) - 1])
-        if last_proto_index > last_mat_or_dat_index:
-            log.warning("(W) Protocol REF column without output in file '" + table.filename + "'")
+    field_headers = [i for i in table.columns
+                     if i.lower().endswith(' name')
+                     or i.lower().endswith(' data file')
+                     or i.lower().endswith(' data matrix file')]
+    protos = [i for i in table.columns if i.lower() == 'protocol ref']
+    if len(protos) > 0:
+        last_proto_index = table.columns.get_loc(protos[len(protos) - 1])
+    else:
+        last_proto_index = -1
+    last_mat_or_dat_index = table.columns.get_loc(field_headers[len(field_headers) - 1])
+    if last_proto_index > last_mat_or_dat_index:
+        spl = "(W) Protocol REF column is not followed by a material or data node in file '" + table.filename + "'"
+        validator.add_warning(message="Missing Protocol Value", supplemental=spl, code=1007)
+        log.warning(spl)
+    if cfg.get_isatab_configuration():
         for left, right in pairwise(field_headers):
             cleft = None
             cright = None
@@ -294,16 +290,16 @@ def check_protocol_fields(table, cfg, proto_map):
                 fprotos_headers = [i for i in raw_headers if 'protocol ref' in i.lower()]
                 fprotos = list()
                 for header in fprotos_headers:
-                    proto_name = table.iloc[0][header]
-                    try:
-                        proto_type = proto_map[proto_name]
-                        fprotos.append(proto_type)
-                    except KeyError:
-                        spl = ("Could not find protocol type for protocol name '{}', trying to validate_rules against name "
-                               "only").format(proto_name)
-                        validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                        log.warning("(W) {}".format(spl))
-                        fprotos.append(proto_name)
+                    proto_names = list(table.loc[:, header].unique())
+                    for proto_name in proto_names:
+                        proto_type = proto_map.get(proto_name)
+                        if not proto_type and proto_name:
+                            spl = ("Could not find protocol type for protocol name '{}' in file '{}'" ).format(proto_name, table.filename)
+                            validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
+                            log.warning("(W) {}".format(spl))
+                        else:
+                            fprotos.append(proto_type)
+
                 invalid_protos = set(cprotos) - set(fprotos)
                 if len(invalid_protos) > 0:
                     spl = ("Protocol(s) of type {} defined in the ISA-configuration expected as a between '{}' and "
@@ -311,8 +307,6 @@ def check_protocol_fields(table, cfg, proto_map):
                     spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
                     validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
                     log.warning("(W) {}".format(spl))
-                    result = False
-    return result
 
 
 def load_table_checks(df, filename):
@@ -327,23 +321,7 @@ def load_table_checks(df, filename):
     for x, column in enumerate(columns):  # check if columns have valid labels
         if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
-        if (column not in ['Source Name', 'Sample Name', 'Term Source REF',
-                           'Protocol REF', 'Term Accession Number',
-                           'Unit', 'Assay Name', 'Extract Name',
-                           'Raw Data File', 'Material Type', 'MS Assay Name', 'NMR Assay Name',
-                           'Raw Spectral Data File',
-                           'Labeled Extract Name',
-                           'Label', 'Hybridization Assay Name',
-                           'Array Design REF', 'Scan Name', 'Array Data File',
-                           'Protein Assignment File',
-                           'Peptide Assignment File',
-                           'Post Translational Modification Assignment File',
-                           'Data Transformation Name',
-                           'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File', 'Image File', "Free Induction Decay Data File",
-                           'Metabolite Assignment File', "Performer", "Date", "Array Data Matrix File",
-                           'Free Induction Decay File', "Derived Array Data Matrix File",
-                           'Acquisition Parameter Data File']) \
+        if (column not in ALL_LABELS) \
                 and not _RX_CHARACTERISTICS.match(column) \
                 and not _RX_PARAMETER_VALUE.match(column) \
                 and not _RX_FACTOR_VALUE.match(column) \
@@ -400,16 +378,32 @@ def load_table_checks(df, filename):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
+    allowed_fields = [
+        'Source Name',
+        'Sample Name',
+        'Extract Name',
+        'Labeled Extract Name',
+        'Protocol REF',
+        'Performer',
+        'Date',
+        'Raw Data File',
+        'Raw Spectral Data File',
+        'Free Induction Decay Data File',
+        'Image File',
+        'Derived Data File',
+        'Derived Spectral Data File',
+        'Derived Array Data File',
+        'Derived Array Data Matrix File',
+        'Array Data File',
+        'Protein Assignment File',
+        'Peptide Assignment File',
+        'Post Translational Modification Assignment File',
+        'Acquisition Parameter Data File',
+        'Metabolite Assignment File',
+        'Metabolite Identification File'
+    ]
     object_index = [i for i, x in enumerate(norm_columns)
-                    if x in ['Source Name', 'Sample Name', 'Protocol REF',
-                             'Extract Name', 'Labeled Extract Name',
-                             'Raw Data File',
-                             'Raw Spectral Data File', 'Array Data File',
-                             'Protein Assignment File',
-                             'Peptide Assignment File',
-                             'Post Translational Modification Assignment File',
-                             'Derived Spectral Data File',
-                             'Derived Array Data File']
+                    if x in allowed_fields
                     or _RX_FACTOR_VALUE.match(x)]
     object_columns_list = list()
     prev_i = object_index[0]
@@ -429,55 +423,114 @@ def load_table_checks(df, filename):
                                'Unit'] and not _RX_CHARACTERISTICS.match(col) \
                         and not _RX_FACTOR_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
-                    log.error("(E) Expected only Characteristics, "
-                              "Factor Values or Comments following {} "
-                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
+                    spl = ("(E) Expected only Characteristics, "
+                           "Factor Values or Comments following {} "
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number',
-                               'Unit', 'Assay Name',
+                               'Unit', 'Assay Name', 'MS Assay Name', 'NMR Assay Name',
                                'Hybridization Assay Name', 'Array Design REF',
-                               'Scan Name'] \
+                               'Scan Name', 'Data Transformation Name'] \
                         and not _RX_PARAMETER_VALUE.match(col) \
                         and not _RX_COMMENT.match(col):
-                    log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(prop_name, col, x + 1))
+                    spl = ("(E) Unexpected column heading following {} "
+                           "column. Found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
         elif prop_name == 'Extract Name':
-            if len(object_columns) > 1:
-                log.error(
-                    "Unexpected column heading(s) following {} column. "
-                    "Found {} at offset {}".format(
-                        prop_name, object_columns[1:], 2))
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number',
+                               'Unit'] and not _RX_CHARACTERISTICS.match(col) \
+                        and not _RX_COMMENT.match(col):
+                    spl = ("(E) Expected only Characteristics, "
+                           "Comments following {} "
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
         elif prop_name == 'Labeled Extract Name':
             if len(object_columns) > 1:
                 if object_columns[1] == 'Label':
                     for x, col in enumerate(object_columns[2:]):
                         if col not in ['Term Source REF',
                                        'Term Accession Number']:
-                            log.error("(E) Unexpected column heading "
-                                      "following {} column. Found {} at "
-                                      "offset {}".format(prop_name, col, x + 1))
+                            spl = ("(E) Unexpected column heading "
+                                   "following {} column. Found {} at "
+                                   "offset {} in file {}".format(prop_name, col, x + 1, filename))
+                            log.error(spl)
+                            error = {
+                                "message": "Unrecognised header",
+                                "supplemental": spl,
+                                "code": 4014
+                            }
+                            validator.add_error(**error)
+
                 else:
-                    log.error("(E) Unexpected column heading following {} "
-                              "column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+                    for x, col in enumerate(object_columns[1:]):
+                        if col not in ['Term Source REF', 'Term Accession Number',
+                                       'Unit'] and not _RX_CHARACTERISTICS.match(col) \
+                                and not _RX_COMMENT.match(col):
+                            spl = ("(E) Expected only Characteristics, "
+                                   "Comments following {} "
+                                   "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                            log.error(spl)
+                            error = {
+                                "message": "Unrecognised header",
+                                "supplemental": spl,
+                                "code": 4014
+                            }
+                            validator.add_error(**error)
             else:
-                log.error("Expected Label column after Labeled Extract Name "
-                          "but none found")
-        elif prop_name in ['Raw Data File', 'Derived Spectral Data File',
-                           'Derived Array Data File', 'Array Data File',
-                           'Raw Spectral Data File', 'Protein Assignment File',
-                           'Peptide Assignment File',
-                           'Post Translational Modification Assignment File']:
+                spl = ("Expected Label column after Labeled Extract Name "
+                       "but none found in file {}".format(filename))
+                log.error(spl)
+                error = {
+                    "message": "Unrecognised header",
+                    "supplemental": spl,
+                    "code": 4014
+                }
+                validator.add_error(**error)
+        elif prop_name in DATA_FILE_LABELS:
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
-                    log.error("(E) Expected only Comments following {} "
-                              "columns but found {} at offset {}".format(prop_name, col, x + 1))
+                    spl = ("(E) Expected only Comments following {} "
+                           "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ['Term Source REF', 'Term Accession Number']:
-                    log.error(
-                        "(E) Unexpected column heading following {} column. "
-                        "Found {} at offset {}".format(prop_name, col, x + 1))
+                    spl = ("(E) Unexpected column heading following {} column. "
+                           "Found {} at offset {} in file {}".format(prop_name, col, x + 1, filename))
+                    log.error(spl)
+                    error = {
+                        "message": "Unrecognised header",
+                        "supplemental": spl,
+                        "code": 4014
+                    }
+                    validator.add_error(**error)
         else:
             log.debug("Need to implement a rule for... " + prop_name)
             log.debug(object_columns)
