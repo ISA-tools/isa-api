@@ -1,0 +1,35 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Sample": "prov:Entity",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "rdfls:Label",
+      "@type": "xsd:string"
+    },
+    "characteristics": {
+      "@id": "prov:type",
+      "@type": "prov:value"
+    },
+    "roles": {
+      "@id": "prov:hadRole",
+      "@type": "prov:Role"
+    },
+    "factorValues": {
+        "@id": "prov:type",
+        "@type": "sdo:value"
+    },
+    "derivesFrom": {
+      "@id": "prov:wasDerivedFrom",
+      "@type": "prov:Entity"
+    }
+  }
+}

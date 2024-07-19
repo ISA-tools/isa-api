@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dcat": "https://www.w3.org/TR/vocab-dcat-3/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "Data": "dcat:Dataset",
+    "type": {
+      "@id": "prov:type",
+      "@type": "xsd:string"
+    },
+    "identifier": {
+      "@id": "prod:id",
+      "@type": "xsd:uri"
+    },
+    "name": {
+      "@id": "rdfs:Label",
+      "@type": "xsd:string"
+    },
+    "comments": {
+      "@id": "rdfs:comment",
+      "@type": "xsd:string"
+    }
+  }
+}

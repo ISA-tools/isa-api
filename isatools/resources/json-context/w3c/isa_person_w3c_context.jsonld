@@ -1,0 +1,45 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Person": "prov:Person",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "firstName": {
+      "@id": "foaf:firstName",
+      "@type": "string"
+    },
+    "lastName": {
+      "@id": "foaf:lastName",
+      "@type": "string"
+    },
+    "midInitials": {
+      "@id": "foaf:name",
+      "@type": "string"
+    },
+    "email": {
+      "@id": "foaf:mbox",
+      "@type": "uri"
+    },
+    "phone": {
+      "@id": "foaf:phone",
+      "@type": "string"
+    },
+    "fax": {
+      "@id": "",
+      "@type": "string"
+    },
+    "affiliation": {
+      "@id": "foaf:member",
+      "@type": "prov:Organization"
+    },
+    "roles": {
+      "@id": "prov:hadRole",
+      "@type": "prov:Role"
+    }
+  }
+}

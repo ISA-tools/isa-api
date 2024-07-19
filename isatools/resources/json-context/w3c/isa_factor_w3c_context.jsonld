@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Factor": "sosa:ObservableProperty?",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "factorName": {
+      "@id": "?:?",
+      "@type": "xsd:string"
+    },
+    "factorType": {
+      "@id": "prov:type",
+      "@type": "xsd:uri"
+    }
+  },
+    "comments": {
+      "@id": "rdfs:comment",
+      "@type": "xsd:string"
+    }
+}

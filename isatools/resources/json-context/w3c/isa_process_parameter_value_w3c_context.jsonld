@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "sdmx-measure": "http://purl.org/linked-data/sdmx/2009/measure#",
+    "qudt": "http://qudt.org/schema/qudt",
+    "cube" : "http://purl.org/linked-data/cube#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ParameterValue": "qb:MeasureProperty",
+    "category": {
+      "@id": "prov:type",
+      "@type": "xsd:string"
+    },
+    "value": {
+      "@id": "prov:value",
+      "@type": ["xsd:string","xsd:float"]
+    },
+    "unit": {
+      "@id": "qudt:unit",
+      "@type": "qudt:Unit"
+    }
+  }
+}

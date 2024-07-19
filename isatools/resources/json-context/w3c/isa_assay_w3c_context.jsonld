@@ -1,0 +1,67 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Assay": "prov:Activity",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "?:?",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "dcterms:description",
+      "@type": "xsd:string"
+    },
+    "filename": {
+      "@id": "prov:atLocation",
+      "@type": "prov:Location"
+    },
+    "measurementType": {
+      "@id": "prov:type",
+      "@type": ["xsd:string","sosa:ObservableProperty"]
+    },
+    "technologyType": {
+      "@id": "prov:type",
+      "@type": "xsd:string"
+    },
+    "technologyPlatform": {
+      "@id": "prov:instrument",
+      "@type": "prov:Agent"
+    },
+    "materials": {
+      "@id": "prov:used",
+      "@type": "prov:Entity"
+    },
+    "othermaterials": {
+      "@id": "prov:used",
+      "@type": "prov:Entity"
+    },
+    "characteristicCategories": {
+      "@id": "prov:type",
+      "@type": ["xsd:string","sosa:ObservableProperty"]
+    },
+    "dataFiles": {
+      "@id": "prov:atLocation",
+      "@type": "prov:Location"
+    },
+    "processSequence": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "prov:Activity"
+    },
+    "unitCategories": {
+      "@id": "prov:type",
+      "@type": "qudt:Unit"
+    },
+    "comments": {
+      "@id": "rdfs:comment",
+      "@type": "xsd:string"
+    }
+  }
+}

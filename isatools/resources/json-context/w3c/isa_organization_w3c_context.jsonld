@@ -1,0 +1,30 @@
+{
+  "@context": {
+    "@language": "en",
+    "prov": "http://www.w3.org/ns/prov#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Organization": "prov:Organization",
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "foaf:name",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "dcterms:description",
+      "@type": "xsd:string"
+    },
+    "postalAddress": {
+      "@id": "prov:atLocation",
+      "@type": "prov:Location"
+    },
+    "roles": {
+      "@id": "prov:hadRole",
+      "@type": "prov:Role"
+    }
+  }
+}

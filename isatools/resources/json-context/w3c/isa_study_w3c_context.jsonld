@@ -1,0 +1,83 @@
+{
+  "@context": {
+    "@language": "en",
+    "materials": "@nest",
+    "prov": "http://www.w3.org/ns/prov#",
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dcat": "https://www.w3.org/TR/vocab-dcat-3/",
+    "qudt": "http://qudt.org/schema/qudt",
+    "cube" : "http://purl.org/linked-data/cube#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Study": "dcat:Dataset",
+    "filename": {
+      "@id": "prov:atLocation",
+      "@type": "prov:Location"
+    },
+    "identifier": {
+      "@id": "prov:id",
+      "@type": "@id"
+    },
+    "title": {
+      "@id": "dcterms:title",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "dcterms:description",
+      "@type": "xsd:string"
+    },
+    "submissionDate": {
+      "@id": "prov:startedAtTime",
+      "@type": "xsd:date"
+    },
+    "publicReleaseDate": {
+      "@id": "prov:generatedAtTime",
+      "@type": "xsd:date"
+    },
+    "publications": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "prov:Communication"
+    },
+    "people": {
+      "@id": "wasAttributedTo",
+      "@type": "prov:Person"
+    },
+    "studyDesignDescriptors": {
+      "@id": "prov:type",
+      "@type": "prov:value"
+    },
+    "protocols": {
+      "@id": "rov:wasAssociatedWith",
+      "@type": "prov:Plan"
+    },
+    "sources": "prov:Entity",
+    "samples": "prov:Entity",
+    "otherMaterials": "prov:Entity",
+    "processSequence": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "prov:Activity"
+    },
+    "assays": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "prov:Activity"
+    },
+    "factors": {
+      "@id": "cube:dimension",
+      "@type": "cube:DimensionProperty"
+    },
+    "characteristicCategories": {
+      "@id": "prov:type",
+      "@type": ["xsd:string","sosa:ObservableProperty"]
+    },
+    "unitCategories": {
+      "@id": "prov:type",
+      "@type": "qudt:Unit"
+    },
+    "comments": {
+      "@id": "rdfs:comment",
+      "@type": "xsd:string"
+    }
+  }
+}
