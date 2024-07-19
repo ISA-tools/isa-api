@@ -336,7 +336,7 @@ def check_unit_field(table, cfg):
         if cell_has_value(cell_value) or cell_has_value(unit_value):
             local_spl = "Field '{}' has a unit but not a value in the file '{}'".format(cfield.header, filename)
             validator.add_warning(message="Cell found has unit but no value", supplemental=local_spl, code=4999)
-            log.warning("(W) {}".format(spl))
+            log.warning("(W) {}".format(local_spl))
             return False
         return True
 
