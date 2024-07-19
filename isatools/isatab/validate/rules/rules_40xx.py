@@ -30,13 +30,11 @@ def check_investigation_against_config(i_df_dict, configs):
         if index > 0:
             spl = "A property value in {}.{} of investigation file at column {} is required"
             spl = spl.format(column, index + 1, value_index + 1)
-            validator.add_error(message=message, supplemental=spl, code=code)
-            log.error("(E) {}".format(spl))
         else:
             spl = "A property value in {} of investigation file at column {} is required"
             spl = spl.format(column, value_index + 1)
-            validator.add_error(message=message, supplemental=spl, code=code)
-            log.error("(E) {}".format(spl))
+        validator.add_error(message=message, supplemental=spl, code=code)
+        log.error("(E) {}".format(spl))
 
     def check_section_against_required_fields_one_value(section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
