@@ -81,7 +81,7 @@ setup(
         'jsonschema~=4.23.0',
         'pandas==1.5.0',
         'openpyxl>=3.1.5',
-        'networkx~=3.3',
+        'networkx~=3.2.1',
         'lxml~=5.2.2',
         'requests~=2.32.3',
         'iso8601~=2.1.0',
