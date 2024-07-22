@@ -77,7 +77,7 @@ setup(
         'graphql-core==3.2.3',
         'wheel~=0.43.0',
         'setuptools~=71.0.4',
-        'numpy~=1.26.0',
+        'numpy~=1.26',
         'jsonschema~=4.23.0',
         'pandas==1.5.0',
         'openpyxl>=3.1.5',
