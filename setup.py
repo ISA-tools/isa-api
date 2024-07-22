@@ -93,7 +93,7 @@ setup(
         'progressbar2~=4.4.2',
         'deepdiff~=7.0.1',
         'PyYAML~=6.0.1',
-        'bokeh~=3.5.0',
+        'bokeh~=3.4.2',
         'certifi==2024.7.4',
         'flake8==7.1.0',
         'ddt==1.7.2',
