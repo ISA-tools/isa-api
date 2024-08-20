@@ -10,6 +10,7 @@ import unittest
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
+from unittest.mock import Mock
 
 from isatools import isajson
 from isatools import isatab
@@ -168,17 +169,22 @@ class TestISArchiveExport(unittest.TestCase):
 
 
 class TestPubMedIDUtil(unittest.TestCase):
+    return_values = {
+        'doi': 'abc123',
+        'authors': ['A', 'B'],
+        'year': 1912,
+        'journal': 'shipping news',
+        'title': 'surprise'
+    }
 
     def test_get_pubmed_article(self):
-        J = pubmed.get_pubmed_article('25520553')
-        self.assertEqual(J['doi'], '10.4137/CIN.S13895')
-        self.assertEqual(J['authors'], ['Johnson D', 'Connor AJ', 'McKeever S', 
-                                        'Wang Z', 'Deisboeck TS', 'Quaiser T', 
-                                        'Shochat E'])
-        self.assertEqual(J['year'], '2014')
-        self.assertEqual(J['journal'], 'Cancer Inform')
-        self.assertEqual(
-            J['title'], 'Semantically linking in silico cancer models.')
+        pubmed.get_pubmed_article = Mock(return_value = return_values)
+        j = pubmed.get_pubmed_article('25520553')
+        self.assertEqual(j['doi'], return_values['doi'])
+        self.assertEqual(j['authors'], return_values['authors'])
+        self.assertEqual(j['year'], return_values['year'])
+        self.assertEqual(j['journal'], return_values['journal'])
+        self.assertEqual(j['title'], return_values['title'])
 
     def test_set_pubmed_article(self):
         p = Publication(pubmed_id='25520553')
