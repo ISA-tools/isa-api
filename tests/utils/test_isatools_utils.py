@@ -85,10 +85,9 @@ class TestOlsSearch(unittest.TestCase):
         self.assertEqual(ontology_source.name, 'efo')
         self.assertEqual(
             ontology_source.file,
-            'https://www.ebi.ac.uk/ols/api/ontologies/efo')
+            'https://www.ebi.ac.uk/ols4/api/ontologies/efo?lang=en')
         self.assertIsInstance(ontology_source.version, str)
-        self.assertEqual(
-            ontology_source.description, '')
+        self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
@@ -178,26 +177,24 @@ class TestPubMedIDUtil(unittest.TestCase):
     }
 
     def test_get_pubmed_article(self):
-        pubmed.get_pubmed_article = Mock(return_value = return_values)
+        pubmed.get_pubmed_article = Mock(return_value = self.return_values)
         j = pubmed.get_pubmed_article('25520553')
-        self.assertEqual(j['doi'], return_values['doi'])
-        self.assertEqual(j['authors'], return_values['authors'])
-        self.assertEqual(j['year'], return_values['year'])
-        self.assertEqual(j['journal'], return_values['journal'])
-        self.assertEqual(j['title'], return_values['title'])
+        self.assertEqual(j['doi'], self.return_values['doi'])
+        self.assertEqual(j['authors'], self.return_values['authors'])
+        self.assertEqual(j['year'], self.return_values['year'])
+        self.assertEqual(j['journal'], self.return_values['journal'])
+        self.assertEqual(j['title'], self.return_values['title'])
 
     def test_set_pubmed_article(self):
+        pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         p = Publication(pubmed_id='25520553')
         pubmed.set_pubmed_article(p)
-        self.assertEqual(p.doi, '10.4137/CIN.S13895')
-        self.assertEqual(p.author_list, 'Johnson D, Connor AJ, McKeever S, '
-                                        'Wang Z, Deisboeck TS, Quaiser T, '
-                                        'Shochat E')
-        self.assertEqual(
-            p.title, 'Semantically linking in silico cancer models.')
+        self.assertEqual(p.doi, self.return_values['doi'])
+        self.assertEqual(p.author_list, ", ".join(self.return_values['authors']))
+        self.assertEqual(p.title, self.return_values['title'])
         self.assertIsInstance(p.comments[0], Comment)
         self.assertEqual(p.comments[0].name, 'Journal')
-        self.assertEqual(p.comments[0].value, 'Cancer Inform')
+        self.assertEqual(p.comments[0].value, self.return_values['journal'])
 
 
 class TestIsaTabFixer(unittest.TestCase):
