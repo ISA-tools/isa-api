@@ -15,8 +15,8 @@ from unittest.mock import Mock
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
-from isatools.net import mtbls as MTBLS
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
+from isatools.net import mtbls
 from isatools.net import ols
 from isatools.net import pubmed
 
@@ -55,7 +55,7 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                J = MTBLS.getj('MTBLS{}'.format(i))
+                J = mtbls.getj('MTBLS{}'.format(i))
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
                     utils.detect_graph_process_pooling(study.graph)
@@ -88,6 +88,7 @@ class TestOlsSearch(unittest.TestCase):
             'https://www.ebi.ac.uk/ols4/api/ontologies/efo?lang=en')
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
+
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
@@ -185,9 +186,22 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(j['journal'], self.return_values['journal'])
         self.assertEqual(j['title'], self.return_values['title'])
 
+        J1 = pubmed.get_pubmed_article('890406')
+        self.assertEqual(J1['doi'], '')
+
+        J2 = pubmed.get_pubmed_article('14909816')
+        self.assertEqual(J2['doi'], "")
+
+        J3 = pubmed.get_pubmed_article('2872386')
+        self.assertEqual(J3['doi'], "10.1016/s0025-7125(16)30931-2")
+
+        J4 = pubmed.get_pubmed_article('14870036')
+        self.assertEqual(J4['doi'], "")
+
     def test_set_pubmed_article(self):
         pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         p = Publication(pubmed_id='25520553')
+        prs = Person(first_name="bob")
         pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, self.return_values['doi'])
         self.assertEqual(p.author_list, ", ".join(self.return_values['authors']))

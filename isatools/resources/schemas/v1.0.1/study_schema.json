@@ -91,6 +91,12 @@
         "$ref": "factor_schema.json#"
       }
     },
+    "study_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "study_group.json#"
+      }
+    },
     "characteristicCategories": {
       "description": "List of all the characteristics categories (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
       "type": "array",
@@ -104,6 +110,10 @@
       "items": {
         "$ref": "ontology_annotation_schema.json#"
       }
+    },
+    "license": {
+      "type": "string",
+      "enum": [""]
     },
     "comments" : {
       "type": "array",

@@ -88,9 +88,9 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
 
     def __eq__(self, other):
         return isinstance(other, Source) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.characteristics == other.characteristics \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -121,4 +121,3 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
             characteristic = Characteristic()
             characteristic.from_dict(data)
             self.characteristics.append(characteristic)
-

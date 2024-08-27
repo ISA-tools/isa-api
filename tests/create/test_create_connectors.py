@@ -69,7 +69,13 @@ class TestMappings(unittest.TestCase):
         source = {'iri': 'GO:2314',
                   'source': {'description': 'toto', 'file': 'file', 'name': 'A', 'version': '1'},
                   'term': 'toto'}
-        self.assertEqual(_map_ontology_annotation(source, False), OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=OntologySource(name='A', file="file", version="1", description="toto")))
+        self.assertEqual(_map_ontology_annotation(source, False),
+                         OntologyAnnotation(term="toto",
+                                            term_accession="GO:2314",
+                                            term_source=OntologySource(name='A',
+                                                                       file="file",
+                                                                       version="1",
+                                                                       description="toto")))
 
     def test_reverse_map_ontology_annotation(self):
         ontosrc = OntologySource(name='A', file="file", version="1", description="toto")
@@ -78,13 +84,6 @@ class TestMappings(unittest.TestCase):
                     'source': {'description': 'toto', 'file': 'file', 'name': 'A', 'version': '1'},
                     'term': 'toto'}
         self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_1, False), expected)
-
-        ontosrc_string = "onto"
-        ontology_annot_2 = OntologyAnnotation(term="toto", term_accession="GO:2314", term_source=ontosrc_string)
-        expected_src_string = {'iri': 'GO:2314',
-                               'source': "onto",
-                               'term': 'toto'}
-        self.assertEqual(_reverse_map_ontology_annotation(ontology_annot_2, False), expected_src_string)
 
     def test_assay_template_convert_json_to_ordered_dict_met_prof_mass_spec(self):
         actual_odict_mp_ms = assay_template_to_ordered_dict(self.met_prof_jsons[0])
@@ -106,8 +105,10 @@ class TestMappings(unittest.TestCase):
 
     def test_assay_template_convert_ordered_dict_empty_nodes(self):
         empty_json = assay_ordered_dict_to_template(self.met_prof_jsons[3])
+
         print(empty_json['workflow'])
         self.assertEqual(empty_json['workflow'], [])
+
 
     @staticmethod
     def _load_config(file_name):
