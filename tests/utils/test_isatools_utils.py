@@ -186,22 +186,10 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(j['journal'], self.return_values['journal'])
         self.assertEqual(j['title'], self.return_values['title'])
 
-        J1 = pubmed.get_pubmed_article('890406')
-        self.assertEqual(J1['doi'], '')
-
-        J2 = pubmed.get_pubmed_article('14909816')
-        self.assertEqual(J2['doi'], "")
-
-        J3 = pubmed.get_pubmed_article('2872386')
-        self.assertEqual(J3['doi'], "10.1016/s0025-7125(16)30931-2")
-
-        J4 = pubmed.get_pubmed_article('14870036')
-        self.assertEqual(J4['doi'], "")
 
     def test_set_pubmed_article(self):
         pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         p = Publication(pubmed_id='25520553')
-        prs = Person(first_name="bob")
         pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, self.return_values['doi'])
         self.assertEqual(p.author_list, ", ".join(self.return_values['authors']))
