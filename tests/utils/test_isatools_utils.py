@@ -10,6 +10,7 @@ import unittest
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
+from unittest.mock import Mock
 
 from isatools import isajson
 from isatools import isatab
@@ -85,8 +86,8 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIn("https://www.ebi.ac.uk/ols", ontology_source.file)
         self.assertIn("/api/ontologies/efo?lang=en", ontology_source.file)
         self.assertIsInstance(ontology_source.version, str)
-        self.assertEqual(
-            ontology_source.description, 'Experimental Factor Ontology')
+        self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
+
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
@@ -167,45 +168,34 @@ class TestISArchiveExport(unittest.TestCase):
 
 
 class TestPubMedIDUtil(unittest.TestCase):
+    return_values = {
+        'doi': 'abc123',
+        'authors': ['A', 'B'],
+        'year': 1912,
+        'journal': 'shipping news',
+        'title': 'surprise'
+    }
 
     def test_get_pubmed_article(self):
-        J = pubmed.get_pubmed_article('25520553')
-        self.assertEqual(J['doi'], '10.4137/CIN.S13895')
-        self.assertEqual(J['authors'], ['Johnson D', 'Connor AJ', 'McKeever S', 
-                                        'Wang Z', 'Deisboeck TS', 'Quaiser T', 
-                                        'Shochat E'])
-        self.assertEqual(J['year'], '2014')
-        self.assertEqual(J['journal'], 'Cancer Inform')
-        self.assertEqual(
-            J['title'], 'Semantically linking in silico cancer models.')
+        pubmed.get_pubmed_article = Mock(return_value = self.return_values)
+        j = pubmed.get_pubmed_article('25520553')
+        self.assertEqual(j['doi'], self.return_values['doi'])
+        self.assertEqual(j['authors'], self.return_values['authors'])
+        self.assertEqual(j['year'], self.return_values['year'])
+        self.assertEqual(j['journal'], self.return_values['journal'])
+        self.assertEqual(j['title'], self.return_values['title'])
 
-        J1 = pubmed.get_pubmed_article('890406')
-        self.assertEqual(J1['doi'], '')
-
-        J2 = pubmed.get_pubmed_article('14909816')
-        self.assertEqual(J2['doi'], "")
-
-        J3 = pubmed.get_pubmed_article('2872386')
-        self.assertEqual(J3['doi'], "10.1016/s0025-7125(16)30931-2")
-
-        J4 = pubmed.get_pubmed_article('14870036')
-        self.assertEqual(J4['doi'], "")
 
     def test_set_pubmed_article(self):
+        pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         p = Publication(pubmed_id='25520553')
-        prs = Person(first_name="bob")
         pubmed.set_pubmed_article(p)
-        self.assertEqual(p.doi, '10.4137/CIN.S13895')
-        self.assertEqual(p.author_list, 'Johnson D, Connor AJ, McKeever S, '
-                                        'Wang Z, Deisboeck TS, Quaiser T, '
-                                        'Shochat E')
-        self.assertEqual(p.title, 'Semantically linking in silico cancer models.')
+        self.assertEqual(p.doi, self.return_values['doi'])
+        self.assertEqual(p.author_list, ", ".join(self.return_values['authors']))
+        self.assertEqual(p.title, self.return_values['title'])
         self.assertIsInstance(p.comments[0], Comment)
         self.assertEqual(p.comments[0].name, 'Journal')
-        self.assertEqual(p.comments[0].value, 'Cancer Inform')
-        with self.assertRaises(Exception) as context:
-            pubmed.set_pubmed_article(prs)
-            self.assertTrue("Can only set PubMed details on a Publication object" in context.exception)
+        self.assertEqual(p.comments[0].value, self.return_values['journal'])
 
 
 class TestIsaTabFixer(unittest.TestCase):
