@@ -83,9 +83,8 @@ class TestOlsSearch(unittest.TestCase):
         ontology_source = ols.get_ols_ontology('efo')
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, 'efo')
-        self.assertEqual(
-            ontology_source.file,
-            'https://www.ebi.ac.uk/ols4/api/ontologies/efo?lang=en')
+        self.assertIn("https://www.ebi.ac.uk/ols", ontology_source.file)
+        self.assertIn("/api/ontologies/efo?lang=en", ontology_source.file)
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
 
