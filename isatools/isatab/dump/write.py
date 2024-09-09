@@ -151,9 +151,11 @@ def write_study_table_files(inv_obj, output_dir):
                     protocol_in_path_count += 1
                     df_dict[olabel][-1] = node.executes_protocol.name
                     for pv in node.parameter_values:
-                        pvlabel = "{0}.Parameter Value[{1}]".format(
-                            olabel, pv.category.parameter_name.term)
-                        write_value_columns(df_dict, pvlabel, pv)
+                        if pv.category:
+                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                            write_value_columns(df_dict, pvlabel, pv)
+                        else:
+                            raise(ValueError, "Protocol Value has no valid parameter_name")
                     if node.date is not None:
                         df_dict[olabel + ".Date"][-1] = node.date
                     if node.performer is not None:
@@ -405,8 +407,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         if node.performer is not None:
                             df_dict[olabel + ".Performer"][-1] = node.performer
                         for pv in node.parameter_values:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                            write_value_columns(df_dict, pvlabel, pv)
+                            if pv.category:
+                                pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                                write_value_columns(df_dict, pvlabel, pv)
+                            else:
+                                raise(ValueError, "Protocol Value has no valid parameter_name")
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
