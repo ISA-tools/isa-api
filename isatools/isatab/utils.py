@@ -388,10 +388,15 @@ def get_pv_columns(label, pv):
     """
     columns = None
     try:
-        columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+        if pv.category is not None:
+            columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+            print(columns)
+        else:
+            raise ValueError
     except AttributeError:
         log.fatal(label, pv)
-    columns.extend(get_value_columns(columns[0], pv))
+    if columns is not None:
+        columns.extend(get_value_columns(columns[0], pv))
     return columns
 
 

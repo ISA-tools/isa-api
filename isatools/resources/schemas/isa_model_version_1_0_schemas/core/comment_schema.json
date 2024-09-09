@@ -1,4 +1,4 @@
-                {
+{
     "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/comment_schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "ISA Comment schema - it corresponds to ISA Comment[] construct",

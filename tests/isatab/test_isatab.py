@@ -18,8 +18,12 @@ from isatools.model import (
 )
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
-from isatools.isatab import IsaTabDataFrame
+from isatools.isatab import IsaTabDataFrame, flatten
 
+from isatools.isatab.utils import (
+    get_comment_column,
+    get_pv_columns
+)
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -93,6 +97,22 @@ class TestIsaTabDump(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
+
+    def test_isatab_flatten(self):
+        test_list = None
+        with self.assertRaises(ValueError):
+            flatten(test_list)
+
+    def test_isatab_get_pv_columns(self):
+        columns = []
+        pp = ProtocolParameter(parameter_name="test_parameter_name")
+        with self.assertRaises(AttributeError):
+            pv = ParameterValue(category="test_parameter_name", value=3)
+            get_pv_columns("Protocol REF", pv)
+
+        with self.assertRaises(AttributeError):
+            pv = ParameterValue(category=pp.parameter_name, value=3)
+            get_pv_columns("Protocol REF", pv)
 
     def test_isatab_bad_i_file_name(self):
         with self.assertRaises(NameError):
