@@ -1,7 +1,5 @@
 import itertools
-
 import networkx as nx
-import os
 
 from isatools.model.datafile import DataFile
 from isatools.model.process import Process
@@ -60,7 +58,6 @@ def _expand_path(path, identifiers_to_objects, dead_end_outputs):
     path_modified = False
     for i, identifier in enumerate(path):
         node = identifiers_to_objects[identifier]
-
         # If the node is a process at beginning of the path, add a path for each of its inputs.
         if i == 0 and isinstance(node, Process):
             identifier_list = [input_.sequence_identifier for input_ in node.inputs]
@@ -90,7 +87,7 @@ def _expand_path(path, identifiers_to_objects, dead_end_outputs):
             output_sequence_identifiers = {output.sequence_identifier for output in node.outputs}
             input_sequence_identifiers = {input_.sequence_identifier for input_ in
                                           identifiers_to_objects[path[i + 1]].inputs}
-            identifier_intersection = output_sequence_identifiers.intersection(input_sequence_identifiers)
+            identifier_intersection = list(output_sequence_identifiers.intersection(input_sequence_identifiers))
 
             combinations = _compute_combinations(identifier_intersection, identifiers_to_objects)
             for combo in combinations:
@@ -206,6 +203,7 @@ def _build_paths_and_indexes(process_sequence=None):
 
     return paths, identifiers_to_objects
 
+
 def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
@@ -289,7 +287,7 @@ def batch_create_assays(*args, n=1):
     from a prototype sequence (currently works only as flat end-to-end
     processes of Material->Process->Material->...)
 
-    :param *args: An argument list representing the process sequence prototype
+    # :param *args: An argument list representing the process sequence prototype
     :param n: Number of process sequences to create in the batch
     :returns: List of process sequences replicating the prototype sequence
 
@@ -376,13 +374,13 @@ def batch_create_assays(*args, n=1):
                     if isinstance(material_a, list):
                         process.inputs = material_a
                     else:
-                        process.inputs.append(material_a)
+                        process.inputs = [material_a]  # /.append(material_a)
                     if isinstance(material_b, list):
                         process.outputs = material_b
                         for material in material_b:
                             material.derives_from = [material_a]
                     else:
-                        process.outputs.append(material_b)
+                        process.outputs = [material_b]  # .append(material_b)
                         material_b.derives_from = [material_a]
                     process_sequence.append(process)
                 material_a = material_b
@@ -402,4 +400,3 @@ def _deep_copy(isa_object):
     if isinstance(isa_object, ProcessSequenceNode):
         new_obj.assign_identifier()
     return new_obj
-

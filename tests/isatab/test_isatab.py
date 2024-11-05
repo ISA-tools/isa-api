@@ -18,8 +18,12 @@ from isatools.model import (
 )
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
-from isatools.isatab import IsaTabDataFrame
+from isatools.isatab import IsaTabDataFrame, flatten
 
+from isatools.isatab.utils import (
+    get_comment_column,
+    get_pv_columns
+)
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -93,6 +97,22 @@ class TestIsaTabDump(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
+
+    def test_isatab_flatten(self):
+        test_list = None
+        with self.assertRaises(ValueError):
+            flatten(test_list)
+
+    def test_isatab_get_pv_columns(self):
+        columns = []
+        pp = ProtocolParameter(parameter_name="test_parameter_name")
+        with self.assertRaises(AttributeError):
+            pv = ParameterValue(category="test_parameter_name", value=3)
+            get_pv_columns("Protocol REF", pv)
+
+        with self.assertRaises(AttributeError):
+            pv = ParameterValue(category=pp.parameter_name, value=3)
+            get_pv_columns("Protocol REF", pv)
 
     def test_isatab_bad_i_file_name(self):
         with self.assertRaises(NameError):
@@ -491,6 +511,83 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
         i2.from_dict(i_dict)
         self.assertEqual(i2.studies[0].samples[0].characteristics[0].value,
                          investigation.studies[0].samples[0].characteristics[0].value)
+
+    def test_simple_investigation_protocol_well_formed_parameter_value_use(self):
+        unit_source = OntologySource(name='UO', description='Unit Ontology')
+        investigation = Investigation(ontology_source_references=[unit_source])
+        unit = OntologyAnnotation(term='mg', term_source=unit_source)
+        concentration_category = OntologyAnnotation(term='concentration', term_source=unit_source)
+        concentration = Characteristic(
+            value=500,
+            unit=unit,
+            category=concentration_category
+        )
+        protocol = Protocol(name="protest", protocol_type=OntologyAnnotation(term="extraction"))
+        parameter = ProtocolParameter(parameter_name="param_test")
+        protocol.parameters.append(parameter)
+        source = Source(name="source_1", id_="#isatest/source_1")
+        sample = Sample(
+            name='sample1',
+            id_="#isatest/sample1",
+            characteristics=[concentration]
+        )
+        pv = ParameterValue(category=parameter, value="T4")
+        ps1 = Process(executes_protocol=protocol, parameter_values=[pv], inputs=[source], outputs=[sample])
+        study = Study(
+            title='study1',
+            sources=[source],
+            samples=[sample],
+            units=[unit],
+            characteristic_categories=[concentration_category],
+            protocols=[protocol],
+            process_sequence=[ps1]
+        )
+        investigation.studies = [study]
+        i_dict = investigation.to_dict()
+
+        i2 = Investigation()
+        i2.from_dict(i_dict)
+        self.assertEqual(i2.studies[0].samples[0].characteristics[0].value,
+                         investigation.studies[0].samples[0].characteristics[0].value)
+        self.assertEqual(i2.studies[0].process_sequence[0].parameter_values[0].value.term, "T4")
+
+
+    def test_simple_investigation_protocol_badly_formed_parameter_value_use(self):
+        unit_source = OntologySource(name='UO', description='Unit Ontology')
+        investigation = Investigation(ontology_source_references=[unit_source])
+        unit = OntologyAnnotation(term='mg', term_source=unit_source)
+        concentration_category = OntologyAnnotation(term='concentration', term_source=unit_source)
+        concentration = Characteristic(
+            value=500,
+            unit=unit,
+            category=concentration_category
+        )
+        protocol = Protocol(name="protest", protocol_type=OntologyAnnotation(term="extraction"))
+        parameter = ProtocolParameter(parameter_name="param_test")
+        protocol.parameters.append(parameter)
+        source = Source(name="source_1", id_="#isatest/source_1")
+        sample = Sample(
+            name='sample1',
+            id_="#isatest/sample1",
+            characteristics=[concentration]
+        )
+        pv = ParameterValue(value="T4") # declaration of a parameter value without a catogory
+        ps1 = Process(executes_protocol=protocol, parameter_values=[pv], inputs=[source], outputs=[sample])
+        study = Study(
+            title='study1',
+            sources=[source],
+            samples=[sample],
+            units=[unit],
+            characteristic_categories=[concentration_category],
+            protocols=[protocol],
+            process_sequence=[ps1]
+        )
+        investigation.studies = [study]
+
+        with self.assertRaises(ValueError):
+            isatab.dump(investigation, self._tmp_dir, i_file_name='i_investigation.txt')
+            # my_json_report_isa_flux = isatab.validate(open(os.path.join(self._tab_data_dir, "issue-569", "i_investigation.txt")))
+            # print(my_json_report_isa_flux)
 
     def test_isatab_dump_investigation_with_assay(self):
         # Create an empty Investigation object and set some values to the

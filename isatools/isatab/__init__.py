@@ -4,6 +4,8 @@ from isatools.isatab.dump import (
     write_study_table_files,
     write_assay_table_files,
     write_value_columns,
+    flatten,
+
     dump_tables_to_dataframes
 )
 from isatools.isatab.load import (
@@ -18,3 +20,4 @@ from isatools.isatab.load import (
 from isatools.isatab.defaults import default_config_dir
 from isatools.isatab.utils import IsaTabDataFrame, TransposedTabParser
 from isatools.isatab.validate import validate, batch_validate
+

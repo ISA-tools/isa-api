@@ -60,7 +60,7 @@ def getblock(container, start_marker, end_marker):
 
 
 def get_archived_file(mw_study_id):
-    """A method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
+    """ A method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
     Workbench study accession number that should follow this pattern ^ST\d+[6]
     :param mw_study_id -> str
     :return: success -> boolean

@@ -26,6 +26,26 @@ from isatools.isatab.utils import (
 )
 
 
+def flatten(current_list) -> list:
+    """
+    :rtype: object
+    :param current_list: List
+    :return: flattened_listL: List
+    """
+    flattened_list = []
+    if current_list is not None:
+
+        for sublist in current_list:
+            if sublist is not None:
+                for item in sublist:
+                    flattened_list.append(item)
+            else:
+                raise ValueError
+    else:
+        raise ValueError
+    return flattened_list
+
+
 def write_study_table_files(inv_obj, output_dir):
     """Writes out study table files according to pattern defined by
 
@@ -49,10 +69,6 @@ def write_study_table_files(inv_obj, output_dir):
             break
         protrefcount = 0
         protnames = dict()
-
-        def flatten(current_list):
-            return [item for sublist in current_list for item in sublist]
-
         columns = []
 
         # start_nodes, end_nodes = _get_start_end_nodes(s_graph)
@@ -135,9 +151,11 @@ def write_study_table_files(inv_obj, output_dir):
                     protocol_in_path_count += 1
                     df_dict[olabel][-1] = node.executes_protocol.name
                     for pv in node.parameter_values:
-                        pvlabel = "{0}.Parameter Value[{1}]".format(
-                            olabel, pv.category.parameter_name.term)
-                        write_value_columns(df_dict, pvlabel, pv)
+                        if pv.category:
+                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                            write_value_columns(df_dict, pvlabel, pv)
+                        else:
+                            raise(ValueError, "Protocol Value has no valid parameter_name")
                     if node.date is not None:
                         df_dict[olabel + ".Date"][-1] = node.date
                     if node.performer is not None:
@@ -255,10 +273,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 break
             protrefcount = 0
             protnames = dict()
-
-            def flatten(current_list):
-                return [item for sublist in current_list for item in sublist]
-
             columns = []
 
             paths, indexes = _build_paths_and_indexes(assay_obj.process_sequence)
@@ -393,8 +407,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         if node.performer is not None:
                             df_dict[olabel + ".Performer"][-1] = node.performer
                         for pv in node.parameter_values:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                            write_value_columns(df_dict, pvlabel, pv)
+                            if pv.category:
+                                pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                                write_value_columns(df_dict, pvlabel, pv)
+                            else:
+                                raise(ValueError, "Protocol Value has no valid parameter_name")
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value

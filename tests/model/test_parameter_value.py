@@ -18,7 +18,7 @@ class TestParameterValue(TestCase):
         with self.assertRaises(ValueError) as context:
             ParameterValue(unit=OntologyAnnotation())
         self.assertEqual(str(context.exception),
-                         "ParameterValue value mus be quantitative (i.e. numeric) if a unit is supplied")
+                         "ParameterValue value must be quantitative (i.e. numeric) if a unit is supplied")
 
     def test_category(self):
         self.assertIsNone(self.parameter.category)
