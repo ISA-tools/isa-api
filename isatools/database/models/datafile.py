@@ -11,6 +11,7 @@ class Datafile(InputOutput):
     """ The SQLAlchemy model for the Material table """
 
     __tablename__: str = 'datafile'
+    __allow_unmapped__ = True
     __mapper_args__: dict = {"polymorphic_identity": "Datafile", "concrete": True}
 
     # Base fields

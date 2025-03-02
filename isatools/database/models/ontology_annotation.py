@@ -17,6 +17,7 @@ class OntologyAnnotation(Base):
     """ The SQLAlchemy model for the OntologyAnnotation table """
 
     __tablename__: str = 'ontology_annotation'
+    __allow_unmapped__ = True
 
     ontology_annotation_id: str = Column(String, primary_key=True)
     annotation_value: str = Column(String)

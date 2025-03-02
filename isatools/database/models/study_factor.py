@@ -11,7 +11,7 @@ class StudyFactor(Base):
     """ The SQLAlchemy model for the StudyFactor table """
 
     __tablename__: str = 'factor'
-
+    __allow_unmapped__ = True
     # Base fields
     factor_id: str = Column(String, primary_key=True)
     name: str = Column(String)

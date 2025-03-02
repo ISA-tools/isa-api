@@ -11,6 +11,7 @@ class Person(Base):
     """ The SQLAlchemy model for the Person table """
 
     __tablename__: str = 'person'
+    __allow_unmapped__ = True
 
     person_id: int = Column(Integer, primary_key=True)
     last_name: str = Column(String)

@@ -11,6 +11,7 @@ class Source(InputOutput):
     """ The SQLAlchemy model for the Source table """
 
     __tablename__: str = 'source'
+    __allow_unmapped__ = True
     __mapper_args__: dict = {
         "polymorphic_identity": "source",
         "concrete": True,
