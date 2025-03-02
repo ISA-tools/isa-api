@@ -23,12 +23,6 @@
         "$ref": "material_attribute_value_schema.json#"
       }
     },
-    "derivesFrom": {
-      "type" : "array",
-      "items" : {
-        "$ref": "material_schema.json#"
-      }
-    },
     "comments" : {
         "type": "array",
         "items": {

@@ -2,6 +2,7 @@ import os
 from collections.abc import Iterable
 from pprint import pprint
 from yaml import load, FullLoader
+from isatools.constants import SYNONYMS
 from isatools.model.comments import Commentable
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.protocol_parameter import ProtocolParameter
@@ -283,3 +284,6 @@ def load_protocol_types_info() -> dict:
     filepath = os.path.join(os.path.dirname(__file__), '..', 'resources', 'config', 'yaml', 'protocol-types.yml')
     with open(filepath) as yaml_file:
         return load(yaml_file, Loader=FullLoader)
+
+    
+    

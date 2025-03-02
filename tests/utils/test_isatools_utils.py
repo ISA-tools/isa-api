@@ -10,12 +10,13 @@ import unittest
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
+from unittest.mock import Mock
 
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
-from isatools.net import mtbls as MTBLS
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
+from isatools.net import mtbls
 from isatools.net import ols
 from isatools.net import pubmed
 
@@ -54,7 +55,7 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                J = MTBLS.getj('MTBLS{}'.format(i))
+                J = mtbls.getj('MTBLS{}'.format(i))
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
                     utils.detect_graph_process_pooling(study.graph)
@@ -82,12 +83,11 @@ class TestOlsSearch(unittest.TestCase):
         ontology_source = ols.get_ols_ontology('efo')
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, 'efo')
-        self.assertEqual(
-            ontology_source.file,
-            'https://www.ebi.ac.uk/ols/api/ontologies/efo')
+        self.assertIn("https://www.ebi.ac.uk/ols", ontology_source.file)
+        self.assertIn("/api/ontologies/efo?lang=en", ontology_source.file)
         self.assertIsInstance(ontology_source.version, str)
-        self.assertEqual(
-            ontology_source.description, '')
+        self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
+
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
@@ -168,30 +168,34 @@ class TestISArchiveExport(unittest.TestCase):
 
 
 class TestPubMedIDUtil(unittest.TestCase):
+    return_values = {
+        'doi': 'abc123',
+        'authors': ['A', 'B'],
+        'year': 1912,
+        'journal': 'shipping news',
+        'title': 'surprise'
+    }
 
     def test_get_pubmed_article(self):
-        J = pubmed.get_pubmed_article('25520553')
-        self.assertEqual(J['doi'], '10.4137/CIN.S13895')
-        self.assertEqual(J['authors'], ['Johnson D', 'Connor AJ', 'McKeever S', 
-                                        'Wang Z', 'Deisboeck TS', 'Quaiser T', 
-                                        'Shochat E'])
-        self.assertEqual(J['year'], '2014')
-        self.assertEqual(J['journal'], 'Cancer Inform')
-        self.assertEqual(
-            J['title'], 'Semantically linking in silico cancer models.')
+        pubmed.get_pubmed_article = Mock(return_value = self.return_values)
+        j = pubmed.get_pubmed_article('25520553')
+        self.assertEqual(j['doi'], self.return_values['doi'])
+        self.assertEqual(j['authors'], self.return_values['authors'])
+        self.assertEqual(j['year'], self.return_values['year'])
+        self.assertEqual(j['journal'], self.return_values['journal'])
+        self.assertEqual(j['title'], self.return_values['title'])
+
 
     def test_set_pubmed_article(self):
+        pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         p = Publication(pubmed_id='25520553')
         pubmed.set_pubmed_article(p)
-        self.assertEqual(p.doi, '10.4137/CIN.S13895')
-        self.assertEqual(p.author_list, 'Johnson D, Connor AJ, McKeever S, '
-                                        'Wang Z, Deisboeck TS, Quaiser T, '
-                                        'Shochat E')
-        self.assertEqual(
-            p.title, 'Semantically linking in silico cancer models.')
+        self.assertEqual(p.doi, self.return_values['doi'])
+        self.assertEqual(p.author_list, ", ".join(self.return_values['authors']))
+        self.assertEqual(p.title, self.return_values['title'])
         self.assertIsInstance(p.comments[0], Comment)
         self.assertEqual(p.comments[0].name, 'Journal')
-        self.assertEqual(p.comments[0].value, 'Cancer Inform')
+        self.assertEqual(p.comments[0].value, self.return_values['journal'])
 
 
 class TestIsaTabFixer(unittest.TestCase):

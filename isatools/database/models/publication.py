@@ -11,6 +11,7 @@ class Publication(Base):
     """ The SQLAlchemy model for the Publication table """
 
     __tablename__: str = 'publication'
+    __allow_unmapped__ = True
 
     # Base fields
     publication_id: str = Column(String, primary_key=True)

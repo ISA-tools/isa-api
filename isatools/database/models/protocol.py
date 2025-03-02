@@ -11,6 +11,7 @@ class Protocol(Base):
     """ The SQLAlchemy model for the Protocol table """
 
     __tablename__: str = 'protocol'
+    __allow_unmapped__ = True
 
     # Base fields
     protocol_id: str = Column(String, primary_key=True)

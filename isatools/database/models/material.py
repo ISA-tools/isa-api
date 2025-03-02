@@ -12,6 +12,7 @@ class Material(InputOutput):
     """ The SQLAlchemy model for the Material table """
 
     __tablename__: str = 'material'
+    __allow_unmapped__ = True
     __mapper_args__: dict = {"polymorphic_identity": "material", "concrete": True}
     __table_args__: tuple = (build_material_constraints(),)
 

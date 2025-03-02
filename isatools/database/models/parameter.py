@@ -11,6 +11,7 @@ class Parameter(Base):
     """ The SQLAlchemy model for the Parameter table """
 
     __tablename__: str = 'parameter'
+    __allow_unmapped__ = True
 
     # Base fields
     parameter_id: str = Column(String, primary_key=True)

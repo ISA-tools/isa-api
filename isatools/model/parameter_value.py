@@ -27,7 +27,7 @@ class ParameterValue(Commentable):
 
         # Shouldn't this be in the setter to avoid manually setting a non-numerical value when a unit is supplied ?
         if not isinstance(value, Number) and unit:
-            raise ValueError("ParameterValue value mus be quantitative (i.e. numeric) if a unit is supplied")
+            raise ValueError("ParameterValue value must be quantitative (i.e. numeric) if a unit is supplied")
         self.value = value
         self.unit = unit
 

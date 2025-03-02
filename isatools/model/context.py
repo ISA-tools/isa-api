@@ -145,6 +145,7 @@ class LDSerializable(metaclass=ABCMeta):
     def gen_id(self) -> str:
         """ Generate an identifier for the object. """
         prepend = self.context.prepend_url if self.context.prepend_url else ''
+
         if isinstance(self, Identifiable):
             return self.id if self.id.startswith('http') else prepend + self.id
         return prepend + gen_id(self.__class__.__name__)

@@ -3,6 +3,7 @@ from typing import TextIO
 
 from os import path
 from glob import glob
+import logging
 
 from pandas.errors import ParserError
 
@@ -45,7 +46,7 @@ def load_investigation(fp):
                 if _RX_COMMENT.match(label) is None:
                     msg = "Invalid label found in investigation file"
                     spl = "In {} section, label {} is not allowed".format(section, label)
-                    message_handler.add_error(message=msg, supplemental=spl, code= 5)
+                    message_handler.add_error(message=msg, supplemental=spl, code=5)
                 elif len(_RX_COMMENT.findall(label)) == 0:
                     spl = "In {} section, label {} is missing a name".format(section, label)
                     msg = "Missing name in Comment[] label"
@@ -167,45 +168,47 @@ def load_investigation(fp):
 
 def validate(fp: TextIO,
              config_dir: str = default_config_dir,
-             mzml: bool = False,
+             origin: str or None = None,
              rules: dict = None,
              log_level=None) -> dict:
     """
     A function to validate an ISA investigation tab file
     :param fp: the investigation file handler
     :param config_dir: the XML configuration directory
-    :param mzml: extra rules for mzML
+    :param origin: value accepted = mzml2isa or None
     :param rules: optional rules to run (default: all rules)
     :param log_level: optional log level (default: INFO)
     :return: a dictionary of the validation results (errors, warnings and info)
     """
-    if not log_level:
+    if log_level is None:
         log.disabled = True
+    else:
+        log.setLevel(log_level)
     message_handler.reset_store()
     validated = False
 
     built_rules = build_rules(rules)
     try:
-        i_df = load_investigation(fp=fp)
+        i_df_dict = load_investigation(fp=fp)
         params = {
-            "investigation_df": i_df,
+            "investigation_df_dict": i_df_dict,
             "dir_context": path.dirname(fp.name),
             "configs": config_dir,
         }
         investigation_validator = ISAInvestigationValidator(**params, **built_rules['investigation'])
 
-        for i, study_df in enumerate(i_df['studies']):
+        for i, study_df in enumerate(i_df_dict['studies']):
             study_filename = study_df.iloc[0]['Study File Name']
             study_validator = ISAStudyValidator(validator=investigation_validator, study_index=i,
                                                 study_filename=study_filename, study_df=study_df,
                                                 **built_rules['studies'])
             assay_tables = list()
-            assay_df = study_validator.params['investigation_df']['s_assays'][i]
+            assay_df = study_validator.params['investigation_df_dict']['s_assays'][i]
             for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                 ISAAssayValidator(assay_tables=assay_tables, validator=study_validator, assay_index=x,
                                   assay_df=assay_df, assay_filename=assay_filename, **built_rules['assays'])
-            if mzml:
-                validate_mzml(fp=fp)
+            if origin == "mzml2isa":
+                validate_origin_mzml2isa(fp=fp)
         validated = True
     except (Exception, ParserError, SystemError, ValueError) as e:
         spl = "The validator could not identify what the error is: {}".format(str(e))
@@ -218,21 +221,22 @@ def validate(fp: TextIO,
     }
 
 
-def validate_mzml(fp: TextIO) -> None:
-    """
-    A function to validate an mzML file
+def validate_origin_mzml2isa(fp: TextIO) -> None:
+    """ A function to validate an ISA-Tab generated from a collection of mzML files (mzml2isa component)
+
     :param fp: the investigation file handler
     """
     from isatools import utils
     try:
         fp.seek(0)
-        utils.detect_isatab_process_pooling(fp)
+        report = utils.detect_isatab_process_pooling(fp)
     except BaseException:
         pass
 
 
 def batch_validate(tab_dir_list):
-    """Validate a batch of ISA-Tab archives
+    """ Validate a batch of ISA-Tab archives
+
     :param tab_dir_list: List of file paths to the ISA-Tab archives to validate_rules
     :return: batch report as JSON
 

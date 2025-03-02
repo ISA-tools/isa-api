@@ -12,6 +12,7 @@ class InputOutput(ConcreteBase, Base):
     multiple through tables. """
 
     __tablename__: str = 'input_output'
+    __allow_unmapped__ = True
 
     # Base fields
     id_: int = Column(Integer, primary_key=True)

@@ -1,4 +1,4 @@
-<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+                <isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
     <isatab-configuration table-name="transcription_seq" isatab-assay-type="generic_assay"
                           isatab-conversion-target="sra">
         <measurement term-label="transcription profiling" term-accession="http://purl.obolibrary.org/obo/OBI_0000424"

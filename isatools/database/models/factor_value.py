@@ -12,6 +12,7 @@ class FactorValue(Base):
     """ The SQLAlchemy model for the FactorValue table """
 
     __tablename__: str = 'factor_value'
+    __allow_unmapped__ = True
     __table_args__: tuple = (build_factor_value_constraints(), )
 
     # Base fields
