@@ -79,7 +79,7 @@ setup(
         'setuptools~=71.0.4',
         'numpy~=1.26',
         'jsonschema~=4.23.0',
-        'pandas==1.5.0',
+        'pandas==2.1.3',
         'openpyxl>=3.1.5',
         'networkx~=3.2.1',
         'lxml~=5.2.2',
@@ -102,7 +102,7 @@ setup(
         'sure==2.0.1',
         'coveralls~=4.0.1',
         'rdflib~=7.0.0',
-        'SQLAlchemy~=1.4.52',
+        'SQLAlchemy~=2.0.28',
         'python-dateutil~=2.9.0.post0',
         'Flask~=3.0.3',
         'flask_sqlalchemy~=3.0.2'

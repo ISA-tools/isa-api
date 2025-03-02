@@ -338,7 +338,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     columns += flatten(
                         map(lambda x: get_comment_column(olabel, x),
                             node.comments))
-                    print(columns)
+                    # print(columns)
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)

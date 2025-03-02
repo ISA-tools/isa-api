@@ -1,0 +1,4343 @@
+{
+  "identifier": "",
+  "title": "",
+  "description": "",
+  "publicReleaseDate": "",
+  "submissionDate": "",
+  "comments": [],
+  "ontologySourceReferences": [
+    {
+      "name": "CHEBI",
+      "file": "https://www.example.org/CHEBI",
+      "version": "1.0",
+      "description": "Chemical Entity of Biological Interest",
+      "comments": []
+    },
+    {
+      "name": "EFO",
+      "file": "",
+      "version": "",
+      "description": "Experimental Factor Ontology",
+      "comments": []
+    },
+    {
+      "name": "OBI",
+      "file": "",
+      "version": "",
+      "description": "Ontology for Biomedical Investigations",
+      "comments": []
+    },
+    {
+      "name": "PATO",
+      "file": "",
+      "version": "",
+      "description": "Phenotype and Trait Ontology",
+      "comments": []
+    },
+    {
+      "name": "NCBITaxon",
+      "file": "",
+      "version": "",
+      "description": "NCBI Taxonomy",
+      "comments": [
+        {
+          "name": "onto-test",
+          "value": "onto-value"
+        }
+      ]
+    },
+    {
+      "name": "MSIO",
+      "file": "",
+      "version": "",
+      "description": "Metabolomics Standards Initiative Ontology",
+      "comments": []
+    },
+    {
+      "name": "UO",
+      "file": "",
+      "version": "",
+      "description": "Unit Ontology",
+      "comments": []
+    }
+  ],
+  "people": [],
+  "publications": [],
+  "studies": [
+    {
+      "filename": "s_BH2024-study.txt",
+      "identifier": "BH2024",
+      "title": "synthetic experiment BH2024",
+      "description": "this is a test file for the MARS project used at BioHackathon 2024",
+      "submissionDate": "2021-08-15",
+      "publicReleaseDate": "2021-08-15",
+      "publications": [
+        {
+          "authorList": "Min,W. and Everest H",
+          "doi": "10.1371/journal.pone.0000000",
+          "pubMedID": "36007233",
+          "status": {
+            "@id": "#ontology_annotation/4aff9bd9-fd98-443b-9f68-9383ee67c022",
+            "annotationValue": "indexed in PubMed",
+            "termSource": "OBI",
+            "termAccession": "https://purl.org/",
+            "comments": []
+          },
+          "title": "Decyphering new cancer pathways with stable isotope resolved metabolomics in MCF7 cell lines",
+          "comments": []
+        }
+      ],
+      "people": [
+        {
+          "address": "Prospect Street, Beijing, People's Republic of China",
+          "affiliation": "Beijing Institute of Metabolism",
+          "comments": [
+            {
+              "name": "Study Person REF",
+              "value": ""
+            }
+          ],
+          "email": "weng.min@bim.edu.cn",
+          "fax": "",
+          "firstName": "Weng",
+          "lastName": "Min",
+          "midInitials": "",
+          "phone": "",
+          "roles": [
+            {
+              "@id": "#ontology_annotation/ee6f3a28-7d71-4e7d-9bfe-e7a7e5102001",
+              "annotationValue": "principal investigator role",
+              "termSource": "",
+              "termAccession": "",
+              "comments": []
+            },
+            {
+              "@id": "#ontology_annotation/bcbcf2a8-a0c0-4313-8737-0d21148b0a1c",
+              "annotationValue": "SRA Inform On Status",
+              "termSource": "",
+              "termAccession": "",
+              "comments": []
+            },
+            {
+              "@id": "#ontology_annotation/41b0f254-599a-47b6-b969-c07a0580f9be",
+              "annotationValue": "SRA Inform On Error",
+              "termSource": "",
+              "termAccession": "",
+              "comments": []
+            }
+          ]
+        },
+        {
+          "address": "CCM, Edinborough, United Kingdom",
+          "affiliation": "Centre for Cell Metabolism",
+          "comments": [
+            {
+              "name": "Study Person REF",
+              "value": ""
+            }
+          ],
+          "email": "",
+          "fax": "",
+          "firstName": "Hillary",
+          "lastName": "Everest",
+          "midInitials": "",
+          "phone": "",
+          "roles": [
+            {
+              "@id": "#ontology_annotation/475c930e-bf57-4a95-98f0-532969e4f72d",
+              "annotationValue": "principal investigator role",
+              "termSource": "",
+              "termAccession": "",
+              "comments": []
+            }
+          ]
+        }
+      ],
+      "comments": [
+        {
+          "name": "EMBL Broker Name",
+          "value": "OXFORD"
+        },
+        {
+          "name": "EMBL Center Name",
+          "value": "OXFORD"
+        },
+        {
+          "name": "EMBL Center Project Name",
+          "value": "OXFORD"
+        },
+        {
+          "name": "EMBL Lab Name",
+          "value": "Oxford e-Research Centre"
+        },
+        {
+          "name": "EMBL Submission Action",
+          "value": "ADD"
+        },
+        {
+          "name": "Study Funding Agency",
+          "value": ""
+        },
+        {
+          "name": "Study Grant Number",
+          "value": ""
+        }
+      ],
+      "studyDesignDescriptors": [
+        {
+          "@id": "#ontology_annotation/e3bd6c92-7797-415d-8c10-96392e5dd2fa",
+          "annotationValue": "intervention design",
+          "termSource": "OBI",
+          "termAccession": "http://purl.obolibrary.org/obo/OBI_0000115",
+          "comments": []
+        },
+        {
+          "@id": "#ontology_annotation/8f7fec42-9dde-4b39-816c-7a805f935484",
+          "annotationValue": "stable isotope resolved metabolomics study",
+          "termSource": "MSIO",
+          "termAccession": "http://purl.obolibrary.org/obo/MSIO_0000096",
+          "comments": []
+        }
+      ],
+      "protocols": [
+        {
+          "@id": "#protocol/f5c14cad-67d1-46f6-addb-46a6b0451da9",
+          "name": "cell culture and isotopic labeling",
+          "description": "SOP for growing MCF7 cells and incubating them with the tracer molecule",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/cae56eee-13c9-4b6c-8710-00e5932b2896",
+              "parameterName": {
+                "@id": "#ontology_annotation/44a4b309-c2bc-4470-8e91-3a9905626417",
+                "annotationValue": "tracer molecule",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/c488fc82-6793-4de0-afd1-c4ee86cdabd2",
+            "annotationValue": "sample collection",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/b2f7b457-4a02-4385-ad3a-44de9d3470f5",
+          "name": "metabolite extraction",
+          "description": "SOP for extracting metabolites from harvested cells",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/06fc1fe4-344c-406f-9801-f07f420fd9aa",
+              "parameterName": {
+                "@id": "#ontology_annotation/1465148b-6b6c-4a71-bdd1-3c8d63f1fa2a",
+                "annotationValue": "Post Extraction",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/c6c200fb-8529-47e1-a3d3-835ec9fa40dd",
+              "parameterName": {
+                "@id": "#ontology_annotation/cb870e6d-4c93-4c40-93ca-1a19cb05e19c",
+                "annotationValue": "Derivatization",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/088ed1ac-0160-43bc-9d62-cff6b9585957",
+            "annotationValue": "Extraction",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/671eb29b-34b1-4f06-be97-9524d552246a",
+          "name": "liquid chromatography",
+          "description": "SOP for Liquid Chromatography",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [],
+          "protocolType": {
+            "@id": "#ontology_annotation/8b17e6e2-45b5-44c2-a1c6-e281b38a6555",
+            "annotationValue": "liquid chromatography",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/756bf5d0-d861-4b0b-b79f-f8da275e9693",
+          "name": "mass spectrometry",
+          "description": "SOP for MS data acquisition",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/bd87d9d7-8bf6-4ccb-9427-9e6a870d36a1",
+              "parameterName": {
+                "@id": "#ontology_annotation/7cf3cfac-b717-45a7-ac87-6961a861809d",
+                "annotationValue": "Chromatography instrument",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/d08da2b9-94ef-4299-b1f3-5150bc5c479c",
+              "parameterName": {
+                "@id": "#ontology_annotation/16a69265-4a66-4425-bb62-d7640cbb2e99",
+                "annotationValue": "Column model",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/48b704b6-2af2-44ea-8fb7-58b9726db126",
+              "parameterName": {
+                "@id": "#ontology_annotation/29d924f6-1732-40ce-9a1b-a58ea2e08554",
+                "annotationValue": "Guard column",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/eac926ac-b867-4760-8968-ebbd9df8fc15",
+              "parameterName": {
+                "@id": "#ontology_annotation/d4e27b69-5441-4e42-ad60-c8bfe39707b9",
+                "annotationValue": "Instrument",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/30cb75df-1271-499e-9c5a-f87cfb358ac0",
+              "parameterName": {
+                "@id": "#ontology_annotation/2b6ada73-8f90-4459-82d5-a5654b3452a4",
+                "annotationValue": "Scan polarity",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/7383e27d-4389-4c25-9c60-a86e0bf6c758",
+              "parameterName": {
+                "@id": "#ontology_annotation/931a72f8-2f05-4869-8cca-bc3fd5f0d5e0",
+                "annotationValue": "Scan m/z range",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/f9a98b23-5cdc-436d-b8e0-5d1b90a7a203",
+              "parameterName": {
+                "@id": "#ontology_annotation/581c2330-aea8-4eeb-8157-25f652c0a044",
+                "annotationValue": "Ion source",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/16277903-e073-4814-a096-5470b6635922",
+              "parameterName": {
+                "@id": "#ontology_annotation/4909b826-93a6-45c9-ada2-d1f6c6d5b178",
+                "annotationValue": "Mass analyzer",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/6e94e8c2-f150-413b-a6ac-e640067197ae",
+            "annotationValue": "mass spectrometry",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/44c050b7-85a8-4084-a206-a19822e6a550",
+          "name": "1D 13C NMR spectroscopy for isotopomer analysis",
+          "description": "SOP for 1D 13C NMR data acquisition for isotopomer analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/1edbcaeb-1c0a-449e-ab01-b440ac5a3ad5",
+              "parameterName": {
+                "@id": "#ontology_annotation/3c70cb53-8d5f-4f05-976b-27dfc68c432a",
+                "annotationValue": "magnetic field strength",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/7d149e94-78fc-4822-9782-a21ef488595b",
+              "parameterName": {
+                "@id": "#ontology_annotation/0acdef7a-3d2e-47e0-a44b-87c3434cd42a",
+                "annotationValue": "nmr tube",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/3bddbc49-97cc-4bb4-a9fe-e72d65b378b8",
+              "parameterName": {
+                "@id": "#ontology_annotation/6d8fb05f-c707-4a7a-be38-16b4fccde0d0",
+                "annotationValue": "pulse sequence",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/6b4b5d4d-a454-41b0-84f4-d3f797513b68",
+            "annotationValue": "NMR spectroscopy",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/552bf716-0547-4e89-9c3e-0cb3e4f8c039",
+          "name": "1D 13C NMR spectroscopy for metabolite profiling",
+          "description": "SOP for 1D 13C NMR data acquisition for metabolite profiling",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/bb44e4ae-7a1f-49cf-b60b-14ed086dede6",
+              "parameterName": {
+                "@id": "#ontology_annotation/e673f7b5-7e0d-48be-bfc5-d310f83598bb",
+                "annotationValue": "magnetic field strength",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/4c99fedd-202d-45ac-9940-1cf1f8849a38",
+              "parameterName": {
+                "@id": "#ontology_annotation/dc8808cc-5441-4625-b6a4-4490688e8032",
+                "annotationValue": "nmr tube",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/6260b45e-13b7-4c41-8087-09ef423776b3",
+              "parameterName": {
+                "@id": "#ontology_annotation/b9f91486-f15f-4c23-b991-4945b00fd60e",
+                "annotationValue": "pulse sequence",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/35cc39bb-1981-43c3-8a41-20059bd85ab8",
+            "annotationValue": "NMR spectroscopy",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/cc685c9c-4d82-4690-9a57-d2bcf841290e",
+          "name": "MS metabolite identification",
+          "description": "SOP for MS signal processing and metabolite and isotopologue identification",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/092392c0-5e8d-4cd3-9247-a73392831fff",
+              "parameterName": {
+                "@id": "#ontology_annotation/d16b1521-f116-46b5-8c28-8fa63731ecd6",
+                "annotationValue": "ms software",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/e3737b2c-9c00-4fc6-a876-a5f63629b245",
+            "annotationValue": "metabolite identification",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/cb205b3c-74e6-48f8-8452-ac05b4cfd743",
+          "name": "NMR metabolite identification",
+          "description": "SOP for NMR signal processing and metabolite and isotopomer identification",
+          "uri": "https://doi.org/10.1021/acs.analchem.1c01064",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/86bc2893-c81b-401d-b112-eb51e25e8772",
+              "parameterName": {
+                "@id": "#ontology_annotation/c25c0030-236c-4e66-842b-cbd17eca7c4b",
+                "annotationValue": "nmr software",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/a5d3d726-966d-4f23-829b-ffe3c7749871",
+            "annotationValue": "data transformation",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/9f688097-97bf-4c66-8202-e51c8f9c3fd5",
+          "name": "mRNA extraction",
+          "description": "procedure for isolating messenger RNA for transcriptomics analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [],
+          "protocolType": {
+            "@id": "#ontology_annotation/464539d4-097e-4959-a887-98fc398a1f35",
+            "annotationValue": "material separation",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/25265832-caa6-4ad0-828b-87fd33077ae9",
+          "name": "gDNA extraction",
+          "description": "procedure for isolating genomic DNA for copy number variation analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [],
+          "protocolType": {
+            "@id": "#ontology_annotation/60c0fbab-6888-45fb-824d-77dcbe0f2b00",
+            "annotationValue": "material separation",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/97b71b63-1d37-4556-adbe-d0b3538b09e3",
+          "name": "gDNA library preparation",
+          "description": "procedure for isolating genoic DNA for copy number variation analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/6e106e3a-239f-4e60-8b74-ed00d5c235d7",
+              "parameterName": {
+                "@id": "#ontology_annotation/48bbbdc3-b0b3-4681-90ff-f4d2b755ebdf",
+                "annotationValue": "library strategy",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/22e11b35-54f7-4def-b606-3bf1ae9415a2",
+              "parameterName": {
+                "@id": "#ontology_annotation/ed8cee4d-662e-43e6-85cd-41e425ef6c37",
+                "annotationValue": "library selection",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/20607997-083f-4b75-a780-f02a328f341a",
+              "parameterName": {
+                "@id": "#ontology_annotation/9527266e-779b-4c6c-962c-97863e52a390",
+                "annotationValue": "library source",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/d8034d40-541f-4186-a119-39f6d469dafe",
+              "parameterName": {
+                "@id": "#ontology_annotation/dccd717e-cbde-454c-9c8d-ba967e521850",
+                "annotationValue": "library orientation",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/33ee0cab-5882-4d10-b70c-b189cbaf726c",
+            "annotationValue": "library construction",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/d5e1a7fb-e977-4370-add7-41c8ed970179",
+          "name": "mRNA library preparation",
+          "description": "procedure for isolating genoic DNA for gene expression analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/c468bbbd-6274-4899-a8ca-74c5fbed2ac6",
+              "parameterName": {
+                "@id": "#ontology_annotation/cbe110ac-cff2-4f25-b16a-0d7073e621db",
+                "annotationValue": "library strategy",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/4496b955-af29-415d-97ff-894b84f762a9",
+              "parameterName": {
+                "@id": "#ontology_annotation/52a25a86-00f0-4e7b-ae31-6cb86e53cfc1",
+                "annotationValue": "library selection",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/026e3456-2c3e-4e97-b7fe-8ddf158cfc47",
+              "parameterName": {
+                "@id": "#ontology_annotation/86ce0a25-8983-45fc-8930-528fb0fd0c82",
+                "annotationValue": "library source",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/424c84c5-305b-47d7-b29e-761f18490ece",
+              "parameterName": {
+                "@id": "#ontology_annotation/f9bc2348-9137-4501-a539-b2ae390f9f64",
+                "annotationValue": "library orientation",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/3a7fa22d-188f-4b81-9ab1-b5393297e124",
+            "annotationValue": "library construction",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd",
+          "name": "nucleic acid sequencing",
+          "description": "SOP for nucleic acid sequencing",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/fffe699e-65f4-4ef3-a230-98c98f327264",
+              "parameterName": {
+                "@id": "#ontology_annotation/f858a5e4-e902-4e63-83c2-14a0f3bfdfc6",
+                "annotationValue": "sequencing instrument",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/0e0dc6dc-e526-4eac-be61-be0d7bcb53f0",
+            "annotationValue": "nucleic acid sequencing",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/17a83309-d9a6-44e3-ba43-05e9b50b78ed",
+          "name": "transcription analysis",
+          "description": "SOP for transcriptomics analysis",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/176d7fae-8f99-4219-a116-8fbe8df63e36",
+              "parameterName": {
+                "@id": "#ontology_annotation/87fd8ea0-7b9f-4404-8fd2-941787c629d0",
+                "annotationValue": "sequence analysis software",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/0ac36bc4-32b7-4593-946b-4888ff552fd6",
+            "annotationValue": "data transformation",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        },
+        {
+          "@id": "#protocol/cbfb99a3-cc0d-46ca-bb93-f85890b7a85d",
+          "name": "CNV analysis",
+          "description": "SOP for CNV ",
+          "uri": "",
+          "version": "",
+          "comments": [],
+          "parameters": [
+            {
+              "@id": "#protocol_parameter/35e76169-1418-469a-9c46-a28fec077e57",
+              "parameterName": {
+                "@id": "#ontology_annotation/77b5c5fa-67a7-4984-8dd7-cac4a6cde743",
+                "annotationValue": "variant calling software",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            },
+            {
+              "@id": "#protocol_parameter/edeac2c2-62b7-4346-bdeb-5b2e1eb6dcd4",
+              "parameterName": {
+                "@id": "#ontology_annotation/008363b0-1184-41f3-84df-053d328260e6",
+                "annotationValue": "genome assembly accession number",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "protocolType": {
+            "@id": "#ontology_annotation/4579e390-7f0e-4e64-8851-1718aa3aec2a",
+            "annotationValue": "data transformation",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          },
+          "components": []
+        }
+      ],
+      "materials": {
+        "sources": [
+          {
+            "@id": "#source/76427572-ad72-4501-87d3-4a0560bdcefa",
+            "name": "culture-1",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/d0daf2c9-e65f-4675-b6cb-b38102831e1f"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/0e8d88b7-a4f5-46ba-875a-2c03428a29cb",
+                  "annotationValue": "SRC:",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              },
+              {
+                "category": {
+                  "@id": "#characteristic_category/acbedbce-ec1d-4b0f-b3f2-228ddd5f6752"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/de4b0b87-151b-43f8-893b-eff18853b1ec",
+                  "annotationValue": "Homo sapiens",
+                  "termSource": "NCBITaxon",
+                  "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
+                  "comments": []
+                },
+                "comments": []
+              },
+              {
+                "category": {
+                  "@id": "#characteristic_category/2887acae-2bc6-4e8c-9eeb-8ba46d15429e"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ead7af52-74b2-4331-bfbf-7e31168ad96b",
+                  "annotationValue": "MCF-7",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "comments": []
+          },
+          {
+            "@id": "#source/433d9ece-57a5-4828-9ae3-542be1fbdd70",
+            "name": "culture-2",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/d0daf2c9-e65f-4675-b6cb-b38102831e1f"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/0e8d88b7-a4f5-46ba-875a-2c03428a29cb",
+                  "annotationValue": "SRC:",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              },
+              {
+                "category": {
+                  "@id": "#characteristic_category/acbedbce-ec1d-4b0f-b3f2-228ddd5f6752"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/de4b0b87-151b-43f8-893b-eff18853b1ec",
+                  "annotationValue": "Homo sapiens",
+                  "termSource": "NCBITaxon",
+                  "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
+                  "comments": []
+                },
+                "comments": []
+              },
+              {
+                "category": {
+                  "@id": "#characteristic_category/2887acae-2bc6-4e8c-9eeb-8ba46d15429e"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ead7af52-74b2-4331-bfbf-7e31168ad96b",
+                  "annotationValue": "MCF-7",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "comments": []
+          }
+        ],
+        "samples": [
+          {
+            "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410",
+            "name": "culture-1-sample-0",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/f5d19dbd-9901-4792-985b-ba9fe2f1152e"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ad21a796-5a21-4afc-923c-fbc9910d3f4e",
+                  "annotationValue": "SAME:0",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "factorValues": [
+              {
+                "category": {
+                  "@id": "#study_factor/54d8ccaa-26aa-4cdf-b92f-abf9abeb82f4"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/7c71227b-56ff-4385-9cc4-56cf88e68417",
+                  "annotationValue": "dioxygen",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/8139f36e-cd22-45a5-bef6-408a60cf9f31"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/b99d4250-6ff9-4893-8b52-84bcf2c56a35",
+                  "annotationValue": "high",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/f23a4c8f-fac5-4629-9034-45ca089758e1"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/99d6e959-9c40-4b35-872b-ab7448dc7fe4",
+                  "annotationValue": "hour",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              }
+            ],
+            "derivesFrom": [],
+            "comments": []
+          },
+          {
+            "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2",
+            "name": "culture-2-sample-0",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/f5d19dbd-9901-4792-985b-ba9fe2f1152e"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ad21a796-5a21-4afc-923c-fbc9910d3f4e",
+                  "annotationValue": "SAME:0",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "factorValues": [
+              {
+                "category": {
+                  "@id": "#study_factor/54d8ccaa-26aa-4cdf-b92f-abf9abeb82f4"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/7c71227b-56ff-4385-9cc4-56cf88e68417",
+                  "annotationValue": "dioxygen",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/8139f36e-cd22-45a5-bef6-408a60cf9f31"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/91a073c8-1946-4232-b1bb-fe0420f5a819",
+                  "annotationValue": "normal",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/f23a4c8f-fac5-4629-9034-45ca089758e1"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/99d6e959-9c40-4b35-872b-ab7448dc7fe4",
+                  "annotationValue": "hour",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              }
+            ],
+            "derivesFrom": [],
+            "comments": []
+          },
+          {
+            "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6",
+            "name": "culture-1-sample-1",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/e70e6bae-77b1-4f17-bd5f-803f91896aea"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ad34f534-4cb1-4600-b74b-877c7eac83a4",
+                  "annotationValue": "SAME:1",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "factorValues": [
+              {
+                "category": {
+                  "@id": "#study_factor/54d8ccaa-26aa-4cdf-b92f-abf9abeb82f4"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/7c71227b-56ff-4385-9cc4-56cf88e68417",
+                  "annotationValue": "dioxygen",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/8139f36e-cd22-45a5-bef6-408a60cf9f31"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/b99d4250-6ff9-4893-8b52-84bcf2c56a35",
+                  "annotationValue": "high",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/f23a4c8f-fac5-4629-9034-45ca089758e1"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/99d6e959-9c40-4b35-872b-ab7448dc7fe4",
+                  "annotationValue": "hour",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              }
+            ],
+            "derivesFrom": [],
+            "comments": []
+          },
+          {
+            "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b",
+            "name": "culture-2-sample-1",
+            "characteristics": [
+              {
+                "category": {
+                  "@id": "#characteristic_category/e70e6bae-77b1-4f17-bd5f-803f91896aea"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/ad34f534-4cb1-4600-b74b-877c7eac83a4",
+                  "annotationValue": "SAME:1",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                },
+                "comments": []
+              }
+            ],
+            "factorValues": [
+              {
+                "category": {
+                  "@id": "#study_factor/54d8ccaa-26aa-4cdf-b92f-abf9abeb82f4"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/7c71227b-56ff-4385-9cc4-56cf88e68417",
+                  "annotationValue": "dioxygen",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/8139f36e-cd22-45a5-bef6-408a60cf9f31"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/91a073c8-1946-4232-b1bb-fe0420f5a819",
+                  "annotationValue": "normal",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              },
+              {
+                "category": {
+                  "@id": "#study_factor/f23a4c8f-fac5-4629-9034-45ca089758e1"
+                },
+                "value": {
+                  "@id": "#ontology_annotation/99d6e959-9c40-4b35-872b-ab7448dc7fe4",
+                  "annotationValue": "hour",
+                  "termSource": "OBI",
+                  "termAccession": "https://purl.org/",
+                  "comments": []
+                }
+              }
+            ],
+            "derivesFrom": [],
+            "comments": []
+          }
+        ],
+        "otherMaterials": []
+      },
+      "processSequence": [
+        {
+          "@id": "#process/d70e3f4b-f51a-4644-9340-602ca42484d3",
+          "name": "sample-collection-process-mbx",
+          "performer": "",
+          "date": "",
+          "executesProtocol": {
+            "@id": "#protocol/f5c14cad-67d1-46f6-addb-46a6b0451da9"
+          },
+          "parameterValues": [
+            {
+              "category": {
+                "@id": "#protocol_parameter/cae56eee-13c9-4b6c-8710-00e5932b2896"
+              },
+              "value": {
+                "@id": "#ontology_annotation/aa4c24cd-39df-49a2-9994-263b1ec178a4",
+                "annotationValue": "80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose",
+                "termSource": "CHEBI",
+                "termAccession": "https://purl.org/chebi_1212",
+                "comments": []
+              }
+            }
+          ],
+          "inputs": [
+            {
+              "@id": "#source/76427572-ad72-4501-87d3-4a0560bdcefa"
+            }
+          ],
+          "outputs": [
+            {
+              "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+            },
+            {
+              "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+            }
+          ],
+          "comments": []
+        },
+        {
+          "@id": "#process/e53dd535-e188-4691-af5a-5121b27a0260",
+          "name": "sample-collection-process-gtx",
+          "performer": "",
+          "date": "",
+          "executesProtocol": {
+            "@id": "#protocol/f5c14cad-67d1-46f6-addb-46a6b0451da9"
+          },
+          "parameterValues": [
+            {
+              "category": {
+                "@id": "#protocol_parameter/cae56eee-13c9-4b6c-8710-00e5932b2896"
+              },
+              "value": {
+                "@id": "#ontology_annotation/aa4c24cd-39df-49a2-9994-263b1ec178a4",
+                "annotationValue": "80% [1-13C1]-D-glucose + 20% [U-13C6]-D-glucose",
+                "termSource": "CHEBI",
+                "termAccession": "https://purl.org/chebi_1212",
+                "comments": []
+              }
+            }
+          ],
+          "inputs": [
+            {
+              "@id": "#source/433d9ece-57a5-4828-9ae3-542be1fbdd70"
+            }
+          ],
+          "outputs": [
+            {
+              "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+            },
+            {
+              "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+            }
+          ],
+          "comments": []
+        }
+      ],
+      "factors": [
+        {
+          "@id": "#study_factor/54d8ccaa-26aa-4cdf-b92f-abf9abeb82f4",
+          "factorName": "compound",
+          "factorType": {
+            "@id": "#ontology_annotation/77454083-64cc-4a09-995b-fea8eeb846a8",
+            "annotationValue": "chemical substance",
+            "termSource": "CHEBI",
+            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_59999",
+            "comments": []
+          },
+          "comments": []
+        },
+        {
+          "@id": "#study_factor/8139f36e-cd22-45a5-bef6-408a60cf9f31",
+          "factorName": "dose",
+          "factorType": {
+            "@id": "#ontology_annotation/722813ab-9ff6-4afa-aeea-a5525d033fba",
+            "annotationValue": "dose",
+            "termSource": "EFO",
+            "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000428",
+            "comments": []
+          },
+          "comments": []
+        },
+        {
+          "@id": "#study_factor/f23a4c8f-fac5-4629-9034-45ca089758e1",
+          "factorName": "duration",
+          "factorType": {
+            "@id": "#ontology_annotation/eaa9cfbb-4af3-4636-afde-170845681c00",
+            "annotationValue": "time",
+            "termSource": "PATO",
+            "termAccession": "http://purl.obolibrary.org/obo/PATO_0000165",
+            "comments": []
+          },
+          "comments": []
+        }
+      ],
+      "characteristicCategories": [
+        {
+          "@id": "#characteristic_category/d0daf2c9-e65f-4675-b6cb-b38102831e1f",
+          "characteristicType": {
+            "@id": "#ontology_annotation/d0daf2c9-e65f-4675-b6cb-b38102831e1f",
+            "annotationValue": "namespace:biosample:src",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          }
+        },
+        {
+          "@id": "#characteristic_category/acbedbce-ec1d-4b0f-b3f2-228ddd5f6752",
+          "characteristicType": {
+            "@id": "#ontology_annotation/acbedbce-ec1d-4b0f-b3f2-228ddd5f6752",
+            "annotationValue": "Organism",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          }
+        },
+        {
+          "@id": "#characteristic_category/2887acae-2bc6-4e8c-9eeb-8ba46d15429e",
+          "characteristicType": {
+            "@id": "#ontology_annotation/2887acae-2bc6-4e8c-9eeb-8ba46d15429e",
+            "annotationValue": "cell line",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          }
+        },
+        {
+          "@id": "#characteristic_category/f5d19dbd-9901-4792-985b-ba9fe2f1152e",
+          "characteristicType": {
+            "@id": "#ontology_annotation/f5d19dbd-9901-4792-985b-ba9fe2f1152e",
+            "annotationValue": "namespace:biosample:smp",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          }
+        },
+        {
+          "@id": "#characteristic_category/e70e6bae-77b1-4f17-bd5f-803f91896aea",
+          "characteristicType": {
+            "@id": "#ontology_annotation/e70e6bae-77b1-4f17-bd5f-803f91896aea",
+            "annotationValue": "namespace:biosample:smp",
+            "termSource": "",
+            "termAccession": "",
+            "comments": []
+          }
+        }
+      ],
+      "unitCategories": [],
+      "assays": [
+        {
+          "measurementType": {
+            "@id": "#ontology_annotation/e9c0fffb-d815-43b9-b71e-9b74007af930",
+            "annotationValue": "metabolite profiling",
+            "termSource": "MSIO",
+            "termAccession": "http://purl.obolibrary.org/obo/msio.owl#metabolite_profiling",
+            "comments": []
+          },
+          "technologyType": {
+            "@id": "#ontology_annotation/417b0b8e-344a-4c1f-ab68-56138d405215",
+            "annotationValue": "mass spectrometry",
+            "termSource": "MSIO",
+            "termAccession": "http://purl.obolibrary.org/obo/CHMO_0000470",
+            "comments": []
+          },
+          "technologyPlatform": "Liquid Chromatography MS",
+          "filename": "a_BH2024-lc-ms-assay.txt",
+          "characteristicCategories": [],
+          "unitCategories": [],
+          "comments": [
+            {
+              "name": "target_repository",
+              "value": "metabolights"
+            }
+          ],
+          "materials": {
+            "samples": [
+              {
+                "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+              },
+              {
+                "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+              },
+              {
+                "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+              },
+              {
+                "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+              }
+            ],
+            "otherMaterials": [
+              {
+                "@id": "#material/d7c88485-3776-46f4-91db-d533f9d8e550",
+                "name": "extract-ms-metpro-0",
+                "type": "Extract Name",
+                "characteristics": [],
+                "comments": []
+              },
+              {
+                "@id": "#material/7958d11d-d7ac-42df-91c7-59f19ce77807",
+                "name": "extract-ms-metpro-1",
+                "type": "Extract Name",
+                "characteristics": [],
+                "comments": []
+              },
+              {
+                "@id": "#material/b2494c4e-54d8-432b-a101-636eafd97089",
+                "name": "extract-ms-metpro-2",
+                "type": "Extract Name",
+                "characteristics": [],
+                "comments": []
+              },
+              {
+                "@id": "#material/6b11da7c-a630-407d-8135-d89987f51232",
+                "name": "extract-ms-metpro-3",
+                "type": "Extract Name",
+                "characteristics": [],
+                "comments": []
+              }
+            ]
+          },
+          "dataFiles": [
+            {
+              "@id": "#data_file/d424c181-f17a-4b6c-b562-cf9f6c0a8a64",
+              "name": "metpro-analysis.txt",
+              "type": "Derived Spectral Data File",
+              "comments": []
+            },
+            {
+              "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68",
+              "name": "ms-data-metpro--1.mzml",
+              "type": "Raw Spectral Data File",
+              "comments": []
+            },
+            {
+              "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50",
+              "name": "ms-data-metpro--2.mzml",
+              "type": "Raw Spectral Data File",
+              "comments": []
+            },
+            {
+              "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c",
+              "name": "ms-data-metpro--3.mzml",
+              "type": "Raw Spectral Data File",
+              "comments": []
+            },
+            {
+              "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0",
+              "name": "ms-data-metpro--4.mzml",
+              "type": "Raw Spectral Data File",
+              "comments": []
+            }
+          ],
+          "processSequence": [
+            {
+              "@id": "#process/6b30e9db-a00e-4ec6-aa2d-42a35d6935ba",
+              "name": "extract-process-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/b2f7b457-4a02-4385-ad3a-44de9d3470f5"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c6c200fb-8529-47e1-a3d3-835ec9fa40dd"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/207f84a1-3b92-4e91-bf60-1ea0f0b248a6",
+                    "annotationValue": "sylilation",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_1266445",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/d7c88485-3776-46f4-91db-d533f9d8e550"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120"
+              }
+            },
+            {
+              "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120",
+              "name": "assay-name-ms-metpro--1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/756bf5d0-d861-4b0b-b79f-f8da275e9693"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/bd87d9d7-8bf6-4ccb-9427-9e6a870d36a1"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/92cca88e-416f-4173-9279-0778d41cc618",
+                    "annotationValue": "Agilent LC234",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_2245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d08da2b9-94ef-4299-b1f3-5150bc5c479c"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/30760154-54b8-49dd-9e6c-bfb38b3e4ca2",
+                    "annotationValue": "C18",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_12314245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/48b704b6-2af2-44ea-8fb7-58b9726db126"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/08743c84-c925-45ec-bb0a-8ac7b3351776",
+                    "annotationValue": "X15",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_23145",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/eac926ac-b867-4760-8968-ebbd9df8fc15"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/d0a670e9-15d7-4a1e-8e5d-42c3c41dd202",
+                    "annotationValue": "Orbitrap Astral MS",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_232334",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/30cb75df-1271-499e-9c5a-f87cfb358ac0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/35b91307-3f39-4ecf-a3d3-a7c92a4cf731",
+                    "annotationValue": "positive mode",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_22224",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/7383e27d-4389-4c25-9c60-a86e0bf6c758"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/37d26214-fa99-40e8-adc2-36bbb90654d2",
+                    "annotationValue": "220-340",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f9a98b23-5cdc-436d-b8e0-5d1b90a7a203"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/05c8f1c3-49d9-4786-a8b4-4e05925c32d9",
+                    "annotationValue": "Chromeleon 7.2 Chromatography Data System",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_123245",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/d7c88485-3776-46f4-91db-d533f9d8e550"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/6b30e9db-a00e-4ec6-aa2d-42a35d6935ba"
+              },
+              "nextProcess": {
+                "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0"
+              }
+            },
+            {
+              "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0",
+              "name": "MS-metpro-DT-ident",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cc685c9c-4d82-4690-9a57-d2bcf841290e"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/092392c0-5e8d-4cd3-9247-a73392831fff"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/5ae3bc5c-84d0-4b7c-a2a0-f9d011702c32",
+                    "annotationValue": "ThermoFisher",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/OBI_121332",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68"
+                },
+                {
+                  "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50"
+                },
+                {
+                  "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c"
+                },
+                {
+                  "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/d424c181-f17a-4b6c-b562-cf9f6c0a8a64"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120"
+              }
+            },
+            {
+              "@id": "#process/ccdc4a7a-f15a-41c1-9461-13e1bd0c16e4",
+              "name": "extract-process-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/b2f7b457-4a02-4385-ad3a-44de9d3470f5"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c6c200fb-8529-47e1-a3d3-835ec9fa40dd"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/ae2a9a69-2c95-4d88-a0b0-f19f6aff4a11",
+                    "annotationValue": "sylilation",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_1266445",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/7958d11d-d7ac-42df-91c7-59f19ce77807"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/9a12fcd3-1729-4e27-abd4-1e12beb7cd07"
+              }
+            },
+            {
+              "@id": "#process/9a12fcd3-1729-4e27-abd4-1e12beb7cd07",
+              "name": "assay-name-ms-metpro--2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/756bf5d0-d861-4b0b-b79f-f8da275e9693"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/bd87d9d7-8bf6-4ccb-9427-9e6a870d36a1"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/73f4b326-fadf-4d60-884b-3ec0080b1d5b",
+                    "annotationValue": "Agilent LC234",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_2245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d08da2b9-94ef-4299-b1f3-5150bc5c479c"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/af69b52e-9af5-41b2-9e51-c0e21e42ffba",
+                    "annotationValue": "C18",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_12314245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/48b704b6-2af2-44ea-8fb7-58b9726db126"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/c64c7f1d-2e63-4edc-b353-8c018fc01442",
+                    "annotationValue": "X15",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_23145",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/eac926ac-b867-4760-8968-ebbd9df8fc15"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/b288e563-64d4-4376-ac5f-7a6ad966db74",
+                    "annotationValue": "Orbitrap Astral MS",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_232334",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/30cb75df-1271-499e-9c5a-f87cfb358ac0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/57ea1d28-d59e-4059-890b-a4b9f4a0c071",
+                    "annotationValue": "positive mode",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_22224",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/7383e27d-4389-4c25-9c60-a86e0bf6c758"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/9ad1a9d0-09b2-4406-af2d-3c7c00c18e50",
+                    "annotationValue": "220-340",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f9a98b23-5cdc-436d-b8e0-5d1b90a7a203"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/08fea50d-65c2-49bc-af36-9a0f328189b0",
+                    "annotationValue": "Chromeleon 7.2 Chromatography Data System",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_123245",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/7958d11d-d7ac-42df-91c7-59f19ce77807"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/ccdc4a7a-f15a-41c1-9461-13e1bd0c16e4"
+              },
+              "nextProcess": {
+                "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0"
+              }
+            },
+            {
+              "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0",
+              "name": "MS-metpro-DT-ident",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cc685c9c-4d82-4690-9a57-d2bcf841290e"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/092392c0-5e8d-4cd3-9247-a73392831fff"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/5ae3bc5c-84d0-4b7c-a2a0-f9d011702c32",
+                    "annotationValue": "ThermoFisher",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/OBI_121332",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68"
+                },
+                {
+                  "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50"
+                },
+                {
+                  "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c"
+                },
+                {
+                  "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/d424c181-f17a-4b6c-b562-cf9f6c0a8a64"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120"
+              }
+            },
+            {
+              "@id": "#process/472243dd-e90b-425c-9354-c7d8f75bf25d",
+              "name": "extract-process-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/b2f7b457-4a02-4385-ad3a-44de9d3470f5"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c6c200fb-8529-47e1-a3d3-835ec9fa40dd"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/b4a9b9c4-12b0-47dc-bb41-55dc69716625",
+                    "annotationValue": "sylilation",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_1266445",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/b2494c4e-54d8-432b-a101-636eafd97089"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/85438e6e-558b-4c1b-9919-f28eaf329f3a"
+              }
+            },
+            {
+              "@id": "#process/85438e6e-558b-4c1b-9919-f28eaf329f3a",
+              "name": "assay-name-ms-metpro--3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/756bf5d0-d861-4b0b-b79f-f8da275e9693"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/bd87d9d7-8bf6-4ccb-9427-9e6a870d36a1"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/27654cce-7f20-4c7f-83b5-57304b910fcb",
+                    "annotationValue": "Agilent LC234",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_2245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d08da2b9-94ef-4299-b1f3-5150bc5c479c"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/fba22c45-fe64-4a89-85fe-4b37726f42f8",
+                    "annotationValue": "C18",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_12314245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/48b704b6-2af2-44ea-8fb7-58b9726db126"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/62babe34-795a-4837-a243-0be7e151f4aa",
+                    "annotationValue": "X15",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_23145",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/eac926ac-b867-4760-8968-ebbd9df8fc15"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/a87c3bea-ecc3-4965-9a1d-a246f753220f",
+                    "annotationValue": "Orbitrap Astral MS",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_232334",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/30cb75df-1271-499e-9c5a-f87cfb358ac0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bcfba431-1f18-4df9-ba3f-4d66658c1392",
+                    "annotationValue": "positive mode",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_22224",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/7383e27d-4389-4c25-9c60-a86e0bf6c758"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/48f181b6-b58b-472c-958c-0ce77cae5385",
+                    "annotationValue": "220-340",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f9a98b23-5cdc-436d-b8e0-5d1b90a7a203"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/8ab65b24-4a49-4481-887e-0a9f20343815",
+                    "annotationValue": "Chromeleon 7.2 Chromatography Data System",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_123245",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/b2494c4e-54d8-432b-a101-636eafd97089"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/472243dd-e90b-425c-9354-c7d8f75bf25d"
+              },
+              "nextProcess": {
+                "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0"
+              }
+            },
+            {
+              "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0",
+              "name": "MS-metpro-DT-ident",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cc685c9c-4d82-4690-9a57-d2bcf841290e"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/092392c0-5e8d-4cd3-9247-a73392831fff"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/5ae3bc5c-84d0-4b7c-a2a0-f9d011702c32",
+                    "annotationValue": "ThermoFisher",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/OBI_121332",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68"
+                },
+                {
+                  "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50"
+                },
+                {
+                  "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c"
+                },
+                {
+                  "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/d424c181-f17a-4b6c-b562-cf9f6c0a8a64"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120"
+              }
+            },
+            {
+              "@id": "#process/4e3cb9d4-0300-4a3f-98c7-b8f5bf7cc0ad",
+              "name": "extract-process-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/b2f7b457-4a02-4385-ad3a-44de9d3470f5"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c6c200fb-8529-47e1-a3d3-835ec9fa40dd"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/ea51675a-5ca3-48d3-9486-246a2dd77623",
+                    "annotationValue": "sylilation",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_1266445",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/6b11da7c-a630-407d-8135-d89987f51232"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/8dd469b3-346f-407f-b34b-535ad95ee092"
+              }
+            },
+            {
+              "@id": "#process/8dd469b3-346f-407f-b34b-535ad95ee092",
+              "name": "assay-name-ms-metpro--4",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/756bf5d0-d861-4b0b-b79f-f8da275e9693"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/bd87d9d7-8bf6-4ccb-9427-9e6a870d36a1"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/596e73d6-953d-4ff7-9de5-ed78f4248034",
+                    "annotationValue": "Agilent LC234",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_2245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d08da2b9-94ef-4299-b1f3-5150bc5c479c"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/a1f59e7d-9374-4bb9-9db6-7a2f9a30f878",
+                    "annotationValue": "C18",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_12314245",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/48b704b6-2af2-44ea-8fb7-58b9726db126"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/c77c768f-4a38-42e6-8df8-8fbd2aca32b9",
+                    "annotationValue": "X15",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_23145",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/eac926ac-b867-4760-8968-ebbd9df8fc15"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/5f03e566-4bc8-435a-a07a-bd6cd0c0beb3",
+                    "annotationValue": "Orbitrap Astral MS",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_232334",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/30cb75df-1271-499e-9c5a-f87cfb358ac0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/b69b49b9-4968-4766-95c0-e0d37ce950ef",
+                    "annotationValue": "positive mode",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_22224",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/7383e27d-4389-4c25-9c60-a86e0bf6c758"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bb324f55-e14b-4906-a2c6-b32b7314f064",
+                    "annotationValue": "220-340",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f9a98b23-5cdc-436d-b8e0-5d1b90a7a203"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/d779eb85-eaab-439a-a8eb-08a77b84cca2",
+                    "annotationValue": "Chromeleon 7.2 Chromatography Data System",
+                    "termSource": "MSIO",
+                    "termAccession": "https://purl.org/MSIO_123245",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/6b11da7c-a630-407d-8135-d89987f51232"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/4e3cb9d4-0300-4a3f-98c7-b8f5bf7cc0ad"
+              },
+              "nextProcess": {
+                "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0"
+              }
+            },
+            {
+              "@id": "#process/557a3647-d0f5-4e38-813e-9446c5a851c0",
+              "name": "MS-metpro-DT-ident",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cc685c9c-4d82-4690-9a57-d2bcf841290e"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/092392c0-5e8d-4cd3-9247-a73392831fff"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/5ae3bc5c-84d0-4b7c-a2a0-f9d011702c32",
+                    "annotationValue": "ThermoFisher",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/OBI_121332",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/1979d521-9a29-43fa-8a19-3ee4d7efdd68"
+                },
+                {
+                  "@id": "#data_file/f2a6acfc-8dcd-44fb-8320-8ff6f9d41e50"
+                },
+                {
+                  "@id": "#data_file/34425022-3909-4df1-9b0e-ce0121599d9c"
+                },
+                {
+                  "@id": "#data_file/8d97de8a-88b3-4b2d-8e4c-2956f3e497c0"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/d424c181-f17a-4b6c-b562-cf9f6c0a8a64"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/4a589d0e-d8a9-429b-928e-9ea7d2ec1120"
+              }
+            }
+          ]
+        },
+        {
+          "measurementType": {
+            "@id": "#ontology_annotation/a75003e0-259f-483b-8c14-9762d2fd0b5c",
+            "annotationValue": "transcription profiling",
+            "termSource": "MSIO",
+            "termAccession": "https://purl.org",
+            "comments": []
+          },
+          "technologyType": {
+            "@id": "#ontology_annotation/53fbc093-8784-466f-b0cd-6e8b433b37b0",
+            "annotationValue": "nucleotide sequencing",
+            "termSource": "MSIO",
+            "termAccession": "https://purl.org",
+            "comments": []
+          },
+          "technologyPlatform": "",
+          "filename": "a_BH2024-rna-seq-assay.txt",
+          "characteristicCategories": [
+            {
+              "@id": "#characteristic_category/2f9909df-5820-49a8-9474-0eab34c9134f",
+              "characteristicType": {
+                "@id": "#ontology_annotation/2f9909df-5820-49a8-9474-0eab34c9134f",
+                "annotationValue": "Stuff Type",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "unitCategories": [],
+          "comments": [
+            {
+              "name": "target_repository",
+              "value": "arrayexpress"
+            }
+          ],
+          "materials": {
+            "samples": [
+              {
+                "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+              },
+              {
+                "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+              },
+              {
+                "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+              },
+              {
+                "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+              }
+            ],
+            "otherMaterials": [
+              {
+                "@id": "#material/805ee0ec-6954-4d16-869b-baf7dd145566",
+                "name": "extract-rna-seq-0",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/2f9909df-5820-49a8-9474-0eab34c9134f"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5847e25c-e51b-428e-9826-cde4694a8273",
+                      "annotationValue": "mRNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/23b50625-7edb-4535-b84b-2114f8eed354",
+                "name": "rna-library-name-0",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/4806afa4-557b-452d-b8c4-287d99834211"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/851157bd-0bf5-40ba-908e-226f8e853c31",
+                      "annotationValue": "AAAAAAAAAA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/bce1b4eb-c8ca-417c-a1ff-613c8abd6c9a",
+                "name": "extract-rna-seq-1",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/2f9909df-5820-49a8-9474-0eab34c9134f"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5847e25c-e51b-428e-9826-cde4694a8273",
+                      "annotationValue": "mRNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/7cb79406-9548-41b1-9273-2425d977ea06",
+                "name": "rna-library-name-1",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/4806afa4-557b-452d-b8c4-287d99834211"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/851157bd-0bf5-40ba-908e-226f8e853c31",
+                      "annotationValue": "AAAAAAAAAA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/53720536-d946-429d-8648-abe9770585e2",
+                "name": "extract-rna-seq-2",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/2f9909df-5820-49a8-9474-0eab34c9134f"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5847e25c-e51b-428e-9826-cde4694a8273",
+                      "annotationValue": "mRNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/55bb909f-3c60-4773-8614-912215a06e65",
+                "name": "rna-library-name-2",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/4806afa4-557b-452d-b8c4-287d99834211"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/851157bd-0bf5-40ba-908e-226f8e853c31",
+                      "annotationValue": "AAAAAAAAAA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/f251f1bb-7259-4874-a746-f744274e848b",
+                "name": "extract-rna-seq-3",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/2f9909df-5820-49a8-9474-0eab34c9134f"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5847e25c-e51b-428e-9826-cde4694a8273",
+                      "annotationValue": "mRNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/b1964a05-9c4b-476c-b4ee-bc7341c78bd5",
+                "name": "rna-library-name-3",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/4806afa4-557b-452d-b8c4-287d99834211"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/851157bd-0bf5-40ba-908e-226f8e853c31",
+                      "annotationValue": "AAAAAAAAAA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              }
+            ]
+          },
+          "dataFiles": [
+            {
+              "@id": "#data_file/a38c8a32-f616-4b5c-aab6-eb7de7aa3a34",
+              "name": "rna-seq-data-fwd-0.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/b63f233d-4374-4062-89ff-d1eaa1fd25bb",
+              "name": "rna-seq-data-rev-0.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/85fc02d2-a2d9-43b0-97b6-15723fc1a4f0",
+              "name": "rna-seq-data-fwd-1.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/a2410c92-47d9-41ef-aed2-fcee62982641",
+              "name": "rna-seq-data-rev-1.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/0d4193c5-f205-497b-baaf-c989d80d8f18",
+              "name": "rna-seq-data-fwd-2.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/2808bdac-8bcf-46ea-8b63-b367389d1fee",
+              "name": "rna-seq-data-rev-2.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/d738f5be-9f34-4442-9e42-2ef815a555be",
+              "name": "rna-seq-data-fwd-3.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/1ea368d6-caaf-431f-b8ba-22db284fc6a4",
+              "name": "rna-seq-data-rev-3.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            }
+          ],
+          "processSequence": [
+            {
+              "@id": "#process/61581667-f2b5-4582-9086-b85231f3c0d3",
+              "name": "extract-process-rna-seq-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/9f688097-97bf-4c66-8202-e51c8f9c3fd5"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/805ee0ec-6954-4d16-869b-baf7dd145566"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/e9e6d1a3-6f09-4d84-ba70-fbf557f51bf5"
+              }
+            },
+            {
+              "@id": "#process/e9e6d1a3-6f09-4d84-ba70-fbf557f51bf5",
+              "name": "rna-library-name-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/d5e1a7fb-e977-4370-add7-41c8ed970179"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c468bbbd-6274-4899-a8ca-74c5fbed2ac6"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/912a631f-4ed2-4f12-8715-5463862e5dbb",
+                    "annotationValue": "RNA-SEQ",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/4496b955-af29-415d-97ff-894b84f762a9"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bf6424a6-4ff7-4f24-97b5-0e1e185f2c8b",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/026e3456-2c3e-4e97-b7fe-8ddf158cfc47"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bedd7568-0177-4075-9ca2-86345fca83f4",
+                    "annotationValue": "TRANSCRIPTOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/424c84c5-305b-47d7-b29e-761f18490ece"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/1d401832-a328-40eb-8752-f920237504e3",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/805ee0ec-6954-4d16-869b-baf7dd145566"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/23b50625-7edb-4535-b84b-2114f8eed354"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/61581667-f2b5-4582-9086-b85231f3c0d3"
+              },
+              "nextProcess": {
+                "@id": "#process/3e6b2bb3-a287-4d1f-9105-388edaa1b1fb"
+              }
+            },
+            {
+              "@id": "#process/3e6b2bb3-a287-4d1f-9105-388edaa1b1fb",
+              "name": "assay-name-rna-seq-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/22f4d27a-4285-43a7-b4d4-d2c576129d03"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/4c68f386-8238-449a-88e6-4afe73901620",
+                    "annotationValue": "Illumina MiSeq",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/23b50625-7edb-4535-b84b-2114f8eed354"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/a38c8a32-f616-4b5c-aab6-eb7de7aa3a34"
+                },
+                {
+                  "@id": "#data_file/b63f233d-4374-4062-89ff-d1eaa1fd25bb"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/e9e6d1a3-6f09-4d84-ba70-fbf557f51bf5"
+              },
+              "nextProcess": {
+                "@id": "#process/9a50d3e9-5581-4681-93a7-17f41ad0a3e6"
+              }
+            },
+            {
+              "@id": "#process/9a50d3e9-5581-4681-93a7-17f41ad0a3e6",
+              "name": "RNASEQ-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/17a83309-d9a6-44e3-ba43-05e9b50b78ed"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/a4eb4dd2-e07f-4a8d-976b-4db560598d24"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/90fa3335-b457-4449-af9b-5047c989de94",
+                    "annotationValue": "DESeq2",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/a38c8a32-f616-4b5c-aab6-eb7de7aa3a34"
+                },
+                {
+                  "@id": "#data_file/b63f233d-4374-4062-89ff-d1eaa1fd25bb"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/2ffc8bac-a04e-4d29-ad34-f87e92f52a17"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/3e6b2bb3-a287-4d1f-9105-388edaa1b1fb"
+              }
+            },
+            {
+              "@id": "#process/6bf7559d-2731-45b0-b640-0b77ef0c5dc7",
+              "name": "extract-process-rna-seq-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/9f688097-97bf-4c66-8202-e51c8f9c3fd5"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/bce1b4eb-c8ca-417c-a1ff-613c8abd6c9a"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/0b603d04-a518-46f3-a0e0-87c60502420a"
+              }
+            },
+            {
+              "@id": "#process/0b603d04-a518-46f3-a0e0-87c60502420a",
+              "name": "rna-library-name-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/d5e1a7fb-e977-4370-add7-41c8ed970179"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c468bbbd-6274-4899-a8ca-74c5fbed2ac6"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/912a631f-4ed2-4f12-8715-5463862e5dbb",
+                    "annotationValue": "RNA-SEQ",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/4496b955-af29-415d-97ff-894b84f762a9"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bf6424a6-4ff7-4f24-97b5-0e1e185f2c8b",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/026e3456-2c3e-4e97-b7fe-8ddf158cfc47"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bedd7568-0177-4075-9ca2-86345fca83f4",
+                    "annotationValue": "TRANSCRIPTOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/424c84c5-305b-47d7-b29e-761f18490ece"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/1d401832-a328-40eb-8752-f920237504e3",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/bce1b4eb-c8ca-417c-a1ff-613c8abd6c9a"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/7cb79406-9548-41b1-9273-2425d977ea06"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/6bf7559d-2731-45b0-b640-0b77ef0c5dc7"
+              },
+              "nextProcess": {
+                "@id": "#process/dc57ffd0-6f57-4aa7-aeae-e0950f7c06dd"
+              }
+            },
+            {
+              "@id": "#process/dc57ffd0-6f57-4aa7-aeae-e0950f7c06dd",
+              "name": "assay-name-rna-seq-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/22f4d27a-4285-43a7-b4d4-d2c576129d03"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/4c68f386-8238-449a-88e6-4afe73901620",
+                    "annotationValue": "Illumina MiSeq",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/7cb79406-9548-41b1-9273-2425d977ea06"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/85fc02d2-a2d9-43b0-97b6-15723fc1a4f0"
+                },
+                {
+                  "@id": "#data_file/a2410c92-47d9-41ef-aed2-fcee62982641"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/0b603d04-a518-46f3-a0e0-87c60502420a"
+              },
+              "nextProcess": {
+                "@id": "#process/b32de1b3-729b-4f3c-83d3-9d3b3420283c"
+              }
+            },
+            {
+              "@id": "#process/b32de1b3-729b-4f3c-83d3-9d3b3420283c",
+              "name": "RNASEQ-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/17a83309-d9a6-44e3-ba43-05e9b50b78ed"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/a4eb4dd2-e07f-4a8d-976b-4db560598d24"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/90fa3335-b457-4449-af9b-5047c989de94",
+                    "annotationValue": "DESeq2",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/85fc02d2-a2d9-43b0-97b6-15723fc1a4f0"
+                },
+                {
+                  "@id": "#data_file/a2410c92-47d9-41ef-aed2-fcee62982641"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/cb5c4766-e542-421a-a876-b5d7a52f6749"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/dc57ffd0-6f57-4aa7-aeae-e0950f7c06dd"
+              }
+            },
+            {
+              "@id": "#process/e1660a4d-9c04-4ba0-9ef2-5bb44d01d1da",
+              "name": "extract-process-rna-seq-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/9f688097-97bf-4c66-8202-e51c8f9c3fd5"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/53720536-d946-429d-8648-abe9770585e2"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/93cf703b-616f-4eb8-a614-aa2f583a58f0"
+              }
+            },
+            {
+              "@id": "#process/93cf703b-616f-4eb8-a614-aa2f583a58f0",
+              "name": "rna-library-name-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/d5e1a7fb-e977-4370-add7-41c8ed970179"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c468bbbd-6274-4899-a8ca-74c5fbed2ac6"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/912a631f-4ed2-4f12-8715-5463862e5dbb",
+                    "annotationValue": "RNA-SEQ",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/4496b955-af29-415d-97ff-894b84f762a9"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bf6424a6-4ff7-4f24-97b5-0e1e185f2c8b",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/026e3456-2c3e-4e97-b7fe-8ddf158cfc47"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bedd7568-0177-4075-9ca2-86345fca83f4",
+                    "annotationValue": "TRANSCRIPTOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/424c84c5-305b-47d7-b29e-761f18490ece"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/1d401832-a328-40eb-8752-f920237504e3",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/53720536-d946-429d-8648-abe9770585e2"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/55bb909f-3c60-4773-8614-912215a06e65"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/e1660a4d-9c04-4ba0-9ef2-5bb44d01d1da"
+              },
+              "nextProcess": {
+                "@id": "#process/092067b3-4316-4538-826a-d1597245df8e"
+              }
+            },
+            {
+              "@id": "#process/092067b3-4316-4538-826a-d1597245df8e",
+              "name": "assay-name-rna-seq-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/22f4d27a-4285-43a7-b4d4-d2c576129d03"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/4c68f386-8238-449a-88e6-4afe73901620",
+                    "annotationValue": "Illumina MiSeq",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/55bb909f-3c60-4773-8614-912215a06e65"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/0d4193c5-f205-497b-baaf-c989d80d8f18"
+                },
+                {
+                  "@id": "#data_file/2808bdac-8bcf-46ea-8b63-b367389d1fee"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/93cf703b-616f-4eb8-a614-aa2f583a58f0"
+              },
+              "nextProcess": {
+                "@id": "#process/b5c4e71e-1a1e-4953-b46b-62cdecf5f399"
+              }
+            },
+            {
+              "@id": "#process/b5c4e71e-1a1e-4953-b46b-62cdecf5f399",
+              "name": "RNASEQ-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/17a83309-d9a6-44e3-ba43-05e9b50b78ed"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/a4eb4dd2-e07f-4a8d-976b-4db560598d24"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/90fa3335-b457-4449-af9b-5047c989de94",
+                    "annotationValue": "DESeq2",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/0d4193c5-f205-497b-baaf-c989d80d8f18"
+                },
+                {
+                  "@id": "#data_file/2808bdac-8bcf-46ea-8b63-b367389d1fee"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/83e4fb8e-5f77-4bf4-a82a-87d5cdd61f10"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/092067b3-4316-4538-826a-d1597245df8e"
+              }
+            },
+            {
+              "@id": "#process/7d537a8e-30b2-48b6-a313-967f648da74a",
+              "name": "extract-process-rna-seq-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/9f688097-97bf-4c66-8202-e51c8f9c3fd5"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/f251f1bb-7259-4874-a746-f744274e848b"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/9445a524-5433-44cf-952d-7729581ebeaa"
+              }
+            },
+            {
+              "@id": "#process/9445a524-5433-44cf-952d-7729581ebeaa",
+              "name": "rna-library-name-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/d5e1a7fb-e977-4370-add7-41c8ed970179"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c468bbbd-6274-4899-a8ca-74c5fbed2ac6"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/912a631f-4ed2-4f12-8715-5463862e5dbb",
+                    "annotationValue": "RNA-SEQ",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/4496b955-af29-415d-97ff-894b84f762a9"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bf6424a6-4ff7-4f24-97b5-0e1e185f2c8b",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/026e3456-2c3e-4e97-b7fe-8ddf158cfc47"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/bedd7568-0177-4075-9ca2-86345fca83f4",
+                    "annotationValue": "TRANSCRIPTOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/424c84c5-305b-47d7-b29e-761f18490ece"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/1d401832-a328-40eb-8752-f920237504e3",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/f251f1bb-7259-4874-a746-f744274e848b"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/b1964a05-9c4b-476c-b4ee-bc7341c78bd5"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/7d537a8e-30b2-48b6-a313-967f648da74a"
+              },
+              "nextProcess": {
+                "@id": "#process/fdf82456-f0e4-4188-ba7b-5de4ef50586b"
+              }
+            },
+            {
+              "@id": "#process/fdf82456-f0e4-4188-ba7b-5de4ef50586b",
+              "name": "assay-name-rna-seq-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/22f4d27a-4285-43a7-b4d4-d2c576129d03"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/4c68f386-8238-449a-88e6-4afe73901620",
+                    "annotationValue": "Illumina MiSeq",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/b1964a05-9c4b-476c-b4ee-bc7341c78bd5"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/d738f5be-9f34-4442-9e42-2ef815a555be"
+                },
+                {
+                  "@id": "#data_file/1ea368d6-caaf-431f-b8ba-22db284fc6a4"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/9445a524-5433-44cf-952d-7729581ebeaa"
+              },
+              "nextProcess": {
+                "@id": "#process/07db6fe1-f04c-4e74-a6e7-9ef62b824e43"
+              }
+            },
+            {
+              "@id": "#process/07db6fe1-f04c-4e74-a6e7-9ef62b824e43",
+              "name": "RNASEQ-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/17a83309-d9a6-44e3-ba43-05e9b50b78ed"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/a4eb4dd2-e07f-4a8d-976b-4db560598d24"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/90fa3335-b457-4449-af9b-5047c989de94",
+                    "annotationValue": "DESeq2",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/d738f5be-9f34-4442-9e42-2ef815a555be"
+                },
+                {
+                  "@id": "#data_file/1ea368d6-caaf-431f-b8ba-22db284fc6a4"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/64ea2648-0bd9-47c0-920f-152441e56fec"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/fdf82456-f0e4-4188-ba7b-5de4ef50586b"
+              }
+            }
+          ]
+        },
+        {
+          "measurementType": {
+            "@id": "#ontology_annotation/82e8c003-5bf5-4d58-bcd5-201b50088690",
+            "annotationValue": "copy number variation profiling",
+            "termSource": "MSIO",
+            "termAccession": "https://purl.org",
+            "comments": []
+          },
+          "technologyType": {
+            "@id": "#ontology_annotation/68407e6f-0f36-4fb2-bd84-b6bbc492e484",
+            "annotationValue": "nucleotide sequencing",
+            "termSource": "MSIO",
+            "termAccession": "https://purl.org",
+            "comments": []
+          },
+          "technologyPlatform": "",
+          "filename": "a_BH2024-cnv_seq-assay.txt",
+          "characteristicCategories": [
+            {
+              "@id": "#characteristic_category/83fbd291-ff72-473d-bde6-260659a59931",
+              "characteristicType": {
+                "@id": "#ontology_annotation/83fbd291-ff72-473d-bde6-260659a59931",
+                "annotationValue": "Stuff Type",
+                "termSource": "",
+                "termAccession": "",
+                "comments": []
+              }
+            }
+          ],
+          "unitCategories": [],
+          "comments": [
+            {
+              "name": "target_repository",
+              "value": "eva"
+            }
+          ],
+          "materials": {
+            "samples": [
+              {
+                "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+              },
+              {
+                "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+              },
+              {
+                "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+              },
+              {
+                "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+              }
+            ],
+            "otherMaterials": [
+              {
+                "@id": "#material/d7b0de2c-04d4-4e76-8495-37bee482de3e",
+                "name": "extract-cnv-seq-0",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/83fbd291-ff72-473d-bde6-260659a59931"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/95985309-a62d-41ef-b52c-8ec1fe631ade",
+                      "annotationValue": "gDNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/OBOfoundry/obi:123414",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/91e08fee-6fae-48f4-9e81-67c931f2dfe9",
+                "name": "cnv-library-name-0",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/6a3a9bd0-7fe4-4412-8ff6-0d412f166715"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5118bb67-027b-4c22-a4b3-eea536b354df",
+                      "annotationValue": "Not Applicable",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/6781da2f-9baf-4027-9e05-60124264c9ac",
+                "name": "extract-cnv-seq-1",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/83fbd291-ff72-473d-bde6-260659a59931"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/95985309-a62d-41ef-b52c-8ec1fe631ade",
+                      "annotationValue": "gDNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/OBOfoundry/obi:123414",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/0de0ac8e-8039-42f2-bd52-c6d42fba8918",
+                "name": "cnv-library-name-1",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/6a3a9bd0-7fe4-4412-8ff6-0d412f166715"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5118bb67-027b-4c22-a4b3-eea536b354df",
+                      "annotationValue": "Not Applicable",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/78bfc5f6-1f7d-4a28-8002-ba60e2dfd443",
+                "name": "extract-cnv-seq-2",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/83fbd291-ff72-473d-bde6-260659a59931"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/95985309-a62d-41ef-b52c-8ec1fe631ade",
+                      "annotationValue": "gDNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/OBOfoundry/obi:123414",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/1d86f3ee-6ee2-4a93-87ba-0f56141979a0",
+                "name": "cnv-library-name-2",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/6a3a9bd0-7fe4-4412-8ff6-0d412f166715"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5118bb67-027b-4c22-a4b3-eea536b354df",
+                      "annotationValue": "Not Applicable",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/e55d3a39-0a7f-4aeb-ae34-f2e43a3c2f8a",
+                "name": "extract-cnv-seq-3",
+                "type": "Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/83fbd291-ff72-473d-bde6-260659a59931"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/95985309-a62d-41ef-b52c-8ec1fe631ade",
+                      "annotationValue": "gDNA",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/OBOfoundry/obi:123414",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              },
+              {
+                "@id": "#material/761f9b11-b848-4f8f-a6fe-4f5ae6654452",
+                "name": "cnv-library-name-3",
+                "type": "Labeled Extract Name",
+                "characteristics": [
+                  {
+                    "category": {
+                      "@id": "#characteristic_category/6a3a9bd0-7fe4-4412-8ff6-0d412f166715"
+                    },
+                    "value": {
+                      "@id": "#ontology_annotation/5118bb67-027b-4c22-a4b3-eea536b354df",
+                      "annotationValue": "Not Applicable",
+                      "termSource": "OBI",
+                      "termAccession": "https://purl.org/",
+                      "comments": []
+                    },
+                    "comments": []
+                  }
+                ],
+                "comments": []
+              }
+            ]
+          },
+          "dataFiles": [
+            {
+              "@id": "#data_file/8174c4cf-0ef9-4183-9e4d-169b72953d21",
+              "name": "cnv-seq-data-0.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/4b29f50e-0020-4b98-8784-5518412e897e",
+              "name": "cnv-seq-data-1.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/714ad47e-ecea-463f-83e7-7eebc6b8ee45",
+              "name": "cnv-seq-data-2.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "@id": "#data_file/80e8c901-71a4-487e-bf1c-e39b239110ed",
+              "name": "cnv-seq-data-3.fastq",
+              "type": "Raw Data File",
+              "comments": [
+                {
+                  "name": "checksum type",
+                  "value": "md5"
+                },
+                {
+                  "name": "checksum",
+                  "value": "d41d8cd98f00b204e9800998ecf8427e"
+                },
+                {
+                  "name": "export",
+                  "value": "yes"
+                }
+              ]
+            }
+          ],
+          "processSequence": [
+            {
+              "@id": "#process/9fd33c63-d9ae-4483-b982-3a9bdc459998",
+              "name": "extract-process-cnv-seq-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/25265832-caa6-4ad0-828b-87fd33077ae9"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/9edc63f1-3a46-4271-a5fc-ecb90f06e410"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/d7b0de2c-04d4-4e76-8495-37bee482de3e"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/5af95946-0629-4f2c-a2e7-050383584ca3"
+              }
+            },
+            {
+              "@id": "#process/5af95946-0629-4f2c-a2e7-050383584ca3",
+              "name": "cnv-library-name-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/97b71b63-1d37-4556-adbe-d0b3538b09e3"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f85f9111-554f-4d5e-9e30-dc33c1ef39be"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/53aafd31-261c-47f3-b07f-8be3d0e53dc7",
+                    "annotationValue": "WGS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c441fae3-fe2a-49a0-8d80-95743ca7576e"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f234be8f-4261-4a43-b5e4-c642b7355a2d",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/ebf9270f-6335-40c6-8ae3-c1987c52bec0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/7f967ec8-572f-4dc3-8c6d-ff591d737ae3",
+                    "annotationValue": "GENOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d9f1913e-a112-40d9-9827-13c9506cf352"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/3ec72d18-d037-4a42-96f6-2a52f7b9ba98",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/d7b0de2c-04d4-4e76-8495-37bee482de3e"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/91e08fee-6fae-48f4-9e81-67c931f2dfe9"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/9fd33c63-d9ae-4483-b982-3a9bdc459998"
+              },
+              "nextProcess": {
+                "@id": "#process/ed008266-26d0-4104-b545-de914143dbcc"
+              }
+            },
+            {
+              "@id": "#process/ed008266-26d0-4104-b545-de914143dbcc",
+              "name": "assay-name-cnv-seq-0",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d7416f2e-0bef-4728-8fcd-336b8b0b6b46"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f7a5004a-e808-47fd-b324-9da790f8ea96",
+                    "annotationValue": "AB SOLiD 5500xl",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/91e08fee-6fae-48f4-9e81-67c931f2dfe9"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/8174c4cf-0ef9-4183-9e4d-169b72953d21"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/5af95946-0629-4f2c-a2e7-050383584ca3"
+              },
+              "nextProcess": {
+                "@id": "#process/fb099a03-5930-4448-b40c-4a24637621fe"
+              }
+            },
+            {
+              "@id": "#process/fb099a03-5930-4448-b40c-4a24637621fe",
+              "name": "VCF-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cbfb99a3-cc0d-46ca-bb93-f85890b7a85d"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/da71b079-9d66-41df-8be3-7a76b89d8131"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/fa2544e7-c14e-4861-9940-36faa0ee7280",
+                    "annotationValue": "VCF caller",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/edeac2c2-62b7-4346-bdeb-5b2e1eb6dcd4"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/e39e7596-e633-4d83-a92f-67c6e2843cb5",
+                    "annotationValue": "EMBL1234135",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/8174c4cf-0ef9-4183-9e4d-169b72953d21"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/f39d4ef4-378f-4d1e-82c8-d4ee89a7ba05"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/ed008266-26d0-4104-b545-de914143dbcc"
+              }
+            },
+            {
+              "@id": "#process/92353b33-298f-4ca2-b842-8922c2550377",
+              "name": "extract-process-cnv-seq-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/25265832-caa6-4ad0-828b-87fd33077ae9"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/12e42a36-645e-41eb-b58b-705d225731b2"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/6781da2f-9baf-4027-9e05-60124264c9ac"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/3327788b-cd66-4b1c-b35d-7f2f1b6e23ff"
+              }
+            },
+            {
+              "@id": "#process/3327788b-cd66-4b1c-b35d-7f2f1b6e23ff",
+              "name": "cnv-library-name-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/97b71b63-1d37-4556-adbe-d0b3538b09e3"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f85f9111-554f-4d5e-9e30-dc33c1ef39be"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/53aafd31-261c-47f3-b07f-8be3d0e53dc7",
+                    "annotationValue": "WGS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c441fae3-fe2a-49a0-8d80-95743ca7576e"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f234be8f-4261-4a43-b5e4-c642b7355a2d",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/ebf9270f-6335-40c6-8ae3-c1987c52bec0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/7f967ec8-572f-4dc3-8c6d-ff591d737ae3",
+                    "annotationValue": "GENOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d9f1913e-a112-40d9-9827-13c9506cf352"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/3ec72d18-d037-4a42-96f6-2a52f7b9ba98",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/6781da2f-9baf-4027-9e05-60124264c9ac"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/0de0ac8e-8039-42f2-bd52-c6d42fba8918"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/92353b33-298f-4ca2-b842-8922c2550377"
+              },
+              "nextProcess": {
+                "@id": "#process/b7b7661f-2b38-4557-a300-7f03f130c238"
+              }
+            },
+            {
+              "@id": "#process/b7b7661f-2b38-4557-a300-7f03f130c238",
+              "name": "assay-name-cnv-seq-1",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d7416f2e-0bef-4728-8fcd-336b8b0b6b46"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f7a5004a-e808-47fd-b324-9da790f8ea96",
+                    "annotationValue": "AB SOLiD 5500xl",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/0de0ac8e-8039-42f2-bd52-c6d42fba8918"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/4b29f50e-0020-4b98-8784-5518412e897e"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/3327788b-cd66-4b1c-b35d-7f2f1b6e23ff"
+              },
+              "nextProcess": {
+                "@id": "#process/c61b2e2e-b4b1-4705-a1bb-f44b7f04111e"
+              }
+            },
+            {
+              "@id": "#process/c61b2e2e-b4b1-4705-a1bb-f44b7f04111e",
+              "name": "VCF-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cbfb99a3-cc0d-46ca-bb93-f85890b7a85d"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/da71b079-9d66-41df-8be3-7a76b89d8131"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/fa2544e7-c14e-4861-9940-36faa0ee7280",
+                    "annotationValue": "VCF caller",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/edeac2c2-62b7-4346-bdeb-5b2e1eb6dcd4"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/e39e7596-e633-4d83-a92f-67c6e2843cb5",
+                    "annotationValue": "EMBL1234135",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/4b29f50e-0020-4b98-8784-5518412e897e"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/c94a3a85-c6d7-43ed-b38d-42ad2fdb8670"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/b7b7661f-2b38-4557-a300-7f03f130c238"
+              }
+            },
+            {
+              "@id": "#process/7f3e58cc-ee31-4edb-8db5-cefb485eb437",
+              "name": "extract-process-cnv-seq-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/25265832-caa6-4ad0-828b-87fd33077ae9"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/942d1178-70b7-4767-b9fc-b617ea65dff6"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/78bfc5f6-1f7d-4a28-8002-ba60e2dfd443"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/60234926-90ac-4cd4-b02b-7380fffe2a40"
+              }
+            },
+            {
+              "@id": "#process/60234926-90ac-4cd4-b02b-7380fffe2a40",
+              "name": "cnv-library-name-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/97b71b63-1d37-4556-adbe-d0b3538b09e3"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f85f9111-554f-4d5e-9e30-dc33c1ef39be"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/53aafd31-261c-47f3-b07f-8be3d0e53dc7",
+                    "annotationValue": "WGS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c441fae3-fe2a-49a0-8d80-95743ca7576e"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f234be8f-4261-4a43-b5e4-c642b7355a2d",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/ebf9270f-6335-40c6-8ae3-c1987c52bec0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/7f967ec8-572f-4dc3-8c6d-ff591d737ae3",
+                    "annotationValue": "GENOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d9f1913e-a112-40d9-9827-13c9506cf352"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/3ec72d18-d037-4a42-96f6-2a52f7b9ba98",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/78bfc5f6-1f7d-4a28-8002-ba60e2dfd443"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/1d86f3ee-6ee2-4a93-87ba-0f56141979a0"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/7f3e58cc-ee31-4edb-8db5-cefb485eb437"
+              },
+              "nextProcess": {
+                "@id": "#process/dfe4384d-f504-40fa-bc5c-67082fa1663a"
+              }
+            },
+            {
+              "@id": "#process/dfe4384d-f504-40fa-bc5c-67082fa1663a",
+              "name": "assay-name-cnv-seq-2",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d7416f2e-0bef-4728-8fcd-336b8b0b6b46"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f7a5004a-e808-47fd-b324-9da790f8ea96",
+                    "annotationValue": "AB SOLiD 5500xl",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/1d86f3ee-6ee2-4a93-87ba-0f56141979a0"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/714ad47e-ecea-463f-83e7-7eebc6b8ee45"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/60234926-90ac-4cd4-b02b-7380fffe2a40"
+              },
+              "nextProcess": {
+                "@id": "#process/b15c250d-5141-414a-b2aa-f7d983068ac1"
+              }
+            },
+            {
+              "@id": "#process/b15c250d-5141-414a-b2aa-f7d983068ac1",
+              "name": "VCF-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cbfb99a3-cc0d-46ca-bb93-f85890b7a85d"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/da71b079-9d66-41df-8be3-7a76b89d8131"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/fa2544e7-c14e-4861-9940-36faa0ee7280",
+                    "annotationValue": "VCF caller",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/edeac2c2-62b7-4346-bdeb-5b2e1eb6dcd4"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/e39e7596-e633-4d83-a92f-67c6e2843cb5",
+                    "annotationValue": "EMBL1234135",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/714ad47e-ecea-463f-83e7-7eebc6b8ee45"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/9361fed7-ca47-4412-a6c3-0ee4a300a74c"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/dfe4384d-f504-40fa-bc5c-67082fa1663a"
+              }
+            },
+            {
+              "@id": "#process/69e6b52d-10f2-4caf-b1d2-4c04dc9aa453",
+              "name": "extract-process-cnv-seq-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/25265832-caa6-4ad0-828b-87fd33077ae9"
+              },
+              "parameterValues": [],
+              "inputs": [
+                {
+                  "@id": "#sample/db0635d1-a02b-432c-8c06-9afb7bd1db4b"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/e55d3a39-0a7f-4aeb-ae34-f2e43a3c2f8a"
+                }
+              ],
+              "comments": [],
+              "nextProcess": {
+                "@id": "#process/8ad1821c-2cc5-458c-9d49-50058e1a4028"
+              }
+            },
+            {
+              "@id": "#process/8ad1821c-2cc5-458c-9d49-50058e1a4028",
+              "name": "cnv-library-name-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/97b71b63-1d37-4556-adbe-d0b3538b09e3"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/f85f9111-554f-4d5e-9e30-dc33c1ef39be"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/53aafd31-261c-47f3-b07f-8be3d0e53dc7",
+                    "annotationValue": "WGS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/c441fae3-fe2a-49a0-8d80-95743ca7576e"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f234be8f-4261-4a43-b5e4-c642b7355a2d",
+                    "annotationValue": "OTHER",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/ebf9270f-6335-40c6-8ae3-c1987c52bec0"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/7f967ec8-572f-4dc3-8c6d-ff591d737ae3",
+                    "annotationValue": "GENOMICS",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d9f1913e-a112-40d9-9827-13c9506cf352"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/3ec72d18-d037-4a42-96f6-2a52f7b9ba98",
+                    "annotationValue": "SINGLE",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/e55d3a39-0a7f-4aeb-ae34-f2e43a3c2f8a"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#material/761f9b11-b848-4f8f-a6fe-4f5ae6654452"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/69e6b52d-10f2-4caf-b1d2-4c04dc9aa453"
+              },
+              "nextProcess": {
+                "@id": "#process/7dfae95e-086c-42ce-ae54-15a99741a875"
+              }
+            },
+            {
+              "@id": "#process/7dfae95e-086c-42ce-ae54-15a99741a875",
+              "name": "assay-name-cnv-seq-3",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/7401c606-be99-422d-9f46-69ee99ec14cd"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/d7416f2e-0bef-4728-8fcd-336b8b0b6b46"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/f7a5004a-e808-47fd-b324-9da790f8ea96",
+                    "annotationValue": "AB SOLiD 5500xl",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#material/761f9b11-b848-4f8f-a6fe-4f5ae6654452"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/80e8c901-71a4-487e-bf1c-e39b239110ed"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/8ad1821c-2cc5-458c-9d49-50058e1a4028"
+              },
+              "nextProcess": {
+                "@id": "#process/8e7706ff-d2bd-4e08-852f-029816f2178c"
+              }
+            },
+            {
+              "@id": "#process/8e7706ff-d2bd-4e08-852f-029816f2178c",
+              "name": "VCF-DT",
+              "performer": "",
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/cbfb99a3-cc0d-46ca-bb93-f85890b7a85d"
+              },
+              "parameterValues": [
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/da71b079-9d66-41df-8be3-7a76b89d8131"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/fa2544e7-c14e-4861-9940-36faa0ee7280",
+                    "annotationValue": "VCF caller",
+                    "termSource": "OBI",
+                    "termAccession": "https://purl.org/",
+                    "comments": []
+                  }
+                },
+                {
+                  "category": {
+                    "@id": "#protocol_parameter/edeac2c2-62b7-4346-bdeb-5b2e1eb6dcd4"
+                  },
+                  "value": {
+                    "@id": "#ontology_annotation/e39e7596-e633-4d83-a92f-67c6e2843cb5",
+                    "annotationValue": "EMBL1234135",
+                    "termSource": "",
+                    "termAccession": "",
+                    "comments": []
+                  }
+                }
+              ],
+              "inputs": [
+                {
+                  "@id": "#data_file/80e8c901-71a4-487e-bf1c-e39b239110ed"
+                }
+              ],
+              "outputs": [
+                {
+                  "@id": "#data_file/396cc248-fe89-4d94-bd9e-546accd79923"
+                }
+              ],
+              "comments": [],
+              "previousProcess": {
+                "@id": "#process/7dfae95e-086c-42ce-ae54-15a99741a875"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,7 @@ class Investigation(Base):
     """ The SQLAlchemy model for the Investigation table """
 
     __tablename__: str = 'investigation'
+    __allow_unmapped__ = True
 
     # Base fields
     investigation_id: int = Column(Integer, primary_key=True)

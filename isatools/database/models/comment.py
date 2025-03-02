@@ -12,6 +12,7 @@ class Comment(Base):
 
     __tablename__: str = 'comment'
     __table_args__: tuple = (build_comment_constraints(), )
+    __allow_unmapped__ = True
 
     # Base fields
     comment_id: int = Column(Integer, primary_key=True)
