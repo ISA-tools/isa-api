@@ -102,7 +102,7 @@ setup(
         'sure==2.0.1',
         'coveralls~=4.0.1',
         'rdflib~=7.0.0',
-        'SQLAlchemy~=1.4.52',
+        'SQLAlchemy==1.4.52',
         'python-dateutil~=2.9.0.post0',
         'Flask~=3.0.3',
         'flask_sqlalchemy~=3.0.2'
