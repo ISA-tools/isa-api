@@ -61,7 +61,7 @@ def getblock(container, start_marker, end_marker):
 
 def get_archived_file(mw_study_id):
     """ A method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
-    Workbench study accession number that should follow this pattern ^ST\d+[6]
+    Workbench study accession number that should follow this pattern ^ST\\d+[6]
     :param mw_study_id -> str
     :return: success -> boolean
     """
@@ -85,10 +85,10 @@ def get_archived_file(mw_study_id):
 
 
 def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
-    """A method to create an EBI Metabolights MAF file from Metabolomics Workbench
+    """ A method to create an EBI Metabolights MAF file from Metabolomics Workbench
     REST API over data and metabolites
     input: a valid Metabolomics Workbench study accession number that should
-    follow this pattern ^ST\d+[6]
+    follow this pattern ^ST\\d+[6]
     :param write_dir:
     :param mw_study_id:
     :param mw_analysis_id:
@@ -941,7 +941,7 @@ def get_fv_records(lol):
 
 
 def get_mwfile_as_lol(input_url):
-    """A method to metabolomics workbench tabular file as list of lists
+    """ A method to metabolomics workbench tabular file as list of lists
     :param input_url:
     :return: list of lists
     """
@@ -958,7 +958,7 @@ def get_mwfile_as_lol(input_url):
 
 
 def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
-    """A method to write an ISA study file
+    """ A method to write an ISA study file
     :param write_dir:
     :param study_acc_num:
     :param study_file_header:
@@ -1010,9 +1010,9 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
 
 
 def get_raw_data(study_accession_number):
-    """METHOD: given a Metabolomics Workbench Identifier, downloads the
+    """ METHOD: given a Metabolomics Workbench Identifier, downloads the
     corresponding zip archive via anonymous FTP
-    :param study_accession_number: string, MW accnum ST\d+
+    :param study_accession_number: string, MW accnum ST\\d+
     :return:
     """
     study_accession_number = str(study_accession_number)
