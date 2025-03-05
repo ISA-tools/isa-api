@@ -390,7 +390,7 @@ def get_pv_columns(label, pv):
     try:
         if pv.category is not None:
             columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
-            print(columns)
+            # print(columns)
         else:
             raise ValueError
     except AttributeError:
