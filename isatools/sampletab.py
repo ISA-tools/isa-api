@@ -216,7 +216,7 @@ def load(FP):
             if not isnan(row["Term Source Version"]):
                 version = row["Term Source Version"]
         except TypeError:
-            pass # Value was probably NoneType...
+            print("Warning: Row 'Term Source Version': " + type(row["Term Source Version"]).__name__)
         ontology_source = OntologySource(name=row["Term Source Name"],
                                          file=row["Term Source URI"],
                                          version=version,
