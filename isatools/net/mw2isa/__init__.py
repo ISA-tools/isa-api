@@ -1090,7 +1090,7 @@ def mw2isa_convert(**kwargs):
 
             page = urlopen(page_url).read()
             soup = BeautifulSoup(page, "html.parser")
-            AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
+            AnalysisParamTable = soup.find_all("table", {'class': "datatable2"})
 
             # analysisid = ""
             # assay_types = []

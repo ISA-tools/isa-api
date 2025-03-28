@@ -649,7 +649,7 @@ def check_term_accession_used_no_source_ref(isa_json):
 
 
 def load_config(config_dir):
-    print('CONFIG at: ', config_dir)
+    #print('CONFIG at: ', config_dir)
     import json
     configs = dict()
     for file in glob.iglob(os.path.join(config_dir, "*.json")):

@@ -212,8 +212,11 @@ def load(FP):
                           "Term Source Version"]]\
             .map(lambda x: np.nan if x == '' else x).dropna(axis=0, how='all').iterrows():
         version = ''
-        if not isnan(row["Term Source Version"]):
-            version = row["Term Source Version"]
+        try:
+            if not isnan(row["Term Source Version"]):
+                version = row["Term Source Version"]
+        except TypeError:
+            pass # Value was probably NoneType...
         ontology_source = OntologySource(name=row["Term Source Name"],
                                          file=row["Term Source URI"],
                                          version=version,
