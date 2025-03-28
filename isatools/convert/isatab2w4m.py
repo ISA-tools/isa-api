@@ -225,7 +225,7 @@ def get_data_file(assay):
 
 def load_df(path):
     df = ISATAB.read_tfile(path)
-    df = df.replace(to_replace='', value=numpy.nan)
+    df = df.map(lambda x: numpy.nan if x == '' else x)
     return df
 
 
@@ -495,7 +495,7 @@ def write_data_frame(df, output_dir, template_filename, study, assay):
 
     # NA values are removed by `read_tfile()` and replaced by ''.
     # Put them back here.
-    df_with_na = df.replace(to_replace='', value=numpy.nan)
+    df_with_na = df.map(lambda x: numpy.nan if x == '' else x)
 
     # Set filename
     filename = FilenameTemplate(template_filename).substitute(s=study, a=assay)
