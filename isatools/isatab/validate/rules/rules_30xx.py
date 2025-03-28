@@ -191,9 +191,9 @@ def check_ontology_fields(table, cfg, tsrs):
             continue
 
         for irow in range(len(table.index)):
-            result = result and check_single_field(table.iloc[irow][icol],
-                                                   table.iloc[irow][rindx],
-                                                   table.iloc[irow][rrindx],
+            result = result and check_single_field(table.iloc[irow].iloc[icol],
+                                                   table.iloc[irow].iloc[rindx],
+                                                   table.iloc[irow].iloc[rrindx],
                                                    cfield,
                                                    table.filename)
 
