@@ -10,10 +10,10 @@ from setuptools import setup
 def read(f_name):
     return open(os.path.join(os.path.dirname(__file__), f_name)).read()
 
-
+    
 setup(
     name='isatools',
-    version='0.14.3',
+    version='0.14.4',
     packages=['isatools',
               'isatools.model',
               'isatools.isatab',
@@ -66,35 +66,35 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
     install_requires=[
-        'graphene==3.1.1',
-        'graphql-core==3.2.3',
+        'graphene==3.4.3',
+        'graphql-core==3.2.6',
         'wheel~=0.43.0',
-        'setuptools~=71.0.4',
-        'numpy~=1.26',
+        'setuptools~=77.0.3',
+        'numpy~=2.2.4',
         'jsonschema~=4.23.0',
-        'pandas==2.1.3',
+        'pandas==2.2.3',
         'openpyxl>=3.1.5',
-        'networkx~=3.2.1',
-        'lxml~=5.2.2',
+        'networkx~=3.4.2',
+        'lxml~=5.3.1',
         'requests~=2.32.3',
         'iso8601~=2.1.0',
         'chardet~=5.2.0',
         'jinja2~=3.1.4',
-        'beautifulsoup4~=4.12.3',
+        'beautifulsoup4~=4.13.3',
         'mzml2isa==1.1.1',
-        'biopython~=1.84',
+        'biopython~=1.85',
         'progressbar2~=4.4.2',
-        'deepdiff~=7.0.1',
-        'PyYAML~=6.0.1',
+        'deepdiff~=8.4.2',
+        'PyYAML~=6.0.2',
         'bokeh~=3.4.2',
-        'certifi==2024.7.4',
+        'certifi==2025.1.31',
         'flake8==7.1.0',
         'ddt==1.7.2',
         'behave==1.2.6',
@@ -104,8 +104,9 @@ setup(
         'rdflib~=7.0.0',
         'SQLAlchemy==1.4.52',
         'python-dateutil~=2.9.0.post0',
-        'Flask~=3.0.3',
+        'Flask~=3.1.0',
         'flask_sqlalchemy~=3.0.2'
     ],
-    test_suite='tests'
+    test_suite='tests',
+    license_files=("LICENSE.txt",)
 )
