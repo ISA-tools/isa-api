@@ -95,7 +95,7 @@ def read_sampletab_msi(fp):
                          encoding='utf-8').dropna(axis=1, how='all')
         # load MSI section
         df = df.T  # transpose MSI section
-        df.replace(np.nan, '', regex=True, inplace=True)
+        df = df.map(lambda x: np.nan if x == '' else x)
         # Strip out the nan entries
         df.reset_index(inplace=True)
         # Reset index so it is accessible as column
@@ -210,10 +210,13 @@ def load(FP):
 
     for _, row in msi_df[["Term Source Name", "Term Source URI",
                           "Term Source Version"]]\
-            .replace('', np.nan).dropna(axis=0, how='all').iterrows():
+            .map(lambda x: np.nan if x == '' else x).dropna(axis=0, how='all').iterrows():
         version = ''
-        if not isnan(row["Term Source Version"]):
-            version = row["Term Source Version"]
+        try:
+            if not isnan(row["Term Source Version"]):
+                version = row["Term Source Version"]
+        except TypeError:
+            print("Warning: Row 'Term Source Version': " + type(row["Term Source Version"]).__name__)
         ontology_source = OntologySource(name=row["Term Source Name"],
                                          file=row["Term Source URI"],
                                          version=version,
@@ -238,10 +241,10 @@ def load(FP):
     ]
 
     try:
-        for _, row in msi_df[["Person Last Name", "Person First Name",
+        for _, row in (msi_df[["Person Last Name", "Person First Name",
                               "Person Initials", "Person Email",
-                              "Person Role"]].replace(
-                '', np.nan).dropna(axis=0, how='all').iterrows():
+                              "Person Role"]].map(lambda x: np.nan if x == '' else x).
+                dropna(axis=0, how='all').iterrows()):
             person = Person(last_name=row['Person Last Name'],
                             first_name=row['Person First Name'],
                             mid_initials=row['Person Initials'],
@@ -255,7 +258,7 @@ def load(FP):
     for i, row in msi_df[
         ["Organization Name", "Organization Address", "Organization URI",
          "Organization Email",
-         "Organization Role"]].replace('', np.nan).dropna(
+         "Organization Role"]].map(lambda x: np.nan if x == '' else x).dropna(
             axis=0, how='all').iterrows():
         ISA.comments.extend([
             Comment(name="Organization Name.{}".format(i),
@@ -633,7 +636,7 @@ def dumps(investigation):
     msi_DF = pd.concat(
         [metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
     msi_DF = msi_DF.set_index("Submission Title").T
-    msi_DF = msi_DF.replace('', np.nan)
+    msi_DF = msi_DF.map(lambda x: np.nan if x == '' else x)
     msi_memf = StringIO()
     msi_DF.to_csv(
         path_or_buf=msi_memf,
@@ -765,7 +768,8 @@ def dumps(investigation):
             else:
                 scd_DF.loc[i, characteristic_label] = characteristic.value
 
-    scd_DF = scd_DF.replace('', np.nan)
+
+    scd_DF = scd_DF.map(lambda x: np.nan if x == '' else x)
     columns = list(scd_DF.columns)
     for i, col in enumerate(columns):
         if col.endswith("Term Source REF"):

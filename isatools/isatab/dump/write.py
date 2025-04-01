@@ -234,7 +234,7 @@ def write_study_table_files(inv_obj, output_dir):
         log.debug("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
-        DF = DF.replace('', nan)
+        DF = DF.map(lambda x: nan if x == '' else x)
         DF = DF.dropna(axis=1, how='all')
 
         with open(path.join(output_dir, study_obj.filename), 'wb') as out_fp:
@@ -534,7 +534,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             log.debug("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
-            DF = DF.replace('', nan)
+            DF = DF.map(lambda x: nan if x == '' else x)
+
             DF = DF.dropna(axis=1, how='all')
 
             with open(path.join(
