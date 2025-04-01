@@ -10,7 +10,7 @@
 <br/><br/>
 
 [![Py versions](https://img.shields.io/pypi/pyversions/isatools.svg?style=flat&maxAge=3600)](https://pypi.python.org/pypi/isatools/)
-[![Build Status](https://github.com/ISA-tools/isa-api/actions/workflows/buildandtestpython/badge.svg?branch=master)](https://github.com/ISA-tools/isa-api/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ISA-tools/isa-api/buildandtestpython.yml?branch=develop)](https://github.com/ISA-tools/isa-api/)
 [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
 [![PyPI version](https://badge.fury.io/py/isatools.svg)](https://pypi.python.org/pypi/isatools/)
 [![Documentation Status](https://readthedocs.org/projects/isatools/badge/?version=latest)](http://isatools.readthedocs.org/en/latest/?badge=latest)
