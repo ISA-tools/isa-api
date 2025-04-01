@@ -77,6 +77,8 @@ setup(
         'graphql-core==3.2.6',
         'wheel~=0.43.0',
         'setuptools~=77.0.3',
+        'numpy~=2.2.4; python_version == 3.10 or python_version == 3.11 or python_version == 3.12 or python_version == 3.13'
+        'numpy~=2.0.2; python_version < 3.10'
         'numpy~=2.2.4',
         'jsonschema~=4.23.0',
         'pandas==2.2.3',
