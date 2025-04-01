@@ -102,7 +102,7 @@ setup(
         'behave==1.2.6',
         'httpretty==1.1.4',
         'sure==2.0.1',
-        'coveralls~=4.0.1; python_version < '3.13',
+        'coveralls~=4.0.1; python_version < 3.13',
         'rdflib~=7.0.0',
         'SQLAlchemy==1.4.52',
         'python-dateutil~=2.9.0.post0',
