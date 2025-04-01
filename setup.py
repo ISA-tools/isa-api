@@ -79,11 +79,11 @@ setup(
         'setuptools~=77.0.3',
         'numpy~=2.2.4; python_version == 3.10 or python_version == 3.11 or python_version == 3.12 or python_version == 3.13'
         'numpy~=2.0.2; python_version < 3.10'
-        'numpy~=2.2.4',
         'jsonschema~=4.23.0',
         'pandas==2.2.3',
         'openpyxl>=3.1.5',
-        'networkx~=3.4.2',
+        'networkx~=3.4.2; python_version == 3.10 or python_version == 3.11 or python_version == 3.12 or python_version == 3.13',
+        'networkx~=3.2; python_version < 3.10',
         'lxml~=5.3.1',
         'requests~=2.32.3',
         'iso8601~=2.1.0',
@@ -102,7 +102,7 @@ setup(
         'behave==1.2.6',
         'httpretty==1.1.4',
         'sure==2.0.1',
-        'coveralls~=4.0.1',
+        'coveralls~=4.0.1; python_version < '3.13',
         'rdflib~=7.0.0',
         'SQLAlchemy==1.4.52',
         'python-dateutil~=2.9.0.post0',
