@@ -9,7 +9,6 @@
 
 <br/><br/>
 
-https://github.com/ISA-tools/isa-api/actions
 
 [![Py versions](https://img.shields.io/pypi/pyversions/isatools.svg?style=flat&maxAge=3600)](https://pypi.python.org/pypi/isatools/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ISA-tools/isa-api/buildandtestpython.yml?branch=develop)](https://github.com/ISA-tools/isa-api/)
