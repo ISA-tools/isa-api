@@ -1,4 +1,4 @@
-from isatools.model.comments import Commentable
+from isatools.model.comments import Commentable, Comment
 from isatools.model.sample import Sample
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.identifiable import Identifiable
@@ -15,7 +15,8 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
+    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None,
+                 checksum_type="", checksum_value=""):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
@@ -28,6 +29,12 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         self.__generated_from = []
         if generated_from:
             self.__generated_from = generated_from
+
+        self.__comments = comments or []
+        self.__comments.extend([
+            Comment(name="checksum type", value=checksum_type),
+            Comment(name="checksum", value=checksum_value)
+        ])
 
     @property
     def filename(self):
@@ -51,7 +58,7 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
                 '{0}.label must be a str or None; got {1}:{2}'
-                    .format(type(self).__name__, val, type(val)))
+                .format(type(self).__name__, val, type(val)))
         else:
             self.__label = val
 
@@ -89,10 +96,10 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
 
     def __eq__(self, other):
         return isinstance(other, DataFile) \
-               and self.filename == other.filename \
-               and self.label == other.label \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.label == other.label \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -143,9 +150,9 @@ class RawDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, RawDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -180,9 +187,9 @@ class DerivedDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -216,9 +223,9 @@ class RawSpectralDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, RawSpectralDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -253,9 +260,9 @@ class DerivedArrayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedArrayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -290,9 +297,9 @@ class ArrayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, ArrayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -327,9 +334,9 @@ class DerivedSpectralDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedSpectralDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -364,9 +371,9 @@ class ProteinAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, ProteinAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -401,9 +408,9 @@ class PeptideAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, PeptideAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -438,9 +445,9 @@ class DerivedArrayDataMatrixFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedArrayDataMatrixFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -476,9 +483,9 @@ class PostTranslationalModificationAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, PostTranslationalModificationAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -514,9 +521,9 @@ class AcquisitionParameterDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, AcquisitionParameterDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -551,9 +558,9 @@ class FreeInductionDecayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, FreeInductionDecayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other

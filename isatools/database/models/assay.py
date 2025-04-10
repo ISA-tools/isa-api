@@ -19,6 +19,7 @@ class Assay(Base):
     """ The SQLAlchemy model for the Assay table """
 
     __tablename__: str = 'assay'
+    __allow_unmapped__ = True
 
     # Base fields
     assay_id: int = Column(Integer, primary_key=True)

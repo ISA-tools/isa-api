@@ -9,8 +9,9 @@
 
 <br/><br/>
 
+
 [![Py versions](https://img.shields.io/pypi/pyversions/isatools.svg?style=flat&maxAge=3600)](https://pypi.python.org/pypi/isatools/)
-[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ISA-tools/isa-api/buildandtestpython.yml?branch=develop)](https://github.com/ISA-tools/isa-api/)
 [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
 [![PyPI version](https://badge.fury.io/py/isatools.svg)](https://pypi.python.org/pypi/isatools/)
 [![Documentation Status](https://readthedocs.org/projects/isatools/badge/?version=latest)](http://isatools.readthedocs.org/en/latest/?badge=latest)
@@ -26,7 +27,7 @@ To find out who's using ISA and about the ISA development and user community, se
 
 The *ISA API*  aims to provide you, the developer, with a set of tools to help you easily and quickly build your own ISA objects, validate, and convert between serializations of ISA-formatted datasets and other formats/schemas (e.g. SRA schemas). The ISA API is published on PyPI as the `isatools` package.
 
-`isatools` currently supports Python 3.6+.
+`isatools` currently supports Python 3.8+.
 
 ----
 ### Read the Publication...
@@ -57,10 +58,10 @@ ISA API: An open platform for interoperable life science experimental metadata. 
 Using the ISA-API
 -----------------
 
-The documentation to install and use the ISA-API (v0.12 and above) can be found [here](https://isa-tools.org/isa-api/content/index.html).
+The documentation to install and use the ISA-API (v0.14.3 and above) can be found [here](https://isa-tools.org/isa-api/content/index.html).
 
 For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
 Contributing
 ------------
-The ISA-API is still in development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team at [isatools@googlegroups.com](mailto:isatools@googlegroups.com), or ask a question, report a bug or file a feature request in the Github issue tracker at [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues).
+The ISA-API is still in development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team at [isatools@googlegroups.com](mailto:isatools@googlegroups.com), or ask a question, report a bug or file a feature request in the GitHub issue tracker at [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues).

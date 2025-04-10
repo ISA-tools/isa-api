@@ -15,7 +15,6 @@ Todo:
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Commentable, Comment
-from isatools.model.context import set_context
 from isatools.model.datafile import (
     DataFile,
     RawDataFile,
@@ -49,5 +48,4 @@ from isatools.model.publication import Publication
 from isatools.model.sample import Sample
 from isatools.model.source import Source
 from isatools.model.study import Study
-from isatools.model.logger import log
 from isatools.model.utils import _build_assay_graph, plink, batch_create_assays, batch_create_materials, _deep_copy

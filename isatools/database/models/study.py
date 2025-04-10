@@ -24,6 +24,7 @@ class Study(Base):
     """ The SQLAlchemy model for the Study table """
 
     __tablename__: str = 'study'
+    __allow_unmapped__ = True
 
     # Base fields
     study_id: int = Column(Integer, primary_key=True)

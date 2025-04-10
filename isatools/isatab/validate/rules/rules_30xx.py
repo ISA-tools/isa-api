@@ -1,33 +1,31 @@
 import iso8601
 
-from pandas import DataFrame
-
 from isatools.isatab.validate.store import validator
 from isatools.isatab.defaults import log, _RX_DOI, _RX_PMID, _RX_PMCID
 from isatools.isatab.utils import cell_has_value
 
 
-def check_filenames_present(i_df: DataFrame) -> None:
+def check_filenames_present(i_df_dict: dict) -> None:
     """ Used for rule 3005
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
-    for s_pos, study_df in enumerate(i_df['studies']):
+    for s_pos, study_df in enumerate(i_df_dict['studies']):
         if study_df.iloc[0]['Study File Name'] == '':
             validator.add_warning(message="Missing Study File Name", supplemental="STUDY.{}".format(s_pos), code=3005)
             log.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
-        for a_pos, filename in enumerate(i_df['s_assays'][s_pos]['Study Assay File Name'].tolist()):
+        for a_pos, filename in enumerate(i_df_dict['s_assays'][s_pos]['Study Assay File Name'].tolist()):
             if filename == '':
                 spl = "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos)
                 validator.add_warning.append(message="Missing assay file name", supplemental=spl, code=3005)
-                log.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(a_pos))
+                log.warning("(W) An assay filename is missing for STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos))
 
 
-def check_date_formats(i_df):
+def check_date_formats(i_df_dict):
     """ Used for rule 3001
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -45,13 +43,13 @@ def check_date_formats(i_df):
                 validator.add_warning(message="Date is not ISO8601 formatted", supplemental=spl, code=3001)
                 log.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
 
-    release_date_vals = i_df['investigation']['Investigation Public Release Date'].tolist()
+    release_date_vals = i_df_dict['investigation']['Investigation Public Release Date'].tolist()
     if len(release_date_vals) > 0:
         check_iso8601_date(release_date_vals[0])
-    sub_date_values = i_df['investigation']['Investigation Submission Date'].tolist()
+    sub_date_values = i_df_dict['investigation']['Investigation Submission Date'].tolist()
     if len(sub_date_values) > 0:
         check_iso8601_date(sub_date_values[0])
-    for i, study_df in enumerate(i_df['studies']):
+    for i, study_df in enumerate(i_df_dict['studies']):
         release_date_vals = study_df['Study Public Release Date'].tolist()
         if len(release_date_vals) > 0:
             check_iso8601_date(release_date_vals[0])
@@ -60,10 +58,10 @@ def check_date_formats(i_df):
             check_iso8601_date(sub_date_values[0])
 
 
-def check_dois(i_df):
+def check_dois(i_df_dict):
     """ Used for rule 3002
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -79,17 +77,17 @@ def check_dois(i_df):
                 validator.add_warning(message="DOI is not valid format", supplemental=spl, code=3002)
                 log.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
 
-    for doi in i_df['i_publications']['Investigation Publication DOI'].tolist():
+    for doi in i_df_dict['i_publications']['Investigation Publication DOI'].tolist():
         check_doi(doi)
-    for i, study_df in enumerate(i_df['s_publications']):
+    for i, study_df in enumerate(i_df_dict['s_publications']):
         for doi in study_df['Study Publication DOI'].tolist():
             check_doi(doi)
 
 
-def check_pubmed_ids_format(i_df):
+def check_pubmed_ids_format(i_df_dict):
     """ Used for rule 3003
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
 
@@ -105,21 +103,21 @@ def check_pubmed_ids_format(i_df):
                 validator.add_warning(message="PubMed ID is not valid format", supplemental=spl, code=3003)
                 log.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
 
-    for doi in i_df['i_publications']['Investigation PubMed ID'].tolist():
+    for doi in i_df_dict['i_publications']['Investigation PubMed ID'].tolist():
         check_pubmed_id(str(doi))
-    for study_pubs_df in i_df['s_publications']:
+    for study_pubs_df in i_df_dict['s_publications']:
         for doi in study_pubs_df['Study PubMed ID'].tolist():
             check_pubmed_id(str(doi))
 
 
-def check_ontology_sources(i_df):
+def check_ontology_sources(i_df_dict):
     """ Used for rule 3008
 
-    :param i_df: An investigation DataFrame
+    :param i_df_dict: A dictionary of  DataFrame and list of Dataframes representing the Investigation file
     :return: None
     """
     term_source_refs = []
-    for i, ontology_source_name in enumerate(i_df['ontology_sources']['Term Source Name'].tolist()):
+    for i, ontology_source_name in enumerate(i_df_dict['ontology_sources']['Term Source Name'].tolist()):
         if ontology_source_name == '' or 'Unnamed: ' in ontology_source_name:
             spl = "pos={}".format(i)
             warn = "(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be referenced"
@@ -141,31 +139,33 @@ def check_ontology_fields(table, cfg, tsrs):
     :return: True if OK, False if not OK
     """
 
-    def check_single_field(cell_value, source, acc, cfield, filename):
+    def check_single_field(cell_value, source, acc, config_field, filename):
         """ Checks ontology annotation columns are correct for a given
         configuration for a given cell value
 
         :param cell_value: Cell value
         :param source: Term Source REF value
         :param acc: Term Accession Number value
-        :param cfield: The configuration specification from the ISA Config
+        :param config_field: The configuration specification from the ISA Config
         :param filename: Filename of the table
         :return: True if OK, False if not OK
         """
+        return_value = True
         if ((cell_has_value(cell_value) and not cell_has_value(source) and cell_has_value(acc))
                 or not cell_has_value(cell_value)):
             msg = "Missing Term Source REF in annotation or missing Term Source Name"
             spl = ("Incomplete values for ontology headers, for the field '{}' in the file '{}'. Check that all the "
-                   "label/accession/source are provided.").format(cfield.header, filename)
+                   "label/accession/source are provided.").format(config_field.header, filename)
             validator.add_warning(message=msg, supplemental=spl, code=3008)
             log.warning("(W) {}".format(spl))
-            if source not in tsrs:
-                spl = ("Term Source REF, for the field '{}' in the file '{}' does not refer to a declared "
-                       "Ontology Source.").format(cfield.header, filename)
-                validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
-                log.warning("(W) {}".format(spl))
-            return False
-        return True
+            return_value = False
+        if cell_has_value(source) and source not in tsrs:
+            spl = ("Term Source REF, for the field '{}' in the file '{}' does not refer to a declared "
+                   "Ontology Source.").format(cfield.header, filename)
+            validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
+            log.warning("(W) {}".format(spl))
+            return_value = False
+        return return_value
 
     result = True
     nfields = len(table.columns)
@@ -191,9 +191,9 @@ def check_ontology_fields(table, cfg, tsrs):
             continue
 
         for irow in range(len(table.index)):
-            result = result and check_single_field(table.iloc[irow][icol],
-                                                   table.iloc[irow][rindx],
-                                                   table.iloc[irow][rrindx],
+            result = result and check_single_field(table.iloc[irow].iloc[icol],
+                                                   table.iloc[irow].iloc[rindx],
+                                                   table.iloc[irow].iloc[rrindx],
                                                    cfield,
                                                    table.filename)
 

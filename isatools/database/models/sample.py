@@ -17,6 +17,7 @@ class Sample(InputOutput):
     """ The SQLAlchemy model for the Sample table """
 
     __tablename__: str = 'sample'
+    __allow_unmapped__ = True
     __mapper_args__: dict = {
         "polymorphic_identity": "sample",
         "concrete": True,

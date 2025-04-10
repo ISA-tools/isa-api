@@ -217,16 +217,16 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
 
     def __eq__(self, other):
         return isinstance(other, Investigation) \
-               and self.filename == other.filename \
-               and self.identifier == other.identifier \
-               and self.title == other.title \
-               and self.submission_date == other.submission_date \
-               and self.public_release_date == other.public_release_date \
-               and self.ontology_source_references == other.ontology_source_references \
-               and self.publications == other.publications \
-               and self.contacts == other.contacts \
-               and self.studies == other.studies \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.identifier == other.identifier \
+            and self.title == other.title \
+            and self.submission_date == other.submission_date \
+            and self.public_release_date == other.public_release_date \
+            and self.ontology_source_references == other.ontology_source_references \
+            and self.publications == other.publications \
+            and self.contacts == other.contacts \
+            and self.studies == other.studies \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other

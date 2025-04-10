@@ -5,7 +5,9 @@ from sqlalchemy.orm import relationship, Session
 
 from isatools.model import Process as ProcessModel
 from isatools.database.utils import Base
-from isatools.database.models.relationships import process_inputs, process_outputs, process_parameter_values
+from isatools.database.models.relationships import (process_inputs,
+                                                    process_outputs,
+                                                    process_parameter_values)
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.utils import make_get_table_method
 
@@ -14,6 +16,7 @@ class Process(Base):
     """ The SQLAlchemy model for the Process table """
 
     __tablename__: str = 'process'
+    __allow_unmapped__ = True
 
     process_id: int = Column(String, primary_key=True)
     name: str = Column(String)
@@ -83,17 +86,29 @@ def make_process_methods():
 
         inputs = []
         for data_input in self.inputs:
-            inputs.append(InputOutput(io_id=data_input.id, io_type='input'))
+            in_out = InputOutput()
+            in_out.io_id = data_input.id
+            in_out.io_type = 'input'
+            inputs.append(in_out)
 
         outputs = []
         for data_output in self.outputs:
-            outputs.append(InputOutput(io_id=data_output.id, io_type='output'))
+            out_in = InputOutput()
+            out_in.io_id = data_output.id
+            out_in.io_type = 'output'
+            # outputs.append(InputOutput(io_id=data_output.id, io_type='output'))
+            outputs.append(out_in)
+
+        if self.date:
+            cleaned_date = self.date
+        else:
+            cleaned_date = None
 
         return Process(
             process_id=self.id,
             name=self.name,
             performer=self.performer,
-            date=datetime.strptime(self.date) if self.date else None,
+            date=cleaned_date,
             comments=[comment.to_sql() for comment in self.comments],
             protocol_id=self.executes_protocol.id,
             inputs=inputs,

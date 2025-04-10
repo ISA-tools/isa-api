@@ -27,16 +27,19 @@ from isatools.model import (
     StudyFactor,
 )
 
-
 __author__ = 'proccaserra@gmail.com'
-
-# a method to obtain a block of line between a start and an end marker
-# this will be invoked to obtain raw data, metabolite identification,metabolite
-# annotation and possible study factors parameters are a filehandle and 2
-# strings allowing the specify the section brackets
 
 
 def getblock(container, start_marker, end_marker):
+    """A method to obtain a block of line between a start and an end marker
+    this will be invoked to obtain raw data, metabolite identification, metabolite
+    annotation and possible study factors parameters are a filehandle and 2
+    strings allowing the specify the section brackets
+    :param container:
+    :param start_marker:
+    :param end_marker:
+    :return:
+    """
     try:
         begin = False
         block = []
@@ -56,10 +59,12 @@ def getblock(container, start_marker, end_marker):
         print("Error: in getblock() method, situation not recognized")
 
 
-# a method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
-# Workbench study accession number that should follow this pattern ^ST\d+[6]
-
 def get_archived_file(mw_study_id):
+    """ A method of download Metabolomics Workbench archived data from their anonymous FTP site input: a valid Metabolomics
+    Workbench study accession number that should follow this pattern ^ST\\d+[6]
+    :param mw_study_id -> str
+    :return: success -> boolean
+    """
     success = True
     archive2download = mw_study_id + ".zip"
 
@@ -78,13 +83,17 @@ def get_archived_file(mw_study_id):
         print("file not found on server \n")
     return False
 
-# a method to create an EBI Metabolights MAF file from Metabolomics Workbench
-# REST API over data and metabolites
-# input: a valid Metabolomics Workbench study accession number that should
-# follow this pattern ^ST\d+[6]
-
 
 def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
+    """ A method to create an EBI Metabolights MAF file from Metabolomics Workbench
+    REST API over data and metabolites
+    input: a valid Metabolomics Workbench study accession number that should
+    follow this pattern ^ST\\d+[6]
+    :param write_dir:
+    :param mw_study_id:
+    :param mw_analysis_id:
+    :return:
+    """
     try:
         data_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/data"
         metabolites_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/metabolites"
@@ -200,7 +209,7 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
                                     fh.writelines("\n")
 
                                     # Output resulting json to file
-                                    # [Action Dissabled]
+                                    # [Action Disabled]
                                     # open("output.json", "w").write(
                                     #     json.dumps(dd, sort_keys=True,
                                     #     indent=4, separators=(',', ': '))
@@ -221,13 +230,15 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
     except IOError:
         print("Error: in generate_maf_file() method, situation not recognized")
 
-# a method to obtain the nature of the technology used in the analysis from a
-# Metabolomics Workbench Header line the method takes one parameter as
-# input: a filehandle the method returns a string holding the ISA
-# technology type
-
 
 def get_assay_type(container):
+    """A method to obtain the nature of the technology used in the analysis from a
+    Metabolomics Workbench Header line the method takes one parameter as
+    input: a filehandle the method returns a string holding the ISA
+    technology type
+    :param container -> list
+    :return: assay_type -> str
+    """
     assay_type = ""
     try:
         for line in container:
@@ -243,17 +254,25 @@ def get_assay_type(container):
         print("Error: in get_assay_type() method, situation not recognized")
 
 
-def write_assay(write_dir, technotype, accnum, mw_analysis_nb,
-                assayrecords, assay_wf_header):
+def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, assay_wf_header):
+    """A method to write an ISA assay table
+
+    :param write_dir:
+    :param technotype:
+    :param accnum:
+    :param mw_analysis_nb:
+    :param assayrecords:
+    :param assay_wf_header:
+    :return: nothing
+    """
     try:
-        # /Users/Philippe/Documents/git/MW2ISA/
         assayfileoutputpath = write_dir + "/" + accnum + "/"
         if not os.path.exists(assayfileoutputpath):
             os.makedirs(assayfileoutputpath)
 
-        assay_file = open(assayfileoutputpath + "a_" + accnum + "_"
-                          + mw_analysis_nb + '.txt', 'w')
+        assay_file = open(assayfileoutputpath + "a_" + accnum + "_" + mw_analysis_nb + '.txt', 'w')
         print("writing 'assay information' to file...")
+
         # DOC: writing header for ISA assay file:
         for this_item in assay_wf_header:
             assay_file.write('"{0}"'.format(this_item))
@@ -301,16 +320,22 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb,
         assay_file.close()
     except IOError:
         print("Error: in write_assay() method, situation not recognized")
-# a method to create Metabolights formated data files which will be referenced
-# in the ISA-Tab document the method takes 3 parameters as input: a filehandle,
-# a MW identifier for the study, a MW identifier for the analysis the method
-# return nothing but creates a raw signal quantification file and a metabolite
-# assignment file.
 
 
-def create_raw_data_files(write_dir, input_techtype, f, input_study_id,
-                          input_analysis_id):
-    # print("file to download: ", f)
+def create_raw_data_files(write_dir, input_techtype, f, input_study_id, input_analysis_id):
+    """A method to create Metabolights formated data files which will be referenced
+    in the ISA-Tab document the method takes 3 parameters as input: a filehandle,
+    a MW identifier for the study, a MW identifier for the analysis the method
+    return nothing but creates a raw signal quantification file and a metabolite
+    assignment file.
+    :param write_dir: str
+    :param input_techtype: str
+    :param f: filehandle
+    :param input_study_id: str
+    :param input_analysis_id: str
+    :return: nothing
+    """
+
     try:
         # dlurl = urlopen(f)
         # saving a remote file to local drive
@@ -421,18 +446,16 @@ def create_raw_data_files(write_dir, input_techtype, f, input_study_id,
         print("Error in create_raw_data_files() methods, "
               "possibly when trying to write data files")
 
-# a method to create ISA assay tables from an Metabolomics Workbench Study
-# Identifier
-# the method takes 3 parameters as input: a filehandle, a MW identifier for
-# the study, a MW identifier for the analysis
-# the method return nothing but creates as many as ISA assay files.
 
-
-# a method to create an ISA assay table for NMR records
-# the method takes a filehandle as input
-
-def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
-
+def create_nmr_assay_records(list_of_lines, study_id, analysis_id, fv_records):
+    """A method to create ISA assay tables from an Metabolomics Workbench Study
+    Identifier
+    the method takes 3 parameters as input: a filehandle, a MW identifier for
+    the study, a MW identifier for the analysis
+    the method return nothing but creates as many as ISA assay files.
+    a method to create an ISA assay table for NMR records
+    the method takes a filehandle as input
+    """
     try:
         # print(fv_records)
         # print("getting the nmr MWTab file: ", lol)
@@ -494,13 +517,13 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
             "Parameter Value[binned increment]",
             "Parameter Value[binned data exclusion range ]",
             "NMR Assay Name",
-            "Free Induction Data File",
+            "Free Induction Decay Data File",
             "Protocol REF",
             "Parameter Value[software]",
             "Data Transformation Name",
             "Derived Spectral Data File"]
 
-        input_nmr_file = urlopen(lol).read()
+        input_nmr_file = urlopen(list_of_lines).read()
         input_nmr_file = str(input_nmr_file).split('\\n')
 
         maf_file = str(study_id) + "_" + str(analysis_id) + "_maf_data.txt"
@@ -656,21 +679,20 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
 
         return longrecords, assay_wf_header, nmr_maf_qt, nmr_rawdata_qt
 
-    except BaseException:
-        print("Error in create_nmr_assay_records() method, possibly when "
-              "trying to write nmr assay data files")
+    except IOError:
+        print("Error in create_nmr_assay_records() method.")
 
 
-# a method to create an ISA assay table for MS records
-# the method takes a filehandle as input
-
-def create_ms_assay_records(
-        lol, input_study_id, input_analysis_id, fv_records):
-
+def create_ms_assay_records(lol, input_study_id, input_analysis_id, fv_records):
+    """A method to create an ISA assay table for MS records
+    the method takes a filehandle as input
+    :param lol:
+    :param input_study_id:
+    :param input_analysis_id:
+    :param fv_records:
+    :return:
+    """
     try:
-        # print("checking the factors from create_ms_assay_records: ",
-        # fv_records)
-
         pv_ch_instrument = ""
         pv_ch_column = ""
         pv_ch_flowrate = ""
@@ -724,8 +746,6 @@ def create_ms_assay_records(
 
         input_ms_file = urlopen(lol).read()
         input_ms_file = str(input_ms_file).split('\\n')
-
-        # print("content of ms file MS?: ", input_ms_file)
 
         for row_item in input_ms_file:
 
@@ -840,11 +860,16 @@ def create_ms_assay_records(
             # longrecords[fv_record[3]])
 
         return longrecords, assay_wf_header, ms_rawdata_qt, ms_maf_qt
-    except BaseException:
+
+    except IOError:
         print("Error: in create_ms_assay_records() method.")
 
 
 def get_organism_with_taxid(lol):
+    """A function to harvest the taxonomic information from MW file
+    :param lol: list of lists
+    :return: 2 strings
+    """
     that_species = ""
     that_taxid = ""
     try:
@@ -853,7 +878,6 @@ def get_organism_with_taxid(lol):
                 that_species = this_row[1]
             if "SU:TAXONOMY_ID" in this_row[0]:
                 that_taxid = this_row[1]
-        # print("species & TaxID :", that_species, that_taxid)
         return that_species, that_taxid
     except Exception as e:
         logging.exception(e)
@@ -861,6 +885,11 @@ def get_organism_with_taxid(lol):
 
 
 def get_fv_records(lol):
+    """A method to return a collection of study variables and their levels from a MW metadata file
+
+    :param lol: list of lists
+    :return:
+    """
     records = []
     factors = {}
     restofrecordheader = []
@@ -912,6 +941,10 @@ def get_fv_records(lol):
 
 
 def get_mwfile_as_lol(input_url):
+    """ A method to metabolomics workbench tabular file as list of lists
+    :param input_url:
+    :return: list of lists
+    """
     try:
         input_file = urlopen(input_url).read()
         input_file = str(input_file).split('\\n')
@@ -919,18 +952,19 @@ def get_mwfile_as_lol(input_url):
         for line in input_file:
             lines = line.split('\\t')
             mw_as_lol.append(lines)
-
         return mw_as_lol
     except IOError:
-        print("IOError in get_mwfile_as_lol() method: can not open file or "
-              "read data ")
-
-# a method to write an ISA study file
-# a
+        print("IOError in get_mwfile_as_lol() method: can not open file or read data")
 
 
 def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
-
+    """ A method to write an ISA study file
+    :param write_dir:
+    :param study_acc_num:
+    :param study_file_header:
+    :param longrecords:
+    :return:
+    """
     try:
         this_study_filename = "s_" + study_acc_num + ".txt"
         # print("study filename: ",this_study_filename)
@@ -970,23 +1004,17 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
             print("IOError in write_study_file method(): "
                   "can not write to file.")
 
-        # else:
-        #   print("Error in write_study_file method()
-        # -something went wrong while trying to write but don't know why!")
-
     except IOError:
         print("IOError in write_study_file() method: "
               "can not open file or read data ")
-    # else:
-    #     print("doh, something went wrong but
-    # don't know why in write_study_file method()!")
-
-
-# METHOD: given a Metabolomics Workbench Identifier, download the
-# corresponding zip archive via anonymous FTP
 
 
 def get_raw_data(study_accession_number):
+    """ METHOD: given a Metabolomics Workbench Identifier, downloads the
+    corresponding zip archive via anonymous FTP
+    :param study_accession_number: string, MW accnum ST\\d+
+    :return:
+    """
     study_accession_number = str(study_accession_number)
     try:
         ftp_download_url = "ftp://www.metabolomicsworkbench.org/Studies/"\
@@ -996,37 +1024,31 @@ def get_raw_data(study_accession_number):
         print("IOError in get_raw_data() method: no permission to download "
               "or wrong url")
 
-# METHOD:
-#
-# a function to iterate over a dictionary of study identifiers matched to a
-# technology type: aim is to allow batch
-#  processing/download from MW
-# dictionary_of_input = {"ST000102": "NMR", "ST000056": "NMR", "ST000282":
-# "MS", "ST000367": "MS", "ST000093": "MS",
-#                       "ST000159": "MS", "ST000110": "MS", "ST000369": "MS"}
-# //////////
-# for key in dictionary_of_input.key():
-#     page_url = baseurl + dictionary_of_input[key] + "Data&StudyID=" + key
-# + "&StudyType=" +
-# dictionary_of_input[key] + "&ResultType=1#DataTabs"
-#
-#     try:
-#         process_entry(key, dictionary_of_input[key])
-#     except IOError:
-#         print()
-#     except:
-#         print("it does not cut no mustard, isn't it?")
-# //////////
-
-# MAIN METHOD:
-# "ST000367"
-# "ST000093"
-# "ST000159"
-# "ST000110"
-# "ST00036"
-
 
 def mw2isa_convert(**kwargs):
+    """Main method to invoke metabolomics workbench conversion to isa format
+    :param kwargs:
+        study_id -> str
+        outputidr -> str
+        dl_option -> str/boolean
+        validation_option -> str/boolean
+    :return: conversion success, boolean
+
+    # TODO
+    a function to iterate over a dictionary of study identifiers matched to a
+    technology type: aim is to allow batch
+    processing/download from MW
+    dictionary_of_input = {
+        "ST000102": "NMR",
+        "ST000056": "NMR",
+        "ST000282": "MS",
+        "ST000367": "MS",
+        "ST000093": "MS",
+        "ST000159": "MS",
+        "ST000110": "MS",
+        "ST000369": "MS"
+        }
+    """
     options = {
         'studyid': '',
         'outputdir': '',
@@ -1035,7 +1057,6 @@ def mw2isa_convert(**kwargs):
 
     conversion_success = True
     try:
-
         options.update(kwargs)
         print("user options", options)
         studyid = options['studyid']
@@ -1046,21 +1067,17 @@ def mw2isa_convert(**kwargs):
         # checking MW study accession number is conform:
         if not re.match(r"(^ST\d{6})", studyid):
             print("this is not a MW accession number, please try again")
-
+            conversion_success = False
         else:
             study_url = "http://www.metabolomicsworkbench.org/rest/study/" \
                         "study_id/" + studyid + "/analysis"
             with urllib.request.urlopen(study_url) as url:
                 study_response = url.read().decode('utf8')
                 analyses = json.loads(study_response)
-                # print("study analysis", analyses)
                 if "1" in analyses.keys():
-                    print("several analysis")
                     for key in analyses.keys():
                         tt = analyses[key]["analysis_type"]
-                        print("analysis_type:", tt)
                 else:
-                    print("Technology is: ", analyses["analysis_type"])
                     tt = analyses["analysis_type"]
             outputpath = outputdir + "/" + studyid + "/"
             if not os.path.exists(outputpath):
@@ -1070,10 +1087,10 @@ def mw2isa_convert(**kwargs):
                       "DRCCMetadata.php?Mode=Study&DataMode="
             page_url = baseurl + tt + "Data&StudyID=" + studyid + \
                 "&StudyType=" + tt + "&ResultType=1#DataTabs"
-            print(page_url)
+
             page = urlopen(page_url).read()
             soup = BeautifulSoup(page, "html.parser")
-            AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
+            AnalysisParamTable = soup.find_all("table", {'class': "datatable2"})
 
             # analysisid = ""
             # assay_types = []
@@ -1086,14 +1103,10 @@ def mw2isa_convert(**kwargs):
 
             study_assays_dict = {"study_id": studyid, "assays": []}
             for table in AnalysisParamTable:
-                # ltab = len(table)
-                # index = 0
                 for index, obj in enumerate(table):
                     if "Analysis ID:" in str(obj):
                         tds = obj.find_all('td')
                         analysisid = tds[1].text
-                        # print(index,"analysis ID", table.tr.next(),
-                        # analysisid)
                         if "MS" in str(table.tr.next()):
                             tt = "mass spectrometry"
                             study_assays_dict["assays"].append(
@@ -1203,6 +1216,7 @@ def mw2isa_convert(**kwargs):
             # Factor section:
             study_factor_records, study_factors, fv_record_header = \
                 get_fv_records(thisFileContent)
+
             # Getting Sample Organism information:
             species, taxonid = get_organism_with_taxid(thisFileContent)
             # Inserting the taxonomic information in the ISA Study
@@ -1247,12 +1261,10 @@ def mw2isa_convert(**kwargs):
                         name="MW submission date", value=row[1]))
 
                 if row[0].find('ST:NUM_GROUPS') != -1:
-                    # study_num_group = row[1]
                     study1.comments.append(Comment(
                         name="number of study groups", value=row[1]))
 
                 if row[0].find('ST:TOTAL_SUBJECTS') != -1:
-                    # study_total_subj = row[1]
                     study1.comments.append(Comment(
                         name="total number of subjects", value=row[1]))
 
@@ -1552,7 +1564,7 @@ def mw2isa_convert(**kwargs):
                         "collision energy: " + row[1])
                     ms_param_oa = OntologyAnnotation(term="collision energy")
                     ms_param = ProtocolParameter(parameter_name=ms_param_oa)
-                    ms_protocol_params.append(ms_param_oa)
+                    ms_protocol_params.append(ms_param)
 
                 if row[0].find('MS:COLLISION_GAS') != -1:
                     # protocol_parameters["mass spectrometry"].append(
@@ -2258,18 +2270,15 @@ def mw2isa_convert(**kwargs):
                 isatab.dump(investigation, outputpath)
             except IOError:
                 print("Error: in main() method can\'t open file or write data")
-            # else:
-            #  print("doh, something went wrong while writing investigation
-            # but don't know why!: from main method")
 
-            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE
-            # FROM MW ANONYMOUS FTP:
+            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
             if dl_option == 'yes':
                 get_archived_file(studyid)
             elif dl_option == 'no':
                 print('user elected not to dowload raw data')
             else:
                 print('user input not recognized')
+                raise ValueError("invalid input, option not recognized {}", dl_option)
 
     except Exception as e:
         logging.exception(e)

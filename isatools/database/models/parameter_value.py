@@ -12,7 +12,7 @@ class ParameterValue(Base):
     """ The SQLAlchemy model for the ParameterValue table """
 
     __tablename__: str = 'parameter_value'
-
+    __allow_unmapped__ = True
     # Base fields
     parameter_value_id: int = Column(Integer, primary_key=True)
     value_int: int = Column(Integer)
