@@ -9,7 +9,9 @@ description = "Metadata tracking tools help to manage an increasingly diverse se
 readme = "README.md"
 requires-python = ">=3.9"
 
-license = { file = "LICENSE.txt" }
+license = "CPAL-1.0"
+license-files = ["LICENSE.txt"]
+
 authors = [
     { name = "ISA Infrastructure Team", email = "isatools@googlegroups.com" }
 ]
@@ -60,7 +62,7 @@ dependencies = [
         'behave==1.2.6',
         'httpretty==1.1.4',
         'sure==2.0.1',
-        'coveralls~=4.0.1',
+        'coveralls~=3.3.1',
         'rdflib~=7.0.0',
         'SQLAlchemy==1.4.52',
         'python-dateutil~=2.9.0.post0',
@@ -77,6 +79,7 @@ dependencies = [
 
 [tool.setuptools]
 include-package-data = false
+packages = ["isatools"]
 
 [tool.setuptools-git-versioning]
 enabled = true
