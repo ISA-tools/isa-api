@@ -13,7 +13,7 @@ def read(f_name):
     
 setup(
     name='isatools',
-    version='0.14.4',
+    version='0.14.3',
     packages=['isatools',
               'isatools.model',
               'isatools.isatab',
@@ -77,13 +77,13 @@ setup(
         'graphql-core==3.2.6',
         'wheel~=0.43.0',
         'setuptools~=77.0.3',
-        'numpy~=2.2.4; python_version == 3.10 or python_version == 3.11 or python_version == 3.12', # or python_version == 3.13'
-        'numpy~=2.0.2; python_version < 3.10',
+        'numpy~=2.2.4; python_version >= "3.9"', # or python_version == 3.11 or python_version == 3.12', # or python_version == 3.13'
+        'numpy~=2.0.2; python_version < "3.10"',
         'jsonschema~=4.23.0',
         'pandas==2.2.3',
         'openpyxl>=3.1.5',
-        'networkx~=3.4.2; python_version == 3.10 or python_version == 3.11 or python_version == 3.12', # or python_version == 3.13',
-        'networkx~=3.2; python_version < 3.10',
+        'networkx~=3.4.2; python_version >= "3.9"', # or python_version == 3.11 or python_version == 3.12', # or python_version == 3.13',
+        'networkx~=3.2; python_version < "3.10"',
         'lxml~=5.3.1',
         'requests~=2.32.3',
         'iso8601~=2.1.0',
@@ -110,5 +110,5 @@ setup(
         'flask_sqlalchemy~=3.0.2'
     ],
     test_suite='tests',
-    license_files=("LICENSE.txt",)
+    license_files=("LICENSE.txt")
 )

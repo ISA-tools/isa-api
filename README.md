@@ -9,6 +9,7 @@
 
 <br/><br/>
 
+
 [![Py versions](https://img.shields.io/pypi/pyversions/isatools.svg?style=flat&maxAge=3600)](https://pypi.python.org/pypi/isatools/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ISA-tools/isa-api/buildandtestpython.yml?branch=develop)](https://github.com/ISA-tools/isa-api/)
 [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
@@ -57,7 +58,7 @@ ISA API: An open platform for interoperable life science experimental metadata. 
 Using the ISA-API
 -----------------
 
-The documentation to install and use the ISA-API (v0.14.5 and above) can be found [here](https://isa-tools.org/isa-api/content/index.html).
+The documentation to install and use the ISA-API (v0.14.3 and above) can be found [here](https://isa-tools.org/isa-api/content/index.html).
 
 For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
