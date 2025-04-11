@@ -3,8 +3,8 @@ holoviews~=1.12.3
 #ipywidgets==7.4.2
 #jupyter==1.0
 #matplotlib~=3.1.1
-numpy~=1.20.0
-pandas~=1.2.1
+numpy~=2.2.4
+pandas~=2.2.3
 python-dateutil~=2.8.0
 pytz==2019.1
 #-e git+http://github.com/ISA-tools/isa-api@b8f2f55b4e046f1841ffba7d6fb190c87918375f#egg=isatools
