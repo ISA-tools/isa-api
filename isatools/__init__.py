@@ -42,6 +42,9 @@ from isatools.net import (
     sra2isatab as sra2isatab_module,
 )
 
+from isatools.utils import (
+    detect_graph_process_pooling as detect_graph_process_pooling_module
+)
 
 # isatools.convert packages
 isatab2cedar = isatab2cedar_module
@@ -66,3 +69,6 @@ mw2isa = mw2isa_module
 ols = ols_module
 pubmed = pubmed_module
 sra2isatab = sra2isatab_module
+
+# isatools.utils packages
+detect_graph_process_pooling = detect_graph_process_pooling_module

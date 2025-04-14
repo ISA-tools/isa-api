@@ -7,10 +7,11 @@ import os
 import shutil
 import tempfile
 import unittest
+import pandas as pd
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock, patch
 
 from isatools import isajson
 from isatools import isatab
@@ -37,6 +38,77 @@ def setUpModule():
 
 
 class TestIsaGraph(unittest.TestCase):
+
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # # @patch('isatools.log')
+    # def test_no_pooling_detected(self, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.return_value = []
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = []
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == []
+    #
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # @patch('isatools.log')
+    # def test_pooling_in_study_only(mock_log, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.side_effect = [['p1', 'p2'], []]  # study -> pooling; assay -> none
+    #
+    #     assay = MagicMock()
+    #     assay.filename = 'assay.txt'
+    #     assay.graph = 'assay-graph'
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = [assay]
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == [{'study.txt': ['p1', 'p2']}]
+    #
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # # @patch('isatools.log')
+    # def test_pooling_in_study_and_assay(self, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.side_effect = [['p1'], ['a1']]  # study -> pooling; assay -> pooling
+    #
+    #     assay = MagicMock()
+    #     assay.filename = 'assay.txt'
+    #     assay.graph = 'assay-graph'
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = [assay]
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == [
+    #         {'study.txt': ['p1']},
+    #         {'assay.txt': ['a1']}
+    #     ]
 
     def test_detect_graph_process_pooling(self):
         with open(os.path.join(
@@ -769,3 +841,78 @@ class TestIsaTabFixer(unittest.TestCase):
                 study.get_prot('sequence analysis - standard procedure 7')
             self.assertIsNone(unused_protocol1)
             self.assertIsNone(unused_protocol2)
+
+
+class TestPyvarFunction(unittest.TestCase):
+
+    def test_basic_word(self):
+        self.assertEqual(utils.pyvar("hello"), "hello")
+
+    def test_spaces(self):
+        self.assertEqual(utils.pyvar("hello world"), "hello_world")
+
+    def test_dashes(self):
+        self.assertEqual(utils.pyvar("hello-world"), "hello_world")
+
+    def test_leading_digits(self):
+        self.assertEqual(utils.pyvar("123name"), "123name")
+
+    def test_special_character_end(self):
+        self.assertEqual(utils.pyvar("name!"), "name_")
+
+    def test_all_special_characters(self):
+        self.assertEqual(utils.pyvar("!@#$$%^&*()"), "___________")
+
+    def test_mixed_characters(self):
+        self.assertEqual(utils.pyvar("var$name"), "var_name")
+
+    def test_empty_string(self):
+        self.assertEqual(utils.pyvar(""), "")
+
+    def test_underscores_untouched(self):
+        self.assertEqual(utils.pyvar("____"), "____")
+
+    def test_multiple_separators(self):
+        self.assertEqual(utils.pyvar("a b-c.d"), "a_b_c_d")
+
+
+class TestRecastColumns(unittest.TestCase):
+
+    def test_single_material_type(self):
+        input_cols = ['Material Type']
+        expected = ['Characteristics[Material Type]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_single_date(self):
+        input_cols = ['Date']
+        expected = ['Parameter Value[Date]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_single_performer(self):
+        input_cols = ['Performer']
+        expected = ['Parameter Value[Performer]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_mixed_columns(self):
+        input_cols = ['Material Type', 'Other', 'Date', 'Performer']
+        expected = [
+            'Characteristics[Material Type]',
+            'Other',
+            'Parameter Value[Date]',
+            'Parameter Value[Performer]'
+        ]
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_no_castable_columns(self):
+        input_cols = ['Sample Name', 'Source Name']
+        expected = ['Sample Name', 'Source Name']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_empty_list(self):
+        self.assertEqual(utils.recast_columns([]), [])
+
+    def test_repeated_columns(self):
+        input_cols = ['Date', 'Date', 'Material Type']
+        expected = ['Parameter Value[Date]', 'Parameter Value[Date]', 'Characteristics[Material Type]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
