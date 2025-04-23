@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, mock_open
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
@@ -56,10 +56,8 @@ class TestISALDSerializer(unittest.TestCase):
         self.assertEqual(key, "Test")
 
     def test_get_any_of_ref(self):
-        ref = ISALDSerializer._get_any_of_ref("http://example.com/schema#field")
+        ref = ISALDSerializer._get_any_of_ref("https://example.com/schema#field")
         self.assertEqual(ref, "field_schema.json")
-
-
 
 
 class TestISALDSerializerAdditional(unittest.TestCase):

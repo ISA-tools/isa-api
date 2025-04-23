@@ -7,16 +7,16 @@ import os
 import shutil
 import tempfile
 import unittest
-import pandas as pd
+
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock
 
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
 from isatools.net import mtbls
 from isatools.net import ols
 from isatools.net import pubmed
@@ -160,7 +160,6 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
 
-
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
         ontology_annotations = ols.search_ols('cell type', ontology_source)
@@ -188,7 +187,7 @@ class TestISArchiveExport(unittest.TestCase):
                 test_utils.TAB_DATA_DIR, 'BII-I-1', 
                 'i_investigation.txt')) as fp:
             result = utils.create_isatab_archive(inv_fp=fp)
-            self.assertIsNone(result)  # returns None if can't create archive
+            self.assertIsNone(result)  # returns None if it can't create an archive
 
     def test_create_isatab_archive(self):
         with open(os.path.join(
@@ -249,14 +248,13 @@ class TestPubMedIDUtil(unittest.TestCase):
     }
 
     def test_get_pubmed_article(self):
-        pubmed.get_pubmed_article = Mock(return_value = self.return_values)
+        pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         j = pubmed.get_pubmed_article('25520553')
         self.assertEqual(j['doi'], self.return_values['doi'])
         self.assertEqual(j['authors'], self.return_values['authors'])
         self.assertEqual(j['year'], self.return_values['year'])
         self.assertEqual(j['journal'], self.return_values['journal'])
         self.assertEqual(j['title'], self.return_values['title'])
-
 
     def test_set_pubmed_article(self):
         pubmed.get_pubmed_article = Mock(return_value=self.return_values)
@@ -698,7 +696,7 @@ class TestIsaTabFixer(unittest.TestCase):
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
-        # check the param got added to protocol and factor removed from study
+        # check the param got added to protocol and factor removed from a study
         with open(os.path.dirname(
                 s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
             investigation = isatab.load(fixed_i_fp)
@@ -915,4 +913,3 @@ class TestRecastColumns(unittest.TestCase):
         input_cols = ['Date', 'Date', 'Material Type']
         expected = ['Parameter Value[Date]', 'Parameter Value[Date]', 'Characteristics[Material Type]']
         self.assertEqual(utils.recast_columns(input_cols), expected)
-

@@ -1,6 +1,6 @@
 """
 File to profile the validation functions of ISAtab.
-Do not comment what look like unused imports. They are being called in the form of a string by runctx.
+Do not comment what looks like unused imports. They are being called in the form of a string by runctx.
 Profiles are dumped in /performances/profiles/ and can be visualized using the following command:
 `snakeviz ./performances/profiles/` from the project root directory.
 Author: D. Batista (@Terazus)
@@ -22,9 +22,9 @@ def profile_validation(filename=None, output_path=None):
     if output_path is None:
         output_path = OUTPUT_PATH
 
-    with open(input_data_path, 'r') as data_file:
-        output_data_path = path.join(output_path, 'isatab_validation_mzml')
-        runctx('validate(data_file, mzml=True)', globals(), locals(), output_data_path)
+    # with open(input_data_path, 'r') as data_file:
+    #     output_data_path = path.join(output_path, 'isatab_validation_mzml')
+    #     runctx('validate(data_file, mzml=True)', globals(), locals(), output_data_path)
 
     with open(input_data_path, 'r') as data_file:
         output_data_path = path.join(output_path, 'isatab_validation')
