@@ -1,0 +1,1 @@
+from isatools.convert import json2sra

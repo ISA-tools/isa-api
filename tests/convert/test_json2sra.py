@@ -3,6 +3,9 @@ import os
 import shutil
 import tempfile
 
+
+from unittest.mock import patch, MagicMock, mock_open
+from isatools import isajson, sra
 from isatools.convert import json2sra
 from lxml import etree
 from isatools.tests import utils
@@ -170,4 +173,5 @@ class TestJsonToSra(TestCase):
             run_set_xml = rs_fp.read()
             actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)
             self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))
+
 
