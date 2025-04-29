@@ -5,7 +5,7 @@ import tempfile
 
 
 from unittest.mock import patch, MagicMock, mock_open
-from isatools import isajson, sra
+from isatools import isajson, sra, convert
 from isatools.convert import json2sra
 from lxml import etree
 from isatools.tests import utils
@@ -175,3 +175,69 @@ class TestJsonToSra(TestCase):
             self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))
 
 
+class TestConvertFunction(TestCase):
+
+    @patch('isatools.convert.json2sra.isajson.validate')
+    @patch('isatools.convert.json2sra.log')
+    def test_convert_with_validation_errors(self, mock_log, mock_validate):
+        # Mock validation to return errors
+        mock_validate.return_value = {'errors': ['Error 1']}
+        mock_fp = MagicMock()
+        mock_fp.name = "test.json"
+
+        # Call the function
+        result = json2sra.convert(mock_fp, "/output/path", validate_first=True)
+
+        # Assert validation errors are logged and function returns early
+        mock_log.fatal.assert_called_once_with(
+            "Could not proceed with conversion as there are some validation errors. Check log."
+        )
+        self.assertIsNone(result)
+
+    @patch('isatools.convert.json2sra.isajson.validate')
+    @patch('isatools.convert.json2sra.isajson.load')
+    @patch('isatools.convert.json2sra.sra.export')
+    @patch('isatools.convert.json2sra.log')
+    def test_convert_successful(self, mock_log, mock_export, mock_load, mock_validate):
+        # Mock successful validation
+        mock_validate.return_value = {'errors': []}
+        mock_fp = MagicMock()
+        mock_fp.name = "test.json"
+
+        # Mock ISA-JSON loading
+        mock_isa = MagicMock()
+        mock_load.return_value = mock_isa
+
+        # Call the function
+        json2sra.convert(mock_fp, "/output/path", validate_first=True)
+
+        # Assert validation, loading, and export are called
+        mock_validate.assert_called_once_with(fp=mock_fp, config_dir=None, log_level=40)
+        mock_load.assert_called_once_with(fp=mock_fp)
+        mock_export.assert_called_once_with(mock_isa, "/output/path", sra_settings=None, datafilehashes=None)
+
+        # Assert logs
+        mock_log.info.assert_any_call("Validating input JSON before conversion")
+        mock_log.info.assert_any_call("Loading isajson test.json")
+        mock_log.info.assert_any_call("Exporting SRA to /output/path")
+
+    @patch('isatools.convert.json2sra.isajson.load')
+    @patch('isatools.convert.json2sra.sra.export')
+    @patch('isatools.convert.json2sra.log')
+    def test_convert_without_validation(self, mock_log, mock_export, mock_load):
+        # Mock ISA-JSON loading
+        mock_isa = MagicMock()
+        mock_load.return_value = mock_isa
+        mock_fp = MagicMock()
+        mock_fp.name = "test.json"
+
+        # Call the function without validation
+        json2sra.convert(mock_fp, "/output/path", validate_first=False)
+
+        # Assert validation is skipped, but loading and export are called
+        mock_load.assert_called_once_with(fp=mock_fp)
+        mock_export.assert_called_once_with(mock_isa, "/output/path", sra_settings=None, datafilehashes=None)
+
+        # Assert logs
+        mock_log.info.assert_any_call("Loading isajson test.json")
+        mock_log.info.assert_any_call("Exporting SRA to /output/path")
