@@ -133,7 +133,6 @@ def create_descriptor():
     # Adding the description to the ISA Source Material:
     source.characteristics.append(characteristic_organism)
     study.sources.append(source)
-
     # declaring a new ontology and adding it to the list of resources used
     uberon = OntologySource(name='UBERON', description='Uber Anatomy Ontology')
     investigation.ontology_source_references.append(uberon)
@@ -179,7 +178,7 @@ def create_descriptor():
     f.comments.append(Comment(name="Study Start Date", value="Saturn"))
     f.comments.append(Comment(name="Study End Date", value="2039-12-12"))
     print(f.comments[0].name, "|", f.comments[0].value)
-
+    print(study.design_descriptors)
     # checking that the ISA Factor object has been modified
     study.factors.append(f)
 
@@ -255,7 +254,7 @@ def create_descriptor():
         sequencing_process.name = "assay-name-{}".format(i)
         sequencing_process.inputs.append(extraction_process.outputs[0])
 
-        # Sequencing process usually has an output data file
+        # Sequencing process usually has an output data file.
 
         datafile = DataFile(filename="sequenced-data-{}".format(i),
                             label="Raw Data File", generated_from=[sample])
