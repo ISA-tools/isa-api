@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, MagicMock
 from isatools.convert.json2jsonld import ISALDSerializer
 
 
@@ -33,14 +33,153 @@ class TestISALDSerializer(unittest.TestCase):
         serializer.set_ontology("sdo")
         self.assertEqual(serializer.ontology, "sdo")
 
-    @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"@context": {}, "@type": "Test"}')
-    def test_inject_ld_split(self, mock_open_file):
+    class TestInjectLDSplit(unittest.TestCase):
+
+        @patch('isatools.convert.json2jsonld.open', new_callable=mock_open,
+               read_data='{"properties": {"field": {"type": "string"}}}')
+        def test_inject_ld_split_basic(self, mock_open):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "field": {"type": "string"}
+                    }
+                }
+            }
+            instance = {"field": "value"}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["field"], "value")
+            self.assertIn("@context", result)
+            self.assertIn("@type", result)
+
+        def test_inject_ld_split_with_array(self):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "array_field": {"type": "array", "items": {"type": "string"}}
+                    }
+                }
+            }
+            instance = {"array_field": ["value1", "value2"]}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["array_field"], ["value1", "value2"])
+
+        def test_inject_ld_split_with_object(self):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "object_field": {"type": "object", "properties": {"subfield": {"type": "string"}}}
+                    }
+                }
+            }
+            instance = {"object_field": {"subfield": "subvalue"}}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["object_field"]["subfield"], "subvalue")
+
+        def test_inject_ld_split_with_ref(self):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "ref_field": {"$ref": "ref_schema.json"}
+                    }
+                },
+                "ref_schema.json": {
+                    "properties": {
+                        "nested_field": {"type": "string"}
+                    }
+                }
+            }
+            instance = {"ref_field": {"nested_field": "nested_value"}}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["ref_field"]["nested_field"], "nested_value")
+
+        def test_inject_ld_split_with_anyOf(self):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "value": {
+                            "anyOf": [
+                                {"$ref": "ref_schema.json"}
+                            ]
+                        }
+                    }
+                },
+                "ref_schema.json": {
+                    "properties": {
+                        "nested_field": {"type": "string"}
+                    }
+                }
+            }
+            instance = {"value": {"nested_field": "nested_value"}}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["value"]["nested_field"], "nested_value")
+
+        def test_inject_ld_split_with_nested_array_of_objects(self):
+            serializer = ISALDSerializer(json_instance={})
+            serializer.schemas = {
+                "test_schema.json": {
+                    "properties": {
+                        "array_field": {
+                            "type": "array",
+                            "items": {"$ref": "nested_schema.json"}
+                        }
+                    }
+                },
+                "nested_schema.json": {
+                    "properties": {
+                        "subfield": {"type": "string"}
+                    }
+                }
+            }
+            instance = {"array_field": [{"subfield": "value1"}, {"subfield": "value2"}]}
+            output = {}
+            result = serializer._inject_ld_split("test_schema.json", output, instance)
+            self.assertEqual(result["array_field"][0]["subfield"], "value1")
+            self.assertEqual(result["array_field"][1]["subfield"], "value2")
+
+    # @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"@context": {}, "@type": "Test"}')
+    # def test_inject_ld_split(self, mock_open_file):
+    #     serializer = ISALDSerializer(json_instance={})
+    #     serializer.schemas = {"test_schema.json": {"properties": {"field": {"type": "string"}}}}
+    #     instance = {"field": "value"}
+    #     output = serializer._inject_ld_split("test_schema.json", {}, instance)
+    #     self.assertEqual(output["field"], "value")
+    #     self.assertIn("@context", output)
+
+    @patch('isatools.convert.json2jsonld.open', new_callable=MagicMock)
+    def test_inject_ld_split(self, mock_open):
+        # Mock schema and instance
+        mock_open.return_value.__enter__.return_value.read.return_value = '{"properties": {"field": {"type": "string"}}}'
         serializer = ISALDSerializer(json_instance={})
-        serializer.schemas = {"test_schema.json": {"properties": {"field": {"type": "string"}}}}
-        instance = {"field": "value"}
-        output = serializer._inject_ld_split("test_schema.json", {}, instance)
-        self.assertEqual(output["field"], "value")
-        self.assertIn("@context", output)
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "field": {"type": "string"},
+                    "nested": {"type": "object", "properties": {"subfield": {"type": "string"}}}
+                }
+            }
+        }
+        instance = {"field": "value", "nested": {"subfield": "subvalue"}}
+        output = {}
+
+        # Call the method
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+
+        # Assertions
+        self.assertIn("@context", result)
+        self.assertIn("@type", result)
+        self.assertEqual(result["field"], "value")
+        self.assertIn("nested", result)
+        self.assertEqual(result["nested"]["subfield"], "subvalue")
 
     @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"@context": {}, "@type": "Test"}')
     def test_inject_ld_collapsed(self, mock_open_file):
@@ -121,6 +260,243 @@ class TestISALDSerializerAdditional(unittest.TestCase):
         instance = {"nested": {"field": "value"}}
         output = serializer._inject_ld_collapsed("test_schema.json", {}, instance)
         self.assertEqual(output["nested"]["field"], "value")
+        self.assertIn("@type", output)
+
+
+class TestInjectLDSplit(unittest.TestCase):
+
+    @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"properties": {"field": {"type": "string"}}}')
+    def test_inject_ld_split_basic(self, mock_open):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"field": "value"}
+        output = {}
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+        self.assertEqual(result["field"], "value")
+        self.assertIn("@context", result)
+        self.assertIn("@type", result)
+
+
+    def test_inject_ld_split_with_object(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "object_field": {"type": "object", "properties": {"subfield": {"type": "string"}}}
+                }
+            }
+        }
+        instance = {"object_field": {"subfield": "subvalue"}}
+        output = {}
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+        self.assertEqual(result["object_field"]["subfield"], "subvalue")
+
+    def test_inject_ld_split_with_ref(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "ref_field": {"$ref": "ref_schema.json"}
+                }
+            },
+            "ref_schema.json": {
+                "properties": {
+                    "nested_field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"ref_field": {"nested_field": "nested_value"}}
+        output = {}
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+        self.assertEqual(result["ref_field"]["nested_field"], "nested_value")
+
+    def test_inject_ld_split_with_anyOf(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "value": {
+                        "anyOf": [
+                            {"$ref": "ref_schema.json"}
+                        ]
+                    }
+                }
+            },
+            "ref_schema.json": {
+                "properties": {
+                    "nested_field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"value": {"nested_field": "nested_value"}}
+        output = {}
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+        self.assertEqual(result["value"]["nested_field"], "nested_value")
+
+    def test_inject_ld_split_with_nested_array_of_objects(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "array_field": {
+                        "type": "array",
+                        "items": {"$ref": "nested_schema.json"}
+                    }
+                }
+            },
+            "nested_schema.json": {
+                "properties": {
+                    "subfield": {"type": "string"}
+                }
+            }
+        }
+        instance = {"array_field": [{"subfield": "value1"}, {"subfield": "value2"}]}
+        output = {}
+        result = serializer._inject_ld_split("test_schema.json", output, instance)
+        self.assertEqual(result["array_field"][0]["subfield"], "value1")
+        self.assertEqual(result["array_field"][1]["subfield"], "value2")
+
+
+class TestInjectLDCollapsed(unittest.TestCase):
+
+    @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"@context": {}, "@type": "Test"}')
+    def test_inject_ld_collapsed_basic(self, mock_open_file):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"field": "value"}
+        output = {}
+        result = serializer._inject_ld_collapsed("test_schema.json", output, instance)
+        self.assertEqual(result["field"], "value")
+        self.assertIn("@type", result)
+
+
+    def test_inject_ld_collapsed_with_object(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "object_field": {"type": "object", "properties": {"subfield": {"type": "string"}}}
+                }
+            }
+        }
+        instance = {"object_field": {"subfield": "subvalue"}}
+        output = {}
+        result = serializer._inject_ld_collapsed("test_schema.json", output, instance)
+        self.assertEqual(result["object_field"]["subfield"], "subvalue")
+
+    def test_inject_ld_collapsed_with_ref(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "ref_field": {"$ref": "ref_schema.json"}
+                }
+            },
+            "ref_schema.json": {
+                "properties": {
+                    "nested_field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"ref_field": {"nested_field": "nested_value"}}
+        output = {}
+        result = serializer._inject_ld_collapsed("test_schema.json", output, instance)
+        self.assertEqual(result["ref_field"]["nested_field"], "nested_value")
+
+    def test_inject_ld_collapsed_with_anyOf(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "value": {
+                        "anyOf": [
+                            {"$ref": "ref_schema.json"}
+                        ]
+                    }
+                }
+            },
+            "ref_schema.json": {
+                "properties": {
+                    "nested_field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"value": {"nested_field": "nested_value"}}
+        output = {}
+        result = serializer._inject_ld_collapsed("test_schema.json", output, instance)
+        self.assertEqual(result["value"]["nested_field"], "nested_value")
+
+    def test_inject_ld_collapsed_with_nested_array_of_objects(self):
+        serializer = ISALDSerializer(json_instance={})
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "array_field": {
+                        "type": "array",
+                        "items": {"$ref": "nested_schema.json"}
+                    }
+                }
+            },
+            "nested_schema.json": {
+                "properties": {
+                    "subfield": {"type": "string"}
+                }
+            }
+        }
+        instance = {"array_field": [{"subfield": "value1"}, {"subfield": "value2"}]}
+        output = {}
+        result = serializer._inject_ld_collapsed("test_schema.json", output, instance)
+        self.assertEqual(result["array_field"][0]["subfield"], "value1")
+        self.assertEqual(result["array_field"][1]["subfield"], "value2")
+
+
+class TestInjectLD(unittest.TestCase):
+
+    @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"@context": {}, "@type": "Test"}')
+    def test_inject_ld_combined(self, mock_open_file):
+        # Test when combined is True
+        serializer = ISALDSerializer(json_instance={})
+        serializer.combined = True
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"field": "value"}
+        output = serializer._inject_ld("test_schema.json", {}, instance)
+        self.assertEqual(output["field"], "value")
+        self.assertIn("@type", output)
+
+    @patch('isatools.convert.json2jsonld.open', new_callable=mock_open, read_data='{"properties": {"field": {"type": "string"}}}')
+    def test_inject_ld_split(self, mock_open_file):
+        # Test when combined is False
+        serializer = ISALDSerializer(json_instance={})
+        serializer.combined = False
+        serializer.schemas = {
+            "test_schema.json": {
+                "properties": {
+                    "field": {"type": "string"}
+                }
+            }
+        }
+        instance = {"field": "value"}
+        output = serializer._inject_ld("test_schema.json", {}, instance)
+        self.assertEqual(output["field"], "value")
+        self.assertIn("@context", output)
         self.assertIn("@type", output)
 
 
