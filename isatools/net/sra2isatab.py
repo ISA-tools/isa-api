@@ -147,7 +147,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                     zipdir(dir_name, zip_file)
 
             except subprocess.CalledProcessError as err:
-                log.error('isatools.convert.sra2isatab: CalledProcessError caught ', err.returncode)
+                log.error('isatools.net.sra2isatab: CalledProcessError caught ', err.returncode)
         buffer.seek(0)
     finally:
         log.debug('Removing dir' + destination_dir)
