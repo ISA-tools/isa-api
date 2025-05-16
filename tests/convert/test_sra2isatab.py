@@ -4,10 +4,14 @@ import os
 import shutil
 import tempfile
 import zipfile
+import warnings
 
-from unittest.mock import patch
-from isatools.tests import utils
+from os import path, walk, listdir, remove
+from unittest.mock import patch, MagicMock
+from io import BytesIO
 from isatools.net import sra2isatab
+from isatools.tests import utils
+
 
 SLOW_TESTS = int(os.getenv('SLOW_TESTS', '0'))
 
@@ -19,6 +23,40 @@ def setUpModule():
             "the ISAdatasets repository using "
             "git clone -b tests --single-branch "
             "git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR))
+
+
+class TestZipDir(unittest.TestCase):
+    def setUp(self):
+        # Create a temporary directory
+        self.test_dir = tempfile.TemporaryDirectory()
+        self.test_file1 = os.path.join(self.test_dir.name, "file1.txt")
+        self.test_file2 = os.path.join(self.test_dir.name, "file2.txt")
+
+        # Create some dummy files
+        with open(self.test_file1, 'w') as f:
+            f.write("Hello from file 1")
+        with open(self.test_file2, 'w') as f:
+            f.write("Hello from file 2")
+
+        # Temp file for zip
+        self.zip_path = os.path.join(self.test_dir.name, "test.zip")
+        self.zip_file = zipfile.ZipFile(self.zip_path, 'w')
+
+    def tearDown(self):
+        self.zip_file.close()
+        self.test_dir.cleanup()
+
+    def test_zipdir_adds_all_files(self):
+        sra2isatab.zipdir(self.test_dir.name, self.zip_file)
+        self.zip_file.close()
+
+        # Open the zip and verify contents
+        with zipfile.ZipFile(self.zip_path, 'r') as z:
+            names = z.namelist()
+
+            # Only the files should be in the zip, not the zip itself
+            self.assertIn("file1.txt", [os.path.basename(n) for n in names])
+            self.assertIn("file2.txt", [os.path.basename(n) for n in names])
 
 
 class TestSraImport(unittest.TestCase):
@@ -52,3 +90,5 @@ class TestSraImport(unittest.TestCase):
         with self.assertRaises(FileNotFoundError, msg='as subprocess.call is mocked files are nor generated'):
             sra2isatab.sra_to_isatab_batch_convert('SRA108974')
             mock_call.assert_called_with('java', '-jar')
+
+

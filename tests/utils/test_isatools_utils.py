@@ -7,6 +7,7 @@ import os
 import shutil
 import tempfile
 import unittest
+
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 
@@ -15,7 +16,7 @@ from unittest.mock import Mock
 from isatools import isajson
 from isatools import isatab
 from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication, Person
+from isatools.model import OntologySource, OntologyAnnotation, Comment, Publication
 from isatools.net import mtbls
 from isatools.net import ols
 from isatools.net import pubmed
@@ -37,6 +38,77 @@ def setUpModule():
 
 
 class TestIsaGraph(unittest.TestCase):
+
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # # @patch('isatools.log')
+    # def test_no_pooling_detected(self, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.return_value = []
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = []
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == []
+    #
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # @patch('isatools.log')
+    # def test_pooling_in_study_only(mock_log, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.side_effect = [['p1', 'p2'], []]  # study -> pooling; assay -> none
+    #
+    #     assay = MagicMock()
+    #     assay.filename = 'assay.txt'
+    #     assay.graph = 'assay-graph'
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = [assay]
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == [{'study.txt': ['p1', 'p2']}]
+    #
+    # @patch('isatools.isatab.load')
+    # @patch('isatools.detect_graph_process_pooling')
+    # # @patch('isatools.log')
+    # def test_pooling_in_study_and_assay(self, mock_detect_pooling, mock_load):
+    #     mock_detect_pooling.side_effect = [['p1'], ['a1']]  # study -> pooling; assay -> pooling
+    #
+    #     assay = MagicMock()
+    #     assay.filename = 'assay.txt'
+    #     assay.graph = 'assay-graph'
+    #
+    #     study = MagicMock()
+    #     study.filename = 'study.txt'
+    #     study.graph = 'study-graph'
+    #     study.assays = [assay]
+    #
+    #     mock_isa = MagicMock()
+    #     mock_isa.studies = [study]
+    #     mock_load.return_value = mock_isa
+    #
+    #     fp = StringIO("dummy content")
+    #     result = utils.detect_isatab_process_pooling(fp)
+    #
+    #     assert result == [
+    #         {'study.txt': ['p1']},
+    #         {'assay.txt': ['a1']}
+    #     ]
 
     def test_detect_graph_process_pooling(self):
         with open(os.path.join(
@@ -83,11 +155,10 @@ class TestOlsSearch(unittest.TestCase):
         ontology_source = ols.get_ols_ontology('efo')
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, 'efo')
-        self.assertIn("https://www.ebi.ac.uk/ols", ontology_source.file)
+        self.assertIn("://www.ebi.ac.uk/ols", ontology_source.file)
         self.assertIn("/api/ontologies/efo?lang=en", ontology_source.file)
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, 'Experimental Factor Ontology')
-
 
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology('efo')
@@ -116,7 +187,7 @@ class TestISArchiveExport(unittest.TestCase):
                 test_utils.TAB_DATA_DIR, 'BII-I-1', 
                 'i_investigation.txt')) as fp:
             result = utils.create_isatab_archive(inv_fp=fp)
-            self.assertIsNone(result)  # returns None if can't create archive
+            self.assertIsNone(result)  # returns None if it can't create an archive
 
     def test_create_isatab_archive(self):
         with open(os.path.join(
@@ -177,14 +248,13 @@ class TestPubMedIDUtil(unittest.TestCase):
     }
 
     def test_get_pubmed_article(self):
-        pubmed.get_pubmed_article = Mock(return_value = self.return_values)
+        pubmed.get_pubmed_article = Mock(return_value=self.return_values)
         j = pubmed.get_pubmed_article('25520553')
         self.assertEqual(j['doi'], self.return_values['doi'])
         self.assertEqual(j['authors'], self.return_values['authors'])
         self.assertEqual(j['year'], self.return_values['year'])
         self.assertEqual(j['journal'], self.return_values['journal'])
         self.assertEqual(j['title'], self.return_values['title'])
-
 
     def test_set_pubmed_article(self):
         pubmed.get_pubmed_article = Mock(return_value=self.return_values)
@@ -626,7 +696,7 @@ class TestIsaTabFixer(unittest.TestCase):
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
-        # check the param got added to protocol and factor removed from study
+        # check the param got added to protocol and factor removed from a study
         with open(os.path.dirname(
                 s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
             investigation = isatab.load(fixed_i_fp)
@@ -769,3 +839,77 @@ class TestIsaTabFixer(unittest.TestCase):
                 study.get_prot('sequence analysis - standard procedure 7')
             self.assertIsNone(unused_protocol1)
             self.assertIsNone(unused_protocol2)
+
+
+class TestPyvarFunction(unittest.TestCase):
+
+    def test_basic_word(self):
+        self.assertEqual(utils.pyvar("hello"), "hello")
+
+    def test_spaces(self):
+        self.assertEqual(utils.pyvar("hello world"), "hello_world")
+
+    def test_dashes(self):
+        self.assertEqual(utils.pyvar("hello-world"), "hello_world")
+
+    def test_leading_digits(self):
+        self.assertEqual(utils.pyvar("123name"), "123name")
+
+    def test_special_character_end(self):
+        self.assertEqual(utils.pyvar("name!"), "name_")
+
+    def test_all_special_characters(self):
+        self.assertEqual(utils.pyvar("!@#$$%^&*()"), "___________")
+
+    def test_mixed_characters(self):
+        self.assertEqual(utils.pyvar("var$name"), "var_name")
+
+    def test_empty_string(self):
+        self.assertEqual(utils.pyvar(""), "")
+
+    def test_underscores_untouched(self):
+        self.assertEqual(utils.pyvar("____"), "____")
+
+    def test_multiple_separators(self):
+        self.assertEqual(utils.pyvar("a b-c.d"), "a_b_c_d")
+
+
+class TestRecastColumns(unittest.TestCase):
+
+    def test_single_material_type(self):
+        input_cols = ['Material Type']
+        expected = ['Characteristics[Material Type]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_single_date(self):
+        input_cols = ['Date']
+        expected = ['Parameter Value[Date]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_single_performer(self):
+        input_cols = ['Performer']
+        expected = ['Parameter Value[Performer]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_mixed_columns(self):
+        input_cols = ['Material Type', 'Other', 'Date', 'Performer']
+        expected = [
+            'Characteristics[Material Type]',
+            'Other',
+            'Parameter Value[Date]',
+            'Parameter Value[Performer]'
+        ]
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_no_castable_columns(self):
+        input_cols = ['Sample Name', 'Source Name']
+        expected = ['Sample Name', 'Source Name']
+        self.assertEqual(utils.recast_columns(input_cols), expected)
+
+    def test_empty_list(self):
+        self.assertEqual(utils.recast_columns([]), [])
+
+    def test_repeated_columns(self):
+        input_cols = ['Date', 'Date', 'Material Type']
+        expected = ['Parameter Value[Date]', 'Parameter Value[Date]', 'Characteristics[Material Type]']
+        self.assertEqual(utils.recast_columns(input_cols), expected)

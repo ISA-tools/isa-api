@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Storage Adapter for accessing ISA content in Github"""
+"""Storage Adapter for accessing ISA content in GitHub"""
 import base64
 import json
 import logging
@@ -95,9 +95,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         Initialize an ISA Storage Adapter to perform CRUD operations on a
         remote GitHub repository
 
-        If credentlials are provided (username, password) th recommended use
-        is in a with command, to allow correct
-        authrization management.
+        If credentials are provided (username, password), the recommended use
+        is in a with command to allow correct
+        authorization management.
         For instance:
 
         with IsaGitHubStorageAdapter('user', 'passw', 'test auth') as adapter:
@@ -106,12 +106,11 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             ...
 
         :param username: str - the (optional) GitHub user login
-        :param password: str - the (optional) Github password for user
-        :param note str - an (optional) note explaining the nature of the
-        authorizations.
+        :param password: str - the (optional) GitHub password for user
+        :param note str - an (optional) note explaining the nature of the authorizations
         :param scopes tuple - a tuple containing the scopes
         (see https://developer.github.com/v3/oauth/#scopes)
-        for the current authorization (if username and password are provided.
+        for the current authorization (if username and password are provided).
         """
         self._authorization = {}
         if username and password:
@@ -139,13 +138,15 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
                 if res.status_code == requests.codes.created:
                     self._authorization = json.loads(res.text or res.content)
+                else:
+                    raise Exception
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Delete the authorization on destruction, if it was created by the
+        Delete the authorization on destruction if it was created by the
         constructor
         """
         self.close()
@@ -169,15 +170,17 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         Method to delete the authorization, if it was created by the
         constructor
         """
+
         if self.is_authenticated:
             headers = {'accept': 'application/json'}
             r = requests.delete(self.authorization_uri, headers=headers, auth=(self._username, self._password))
             log.debug(r)
+
             return r.raise_for_status()
 
     def download(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False):
         """
-        Call to download a resource from a remote GitHub repository
+        call to download a resource from a remote GitHub repository
 
         :type source: str - URLish path to the source (within the GitHub
         repository)
@@ -185,9 +188,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         :type owner str
         :type repository str
         :type validate_json bool - if True perform validation against a
-        JSON schema (i.e. investigation schema). Valid only for JSON datasets
+        JSON schema (i.e., investigation schema). Valid only for JSON datasets.
         """
-        # get the content at source as raw data
+        # get the content at the source as raw data
         get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
         headers = {'Authorization': 'token %s' % self.token, 'Accept': GITHUB_RAW_MEDIA_TYPE}
         res = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers)
@@ -203,7 +206,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     # then download all the items in the directory
                     return self._download_dir(source.split('/')[-1], destination, res_payload)
 
-                # if it is an object it's the file content to be stored
+                # if it is an object, it's the file content to be stored.
                 else:
                     # validate against JSON schema
                     if validate_json:
@@ -248,25 +251,24 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             Defaults to 'isa-api'
             :param ref str - the name of commit/branch/tag. Defaults to
             'master'
-            :param validate_json bool - if True perform validation against a
-            JSON schema (i.e. investigation schema). Valid only for JSON
-            datasets. Defaults to False
-            :param decode_content bool - if True it will decode the content
+            :param validate_json bool - if True, perform validation against a
+            JSON schema (i.e., investigation schema). Valid only for JSON
+            datasets. Default to False
+            :param decode_content bool - if True, it will decode the content
             encoded in the payload, otherwise it will fire a second request to
-            retrieve the raw file. Defaults to True
+            retrieve the raw file. Default to True
             :param write_to_file bool - if True writes the file to the
             specified destination directory. Defaults to True
 
         Returns:
-            :return dict - if the retrieved file contains a (valid) json
+            :return dict - if the retrieved file contains a (valid) JSON
             document
             :return XMLElement - if the retrieved file contains a valid ISA
             XML configuration file
             :return io.BytesIO - if the target is a directory of a ZIP file.
-            If it is a directory the zipped content of
-                                 it is returned as a binary stream.
+            If it is a directory, the zipped content of it is returned as a binary stream.
             :return False - if the file downloaded is of an unauthorized type.
-            These file are not saved to disk
+            These files are not saved to disk
 
         Raises:
             :raise requests.exceptions.HTTPException when the request to
@@ -293,7 +295,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 return self._download_dir(source.split('/')[-1], destination,
                                           res_payload, write_to_file)
 
-            # if it is an object decode the content (if the option is
+            # if it is an object, decodes the content (if the option is
             # available)
             elif decode_content:
                 processed_payload = self._handle_content(res_payload)
@@ -349,10 +351,10 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             for file in files:
                 file_name = file["name"]
                 res = requests.get(file['download_url'], headers=headers)
-                # if request went fine and the payload is a regular (ISA) text file write it to file
+                # if request went fine and the payload is a regular (ISA) text file, write it to file
                 if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
                     # zip the text payload
-                    zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+                    zip_file.writestr(os.path.join(directory, str(file["name"])), res.text)
                     # write to a target dir
                     if write_to_directory:
                         dir_path = os.path.join(destination, directory)
@@ -363,12 +365,14 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         buf.seek(0)
         return buf
 
-    def _handle_content(self, payload, validate_json=False, char_set='utf-8'):
+    @staticmethod
+    def _handle_content(payload, validate_json=False, char_set='utf-8'):
         """
         Handle file content, decoding its 'content' property, without firing
         another GET request to GitHub
         """
         # determine decoding strategy
+        decode_cmd = None
         if payload['encoding'] == 'base64':
             decode_cmd = base64.b64decode
         elif payload['encoding'] == 'base32':
@@ -378,7 +382,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         file_name = payload['name']
         file_ext = file_name.split('.')[-1]
 
-        # if file is JSON
+        # if the file is JSON
         if file_ext == 'json':
             # try to parse the content as JSON and validate (if required)
             decoded_content = decoded_content.decode(char_set)
@@ -387,14 +391,14 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 validate_json_against_schema(json_content, INVESTIGATION_SCHEMA_FILE)
             return {'json': json_content, 'text': decoded_content}
 
-        # if file is XML
+        # if the file is XML
         elif file_ext == 'xml':
             # try to parse the content as XML against configuration schema
             decoded_content = decoded_content.decode(char_set)
             xml = validate_xml_against_schema(decoded_content, CONFIGURATION_SCHEMA_FILE)
             return {'xml': xml, 'text': decoded_content}
 
-        # if ZIP file return raw content
+        # if ZIP file, return raw content
         elif file_ext == 'zip':
             return {'content': decoded_content}
 
@@ -410,7 +414,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         if r.status_code == requests.codes.ok:
             content_type = r.headers['content-type'].split(';')[0]
 
-            # if content is a text file it might be a JSON or XML
+            # if content is a text file, it might be a JSON or XML
             if content_type == 'text/plain':
                 try:
                     json_payload = json.loads(r.text or r.content)

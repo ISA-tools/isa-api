@@ -29,7 +29,7 @@ def get(arrayexpress_id, target_dir=None):
     This function downloads MAGE-TAB content from the ArrayExpress FTP site.
 
     :param arrayexpress_id: Experiment identifier for ArrayExpress study to
-    get, as a str (e.g. E-GEOD-59671)
+    get, as a str (e.g., E-GEOD-59671)
     :param target_dir: Path to write MAGE-TAB files to. If None, writes to
     temporary directory (generated on the fly)
     :return: Path where the files were written to
@@ -54,9 +54,11 @@ def get(arrayexpress_id, target_dir=None):
             ftp.cwd('{base_dir}/{exp_type}/{arrayexpress_id}'.format(
                 base_dir=AX_EXPERIMENT_BASE_DIR, exp_type=exp_type,
                 arrayexpress_id=arrayexpress_id))
+            # this won't get set if there is no remote file or the ftp.cwd fails
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
                 log.info("Using directory '{}'".format(target_dir))
+
             idf_filename = "{}.idf.txt".format(arrayexpress_id)
             with open(os.path.join(target_dir, idf_filename),
                       'wb') as out_file:

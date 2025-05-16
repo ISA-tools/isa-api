@@ -50,7 +50,7 @@ logger = logging.getLogger('isatools')
 
 
 def replaceAll(file, searchExp, replaceExp):
-    for line in fileinput.input(file, inplace=1):
+    for line in fileinput.input(file, inplace=True):
         if searchExp in line:
             line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
@@ -206,7 +206,7 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
         logger.debug(err)
 
     with ZipFile(buffer, 'w') as zip_file:
-        # use relative dir_name to avoid absolute path on file names
+        # use relative dir_name to avoid an absolute path on file names
         zipdir(dir_name, zip_file)
         logger.debug("!", zip_file.namelist())
 
@@ -247,8 +247,8 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
                 myMblite = p.get('metabolite')
                 if myMblite not in myMetabolitesList:
                     myMetabolitesList.append(myMblite)
-            # it is assume that the rawdatafilename is unique in each of the
-            # plate grouping and polarity
+            # it is assumed that the rawdatafilename is unique in each of the
+            # plate groupings and polarity
             myAttrs[pi.get('rawdatafilename').split('.')[0]] = myAttrList
         myMetabolites[usedop + '-' + platebarcode + '-' + polarity.lower()] = myMetabolitesList
     return myAttrs, mydict
