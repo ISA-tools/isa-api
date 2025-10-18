@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools >= 77.0.3"]
+requires = ["setuptools >= 77.0.3, < 81"]
 build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 version = "0.14.3"
-
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+packages = [
+  { include = "isatools" }
+]
 
 [project]
 name = "isatools"
@@ -19,14 +19,12 @@ license = "CPAL-1.0"
 license-files = ["LICENSE.txt"]
 
 authors = [
-    { name = "ISA Infrastructure Team", email = "isatools@googlegroups.com" }
+        { name = "ISA Infrastructure Team", email = "isatools@googlegroups.com" },
 ]
 keywords = []
 
 
-
-
-classifiers=[
+classifiers = [
         'Operating System :: OS Independent',
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -40,48 +38,63 @@ classifiers=[
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
-       # 'Programming Language :: Python :: 3.13',
+        # 'Programming Language :: Python :: 3.13',
 ]
-dependencies = [
-        'graphene==3.4.3',
-        'graphql-core==3.2.6',
-        'wheel~=0.43.0',
-        'setuptools~=77.0.3',
-        'numpy~=2.0.2; python_version == "3.9"',
-        'numpy~=2.2.4; python_version > "3.9"',
-        'jsonschema~=4.23.0',
-        'pandas==2.2.3',
-        'openpyxl>=3.1.5',
-        'networkx~=3.4.2; python_version > "3.9"',
-        'networkx~=3.2; python_version == "3.10"',
-        'lxml~=5.3.1',
-        'requests~=2.32.3',
-        'iso8601~=2.1.0',
-        'chardet~=5.2.0',
-        'jinja2~=3.1.4',
-        'beautifulsoup4~=4.13.3',
-        'mzml2isa==1.1.1',
-        'biopython~=1.85',
-        'progressbar2~=4.4.2',
-        'deepdiff~=8.4.2',
-        'PyYAML~=6.0.2',
-        'bokeh~=3.4.2',
-        'certifi==2025.1.31',
-        'flake8==7.1.0',
-        'ddt==1.7.2',
-        'behave==1.2.6',
-        'httpretty==1.1.4',
-        'sure==2.0.1',
-        'coveralls~=3.3.1',
-        'rdflib~=7.0.0',
-        'SQLAlchemy==1.4.52',
-        'python-dateutil~=2.9.0.post0',
-        'Flask~=3.1.0',
-        'flask_sqlalchemy~=3.0.2',
-        "pytest (>=8.3.5,<9.0.0)"
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+wheel = "~0.43.0"
+setuptools = ">=77.0.3,<81"
+numpy = [
+        { version = "~2.0.2", markers = 'python_version < "3.10"' },
+        { version = "~2.2.4", markers = 'python_version >= "3.10"' },
 ]
+networkx = [
+        { version = "~3.2", markers = 'python_version < "3.10"' },
+        { version = "~3.4.2", markers = 'python_version >= "3.10"' },
+]
+jsonschema = ">=4.23.0,<5"
+pandas = { version = ">=2.2.3,<3" }
+openpyxl = ">=3.1.5"
+lxml = "~5.3.1"
+requests = "~2.32.3"
+iso8601 = "~2.1.0"
+chardet = "~5.2.0"
+jinja2 = "~3.1.4"
+beautifulsoup4 = "~4.13.3"
+mzml2isa = "1.1.1"
+biopython = "~1.85"
+progressbar2 = "~4.4.2"
+PyYAML = "~6.0.2"
+certifi = "2025.1.31"
+rdflib = "~7.0.0"
+python-dateutil = "~2.9.0.post0"
+
+
+# Optional dependencies
+Flask = { version = ">=3.1.0", optional = false }
+flask_sqlalchemy = { version = ">=3.0.2", optional = false }
+SQLAlchemy = { version = "~1.4.54", optional = false }
+graphene = { version = "~3.4.3", optional = false }
+graphql-core = { version = "~3.2.6", optional = false }
+bokeh  = { version =  "~3.4.2", optional = true}
+
+[tool.poetry.extras]
+notebook = ["bokeh"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.3.5,<9.0.0"
+coveralls = "~3.3.1"
+sure = "2.0.1"
+flake8 = "7.1.0"
+ddt = "1.7.2"
+deepdiff = "~8.4.2"
+behave = "1.2.6"
+httpretty = "1.1.4"
+
+
 
 [project.urls]
+"Code" = "https://github.com/ISA-tools/isa-api"
 "Bug Tracker" = "https://github.com/ISA-tools/isa-api/issues"
 "Changelog" = "https://github.com/ISA-tools/isa-api/issues"
 "Documentation" = "https://isa-tools.org/isa-api/content/index.html"
@@ -91,7 +104,21 @@ dependencies = [
 
 [tool.setuptools]
 include-package-data = false
-packages = ["isatools"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["isatools*"]
+exclude = ["features*", "performances*"]
+
+[tool.setuptools.package-data]
+"isatools" = ["resources/**/*", "net/**/*"]
 
 [tool.setuptools-git-versioning]
 enabled = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
