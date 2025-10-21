@@ -1,9 +1,9 @@
 import unittest
+
 from isatools.examples.createSimpleISAtab import create_descriptor
 
 
 class TestCreateSimpleISATab(unittest.TestCase):
-
     def test_create_descriptor_returns_valid_isatab(self):
         # Call the function
         result = create_descriptor()
@@ -36,5 +36,5 @@ class TestCreateSimpleISATab(unittest.TestCase):
         self.assertIn("a_assay.txt", result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

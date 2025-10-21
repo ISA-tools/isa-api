@@ -1,18 +1,18 @@
 from logging import getLogger
 
 from isatools.model.comments import Commentable
+from isatools.model.datafile import DataFile
+from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.material import Material
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.parameter_value import ParameterValue
 from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.protocol import Protocol
-from isatools.model.material import Material
-from isatools.model.source import Source
 from isatools.model.sample import Sample
-from isatools.model.datafile import DataFile
-from isatools.model.parameter_value import ParameterValue
-from isatools.model.identifiable import Identifiable
-from isatools.model.ontology_annotation import OntologyAnnotation
-from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.source import Source
 
-log = getLogger('isatools')
+log = getLogger("isatools")
 
 
 class Process(Commentable, ProcessSequenceNode, Identifiable):
@@ -39,15 +39,24 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     # TODO: replace with above but need to debug where behaviour starts varying
 
-    def __init__(self, id_='', name='', executes_protocol=None, date_=None,
-                 performer=None, parameter_values=None, inputs=None,
-                 outputs=None, comments=None):
+    def __init__(
+        self,
+        id_="",
+        name="",
+        executes_protocol=None,
+        date_=None,
+        performer=None,
+        parameter_values=None,
+        inputs=None,
+        outputs=None,
+        comments=None,
+    ):
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
         Identifiable.__init__(self)
 
         self.id = id_
-        self.name = ''
+        self.name = ""
         if name:
             self.name = name
 
@@ -87,7 +96,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         if val is not None and isinstance(val, str):
             self.__name = val
         else:
-            raise AttributeError('Process.name must be a string')
+            raise AttributeError("Process.name must be a string")
 
     @property
     def executes_protocol(self):
@@ -98,8 +107,9 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @executes_protocol.setter
     def executes_protocol(self, val):
         if val is not None and not isinstance(val, Protocol):
-            raise AttributeError('Process.executes_protocol must be a Protocol or None; got {0}:{1}'
-                                 .format(val, type(val)))
+            raise AttributeError(
+                "Process.executes_protocol must be a Protocol or None; got {0}:{1}".format(val, type(val))
+            )
         self.__executes_protocol = val
 
     @property
@@ -112,7 +122,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         if val is not None and isinstance(val, str):
             self.__date = val
         else:
-            raise AttributeError('Process.date must be a string')
+            raise AttributeError("Process.date must be a string")
 
     @property
     def performer(self):
@@ -124,7 +134,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         if val is not None and isinstance(val, str):
             self.__performer = val
         else:
-            raise AttributeError('Process.performer must be a string')
+            raise AttributeError("Process.performer must be a string")
 
     @property
     def parameter_values(self):
@@ -134,11 +144,11 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     @parameter_values.setter
     def parameter_values(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, ParameterValue) for x in val):
                 self.__parameter_values = list(val)
         else:
-            raise AttributeError('Process.parameter_values must be iterable containing ParameterValues')
+            raise AttributeError("Process.parameter_values must be iterable containing ParameterValues")
 
     @property
     def inputs(self):
@@ -148,12 +158,13 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     @inputs.setter
     def inputs(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, (Material, Source, Sample, DataFile)) for x in val):
                 self.__inputs = list(val)
         else:
-            raise AttributeError('Process.inputs must be iterable containing objects of types '
-                                 '(Material, Source, Sample, DataFile)')
+            raise AttributeError(
+                "Process.inputs must be iterable containing objects of types (Material, Source, Sample, DataFile)"
+            )
 
     @property
     def outputs(self):
@@ -163,13 +174,13 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
 
     @outputs.setter
     def outputs(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, (Material, Source, Sample, DataFile)) for x in val):
                 self.__outputs = list(val)
         else:
             raise AttributeError(
-                'Process.outputs must be iterable containing objects of types '
-                '(Material, Source, Sample, DataFile)')
+                "Process.outputs must be iterable containing objects of types (Material, Source, Sample, DataFile)"
+            )
 
     @property
     def prev_process(self):
@@ -180,9 +191,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @prev_process.setter
     def prev_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise AttributeError(
-                'Process.prev_process must be a Process '
-                'or None; got {0}:{1}'.format(val, type(val)))
+            raise AttributeError("Process.prev_process must be a Process or None; got {0}:{1}".format(val, type(val)))
         else:
             self.__prev_process = val
 
@@ -195,17 +204,16 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @next_process.setter
     def next_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise AttributeError(
-                'Process.next_process must be a Process '
-                'or None; got {0}:{1}'.format(val, type(val))
-            )
+            raise AttributeError("Process.next_process must be a Process or None; got {0}:{1}".format(val, type(val)))
         else:
             self.__next_process = val
 
     def __repr__(self):
-        return ('{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, '
-                'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}'
-                ')').format(self.__class__.__module__, self.__class__.__name__, self)
+        return (
+            '{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, '
+            'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}'
+            ")"
+        ).format(self.__class__.__module__, self.__class__.__name__, self)
 
     def __str__(self):
         return """{0}(name={1.name})""".format(self.__class__.__name__, self)
@@ -214,14 +222,16 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Process) \
-               and self.id == other.id \
-               and self.name == other.name \
-               and self.executes_protocol == other.executes_protocol \
-               and self.date == other.date \
-               and self.performer == other.performer \
-               and self.inputs == other.inputs \
-               and self.outputs == other.outputs
+        return (
+            isinstance(other, Process)
+            and self.id == other.id
+            and self.name == other.name
+            and self.executes_protocol == other.executes_protocol
+            and self.date == other.date
+            and self.performer == other.performer
+            and self.inputs == other.inputs
+            and self.outputs == other.outputs
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -229,10 +239,10 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     def to_dict(self, ld=False):
         parameter_values = []
         for param in self.parameter_values:
-            value = ' '
-            #print("BEFORE:", param.value)
-            if param.value is not None or len(str(param.value))>0:
-                #print("AFTER:", param.value)
+            value = " "
+            # print("BEFORE:", param.value)
+            if param.value is not None or len(str(param.value)) > 0:
+                # print("AFTER:", param.value)
                 if isinstance(param.value, OntologyAnnotation):
                     value = param.value.to_dict(ld=ld)
                 elif isinstance(param.value, (int, float)):
@@ -240,52 +250,48 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                 elif isinstance(param.value, str):
                     value = param.value
                 else:
-                    value = "N/A" #param.value
-            else: #if param.value in (None, ''):
-
+                    value = "N/A"  # param.value
+            else:  # if param.value in (None, ''):
                 value = -1
             # print("HERE:", value)
-            parameter_value = {
-                "category": {"@id": param.category.id} if param.category else '',
-                "value": value
-            }
+            parameter_value = {"category": {"@id": param.category.id} if param.category else "", "value": value}
 
             if param.unit is not None:
                 parameter_value["unit"] = {"@id": param.unit.id}
             parameter_values.append(parameter_value)
         serialized = {
             "@id": self.id,
-            "name": self.name if self.name is not None else '',
-            "performer": self.performer if self.performer is not None else '',
-            "date": self.date if self.date is not None else '',
+            "name": self.name if self.name is not None else "",
+            "performer": self.performer if self.performer is not None else "",
+            "date": self.date if self.date is not None else "",
             "executesProtocol": {"@id": self.executes_protocol.id},
             "parameterValues": parameter_values,
-            "inputs": [{'@id': x.id} for x in self.inputs],
-            "outputs": [{'@id': x.id} for x in self.outputs],
-            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
+            "inputs": [{"@id": x.id} for x in self.inputs],
+            "outputs": [{"@id": x.id} for x in self.outputs],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         if self.prev_process:
-            serialized['previousProcess'] = {'@id': self.prev_process.id}
+            serialized["previousProcess"] = {"@id": self.prev_process.id}
         if self.next_process:
-            serialized['nextProcess'] = {'@id': self.next_process.id}
+            serialized["nextProcess"] = {"@id": self.next_process.id}
         return self.update_isa_object(serialized, ld)
 
     def from_dict(self, process):
-        self.id = process.get('@id', '')
-        self.name = process.get('name', '')
-        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
-        self.load_comments(process.get('comments', []))
-        self.performer = process.get('performer', '')
-        self.date = process.get('date', '')
+        self.id = process.get("@id", "")
+        self.name = process.get("name", "")
+        self.executes_protocol = indexes.get_protocol(process["executesProtocol"]["@id"])
+        self.load_comments(process.get("comments", []))
+        self.performer = process.get("performer", "")
+        self.date = process.get("date", "")
 
         # parameter values
-        for parameter_value_data in process.get('parameterValues', []):
+        for parameter_value_data in process.get("parameterValues", []):
             parameter_value = ParameterValue()
             parameter_value.from_dict(parameter_value_data)
             self.parameter_values.append(parameter_value)
 
         # Inputs
-        for input_data in process.get('inputs', []):
+        for input_data in process.get("inputs", []):
             input_ = None
             try:
                 input_ = indexes.get_source(input_data["@id"])
@@ -301,7 +307,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             self.inputs.append(input_)
 
         # Outputs
-        for output_data in process.get('outputs', []):
+        for output_data in process.get("outputs", []):
             output = None
             try:
                 output = indexes.get_source(output_data["@id"])
@@ -317,13 +323,13 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             self.outputs.append(output)
 
     def from_assay_dict(self, process, technology_type):
-        self.id = process.get('@id', '')
-        self.name = process.get('name', '')
-        self.executes_protocol = indexes.get_protocol(process['executesProtocol']['@id'])
-        self.load_comments(process.get('comments', []))
+        self.id = process.get("@id", "")
+        self.name = process.get("name", "")
+        self.executes_protocol = indexes.get_protocol(process["executesProtocol"]["@id"])
+        self.load_comments(process.get("comments", []))
 
         # Inputs / Outputs
-        for io_data_target in ['inputs', 'outputs']:
+        for io_data_target in ["inputs", "outputs"]:
             for io_data in process.get(io_data_target, []):
                 io_value = None
                 try:
@@ -341,13 +347,15 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                         except KeyError:
                             pass
                 if io_value is None:
-                    error_msg = "Could not find %s node in samples or materials or data " \
-                                "dicts: %s" % (io_data_target.replace('s', ''), io_data["@id"])
+                    error_msg = "Could not find %s node in samples or materials or data dicts: %s" % (
+                        io_data_target.replace("s", ""),
+                        io_data["@id"],
+                    )
                     raise IOError(error_msg)
                 getattr(self, io_data_target).append(io_value)
 
         # Parameter values
-        for parameter_value_data in process.get('parameterValues', []):
+        for parameter_value_data in process.get("parameterValues", []):
             if "category" not in parameter_value_data.keys():
                 log.warning("warning: parameter category not found for instance %s" % parameter_value_data)
             else:
@@ -356,11 +364,11 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                 elif isinstance(parameter_value_data["value"], int) or isinstance(parameter_value_data["value"], float):
                     parameter_value = ParameterValue(
                         category=indexes.get_parameter(parameter_value_data["category"]["@id"]),
-                        value=parameter_value_data["value"]
+                        value=parameter_value_data["value"],
                     )
-                    parameter_value.load_comments(parameter_value_data.get('comments', []))
-                    if 'unit' in parameter_value_data.keys():
-                        parameter_value.unit = indexes.get_unit(parameter_value_data['unit']['@id'])
+                    parameter_value.load_comments(parameter_value_data.get("comments", []))
+                    if "unit" in parameter_value_data.keys():
+                        parameter_value.unit = indexes.get_unit(parameter_value_data["unit"]["@id"])
                     self.parameter_values.append(parameter_value)
                 else:
                     parameter_value = ParameterValue()

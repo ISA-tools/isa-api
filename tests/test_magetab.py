@@ -1,14 +1,14 @@
-import unittest
-from isatools.tests.utils import MAGETAB_DATA_DIR
 import os
+import unittest
+
 from isatools.magetab import MageTabParser
 from isatools.model import Investigation
+from isatools.tests.utils import MAGETAB_DATA_DIR
 
 """ Unit tests for MAGE-TAB package - only for sanity check, not comprehensive testing """
 
 
 class WhenCreatingNewParser(unittest.TestCase):
-
     def setUp(self):
         self.parser = MageTabParser()
 
@@ -16,17 +16,16 @@ class WhenCreatingNewParser(unittest.TestCase):
         pass
 
     def test_ISA_should_have_empty_identifier(self):
-        self.assertTrue(self.parser.ISA.identifier == '')
+        self.assertTrue(self.parser.ISA.identifier == "")
 
     def test_ISA_should_have_one_study(self):
         self.assertTrue(len(self.parser.ISA.studies) == 1)
 
 
 class WhenParsingIDF(unittest.TestCase):
-
     def setUp(self):
         self.parser = MageTabParser()
-        self.test_path = os.path.join(MAGETAB_DATA_DIR, 'E-MEXP-31.idf.txt')
+        self.test_path = os.path.join(MAGETAB_DATA_DIR, "E-MEXP-31.idf.txt")
 
     def test_should_parse_idf_without_error(self):
         self.parser.parse_idf(self.test_path)
@@ -40,10 +39,11 @@ class WhenParsingIDF(unittest.TestCase):
 
 
 class WhenParsedIDF(unittest.TestCase):
-    """ Test case using E-MEXP-31.idf.txt """
+    """Test case using E-MEXP-31.idf.txt"""
+
     def setUp(self):
         self.parser = MageTabParser()
-        self.test_path = os.path.join(MAGETAB_DATA_DIR, 'E-MEXP-31.idf.txt')
+        self.test_path = os.path.join(MAGETAB_DATA_DIR, "E-MEXP-31.idf.txt")
         self.parser.parse_idf(self.test_path)
 
     def test_should_load_five_ontology_sources(self):

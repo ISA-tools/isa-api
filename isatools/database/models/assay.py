@@ -1,24 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import Session, relationship
 
-from isatools.model import Assay as AssayModel
-from isatools.database.models.utils import get_characteristic_categories
 from isatools.database.models.relationships import (
-    study_assays,
-    assay_unit_categories,
     assay_characteristic_categories,
-    assay_samples,
+    assay_data_files,
     assay_materials,
-    assay_data_files
+    assay_samples,
+    assay_unit_categories,
+    study_assays,
 )
+from isatools.database.models.utils import get_characteristic_categories, make_get_table_method
 from isatools.database.utils import Base
-from isatools.database.models.utils import make_get_table_method
+from isatools.model import Assay as AssayModel
 
 
 class Assay(Base):
-    """ The SQLAlchemy model for the Assay table """
+    """The SQLAlchemy model for the Assay table"""
 
-    __tablename__: str = 'assay'
+    __tablename__: str = "assay"
     __allow_unmapped__ = True
 
     # Base fields
@@ -27,52 +26,56 @@ class Assay(Base):
     technology_platform: str = Column(String)
 
     # Relationships back reference
-    studies: relationship = relationship('Study', secondary=study_assays, back_populates='assays')
+    studies: relationship = relationship("Study", secondary=study_assays, back_populates="assays")
 
     # Relationship many-to-one
-    measurement_type_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
+    measurement_type_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
     measurement_type: relationship = relationship(
-        'OntologyAnnotation', backref='measurement_type', foreign_keys=[measurement_type_id])
-    technology_type_id: str = Column(String, ForeignKey('ontology_annotation.ontology_annotation_id'))
+        "OntologyAnnotation", backref="measurement_type", foreign_keys=[measurement_type_id]
+    )
+    technology_type_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
     technology_type: relationship = relationship(
-        'OntologyAnnotation', backref='technology_type', foreign_keys=[technology_type_id])
+        "OntologyAnnotation", backref="technology_type", foreign_keys=[technology_type_id]
+    )
 
     # Relationship manh-to-many
     # data files
     unit_categories: relationship = relationship(
-        'OntologyAnnotation', secondary=assay_unit_categories, back_populates='assays_units')
+        "OntologyAnnotation", secondary=assay_unit_categories, back_populates="assays_units"
+    )
     characteristic_categories: relationship = relationship(
-        'OntologyAnnotation', secondary=assay_characteristic_categories, back_populates='assays_characteristics')
-    samples: relationship = relationship('Sample', secondary=assay_samples, back_populates='assays')
-    materials: relationship = relationship('Material', secondary=assay_materials, back_populates='assays')
-    datafiles: relationship = relationship('Datafile', secondary=assay_data_files, back_populates='assays')
+        "OntologyAnnotation", secondary=assay_characteristic_categories, back_populates="assays_characteristics"
+    )
+    samples: relationship = relationship("Sample", secondary=assay_samples, back_populates="assays")
+    materials: relationship = relationship("Material", secondary=assay_materials, back_populates="assays")
+    datafiles: relationship = relationship("Datafile", secondary=assay_data_files, back_populates="assays")
 
     # Relationships: one-to-many
-    comments: relationship = relationship('Comment', back_populates='assay')
+    comments: relationship = relationship("Comment", back_populates="assay")
     process_sequence: relationship = relationship("Process", back_populates="assay")
 
     def to_json(self):
         characteristic_categories = get_characteristic_categories(self.characteristic_categories)
         return {
-            'filename': self.filename,
+            "filename": self.filename,
             "technologyPlatform": self.technology_platform,
-            'measurementType': self.measurement_type.to_json(),
-            'technologyType': self.technology_type.to_json(),
-            'unitCategories': [uc.to_json() for uc in self.unit_categories],
-            'characteristicCategories': characteristic_categories,
-            'materials': {
-                'samples': [s.to_json() for s in self.samples],
-                'otherMaterials': [m.to_json() for m in self.materials]
+            "measurementType": self.measurement_type.to_json(),
+            "technologyType": self.technology_type.to_json(),
+            "unitCategories": [uc.to_json() for uc in self.unit_categories],
+            "characteristicCategories": characteristic_categories,
+            "materials": {
+                "samples": [s.to_json() for s in self.samples],
+                "otherMaterials": [m.to_json() for m in self.materials],
             },
-            'dataFiles': [df.to_json() for df in self.datafiles],
-            'processSequence': [p.to_json() for p in self.process_sequence],
-            "comments": [comment.to_json() for comment in self.comments]
+            "dataFiles": [df.to_json() for df in self.datafiles],
+            "processSequence": [p.to_json() for p in self.process_sequence],
+            "comments": [comment.to_json() for comment in self.comments],
         }
 
 
 def make_assay_methods():
     def to_sql(self: AssayModel, session: Session) -> Assay:
-        """ Converts an Assay model object to a SQLAlchemy model object """
+        """Converts an Assay model object to a SQLAlchemy model object"""
         return Assay(
             filename=self.filename,
             technology_platform=self.technology_platform,
@@ -84,7 +87,8 @@ def make_assay_methods():
             materials=[material.to_sql(session) for material in self.other_material],
             datafiles=[datafile.to_sql(session) for datafile in self.data_files],
             process_sequence=[process.to_sql(session) for process in self.process_sequence],
-            comments=[comment.to_sql(session) for comment in self.comments]
+            comments=[comment.to_sql(session) for comment in self.comments],
         )
-    setattr(AssayModel, 'to_sql', to_sql)
-    setattr(AssayModel, 'get_table', make_get_table_method(Assay))
+
+    setattr(AssayModel, "to_sql", to_sql)
+    setattr(AssayModel, "get_table", make_get_table_method(Assay))

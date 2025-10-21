@@ -1,16 +1,16 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy.orm import Session, relationship
 
-from isatools.model import DataFile as DataFileModel
-from isatools.database.models.relationships import assay_data_files
 from isatools.database.models.inputs_outputs import InputOutput
+from isatools.database.models.relationships import assay_data_files
 from isatools.database.models.utils import make_get_table_method
+from isatools.model import DataFile as DataFileModel
 
 
 class Datafile(InputOutput):
-    """ The SQLAlchemy model for the Material table """
+    """The SQLAlchemy model for the Material table"""
 
-    __tablename__: str = 'datafile'
+    __tablename__: str = "datafile"
     __allow_unmapped__ = True
     __mapper_args__: dict = {"polymorphic_identity": "Datafile", "concrete": True}
 
@@ -20,17 +20,17 @@ class Datafile(InputOutput):
     label: str = Column(String)
 
     # Relationships back-ref
-    assays: relationship = relationship('Assay', secondary=assay_data_files, back_populates='datafiles')
+    assays: relationship = relationship("Assay", secondary=assay_data_files, back_populates="datafiles")
 
     # Relationships: one-to-many
-    comments: relationship = relationship('Comment', back_populates='datafile')
+    comments: relationship = relationship("Comment", back_populates="datafile")
 
     def to_json(self):
         return {
-            '@id': self.datafile_id,
-            'name': self.filename,
-            'type': self.label,
-            'comments': [comment.to_json() for comment in self.comments]
+            "@id": self.datafile_id,
+            "name": self.filename,
+            "type": self.label,
+            "comments": [comment.to_json() for comment in self.comments],
         }
 
 
@@ -43,7 +43,8 @@ def make_datafile_methods():
             datafile_id=self.id,
             filename=self.filename,
             label=self.label,
-            comments=[comment.to_sql() for comment in self.comments]
+            comments=[comment.to_sql() for comment in self.comments],
         )
-    setattr(DataFileModel, 'to_sql', to_sql)
-    setattr(DataFileModel, 'get_table', make_get_table_method(Datafile))
+
+    setattr(DataFileModel, "to_sql", to_sql)
+    setattr(DataFileModel, "get_table", make_get_table_method(Datafile))

@@ -62,6 +62,76 @@ The documentation to install and use the ISA-API (v0.14.3 and above) can be foun
 
 For the previous versions (up to v0.11) check the documentation [here](https://isatools.readthedocs.io/en/latest/).
 
+
 Contributing
 ------------
 The ISA-API is still in development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team at [isatools@googlegroups.com](mailto:isatools@googlegroups.com), or ask a question, report a bug or file a feature request in the GitHub issue tracker at [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues).
+
+
+Setup Development Environment
+-----------------------------
+
+```bash
+# install python package manager uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# add $HOME/.local/bin to your PATH, either restart your shell or run
+export PATH=$HOME/.local/bin:$PATH
+
+# install git from https://git-scm.com/downloads
+# Linux command
+apt update; apt install git -y
+
+# Mac command
+# brew install git
+
+# clone project from github
+git clone https://github.com/ISA-tools/isa-api.git
+
+cd isa-api
+
+# install python if it is not installed
+uv python install 3.13
+
+# uv python install 3.12
+# uv python install 3.11
+# uv python install 3.10
+
+# pin a python version
+uv python pin 3.13
+
+# install python dependencies
+uv sync
+
+# install pre-commit to check repository integrity and format checking
+uv run pre-commit
+
+# run package and module dependencies
+uv run lint-imports
+
+# list all possible linters. selected linters are defined in pyproject.toml
+uv run ruff linter
+
+# run lint tool
+uv run ruff check
+
+# check specific linter
+uv run ruff check --select I
+
+# check specific lint rule
+uv run ruff check --select F841
+
+# check imports and update imports order
+uv run ruff check --select I --fix
+
+# run format check
+uv run ruff format --check
+
+# run unit tests with specific version
+uv run --python 3.11 pytest
+
+uv run --python 3.13 pytest
+
+# open your IDE (vscode, pycharm, etc.) and set python interpreter as .venv/bin/python
+
+```

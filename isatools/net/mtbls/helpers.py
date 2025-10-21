@@ -1,4 +1,4 @@
-from os import path, makedirs
+from os import makedirs, path
 from tempfile import mkdtemp
 
 import progressbar
@@ -35,7 +35,7 @@ def getj(mtbls_study_id: str) -> dict:
     Example usage:
         my_json = getj('MTBLS1')
     """
-    investigation = MTBLSInvestigation(mtbls_id=mtbls_study_id, output_format='json')
+    investigation = MTBLSInvestigation(mtbls_id=mtbls_study_id, output_format="json")
     investigation.load_json()
     return investigation.investigation.to_dict()
 
@@ -213,7 +213,7 @@ def get_study_group_factors(mtbls_study_id: str) -> list:
 
 
 def get_filtered_df_on_factors_list(mtbls_study_id: str) -> list:
-    """ Print the filtered dataframe on factors list and returns the applied queries
+    """Print the filtered dataframe on factors list and returns the applied queries
 
     :param mtbls_study_id: Accession number of the Metabolights study
     :return: a list of applied queries
@@ -274,30 +274,27 @@ def dl_all_mtbls_isatab(target_dir: str, mtbls_ids: list = None, limit: int = 0)
 
 
 def get_factors_command(study_id: str, output: str) -> list:
-    """ TODO: write docstring """
+    """TODO: write docstring"""
     investigation = MTBLSInvestigation(study_id)
-    with open(output, 'w+') as f:
+    with open(output, "w+") as f:
         factors = investigation.get_factors_command(f)
     return factors
 
 
 def get_factor_values_command(study_id: str, factor: str, output: str) -> list:
-    """ TODO: write docstring """
+    """TODO: write docstring"""
     investigation = MTBLSInvestigation(study_id)
-    with open(output, 'w+') as f:
+    with open(output, "w+") as f:
         factors = investigation.get_factor_values_command(factor, f)
     return factors
 
 
 def get_data_files_command(
-        study_id: str,
-        output: str,
-        json_query: str = None,
-        galaxy_parameters_file: str = None
+    study_id: str, output: str, json_query: str = None, galaxy_parameters_file: str = None
 ) -> None:
-    """ TODO: write docstring """
+    """TODO: write docstring"""
     investigation = MTBLSInvestigation(study_id)
-    with open(output, 'w+') as f:
+    with open(output, "w+") as f:
         investigation.get_data_files_command(f, json_query, galaxy_parameters_file)
 
 
@@ -313,20 +310,20 @@ def get_summary_command(study_id: str, json_output: str, html_output: str) -> li
         html = get_summary_command('MTBLS1', '/path/to/summary/MTBLS1.json', '/path/to/summary/MTBLS1.html')
     """
     investigation = MTBLSInvestigation(study_id)
-    with open(json_output, 'w+') as f:
+    with open(json_output, "w+") as f:
         return investigation.get_summary_command(f, html_output)
 
 
 def datatype_get_summary_command(study_id: str, output):
     """
-        This function gets a json summary of the Metabolights study variables
+    This function gets a json summary of the Metabolights study variables
 
-        :param study_id: Accession number of the Metabolights study
-        :param output: The path to the json output file
+    :param study_id: Accession number of the Metabolights study
+    :param output: The path to the json output file
 
-        Example usage:
-            html = get_summary_command('MTBLS1', '/path/to/download/MTBLS1.json')
-        """
+    Example usage:
+        html = get_summary_command('MTBLS1', '/path/to/download/MTBLS1.json')
+    """
     investigation = MTBLSInvestigation(study_id)
-    with open(output, 'w+') as f:
+    with open(output, "w+") as f:
         return investigation.datatype_get_summary_command(f)

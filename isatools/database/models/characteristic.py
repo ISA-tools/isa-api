@@ -1,58 +1,69 @@
-from sqlalchemy import Column, Integer, ForeignKey, Float, String
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Session, relationship
 
-from isatools.model import Characteristic as CharacteristicModel, OntologyAnnotation as OntologyAnnotationModel
-from isatools.database.models.relationships import (
-    source_characteristics,
-    sample_characteristics,
-    materials_characteristics
-)
 from isatools.database.models.constraints import build_characteristic_constraints
-from isatools.database.utils import Base
+from isatools.database.models.relationships import (
+    materials_characteristics,
+    sample_characteristics,
+    source_characteristics,
+)
 from isatools.database.models.utils import make_get_table_method
+from isatools.database.utils import Base
+from isatools.model import Characteristic as CharacteristicModel
+from isatools.model import OntologyAnnotation as OntologyAnnotationModel
 
 
 class Characteristic(Base):
-    """ The SQLAlchemy model for the Characteristic table """
+    """The SQLAlchemy model for the Characteristic table"""
 
-    __tablename__: str = 'characteristic'
+    __tablename__: str = "characteristic"
     __allow_unmapped__ = True
     __table_args__: tuple = (*build_characteristic_constraints(), {"comment": "Characteristic table"})
 
     # Base fields
     characteristic_id: int = Column(Integer, primary_key=True)
-    value_int: float = Column(Float, comment='Characteristic value as a float')
-    unit_str: str = Column(String, comment='Characteristic unit as a string')
-    category_str: str = Column(String, comment='Characteristic category as a string')
+    value_int: float = Column(Float, comment="Characteristic value as a float")
+    unit_str: str = Column(String, comment="Characteristic unit as a string")
+    category_str: str = Column(String, comment="Characteristic category as a string")
 
     # Relationships: back-ref
-    sources: relationship = relationship('Source', secondary=source_characteristics, back_populates='characteristics')
-    samples: relationship = relationship('Sample', secondary=sample_characteristics, back_populates='characteristics')
+    sources: relationship = relationship("Source", secondary=source_characteristics, back_populates="characteristics")
+    samples: relationship = relationship("Sample", secondary=sample_characteristics, back_populates="characteristics")
     materials: relationship = relationship(
-        'Material', secondary=materials_characteristics, back_populates='characteristics')
+        "Material", secondary=materials_characteristics, back_populates="characteristics"
+    )
 
     # Relationships many-to-one
-    value_id: str = Column(String, ForeignKey(
-        'ontology_annotation.ontology_annotation_id'), comment='Value of the characteristic as an OntologyAnnotation')
+    value_id: str = Column(
+        String,
+        ForeignKey("ontology_annotation.ontology_annotation_id"),
+        comment="Value of the characteristic as an OntologyAnnotation",
+    )
     value_oa: relationship = relationship(
-        'OntologyAnnotation', backref='characteristics_value', foreign_keys=[value_id])
+        "OntologyAnnotation", backref="characteristics_value", foreign_keys=[value_id]
+    )
 
     unit_id: str = Column(
-        String, ForeignKey('ontology_annotation.ontology_annotation_id'),
-        comment='Characteristic unit as an ontology annotation')
-    unit_oa: relationship = relationship('OntologyAnnotation', backref='characteristics_unit', foreign_keys=[unit_id])
+        String,
+        ForeignKey("ontology_annotation.ontology_annotation_id"),
+        comment="Characteristic unit as an ontology annotation",
+    )
+    unit_oa: relationship = relationship("OntologyAnnotation", backref="characteristics_unit", foreign_keys=[unit_id])
 
     category_id: str = Column(
-        String, ForeignKey('ontology_annotation.ontology_annotation_id'),
-        comment='Characteristic category as an ontology annotation')
+        String,
+        ForeignKey("ontology_annotation.ontology_annotation_id"),
+        comment="Characteristic category as an ontology annotation",
+    )
     category_oa: relationship = relationship(
-        'OntologyAnnotation', backref='characteristics_category', foreign_keys=[category_id])
+        "OntologyAnnotation", backref="characteristics_category", foreign_keys=[category_id]
+    )
 
     # Relationships one-to-many
-    comments: relationship = relationship('Comment', back_populates='characteristic')
+    comments: relationship = relationship("Comment", back_populates="characteristic")
 
     def to_json(self) -> dict:
-        """ Convert the SQLAlchemy object to a dictionary
+        """Convert the SQLAlchemy object to a dictionary
 
         :return: The dictionary representation of the object taken from the database
         """
@@ -74,12 +85,13 @@ class Characteristic(Base):
 
 
 def make_characteristic_methods():
-    """ This function will dynamically add the methods to the Characteristic class that are required to interact with
+    """This function will dynamically add the methods to the Characteristic class that are required to interact with
     the database. This is done to avoid circular imports and to extra dependencies in the models package. It's called
     in the init of the database models package.
     """
+
     def to_sql(self, session: Session) -> Characteristic:
-        """ Convert the Characteristic object to a SQLAlchemy object so that it can be added to the database.
+        """Convert the Characteristic object to a SQLAlchemy object so that it can be added to the database.
 
         :param self: the Characteristic object. Will be injected automatically.
         :param session: The SQLAlchemy session to use.
@@ -109,5 +121,5 @@ def make_characteristic_methods():
             characteristic["category_id"] = self.category.id
         return Characteristic(**characteristic)
 
-    setattr(CharacteristicModel, 'to_sql', to_sql)
-    setattr(CharacteristicModel, 'get_table', make_get_table_method(Characteristic))
+    setattr(CharacteristicModel, "to_sql", to_sql)
+    setattr(CharacteristicModel, "get_table", make_get_table_method(Characteristic))

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*
 """Convert ISA-JSOn to MAGE-TAB"""
+
 import logging
 
 from isatools import isajson, magetab
 
-
-log = logging.getLogger('isatools')
+log = logging.getLogger("isatools")
 
 
 def convert(source_json_fp, out_path):
-    """ Converter for ISA-JSON to MAGE-Tab.
+    """Converter for ISA-JSON to MAGE-Tab.
     :param source_json_fp: File descriptor of input ISA JSON file
     :param out_path: Output path to write output MAGE-Tab to
     """

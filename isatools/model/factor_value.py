@@ -1,9 +1,10 @@
 from uuid import uuid4
+
 from isatools.model.comments import Commentable
-from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.identifiable import Identifiable
-from isatools.model.parameter_value import ParameterValue
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.parameter_value import ParameterValue
 
 
 class FactorValue(Commentable):
@@ -34,8 +35,9 @@ class FactorValue(Commentable):
     @factor_name.setter
     def factor_name(self, val):
         if val is not None and not isinstance(val, StudyFactor):
-            raise AttributeError('FactorValue.factor_name must be a StudyFactor or None; got {0}:{1}'
-                                 .format(val, type(val)))
+            raise AttributeError(
+                "FactorValue.factor_name must be a StudyFactor or None; got {0}:{1}".format(val, type(val))
+            )
         self.__factor_name = val
 
     @property
@@ -47,13 +49,16 @@ class FactorValue(Commentable):
     @value.setter
     def value(self, val):
         if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
-            raise AttributeError('FactorValue.value must be a string, numeric, an OntologyAnnotation, or None; '
-                                 'got {0}:{1}'.format(val, type(val)))
+            raise AttributeError(
+                "FactorValue.value must be a string, numeric, an OntologyAnnotation, or None; got {0}:{1}".format(
+                    val, type(val)
+                )
+            )
         self.__value = val
 
     @property
     def unit(self):
-        """ :obj:`OntologyAnnotation`: a unit for the parameter value"""
+        """:obj:`OntologyAnnotation`: a unit for the parameter value"""
         return self.__unit
 
     @unit.setter
@@ -61,60 +66,61 @@ class FactorValue(Commentable):
         # FIXME can this be a string as well?
         if val is not None and not isinstance(val, (OntologyAnnotation, str)):
             raise AttributeError(
-                'FactorValue.unit must be an OntologyAnnotation, o string, or None; '
-                'got {0}:{1}'.format(val, type(val)))
+                "FactorValue.unit must be an OntologyAnnotation, o string, or None; got {0}:{1}".format(val, type(val))
+            )
         self.__unit = val
 
     def __repr__(self):
-        return ("isatools.model.FactorValue(factor_name={factor_name}, value={value}, unit={unit})"
-                ).format(factor_name=repr(self.factor_name), value=repr(self.value), unit=repr(self.unit))
+        return ("isatools.model.FactorValue(factor_name={factor_name}, value={value}, unit={unit})").format(
+            factor_name=repr(self.factor_name), value=repr(self.value), unit=repr(self.unit)
+        )
 
     def __str__(self):
-        return ("FactorValue(\n\t"
-                "factor_name={factor_name}\n\t"
-                "value={value}\n\t"
-                "unit={unit}\n)"
-                ).format(factor_name=self.factor_name.name if self.factor_name else '',
-                         value=self.value.term if isinstance(self.value, OntologyAnnotation) else repr(self.value),
-                         unit=self.unit.term if self.unit else '')
+        return ("FactorValue(\n\tfactor_name={factor_name}\n\tvalue={value}\n\tunit={unit}\n)").format(
+            factor_name=self.factor_name.name if self.factor_name else "",
+            value=self.value.term if isinstance(self.value, OntologyAnnotation) else repr(self.value),
+            unit=self.unit.term if self.unit else "",
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, FactorValue) \
-               and self.factor_name == other.factor_name \
-               and self.value == other.value \
-               and self.unit == other.unit
+        return (
+            isinstance(other, FactorValue)
+            and self.factor_name == other.factor_name
+            and self.value == other.value
+            and self.unit == other.unit
+        )
 
     def __ne__(self, other):
         return not self == other
 
     def to_dict(self, ld=False):
-        category = ''
+        category = ""
         if self.factor_name:
             category = {"@id": self.factor_name.id}
 
-        value = self.value if self.value else ''
+        value = self.value if self.value else ""
         if isinstance(value, OntologyAnnotation):
             value = value.to_dict(ld=ld)
 
-        factor_value = {'category': category, 'value': value}
+        factor_value = {"category": category, "value": value}
 
         if self.unit:
-            id_ = '#ontology_annotation/' + str(uuid4())
+            id_ = "#ontology_annotation/" + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
-                id_ = self.unit.id.replace('#unit/', '#ontology_annotation/')
-                #id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
-            factor_value['unit'] = {"@id": id_}
+                id_ = self.unit.id.replace("#unit/", "#ontology_annotation/")
+                # id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
+            factor_value["unit"] = {"@id": id_}
 
         return self.update_isa_object(factor_value, ld=ld)
 
     def from_dict(self, factor_value):
         self.factor_name = indexes.get_factor(factor_value["category"]["@id"])
-        self.load_comments(factor_value.get('comments', []))
+        self.load_comments(factor_value.get("comments", []))
 
-        value_data = factor_value.get('value', None)
+        value_data = factor_value.get("value", None)
         if value_data:
             if isinstance(value_data, dict):
                 value = OntologyAnnotation()
@@ -122,7 +128,7 @@ class FactorValue(Commentable):
                 self.value = value
             elif isinstance(value_data, (int, float)):
                 try:
-                    self.unit = indexes.get_unit(factor_value['unit']['@id'])
+                    self.unit = indexes.get_unit(factor_value["unit"]["@id"])
                 except KeyError:
                     self.unit = None
                 self.value = value_data
@@ -144,7 +150,7 @@ class StudyFactor(Commentable, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', name='', factor_type=None, comments=None):
+    def __init__(self, id_="", name="", factor_type=None, comments=None):
         super().__init__(comments=comments)
 
         self.id = id_
@@ -161,7 +167,7 @@ class StudyFactor(Commentable, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('StudyFactor.name must be a str or None; got {0}:{1}'.format(val, type(val)))
+            raise AttributeError("StudyFactor.name must be a str or None; got {0}:{1}".format(val, type(val)))
         self.__name = val
 
     @property
@@ -173,52 +179,57 @@ class StudyFactor(Commentable, Identifiable):
     @factor_type.setter
     def factor_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError('StudyFactor.factor_type must be a OntologyAnnotation or None; got {0}:{1}'
-                                 .format(val, type(val)))
+            raise AttributeError(
+                "StudyFactor.factor_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+            )
         self.__factor_type = val
 
     def __repr__(self):
-        return ("isatools.model.StudyFactor(name='{study_factor.name}', "
-                "factor_type={factor_type}, comments={study_factor.comments})"
-                ).format(study_factor=self, factor_type=repr(self.factor_type))
+        return (
+            "isatools.model.StudyFactor(name='{study_factor.name}', "
+            "factor_type={factor_type}, comments={study_factor.comments})"
+        ).format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __str__(self):
-        return ("StudyFactor(\n\t"
-                "name={factor.name}\n\t"
-                "factor_type={factor_type}\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(factor=self,
-                         factor_type=self.factor_type.term if self.factor_type else '',
-                         num_comments=len(self.comments))
+        return (
+            "StudyFactor(\n\t"
+            "name={factor.name}\n\t"
+            "factor_type={factor_type}\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(
+            factor=self, factor_type=self.factor_type.term if self.factor_type else "", num_comments=len(self.comments)
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, StudyFactor) \
-               and self.name == other.name \
-               and self.factor_type == other.factor_type \
-               and self.comments == other.comments
+        return (
+            isinstance(other, StudyFactor)
+            and self.name == other.name
+            and self.factor_type == other.factor_type
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
 
     def to_dict(self, ld=False):
         study_factor = {
-            '@id': self.id,
-            'factorName': self.name,
-            'factorType': self.factor_type.to_dict(ld=ld) if self.factor_type else '',
-            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
+            "@id": self.id,
+            "factorName": self.name,
+            "factorType": self.factor_type.to_dict(ld=ld) if self.factor_type else "",
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(study_factor, ld=ld)
 
     def from_dict(self, factor):
-        self.id = factor.get('@id', '')
-        self.name = factor.get('factorName', '')
-        self.load_comments(factor.get('comments', []))
+        self.id = factor.get("@id", "")
+        self.name = factor.get("factorName", "")
+        self.load_comments(factor.get("comments", []))
 
         # factor type
-        factor_type_data = factor.get('factorType', None)
+        factor_type_data = factor.get("factorType", None)
         if factor_type_data:
             factor_type = OntologyAnnotation()
             factor_type.from_dict(factor_type_data)

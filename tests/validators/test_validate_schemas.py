@@ -1,16 +1,16 @@
-import unittest
-import os
-import json
 import glob
+import json
+import os
+import unittest
+
 from jsonschema import Draft4Validator
 
 
 class TestIsaJsonSchemas(unittest.TestCase):
-
     @staticmethod
     def validateSchemasInFolder(folder):
         path = os.path.abspath(folder)
-        for schemaFile in glob.iglob(os.path.join(path, '*.json')):
+        for schemaFile in glob.iglob(os.path.join(path, "*.json")):
             print("Validating schema ", os.path.basename(schemaFile), "...")
             with open(schemaFile) as schema_fp:
                 schema = json.load(schema_fp)
@@ -18,7 +18,7 @@ class TestIsaJsonSchemas(unittest.TestCase):
                 print("done.")
 
     def setUp(self):
-        self._schemas_dir = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'schemas')
+        self._schemas_dir = os.path.join(os.path.dirname(__file__), "..", "isatools", "schemas")
 
     # validating schemas for isa v1 model
     def test_isa_model_v1_schemas(self):

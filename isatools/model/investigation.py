@@ -1,14 +1,14 @@
 import os
 
+from isatools.graphQL.models import IsaSchema
 from isatools.model.comments import Commentable
+from isatools.model.identifiable import Identifiable
+from isatools.model.loader_indexes import loader_states as indexes
 from isatools.model.mixins import MetadataMixin
 from isatools.model.ontology_annotation import OntologySource
-from isatools.model.study import Study
-from isatools.model.identifiable import Identifiable
 from isatools.model.person import Person
 from isatools.model.publication import Publication
-from isatools.model.loader_indexes import loader_states as indexes
-from isatools.graphQL.models import IsaSchema
+from isatools.model.study import Study
 
 
 class Investigation(Commentable, MetadataMixin, Identifiable, object):
@@ -34,15 +34,32 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', filename='', identifier='', title='',
-                 description='', submission_date='', public_release_date='',
-                 ontology_source_references=None, publications=None,
-                 contacts=None, studies=None, comments=None):
-        MetadataMixin.__init__(self, filename=filename, identifier=identifier,
-                               title=title, description=description,
-                               submission_date=submission_date,
-                               public_release_date=public_release_date,
-                               publications=publications, contacts=contacts)
+    def __init__(
+        self,
+        id_="",
+        filename="",
+        identifier="",
+        title="",
+        description="",
+        submission_date="",
+        public_release_date="",
+        ontology_source_references=None,
+        publications=None,
+        contacts=None,
+        studies=None,
+        comments=None,
+    ):
+        MetadataMixin.__init__(
+            self,
+            filename=filename,
+            identifier=identifier,
+            title=title,
+            description=description,
+            submission_date=submission_date,
+            public_release_date=public_release_date,
+            publications=publications,
+            contacts=contacts,
+        )
         Commentable.__init__(self, comments=comments)
         Identifiable.__init__(self)
 
@@ -61,23 +78,21 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     @property
     def ontology_source_references(self):
         """:obj:`list` of :obj:`OntologySource`: Container for ontology
-                sources
+        sources
         """
         return self.__ontology_source_references
 
     @ontology_source_references.setter
     def ontology_source_references(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, OntologySource) for x in val):
                 self.__ontology_source_references = list(val)
         else:
             raise AttributeError(
-                'Investigation.ontology_source_references must be iterable '
-                'containing OntologySource objects')
+                "Investigation.ontology_source_references must be iterable containing OntologySource objects"
+            )
 
-    def add_ontology_source_reference(self, name='', version='',
-                                      description='',
-                                      file='', comments=None):
+    def add_ontology_source_reference(self, name="", version="", description="", file="", comments=None):
         """
         Adds a new ontology_source_reference to the ontology_source_reference
         list.
@@ -89,8 +104,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             file: OntologySource file
             comments: list
         """
-        c = OntologySource(name=name, version=version, description=description,
-                           file=file, comments=comments)
+        c = OntologySource(name=name, version=version, description=description, file=file, comments=comments)
         self.ontology_source_references.append(c)
 
     def yield_ontology_source_references(self, name=None):
@@ -149,11 +163,11 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
 
     @studies.setter
     def studies(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Study) for x in val):
                 self.__studies = list(val)
         else:
-            raise AttributeError('Investigation.studies must be iterable containing Study objects')
+            raise AttributeError("Investigation.studies must be iterable containing Study objects")
 
     def execute_query(self, query, variables=None):
         """
@@ -179,18 +193,20 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         return IsaSchema.execute(introspection_query)
 
     def __repr__(self):
-        return "isatools.model.Investigation(" \
-               "identifier='{investigation.identifier}', " \
-               "filename='{investigation.filename}', " \
-               "title='{investigation.title}', " \
-               "submission_date='{investigation.submission_date}', " \
-               "public_release_date='{investigation.public_release_date}', " \
-               "ontology_source_references=" \
-               "{investigation.ontology_source_references}, " \
-               "publications={investigation.publications}, " \
-               "contacts={investigation.contacts}, " \
-               "studies={investigation.studies}, " \
-               "comments={investigation.comments})".format(investigation=self)
+        return (
+            "isatools.model.Investigation("
+            "identifier='{investigation.identifier}', "
+            "filename='{investigation.filename}', "
+            "title='{investigation.title}', "
+            "submission_date='{investigation.submission_date}', "
+            "public_release_date='{investigation.public_release_date}', "
+            "ontology_source_references="
+            "{investigation.ontology_source_references}, "
+            "publications={investigation.publications}, "
+            "contacts={investigation.contacts}, "
+            "studies={investigation.studies}, "
+            "comments={investigation.comments})".format(investigation=self)
+        )
 
     def __str__(self):
         return """Investigation(
@@ -204,29 +220,32 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     contacts={num_contacts} Person objects
     studies={num_studies} Study objects
     comments={num_comments} Comment objects
-)""".format(investigation=self,
-            num_ontology_source_references=len(
-                self.ontology_source_references),
+)""".format(
+            investigation=self,
+            num_ontology_source_references=len(self.ontology_source_references),
             num_publications=len(self.publications),
             num_contacts=len(self.contacts),
             num_studies=len(self.studies),
-            num_comments=len(self.comments))
+            num_comments=len(self.comments),
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Investigation) \
-            and self.filename == other.filename \
-            and self.identifier == other.identifier \
-            and self.title == other.title \
-            and self.submission_date == other.submission_date \
-            and self.public_release_date == other.public_release_date \
-            and self.ontology_source_references == other.ontology_source_references \
-            and self.publications == other.publications \
-            and self.contacts == other.contacts \
-            and self.studies == other.studies \
+        return (
+            isinstance(other, Investigation)
+            and self.filename == other.filename
+            and self.identifier == other.identifier
+            and self.title == other.title
+            and self.submission_date == other.submission_date
+            and self.public_release_date == other.public_release_date
+            and self.ontology_source_references == other.ontology_source_references
+            and self.publications == other.publications
+            and self.contacts == other.contacts
+            and self.studies == other.studies
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -242,7 +261,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
             "ontologySourceReferences": [oS.to_dict(ld=ld) for oS in self.ontology_source_references],
             "people": [person.to_dict(ld=ld) for person in self.contacts],
             "publications": [publication.to_dict(ld=ld) for publication in self.publications],
-            "studies": [study.to_dict(ld=ld) for study in self.studies]
+            "studies": [study.to_dict(ld=ld) for study in self.studies],
         }
         return self.update_isa_object(investigation, ld=ld)
 
@@ -250,34 +269,34 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         return self.to_dict(ld=True)
 
     def from_dict(self, investigation):
-        self.identifier = investigation.get('identifier', '')
-        self.title = investigation.get('title', '')
-        self.public_release_date = investigation.get('publicReleaseDate', '')
-        self.submission_date = investigation.get('submissionDate', '')
-        self.description = investigation.get('description', '')
-        self.load_comments(investigation.get('comments', []))
+        self.identifier = investigation.get("identifier", "")
+        self.title = investigation.get("title", "")
+        self.public_release_date = investigation.get("publicReleaseDate", "")
+        self.submission_date = investigation.get("submissionDate", "")
+        self.description = investigation.get("description", "")
+        self.load_comments(investigation.get("comments", []))
 
         # ontology source references
-        for ontology_source_data in investigation.get('ontologySourceReferences', []):
-            ontology_source = OntologySource('')
+        for ontology_source_data in investigation.get("ontologySourceReferences", []):
+            ontology_source = OntologySource("")
             ontology_source.from_dict(ontology_source_data)
             self.ontology_source_references.append(ontology_source)
             indexes.add_term_source(ontology_source)
 
         # people
-        for person_data in investigation.get('people', []):
+        for person_data in investigation.get("people", []):
             person = Person()
             person.from_dict(person_data)
             self.contacts.append(person)
 
         # publications
-        for publication_data in investigation.get('publications', []):
+        for publication_data in investigation.get("publications", []):
             publication = Publication()
             publication.from_dict(publication_data)
             self.publications.append(publication)
 
         # studies
-        for study_data in investigation.get('studies', []):
+        for study_data in investigation.get("studies", []):
             study = Study()
             study.from_dict(study_data)
             self.studies.append(study)

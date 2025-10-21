@@ -1,11 +1,11 @@
-from isatools.model.comments import Commentable
-from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
-from isatools.model.source import Source
-from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.comments import Commentable
 from isatools.model.factor_value import FactorValue
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.source import Source
 
 
 class Sample(Commentable, ProcessSequenceNode, Identifiable):
@@ -22,8 +22,7 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, name='', id_='', factor_values=None,
-                 characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name="", id_="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
         Identifiable.__init__(self)
@@ -49,7 +48,7 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('Sample.name must be a str or None; got {0}:{1}'.format(val, type(val)))
+            raise AttributeError("Sample.name must be a str or None; got {0}:{1}".format(val, type(val)))
         self.__name = val
 
     @property
@@ -60,11 +59,11 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
 
     @factor_values.setter
     def factor_values(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, FactorValue) for x in val):
                 self.__factor_values = list(val)
         else:
-            raise AttributeError('Sample.factor_values must be iterable containing FactorValues')
+            raise AttributeError("Sample.factor_values must be iterable containing FactorValues")
 
     @property
     def characteristics(self):
@@ -74,11 +73,11 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
 
     @characteristics.setter
     def characteristics(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError('Sample.characteristics must be iterable containing Characteristics')
+            raise AttributeError("Sample.characteristics must be iterable containing Characteristics")
 
     def has_char(self, char):
         if isinstance(char, str):
@@ -103,43 +102,49 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
 
     @derives_from.setter
     def derives_from(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Source) for x in val):
                 self.__derives_from = list(val)
         else:
-            raise AttributeError(
-                'Sample.derives_from must be iterable containing Sources')
+            raise AttributeError("Sample.derives_from must be iterable containing Sources")
 
     def __repr__(self):
-        return ("isatools.model.Sample(name='{sample.name}', "
-                "characteristics={sample.characteristics}, "
-                "factor_values={sample.factor_values}, "
-                "derives_from={sample.derives_from}, "
-                "comments={sample.comments})").format(sample=self)
+        return (
+            "isatools.model.Sample(name='{sample.name}', "
+            "characteristics={sample.characteristics}, "
+            "factor_values={sample.factor_values}, "
+            "derives_from={sample.derives_from}, "
+            "comments={sample.comments})"
+        ).format(sample=self)
 
     def __str__(self):
-        return ("Sample(\n\t"
-                "name={sample.name}\n\t"
-                "characteristics={num_characteristics} Characteristic objects\n\t"
-                "factor_values={num_factor_values} FactorValue objects\n\t"
-                "derives_from={num_derives_from} Source objects\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(sample=self,
-                         num_characteristics=len(self.characteristics),
-                         num_factor_values=len(self.factor_values),
-                         num_derives_from=len(self.derives_from),
-                         num_comments=len(self.comments))
+        return (
+            "Sample(\n\t"
+            "name={sample.name}\n\t"
+            "characteristics={num_characteristics} Characteristic objects\n\t"
+            "factor_values={num_factor_values} FactorValue objects\n\t"
+            "derives_from={num_derives_from} Source objects\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(
+            sample=self,
+            num_characteristics=len(self.characteristics),
+            num_factor_values=len(self.factor_values),
+            num_derives_from=len(self.derives_from),
+            num_comments=len(self.comments),
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Sample) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.factor_values == other.factor_values \
-               and self.derives_from == other.derives_from \
-               and self.comments == other.comments
+        return (
+            isinstance(other, Sample)
+            and self.name == other.name
+            and self.characteristics == other.characteristics
+            and self.factor_values == other.factor_values
+            and self.derives_from == other.derives_from
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -151,33 +156,33 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
             "characteristics": [characteristic.to_dict(ld=ld) for characteristic in self.characteristics],
             "factorValues": [factor_values.to_dict(ld=ld) for factor_values in self.factor_values],
             "derivesFrom": [{"@id": derives_from.id} for derives_from in self.derives_from],
-            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(sample, ld)
 
     def from_dict(self, sample):
-        self.id = sample.get('@id', '')
-        self.name = sample.get('name', '').replace('sample-', '')
-        self.load_comments(sample.get('comments', []))
+        self.id = sample.get("@id", "")
+        self.name = sample.get("name", "").replace("sample-", "")
+        self.load_comments(sample.get("comments", []))
 
         # characteristics
-        for characteristic_data in sample.get('characteristics', []):
-            id_ = characteristic_data.get('category', {}).get('@id', '')
+        for characteristic_data in sample.get("characteristics", []):
+            id_ = characteristic_data.get("category", {}).get("@id", "")
             data = {
-                'comments': characteristic_data.get('comments', []),
-                'category': indexes.get_characteristic_category(id_),
-                'value': characteristic_data['value'],
-                'unit': characteristic_data.get('unit', '')
+                "comments": characteristic_data.get("comments", []),
+                "category": indexes.get_characteristic_category(id_),
+                "value": characteristic_data["value"],
+                "unit": characteristic_data.get("unit", ""),
             }
             characteristic = Characteristic()
             characteristic.from_dict(data)
             self.characteristics.append(characteristic)
 
         # factor values
-        for factor_value_data in sample.get('factorValues', []):
+        for factor_value_data in sample.get("factorValues", []):
             factor = FactorValue()
             factor.from_dict(factor_value_data)
             self.factor_values.append(factor)
 
-        for derives_data in sample.get('derivesFrom', []):
+        for derives_data in sample.get("derivesFrom", []):
             self.derives_from.append(indexes.get_source(derives_data["@id"]))

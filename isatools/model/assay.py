@@ -1,14 +1,14 @@
 from isatools.model.comments import Commentable
+from isatools.model.datafile import DataFile
+from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.material import Material
 from isatools.model.mixins import StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
-from isatools.model.datafile import DataFile
-from isatools.model.material import Material
 from isatools.model.process import Process
-from isatools.model.loader_indexes import loader_states as indexes
 
 
 class Assay(Commentable, StudyAssayMixin, object):
-    """ An Assay represents a test performed either on material taken from a
+    """An Assay represents a test performed either on material taken from a
     subject or on a whole initial subject, producing qualitative or
     quantitative
     measurements. An Assay groups descriptions of provenance of sample
@@ -36,16 +36,30 @@ class Assay(Commentable, StudyAssayMixin, object):
         graph: A graph representation of the assay graph.
     """
 
-    def __init__(self, measurement_type=None, technology_type=None,
-                 technology_platform='', filename='', process_sequence=None,
-                 data_files=None, samples=None, other_material=None,
-                 characteristic_categories=None, units=None, comments=None):
+    def __init__(
+        self,
+        measurement_type=None,
+        technology_type=None,
+        technology_platform="",
+        filename="",
+        process_sequence=None,
+        data_files=None,
+        samples=None,
+        other_material=None,
+        characteristic_categories=None,
+        units=None,
+        comments=None,
+    ):
         super().__init__(comments)
         StudyAssayMixin.__init__(
-            self, filename=filename, samples=samples,
+            self,
+            filename=filename,
+            samples=samples,
             other_material=other_material,
             process_sequence=process_sequence,
-            characteristic_categories=characteristic_categories, units=units)
+            characteristic_categories=characteristic_categories,
+            units=units,
+        )
 
         self.__measurement_type = OntologyAnnotation()
         if measurement_type:
@@ -68,8 +82,8 @@ class Assay(Commentable, StudyAssayMixin, object):
     def measurement_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise AttributeError(
-                'Assay.measurement_type must be a OntologyAnnotation or '
-                'None; got {0}:{1}'.format(val, type(val)))
+                "Assay.measurement_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+            )
         else:
             self.__measurement_type = val
 
@@ -83,8 +97,8 @@ class Assay(Commentable, StudyAssayMixin, object):
     def technology_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise AttributeError(
-                'Assay.technology_type must be a OntologyAnnotation or '
-                'None; got {0}:{1}'.format(val, type(val)))
+                "Assay.technology_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+            )
         else:
             self.__technology_type = val
 
@@ -96,9 +110,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     @technology_platform.setter
     def technology_platform(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                'Assay.technology_platform must be a str or None; got {0}:{1}'
-                .format(val, type(val)))
+            raise AttributeError("Assay.technology_platform must be a str or None; got {0}:{1}".format(val, type(val)))
         else:
             self.__technology_platform = val
 
@@ -109,25 +121,26 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @data_files.setter
     def data_files(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, DataFile) for x in val):
                 self.__data_files = list(val)
         else:
-            raise AttributeError('{0}.data_files must be iterable containing DataFiles'.format(type(self).__name__))
+            raise AttributeError("{0}.data_files must be iterable containing DataFiles".format(type(self).__name__))
 
     def __repr__(self):
-        return "isatools.model.Assay(measurement_type={measurement_type}, " \
-               "technology_type={technology_type}, " \
-               "technology_platform='{assay.technology_platform}', " \
-               "filename='{assay.filename}', data_files={assay.data_files}, " \
-               "samples={assay.samples}, " \
-               "process_sequence={assay.process_sequence}, " \
-               "other_material={assay.other_material}, " \
-               "characteristic_categories={assay.characteristic_categories}," \
-               " comments={assay.comments}, units={assay.units})" \
-            .format(assay=self,
-                    measurement_type=repr(self.measurement_type),
-                    technology_type=repr(self.technology_type))
+        return (
+            "isatools.model.Assay(measurement_type={measurement_type}, "
+            "technology_type={technology_type}, "
+            "technology_platform='{assay.technology_platform}', "
+            "filename='{assay.filename}', data_files={assay.data_files}, "
+            "samples={assay.samples}, "
+            "process_sequence={assay.process_sequence}, "
+            "other_material={assay.other_material}, "
+            "characteristic_categories={assay.characteristic_categories},"
+            " comments={assay.comments}, units={assay.units})".format(
+                assay=self, measurement_type=repr(self.measurement_type), technology_type=repr(self.technology_type)
+            )
+        )
 
     def __str__(self):
         return """Assay(
@@ -142,43 +155,53 @@ class Assay(Commentable, StudyAssayMixin, object):
     characteristic_categories={num_characteristic_categories} OntologyAnnots
     comments={num_comments} Comment objects
     units={num_units} Unit objects
-)""".format(assay=self,
-            measurement_type=self.measurement_type.term if isinstance(self.measurement_type, OntologyAnnotation)
-            else self.measurement_type if isinstance(self.measurement_type, str) else '',
-            technology_type=self.technology_type.term if isinstance(self.technology_type, OntologyAnnotation)
-            else self.technology_type if isinstance(self.technology_type, str) else '',
+)""".format(
+            assay=self,
+            measurement_type=self.measurement_type.term
+            if isinstance(self.measurement_type, OntologyAnnotation)
+            else self.measurement_type
+            if isinstance(self.measurement_type, str)
+            else "",
+            technology_type=self.technology_type.term
+            if isinstance(self.technology_type, OntologyAnnotation)
+            else self.technology_type
+            if isinstance(self.technology_type, str)
+            else "",
             num_datafiles=len(self.data_files),
             num_samples=len(self.samples),
             num_processes=len(self.process_sequence),
             num_other_material=len(self.other_material),
             num_characteristic_categories=len(self.characteristic_categories),
-            num_comments=len(self.comments), num_units=len(self.units))
+            num_comments=len(self.comments),
+            num_units=len(self.units),
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Assay) \
-               and self.measurement_type == other.measurement_type \
-               and self.technology_type == other.technology_type \
-               and self.technology_platform == other.technology_platform \
-               and self.filename == other.filename \
-               and self.data_files == other.data_files \
-               and self.samples == other.samples \
-               and self.process_sequence == other.process_sequence \
-               and self.other_material == other.other_material \
-               and self.characteristic_categories \
-               == other.characteristic_categories \
-               and self.comments == other.comments \
-               and self.units == other.units
+        return (
+            isinstance(other, Assay)
+            and self.measurement_type == other.measurement_type
+            and self.technology_type == other.technology_type
+            and self.technology_platform == other.technology_platform
+            and self.filename == other.filename
+            and self.data_files == other.data_files
+            and self.samples == other.samples
+            and self.process_sequence == other.process_sequence
+            and self.other_material == other.other_material
+            and self.characteristic_categories == other.characteristic_categories
+            and self.comments == other.comments
+            and self.units == other.units
+        )
 
     def __ne__(self, other):
         return not self == other
 
     def to_dict(self, ld=False):
         assay = {
-            "measurementType": self.measurement_type.to_dict(ld=ld) if self.measurement_type else '',
-            "technologyType": self.technology_type.to_dict(ld=ld) if self.technology_type else '',
+            "measurementType": self.measurement_type.to_dict(ld=ld) if self.measurement_type else "",
+            "technologyType": self.technology_type.to_dict(ld=ld) if self.technology_type else "",
             "technologyPlatform": self.technology_platform,
             "filename": self.filename,
             "characteristicCategories": self.categories_to_dict(ld=ld),
@@ -186,34 +209,34 @@ class Assay(Commentable, StudyAssayMixin, object):
             "comments": [comment.to_dict(ld=ld) for comment in self.comments],
             "materials": {
                 "samples": [{"@id": sample.id} for sample in self.samples],
-                "otherMaterials": [mat.to_dict(ld=ld) for mat in self.other_material]
+                "otherMaterials": [mat.to_dict(ld=ld) for mat in self.other_material],
             },
             "dataFiles": [file.to_dict(ld=ld) for file in self.data_files],
-            "processSequence": [process.to_dict(ld=ld) for process in self.process_sequence]
+            "processSequence": [process.to_dict(ld=ld) for process in self.process_sequence],
         }
         return self.update_isa_object(assay, ld)
 
     def from_dict(self, assay, isa_study):
-        self.technology_platform = assay.get('technologyPlatform', '')
-        self.filename = assay.get('filename', '')
-        self.load_comments(assay.get('comments', []))
+        self.technology_platform = assay.get("technologyPlatform", "")
+        self.filename = assay.get("filename", "")
+        self.load_comments(assay.get("comments", []))
 
         # measurement type
-        measurement_type_data = assay.get('measurementType', None)
+        measurement_type_data = assay.get("measurementType", None)
         if measurement_type_data:
             measurement_type = OntologyAnnotation()
             measurement_type.from_dict(measurement_type_data)
             self.measurement_type = measurement_type
 
         # technology type
-        technology_type_data = assay.get('technologyType', None)
+        technology_type_data = assay.get("technologyType", None)
         if technology_type_data:
             technology_type = OntologyAnnotation()
             technology_type.from_dict(technology_type_data)
             self.technology_type = technology_type
 
         # units categories
-        for unit_data in assay.get('unitCategories', []):
+        for unit_data in assay.get("unitCategories", []):
             unit = OntologyAnnotation()
             unit.from_dict(unit_data)
             self.units.append(unit)
@@ -221,52 +244,53 @@ class Assay(Commentable, StudyAssayMixin, object):
 
         # data files
         indexes.reset_data_file()
-        for data_file_data in assay.get('dataFiles', []):
+        for data_file_data in assay.get("dataFiles", []):
             data_file = DataFile()
             data_file.from_dict(data_file_data)
             self.data_files.append(data_file)
             indexes.add_data_file(data_file)
 
         # samples
-        for sample_data in assay.get('materials', {}).get('samples', []):
-            self.samples.append(indexes.get_sample(sample_data['@id']))
+        for sample_data in assay.get("materials", {}).get("samples", []):
+            self.samples.append(indexes.get_sample(sample_data["@id"]))
 
         # characteristic categories
-        for characteristic_category_data in assay.get('characteristicCategories', []):
+        for characteristic_category_data in assay.get("characteristicCategories", []):
             characteristic_category = OntologyAnnotation()
-            characteristic_category.from_dict(characteristic_category_data['characteristicType'])
-            characteristic_category.id = characteristic_category_data['@id']
+            characteristic_category.from_dict(characteristic_category_data["characteristicType"])
+            characteristic_category.id = characteristic_category_data["@id"]
             self.characteristic_categories.append(characteristic_category)
             indexes.add_characteristic_category(characteristic_category)
 
         # other materials
-        for other_material_data in assay.get('materials', {}).get('otherMaterials', []):
+        for other_material_data in assay.get("materials", {}).get("otherMaterials", []):
             other_material = Material()
-            other_material_data['name'] = (other_material_data['name']
-                                           .replace("labeledextract-", "")
-                                           .replace("extract-", ""))
+            other_material_data["name"] = (
+                other_material_data["name"].replace("labeledextract-", "").replace("extract-", "")
+            )
             other_material.from_dict(other_material_data)
 
             self.other_material.append(other_material)
             indexes.add_other_material(other_material)
 
         # process sequence
-        for process_sequence_data in assay.get('processSequence', []):
+        for process_sequence_data in assay.get("processSequence", []):
             process = Process()
             process.from_assay_dict(process_sequence_data, technology_type=self.technology_type)
             self.process_sequence.append(process)
             indexes.add_process(process)
 
             # link processes in process sequence
-            for assay_process_json in assay.get('processSequence', []):
+            for assay_process_json in assay.get("processSequence", []):
                 try:
-                    previous_process_id = assay_process_json['previousProcess']['@id']
-                    indexes.get_process(assay_process_json["@id"]).prev_process = \
-                        indexes.get_process(previous_process_id)
+                    previous_process_id = assay_process_json["previousProcess"]["@id"]
+                    indexes.get_process(assay_process_json["@id"]).prev_process = indexes.get_process(
+                        previous_process_id
+                    )
                 except KeyError:
                     pass
                 try:
-                    next_process_id = assay_process_json['nextProcess']['@id']
+                    next_process_id = assay_process_json["nextProcess"]["@id"]
                     indexes.get_process(assay_process_json["@id"]).next_process = indexes.get_process(next_process_id)
                 except KeyError:
                     pass

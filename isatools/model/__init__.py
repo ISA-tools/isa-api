@@ -12,29 +12,30 @@ Todo:
 .. _ISA Model and Serialization Specs 1.0: http://isa-specs.readthedocs.io/
 
 """
+
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
-from isatools.model.comments import Commentable, Comment
+from isatools.model.comments import Comment, Commentable
 from isatools.model.datafile import (
-    DataFile,
-    RawDataFile,
-    DerivedDataFile,
-    RawSpectralDataFile,
-    DerivedArrayDataFile,
-    ArrayDataFile,
-    DerivedSpectralDataFile,
-    ProteinAssignmentFile,
-    PeptideAssignmentFile,
-    DerivedArrayDataMatrixFile,
-    PostTranslationalModificationAssignmentFile,
     AcquisitionParameterDataFile,
-    FreeInductionDecayDataFile
+    ArrayDataFile,
+    DataFile,
+    DerivedArrayDataFile,
+    DerivedArrayDataMatrixFile,
+    DerivedDataFile,
+    DerivedSpectralDataFile,
+    FreeInductionDecayDataFile,
+    PeptideAssignmentFile,
+    PostTranslationalModificationAssignmentFile,
+    ProteinAssignmentFile,
+    RawDataFile,
+    RawSpectralDataFile,
 )
 from isatools.model.factor_value import FactorValue, StudyFactor
 from isatools.model.investigation import Investigation
 from isatools.model.logger import log
-from isatools.model.material import Material, Extract, LabeledExtract
-from isatools.model.mixins import MetadataMixin, StudyAssayMixin, _build_assay_graph
+from isatools.model.material import Extract, LabeledExtract, Material
+from isatools.model.mixins import MetadataMixin, StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.ontology_source import OntologySource
 from isatools.model.parameter_value import ParameterValue
@@ -48,4 +49,4 @@ from isatools.model.publication import Publication
 from isatools.model.sample import Sample
 from isatools.model.source import Source
 from isatools.model.study import Study
-from isatools.model.utils import _build_assay_graph, plink, batch_create_assays, batch_create_materials, _deep_copy
+from isatools.model.utils import _build_assay_graph, _deep_copy, batch_create_assays, batch_create_materials, plink

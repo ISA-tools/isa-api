@@ -1,5 +1,6 @@
-from typing import List, Any
-from isatools.model.comments import Commentable, Comment
+from typing import Any, List
+
+from isatools.model.comments import Comment, Commentable
 
 
 class OntologySource(Commentable):
@@ -16,12 +17,9 @@ class OntologySource(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self,
-                 name: str,
-                 file: str = '',
-                 version: str = '',
-                 description: str = '',
-                 comments: List[Comment] = None):
+    def __init__(
+        self, name: str, file: str = "", version: str = "", description: str = "", comments: List[Comment] = None
+    ):
         super().__init__(comments)
 
         self.__name = name
@@ -41,19 +39,17 @@ class OntologySource(Commentable):
 
     @staticmethod
     def validate_field(val: Any, field_name: str):
-        """ Validates that the given value is a valid value for the given field
+        """Validates that the given value is a valid value for the given field
 
         @param val: the value to validate
         @param field_name: the name of the field to validate
         """
         if not isinstance(val, str):
-            raise AttributeError('OntologySource.{0} must be a str; got {1}:{2}'.format(field_name,
-                                                                                        val,
-                                                                                        type(val)))
+            raise AttributeError("OntologySource.{0} must be a str; got {1}:{2}".format(field_name, val, type(val)))
 
     @name.setter
     def name(self, val):
-        self.validate_field(val, 'name')
+        self.validate_field(val, "name")
         self.__name = val
 
     @property
@@ -63,7 +59,7 @@ class OntologySource(Commentable):
 
     @file.setter
     def file(self, val):
-        self.validate_field(val, 'file')
+        self.validate_field(val, "file")
         self.__file = val
 
     @property
@@ -73,7 +69,7 @@ class OntologySource(Commentable):
 
     @version.setter
     def version(self, val):
-        self.validate_field(val, 'version')
+        self.validate_field(val, "version")
         self.__version = val
 
     @property
@@ -83,52 +79,57 @@ class OntologySource(Commentable):
 
     @description.setter
     def description(self, val):
-        self.validate_field(val, 'description')
+        self.validate_field(val, "description")
         self.__description = val
 
     def __repr__(self):
-        return ("isatools.model.OntologySource(name='{ontology_source.name}', "
-                "file='{ontology_source.file}', "
-                "version='{ontology_source.version}', "
-                "description='{ontology_source.description}', "
-                "comments={ontology_source.comments})").format(ontology_source=self)
+        return (
+            "isatools.model.OntologySource(name='{ontology_source.name}', "
+            "file='{ontology_source.file}', "
+            "version='{ontology_source.version}', "
+            "description='{ontology_source.description}', "
+            "comments={ontology_source.comments})"
+        ).format(ontology_source=self)
 
     def __str__(self):
-        return ("OntologySource(\n\t"
-                "name={ontology_source.name}\n\t"
-                "file={ontology_source.file}\n\t"
-                "version={ontology_source.version}\n\t"
-                "description={ontology_source.description}\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(ontology_source=self, num_comments=len(self.comments))
+        return (
+            "OntologySource(\n\t"
+            "name={ontology_source.name}\n\t"
+            "file={ontology_source.file}\n\t"
+            "version={ontology_source.version}\n\t"
+            "description={ontology_source.description}\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(ontology_source=self, num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, OntologySource) \
-               and self.name == other.name \
-               and self.file == other.file \
-               and self.version == other.version \
-               and self.description == other.description \
-               and self.comments == other.comments
+        return (
+            isinstance(other, OntologySource)
+            and self.name == other.name
+            and self.file == other.file
+            and self.version == other.version
+            and self.description == other.description
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
 
     def to_dict(self, ld=False):
         ontology_source_ref = {
-            'name': self.name,
-            'file': self.file,
-            'version': self.version,
-            'description': self.description,
-            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
+            "name": self.name,
+            "file": self.file,
+            "version": self.version,
+            "description": self.description,
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(ontology_source_ref, ld=ld)
 
     def from_dict(self, ontology_source):
-        self.name = ontology_source['name'] if 'name' in ontology_source else ''
-        self.file = ontology_source['file'] if 'file' in ontology_source else ''
-        self.version = ontology_source['version'] if 'version' in ontology_source else ''
-        self.description = ontology_source['description'] if 'description' in ontology_source else ''
-        self.load_comments(ontology_source.get('comments', []))
+        self.name = ontology_source["name"] if "name" in ontology_source else ""
+        self.file = ontology_source["file"] if "file" in ontology_source else ""
+        self.version = ontology_source["version"] if "version" in ontology_source else ""
+        self.description = ontology_source["description"] if "description" in ontology_source else ""
+        self.load_comments(ontology_source.get("comments", []))

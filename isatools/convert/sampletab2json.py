@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*
 """Convert SampleTab to ISA-JSON"""
+
 import json
 import logging
 
 from isatools import sampletab
 from isatools.isajson import ISAJSONEncoder
 
-
-logger = logging.getLogger('isatools')
+logger = logging.getLogger("isatools")
 
 
 def convert(source_sampletab_fp, target_json_fp):
-    """ Converter for ISA-JSON to SampleTab.
+    """Converter for ISA-JSON to SampleTab.
     :param source_sampletab_fp: File descriptor of input SampleTab file
     :param target_json_fp: File descriptor to write output ISA JSON (must be
                            writeable)

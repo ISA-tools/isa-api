@@ -1,8 +1,8 @@
 from os import path
 
-from isatools.utils import utf8_text_file_open
-from isatools.isatab.validate.store import validator
 from isatools.isatab.defaults import log
+from isatools.isatab.validate.store import validator
+from isatools.utils import utf8_text_file_open
 
 
 def check_table_files_read(i_df_dict, dir_context):
@@ -12,9 +12,9 @@ def check_table_files_read(i_df_dict, dir_context):
     :param dir_context: Path to where the investigation file is found
     :return: None
     """
-    for i, study_df in enumerate(i_df_dict['studies']):
-        study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename != '':
+    for i, study_df in enumerate(i_df_dict["studies"]):
+        study_filename = study_df.iloc[0]["Study File Name"]
+        if study_filename != "":
             try:
                 with utf8_text_file_open(path.join(dir_context, study_filename)):
                     pass
@@ -22,8 +22,8 @@ def check_table_files_read(i_df_dict, dir_context):
                 spl = "Study File {} does not appear to exist".format(study_filename)
                 validator.add_error(message="Missing study tab file(s)", supplemental=spl, code=6)
                 log.error("(E) Study File {} does not appear to exist".format(study_filename))
-        for j, assay_filename in enumerate(i_df_dict['s_assays'][i]['Study Assay File Name'].tolist()):
-            if assay_filename != '':
+        for j, assay_filename in enumerate(i_df_dict["s_assays"][i]["Study Assay File Name"].tolist()):
+            if assay_filename != "":
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)):
                         pass
@@ -34,7 +34,7 @@ def check_table_files_read(i_df_dict, dir_context):
 
 
 def check_sample_names(study_sample_table, assay_tables=None):
-    """ Checks that samples in the assay tables also appear in the study-sample table
+    """Checks that samples in the assay tables also appear in the study-sample table
 
     :param study_sample_table: Study table DataFrame
     :param assay_tables: A list of Assay table DataFrames
@@ -43,9 +43,9 @@ def check_sample_names(study_sample_table, assay_tables=None):
     if assay_tables is None:
         assay_tables = []
     if len(assay_tables) > 0:
-        study_samples = set(study_sample_table['Sample Name'])
+        study_samples = set(study_sample_table["Sample Name"])
         for assay_table in assay_tables:
-            assay_samples = set(assay_table['Sample Name'])
+            assay_samples = set(assay_table["Sample Name"])
             for assay_sample in assay_samples:
                 spl = "{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
                 spl = spl.format(assay_sample, assay_table.filename, study_sample_table.filename)

@@ -1,9 +1,9 @@
-from isatools.model.comments import Commentable
-from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.characteristic import Characteristic
-from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.comments import Commentable
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.process_sequence import ProcessSequenceNode
 
 
 class Source(Commentable, ProcessSequenceNode, Identifiable):
@@ -16,7 +16,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, name='', id_='', characteristics=None, comments=None):
+    def __init__(self, name="", id_="", characteristics=None, comments=None):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
@@ -37,8 +37,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('Source.name must be a str or None; got {0}:{1}'
-                                 .format(val, type(val)))
+            raise AttributeError("Source.name must be a str or None; got {0}:{1}".format(val, type(val)))
         else:
             self.__name = val
 
@@ -50,11 +49,11 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
 
     @characteristics.setter
     def characteristics(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError('Source.characteristics must be iterable containing Characteristics')
+            raise AttributeError("Source.characteristics must be iterable containing Characteristics")
 
     def has_char(self, char):
         if isinstance(char, str):
@@ -72,51 +71,56 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
         return result
 
     def __repr__(self):
-        return("isatools.model.Source(name='{source.name}', " 
-               "characteristics={source.characteristics}, " 
-               "comments={source.comments})".format(source=self))
+        return (
+            "isatools.model.Source(name='{source.name}', "
+            "characteristics={source.characteristics}, "
+            "comments={source.comments})".format(source=self)
+        )
 
     def __str__(self):
-        return("Source(\n\t"
-               "name={source.name}\n\t"
-               "characteristics={num_characteristics} Characteristic objects\n\t"
-               "comments={num_comments} Comment objects\n)"
-               ).format(source=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
+        return (
+            "Source(\n\t"
+            "name={source.name}\n\t"
+            "characteristics={num_characteristics} Characteristic objects\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(source=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Source) \
-            and self.name == other.name \
-            and self.characteristics == other.characteristics \
+        return (
+            isinstance(other, Source)
+            and self.name == other.name
+            and self.characteristics == other.characteristics
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
 
     def to_dict(self, ld=False):
         source = {
-            '@id': self.id,
-            'name': self.name,
-            'characteristics': [char.to_dict(ld=ld) for char in self.characteristics],
-            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
+            "@id": self.id,
+            "name": self.name,
+            "characteristics": [char.to_dict(ld=ld) for char in self.characteristics],
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(source, ld=ld)
 
     def from_dict(self, source):
-        self.id = source.get('@id', '')
-        self.name = source.get('name', '').replace("source-", "")
-        self.load_comments(source.get('comments', []))
+        self.id = source.get("@id", "")
+        self.name = source.get("name", "").replace("source-", "")
+        self.load_comments(source.get("comments", []))
 
         # characteristics
-        for characteristic_data in source.get('characteristics', []):
-            id_ = characteristic_data.get('category', {}).get('@id', '')
+        for characteristic_data in source.get("characteristics", []):
+            id_ = characteristic_data.get("category", {}).get("@id", "")
             data = {
-                'comments': characteristic_data.get('comments', []),
-                'category': indexes.get_characteristic_category(id_),
-                'value': characteristic_data['value'],
-                'unit': characteristic_data.get('unit', None)
+                "comments": characteristic_data.get("comments", []),
+                "category": indexes.get_characteristic_category(id_),
+                "value": characteristic_data["value"],
+                "unit": characteristic_data.get("unit", None),
             }
             characteristic = Characteristic()
             characteristic.from_dict(data)

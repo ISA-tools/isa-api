@@ -22,10 +22,10 @@ def build_assays_filters(filters):
     :return: an object to pass as an input to search_assays()
     """
     return {
-        "measurementType": build_filter(filters, 'measurementType'),
-        "technologyType": build_filter(filters, 'technologyType'),
-        "executesProtocol": build_filter(filters, 'executesProtocol'),
-        "treatmentGroup": filters['treatmentGroup'] if filters and 'treatmentGroup' in filters else None,
-        "characteristics": filters['characteristics'] if filters and 'characteristics' in filters else None,
-        "parameterValues": filters['parameterValues'] if filters and 'parameterValues' in filters else None
+        "measurementType": build_filter(filters, "measurementType"),
+        "technologyType": build_filter(filters, "technologyType"),
+        "executesProtocol": build_filter(filters, "executesProtocol"),
+        "treatmentGroup": filters["treatmentGroup"] if filters and "treatmentGroup" in filters else None,
+        "characteristics": filters["characteristics"] if filters and "characteristics" in filters else None,
+        "parameterValues": filters["parameterValues"] if filters and "parameterValues" in filters else None,
     }

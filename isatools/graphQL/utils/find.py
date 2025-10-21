@@ -32,15 +32,16 @@ def find_exposure_value(sample, expected_value, target):
     :param target: the target of sample to look into
     :return: {Boolean}
     """
-    if not expected_value or not expected_value['value']:
+    if not expected_value or not expected_value["value"]:
         return True
     for factor in sample.factor_values:
-        value_operator = list(expected_value['value'].keys())[0]
+        value_operator = list(expected_value["value"].keys())[0]
         name_operator = list(target.keys())[0]
-        val = expected_value['value'][value_operator]
+        val = expected_value["value"][value_operator]
         name = target[name_operator]
-        if compare_values(factor.factor_name.name, name, name_operator) \
-                and compare_values(factor.value.term, val, value_operator):
+        if compare_values(factor.factor_name.name, name, name_operator) and compare_values(
+            factor.value.term, val, value_operator
+        ):
             return True
     return False
 
@@ -52,12 +53,12 @@ def find_characteristics(sample, expected_value):
     :param expected_value: the value to look for
     :return: {Boolean}
     """
-    if not expected_value or not expected_value['value']:
+    if not expected_value or not expected_value["value"]:
         return True
-    target = expected_value['name']
+    target = expected_value["name"]
     target_operator = list(target.keys())[0]
     target_value = target[target_operator]
-    value = expected_value['value']
+    value = expected_value["value"]
     value_operator = list(value.keys())[0]
     value_value = value[value_operator]
     for characteristic in sample.characteristics:
@@ -84,7 +85,7 @@ def find_exposure(process_sequence, exposure):
             if type(input_data).__name__ == "Sample":
                 is_found = []
                 for factor in exposure:
-                    found = find_exposure_value(input_data, factor, factor['name'])
+                    found = find_exposure_value(input_data, factor, factor["name"])
                     is_found.append(found)
                 if list(set(is_found)) == [True]:
                     return True
@@ -137,25 +138,27 @@ def compare_values(reference, target, operator):
     :param operator: must be eq, includes, gt, gte, lt, lte
     :return:
     """
-    if operator == 'eq':
+    if operator == "eq":
         return reference == target
-    elif operator == 'includes':
+    elif operator == "includes":
         return target in reference
     else:
         try:
             target = int(target)
-            if type(reference).__name__ == 'str':
+            if type(reference).__name__ == "str":
                 return False
             reference = int(reference)
-            if operator == 'gt':
+            if operator == "gt":
                 return target > reference
-            elif operator == 'gte':
+            elif operator == "gte":
                 return target >= reference
-            elif operator == 'lt':
+            elif operator == "lt":
                 return target < reference
-            elif operator == 'lte':
+            elif operator == "lte":
                 return target <= reference
         except Exception:
-            message = "Both value and target should be integers when using lt, gt, lte or gte got" \
-                      " value: '%s' and target: '%s'" % (reference, target)
+            message = (
+                "Both value and target should be integers when using lt, gt, lte or gte got"
+                " value: '%s' and target: '%s'" % (reference, target)
+            )
             raise Exception(message)

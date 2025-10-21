@@ -1,20 +1,19 @@
 import unittest
 from unittest.mock import patch
+
 from isatools.net.storage_adapter import IsaGitHubStorageAdapter
 
 
 class TestIsaGitHubStorageAdapter(unittest.TestCase):
-
-    @patch('isatools.net.storage_adapter.requests.get')
+    @patch("isatools.net.storage_adapter.requests.get")
     def test_is_not_authenticated(self, mock_get):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = []
         adapter = IsaGitHubStorageAdapter()
         self.assertFalse(adapter.is_authenticated)
 
-
-    @patch('isatools.net.storage_adapter.requests.get')
-    @patch('isatools.net.storage_adapter.requests.post')
+    @patch("isatools.net.storage_adapter.requests.get")
+    @patch("isatools.net.storage_adapter.requests.post")
     def test_authorization_creation(self, mock_get, mock_post):
         # Mock the GET request
         mock_get.return_value.status_code = 200
@@ -26,9 +25,8 @@ class TestIsaGitHubStorageAdapter(unittest.TestCase):
         adapter = IsaGitHubStorageAdapter(username="user", password="pass")
         self.assertEqual(adapter.token, None)
 
-
-    @patch('isatools.net.storage_adapter.requests.get')
-    @patch('isatools.net.storage_adapter.requests.delete')
+    @patch("isatools.net.storage_adapter.requests.get")
+    @patch("isatools.net.storage_adapter.requests.delete")
     def test_close(self, mock_get, mock_delete):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = []
@@ -46,7 +44,7 @@ class TestIsaGitHubStorageAdapter(unittest.TestCase):
     #     result = adapter.download(source="test.json", destination="test_dir")
     #     self.assertTrue(result)
 
-    @patch('isatools.net.storage_adapter.requests.get')
+    @patch("isatools.net.storage_adapter.requests.get")
     def test_download_invalid_file(self, mock_get):
         mock_get.return_value.status_code = 404
         adapter = IsaGitHubStorageAdapter()
@@ -68,7 +66,7 @@ class TestIsaGitHubStorageAdapter(unittest.TestCase):
     #     with self.assertRaises(Exception):
     #         adapter.retrieve(source="invalid.json")
 
-    @patch('isatools.net.storage_adapter.base64.b64decode')
+    @patch("isatools.net.storage_adapter.base64.b64decode")
     def test_handle_content_json(self, mock_decode):
         mock_decode.return_value = b'{"key": "value"}'
         adapter = IsaGitHubStorageAdapter()
@@ -76,9 +74,9 @@ class TestIsaGitHubStorageAdapter(unittest.TestCase):
         result = adapter._handle_content(payload)
         self.assertEqual(result["json"], {"key": "value"})
 
-    @patch('isatools.net.storage_adapter.base64.b64decode')
+    @patch("isatools.net.storage_adapter.base64.b64decode")
     def test_handle_content_invalid(self, mock_decode):
-        mock_decode.return_value = b'invalid content'
+        mock_decode.return_value = b"invalid content"
         adapter = IsaGitHubStorageAdapter()
         payload = {"encoding": "base64", "content": "test", "name": "test.txt"}
         result = adapter._handle_content(payload)

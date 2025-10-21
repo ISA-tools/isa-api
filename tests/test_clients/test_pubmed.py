@@ -1,24 +1,28 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from isatools.net import pubmed
+from unittest.mock import MagicMock, patch
+
 from isatools.model import Publication
+from isatools.net import pubmed
 
 
 class TestGetPubmedArticle(unittest.TestCase):
-
     @patch("Bio.Medline.parse")
     @patch("Bio.Entrez.efetch")
     def test_valid_pubmed_response_with_doi(self, mock_efetch, mock_medline_parse):
         mock_handle = MagicMock()
         mock_efetch.return_value = mock_handle
 
-        mock_medline_parse.return_value = iter([{
-            "TI": "Sample Article Title",
-            "AU": ["Author A", "Author B"],
-            "TA": "Sample Journal",
-            "EDAT": "2020/01/01 00:00",
-            "LID": "10.1234/exampledoi [doi]",
-        }])
+        mock_medline_parse.return_value = iter(
+            [
+                {
+                    "TI": "Sample Article Title",
+                    "AU": ["Author A", "Author B"],
+                    "TA": "Sample Journal",
+                    "EDAT": "2020/01/01 00:00",
+                    "LID": "10.1234/exampledoi [doi]",
+                }
+            ]
+        )
 
         expected = {
             "pubmedid": "123456",
@@ -37,14 +41,18 @@ class TestGetPubmedArticle(unittest.TestCase):
     def test_pubmed_response_with_aid_doi(self, mock_efetch, mock_medline_parse):
         mock_efetch.return_value = MagicMock()
 
-        mock_medline_parse.return_value = iter([{
-            "TI": "Another Title",
-            "AU": ["C. Author"],
-            "TA": "Another Journal",
-            "EDAT": "2019/05/15 00:00",
-            "LID": "",
-            "AID": ["10.5678/alt-doi [doi]", "SOMEID [pii]"]
-        }])
+        mock_medline_parse.return_value = iter(
+            [
+                {
+                    "TI": "Another Title",
+                    "AU": ["C. Author"],
+                    "TA": "Another Journal",
+                    "EDAT": "2019/05/15 00:00",
+                    "LID": "",
+                    "AID": ["10.5678/alt-doi [doi]", "SOMEID [pii]"],
+                }
+            ]
+        )
 
         result = pubmed.get_pubmed_article("654321")
 
@@ -60,12 +68,16 @@ class TestGetPubmedArticle(unittest.TestCase):
     def test_pubmed_response_no_doi(self, mock_efetch, mock_medline_parse):
         mock_efetch.return_value = MagicMock()
 
-        mock_medline_parse.return_value = iter([{
-            "TI": "No DOI Title",
-            "AU": [],
-            "TA": "Journal X",
-            "EDAT": "2018/12/31 00:00",
-        }])
+        mock_medline_parse.return_value = iter(
+            [
+                {
+                    "TI": "No DOI Title",
+                    "AU": [],
+                    "TA": "Journal X",
+                    "EDAT": "2018/12/31 00:00",
+                }
+            ]
+        )
 
         result = pubmed.get_pubmed_article("999999")
 
@@ -74,6 +86,7 @@ class TestGetPubmedArticle(unittest.TestCase):
         self.assertEqual(result["title"], "No DOI Title")
         self.assertEqual(result["authors"], [])
         self.assertEqual(result["journal"], "Journal X")
+
 
 #
 # class Comment:

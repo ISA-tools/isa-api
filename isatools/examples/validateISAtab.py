@@ -9,8 +9,7 @@ from isatools import isatab
 
 
 def main(args):
-    """usage: validateISAtab.py inputfile1 [inputfile2 ...]
-    """
+    """usage: validateISAtab.py inputfile1 [inputfile2 ...]"""
     if len(args) < 1:
         print(main.__doc__)
         sys.exit(1)
@@ -31,26 +30,27 @@ def main(args):
         else:
             with open(args[i]) as fp:
                 report = isatab.validate(fp)
-                numerrors = len(report['errors'])
-                numwarnings = len(report['warnings'])
+                numerrors = len(report["errors"])
+                numwarnings = len(report["warnings"])
                 if numerrors > 0:
                     invalid += 1
-                print("Validator found {} errors and {} warnings in this "
-                      "ISA-Tab archive".format(numerrors, numwarnings))
+                print(
+                    "Validator found {} errors and {} warnings in this ISA-Tab archive".format(numerrors, numwarnings)
+                )
                 totalerrors += numerrors
                 totalwarnings += numwarnings
                 numfiles += 1
         print("-" * 75)
-    print("Validated {} ISA-Tab archives, {} valid ISA-Tab archives, "
-          "{} invalid ISA-Tab archives".format(numfiles - skipped,
-                                               numfiles - invalid - skipped,
-                                               invalid))
-    print("Found {} errors and {} warnings in across all ISA-Tab archives"
-          .format(totalerrors, totalwarnings))
+    print(
+        "Validated {} ISA-Tab archives, {} valid ISA-Tab archives, {} invalid ISA-Tab archives".format(
+            numfiles - skipped, numfiles - invalid - skipped, invalid
+        )
+    )
+    print("Found {} errors and {} warnings in across all ISA-Tab archives".format(totalerrors, totalwarnings))
 
     if invalid > 0:
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

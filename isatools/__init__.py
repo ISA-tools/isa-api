@@ -17,42 +17,72 @@ Example:
 """
 
 from __future__ import absolute_import
+
 #
-from isatools.convert import (isatab2json)
 from isatools.convert import (
     isatab2cedar as isatab2cedar_module,
+)
+from isatools.convert import (
     isatab2json as isatab2json_module,
+)
+from isatools.convert import (
     isatab2sampletab as isatab2sampletab_module,
+)
+from isatools.convert import (
     isatab2sra as isatab2sra_module,
+)
+from isatools.convert import (
     isatab2w4m as isatab2w4m_module,
+)
+from isatools.convert import (
     json2isatab as json2isatab_module,
+)
+from isatools.convert import (
     json2magetab as json2magetab_module,
+)
+from isatools.convert import (
     json2sampletab as json2sampletab_module,
+)
+from isatools.convert import (
     json2sra as json2sra_module,
+)
+from isatools.convert import (
     magetab2isatab as magetab2isatab_module,
+)
+from isatools.convert import (
     magetab2json as magetab2json_module,
+)
+from isatools.convert import (
     mzml2isa as mzml2isa_module,
+)
+from isatools.convert import (
     sampletab2isatab as sampletab2isatab_module,
+)
+from isatools.convert import (
     sampletab2json as sampletab2json_module,
 )
+
 #
 #
 from isatools.net import (
     biocrates2isatab as biocrates2isatab_module,
+)
+from isatools.net import (
     mtbls as mtbls_module,
+)
+from isatools.net import (
     mw2isa as mw2isa_module,
+)
+from isatools.net import (
     ols as ols_module,
+)
+from isatools.net import (
     pubmed as pubmed_module,
-    sra2isatab as sra2isatab_module
 )
-
-from isatools.utils import (
-    detect_graph_process_pooling as detect_graph_process_pooling_module
+from isatools.net import (
+    sra2isatab as sra2isatab_module,
 )
-
-from isatools.utils import (
-    detect_graph_process_pooling as detect_graph_process_pooling_module
-)
+from isatools.utils import detect_graph_process_pooling as detect_graph_process_pooling_module
 
 # isatools.convert packages
 isatab2cedar = isatab2cedar_module

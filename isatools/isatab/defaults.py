@@ -1,11 +1,9 @@
 import logging
-from os import path
 from logging import getLogger
-
+from os import path
 from re import compile
 
-
-log = getLogger('isatools')
+log = getLogger("isatools")
 
 
 def xml_config_contents(filename):
@@ -16,10 +14,10 @@ def xml_config_contents(filename):
     """
     config_filepath = path.join(
         path.dirname(__file__),
-        '..',
-        'resources',
-        'config',
-        'xml',
+        "..",
+        "resources",
+        "config",
+        "xml",
         filename,
     )
     with open(config_filepath) as f:
@@ -31,22 +29,22 @@ def pbar(x):
 
 
 # REGEXES
-_RX_I_FILE_NAME = compile(r'i_(.*?)\.txt')
-_RX_DATA = compile(r'data\[(.*?)\]')
-_RX_COMMENT = compile(r'Comment\[(.*?)\]')
-_RX_DOI = compile(r'10.\d{4,9}/[-._;()/:a-z0-9A-Z]+')
-_RX_PMID = compile(r'[0-9]{8}')
-_RX_PMCID = compile(r'PMC[0-9]{8}')
-_RX_CHARACTERISTICS = compile(r'Characteristics\[(.*?)\]')
-_RX_PARAMETER_VALUE = compile(r'Parameter Value\[(.*?)\]')
-_RX_FACTOR_VALUE = compile(r'Factor Value\[(.*?)\]')
-_RX_INDEXED_COL = compile(r'(.*?)\.\d+')
+_RX_I_FILE_NAME = compile(r"i_(.*?)\.txt")
+_RX_DATA = compile(r"data\[(.*?)\]")
+_RX_COMMENT = compile(r"Comment\[(.*?)\]")
+_RX_DOI = compile(r"10.\d{4,9}/[-._;()/:a-z0-9A-Z]+")
+_RX_PMID = compile(r"[0-9]{8}")
+_RX_PMCID = compile(r"PMC[0-9]{8}")
+_RX_CHARACTERISTICS = compile(r"Characteristics\[(.*?)\]")
+_RX_PARAMETER_VALUE = compile(r"Parameter Value\[(.*?)\]")
+_RX_FACTOR_VALUE = compile(r"Factor Value\[(.*?)\]")
+_RX_INDEXED_COL = compile(r"(.*?)\.\d+")
 
-STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
-NUMBER_OF_STUDY_GROUPS = 'Comment[Number of Study Groups]'
+STUDY_SAMPLE_XML_CONFIG = xml_config_contents("studySample.xml")
+NUMBER_OF_STUDY_GROUPS = "Comment[Number of Study Groups]"
 
 BASE_DIR = path.dirname(__file__)
-default_config_dir = path.join(BASE_DIR, '..', 'resources', 'config', 'xml')
+default_config_dir = path.join(BASE_DIR, "..", "resources", "config", "xml")
 
 
 class _Defaults(object):
@@ -54,11 +52,11 @@ class _Defaults(object):
 
     def __init__(self):
         self._tab_options = {
-            'readCellQuotes': False,  # read cell quotes as part of cell values
-            'writeCellQuotes': True,  # write out cell values enclosed with quotes
-            'forceFitColumns': True,
-            'validateBeforeRead': False,
-            'validateAfterWrite': False
+            "readCellQuotes": False,  # read cell quotes as part of cell values
+            "writeCellQuotes": True,  # write out cell values enclosed with quotes
+            "forceFitColumns": True,
+            "validateBeforeRead": False,
+            "validateAfterWrite": False,
         }
         self._show_progressbar = False
         self._log_level = logging.WARNING

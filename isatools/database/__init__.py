@@ -9,9 +9,27 @@ objects in SQLAlchemy.
 Authors: D. Batista (@Terazus)
 """
 
-from isatools.database.utils import app, db
 from isatools.database.models import (
-    Comment, Publication, Investigation, Study, OntologyAnnotation, OntologySource,
-    Parameter, Person, Process, Protocol, Source, Characteristic, Factor, Sample,
-    FactorValue, Material, ParameterValue, Assay, Datafile as DataFile
+    Assay,
+    Characteristic,
+    Comment,
+    Factor,
+    FactorValue,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    Parameter,
+    ParameterValue,
+    Person,
+    Process,
+    Protocol,
+    Publication,
+    Sample,
+    Source,
+    Study,
 )
+from isatools.database.models import (
+    Datafile as DataFile,
+)
+from isatools.database.utils import app, db

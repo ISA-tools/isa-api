@@ -1,12 +1,11 @@
-import unittest
 import json
-from isatools.examples.createSimpleISAJSON import create_descriptor
+import unittest
 from unittest.mock import patch
 
+from isatools.examples.createSimpleISAJSON import create_descriptor
 
 
 class TestCreateSimpleISAJSON(unittest.TestCase):
-
     def test_create_descriptor_returns_valid_json(self):
         # Call the function
         result = create_descriptor()
@@ -40,7 +39,7 @@ class TestCreateSimpleISAJSON(unittest.TestCase):
         self.assertIsInstance(data["ontologySourceReferences"], list)
         self.assertGreater(len(data["ontologySourceReferences"]), 0)
 
-    @patch('isatools.examples.createSimpleISAJSON.create_descriptor')
+    @patch("isatools.examples.createSimpleISAJSON.create_descriptor")
     def test_create_descriptor_invalid_json(self, mock_create_descriptor):
         # Mock the function to return invalid JSON
         mock_create_descriptor.return_value = "invalid_json"
@@ -53,5 +52,5 @@ class TestCreateSimpleISAJSON(unittest.TestCase):
             json.loads(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

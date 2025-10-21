@@ -1,9 +1,9 @@
 import os
 import shutil
 
-__author__ = 'massi'
+__author__ = "massi"
 
-TARGET_DIR = 'test_outputs'
+TARGET_DIR = "test_outputs"
 
 
 def before_all(context):

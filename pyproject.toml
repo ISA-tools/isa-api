@@ -1,97 +1,160 @@
-[build-system]
-requires = ["setuptools >= 77.0.3"]
-build-backend = "setuptools.build_meta"
-
-[tool.poetry]
-version = "0.14.3"
-
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-
 [project]
 name = "isatools"
-dynamic = ["version"]
+version = "0.14.3"
 description = "Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<4"
 
 license = "CPAL-1.0"
 license-files = ["LICENSE.txt"]
 
 authors = [
-    { name = "ISA Infrastructure Team", email = "isatools@googlegroups.com" }
+        { name = "ISA Infrastructure Team", email = "isatools@googlegroups.com" },
 ]
 keywords = []
 
 
-
-
-classifiers=[
-        'Operating System :: OS Independent',
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'Intended Audience :: Healthcare Industry',
-        'Intended Audience :: System Administrators',
-        'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Topic :: Scientific/Engineering :: Medical Science Apps.',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
-       # 'Programming Language :: Python :: 3.13',
+classifiers = [
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: System Administrators",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-        'graphene==3.4.3',
-        'graphql-core==3.2.6',
-        'wheel~=0.43.0',
-        'setuptools~=77.0.3',
-        'numpy~=2.0.2; python_version == "3.9"',
-        'numpy~=2.2.4; python_version > "3.9"',
-        'jsonschema~=4.23.0',
-        'pandas==2.2.3',
-        'openpyxl>=3.1.5',
-        'networkx~=3.4.2; python_version > "3.9"',
-        'networkx~=3.2; python_version == "3.10"',
-        'lxml~=5.3.1',
-        'requests~=2.32.3',
-        'iso8601~=2.1.0',
-        'chardet~=5.2.0',
-        'jinja2~=3.1.4',
-        'beautifulsoup4~=4.13.3',
-        'mzml2isa==1.1.1',
-        'biopython~=1.85',
-        'progressbar2~=4.4.2',
-        'deepdiff~=8.4.2',
-        'PyYAML~=6.0.2',
-        'bokeh~=3.4.2',
-        'certifi==2025.1.31',
-        'flake8==7.1.0',
-        'ddt==1.7.2',
-        'behave==1.2.6',
-        'httpretty==1.1.4',
-        'sure==2.0.1',
-        'coveralls~=3.3.1',
-        'rdflib~=7.0.0',
-        'SQLAlchemy==1.4.52',
-        'python-dateutil~=2.9.0.post0',
-        'Flask~=3.1.0',
-        'flask_sqlalchemy~=3.0.2',
-        "pytest (>=8.3.5,<9.0.0)"
+    "setuptools>=77.0.3,<81",
+    'numpy~=2.0.2 ; python_version < "3.10"',
+    'numpy~=2.2.4 ; python_version >= "3.10"',
+    'networkx>=3.2,<3.3 ; python_version < "3.10"',
+    'networkx~=3.4.2 ; python_version >= "3.10"',
+    "jsonschema>=4.23.0,<5",
+    "pandas>=2.2.3,<3",
+    "openpyxl>=3.1.5",
+    "lxml~=6.0.2",
+    "requests~=2.32.3",
+    "iso8601~=2.1.0",
+    "chardet~=5.2.0",
+    "jinja2~=3.1.4",
+    "beautifulsoup4~=4.14.2",
+    "mzml2isa==1.1.1",
+    "biopython>=1.85,<1.86",
+    "progressbar2~=4.5.0",
+    "PyYAML~=6.0.2",
+    "rdflib~=7.2.1",
+    "python-dateutil~=2.9.0.post0",
+    "Flask>=3.1.0",
+    "flask_sqlalchemy>=3.0.2",
+    "SQLAlchemy~=1.4.54",
+    "graphene~=3.4.3",
+    "graphql-core~=3.2.6",
+    "ruff>=0.14.1",
 ]
 
+[project.optional-dependencies]
+notebook = ["bokeh~=3.4.2"]
+
 [project.urls]
+Code = "https://github.com/ISA-tools/isa-api"
 "Bug Tracker" = "https://github.com/ISA-tools/isa-api/issues"
-"Changelog" = "https://github.com/ISA-tools/isa-api/issues"
-"Documentation" = "https://isa-tools.org/isa-api/content/index.html"
-"Coverage" = "https://coveralls.io/github/ISA-tools/isa-api?branch=master"
-"CI" = "https://github.com/ISA-tools/isa-api/actions"
+Changelog = "https://github.com/ISA-tools/isa-api/issues"
+Documentation = "https://isa-tools.org/isa-api/content/index.html"
+Coverage = "https://coveralls.io/github/ISA-tools/isa-api?branch=master"
+CI = "https://github.com/ISA-tools/isa-api/actions"
 
+[build-system]
+requires = ["uv_build>=0.9.3"]
+build-backend = "uv_build"
 
-[tool.setuptools]
-include-package-data = false
-packages = ["isatools"]
+[tool.uv.build-backend]
+module-name = "isatools"
+module-root = ""
+# data = ["resources/**/*", "net/**/*"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5,<9.0.0",
+    "coveralls>=4.0.1",
+    "sure>=2.0.1",
+    "ddt>=1.7.2",
+    "deepdiff>=8.4.2",
+    "behave>=1.2.6",
+    "httpretty>=1.1.4",
+    "import-linter>=2.5.2",
+    "ruff>=0.14.1",
+    "pre-commit>=4.0.1,<5",
+]
+
 
 [tool.setuptools-git-versioning]
 enabled = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q -v"
+
+testpaths = [
+    "tests"
+]
+python_files = ["test_*.py", "*_test.py"]
+
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+extend-select = ["E4", "E7", "E9", "F", "I"]
+ignore= ["F401", "F403", "F541", "F841", "F405", "G003" ]
+fixable = ["ALL"]
+
+[tool.importlinter]
+include_external_packages = true
+root_packages = ["isatools"]
+
+[[tool.importlinter.contracts]]
+name = "Architecture Layer Dependencies"
+type = "layers"
+layers = [
+    "isatools.convert",
+    "isatools.isajson",
+    "isatools.isatab",
+    "isatools.model"
+]
+
+[[tool.importlinter.contracts]]
+name = "Restricted External Package Imports - Flask, SQLAlchemy"
+description = "Use flask and sqlalchemy packages only for database related utilities"
+type = "forbidden"
+source_modules = [
+   "isatools"
+]
+forbidden_modules = [
+    "flask",
+    "sqlalchemy"
+]
+ignore_imports = [
+    "isatools.database.models.** -> sqlalchemy",
+    "isatools.database.utils -> flask"
+]
+
+[[tool.importlinter.contracts]]
+name = "Restricted Development Package Imports"
+type = "forbidden"
+source_modules = [
+   "isatools"
+]
+forbidden_modules = [
+    "bokeh", "coveralls", "pytest", "behave"
+]
+ignore_imports = [
+
+]

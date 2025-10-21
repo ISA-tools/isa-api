@@ -1,11 +1,12 @@
 import itertools
+
 import networkx as nx
 
 from isatools.model.datafile import DataFile
-from isatools.model.process import Process
-from isatools.model.source import Source
-from isatools.model.sample import Sample
 from isatools.model.material import Material
+from isatools.model.process import Process
+from isatools.model.sample import Sample
+from isatools.model.source import Source
 
 
 def find(predictor, iterable):
@@ -82,23 +83,28 @@ def _expand_path(path, identifiers_to_objects, dead_end_outputs):
 
         # If the node is a process in the middle of the path and the next node in the path is also a process,
         # add paths for each output that is also an input to the next process.
-        if i + 1 < path_len and isinstance(identifiers_to_objects[path[i + 1]], Process) and i > 0 and isinstance(node,
-                                                                                                                  Process):
+        if (
+            i + 1 < path_len
+            and isinstance(identifiers_to_objects[path[i + 1]], Process)
+            and i > 0
+            and isinstance(node, Process)
+        ):
             output_sequence_identifiers = {output.sequence_identifier for output in node.outputs}
-            input_sequence_identifiers = {input_.sequence_identifier for input_ in
-                                          identifiers_to_objects[path[i + 1]].inputs}
+            input_sequence_identifiers = {
+                input_.sequence_identifier for input_ in identifiers_to_objects[path[i + 1]].inputs
+            }
             identifier_intersection = list(output_sequence_identifiers.intersection(input_sequence_identifiers))
 
             combinations = _compute_combinations(identifier_intersection, identifiers_to_objects)
             for combo in combinations:
-                new_path = path[0:i + 1] + list(combo) + path[i + 1:]
+                new_path = path[0 : i + 1] + list(combo) + path[i + 1 :]
                 path_modified = True
                 if new_path not in new_paths:
                     new_paths.append(new_path)
 
             # Add outputs that aren't later used as inputs.
             for output in output_sequence_identifiers.intersection(dead_end_outputs):
-                new_path = path[:i + 1] + [output]
+                new_path = path[: i + 1] + [output]
                 path_modified = True
                 if new_path not in new_paths:
                     new_paths.append(new_path)
@@ -114,10 +120,14 @@ def _build_paths_and_indexes(process_sequence=None):
     """
     # Determining paths depends on processes having next and prev sequence, so add
     # them if they aren't there based on inputs and outputs.
-    inputs_to_process = {id(p_input): {"process": process, "input": p_input} for process in process_sequence for p_input
-                         in process.inputs}
-    outputs_to_process = {id(output): {"process": process, "output": output} for process in process_sequence for output
-                          in process.outputs}
+    inputs_to_process = {
+        id(p_input): {"process": process, "input": p_input}
+        for process in process_sequence
+        for p_input in process.inputs
+    }
+    outputs_to_process = {
+        id(output): {"process": process, "output": output} for process in process_sequence for output in process.outputs
+    }
     for output, output_dict in outputs_to_process.items():
         if output in inputs_to_process:
             if not inputs_to_process[output]["process"].prev_process:
@@ -133,7 +143,6 @@ def _build_paths_and_indexes(process_sequence=None):
     # the path obtained by simply following the next and prev sequences. Also create a dictionary,
     # identifiers_to_objects to be able to easily reference an object from its identifier later.
     for process in process_sequence:
-
         identifiers_to_objects[process.sequence_identifier] = process
         for output in process.outputs:
             identifiers_to_objects[output.sequence_identifier] = output
@@ -215,8 +224,7 @@ def _build_assay_graph(process_sequence=None):
         g.indexes[process.sequence_identifier] = process
         if process.next_process is not None or len(process.outputs) > 0:
             if len([n for n in process.outputs if not isinstance(n, DataFile)]) > 0:
-                for output in [n for n in process.outputs if
-                               not isinstance(n, DataFile)]:
+                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
                     g.add_edge(process.sequence_identifier, output.sequence_identifier)
                     g.indexes[output.sequence_identifier] = output
             else:
@@ -273,8 +281,8 @@ def batch_create_materials(material=None, n=1):
     if isinstance(material, (Source, Sample, Material)):
         for x in range(0, n):
             new_obj = _deep_copy(material)
-            new_obj.name = material.name + '-' + str(x)
-            if hasattr(material, 'derives_from'):
+            new_obj.name = material.name + "-" + str(x)
+            if hasattr(material, "derives_from"):
                 new_obj.derives_from = material.derives_from
 
             material_list.append(new_obj)
@@ -331,30 +339,30 @@ def batch_create_assays(*args, n=1):
                         material_a = _deep_copy(arg)
                         y = 0
                         for material in material_a:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = material.name + "-" + str(x) + "-" + str(y)
                             y += 1
                     else:
                         material_b = _deep_copy(arg)
                         y = 0
                         for material in material_b:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = material.name + "-" + str(x) + "-" + str(y)
                             y += 1
                 elif isinstance(arg[0], Process):
                     process = _deep_copy(arg)
                     y = 0
                     for p in process:
-                        p.name = p.name + '-' + str(x) + '-' + str(y)
+                        p.name = p.name + "-" + str(x) + "-" + str(y)
                         y += 1
             if isinstance(arg, (Source, Sample, Material)):
                 if material_a is None:
                     material_a = _deep_copy(arg)
-                    material_a.name = material_a.name + '-' + str(x)
+                    material_a.name = material_a.name + "-" + str(x)
                 else:
                     material_b = _deep_copy(arg)
-                    material_b.name = material_b.name + '-' + str(x)
+                    material_b.name = material_b.name + "-" + str(x)
             elif isinstance(arg, Process):
                 process = _deep_copy(arg)
-                process.name = process.name + '-' + str(x)
+                process.name = process.name + "-" + str(x)
             if material_a is not None and material_b is not None and process is not None:
                 if isinstance(process, list):
                     for p in process:
@@ -395,7 +403,9 @@ def _deep_copy(isa_object):
     :param {Object} isa_object: the object to copy
     """
     from copy import deepcopy
+
     from isatools.model.process_sequence import ProcessSequenceNode
+
     new_obj = deepcopy(isa_object)
     if isinstance(isa_object, ProcessSequenceNode):
         new_obj.assign_identifier()

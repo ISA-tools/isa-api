@@ -1,31 +1,25 @@
 from __future__ import annotations
 
-from io import StringIO
 from bisect import bisect_left, bisect_right
-from itertools import tee
-from math import isnan
 from csv import reader as csv_reader
+from io import StringIO
+from itertools import tee
 from json import loads
+from math import isnan
+
 from pandas import DataFrame, Series
 
-from isatools.constants import (
-    SYNONYMS,
-    ALL_LABELS,
-    _LABELS_DATA_NODES,
-    _LABELS_ASSAY_NODES,
-    _LABELS_MATERIAL_NODES
-)
-
-from isatools.utils import utf8_text_file_open
+from isatools.constants import _LABELS_ASSAY_NODES, _LABELS_DATA_NODES, _LABELS_MATERIAL_NODES, ALL_LABELS, SYNONYMS
 from isatools.isatab.defaults import (
-    log,
     _RX_CHARACTERISTICS,
-    _RX_PARAMETER_VALUE,
-    _RX_FACTOR_VALUE,
     _RX_COMMENT,
-    defaults
+    _RX_FACTOR_VALUE,
+    _RX_PARAMETER_VALUE,
+    defaults,
+    log,
 )
 from isatools.model import OntologyAnnotation
+from isatools.utils import utf8_text_file_open
 
 
 class IsaTabSeries(Series):
@@ -62,13 +56,13 @@ class IsaTabDataFrame(DataFrame):
             if clean_label.lower() in label.strip().lower():
                 return clean_label
             elif _RX_CHARACTERISTICS.match(label):
-                return 'Characteristics[{val}]'.format(val=next(iter(_RX_CHARACTERISTICS.findall(label))))
+                return "Characteristics[{val}]".format(val=next(iter(_RX_CHARACTERISTICS.findall(label))))
             elif _RX_PARAMETER_VALUE.match(label):
-                return 'Parameter Value[{val}]'.format(val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
+                return "Parameter Value[{val}]".format(val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
             elif _RX_FACTOR_VALUE.match(label):
-                return 'Factor Value[{val}]'.format(val=next(iter(_RX_FACTOR_VALUE.findall(label))))
+                return "Factor Value[{val}]".format(val=next(iter(_RX_FACTOR_VALUE.findall(label))))
             elif _RX_COMMENT.match(label):
-                return 'Comment[{val}]'.format(val=next(iter(_RX_COMMENT.findall(label))))
+                return "Comment[{val}]".format(val=next(iter(_RX_COMMENT.findall(label))))
 
     @property
     def isatab_header(self):
@@ -106,7 +100,7 @@ class TransposedTabParser(object):
             self.log_level = defaults.log_level
         else:
             if not isinstance(tab_options, dict):
-                raise TypeError('tab_options must be dict, not {}'.format(type(tab_options)))
+                raise TypeError("tab_options must be dict, not {}".format(type(tab_options)))
             self.log_level = log_level
 
         self._ttable_dict = dict(header=list(), table=dict())
@@ -121,20 +115,20 @@ class TransposedTabParser(object):
         """
         try:
             with utf8_text_file_open(filename) as unicode_file:
-                ttable_reader = csv_reader(filter(lambda r: r[0] != '#', unicode_file), dialect='excel-tab')
+                ttable_reader = csv_reader(filter(lambda r: r[0] != "#", unicode_file), dialect="excel-tab")
                 for row in ttable_reader:
                     if len(row) > 0:
                         key = get_squashed(key=row[0])
-                        self._ttable_dict['header'].append(key)
-                        self._ttable_dict['table'][key] = row[1:]
+                        self._ttable_dict["header"].append(key)
+                        self._ttable_dict["table"][key] = row[1:]
         except UnicodeDecodeError:
-            with open(filename, encoding='ISO8859-2') as latin2_file:
-                ttable_reader = csv_reader(filter(lambda r: r[0] != '#', latin2_file), dialect='excel-tab')
+            with open(filename, encoding="ISO8859-2") as latin2_file:
+                ttable_reader = csv_reader(filter(lambda r: r[0] != "#", latin2_file), dialect="excel-tab")
                 for row in ttable_reader:
                     if len(row) > 0:
                         key = get_squashed(key=row[0])
-                        self._ttable_dict['header'].append(key)
-                        self._ttable_dict['table'][key] = row[1:]
+                        self._ttable_dict["header"].append(key)
+                        self._ttable_dict["table"][key] = row[1:]
 
         return self._ttable_dict
 
@@ -150,9 +144,9 @@ def strip_comments(in_fp):
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
     for line in in_fp.readlines():
-        log.debug('processing line: {}'.format(line))
-        if line.lstrip().startswith('#'):
-            log.debug('stripping line:'.format(line))
+        log.debug("processing line: {}".format(line))
+        if line.lstrip().startswith("#"):
+            log.debug("stripping line: {}".format(line))
         elif len(line.strip()) > 0:
             out_fp.write(line)
     out_fp.seek(0)
@@ -187,8 +181,8 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
 
     process_key = protocol_ref
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-    input_node_value = ''
-    output_node_value = ''
+    input_node_value = ""
+    output_node_value = ""
     output_node_index = find_gt(node_cols, object_label_index)
     if output_node_index > -1:
         output_node_label = all_columns[output_node_index]
@@ -200,8 +194,9 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
         input_node_value = str(series[input_node_label])
 
     input_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[input_node_index]]].drop_duplicates()
-    output_nodes_with_prot_keys = DF[[all_columns[object_label_index],
-                                      all_columns[output_node_index]]].drop_duplicates()
+    output_nodes_with_prot_keys = DF[
+        [all_columns[object_label_index], all_columns[output_node_index]]
+    ].drop_duplicates()
 
     if len(input_nodes_with_prot_keys) > len(output_nodes_with_prot_keys):
         node_key = output_node_value
@@ -209,28 +204,28 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
         node_key = input_node_value
 
     if process_key == protocol_ref:
-        process_key += '-' + str(series_index)
+        process_key += "-" + str(series_index)
 
-    pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+    pv_cols = [c for c in column_group if c.startswith("Parameter Value[")]
     if len(pv_cols) > 0:
         # 2. else try use protocol REF + Parameter Values as key
         if node_key is not None:
-            process_key = node_key + ':' + protocol_ref + ':' + '/'.join([str(v) for v in series[pv_cols]])
+            process_key = node_key + ":" + protocol_ref + ":" + "/".join([str(v) for v in series[pv_cols]])
         else:
-            process_key = protocol_ref + ':' + '/'.join([str(v) for v in series[pv_cols]])
+            process_key = protocol_ref + ":" + "/".join([str(v) for v in series[pv_cols]])
     else:
         # 3. else try use input + protocol REF as key
         # 4. else try use output + protocol REF as key
         if node_key is not None:
-            process_key = node_key + '/' + protocol_ref
+            process_key = node_key + "/" + protocol_ref
 
-    date_col_hits = [c for c in column_group if c.startswith('Date')]
+    date_col_hits = [c for c in column_group if c.startswith("Date")]
     if len(date_col_hits) == 1:
-        process_key = ':'.join([process_key, series[date_col_hits[0]]])
+        process_key = ":".join([process_key, series[date_col_hits[0]]])
 
-    performer_col_hits = [c for c in column_group if c.startswith('Performer')]
+    performer_col_hits = [c for c in column_group if c.startswith("Performer")]
     if len(performer_col_hits) == 1:
-        process_key = ':'.join([process_key, series[performer_col_hits[0]]])
+        process_key = ":".join([process_key, series[performer_col_hits[0]]])
 
     return process_key
 
@@ -275,9 +270,9 @@ def cell_has_value(cell):
             return True
         return False
     else:
-        if cell.strip() == '':
+        if cell.strip() == "":
             return False
-        elif 'Unnamed: ' in cell:
+        elif "Unnamed: " in cell:
             return False
         return True
 
@@ -291,7 +286,7 @@ def get_num_study_groups(study_sample_table, study_filename):
     :return: The computed number of study groups
     """
     num_study_groups = -1
-    factor_columns = [x for x in study_sample_table.columns if x.startswith('Factor Value')]
+    factor_columns = [x for x in study_sample_table.columns if x.startswith("Factor Value")]
     if factor_columns:
         num_study_groups = len(study_sample_table[factor_columns].drop_duplicates())
     else:
@@ -309,8 +304,8 @@ def squashstr(string):
 def get_squashed(key):
     """Squashes an ISA-Tab header string for use as key elsewhere"""
     try:
-        if '[' in key and ']' in key:
-            return squashstr(key[0:key.index('[')]) + key[key.index('['):]
+        if "[" in key and "]" in key:
+            return squashstr(key[0 : key.index("[")]) + key[key.index("[") :]
         else:
             return squashstr(key)
     except ValueError:
@@ -353,7 +348,9 @@ def get_characteristic_columns(label, c):
     if not c or not c.category:
         return columns
     if isinstance(c.category.term, str):
-        if c.category.term.startswith("{", ):
+        if c.category.term.startswith(
+            "{",
+        ):
             c_as_json = loads(c.category.term)
             if "annotationValue" in c_as_json.keys():
                 columns = ["{0}.Characteristics[{1}]".format(label, c_as_json["annotationValue"])]
@@ -406,7 +403,7 @@ def get_ontology_source_refs(i_df):
     :param i_df: An investigation DataFrame
     :return: None
     """
-    return i_df['ontology_sources']['Term Source Name'].tolist()
+    return i_df["ontology_sources"]["Term Source Name"].tolist()
 
 
 def convert_to_number(value: str) -> int | float | None:
@@ -440,7 +437,7 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
     """
     cell_value = object_series[object_column]
 
-    if cell_value == '':
+    if cell_value == "":
         return cell_value, None
 
     column_index = list(column_group).index(object_column)
@@ -451,16 +448,16 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
     except IndexError:
         return cell_value, None
 
-    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
+    if offset_1r_col.startswith("Term Source REF") and offset_2r_col.startswith("Term Accession Number"):
         value = OntologyAnnotation(term=str(cell_value))
         term_source_value = object_series[offset_1r_col]
-        if term_source_value != '':
+        if term_source_value != "":
             try:
                 value.term_source = ontology_source_map[term_source_value]
             except KeyError:
-                log.debug('term source: ', term_source_value, ' not found')
+                log.debug("term source: ", term_source_value, " not found")
         term_accession_value = object_series[offset_2r_col]
-        if term_accession_value != '':
+        if term_accession_value != "":
             value.term_accession = str(term_accession_value)
         return value, None
 
@@ -469,9 +466,11 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
     except IndexError:
         return cell_value, None
 
-    if offset_1r_col.startswith('Unit') \
-            and offset_2r_col.startswith('Term Source REF') \
-            and offset_3r_col.startswith('Term Accession Number'):
+    if (
+        offset_1r_col.startswith("Unit")
+        and offset_2r_col.startswith("Term Source REF")
+        and offset_3r_col.startswith("Term Accession Number")
+    ):
         category_key = object_series[offset_1r_col]
         try:
             unit_term_value = unit_categories[category_key]
@@ -479,13 +478,13 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
             unit_term_value = OntologyAnnotation(term=category_key)
             unit_categories[category_key] = unit_term_value
             unit_term_source_value = object_series[offset_2r_col]
-            if unit_term_source_value != '':
+            if unit_term_source_value != "":
                 try:
                     unit_term_value.term_source = ontology_source_map[unit_term_source_value]
                 except KeyError:
-                    log.debug('term source: ', unit_term_source_value, ' not found')
+                    log.debug("term source: ", unit_term_source_value, " not found")
             term_accession_value = object_series[offset_3r_col]
-            if term_accession_value != '':
+            if term_accession_value != "":
                 unit_term_value.term_accession = term_accession_value
         return convert_to_number(cell_value), unit_term_value
     return cell_value, None
@@ -501,9 +500,9 @@ def get_object_column_map(isatab_header, df_columns):
     """
     labels = _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
     if set(isatab_header) == set(df_columns):
-        object_index = [i for i, x in enumerate(df_columns) if x in labels or 'Protocol REF' in x or ' File' in x]
+        object_index = [i for i, x in enumerate(df_columns) if x in labels or "Protocol REF" in x or " File" in x]
     else:
-        object_index = [i for i, x in enumerate(isatab_header) if x in labels + ['Protocol REF']]
+        object_index = [i for i, x in enumerate(isatab_header) if x in labels + ["Protocol REF"]]
 
     # group headers regarding objects delimited by object_index by slicing up the header list
     object_column_map = []
@@ -521,7 +520,7 @@ def get_object_column_map(isatab_header, df_columns):
 
 
 def get_value_columns(label, x):
-    """ Generates the appropriate columns based on the value of the object.
+    """Generates the appropriate columns based on the value of the object.
     For example, if the object's .value value is an OntologyAnnotation,
     the ISA-Tab requires extra columns Term Source REF and
     Term Accession Number
@@ -532,7 +531,6 @@ def get_value_columns(label, x):
     "Sample Name.Term Accession Number"]
     """
     if isinstance(x.value, (int, float)) and x.unit:
-
         if isinstance(x.unit, OntologyAnnotation):
             # print("GET_VALUE_COLUMNS_NUMERIC: ", x.unit.term, x.value)
             labels = ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
