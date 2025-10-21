@@ -1,5 +1,6 @@
+from typing import Optional
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.constraints import build_characteristic_constraints
 from isatools.database.models.relationships import (
@@ -21,46 +22,49 @@ class Characteristic(Base):
     __table_args__: tuple = (*build_characteristic_constraints(), {"comment": "Characteristic table"})
 
     # Base fields
-    characteristic_id: int = Column(Integer, primary_key=True)
-    value_int: float = Column(Float, comment="Characteristic value as a float")
-    unit_str: str = Column(String, comment="Characteristic unit as a string")
-    category_str: str = Column(String, comment="Characteristic category as a string")
+    characteristic_id: Mapped[int] = Column(Integer, primary_key=True)
+    value_int: Mapped[float] = Column(Float, nullable=True, comment="Characteristic value as a float")
+    unit_str: Mapped[str] = Column(String, nullable=True, comment="Characteristic unit as a string")
+    category_str: Mapped[str] = Column(String, nullable=True, comment="Characteristic category as a string")
 
     # Relationships: back-ref
-    sources: relationship = relationship("Source", secondary=source_characteristics, back_populates="characteristics")
-    samples: relationship = relationship("Sample", secondary=sample_characteristics, back_populates="characteristics")
-    materials: relationship = relationship(
+    sources:  Mapped[list["Source"]] = relationship("Source", secondary=source_characteristics, back_populates="characteristics")
+    samples:  Mapped[list["Sample"]] = relationship("Sample", secondary=sample_characteristics, back_populates="characteristics")
+    materials:  Mapped[list["Material"]] = relationship(
         "Material", secondary=materials_characteristics, back_populates="characteristics"
     )
 
     # Relationships many-to-one
-    value_id: str = Column(
+    value_id: Mapped[str] = Column(
         String,
         ForeignKey("ontology_annotation.ontology_annotation_id"),
+        nullable = True,
         comment="Value of the characteristic as an OntologyAnnotation",
     )
-    value_oa: relationship = relationship(
+    value_oa: Mapped[Optional["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", backref="characteristics_value", foreign_keys=[value_id]
     )
 
-    unit_id: str = Column(
+    unit_id: Mapped[str] = Column(
         String,
         ForeignKey("ontology_annotation.ontology_annotation_id"),
+        nullable = True,
         comment="Characteristic unit as an ontology annotation",
     )
-    unit_oa: relationship = relationship("OntologyAnnotation", backref="characteristics_unit", foreign_keys=[unit_id])
+    unit_oa: Mapped[Optional["OntologyAnnotation"]] = relationship("OntologyAnnotation", backref="characteristics_unit", foreign_keys=[unit_id])
 
-    category_id: str = Column(
+    category_id: Mapped[str] = Column(
         String,
         ForeignKey("ontology_annotation.ontology_annotation_id"),
+        nullable=True,
         comment="Characteristic category as an ontology annotation",
     )
-    category_oa: relationship = relationship(
+    category_oa: Mapped[Optional["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", backref="characteristics_category", foreign_keys=[category_id]
     )
 
     # Relationships one-to-many
-    comments: relationship = relationship("Comment", back_populates="characteristic")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="characteristic")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

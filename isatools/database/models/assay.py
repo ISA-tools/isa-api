@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.relationships import (
     assay_characteristic_categories,
@@ -21,38 +21,38 @@ class Assay(Base):
     __allow_unmapped__ = True
 
     # Base fields
-    assay_id: int = Column(Integer, primary_key=True)
-    filename: str = Column(String)
-    technology_platform: str = Column(String)
+    assay_id: Mapped[int] = Column(Integer, primary_key=True)
+    filename: Mapped[str] = Column(String)
+    technology_platform: Mapped[str] = Column(String)
 
     # Relationships back reference
-    studies: relationship = relationship("Study", secondary=study_assays, back_populates="assays")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_assays, back_populates="assays")
 
     # Relationship many-to-one
-    measurement_type_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    measurement_type: relationship = relationship(
+    measurement_type_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
+    measurement_type: Mapped["OntologyAnnotation"] = relationship(
         "OntologyAnnotation", backref="measurement_type", foreign_keys=[measurement_type_id]
     )
-    technology_type_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    technology_type: relationship = relationship(
+    technology_type_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
+    technology_type: Mapped["OntologyAnnotation"] = relationship(
         "OntologyAnnotation", backref="technology_type", foreign_keys=[technology_type_id]
     )
 
     # Relationship manh-to-many
     # data files
-    unit_categories: relationship = relationship(
+    unit_categories: Mapped[list["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", secondary=assay_unit_categories, back_populates="assays_units"
     )
-    characteristic_categories: relationship = relationship(
+    characteristic_categories: Mapped[list["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", secondary=assay_characteristic_categories, back_populates="assays_characteristics"
     )
-    samples: relationship = relationship("Sample", secondary=assay_samples, back_populates="assays")
-    materials: relationship = relationship("Material", secondary=assay_materials, back_populates="assays")
-    datafiles: relationship = relationship("Datafile", secondary=assay_data_files, back_populates="assays")
+    samples: Mapped[list["Sample"]] = relationship("Sample", secondary=assay_samples, back_populates="assays")
+    materials: Mapped[list["Material"]] = relationship("Material", secondary=assay_materials, back_populates="assays")
+    datafiles: Mapped[list["Datafile"]] = relationship("Datafile", secondary=assay_data_files, back_populates="assays")
 
     # Relationships: one-to-many
-    comments: relationship = relationship("Comment", back_populates="assay")
-    process_sequence: relationship = relationship("Process", back_populates="assay")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="assay")
+    process_sequence: Mapped[list["Process"]] = relationship("Process", back_populates="assay")
 
     def to_json(self):
         characteristic_categories = get_characteristic_categories(self.characteristic_categories)

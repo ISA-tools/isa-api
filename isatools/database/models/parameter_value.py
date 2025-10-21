@@ -1,5 +1,6 @@
+from typing import Optional
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.relationships import process_parameter_values
 from isatools.database.models.utils import make_get_table_method
@@ -14,21 +15,21 @@ class ParameterValue(Base):
     __tablename__: str = "parameter_value"
     __allow_unmapped__ = True
     # Base fields
-    parameter_value_id: int = Column(Integer, primary_key=True)
-    value_int: int = Column(Integer)
+    parameter_value_id: Mapped[int] = Column(Integer, primary_key=True)
+    value_int: Mapped[int]  = Column(Integer, nullable=True)
 
     # Relationships: back-ref
-    processes_parameter_values: relationship = relationship(
+    processes_parameter_values: Mapped[list['Process']]  = relationship(
         "Process", secondary=process_parameter_values, back_populates="parameter_values"
     )
 
     # Relationships many-to-one
-    value_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    value_oa: relationship = relationship("OntologyAnnotation", backref="parameter_values", foreign_keys=[value_id])
-    unit_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    unit: relationship = relationship("OntologyAnnotation", backref="parameter_values_unit", foreign_keys=[unit_id])
-    category_id: str = Column(String, ForeignKey("parameter.parameter_id"))
-    category: relationship = relationship("Parameter", backref="parameter_values")
+    value_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
+    value_oa: Mapped[Optional['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="parameter_values", foreign_keys=[value_id])
+    unit_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
+    unit: Mapped[Optional['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="parameter_values_unit", foreign_keys=[unit_id])
+    category_id: Mapped[str] = Column(String, ForeignKey("parameter.parameter_id"), nullable=True)
+    category: Mapped[Optional['OntologyAnnotation']] = relationship("Parameter", backref="parameter_values")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

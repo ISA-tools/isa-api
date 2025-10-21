@@ -1,5 +1,6 @@
+from typing import Optional
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import sample_derives_from, source_characteristics, study_sources
@@ -18,19 +19,19 @@ class Source(InputOutput):
     }
 
     # Base fields
-    source_id: str = Column(String, primary_key=True)
-    name: str = Column(String)
+    source_id: Mapped[str] = Column(String, primary_key=True)
+    name: Mapped[Optional[str]] = Column(String, nullable=True)
 
     # Relationships back-ref
-    studies: relationship = relationship("Study", secondary=study_sources, back_populates="sources")
-    samples: relationship = relationship("Sample", secondary=sample_derives_from, back_populates="derives_from")
+    studies: Mapped[list['Study']] = relationship("Study", secondary=study_sources, back_populates="sources")
+    samples: Mapped[list['Study']] = relationship("Sample", secondary=sample_derives_from, back_populates="derives_from")
 
     # Relationships: many-to-many
-    characteristics: relationship = relationship(
+    characteristics: Mapped[list['Characteristic']] = relationship(
         "Characteristic", secondary=source_characteristics, back_populates="sources"
     )
 
-    comments = relationship("Comment", back_populates="source")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="source")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -59,15 +60,17 @@ def make_source_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        source = session.query(Source).get(self.id)
+        source = session.get(Source, self.id)
         if source:
             return source
-        return Source(
+        source = Source(
             source_id=self.id,
             name=self.name,
             characteristics=[c.to_sql(session) for c in self.characteristics],
             comments=[c.to_sql() for c in self.comments],
         )
+        session.add(source)
+        return source
 
     setattr(SourceModel, "to_sql", to_sql)
     setattr(SourceModel, "get_table", make_get_table_method(Source))

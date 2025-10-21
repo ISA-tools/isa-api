@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import assay_data_files
@@ -15,15 +15,15 @@ class Datafile(InputOutput):
     __mapper_args__: dict = {"polymorphic_identity": "Datafile", "concrete": True}
 
     # Base fields
-    datafile_id: str = Column(String, primary_key=True)
-    filename: str = Column(String)
-    label: str = Column(String)
+    datafile_id: Mapped[str] = Column(String, primary_key=True)
+    filename: Mapped[str]  = Column(String)
+    label: Mapped[str]  = Column(String)
 
     # Relationships back-ref
-    assays: relationship = relationship("Assay", secondary=assay_data_files, back_populates="datafiles")
+    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_data_files, back_populates="datafiles")
 
     # Relationships: one-to-many
-    comments: relationship = relationship("Comment", back_populates="datafile")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="datafile")
 
     def to_json(self):
         return {
@@ -36,15 +36,16 @@ class Datafile(InputOutput):
 
 def make_datafile_methods():
     def to_sql(self, session: Session) -> Datafile:
-        datafile = session.query(Datafile).get(self.id)
+        datafile = session.get(Datafile, self.id)
         if datafile:
             return datafile
-        return Datafile(
+        datafile = Datafile(
             datafile_id=self.id,
             filename=self.filename,
             label=self.label,
             comments=[comment.to_sql() for comment in self.comments],
         )
-
+        session.add(datafile)
+        return datafile
     setattr(DataFileModel, "to_sql", to_sql)
     setattr(DataFileModel, "get_table", make_get_table_method(Datafile))

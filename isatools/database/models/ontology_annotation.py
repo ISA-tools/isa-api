@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 
 from isatools.database.models.relationships import (
     assay_characteristic_categories,
@@ -20,34 +20,34 @@ class OntologyAnnotation(Base):
     __tablename__: str = "ontology_annotation"
     __allow_unmapped__ = True
 
-    ontology_annotation_id: str = Column(String, primary_key=True)
-    annotation_value: str = Column(String)
-    term_accession: str = Column(String)
+    ontology_annotation_id: Mapped[str] = Column(String, primary_key=True)
+    annotation_value: Mapped[str] = Column(String)
+    term_accession: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    design_descriptors: relationship = relationship(
+    design_descriptors: Mapped[list["Study"]] = relationship(
         "Study", secondary=study_design_descriptors, back_populates="study_design_descriptors"
     )
-    characteristic_categories: relationship = relationship(
+    characteristic_categories: Mapped[list["Study"]] = relationship(
         "Study", secondary=study_characteristic_categories, back_populates="characteristic_categories"
     )
-    unit_categories: relationship = relationship(
+    unit_categories: Mapped[list["Study"]] = relationship(
         "Study", secondary=study_unit_categories, back_populates="unit_categories"
     )
-    roles: relationship = relationship("Person", secondary=person_roles, back_populates="roles")
-    assays_units: relationship = relationship(
+    roles: Mapped[list["Person"]] = relationship("Person", secondary=person_roles, back_populates="roles")
+    assays_units: Mapped[list["Assay"]] = relationship(
         "Assay", secondary=assay_unit_categories, back_populates="unit_categories"
     )
-    assays_characteristics: relationship = relationship(
+    assays_characteristics: Mapped[list["Assay"]] = relationship(
         "Assay", secondary=assay_characteristic_categories, back_populates="characteristic_categories"
     )
 
     # Relationships many-to-one
-    term_source_id: str = Column(String, ForeignKey("ontology_source.ontology_source_id"))
-    term_source: relationship = relationship("OntologySource", backref="ontology_annotations")
+    term_source_id: Mapped[str] = Column(String, ForeignKey("ontology_source.ontology_source_id"))
+    term_source: Mapped["OntologySource"] = relationship("OntologySource", backref="ontology_annotations")
 
     # References: one-to-many
-    comments: relationship = relationship("Comment", back_populates="ontology_annotation")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="ontology_annotation")
 
     def to_json(self):
         """Convert the SQLAlchemy object to a dictionary
@@ -78,7 +78,7 @@ def make_ontology_annotation_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        oa = session.query(OntologyAnnotation).get(self.id)
+        oa = session.get(OntologyAnnotation, self.id)
         if oa:
             return oa
         term_source_id = self.term_source.to_sql(session) if self.term_source else None

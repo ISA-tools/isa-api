@@ -1,8 +1,8 @@
 from datetime import datetime
-
+from typing import Optional
 import dateutil.parser as date
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy import Column, ForeignKey, Integer, String, Date
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.relationships import (
     study_assays,
@@ -28,40 +28,40 @@ class Study(Base):
     __allow_unmapped__ = True
 
     # Base fields
-    study_id: int = Column(Integer, primary_key=True)
-    title: str = Column(String)
-    identifier: str = Column(String)
-    description: str = Column(String)
-    filename: str = Column(String)
-    submission_date: datetime = Column(String)
-    public_release_date: datetime = Column(String)
+    study_id: Mapped[int] = Column(Integer, primary_key=True)
+    title: Mapped[Optional[str]] = Column(String, nullable=True)
+    identifier: Mapped[Optional[str]] = Column(String, nullable=True)
+    description: Mapped[Optional[str]] = Column(String, nullable=True)
+    filename: Mapped[Optional[str]] = Column(String, nullable=True)
+    submission_date: Mapped[Date] or None = Column(Date, nullable=True)
+    public_release_date: Mapped[Date] or None = Column(Date, nullable=True)
 
     # Relationships back reference
-    investigation: relationship = relationship("Investigation", back_populates="studies")
-    investigation_id: int = Column(Integer, ForeignKey("investigation.investigation_id"))
+    investigation: Mapped[Optional["Investigation"]] = relationship("Investigation", back_populates="studies")
+    investigation_id: Mapped[int] = Column(Integer, ForeignKey("investigation.investigation_id"), nullable=True)
 
     # Relationships: one-to-many
-    process_sequence: relationship = relationship("Process", back_populates="study")
-    contacts: relationship = relationship("Person", back_populates="study")
-    comments: relationship = relationship("Comment", back_populates="study")
+    process_sequence: Mapped[list['Process']] = relationship("Process", back_populates="study")
+    contacts: Mapped[list['Person']] = relationship("Person", back_populates="study")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="study")
 
     # Relationships: many-to-many
-    publications: relationship = relationship("Publication", secondary=study_publications, back_populates="studies")
-    protocols: relationship = relationship("Protocol", secondary=study_protocols, back_populates="studies")
-    characteristic_categories: relationship = relationship(
+    publications: Mapped[list['Publication']] = relationship("Publication", secondary=study_publications, back_populates="studies")
+    protocols: Mapped[list['Protocol']] = relationship("Protocol", secondary=study_protocols, back_populates="studies")
+    characteristic_categories: Mapped[list['OntologyAnnotation']] = relationship(
         "OntologyAnnotation", secondary=study_characteristic_categories, back_populates="characteristic_categories"
     )
-    unit_categories: relationship = relationship(
+    unit_categories: Mapped[list['OntologyAnnotation']] = relationship(
         "OntologyAnnotation", secondary=study_unit_categories, back_populates="unit_categories"
     )
-    study_design_descriptors: relationship = relationship(
+    study_design_descriptors: Mapped[list['OntologyAnnotation']] = relationship(
         "OntologyAnnotation", secondary=study_design_descriptors, back_populates="design_descriptors"
     )
-    study_factors: relationship = relationship("StudyFactor", secondary=study_factors, back_populates="studies")
-    sources: relationship = relationship("Source", secondary=study_sources, back_populates="studies")
-    samples: relationship = relationship("Sample", secondary=study_samples, back_populates="studies")
-    materials: relationship = relationship("Material", secondary=study_materials, back_populates="studies")
-    assays: relationship = relationship("Assay", secondary=study_assays, back_populates="studies")
+    study_factors: Mapped[list['StudyFactor']] = relationship("StudyFactor", secondary=study_factors, back_populates="studies")
+    sources: Mapped[list['Source']] = relationship("Source", secondary=study_sources, back_populates="studies")
+    samples: Mapped[list['Sample']] = relationship("Sample", secondary=study_samples, back_populates="studies")
+    materials: Mapped[list['Material']] = relationship("Material", secondary=study_materials, back_populates="studies")
+    assays: Mapped[list['Assay']] = relationship("Assay", secondary=study_assays, back_populates="studies")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

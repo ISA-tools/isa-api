@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import (
@@ -24,22 +24,22 @@ class Sample(InputOutput):
     }
 
     # Base fields
-    sample_id: str = Column(String, primary_key=True)
-    name: str = Column(String)
+    sample_id: Mapped[str] = Column(String, primary_key=True)
+    name: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    studies: relationship = relationship("Study", secondary=study_samples, back_populates="samples")
-    assays: relationship = relationship("Assay", secondary=assay_samples, back_populates="samples")
+    studies: Mapped[list['Study']] = relationship("Study", secondary=study_samples, back_populates="samples")
+    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_samples, back_populates="samples")
 
     # Relationships: many-to-many
-    characteristics: relationship = relationship(
+    characteristics: Mapped[list['Characteristic']] = relationship(
         "Characteristic", secondary=sample_characteristics, back_populates="samples"
     )
-    derives_from: relationship = relationship("Source", secondary=sample_derives_from, back_populates="samples")
-    factor_values: relationship = relationship("FactorValue", secondary=sample_factor_values, back_populates="samples")
+    derives_from: Mapped[list['Source']] = relationship("Source", secondary=sample_derives_from, back_populates="samples")
+    factor_values: Mapped[list['FactorValue']] = relationship("FactorValue", secondary=sample_factor_values, back_populates="samples")
 
     # Factor values, derives from
-    comments = relationship("Comment", back_populates="sample")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="sample")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -70,10 +70,10 @@ def make_sample_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        sample = session.query(Sample).get(self.id)
+        sample = session.get(Sample, self.id)
         if sample:
             return sample
-        return Sample(
+        sample = Sample(
             sample_id=self.id,
             name=self.name,
             characteristics=[c.to_sql(session) for c in self.characteristics],
@@ -81,6 +81,8 @@ def make_sample_methods():
             factor_values=[fv.to_sql(session) for fv in self.factor_values],
             comments=[c.to_sql() for c in self.comments],
         )
+        session.add(sample)
+        return sample
 
     setattr(SampleModel, "to_sql", to_sql)
     setattr(SampleModel, "get_table", make_get_table_method(Sample))

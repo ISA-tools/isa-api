@@ -1,5 +1,6 @@
+from typing import Optional
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.constraints import build_factor_value_constraints
 from isatools.database.models.relationships import sample_factor_values
@@ -17,27 +18,27 @@ class FactorValue(Base):
     __table_args__: tuple = (build_factor_value_constraints(),)
 
     # Base fields
-    factor_value_id: int = Column(Integer, primary_key=True)
-    value_int: int = Column(Integer)
-    value_str: str = Column(String)
+    factor_value_id: Mapped[int] = Column(Integer, primary_key=True)
+    value_int: Mapped[Optional[int]] = Column(Integer, nullable=True)
+    value_str: Mapped[Optional[str]] = Column(String, nullable=True)
 
     # Relationships back-ref
-    samples: relationship = relationship("Sample", secondary=sample_factor_values, back_populates="factor_values")
+    samples: Mapped[list['Sample']] = relationship("Sample", secondary=sample_factor_values, back_populates="factor_values")
 
     # Relationships many-to-one
-    factor_name_id: str = Column(String, ForeignKey("factor.factor_id"))
-    factor_name: relationship = relationship("StudyFactor", backref="factor_values_names")
-    value_oa_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    value_oa: relationship = relationship(
+    factor_name_id: Mapped[Optional[str]]  = Column(String, ForeignKey("factor.factor_id"), nullable=True)
+    factor_name: Mapped[Optional['StudyFactor']] = relationship("StudyFactor", backref="factor_values_names")
+    value_oa_id: Mapped[Optional[str]]  = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
+    value_oa: Mapped[Optional['OntologyAnnotation']] = relationship(
         "OntologyAnnotation", backref="factor_values_values", foreign_keys=[value_oa_id]
     )
-    factor_unit_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    factor_unit: relationship = relationship(
+    factor_unit_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
+    factor_unit: Mapped[Optional['OntologyAnnotation']]  = relationship(
         "OntologyAnnotation", backref="factor_values_units", foreign_keys=[factor_unit_id]
     )
 
     # Relationship one-to-many
-    comments = relationship("Comment", back_populates="factor_value")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="factor_value")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

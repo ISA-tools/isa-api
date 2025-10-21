@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 
 from isatools.database.models.relationships import investigation_ontology_source
 from isatools.database.models.utils import make_get_table_method
@@ -13,19 +13,19 @@ class OntologySource(Base):
     __tablename__: str = "ontology_source"
     __allow_unmapped__ = True
 
-    ontology_source_id: str = Column(String, primary_key=True)
-    name: str = Column(String)
-    file: str = Column(String)
-    version: str = Column(String)
-    description: str = Column(String)
+    ontology_source_id: Mapped[str] = Column(String, primary_key=True)
+    name: Mapped[str] = Column(String)
+    file: Mapped[str] = Column(String)
+    version: Mapped[str] = Column(String)
+    description: Mapped[str] = Column(String)
 
     # Back references
-    investigations: relationship = relationship(
+    investigations: Mapped[list["Investigation"]] = relationship(
         "Investigation", secondary=investigation_ontology_source, back_populates="ontology_source_reference"
     )
 
     # References: one-to-many
-    comments: relationship = relationship("Comment", back_populates="ontology_source")
+    comments: Mapped[list["Comment"]]  = relationship("Comment", back_populates="ontology_source")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -56,19 +56,19 @@ def make_ontology_source_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        ontology_source = session.query(OntologySource).get(self.name)
+        ontology_source = session.get(OntologySource, self.name)
         if ontology_source:
             return ontology_source
-        os = OntologySource(
+        ontology_source = OntologySource(
             ontology_source_id=self.name,
             name=self.name,
             file=self.file,
             version=self.version,
             description=self.description,
         )
-        session.add(os)
-        session.commit()
-        return os
+        session.add(ontology_source)
+        # session.commit()
+        return ontology_source
 
     setattr(OntologySourceModel, "to_sql", to_sql)
     setattr(OntologySourceModel, "get_table", make_get_table_method(OntologySource))

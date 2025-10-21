@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.constraints import build_material_constraints
 from isatools.database.models.inputs_outputs import InputOutput
@@ -17,21 +17,21 @@ class Material(InputOutput):
     __table_args__: tuple = (build_material_constraints(),)
 
     # Base fields
-    material_id: str = Column(String, primary_key=True)
-    name: str = Column(String)
-    material_type: str = Column(String)
+    material_id: Mapped[str] = Column(String, primary_key=True)
+    name: Mapped[str] = Column(String)
+    material_type: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    studies: relationship = relationship("Study", secondary=study_materials, back_populates="materials")
-    assays: relationship = relationship("Assay", secondary=assay_materials, back_populates="materials")
+    studies: Mapped[list['Study']] = relationship("Study", secondary=study_materials, back_populates="materials")
+    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_materials, back_populates="materials")
 
     # Relationships: many-to-many
-    characteristics: relationship = relationship(
+    characteristics: Mapped[list['Characteristic']] = relationship(
         "Characteristic", secondary=materials_characteristics, back_populates="materials"
     )
 
     # Relationships: one-to-many
-    comments = relationship("Comment", back_populates="material")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="material")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -60,16 +60,19 @@ def make_material_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        material = session.query(Material).get(self.id)
+        material = session.get(Material, self.id)
         if material:
             return material
 
-        return Material(
+        material = Material(
             material_id=self.id,
             name=self.name,
             material_type=self.type,
             characteristics=[c.to_sql(session) for c in self.characteristics],
         )
+
+        session.add(material)
+        return material
 
     setattr(MaterialModel, "to_sql", to_sql)
     setattr(MaterialModel, "get_table", make_get_table_method(Material))

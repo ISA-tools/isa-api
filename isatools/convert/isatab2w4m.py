@@ -252,7 +252,8 @@ def get_data_file(assay):
 
 def load_df(path):
     df = ISATAB.read_tfile(path)
-    df = df.map(lambda x: numpy.nan if x == "" else x)
+    # df = df.map(lambda x: numpy.nan if x == "" else x)
+    df = df.map(lambda x: numpy.nan if x == "" else x).infer_objects(copy=False)
     return df
 
 
@@ -467,7 +468,7 @@ def make_matrix(measures_df, sample_names, variable_names, normalize=True):
     if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         norm_sample_names.insert(0, "variable.name")
-        sample_variable_matrix.set_axis(copy=False, axis=1, labels=norm_sample_names)
+        sample_variable_matrix.set_axis(axis=1, labels=norm_sample_names)
 
     return sample_variable_matrix
 

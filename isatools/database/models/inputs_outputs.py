@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import ConcreteBase
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 
 from isatools.database.models.relationships import process_inputs
 from isatools.database.utils import Base
@@ -15,12 +15,12 @@ class InputOutput(ConcreteBase, Base):
     __allow_unmapped__ = True
 
     # Base fields
-    id_: int = Column(Integer, primary_key=True)
-    io_id: str = Column(String)
-    io_type: str = Column(String)
+    id_: Mapped[int] = Column(Integer, primary_key=True)
+    io_id: Mapped[str] = Column(String)
+    io_type: Mapped[str] = Column(String)
 
     __mapper_args__: dict = {"polymorphic_identity": "input", "concrete": True}
 
     # Relationships: back-ref
-    processes_inputs: relationship = relationship("Process", secondary=process_inputs, viewonly=True)
-    processes_outputs: relationship = relationship("Process", secondary=process_inputs, viewonly=True)
+    processes_inputs: Mapped[list["Process"]] = relationship("Process", secondary=process_inputs, viewonly=True)
+    processes_outputs: Mapped[list["Process"]] = relationship("Process", secondary=process_inputs, viewonly=True)

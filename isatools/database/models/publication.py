@@ -1,5 +1,6 @@
+from typing import Optional
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, mapped_column, Mapped
 
 from isatools.database.models.relationships import investigation_publications, study_publications
 from isatools.database.models.utils import make_get_table_method
@@ -14,24 +15,24 @@ class Publication(Base):
     __allow_unmapped__ = True
 
     # Base fields
-    publication_id: str = Column(String, primary_key=True)
-    author_list: str = Column(String, nullable=True)
-    doi: str = Column(String, nullable=True)
-    pubmed_id: str = Column(String, nullable=True)
-    title: str = Column(String, nullable=True)
+    publication_id: Mapped[str] = mapped_column(String, primary_key=True)
+    author_list: Mapped[str] = mapped_column(String, nullable=True)
+    doi: Mapped[str] = mapped_column(String, nullable=True)
+    pubmed_id: Mapped[str] = mapped_column(String, nullable=True)
+    title: Mapped[str] = mapped_column(String, nullable=True)
 
     # Relationships: back-ref
-    investigations: relationship = relationship(
+    investigations: Mapped[list['Investigation']] = relationship(
         "Investigation", secondary=investigation_publications, back_populates="publications"
     )
-    studies: relationship = relationship("Study", secondary=study_publications, back_populates="publications")
+    studies: Mapped[list['Study']] = relationship("Study", secondary=study_publications, back_populates="publications")
 
     # Relationships many-to-one
-    status_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    status: relationship = relationship("OntologyAnnotation", backref="publications")
+    status_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
+    status: Mapped[Optional['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="publications")
 
     # Relationships
-    comments: relationship = relationship("Comment", back_populates="publication")
+    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="publication")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -62,7 +63,7 @@ def make_publication_methods():
 
         :return: The SQLAlchemy object ready to committed to the database session.
         """
-        publication = session.query(Publication).get(self.doi)
+        publication = session.get(Publication, self.doi)
         if publication:
             return publication
         publication = Publication(

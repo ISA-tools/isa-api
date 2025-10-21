@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, relationship, Mapped
 
 from isatools.database.models.relationships import protocol_parameters
 from isatools.database.models.utils import make_get_table_method
@@ -14,16 +14,16 @@ class Parameter(Base):
     __allow_unmapped__ = True
 
     # Base fields
-    parameter_id: str = Column(String, primary_key=True)
+    parameter_id: Mapped[str] = Column(String, primary_key=True)
 
     # Relationships back-ref
-    protocols: relationship = relationship(
+    protocols: Mapped[list['Protocol']] = relationship(
         "Protocol", secondary=protocol_parameters, back_populates="protocol_parameters"
     )
 
     # Relationships many-to-one
-    ontology_annotation_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    ontology_annotation: relationship = relationship("OntologyAnnotation", backref="parameters")
+    ontology_annotation_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
+    ontology_annotation: Mapped[list['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="parameters")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
@@ -50,10 +50,12 @@ def make_parameter_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        parameter = session.query(Parameter).get(self.id)
+        parameter = session.get(Parameter, self.id)
         if parameter:
             return parameter
-        return Parameter(parameter_id=self.id, ontology_annotation=self.parameter_name.to_sql(session))
+        parameter = Parameter(parameter_id=self.id, ontology_annotation=self.parameter_name.to_sql(session))
+        session.add(parameter)
+        return parameter
 
     setattr(ParameterModel, "to_sql", to_sql)
     setattr(ParameterModel, "get_table", make_get_table_method(Parameter))
