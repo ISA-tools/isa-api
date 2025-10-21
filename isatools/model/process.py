@@ -240,9 +240,8 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         parameter_values = []
         for param in self.parameter_values:
             value = " "
-            # print("BEFORE:", param.value)
             if param.value is not None or len(str(param.value)) > 0:
-                # print("AFTER:", param.value)
+
                 if isinstance(param.value, OntologyAnnotation):
                     value = param.value.to_dict(ld=ld)
                 elif isinstance(param.value, (int, float)):
@@ -253,7 +252,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                     value = "N/A"  # param.value
             else:  # if param.value in (None, ''):
                 value = -1
-            # print("HERE:", value)
+
             parameter_value = {"category": {"@id": param.category.id} if param.category else "", "value": value}
 
             if param.unit is not None:

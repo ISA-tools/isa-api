@@ -111,7 +111,6 @@ class FactorValue(Commentable):
             id_ = "#ontology_annotation/" + str(uuid4())
             if isinstance(self.unit, OntologyAnnotation):
                 id_ = self.unit.id.replace("#unit/", "#ontology_annotation/")
-                # id_ = self.unit.id.replace('#ontology_annotation/', '#unit/')
             factor_value["unit"] = {"@id": id_}
 
         return self.update_isa_object(factor_value, ld=ld)

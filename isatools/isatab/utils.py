@@ -532,12 +532,10 @@ def get_value_columns(label, x):
     """
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
-            # print("GET_VALUE_COLUMNS_NUMERIC: ", x.unit.term, x.value)
             labels = ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
             return map(lambda x: "{0}.{1}".format(label, x), labels)
         return ["{0}.Unit".format(label)]
     elif isinstance(x.value, OntologyAnnotation):
-        # print("GET_VALUE_COLUMNS_ONTOLOGY: ", x.unit, x.value.term)
         return map(lambda y: "{0}.{1}".format(label, y), ["Term Source REF", "Term Accession Number"])
     return []
 
