@@ -1,6 +1,7 @@
 from typing import Optional
+
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import sample_derives_from, source_characteristics, study_sources
@@ -23,15 +24,15 @@ class Source(InputOutput):
     name: Mapped[Optional[str]] = Column(String, nullable=True)
 
     # Relationships back-ref
-    studies: Mapped[list['Study']] = relationship("Study", secondary=study_sources, back_populates="sources")
-    samples: Mapped[list['Study']] = relationship("Sample", secondary=sample_derives_from, back_populates="derives_from")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_sources, back_populates="sources")
+    samples: Mapped[list["Study"]] = relationship("Sample", secondary=sample_derives_from, back_populates="derives_from")
 
     # Relationships: many-to-many
-    characteristics: Mapped[list['Characteristic']] = relationship(
+    characteristics: Mapped[list["Characteristic"]] = relationship(
         "Characteristic", secondary=source_characteristics, back_populates="sources"
     )
 
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="source")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="source")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

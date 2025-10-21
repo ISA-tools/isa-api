@@ -2,7 +2,7 @@ from datetime import datetime
 
 import dateutil.parser as date
 from sqlalchemy import Column, Date, Integer, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 from sqlalchemy.orm.decl_api import declared_attr
 
 from isatools.database.models.relationships import investigation_ontology_source, investigation_publications
@@ -27,15 +27,15 @@ class Investigation(Base):
     public_release_date: Mapped[Date] or None = Column(Date, nullable=True)
 
     # Relationships: one-to-many
-    studies: Mapped[list['Study']] = relationship("Study", back_populates="investigation")
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="investigation")
-    contacts: Mapped[list['Person']] = relationship("Person", back_populates="investigation")
+    studies: Mapped[list["Study"]] = relationship("Study", back_populates="investigation")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="investigation")
+    contacts: Mapped[list["Person"]] = relationship("Person", back_populates="investigation")
 
     # Relationships: many-to-many
-    publications: Mapped[list['Publication']] = relationship(
+    publications: Mapped[list["Publication"]] = relationship(
         "Publication", secondary=investigation_publications, back_populates="investigations"
     )
-    ontology_source_reference: Mapped[list['OntologySource']] = relationship(
+    ontology_source_reference: Mapped[list["OntologySource"]] = relationship(
         "OntologySource", secondary=investigation_ontology_source, back_populates="investigations"
     )
 

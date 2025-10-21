@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import ConcreteBase
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from isatools.database.models.relationships import process_inputs
 from isatools.database.utils import Base

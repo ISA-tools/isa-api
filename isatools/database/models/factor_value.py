@@ -1,6 +1,7 @@
 from typing import Optional
+
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 
 from isatools.database.models.constraints import build_factor_value_constraints
 from isatools.database.models.relationships import sample_factor_values

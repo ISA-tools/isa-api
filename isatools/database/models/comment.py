@@ -1,6 +1,7 @@
 from typing import Optional
+
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from isatools.database.models.constraints import build_comment_constraints
 from isatools.database.models.utils import make_get_table_method

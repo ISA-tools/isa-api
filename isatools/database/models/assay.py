@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 
 from isatools.database.models.relationships import (
     assay_characteristic_categories,

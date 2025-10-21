@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from isatools.database.models.relationships import investigation_ontology_source
 from isatools.database.models.utils import make_get_table_method

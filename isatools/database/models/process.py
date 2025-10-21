@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
+
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, update
-from sqlalchemy.orm import Session, relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import process_inputs, process_outputs, process_parameter_values

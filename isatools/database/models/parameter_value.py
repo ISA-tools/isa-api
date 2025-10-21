@@ -1,6 +1,7 @@
 from typing import Optional
+
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 
 from isatools.database.models.relationships import process_parameter_values
 from isatools.database.models.utils import make_get_table_method

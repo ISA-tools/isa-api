@@ -1,6 +1,7 @@
 from typing import Optional
+
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from isatools.database.models.relationships import study_factors
 from isatools.database.models.utils import make_get_table_method
@@ -18,10 +19,10 @@ class StudyFactor(Base):
     name: Mapped[str] = Column(String, nullable=True)
 
     # Relationships back-ref
-    studies: Mapped[list['Study']] = relationship("Study", secondary=study_factors, back_populates="study_factors")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_factors, back_populates="study_factors")
 
     # Relationships: one-to-many
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="study_factor")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="study_factor")
 
     # Relationships many-to-one
     factor_type_id: Mapped[Optional[str]] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)

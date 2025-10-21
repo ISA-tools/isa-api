@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.orm import Mapped, Session, relationship
 
 from isatools.database.models.inputs_outputs import InputOutput
 from isatools.database.models.relationships import (
