@@ -24,13 +24,15 @@ class Person(Base):
     affiliation: Mapped[str] = Column(String, nullable=True)
 
     investigation_id: Mapped[int] = Column(Integer, ForeignKey("investigation.investigation_id"), nullable=True)
-    investigation: Mapped[list['Investigation']] = relationship("Investigation", back_populates="contacts")
+    investigation: Mapped[list["Investigation"]] = relationship("Investigation", back_populates="contacts")
     study_id: Mapped[int] = Column(Integer, ForeignKey("study.study_id"), nullable=True)
-    study: Mapped[list['Study']]  = relationship("Study", back_populates="contacts")
-    comments: Mapped[list['Comment']]  = relationship("Comment", back_populates="person")
+    study: Mapped[list["Study"]] = relationship("Study", back_populates="contacts")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="person")
 
     # Relationships many-to-many
-    roles: Mapped[list['OntologyAnnotation']]  = relationship("OntologyAnnotation", secondary=person_roles, back_populates="roles")
+    roles: Mapped[list["OntologyAnnotation"]] = relationship(
+        "OntologyAnnotation", secondary=person_roles, back_populates="roles"
+    )
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

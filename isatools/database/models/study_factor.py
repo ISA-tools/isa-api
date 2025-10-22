@@ -25,8 +25,10 @@ class StudyFactor(Base):
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="study_factor")
 
     # Relationships many-to-one
-    factor_type_id: Mapped[Optional[str]] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
-    factor_type: Mapped[Optional['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="factor_values")
+    factor_type_id: Mapped[Optional[str]] = Column(
+        String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True
+    )
+    factor_type: Mapped[Optional["OntologyAnnotation"]] = relationship("OntologyAnnotation", backref="factor_values")
 
     def to_json(self):
         return {

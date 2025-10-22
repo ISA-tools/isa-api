@@ -17,13 +17,13 @@ class Parameter(Base):
     parameter_id: Mapped[str] = Column(String, primary_key=True)
 
     # Relationships back-ref
-    protocols: Mapped[list['Protocol']] = relationship(
+    protocols: Mapped[list["Protocol"]] = relationship(
         "Protocol", secondary=protocol_parameters, back_populates="protocol_parameters"
     )
 
     # Relationships many-to-one
     ontology_annotation_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
-    ontology_annotation: Mapped[list['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="parameters")
+    ontology_annotation: Mapped[list["OntologyAnnotation"]] = relationship("OntologyAnnotation", backref="parameters")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

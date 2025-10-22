@@ -29,9 +29,13 @@ class Characteristic(Base):
     category_str: Mapped[str] = Column(String, nullable=True, comment="Characteristic category as a string")
 
     # Relationships: back-ref
-    sources:  Mapped[list["Source"]] = relationship("Source", secondary=source_characteristics, back_populates="characteristics")
-    samples:  Mapped[list["Sample"]] = relationship("Sample", secondary=sample_characteristics, back_populates="characteristics")
-    materials:  Mapped[list["Material"]] = relationship(
+    sources: Mapped[list["Source"]] = relationship(
+        "Source", secondary=source_characteristics, back_populates="characteristics"
+    )
+    samples: Mapped[list["Sample"]] = relationship(
+        "Sample", secondary=sample_characteristics, back_populates="characteristics"
+    )
+    materials: Mapped[list["Material"]] = relationship(
         "Material", secondary=materials_characteristics, back_populates="characteristics"
     )
 
@@ -39,7 +43,7 @@ class Characteristic(Base):
     value_id: Mapped[str] = Column(
         String,
         ForeignKey("ontology_annotation.ontology_annotation_id"),
-        nullable = True,
+        nullable=True,
         comment="Value of the characteristic as an OntologyAnnotation",
     )
     value_oa: Mapped[Optional["OntologyAnnotation"]] = relationship(
@@ -49,10 +53,12 @@ class Characteristic(Base):
     unit_id: Mapped[str] = Column(
         String,
         ForeignKey("ontology_annotation.ontology_annotation_id"),
-        nullable = True,
+        nullable=True,
         comment="Characteristic unit as an ontology annotation",
     )
-    unit_oa: Mapped[Optional["OntologyAnnotation"]] = relationship("OntologyAnnotation", backref="characteristics_unit", foreign_keys=[unit_id])
+    unit_oa: Mapped[Optional["OntologyAnnotation"]] = relationship(
+        "OntologyAnnotation", backref="characteristics_unit", foreign_keys=[unit_id]
+    )
 
     category_id: Mapped[str] = Column(
         String,

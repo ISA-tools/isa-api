@@ -25,7 +25,9 @@ class Source(InputOutput):
 
     # Relationships back-ref
     studies: Mapped[list["Study"]] = relationship("Study", secondary=study_sources, back_populates="sources")
-    samples: Mapped[list["Study"]] = relationship("Sample", secondary=sample_derives_from, back_populates="derives_from")
+    samples: Mapped[list["Study"]] = relationship(
+        "Sample", secondary=sample_derives_from, back_populates="derives_from"
+    )
 
     # Relationships: many-to-many
     characteristics: Mapped[list["Characteristic"]] = relationship(

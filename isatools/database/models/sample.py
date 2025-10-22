@@ -28,18 +28,22 @@ class Sample(InputOutput):
     name: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    studies: Mapped[list['Study']] = relationship("Study", secondary=study_samples, back_populates="samples")
-    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_samples, back_populates="samples")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_samples, back_populates="samples")
+    assays: Mapped[list["Assay"]] = relationship("Assay", secondary=assay_samples, back_populates="samples")
 
     # Relationships: many-to-many
-    characteristics: Mapped[list['Characteristic']] = relationship(
+    characteristics: Mapped[list["Characteristic"]] = relationship(
         "Characteristic", secondary=sample_characteristics, back_populates="samples"
     )
-    derives_from: Mapped[list['Source']] = relationship("Source", secondary=sample_derives_from, back_populates="samples")
-    factor_values: Mapped[list['FactorValue']] = relationship("FactorValue", secondary=sample_factor_values, back_populates="samples")
+    derives_from: Mapped[list["Source"]] = relationship(
+        "Source", secondary=sample_derives_from, back_populates="samples"
+    )
+    factor_values: Mapped[list["FactorValue"]] = relationship(
+        "FactorValue", secondary=sample_factor_values, back_populates="samples"
+    )
 
     # Factor values, derives from
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="sample")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="sample")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

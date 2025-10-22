@@ -23,17 +23,17 @@ class Publication(Base):
     title: Mapped[str] = mapped_column(String, nullable=True)
 
     # Relationships: back-ref
-    investigations: Mapped[list['Investigation']] = relationship(
+    investigations: Mapped[list["Investigation"]] = relationship(
         "Investigation", secondary=investigation_publications, back_populates="publications"
     )
-    studies: Mapped[list['Study']] = relationship("Study", secondary=study_publications, back_populates="publications")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_publications, back_populates="publications")
 
     # Relationships many-to-one
     status_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
-    status: Mapped[Optional['OntologyAnnotation']] = relationship("OntologyAnnotation", backref="publications")
+    status: Mapped[Optional["OntologyAnnotation"]] = relationship("OntologyAnnotation", backref="publications")
 
     # Relationships
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="publication")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="publication")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

@@ -16,14 +16,14 @@ class Datafile(InputOutput):
 
     # Base fields
     datafile_id: Mapped[str] = Column(String, primary_key=True)
-    filename: Mapped[str]  = Column(String)
-    label: Mapped[str]  = Column(String)
+    filename: Mapped[str] = Column(String)
+    label: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_data_files, back_populates="datafiles")
+    assays: Mapped[list["Assay"]] = relationship("Assay", secondary=assay_data_files, back_populates="datafiles")
 
     # Relationships: one-to-many
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="datafile")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="datafile")
 
     def to_json(self):
         return {
@@ -47,5 +47,6 @@ def make_datafile_methods():
         )
         session.add(datafile)
         return datafile
+
     setattr(DataFileModel, "to_sql", to_sql)
     setattr(DataFileModel, "get_table", make_get_table_method(Datafile))

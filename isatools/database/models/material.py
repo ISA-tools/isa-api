@@ -22,16 +22,16 @@ class Material(InputOutput):
     material_type: Mapped[str] = Column(String)
 
     # Relationships back-ref
-    studies: Mapped[list['Study']] = relationship("Study", secondary=study_materials, back_populates="materials")
-    assays: Mapped[list['Assay']] = relationship("Assay", secondary=assay_materials, back_populates="materials")
+    studies: Mapped[list["Study"]] = relationship("Study", secondary=study_materials, back_populates="materials")
+    assays: Mapped[list["Assay"]] = relationship("Assay", secondary=assay_materials, back_populates="materials")
 
     # Relationships: many-to-many
-    characteristics: Mapped[list['Characteristic']] = relationship(
+    characteristics: Mapped[list["Characteristic"]] = relationship(
         "Characteristic", secondary=materials_characteristics, back_populates="materials"
     )
 
     # Relationships: one-to-many
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="material")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="material")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

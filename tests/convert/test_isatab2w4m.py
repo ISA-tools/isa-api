@@ -9,7 +9,8 @@ from isatools.convert import isatab2w4m
 from isatools.tests import utils
 
 # Check if running in CI environment
-IS_CI = os.environ.get('CI', 'false').lower() == 'true'
+IS_CI = os.environ.get("CI", "false").lower() == "true"
+
 
 def universal_filecmp(f1, f2):
     with open(f1, "r") as fp1, open(f2, "r") as fp2:

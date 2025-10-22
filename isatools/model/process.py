@@ -241,7 +241,6 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
         for param in self.parameter_values:
             value = " "
             if param.value is not None or len(str(param.value)) > 0:
-
                 if isinstance(param.value, OntologyAnnotation):
                     value = param.value.to_dict(ld=ld)
                 elif isinstance(param.value, (int, float)):

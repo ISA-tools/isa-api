@@ -47,7 +47,9 @@ class Study(Base):
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="study")
 
     # Relationships: many-to-many
-    publications: Mapped[list["Publication"]] = relationship("Publication", secondary=study_publications, back_populates="studies")
+    publications: Mapped[list["Publication"]] = relationship(
+        "Publication", secondary=study_publications, back_populates="studies"
+    )
     protocols: Mapped[list["Protocol"]] = relationship("Protocol", secondary=study_protocols, back_populates="studies")
     characteristic_categories: Mapped[list["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", secondary=study_characteristic_categories, back_populates="characteristic_categories"
@@ -58,7 +60,9 @@ class Study(Base):
     study_design_descriptors: Mapped[list["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", secondary=study_design_descriptors, back_populates="design_descriptors"
     )
-    study_factors: Mapped[list["StudyFactor"]] = relationship("StudyFactor", secondary=study_factors, back_populates="studies")
+    study_factors: Mapped[list["StudyFactor"]] = relationship(
+        "StudyFactor", secondary=study_factors, back_populates="studies"
+    )
     sources: Mapped[list["Source"]] = relationship("Source", secondary=study_sources, back_populates="studies")
     samples: Mapped[list["Sample"]] = relationship("Sample", secondary=study_samples, back_populates="studies")
     materials: Mapped[list["Material"]] = relationship("Material", secondary=study_materials, back_populates="studies")

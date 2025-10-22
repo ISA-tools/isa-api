@@ -25,7 +25,7 @@ class OntologySource(Base):
     )
 
     # References: one-to-many
-    comments: Mapped[list["Comment"]]  = relationship("Comment", back_populates="ontology_source")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="ontology_source")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary

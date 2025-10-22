@@ -24,22 +24,26 @@ class FactorValue(Base):
     value_str: Mapped[Optional[str]] = Column(String, nullable=True)
 
     # Relationships back-ref
-    samples: Mapped[list['Sample']] = relationship("Sample", secondary=sample_factor_values, back_populates="factor_values")
+    samples: Mapped[list["Sample"]] = relationship(
+        "Sample", secondary=sample_factor_values, back_populates="factor_values"
+    )
 
     # Relationships many-to-one
-    factor_name_id: Mapped[Optional[str]]  = Column(String, ForeignKey("factor.factor_id"), nullable=True)
-    factor_name: Mapped[Optional['StudyFactor']] = relationship("StudyFactor", backref="factor_values_names")
-    value_oa_id: Mapped[Optional[str]]  = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
-    value_oa: Mapped[Optional['OntologyAnnotation']] = relationship(
+    factor_name_id: Mapped[Optional[str]] = Column(String, ForeignKey("factor.factor_id"), nullable=True)
+    factor_name: Mapped[Optional["StudyFactor"]] = relationship("StudyFactor", backref="factor_values_names")
+    value_oa_id: Mapped[Optional[str]] = Column(
+        String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True
+    )
+    value_oa: Mapped[Optional["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", backref="factor_values_values", foreign_keys=[value_oa_id]
     )
     factor_unit_id: str = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"), nullable=True)
-    factor_unit: Mapped[Optional['OntologyAnnotation']]  = relationship(
+    factor_unit: Mapped[Optional["OntologyAnnotation"]] = relationship(
         "OntologyAnnotation", backref="factor_values_units", foreign_keys=[factor_unit_id]
     )
 
     # Relationship one-to-many
-    comments: Mapped[list['Comment']] = relationship("Comment", back_populates="factor_value")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="factor_value")
 
     def to_json(self) -> dict:
         """Convert the SQLAlchemy object to a dictionary
