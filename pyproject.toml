@@ -57,6 +57,7 @@ dependencies = [
     "graphene~=3.4.3",
     "graphql-core~=3.2.6",
     "ruff>=0.14.1",
+    "pytest-timeout>=2.4.0",
 ]
 
 [project.optional-dependencies]

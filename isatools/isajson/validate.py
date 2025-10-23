@@ -14,7 +14,7 @@ import os
 import re
 from io import StringIO
 
-from jsonschema import Draft4Validator, RefResolver, ValidationError
+from jsonschema import Draft4Validator, ValidationError
 
 from isatools.isajson.load import load
 
@@ -548,9 +548,9 @@ def check_isa_schemas(isa_json, investigation_schema_path):
     try:
         with open(investigation_schema_path) as fp:
             investigation_schema = json.load(fp)
-            resolver = RefResolver("file://" + investigation_schema_path, investigation_schema)
-            validator = Draft4Validator(investigation_schema, resolver=resolver)
+            validator = Draft4Validator(investigation_schema)
             validator.validate(isa_json)
+            #jsonschema.validate(instance=isa_json, schema=investigation_schema, cls=jsonschema.Draft4Validator)
     except ValidationError as ve:
         errors.append({"message": "Invalid JSON against ISA-JSON schemas", "supplemental": str(ve), "code": 3})
         log.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
