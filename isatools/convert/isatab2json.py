@@ -140,9 +140,8 @@ class ISATab2ISAjson_v1:
             # validate json
             with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
                 schema = json.load(json_fp)
-                resolver = RefResolver("file://" + join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
-                validator = Draft4Validator(schema, resolver=resolver)
-                validator.validate(isa_json, schema)
+                validator = Draft4Validator(schema)
+                validator.validate(isa_json)
 
                 log.info("Conversion finished")
                 return isa_json

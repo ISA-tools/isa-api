@@ -41,8 +41,7 @@ class ISATab2CEDAR(object):
             schema = json.load(json_fp)
         if schema is None:
             raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH, schema_file)))
-        resolver = RefResolver("file://{}".format(join(CEDAR_SCHEMA_PATH, schema_file)), schema)
-        validator = Draft4Validator(schema, resolver=resolver)
+        validator = Draft4Validator(schema)
 
         isa_tab = isatab_parser.parse(work_dir)
 
@@ -121,7 +120,7 @@ class ISATab2CEDAR(object):
                 study_identifier = ""
 
             try:
-                validator.validate(cedar_json, schema)
+                validator.validate(cedar_json)
             except ValidationError as e:
                 error_file_name = os.path.join(json_dir, "error.log")
                 with open(error_file_name, "w") as errorfile:
