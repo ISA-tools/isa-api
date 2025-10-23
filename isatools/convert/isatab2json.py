@@ -10,7 +10,9 @@ from enum import Enum
 from os.path import join
 from uuid import uuid4
 
-from jsonschema import Draft4Validator, RefResolver
+from jsonschema import Draft4Validator
+from referencing import Registry
+from referencing.jsonschema import DRAFT4
 
 from isatools import isatab
 from isatools.io.isatab_parser import parse
@@ -139,8 +141,10 @@ class ISATab2ISAjson_v1:
 
             # validate json
             with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
-                schema = json.load(json_fp)
-                validator = Draft4Validator(schema)
+                investigation_schema = json.load(json_fp)
+                schema = DRAFT4.create_resource(investigation_schema)
+                registry = Registry.with_resource(investigation_schema['id'], schema)
+                validator = Draft4Validator(investigation_schema, registry=registry)
                 validator.validate(isa_json)
 
                 log.info("Conversion finished")

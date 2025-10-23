@@ -10,9 +10,11 @@ from os import listdir
 from os.path import isdir, join
 from uuid import uuid4
 
-from jsonschema import Draft4Validator, RefResolver
-from jsonschema.exceptions import ValidationError
+from jsonschema import Draft4Validator
+from referencing.jsonschema import DRAFT4
+from referencing import Registry
 
+from jsonschema.exceptions import ValidationError
 from isatools.io import isatab_parser
 
 __author__ = "agbeltran"
@@ -38,10 +40,12 @@ class ISATab2CEDAR(object):
         log.info("Converting ISA to CEDAR model for {}".format(work_dir))
         schema_file = "investigation_template.json"
         with open(join(CEDAR_SCHEMA_PATH, schema_file)) as json_fp:
-            schema = json.load(json_fp)
-        if schema is None:
+            investigation_schema = json.load(json_fp)
+        if investigation_schema is None:
             raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH, schema_file)))
-        validator = Draft4Validator(schema)
+        schema = DRAFT4.create_resource(investigation_schema)
+        registry = Registry.with_resource(investigation_schema['id'], schema)
+        validator = Draft4Validator(investigation_schema, registry=registry)
 
         isa_tab = isatab_parser.parse(work_dir)
 
