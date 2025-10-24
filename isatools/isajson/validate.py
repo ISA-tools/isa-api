@@ -13,10 +13,11 @@ import logging
 import os
 import re
 from io import StringIO
+from pathlib import Path
 
-from jsonschema import Draft4Validator, ValidationError
+from jsonschema import Draft4Validator, ValidationError, Draft202012Validator, FormatChecker
 from referencing import Registry
-from referencing.jsonschema import DRAFT4
+from referencing.jsonschema import DRAFT4, DRAFT202012
 
 from isatools.isajson.load import load
 
@@ -545,15 +546,27 @@ def check_utf8(fp):
             raise SystemError()
 
 
+
 def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
         with open(investigation_schema_path) as fp:
-            investigation_schema = json.load(fp)
-            schema = DRAFT4.create_resource(investigation_schema)
-            registry = Registry.with_resource(investigation_schema['id'], schema)
-            validator = Draft4Validator(investigation_schema, registry=registry)
+            resources = []
+            investigation_schema_path = Path(investigation_schema_path)
+            schemas_dir = investigation_schema_path.parent
+
+            for p in sorted(schemas_dir.glob("*.json")):
+                contents = json.loads(p.read_text(encoding="utf-8"))
+                resource = DRAFT202012.create_resource(contents)
+                resources.append((p.resolve().as_uri(), resource))
+
+            registry = Registry().with_resources(resources)
+            main_uri = investigation_schema_path.resolve().as_uri()
+            print(registry.contents(main_uri))
+            schema_ref = {"$ref": main_uri, "$schema": "https://json-schema.org/draft/2020-12/schema"}
+            validator = Draft202012Validator(schema_ref, registry=registry, format_checker=FormatChecker())
             validator.validate(isa_json)
+
     except ValidationError as ve:
         errors.append({"message": "Invalid JSON against ISA-JSON schemas", "supplemental": str(ve), "code": 3})
         log.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")

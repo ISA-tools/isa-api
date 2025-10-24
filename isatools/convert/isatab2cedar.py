@@ -8,9 +8,10 @@ import logging
 import os
 from os import listdir
 from os.path import isdir, join
+from pathlib import Path
 from uuid import uuid4
 
-from jsonschema import Draft4Validator
+from jsonschema import Draft4Validator, FormatChecker
 from referencing.jsonschema import DRAFT4
 from referencing import Registry
 
@@ -43,9 +44,21 @@ class ISATab2CEDAR(object):
             investigation_schema = json.load(json_fp)
         if investigation_schema is None:
             raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH, schema_file)))
-        schema = DRAFT4.create_resource(investigation_schema)
-        registry = Registry.with_resource(investigation_schema['id'], schema)
-        validator = Draft4Validator(investigation_schema, registry=registry)
+
+        resources = []
+        schemas_dir = Path(CEDAR_SCHEMA_PATH)
+        investigation_schema_path = Path(join(CEDAR_SCHEMA_PATH, schema_file))
+
+        for p in sorted(schemas_dir.glob("*.json")):
+            contents = json.loads(p.read_text(encoding="utf-8"))
+            resource = DRAFT4.create_resource(contents)
+            resources.append((p.resolve().as_uri(), resource))
+
+        registry = Registry().with_resources(resources)
+        main_uri = investigation_schema_path.resolve().as_uri()
+        print(registry.contents(main_uri))
+        schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
+        validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
 
         isa_tab = isatab_parser.parse(work_dir)
 
