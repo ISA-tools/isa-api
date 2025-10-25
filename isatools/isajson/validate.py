@@ -4,7 +4,6 @@ Functions validating ISA-JSON.
 Don't forget to read the ISA-JSON spec:
 https://isa-specs.readthedocs.io/en/latest/isajson.html
 """
-
 from __future__ import absolute_import
 
 import glob
@@ -15,7 +14,7 @@ import re
 from io import StringIO
 from pathlib import Path
 
-from jsonschema import Draft4Validator, ValidationError, Draft202012Validator, FormatChecker
+from jsonschema import Draft4Validator, Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry
 from referencing.jsonschema import DRAFT4, DRAFT202012
 

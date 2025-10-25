@@ -12,10 +12,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from jsonschema import Draft4Validator, FormatChecker
-from referencing.jsonschema import DRAFT4
-from referencing import Registry
-
 from jsonschema.exceptions import ValidationError
+from referencing import Registry
+from referencing.jsonschema import DRAFT4
+
 from isatools.io import isatab_parser
 
 __author__ = "agbeltran"
