@@ -12,13 +12,13 @@ import logging
 import os
 import re
 from io import StringIO
-from pathlib import Path
 
+from isatools.isajson.load import load
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from pathlib import Path
 from referencing import Registry
 from referencing.jsonschema import DRAFT202012
 
-from isatools.isajson.load import load
 
 __author__ = "djcomlab@gmail.com (David Johnson)"
 
@@ -209,7 +209,7 @@ def check_process_protocol_ids_usage(study_json):
         )
 
 
-gdef get_study_protocols_parameter_ids(study_json):
+def get_study_protocols_parameter_ids(study_json):
     """Used for rule 1009"""
     return [
         elem
