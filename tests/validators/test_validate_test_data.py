@@ -6,7 +6,7 @@ import unittest
 from os.path import join
 from pathlib import Path
 
-from jsonschema import Draft4Validator, FormatChecker, RefResolver
+from jsonschema import Draft4Validator, FormatChecker
 from referencing import Registry
 from referencing.jsonschema import DRAFT4
 
@@ -382,12 +382,6 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
         with open(os.path.join(utils.JSON_DATA_DIR, "create", "sampleassayplan_qc_test.json")) as test_case_fp:
             with open(os.path.join(self.v2_create_schemas_path, "sample_assay_plan_schema.json")) as fp:
                 sample_assay_plan_schema = json.load(fp)
-            # resolver = RefResolver('file://{}'.format(
-            #     os.path.join(self.v2_create_schemas_path,
-            #                  'sample_assay_plan_schema.json')),
-            #                        sample_assay_plan_schema)
-            # res_path = str(pathlib.Path("file://", self.v2_create_schemas_path, "sample_assay_plan_schema.json"))
-            # resolver = RefResolver(res_path, sample_assay_plan_schema)
 
             resources = []
             schemas_dir = Path("file://", self.v2_create_schemas_path)
@@ -403,7 +397,6 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             print(registry.contents(main_uri))
             schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
 
-            # validator = Draft4Validator(sample_assay_plan_schema, resolver=resolver)
             validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
             validator.validate(json.load(test_case_fp))
 
