@@ -142,11 +142,11 @@ class ISATab2ISAjson_v1:
 
             # validate json
             with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
-                #investigation_schema = json.load(json_fp)
-                #schema = DRAFT4.create_resource(investigation_schema)
-                #registry = Registry.with_resource(investigation_schema['id'], schema)
-                #validator = Draft4Validator(investigation_schema, registry=registry)
-                #validator.validate(isa_json)
+                # investigation_schema = json.load(json_fp)
+                # schema = DRAFT4.create_resource(investigation_schema)
+                # registry = Registry.with_resource(investigation_schema['id'], schema)
+                # validator = Draft4Validator(investigation_schema, registry=registry)
+                # validator.validate(isa_json)
 
                 resources = []
                 schemas_dir = Path(SCHEMAS_PATH)

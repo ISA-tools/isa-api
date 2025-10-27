@@ -359,9 +359,11 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
                 sample_assay_plan_schema = json.load(fp)
 
                 resources = []
-                res_path = pathlib.Path(
-                    "file://", self.v2_create_schemas_path, "sample_assay_plan_schema.json"
-                ).resolve().as_uri()
+                res_path = (
+                    pathlib.Path("file://", self.v2_create_schemas_path, "sample_assay_plan_schema.json")
+                    .resolve()
+                    .as_uri()
+                )
                 schemas_dir = pathlib.Path("file://", self.v2_create_schemas_path)
                 for p in sorted(schemas_dir.glob("*.json")):
                     contents = json.loads(p.read_text(encoding="utf-8"))
@@ -373,7 +375,6 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
 
                 validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
                 validator.validate(json.load(test_case_fp))
-
 
     def test_validate_testdata_sampleassayplan_qc_json(self):
         with open(os.path.join(utils.JSON_DATA_DIR, "create", "sampleassayplan_qc_test.json")) as test_case_fp:

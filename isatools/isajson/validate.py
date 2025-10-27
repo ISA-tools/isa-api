@@ -4,6 +4,7 @@ Functions validating ISA-JSON.
 Don't forget to read the ISA-JSON spec:
 https://isa-specs.readthedocs.io/en/latest/isajson.html
 """
+
 from __future__ import absolute_import
 
 import glob
@@ -543,7 +544,6 @@ def check_utf8(fp):
                 )
             )
             raise SystemError()
-
 
 
 def check_isa_schemas(isa_json, investigation_schema_path):
