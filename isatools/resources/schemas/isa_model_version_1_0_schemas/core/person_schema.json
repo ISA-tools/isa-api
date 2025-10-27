@@ -12,7 +12,13 @@
         "lastName" : { "type" : "string"},
         "firstName" : { "type" : "string"},
         "midInitials" : { "type" : "string" },
-        "email" : { "type" : "string"},
+        "email" : {
+          "anyOf": [
+            { "type" : "string", "format": "email" },
+            { "type" : "string", "maxLength": 0 },
+            { "type": "null" }
+          ]
+        },
         "phone" : { "type": "string"},
         "fax" : { "type" : "string" },
         "address" : { "type" : "string" },

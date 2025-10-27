@@ -14,9 +14,9 @@ import re
 from io import StringIO
 from pathlib import Path
 
-from jsonschema import Draft4Validator, Draft202012Validator, FormatChecker, ValidationError
+from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry
-from referencing.jsonschema import DRAFT4, DRAFT202012
+from referencing.jsonschema import DRAFT202012
 
 from isatools.isajson.load import load
 
