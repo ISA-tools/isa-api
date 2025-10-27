@@ -4,9 +4,9 @@ import os
 import pathlib
 import unittest
 
-from jsonschema import Draft4Validator, RefResolver, FormatChecker
-from referencing.jsonschema import DRAFT4
+from jsonschema import Draft4Validator, FormatChecker, RefResolver
 from referencing import Registry
+from referencing.jsonschema import DRAFT4
 
 from isatools import isajson, isatab
 from isatools.tests import utils
