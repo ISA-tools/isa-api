@@ -14,9 +14,9 @@ import re
 from io import StringIO
 from pathlib import Path
 
-from jsonschema import Draft4Validator, Draft202012Validator, FormatChecker, ValidationError
+from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry
-from referencing.jsonschema import DRAFT4, DRAFT202012
+from referencing.jsonschema import DRAFT202012
 
 from isatools.isajson.load import load
 
@@ -209,7 +209,7 @@ def check_process_protocol_ids_usage(study_json):
         )
 
 
-def get_study_protocols_parameter_ids(study_json):
+gdef get_study_protocols_parameter_ids(study_json):
     """Used for rule 1009"""
     return [
         elem

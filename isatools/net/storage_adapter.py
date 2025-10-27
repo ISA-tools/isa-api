@@ -5,15 +5,18 @@ import base64
 import json
 import logging
 import os
-import pathlib
 from abc import ABCMeta, abstractmethod
 from io import BytesIO, StringIO
+from os.path import join
+from pathlib import Path
 from urllib.parse import urljoin
 from zipfile import ZipFile
 
 import requests
-from jsonschema import Draft4Validator, RefResolver
+from jsonschema import Draft4Validator, FormatChecker  # RefResolver
 from lxml import etree
+from referencing import Registry
+from referencing.jsonschema import DRAFT4
 
 log = logging.getLogger("isatools")
 
@@ -58,8 +61,22 @@ def validate_json_against_schema(json_dict, schema_src):
     """
     with open(schema_src) as schema_file:
         schema = json.load(schema_file)
-    resolver = RefResolver(pathlib.Path(os.path.abspath(schema_src)).as_uri(), schema)
-    validator = Draft4Validator(schema, resolver=resolver)
+        resources = []
+        schemas_dir = Path(schema_src)
+        investigation_schema_path = Path(join(schema_src, schema_file))
+
+        for p in sorted(schemas_dir.glob("*.json")):
+            contents = json.loads(p.read_text(encoding="utf-8"))
+            resource = DRAFT4.create_resource(contents)
+            resources.append((p.resolve().as_uri(), resource))
+
+        registry = Registry().with_resources(resources)
+        main_uri = investigation_schema_path.resolve().as_uri()
+        print(registry.contents(main_uri))
+        schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
+        validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
+
+    # validator = Draft4Validator(schema)
     return validator.validate(json_dict, schema)
 
 
