@@ -6,10 +6,7 @@ import unittest
 from os.path import join
 from pathlib import Path
 
-from jsonschema import Draft4Validator, RefResolver, FormatChecker
-from referencing.jsonschema import DRAFT4
-from referencing import Registry
-from jsonschema import Draft4Validator, FormatChecker  # RefResolver
+from jsonschema import Draft4Validator, FormatChecker, RefResolver
 from referencing import Registry
 from referencing.jsonschema import DRAFT4
 

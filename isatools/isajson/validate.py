@@ -12,12 +12,13 @@ import logging
 import os
 import re
 from io import StringIO
-from isatools.isajson.load import load
 from pathlib import Path
+
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry
 from referencing.jsonschema import DRAFT202012
 
+from isatools.isajson.load import load
 
 __author__ = "djcomlab@gmail.com (David Johnson)"
 
