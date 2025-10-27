@@ -12,10 +12,9 @@ import logging
 import os
 import re
 from io import StringIO
-
 from isatools.isajson.load import load
-from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from pathlib import Path
+from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry
 from referencing.jsonschema import DRAFT202012
 
@@ -561,7 +560,6 @@ def check_isa_schemas(isa_json, investigation_schema_path):
 
             registry = Registry().with_resources(resources)
             main_uri = investigation_schema_path.resolve().as_uri()
-            print(registry.contents(main_uri))
             schema_ref = {"$ref": main_uri, "$schema": "https://json-schema.org/draft/2020-12/schema"}
             validator = Draft202012Validator(schema_ref, registry=registry, format_checker=FormatChecker())
             validator.validate(isa_json)
