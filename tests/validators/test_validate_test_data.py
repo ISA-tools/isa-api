@@ -3,6 +3,8 @@ import logging
 import os
 import pathlib
 import unittest
+from os.path import join
+from pathlib import Path
 
 from jsonschema import Draft4Validator, FormatChecker, RefResolver
 from referencing import Registry
@@ -384,18 +386,49 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
             #     os.path.join(self.v2_create_schemas_path,
             #                  'sample_assay_plan_schema.json')),
             #                        sample_assay_plan_schema)
-            res_path = str(pathlib.Path("file://", self.v2_create_schemas_path, "sample_assay_plan_schema.json"))
-            resolver = RefResolver(res_path, sample_assay_plan_schema)
-            validator = Draft4Validator(sample_assay_plan_schema, resolver=resolver)
+            # res_path = str(pathlib.Path("file://", self.v2_create_schemas_path, "sample_assay_plan_schema.json"))
+            # resolver = RefResolver(res_path, sample_assay_plan_schema)
+
+            resources = []
+            schemas_dir = Path("file://", self.v2_create_schemas_path)
+            schema_path = Path(join(schemas_dir, "sample_assay_plan_schema.json"))
+
+            for p in sorted(schemas_dir.glob("*.json")):
+                contents = json.loads(p.read_text(encoding="utf-8"))
+                resource = DRAFT4.create_resource(contents)
+                resources.append((p.resolve().as_uri(), resource))
+
+            registry = Registry().with_resources(resources)
+            main_uri = schema_path.resolve().as_uri()
+            print(registry.contents(main_uri))
+            schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
+
+            # validator = Draft4Validator(sample_assay_plan_schema, resolver=resolver)
+            validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
             validator.validate(json.load(test_case_fp))
 
     def test_validate_testdata_treatment_sequence_json(self):
         with open(os.path.join(utils.JSON_DATA_DIR, "create", "treatment_sequence_test.json")) as test_case_fp:
             with open(os.path.join(self.v2_create_schemas_path, "treatment_sequence_schema.json")) as fp:
                 treatment_sequence_schema = json.load(fp)
-            res_path = pathlib.Path("file://", self.v2_create_schemas_path, "treatment_sequence_schema.json").as_uri()
-            resolver = RefResolver(res_path, treatment_sequence_schema)
-            validator = Draft4Validator(treatment_sequence_schema, resolver=resolver)
+            #res_path = pathlib.Path("file://", self.v2_create_schemas_path, "treatment_sequence_schema.json").as_uri()
+            # resolver = RefResolver(res_path, treatment_sequence_schema)
+            # validator = Draft4Validator(treatment_sequence_schema, resolver=resolver)
+            resources = []
+            schemas_dir = Path("file://", self.v2_create_schemas_path)
+            schema_path = Path(join(schemas_dir, "treatment_sequence_schema.json"))
+
+            for p in sorted(schemas_dir.glob("*.json")):
+                contents = json.loads(p.read_text(encoding="utf-8"))
+                resource = DRAFT4.create_resource(contents)
+                resources.append((p.resolve().as_uri(), resource))
+
+            registry = Registry().with_resources(resources)
+            main_uri = schema_path.resolve().as_uri()
+            print(registry.contents(main_uri))
+            schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
+            validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
+
             validator.validate(json.load(test_case_fp))
 
 
