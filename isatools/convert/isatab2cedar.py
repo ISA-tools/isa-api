@@ -8,10 +8,13 @@ import logging
 import os
 from os import listdir
 from os.path import isdir, join
+from pathlib import Path
 from uuid import uuid4
 
-from jsonschema import Draft4Validator, RefResolver
+from jsonschema import Draft4Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
+from referencing import Registry
+from referencing.jsonschema import DRAFT4
 
 from isatools.io import isatab_parser
 
@@ -38,11 +41,24 @@ class ISATab2CEDAR(object):
         log.info("Converting ISA to CEDAR model for {}".format(work_dir))
         schema_file = "investigation_template.json"
         with open(join(CEDAR_SCHEMA_PATH, schema_file)) as json_fp:
-            schema = json.load(json_fp)
-        if schema is None:
+            investigation_schema = json.load(json_fp)
+        if investigation_schema is None:
             raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH, schema_file)))
-        resolver = RefResolver("file://{}".format(join(CEDAR_SCHEMA_PATH, schema_file)), schema)
-        validator = Draft4Validator(schema, resolver=resolver)
+
+        resources = []
+        schemas_dir = Path(CEDAR_SCHEMA_PATH)
+        investigation_schema_path = Path(join(CEDAR_SCHEMA_PATH, schema_file))
+
+        for p in sorted(schemas_dir.glob("*.json")):
+            contents = json.loads(p.read_text(encoding="utf-8"))
+            resource = DRAFT4.create_resource(contents)
+            resources.append((p.resolve().as_uri(), resource))
+
+        registry = Registry().with_resources(resources)
+        main_uri = investigation_schema_path.resolve().as_uri()
+        print(registry.contents(main_uri))
+        schema_ref = {"$ref": main_uri, "$schema": "http://json-schema.org/draft-04/schema"}
+        validator = Draft4Validator(schema_ref, registry=registry, format_checker=FormatChecker())
 
         isa_tab = isatab_parser.parse(work_dir)
 
@@ -121,7 +137,7 @@ class ISATab2CEDAR(object):
                 study_identifier = ""
 
             try:
-                validator.validate(cedar_json, schema)
+                validator.validate(cedar_json)
             except ValidationError as e:
                 error_file_name = os.path.join(json_dir, "error.log")
                 with open(error_file_name, "w") as errorfile:

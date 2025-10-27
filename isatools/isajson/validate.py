@@ -13,8 +13,11 @@ import logging
 import os
 import re
 from io import StringIO
+from pathlib import Path
 
-from jsonschema import Draft4Validator, RefResolver, ValidationError
+from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from referencing import Registry
+from referencing.jsonschema import DRAFT202012
 
 from isatools.isajson.load import load
 
@@ -547,10 +550,21 @@ def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
         with open(investigation_schema_path) as fp:
-            investigation_schema = json.load(fp)
-            resolver = RefResolver("file://" + investigation_schema_path, investigation_schema)
-            validator = Draft4Validator(investigation_schema, resolver=resolver)
+            resources = []
+            investigation_schema_path = Path(investigation_schema_path)
+            schemas_dir = investigation_schema_path.parent
+
+            for p in sorted(schemas_dir.glob("*.json")):
+                contents = json.loads(p.read_text(encoding="utf-8"))
+                resource = DRAFT202012.create_resource(contents)
+                resources.append((p.resolve().as_uri(), resource))
+
+            registry = Registry().with_resources(resources)
+            main_uri = investigation_schema_path.resolve().as_uri()
+            schema_ref = {"$ref": main_uri, "$schema": "https://json-schema.org/draft/2020-12/schema"}
+            validator = Draft202012Validator(schema_ref, registry=registry, format_checker=FormatChecker())
             validator.validate(isa_json)
+
     except ValidationError as ve:
         errors.append({"message": "Invalid JSON against ISA-JSON schemas", "supplemental": str(ve), "code": 3})
         log.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")

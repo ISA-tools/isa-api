@@ -8,9 +8,12 @@ import os
 import re
 from enum import Enum
 from os.path import join
+from pathlib import Path
 from uuid import uuid4
 
-from jsonschema import Draft4Validator, RefResolver
+from jsonschema import Draft202012Validator, FormatChecker
+from referencing import Registry
+from referencing.jsonschema import DRAFT202012
 
 from isatools import isatab
 from isatools.io.isatab_parser import parse
@@ -139,10 +142,27 @@ class ISATab2ISAjson_v1:
 
             # validate json
             with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
-                schema = json.load(json_fp)
-                resolver = RefResolver("file://" + join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
-                validator = Draft4Validator(schema, resolver=resolver)
-                validator.validate(isa_json, schema)
+                # investigation_schema = json.load(json_fp)
+                # schema = DRAFT4.create_resource(investigation_schema)
+                # registry = Registry.with_resource(investigation_schema['id'], schema)
+                # validator = Draft4Validator(investigation_schema, registry=registry)
+                # validator.validate(isa_json)
+
+                resources = []
+                schemas_dir = Path(SCHEMAS_PATH)
+                investigation_schema_path = Path(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA))
+
+                for p in sorted(schemas_dir.glob("*.json")):
+                    contents = json.loads(p.read_text(encoding="utf-8"))
+                    resource = DRAFT202012.create_resource(contents)
+                    resources.append((p.resolve().as_uri(), resource))
+
+                registry = Registry().with_resources(resources)
+                main_uri = investigation_schema_path.resolve().as_uri()
+                print(registry.contents(main_uri))
+                schema_ref = {"$ref": main_uri, "$schema": "https://json-schema.org/draft/2020-12/schema"}
+                validator = Draft202012Validator(schema_ref, registry=registry, format_checker=FormatChecker())
+                validator.validate(isa_json)
 
                 log.info("Conversion finished")
                 return isa_json

@@ -14,7 +14,6 @@ from functools import reduce
 from zipfile import ZipFile
 
 import pandas as pd
-import yaml
 
 from isatools import isatab
 from isatools.model import Process

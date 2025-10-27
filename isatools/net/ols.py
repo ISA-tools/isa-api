@@ -39,6 +39,7 @@ def get_ols_ontologies():
                 file=file,
             )
         )
+
     return ontology_sources
 
 
@@ -47,6 +48,7 @@ def get_ols_ontology(ontology_name):
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
     log.debug(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
+    print("EMBEDDED: ", J["_embedded"]["ontologies"])
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
         ontology_sources.append(
@@ -57,7 +59,10 @@ def get_ols_ontology(ontology_name):
                 file=ontology_source_json["_links"]["self"]["href"],
             )
         )
+    print("NAME: ", ontology_name)
+    print("SOURCES: ", [o.name for o in ontology_sources])
     hits = [o for o in ontology_sources if o.name == ontology_name]
+    print("HITS: ", hits)
     if len(hits) == 1:
         return hits[0]
     return None

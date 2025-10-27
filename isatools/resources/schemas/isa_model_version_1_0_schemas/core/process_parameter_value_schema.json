@@ -1,5 +1,5 @@
 {
-    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/process_parameter_value_schema.json",
+    "$id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/process_parameter_value_schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title" : "ISA process parameter value schema",
     "name" : "ISA Process Parameter Value schema",
