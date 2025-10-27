@@ -139,6 +139,7 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_sources, list)
         self.assertIsInstance(ontology_sources[0], OntologySource)
 
+    @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
     def test_get_ontology(self):
         ontology_source = ols.get_ols_ontology("efo")
         self.assertIsInstance(ontology_source, OntologySource)
@@ -148,6 +149,7 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
+    @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
     def test_search_for_term(self):
         ontology_source = ols.get_ols_ontology("efo")
         ontology_annotations = ols.search_ols("cell type", ontology_source)
