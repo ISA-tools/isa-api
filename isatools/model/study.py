@@ -1,20 +1,20 @@
-from typing import List
 from collections.abc import Iterable
+from typing import List
 
 from isatools.model.assay import Assay
 from isatools.model.comments import Commentable
-from isatools.model.mixins import StudyAssayMixin, MetadataMixin
+from isatools.model.factor_value import StudyFactor
+from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.logger import log
+from isatools.model.mixins import MetadataMixin, StudyAssayMixin
 from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.person import Person
+from isatools.model.process import Process
 from isatools.model.protocol import Protocol
 from isatools.model.protocol_parameter import ProtocolParameter
-from isatools.model.factor_value import StudyFactor
 from isatools.model.publication import Publication
-from isatools.model.person import Person
-from isatools.model.source import Source
 from isatools.model.sample import Sample
-from isatools.model.process import Process
-from isatools.model.logger import log
-from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.source import Source
 
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
@@ -61,24 +61,50 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         graph: Graph representation of the study graph.
     """
 
-    def __init__(self, id_='', filename='', identifier='', title='',
-                 description='', submission_date='', public_release_date='',
-                 contacts=None, design_descriptors=None, publications=None,
-                 factors=None, protocols=None, assays=None, sources=None,
-                 samples=None, process_sequence=None, other_material=None,
-                 characteristic_categories=None, comments=None, units=None):
-        MetadataMixin.__init__(self, filename=filename, identifier=identifier,
-                               title=title, description=description,
-                               submission_date=submission_date,
-                               public_release_date=public_release_date,
-                               publications=publications, contacts=contacts)
+    def __init__(
+        self,
+        id_="",
+        filename="",
+        identifier="",
+        title="",
+        description="",
+        submission_date="",
+        public_release_date="",
+        contacts=None,
+        design_descriptors=None,
+        publications=None,
+        factors=None,
+        protocols=None,
+        assays=None,
+        sources=None,
+        samples=None,
+        process_sequence=None,
+        other_material=None,
+        characteristic_categories=None,
+        comments=None,
+        units=None,
+    ):
+        MetadataMixin.__init__(
+            self,
+            filename=filename,
+            identifier=identifier,
+            title=title,
+            description=description,
+            submission_date=submission_date,
+            public_release_date=public_release_date,
+            publications=publications,
+            contacts=contacts,
+        )
         StudyAssayMixin.__init__(
-            self, filename=filename, sources=sources,
+            self,
+            filename=filename,
+            sources=sources,
             samples=samples,
             other_material=other_material,
             process_sequence=process_sequence,
             characteristic_categories=characteristic_categories,
-            units=units)
+            units=units,
+        )
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
@@ -110,12 +136,13 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @design_descriptors.setter
     def design_descriptors(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__design_descriptors = list(val)
         else:
-            raise AttributeError('{}.design_descriptors must be iterable containing OntologyAnnotations'
-                                 .format(type(self).__name__))
+            raise AttributeError(
+                "{}.design_descriptors must be iterable containing OntologyAnnotations".format(type(self).__name__)
+            )
 
     @property
     def protocols(self):
@@ -134,12 +161,12 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 .format(type(self).__name__))
         """
         if not isinstance(val, Iterable) or not all(isinstance(el, Protocol) for el in val):
-            raise AttributeError('The object supplied is not an iterable of Protocol objects')
+            raise AttributeError("The object supplied is not an iterable of Protocol objects")
         self.__protocols = [protocol for protocol in val]
 
     def add_protocol(self, protocol):
         if not isinstance(protocol, Protocol):
-            raise TypeError('The object supplied is not an instance of Protocol')
+            raise TypeError("The object supplied is not an instance of Protocol")
         if protocol not in self.protocols:
             self.__protocols.append(protocol)
 
@@ -150,35 +177,33 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         parameter_list = []
 
         parameter_list_index = {
-            'mass spectrometry': [
-                'instrument',
-                'ion source',
-                'detector',
-                'analyzer',
-                'chromatography instrument',
-                'chromatography column'
+            "mass spectrometry": [
+                "instrument",
+                "ion source",
+                "detector",
+                "analyzer",
+                "chromatography instrument",
+                "chromatography column",
             ],
-            'nmr spectroscopy': [
-                'instrument',
-                'NMR probe',
-                'number of acquisition',
-                'magnetic field strength',
-                'pulse sequence'
+            "nmr spectroscopy": [
+                "instrument",
+                "NMR probe",
+                "number of acquisition",
+                "magnetic field strength",
+                "pulse sequence",
             ],
-            'nucleic acid hybridization': ['Array Design REF'],
-            'nucleic acid sequencing': ['sequencing instrument', 'quality scorer', 'base caller']
+            "nucleic acid hybridization": ["Array Design REF"],
+            "nucleic acid sequencing": ["sequencing instrument", "quality scorer", "base caller"],
         }
         if protocol_type in parameter_list_index:
             parameter_list = parameter_list_index[protocol_type]
-        default_protocol.parameters = [ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
-                                       for x in parameter_list]
+        default_protocol.parameters = [
+            ProtocolParameter(parameter_name=OntologyAnnotation(term=x)) for x in parameter_list
+        ]
         # TODO: Implement this for other defaults OR generate from config #51
         return default_protocol
 
-    def add_prot(self,
-                 protocol_name='',
-                 protocol_type=None,
-                 use_default_params=True):
+    def add_prot(self, protocol_name="", protocol_type=None, use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
             log.warning('A protocol with name "{}" has already been declared in the study'.format(protocol_name))
         else:
@@ -187,8 +212,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 default_protocol.name = protocol_name
                 self.protocols.append(default_protocol)
             else:
-                self.protocols.append(Protocol(name=protocol_name,
-                                               protocol_type=OntologyAnnotation(term=protocol_type)))
+                self.protocols.append(
+                    Protocol(name=protocol_name, protocol_type=OntologyAnnotation(term=protocol_type))
+                )
 
     def get_prot(self, protocol_name):
         prot = None
@@ -226,11 +252,11 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @assays.setter
     def assays(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Assay) for x in val):
                 self.__assays = list(val)
         else:
-            raise AttributeError('{}.assays must be iterable containing Assays'.format(type(self).__name__))
+            raise AttributeError("{}.assays must be iterable containing Assays".format(type(self).__name__))
 
     @property
     def factors(self):
@@ -240,28 +266,29 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     @factors.setter
     def factors(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, StudyFactor) for x in val):
                 self.__factors = list(val)
         else:
-            raise AttributeError('{}.factors must be iterable containing StudyFactors'.format(type(self).__name__))
+            raise AttributeError("{}.factors must be iterable containing StudyFactors".format(type(self).__name__))
 
     def __repr__(self):
-        return "isatools.model.Study(filename='{study.filename}', " \
-               "identifier='{study.identifier}', title='{study.title}', " \
-               "description='{study.description}', " \
-               "submission_date='{study.submission_date}', " \
-               "public_release_date='{study.public_release_date}', " \
-               "contacts={study.contacts}, " \
-               "design_descriptors={study.design_descriptors}, " \
-               "publications={study.publications}, factors={study.factors}, " \
-               "protocols={study.protocols}, assays={study.assays}, " \
-               "sources={study.sources}, samples={study.samples}, " \
-               "process_sequence={study.process_sequence}, " \
-               "other_material={study.other_material}, " \
-               "characteristic_categories={study.characteristic_categories}," \
-               " comments={study.comments}, units={study.units})" \
-            .format(study=self)
+        return (
+            "isatools.model.Study(filename='{study.filename}', "
+            "identifier='{study.identifier}', title='{study.title}', "
+            "description='{study.description}', "
+            "submission_date='{study.submission_date}', "
+            "public_release_date='{study.public_release_date}', "
+            "contacts={study.contacts}, "
+            "design_descriptors={study.design_descriptors}, "
+            "publications={study.publications}, factors={study.factors}, "
+            "protocols={study.protocols}, assays={study.assays}, "
+            "sources={study.sources}, samples={study.samples}, "
+            "process_sequence={study.process_sequence}, "
+            "other_material={study.other_material}, "
+            "characteristic_categories={study.characteristic_categories},"
+            " comments={study.comments}, units={study.units})".format(study=self)
+        )
 
     def __str__(self):
         return """Study(
@@ -284,7 +311,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     characteristic_categories={num_characteristic_categories} OntologyAnnots
     comments={num_comments} Comment objects
     units={num_units} Unit objects
-)""".format(study=self, num_contacts=len(self.contacts),
+)""".format(
+            study=self,
+            num_contacts=len(self.contacts),
             num_design_descriptors=len(self.design_descriptors),
             num_publications=len(self.publications),
             num_study_factors=len(self.factors),
@@ -296,32 +325,35 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             num_other_material=len(self.other_material),
             num_characteristic_categories=len(self.characteristic_categories),
             num_comments=len(self.comments),
-            num_units=len(self.units))
+            num_units=len(self.units),
+        )
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Study) \
-               and self.filename == other.filename \
-               and self.identifier == other.identifier \
-               and self.title == other.title \
-               and self.description == other.description \
-               and self.submission_date == other.submission_date \
-               and self.public_release_date == other.public_release_date \
-               and self.contacts == other.contacts \
-               and self.design_descriptors == other.design_descriptors \
-               and self.publications == other.publications \
-               and self.factors == other.factors \
-               and self.protocols == other.protocols \
-               and self.assays == other.assays \
-               and self.sources == other.sources \
-               and self.samples == other.samples \
-               and self.process_sequence == other.process_sequence \
-               and self.other_material == other.other_material \
-               and self.characteristic_categories == other.characteristic_categories \
-               and self.comments == other.comments \
-               and self.units == other.units
+        return (
+            isinstance(other, Study)
+            and self.filename == other.filename
+            and self.identifier == other.identifier
+            and self.title == other.title
+            and self.description == other.description
+            and self.submission_date == other.submission_date
+            and self.public_release_date == other.public_release_date
+            and self.contacts == other.contacts
+            and self.design_descriptors == other.design_descriptors
+            and self.publications == other.publications
+            and self.factors == other.factors
+            and self.protocols == other.protocols
+            and self.assays == other.assays
+            and self.sources == other.sources
+            and self.samples == other.samples
+            and self.process_sequence == other.process_sequence
+            and self.other_material == other.other_material
+            and self.characteristic_categories == other.characteristic_categories
+            and self.comments == other.comments
+            and self.units == other.units
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -357,28 +389,27 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             "factors": [factor.to_dict(ld=ld) for factor in self.factors],
             "characteristicCategories": self.categories_to_dict(ld=ld),
             "unitCategories": [unit.to_dict(ld=ld) for unit in self.units],
-
-            "assays": [assay.to_dict(ld=ld) for assay in self.assays]
+            "assays": [assay.to_dict(ld=ld) for assay in self.assays],
         }
         return self.update_isa_object(study, ld=ld)
 
     def from_dict(self, study):
         indexes.reset_process()
-        self.filename = study.get('filename', '')
-        self.identifier = study.get('identifier', '')
-        self.title = study.get('title', '')
-        self.description = study.get('description', '')
-        self.submission_date = study.get('submissionDate', '')
-        self.public_release_date = study.get('publicReleaseDate', '')
-        self.load_comments(study.get('comments', []))
+        self.filename = study.get("filename", "")
+        self.identifier = study.get("identifier", "")
+        self.title = study.get("title", "")
+        self.description = study.get("description", "")
+        self.submission_date = study.get("submissionDate", "")
+        self.public_release_date = study.get("publicReleaseDate", "")
+        self.load_comments(study.get("comments", []))
 
         # Build characteristic categories index
-        for assay in study.get('assays', []):
-            for characteristic_category in assay['characteristicCategories']:
+        for assay in study.get("assays", []):
+            for characteristic_category in assay["characteristicCategories"]:
                 category = OntologyAnnotation()
                 category.from_dict(characteristic_category)
                 indexes.add_characteristic_category(category)
-        for characteristic_category in study.get('characteristicCategories', []):
+        for characteristic_category in study.get("characteristicCategories", []):
             category = OntologyAnnotation()
             category.from_dict(characteristic_category["characteristicType"])
             category.id = characteristic_category["@id"]
@@ -386,79 +417,79 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             indexes.add_characteristic_category(category)
 
         # Units
-        for unit_data in study.get('unitCategories', []):
+        for unit_data in study.get("unitCategories", []):
             unit = OntologyAnnotation()
             unit.from_dict(unit_data)
             self.units.append(unit)
             indexes.add_unit(unit)
 
         # Publications
-        for publication_data in study.get('publications', []):
+        for publication_data in study.get("publications", []):
             publication = Publication()
             publication.from_dict(publication_data)
             self.publications.append(publication)
 
         # People
-        for person_data in study.get('people', []):
+        for person_data in study.get("people", []):
             person = Person()
             person.from_dict(person_data)
             self.contacts.append(person)
 
         # Design descriptors
-        for descriptor_data in study.get('studyDesignDescriptors', []):
+        for descriptor_data in study.get("studyDesignDescriptors", []):
             descriptor = OntologyAnnotation()
             descriptor.from_dict(descriptor_data)
             self.design_descriptors.append(descriptor)
 
         # Protocols
-        for protocol_data in study.get('protocols', []):
+        for protocol_data in study.get("protocols", []):
             protocol = Protocol()
             protocol.from_dict(protocol_data)
             self.protocols.append(protocol)
             indexes.add_protocol(protocol)
 
         # Factors
-        for factor_data in study.get('factors', []):
+        for factor_data in study.get("factors", []):
             factor = StudyFactor()
             factor.from_dict(factor_data)
             self.factors.append(factor)
             indexes.add_factor(factor)
 
         # Source
-        for source_data in study.get('materials', {}).get('sources', []):
+        for source_data in study.get("materials", {}).get("sources", []):
             source = Source()
             source.from_dict(source_data)
             self.sources.append(source)
             indexes.add_source(source)
 
         # Sample
-        for sample_data in study.get('materials', {}).get('samples', []):
+        for sample_data in study.get("materials", {}).get("samples", []):
             sample = Sample()
             sample.from_dict(sample_data)
             self.samples.append(sample)
             indexes.add_sample(sample)
 
         # Process
-        for process_data in study.get('processSequence', []):
+        for process_data in study.get("processSequence", []):
             process = Process()
             process.from_dict(process_data)
             self.process_sequence.append(process)
             indexes.add_process(process)
-        for process_data in study.get('processSequence', []):
+        for process_data in study.get("processSequence", []):
             try:
-                current_process = indexes.get_process(process_data['@id'])
-                previous_process_id = process_data['previousProcess']['@id']
+                current_process = indexes.get_process(process_data["@id"])
+                previous_process_id = process_data["previousProcess"]["@id"]
                 previous_process = indexes.get_process(previous_process_id)
                 current_process.prev_process = previous_process
 
-                next_process_id = process_data['nextProcess']['@id']
+                next_process_id = process_data["nextProcess"]["@id"]
                 next_process = indexes.get_process(next_process_id)
                 current_process.next_process = next_process
             except KeyError:
                 pass
 
         # Assay
-        for assay_data in study.get('assays', []):
+        for assay_data in study.get("assays", []):
             indexes.processes = {}
             assay = Assay()
             assay.from_dict(assay_data, self)

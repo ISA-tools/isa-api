@@ -5,15 +5,16 @@ This module connects to the PubMed API via Entrez.
 If you have problems with it, check that it's working at
 https://www.ncbi.nlm.nih.gov/pubmed/
 """
+
 from __future__ import absolute_import
+
 import logging
 
 from Bio import Entrez, Medline
 
 from isatools.model import Comment, Publication
 
-
-log = logging.getLogger('isatools')
+log = logging.getLogger("isatools")
 
 
 def get_pubmed_article(pubmed_id):
@@ -49,16 +50,15 @@ def get_pubmed_article(pubmed_id):
 
 def set_pubmed_article(publication):
     """
-        Given a Publication object with pubmed_id set to some value, set the
-        rest of the values from information
-        collected via Entrez webservice from PubMed
+    Given a Publication object with pubmed_id set to some value, set the
+    rest of the values from information
+    collected via Entrez webservice from PubMed
     """
     if isinstance(publication, Publication):
         response = get_pubmed_article(publication.pubmed_id)
         publication.doi = response["doi"]
         publication.author_list = ", ".join(response["authors"])
         publication.title = response["title"]
-        publication.comments = [Comment(name="Journal",
-                                        value=response["journal"])]
+        publication.comments = [Comment(name="Journal", value=response["journal"])]
     else:
         raise TypeError("Can only set PubMed details on a Publication object")

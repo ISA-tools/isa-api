@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*
 """Convert ISA-Tab to SRA-XML"""
+
 import json
 import logging
 import os
@@ -8,23 +9,23 @@ from zipfile import ZipFile
 
 from isatools.convert import isatab2json, json2sra
 
-
-log = logging.getLogger('isatools')
+log = logging.getLogger("isatools")
 
 
 def zipdir(path, zip_file):
     """utility function to zip only SRA xml documents from a whole directory"""
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
-        for file in [f for f in files if f in [
-            'submission.xml', 'project_set.xml', 'run_set.xml',
-                'experiment_set.xml', 'sample_set.xml']]:
-            zip_file.write(os.path.join(root, file),
-                           arcname=os.path.join(os.path.basename(root), file))
+        for file in [
+            f
+            for f in files
+            if f in ["submission.xml", "project_set.xml", "run_set.xml", "experiment_set.xml", "sample_set.xml"]
+        ]:
+            zip_file.write(os.path.join(root, file), arcname=os.path.join(os.path.basename(root), file))
 
 
 BASE_DIR = os.path.dirname(__file__)
-default_config_dir = os.path.join(BASE_DIR, '..', 'config', 'xml')
+default_config_dir = os.path.join(BASE_DIR, "..", "config", "xml")
 
 
 def convert(source_path, dest_path, sra_settings=None, validate_first=True):
@@ -40,7 +41,7 @@ def convert(source_path, dest_path, sra_settings=None, validate_first=True):
     buffer = BytesIO()
     if os.path.isdir(dest_path):
         log.info("Zipping SRA files")
-        with ZipFile(buffer, 'w') as zip_file:
+        with ZipFile(buffer, "w") as zip_file:
             zipdir(dest_path, zip_file)
             log.debug("Zipped %s", zip_file.namelist())
         buffer.seek(0)

@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import List, Any
-from isatools.model.comments import Commentable, Comment
-from isatools.model.ontology_source import OntologySource
+
+from typing import Any, List
+
+from isatools.model.comments import Comment, Commentable
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.ontology_source import OntologySource
 
 
 class OntologyAnnotation(Commentable, Identifiable):
@@ -17,12 +19,14 @@ class OntologyAnnotation(Commentable, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self,
-                 term: str = '',
-                 term_source: OntologySource = '',
-                 term_accession: str = '',
-                 comments: List[Comment] = None,
-                 id_: str = ''):
+    def __init__(
+        self,
+        term: str = "",
+        term_source: OntologySource = "",
+        term_accession: str = "",
+        comments: List[Comment] = None,
+        id_: str = "",
+    ):
         super().__init__(comments=comments)
         self.term = term
         self.term_source = None
@@ -39,7 +43,7 @@ class OntologyAnnotation(Commentable, Identifiable):
     @term.setter
     def term(self, val: str):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('OntologyAnnotation.term must be a str or None; got {0}:{1}'.format(val, type(val)))
+            raise AttributeError("OntologyAnnotation.term must be a str or None; got {0}:{1}".format(val, type(val)))
         self.__term = val
 
     @property
@@ -51,8 +55,9 @@ class OntologyAnnotation(Commentable, Identifiable):
     @term_source.setter
     def term_source(self, val: OntologySource):
         if val is not None and not isinstance(val, OntologySource):
-            raise AttributeError('OntologyAnnotation.term_source must be a OntologySource or '
-                                 'None; got {0}:{1}'.format(val, type(val)))
+            raise AttributeError(
+                "OntologyAnnotation.term_source must be a OntologySource or None; got {0}:{1}".format(val, type(val))
+            )
         self.__term_source = val
 
     @property
@@ -63,46 +68,47 @@ class OntologyAnnotation(Commentable, Identifiable):
     @term_accession.setter
     def term_accession(self, val: str):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('OntologyAnnotation.term_accession must be a str or None')
+            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
         self.__term_accession = val
 
     def __repr__(self):
-        return ("isatools.model.OntologyAnnotation("
-                "term='{ontology_annotation.term}', "
-                "term_source={term_source}, "
-                "term_accession='{ontology_annotation.term_accession}', "
-                "comments={ontology_annotation.comments})"
-                ).format(ontology_annotation=self, term_source=repr(self.term_source))
+        return (
+            "isatools.model.OntologyAnnotation("
+            "term='{ontology_annotation.term}', "
+            "term_source={term_source}, "
+            "term_accession='{ontology_annotation.term_accession}', "
+            "comments={ontology_annotation.comments})"
+        ).format(ontology_annotation=self, term_source=repr(self.term_source))
 
     def __str__(self):
-        if not self.term_source == str and isinstance(self.term_source, OntologySource):
-            return ("OntologyAnnotation(\n\t"
-                    "term={ontology_annotation.term}\n\t"
-                    "term_source={term_source_ref}\n\t"
-                    "term_accession={ontology_annotation.term_accession}\n\t"
-                    "comments={num_comments} Comment objects\n)"
-                    ).format(ontology_annotation=self,
-                             term_source_ref=self.term_source.name,
-                             num_comments=len(self.comments))
+        if not isinstance(self.term_source, str) and isinstance(self.term_source, OntologySource):
+            return (
+                "OntologyAnnotation(\n\t"
+                "term={ontology_annotation.term}\n\t"
+                "term_source={term_source_ref}\n\t"
+                "term_accession={ontology_annotation.term_accession}\n\t"
+                "comments={num_comments} Comment objects\n)"
+            ).format(ontology_annotation=self, term_source_ref=self.term_source.name, num_comments=len(self.comments))
         else:
-            return ("OntologyAnnotation(\n\t"
-                    "term={ontology_annotation.term}\n\t"
-                    "term_source={term_source_ref}\n\t"
-                    "term_accession={ontology_annotation.term_accession}\n\t"
-                    "comments={num_comments} Comment objects\n)"
-                    ).format(ontology_annotation=self,
-                             term_source_ref=self.term_source,
-                             num_comments=len(self.comments))
+            return (
+                "OntologyAnnotation(\n\t"
+                "term={ontology_annotation.term}\n\t"
+                "term_source={term_source_ref}\n\t"
+                "term_accession={ontology_annotation.term_accession}\n\t"
+                "comments={num_comments} Comment objects\n)"
+            ).format(ontology_annotation=self, term_source_ref=self.term_source, num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other: Any) -> bool:
-        return (isinstance(other, OntologyAnnotation)
-                and self.term == other.term
-                and self.term_source == other.term_source
-                and self.term_accession == other.term_accession
-                and self.comments == other.comments)
+        return (
+            isinstance(other, OntologyAnnotation)
+            and self.term == other.term
+            and self.term_source == other.term_source
+            and self.term_accession == other.term_accession
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other: Any) -> bool:
         return not self == other
@@ -113,20 +119,20 @@ class OntologyAnnotation(Commentable, Identifiable):
             term_source = self.term_source.name
 
         ontology_annotation = {
-            '@id': self.id,
-            'annotationValue': self.term,
-            'termSource': term_source,
-            'termAccession': self.term_accession,
-            'comments': [comment.to_dict(ld=ld) for comment in self.comments]
+            "@id": self.id,
+            "annotationValue": self.term,
+            "termSource": term_source,
+            "termAccession": self.term_accession,
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, ontology_annotation):
-        self.id = ontology_annotation.get('@id', '')
-        self.term = ontology_annotation.get('annotationValue', '')
-        self.term_accession = ontology_annotation.get('termAccession', '')
-        self.load_comments(ontology_annotation.get('comments', []))
+        self.id = ontology_annotation.get("@id", "")
+        self.term = ontology_annotation.get("annotationValue", "")
+        self.term_accession = ontology_annotation.get("termAccession", "")
+        self.load_comments(ontology_annotation.get("comments", []))
 
-        if 'termSource' in ontology_annotation and ontology_annotation['termSource']:
-            source = indexes.get_term_source(ontology_annotation['termSource'])
+        if "termSource" in ontology_annotation and ontology_annotation["termSource"]:
+            source = indexes.get_term_source(ontology_annotation["termSource"])
             self.term_source = source

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-""" ISA-specific exceptions """
+"""ISA-specific exceptions"""
 
 
 class AttributeError(AttributeError):
@@ -24,5 +24,3 @@ class ISAModelIndexError(IndexError):
     """
     If an index is out of bounds
     """
-
-

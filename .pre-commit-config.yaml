@@ -1,0 +1,72 @@
+default_language_version:
+  python: python3.13
+repos:
+- repo: https://github.com/abravalheri/validate-pyproject
+  rev: v0.24.1
+  hooks:
+  - id: validate-pyproject
+    name: 🔍 Validate pyproject.toml
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.28.0
+  hooks:
+  - id: gitleaks
+    name: "🔒 Security · Detect hardcoded secrets"
+- repo: https://github.com/hukkin/mdformat
+  rev: 0.7.22
+  hooks:
+  - id: mdformat
+    name: "🟢  Markdown · Format markdown"
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-added-large-files
+    name: 🟢  Check large files
+    args: [ "--maxkb=2000" ]
+  - id: check-toml
+    name: 🟢  Check toml files
+  - id: check-json
+    name: 🟢  Check json files
+  - id: pretty-format-json
+    name: 🟢  Format json files
+    args:
+    - "--autofix"
+    - "--indent=4"
+    - "--no-sort-keys"
+  - id: check-yaml
+    name: 🟢  Check yaml files
+    args:
+    - --unsafe
+  - id: end-of-file-fixer
+    name: 🟢 Check end of file character
+    exclude: resources/.+\.(js|css)$
+  - id: trailing-whitespace
+    name: 🟢  Check trailing whitespaces
+    exclude: (tests/data/.+|resources/.+\.(js|css))$
+- repo: https://github.com/astral-sh/uv-pre-commit
+  rev: 0.9.1
+  hooks:
+  - id: uv-lock
+    name: ✅ Check uv.lock file
+- repo: https://github.com/lk16/detect-missing-init
+  rev: v0.1.6
+  hooks:
+  - id: detect-missing-init
+    name: 🔍 Detect missing __init__.py files
+    args: [ "--create", "--track", "--python-folders", "isatools" ]
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.14.0
+  hooks:
+  - id: ruff-check
+    name: 🔍 Check Format with Ruff
+    args:
+    - --exit-non-zero-on-fix
+    - --no-cache
+  - id: ruff-format
+    name: 🐍 python · Format with Ruff
+- repo: https://github.com/seddonym/import-linter.git
+  rev: "v2.5.2"
+  hooks:
+  - id: import-linter
+    name: 🪵 architecture and package structure check (lint-imports)
+    language: python
+    args: [ "--no-cache" ]

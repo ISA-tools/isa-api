@@ -1,32 +1,33 @@
+import logging
 import os
 import unittest
-import logging
-from isatools.isatab import load
-from isatools.graphQL.utils.validate import validate_input, validate_outputs
+
+from isatools.graphQL.utils.find import (
+    compare_values,
+    find_characteristics,
+    find_exposure_value,
+    find_measurement,
+    find_protocol,
+    find_technology_type,
+)
 from isatools.graphQL.utils.search import (
     search_assays,
-    search_process_sequence,
+    search_data_files,
     search_inputs,
     search_outputs,
-    search_data_files,
-    search_parameter_values
+    search_parameter_values,
+    search_process_sequence,
 )
-from isatools.graphQL.utils.find import (
-    find_technology_type,
-    find_measurement,
-    find_exposure_value,
-    find_characteristics,
-    find_protocol,
-    compare_values
-)
+from isatools.graphQL.utils.validate import validate_input, validate_outputs
+from isatools.isatab import load
 
 here_path = os.path.dirname(os.path.realpath(__file__))
 investigation_filepath = os.path.join(here_path, "../data/tab/BII-S-TEST/i_test.txt")
-with open(investigation_filepath, 'r') as investigation_file:
+with open(investigation_filepath, "r") as investigation_file:
     investigation = load(investigation_file)
     investigation_file.close()
 
-log = logging.getLogger('isatools')
+log = logging.getLogger("isatools")
 
 
 class I0Data:
@@ -37,10 +38,9 @@ class I0Data:
 
 
 class TestGraphQLQueries(unittest.TestCase):
-
     def setUp(self):
         graph_filepath = os.path.join(here_path, "../data/graphQL/example.gql")
-        with open(graph_filepath, 'r') as graph_file:
+        with open(graph_filepath, "r") as graph_file:
             self.query = graph_file.read()
             graph_file.close()
 
@@ -52,7 +52,7 @@ class TestGraphQLQueries(unittest.TestCase):
             "protocol": "nucleic acid ext",
             "compound": "carbon diox",
             "dose": "high",
-            "material": None
+            "material": None,
         }
         response = investigation.execute_query(self.query, variables)
         self.assertTrue(not response.errors)
@@ -63,7 +63,6 @@ class TestGraphQLQueries(unittest.TestCase):
 
 
 class TestValidation(unittest.TestCase):
-
     def setUp(self):
         self.input_data = I0Data("Sample", "group", "characteristics")
 
@@ -95,12 +94,13 @@ class TestValidation(unittest.TestCase):
         self.input_data = I0Data("DataFile", None, "characteristics")
         with self.assertRaises(Exception) as context:
             validate_input(self.input_data)
-        self.assertTrue("Inputs 'characteristics' argument can only be applied to Sample, Material or Source"
-                        == str(context.exception))
+        self.assertTrue(
+            "Inputs 'characteristics' argument can only be applied to Sample, Material or Source"
+            == str(context.exception)
+        )
 
 
 class TestSearch(unittest.TestCase):
-
     def test_search_assays(self):
         assays = search_assays(investigation.studies[0].assays, {}, "AND")
         self.assertTrue(len(assays) == 2)
@@ -111,21 +111,10 @@ class TestSearch(unittest.TestCase):
             "measurementType": {"eq": "transcription profiling"},
             "executesProtocol": {"includes": "nucleic acid ext"},
             "characteristics": [
-                {
-                    "name": {"eq": "category"},
-                    "value": {"eq": "anatomical part"}
-                },
-                {
-                    "name": {"eq": "value"},
-                    "value": {"eq": "liver"}
-                }
+                {"name": {"eq": "category"}, "value": {"eq": "anatomical part"}},
+                {"name": {"eq": "value"}, "value": {"eq": "liver"}},
             ],
-            "treatmentGroup": [
-                {
-                    "name": {"eq": "compound"},
-                    "value": {"includes": "carb"}
-                }
-            ]
+            "treatmentGroup": [{"name": {"eq": "compound"}, "value": {"includes": "carb"}}],
         }
         assays = search_assays(investigation.studies[0].assays, filters, "AND")
         self.assertTrue(len(assays) == 1)
@@ -134,12 +123,7 @@ class TestSearch(unittest.TestCase):
         assays = search_assays(investigation.studies[0].assays, filters, "OR")
         self.assertTrue(len(assays) == 2)
 
-        filters = {
-            "parameterValues": {
-                "category": {"eq": "library strategy"},
-                "value": {"eq": "WGS"}
-            }
-        }
+        filters = {"parameterValues": {"category": {"eq": "library strategy"}, "value": {"eq": "WGS"}}}
         assays = search_assays(investigation.studies[0].assays, filters, "AND")
         self.assertTrue(len(assays) == 1)
 
@@ -148,50 +132,36 @@ class TestSearch(unittest.TestCase):
         self.assertTrue("Operator TEST should be AND or OR" == str(context.exception))
 
     def test_search_process_sequence(self):
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {}, 'AND')
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {}, "AND")
         self.assertTrue(len(process_sequence) == 18)
 
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, {
-            "target": "Sample"
-        }, 'AND')
+        process_sequence = search_process_sequence(
+            investigation.studies[0].assays[0].process_sequence, {"target": "Sample"}, "AND"
+        )
         self.assertTrue(len(process_sequence) == 18)
 
         filters = {
             "executesProtocol": {"includes": "nucleic acid ext"},
-            "treatmentGroup": [
-                {
-                    "name": {"eq": "compound"},
-                    "value": {"includes": "carb"}
-                }
-            ]
+            "treatmentGroup": [{"name": {"eq": "compound"}, "value": {"includes": "carb"}}],
         }
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, "AND")
         self.assertTrue(len(process_sequence) == 8)
-        filters['target'] = "Sample"
-        filters['characteristics'] = [
-            {
-                "name": {"eq": "category"},
-                "value": {"eq": "anatomical part"}
-            },
-            {
-                "name": {"eq": "value"},
-                "value": {"eq": "liver"}
-            }
+        filters["target"] = "Sample"
+        filters["characteristics"] = [
+            {"name": {"eq": "category"}, "value": {"eq": "anatomical part"}},
+            {"name": {"eq": "value"}, "value": {"eq": "liver"}},
         ]
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, "AND")
         self.assertTrue(len(process_sequence) == 3)
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'OR')
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, "OR")
         self.assertTrue(len(process_sequence) == 8)
 
-        filters = {"parameterValues": {
-            "category": {"eq": "library strategy"},
-            "value": {"includes": "WG"}
-        }}
-        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'AND')
+        filters = {"parameterValues": {"category": {"eq": "library strategy"}, "value": {"includes": "WG"}}}
+        process_sequence = search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, "AND")
         self.assertTrue(len(process_sequence) == 4)
 
         with self.assertRaises(Exception) as context:
-            search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, 'TEST')
+            search_process_sequence(investigation.studies[0].assays[0].process_sequence, filters, "TEST")
         self.assertTrue("Operator TEST should be AND or OR" == str(context.exception))
 
     def test_search_inputs(self):
@@ -199,15 +169,7 @@ class TestSearch(unittest.TestCase):
         inputs = search_inputs(investigation.studies[0].assays[0].process_sequence[0].inputs, filters, "AND")
         self.assertTrue(inputs[0].name == "GSM255770")
 
-        filters = {
-            "treatmentGroup": [
-                {
-                    "name": {"eq": "compound"},
-                    "value": {"includes": "carb"}
-                }
-            ],
-            "target": "Sample"
-        }
+        filters = {"treatmentGroup": [{"name": {"eq": "compound"}, "value": {"includes": "carb"}}], "target": "Sample"}
         found = 0
         for process in investigation.studies[0].assays[0].process_sequence:
             inputs = search_inputs(process.inputs, filters, "AND")
@@ -217,23 +179,17 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 4)
 
         found = 0
-        filters['treatmentGroup'][0]['value'] = {"eq": "test"}
+        filters["treatmentGroup"][0]["value"] = {"eq": "test"}
         for process in investigation.studies[0].assays[0].process_sequence:
             inputs = search_inputs(process.inputs, filters, "AND")
             if len(inputs) > 0:
                 found += 1
         self.assertTrue(found == 0)
 
-        filters['treatmentGroup'][0]['value'] = {"includes": "carb"}
-        filters['characteristics'] = [
-            {
-                "name": {"eq": "category"},
-                "value": {"eq": "anatomical part"}
-            },
-            {
-                "name": {"eq": "value"},
-                "value": {"eq": "liver"}
-            }
+        filters["treatmentGroup"][0]["value"] = {"includes": "carb"}
+        filters["characteristics"] = [
+            {"name": {"eq": "category"}, "value": {"eq": "anatomical part"}},
+            {"name": {"eq": "value"}, "value": {"eq": "liver"}},
         ]
         for process in investigation.studies[0].assays[0].process_sequence:
             inputs = search_inputs(process.inputs, filters, "AND")
@@ -261,10 +217,7 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 14)
 
         found = 0
-        filters = {
-            "target": "DataFile",
-            "label": {"eq": "Raw Data File"}
-        }
+        filters = {"target": "DataFile", "label": {"eq": "Raw Data File"}}
         for process in investigation.studies[0].assays[0].process_sequence:
             outputs = search_outputs(process.outputs, filters)
             if len(outputs) > 0:
@@ -273,10 +226,7 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 6)
 
         found = 0
-        filters = {
-            "target": "Material",
-            "label": {"includes": "Extract Name"}
-        }
+        filters = {"target": "Material", "label": {"includes": "Extract Name"}}
         for process in investigation.studies[0].assays[0].process_sequence:
             outputs = search_outputs(process.outputs, filters)
             if len(outputs) > 0:
@@ -286,10 +236,7 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 8)
 
         found = 0
-        filters = {
-            "target": "Sample",
-            "label": {"includes": "123"}
-        }
+        filters = {"target": "Sample", "label": {"includes": "123"}}
         for process in investigation.studies[0].assays[0].process_sequence:
             outputs = search_outputs(process.outputs, filters)
             if len(outputs) > 0:
@@ -310,12 +257,7 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(found == 10)
 
         found = 0
-        filters = {
-            "parameterValues": {
-                "category": {"eq": "library strategy"},
-                "value": {"includes": "WG"}
-            }
-        }
+        filters = {"parameterValues": {"category": {"eq": "library strategy"}, "value": {"includes": "WG"}}}
         for process in investigation.studies[0].assays[0].process_sequence:
             if len(process.parameter_values) > 0:
                 parameter_values = search_parameter_values(process, filters)
@@ -325,11 +267,11 @@ class TestSearch(unittest.TestCase):
 
 
 class TestFind(unittest.TestCase):
-
     def setUp(self):
         class FindObject:
             def __init__(self, term):
                 self.term = term
+
         self.template = FindObject("test")
         self.sample = investigation.studies[0].assays[0].process_sequence[0].inputs[0]
 
@@ -356,24 +298,16 @@ class TestFind(unittest.TestCase):
     def test_find_characteristics(self):
         found = find_characteristics(self.sample, None)
         self.assertTrue(found)
-        found = find_characteristics(self.sample, {
-            "value": {"eq": "anatomical part"},
-            "name": {"eq": "category"}
-        })
+        found = find_characteristics(self.sample, {"value": {"eq": "anatomical part"}, "name": {"eq": "category"}})
         self.assertTrue(found)
-        found = find_characteristics(self.sample, {
-            "value": {"eq": "anatomical part"},
-            "name": {"eq": "cat"}
-        })
+        found = find_characteristics(self.sample, {"value": {"eq": "anatomical part"}, "name": {"eq": "cat"}})
         self.assertFalse(found)
 
         from copy import copy
+
         another_sample = copy(self.sample)
         another_sample.characteristics = []
-        found = find_characteristics(another_sample, {
-            "value": {"eq": "anatomical part"},
-            "name": {"eq": "category"}
-        })
+        found = find_characteristics(another_sample, {"value": {"eq": "anatomical part"}, "name": {"eq": "category"}})
         self.assertFalse(found)
 
     def test_find_protocol(self):
@@ -402,7 +336,8 @@ class TestFind(unittest.TestCase):
 
         with self.assertRaises(Exception) as context:
             compare_values(100, "test", "gte")
-        error = "Both value and target should be integers when using lt, gt, lte or gte got value: '100' " \
-                "and target: 'test'"
+        error = (
+            "Both value and target should be integers when using lt, gt, lte or gte got value: '100' and target: 'test'"
+        )
         self.assertTrue(error == str(context.exception))
         self.assertFalse(compare_values("100", 90, "gte"))

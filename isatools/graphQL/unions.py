@@ -1,9 +1,6 @@
 from graphene import Union
-from isatools.graphQL.models import (
-    Source,
-    Sample,
-    Material,
-    DataFile)
+
+from isatools.graphQL.models import DataFile, Material, Sample, Source
 
 
 class ProcessInputs(Union):
@@ -13,11 +10,11 @@ class ProcessInputs(Union):
     @classmethod
     def resolve_type(cls, instance, info):
         instance_type = type(instance).__name__
-        if instance_type == 'Source':
+        if instance_type == "Source":
             return Source
-        elif instance_type == 'Sample':
+        elif instance_type == "Sample":
             return Sample
-        elif instance_type == 'Material':
+        elif instance_type == "Material":
             return Material
         elif instance_type == "DataFile":
             return DataFile
@@ -30,9 +27,9 @@ class ProcessOutputs(Union):
     @classmethod
     def resolve_type(cls, instance, info):
         instance_type = type(instance).__name__
-        if instance_type == 'Sample':
+        if instance_type == "Sample":
             return Sample
-        elif instance_type == 'Material':
+        elif instance_type == "Material":
             return Material
         elif instance_type == "DataFile":
             return DataFile

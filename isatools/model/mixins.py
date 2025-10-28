@@ -1,19 +1,20 @@
 from abc import ABCMeta
+from random import shuffle
 from typing import List
 from warnings import warn
-from random import shuffle
 
-from isatools.model.publication import Publication
-from isatools.model.person import Person
-from isatools.model.source import Source
-from isatools.model.ontology_annotation import OntologyAnnotation
-from isatools.model.sample import Sample
 from isatools.model.characteristic import Characteristic
-from isatools.model.material import Material
-from isatools.model.process import Process
 from isatools.model.context import LDSerializable
 from isatools.model.identifiable import Identifiable
-from isatools.model.utils import find as find_material, _build_assay_graph
+from isatools.model.material import Material
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.person import Person
+from isatools.model.process import Process
+from isatools.model.publication import Publication
+from isatools.model.sample import Sample
+from isatools.model.source import Source
+from isatools.model.utils import _build_assay_graph
+from isatools.model.utils import find as find_material
 
 
 class MetadataMixin(metaclass=ABCMeta):
@@ -30,10 +31,17 @@ class MetadataMixin(metaclass=ABCMeta):
             class.
     """
 
-    def __init__(self, filename='', identifier='', title='', description='',
-                 submission_date='', public_release_date='', publications=None,
-                 contacts=None):
-
+    def __init__(
+        self,
+        filename="",
+        identifier="",
+        title="",
+        description="",
+        submission_date="",
+        public_release_date="",
+        publications=None,
+        contacts=None,
+    ):
         self.__filename = filename
         self.__identifier = identifier
         self.__title = title
@@ -61,7 +69,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__filename = val
         else:
-            raise AttributeError('{0}.filename must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.filename must be a string".format(type(self).__name__))
 
     @property
     def identifier(self):
@@ -73,7 +81,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__identifier = val
         else:
-            raise AttributeError('{0}.identifier must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.identifier must be a string".format(type(self).__name__))
 
     @property
     def title(self):
@@ -85,7 +93,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__title = val
         else:
-            raise AttributeError('{0}.title must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.title must be a string".format(type(self).__name__))
 
     @property
     def description(self):
@@ -97,7 +105,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__description = val
         else:
-            raise AttributeError('{0}.description must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.description must be a string".format(type(self).__name__))
 
     @property
     def submission_date(self):
@@ -109,7 +117,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__submission_date = val
         else:
-            raise AttributeError('{0}.submission_date must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.submission_date must be a string".format(type(self).__name__))
 
     @property
     def public_release_date(self):
@@ -121,7 +129,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__public_release_date = val
         else:
-            raise AttributeError('{0}.public_release_date must be a string'.format(type(self).__name__))
+            raise AttributeError("{0}.public_release_date must be a string".format(type(self).__name__))
 
     @property
     def publications(self):
@@ -130,12 +138,13 @@ class MetadataMixin(metaclass=ABCMeta):
 
     @publications.setter
     def publications(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Publication) for x in val):
                 self.__publications = list(val)
         else:
-            raise AttributeError('{0}.publications must be iterable containing Publications'
-                                 .format(type(self).__name__))
+            raise AttributeError(
+                "{0}.publications must be iterable containing Publications".format(type(self).__name__)
+            )
 
     @property
     def contacts(self):
@@ -144,11 +153,11 @@ class MetadataMixin(metaclass=ABCMeta):
 
     @contacts.setter
     def contacts(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Person) for x in val):
                 self.__contacts = list(val)
         else:
-            raise AttributeError('{0}.contacts must be iterable containing Person objects'.format(type(self).__name__))
+            raise AttributeError("{0}.contacts must be iterable containing Person objects".format(type(self).__name__))
 
 
 class StudyAssayMixin(metaclass=ABCMeta):
@@ -172,26 +181,25 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     """
 
-    def __init__(self, filename='',
-                 sources: List[Source] = None,
-                 samples: List[Sample] = None,
-                 other_material: List[Material] = None,
-                 units: List[OntologyAnnotation] = None,
-                 characteristic_categories: List[OntologyAnnotation] = None,
-                 process_sequence: List[Process] = None):
+    def __init__(
+        self,
+        filename="",
+        sources: List[Source] = None,
+        samples: List[Sample] = None,
+        other_material: List[Material] = None,
+        units: List[OntologyAnnotation] = None,
+        characteristic_categories: List[OntologyAnnotation] = None,
+        process_sequence: List[Process] = None,
+    ):
         self.__filename = filename
 
-        self.__materials = {
-            'sources': sources if sources else [],
-            'samples': [],
-            'other_material': []
-        }
-        if not (sources is None):
-            self.__materials['sources'] = sources
-        if not (samples is None):
-            self.__materials['samples'] = samples
-        if not (other_material is None):
-            self.__materials['other_material'] = other_material
+        self.__materials = {"sources": sources if sources else [], "samples": [], "other_material": []}
+        if sources is not None:
+            self.__materials["sources"] = sources
+        if samples is not None:
+            self.__materials["samples"] = samples
+        if other_material is not None:
+            self.__materials["other_material"] = other_material
 
         self.__units = []
         self.__process_sequence = []
@@ -212,38 +220,38 @@ class StudyAssayMixin(metaclass=ABCMeta):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('{0}.filename must be a str or None; got {1}:{2}'
-                                 .format(type(self).__name__, val, type(val)))
+            raise AttributeError(
+                "{0}.filename must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+            )
         self.__filename = val
 
     @property
     def units(self):
-        """:obj:`list` of :obj:`OntologyAnnotation`: Container for study units
-        """
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for study units"""
         return self.__units
 
     @units.setter
     def units(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__units = list(val)
         else:
-            raise AttributeError('{}.units must be iterable containing OntologyAnnotations'.format(type(self).__name__))
+            raise AttributeError("{}.units must be iterable containing OntologyAnnotations".format(type(self).__name__))
 
     @property
     def sources(self):
         """:obj:`list` of :obj:`Source`: Container for study sources"""
-        return self.__materials['sources']
+        return self.__materials["sources"]
 
     @sources.setter
     def sources(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Source) for x in val):
-                self.__materials['sources'] = list(val)
+                self.__materials["sources"] = list(val)
         else:
-            raise AttributeError('{}.sources must be iterable containing Sources'.format(type(self).__name__))
+            raise AttributeError("{}.sources must be iterable containing Sources".format(type(self).__name__))
 
-    def add_source(self, name='', characteristics=None, comments=None):
+    def add_source(self, name="", characteristics=None, comments=None):
         """Adds a new source to the source materials list.
         :param string name: Source name
         :param list[Characteristics] characteristics: Characteristics about the Source
@@ -304,9 +312,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 found.
 
         """
-        slist = list(
-            self.yield_sources_by_characteristic(
-                characteristic=characteristic))
+        slist = list(self.yield_sources_by_characteristic(characteristic=characteristic))
         if len(slist) > 0:
             return slist[-1]
         return None
@@ -323,18 +329,17 @@ class StudyAssayMixin(metaclass=ABCMeta):
     @property
     def samples(self):
         """:obj:`list` of :obj:`Sample`: Container for study samples"""
-        return self.__materials['samples']
+        return self.__materials["samples"]
 
     @samples.setter
     def samples(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Sample) for x in val):
-                self.__materials['samples'] = list(val)
+                self.__materials["samples"] = list(val)
         else:
-            raise AttributeError('{}.samples must be iterable containing Samples'.format(type(self).__name__))
+            raise AttributeError("{}.samples must be iterable containing Samples".format(type(self).__name__))
 
-    def add_sample(self, name='', characteristics=None, factor_values=None,
-                   derives_from=None, comments=None):
+    def add_sample(self, name="", characteristics=None, factor_values=None, derives_from=None, comments=None):
         """Adds a new sample to the sample materials list.
         :param string name: Sample name
         :param list[Characteristics] characteristics: Characteristics about the sample
@@ -348,7 +353,8 @@ class StudyAssayMixin(metaclass=ABCMeta):
             characteristics=characteristics,
             factor_values=factor_values,
             derives_from=derives_from,
-            comments=comments)
+            comments=comments,
+        )
         self.samples.append(sample)
 
     def yield_samples(self, name=None):
@@ -399,9 +405,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 found.
 
         """
-        slist = list(
-            self.yield_samples_by_characteristic(
-                characteristic=characteristic))
+        slist = list(self.yield_samples_by_characteristic(characteristic=characteristic))
         if len(slist) > 0:
             return slist[-1]
         else:
@@ -433,9 +437,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 found.
 
         """
-        slist = list(
-            self.yield_samples_by_factor_value(
-                factor_value=factor_value))
+        slist = list(self.yield_samples_by_factor_value(factor_value=factor_value))
         if len(slist) > 0:
             return slist[-1]
         else:
@@ -452,19 +454,16 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     @property
     def other_material(self):
-        """:obj:`list` of :obj:`Material`: Container for study other_material
-        """
-        return self.__materials['other_material']
+        """:obj:`list` of :obj:`Material`: Container for study other_material"""
+        return self.__materials["other_material"]
 
     @other_material.setter
     def other_material(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Material) for x in val):
-                self.__materials['other_material'] = list(val)
+                self.__materials["other_material"] = list(val)
         else:
-            raise AttributeError(
-                '{}.other_material must be iterable containing Materials'
-                .format(type(self).__name__))
+            raise AttributeError("{}.other_material must be iterable containing Materials".format(type(self).__name__))
 
     def yield_materials_by_characteristic(self, characteristic=None):
         """Gets an iterator of matching materials for a given characteristic.
@@ -493,9 +492,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 found.
 
         """
-        mlist = list(
-            self.yield_materials_by_characteristic(
-                characteristic=characteristic))
+        mlist = list(self.yield_materials_by_characteristic(characteristic=characteristic))
         if len(mlist) > 0:
             return mlist[-1]
         else:
@@ -505,8 +502,11 @@ class StudyAssayMixin(metaclass=ABCMeta):
     def materials(self):
         """:obj:`dict` of :obj:`list`: Container for sources, samples and
         other_material"""
-        warn("the `materials` dict property is being deprecated in favour of `sources`, `samples`, "
-             "and `other_material` properties.", DeprecationWarning)
+        warn(
+            "the `materials` dict property is being deprecated in favour of `sources`, `samples`, "
+            "and `other_material` properties.",
+            DeprecationWarning,
+        )
         return self.__materials
 
     @property
@@ -516,13 +516,13 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     @process_sequence.setter
     def process_sequence(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Process) for x in val):
                 self.__process_sequence = list(val)
         else:
             raise AttributeError(
-                '{}.process_sequence must be iterable containing Processes'
-                .format(type(self).__name__))
+                "{}.process_sequence must be iterable containing Processes".format(type(self).__name__)
+            )
 
     @property
     def characteristic_categories(self):
@@ -532,12 +532,15 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     @characteristic_categories.setter
     def characteristic_categories(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__characteristic_categories = list(val)
         else:
-            raise AttributeError('{}.characteristic_categories must be iterable containing OntologyAnnotation'
-                                 .format(type(self).__name__))
+            raise AttributeError(
+                "{}.characteristic_categories must be iterable containing OntologyAnnotation".format(
+                    type(self).__name__
+                )
+            )
 
     @property
     def graph(self):
@@ -549,7 +552,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     @graph.setter
     def graph(self, graph):
-        raise AttributeError('{}.graph is not settable'.format(type(self).__name__))
+        raise AttributeError("{}.graph is not settable".format(type(self).__name__))
 
     def shuffle_materials(self, attribute):
         """
@@ -563,27 +566,27 @@ class StudyAssayMixin(metaclass=ABCMeta):
         """
 
         ontology_mapping = {
-            'samples': 'extraction',
-            'sources': 'sampling',
-            'Extract Name': None,
-            'Labeled Extract Name': 'data acquisition'
+            "samples": "extraction",
+            "sources": "sampling",
+            "Extract Name": None,
+            "Labeled Extract Name": "data acquisition",
         }
 
         if attribute not in ontology_mapping:
-            error = '%s should be in %s' % (attribute, ', '.join(list(ontology_mapping.keys())))
+            error = "%s should be in %s" % (attribute, ", ".join(list(ontology_mapping.keys())))
             raise ValueError(error)
 
-        if attribute == 'samples' or attribute == 'sources':
+        if attribute == "samples" or attribute == "sources":
             target_material = [x for x in getattr(self, attribute)]
         else:
-            target_material = [x for x in getattr(self, 'other_material') if getattr(x, 'type') == attribute]
+            target_material = [x for x in getattr(self, "other_material") if getattr(x, "type") == attribute]
 
         shuffle(target_material)
         mat_index = 0
         for mat in target_material:
-            ontology_term = 'randomized order'
+            ontology_term = "randomized order"
             if ontology_mapping[attribute]:
-                ontology_term = 'randomized %s order' % ontology_mapping[attribute]
+                ontology_term = "randomized %s order" % ontology_mapping[attribute]
             ontology_annotation = OntologyAnnotation(term=ontology_term)
             characteristic = Characteristic(category=ontology_annotation, value=mat_index)
             char, char_index = find_material(lambda x: x.category.term == ontology_term, mat.characteristics)
@@ -597,14 +600,11 @@ class StudyAssayMixin(metaclass=ABCMeta):
         characteristics_categories = []
         for characteristic in self.characteristic_categories:
             id_ = characteristic.id
-            if id_.startswith('#ontology_annotation/'):
-                id_ = id_.replace('#ontology_annotation/', '#characteristic_category/')
+            if id_.startswith("#ontology_annotation/"):
+                id_ = id_.replace("#ontology_annotation/", "#characteristic_category/")
             else:
-                id_ = '#characteristic_category/' + id_ if not id_.startswith('#characteristic_category/') else id_
-            characteristic_to_append = {
-                '@id': id_,
-                'characteristicType': characteristic.to_dict(ld=ld)
-            }
+                id_ = "#characteristic_category/" + id_ if not id_.startswith("#characteristic_category/") else id_
+            characteristic_to_append = {"@id": id_, "characteristicType": characteristic.to_dict(ld=ld)}
             if ld:
                 characteristic_to_append = {**characteristic_to_append, **MaterialAttribute(id_=id_).to_dict()}
             characteristics_categories.append(characteristic_to_append)
@@ -612,7 +612,6 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
 
 class MaterialAttribute(LDSerializable, Identifiable):
-
     def __init__(self, id_=None):
         super().__init__()
         self.id = id_

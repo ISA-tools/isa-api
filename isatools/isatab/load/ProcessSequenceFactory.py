@@ -1,26 +1,18 @@
-from isatools.isatab.utils import process_keygen, find_lt, find_gt, pairwise, get_object_column_map, get_value
-from isatools.isatab.defaults import (
-    log,
-    _RX_COMMENT,
-    _RX_CHARACTERISTICS,
-    _RX_FACTOR_VALUE,
-    _RX_PARAMETER_VALUE
-)
-
-from isatools.constants import _LABELS_ASSAY_NODES, _LABELS_MATERIAL_NODES, _LABELS_DATA_NODES
-
+from isatools.constants import _LABELS_ASSAY_NODES, _LABELS_DATA_NODES, _LABELS_MATERIAL_NODES
+from isatools.isatab.defaults import _RX_CHARACTERISTICS, _RX_COMMENT, _RX_FACTOR_VALUE, _RX_PARAMETER_VALUE, log
+from isatools.isatab.utils import find_gt, find_lt, get_object_column_map, get_value, pairwise, process_keygen
 from isatools.model import (
-    OntologyAnnotation,
-    Comment,
-    Material,
     Characteristic,
-    Source,
-    Sample,
+    Comment,
     DataFile,
     FactorValue,
-    Process,
+    Material,
+    OntologyAnnotation,
     ParameterValue,
-    plink
+    Process,
+    Sample,
+    Source,
+    plink,
 )
 
 
@@ -33,15 +25,18 @@ def preprocess(DF):
     columns = DF.columns
     process_node_name_indices = [x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
     missing_process_indices = list()
-    protocol_ref_cols = [x for x in columns if x.startswith('Protocol REF')]
+    protocol_ref_cols = [x for x in columns if x.startswith("Protocol REF")]
     num_protocol_refs = len(protocol_ref_cols)
     indexes = _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + _LABELS_ASSAY_NODES + protocol_ref_cols
     all_cols_indicies = [i for i, c in enumerate(columns) if c in indexes]
 
     for i in process_node_name_indices:
-        if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
-            log.info('warning: Protocol REF missing between \'{}\' and \'{}\''
-                     .format(columns[find_lt(all_cols_indicies, i)], columns[i]))
+        if not columns[find_lt(all_cols_indicies, i)].startswith("Protocol REF"):
+            log.info(
+                "warning: Protocol REF missing between '{}' and '{}'".format(
+                    columns[find_lt(all_cols_indicies, i)], columns[i]
+                )
+            )
             missing_process_indices.append(i)
 
     # insert Protocol REF columns
@@ -52,12 +47,18 @@ def preprocess(DF):
         rightcol = columns[i]
         # Force use of unknown protocol always, until we can insert missing
         # protocol from above inferences into study metadata
-        inferred_protocol_type = ''
-        log.info('Inserting protocol {} in between {} and {}'
-                 .format(inferred_protocol_type if inferred_protocol_type != '' else 'unknown', leftcol, rightcol))
-        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset),
-                  'unknown' if inferred_protocol_type == '' else inferred_protocol_type)
-        DF.isatab_header.insert(i, 'Protocol REF')
+        inferred_protocol_type = ""
+        log.info(
+            "Inserting protocol {} in between {} and {}".format(
+                inferred_protocol_type if inferred_protocol_type != "" else "unknown", leftcol, rightcol
+            )
+        )
+        DF.insert(
+            i,
+            "Protocol REF.{}".format(num_protocol_refs + offset),
+            "unknown" if inferred_protocol_type == "" else inferred_protocol_type,
+        )
+        DF.isatab_header.insert(i, "Protocol REF")
         offset += 1
     return DF
 
@@ -66,8 +67,7 @@ class ProcessSequenceFactory:
     """The ProcessSequenceFactory is used to parse the tables and build the
     process sequences representing the experimental graphs"""
 
-    def __init__(self, ontology_sources=None, study_samples=None,
-                 study_protocols=None, study_factors=None):
+    def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
         self.ontology_sources = ontology_sources
         self.samples = study_samples
         self.protocols = study_protocols
@@ -99,56 +99,67 @@ class ProcessSequenceFactory:
             protocol_map = dict(map(lambda x: (x.name, x), self.protocols))
 
         try:
-            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)),
-                               [x for x in DF['Source Name'].drop_duplicates() if x != '']))
+            sources = dict(
+                map(
+                    lambda x: ("Source Name:" + x, Source(name=x)),
+                    [x for x in DF["Source Name"].drop_duplicates() if x != ""],
+                )
+            )
         except KeyError:
             pass
 
         try:
             if self.samples is not None:
-                sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
-                sample_keys = list(map(lambda x: 'Sample Name:' + x,
-                                       [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                sample_map = dict(map(lambda x: ("Sample Name:" + x.name, x), self.samples))
+                sample_keys = list(
+                    map(lambda x: "Sample Name:" + x, [str(x) for x in DF["Sample Name"].drop_duplicates() if x != ""])
+                )
                 for k in sample_keys:
                     try:
                         samples[k] = sample_map[k]
                     except KeyError:
-                        log.warning('warning! Did not find sample referenced at assay level in study samples')
+                        log.warning("warning! Did not find sample referenced at assay level in study samples")
             else:
                 samples = dict(
-                    map(lambda x: ('Sample Name:' + x, Sample(name=x)),
-                        [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                    map(
+                        lambda x: ("Sample Name:" + x, Sample(name=x)),
+                        [str(x) for x in DF["Sample Name"].drop_duplicates() if x != ""],
+                    )
+                )
         except KeyError:
             pass
 
         try:
             extracts = dict(
-                map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')),
-                    [x for x in DF['Extract Name'].drop_duplicates() if x != '']))
+                map(
+                    lambda x: ("Extract Name:" + x, Material(name=x, type_="Extract Name")),
+                    [x for x in DF["Extract Name"].drop_duplicates() if x != ""],
+                )
+            )
             other_material.update(extracts)
         except KeyError:
             pass
 
         try:
-            if 'Labeled Extract Name' in DF.columns:
+            if "Labeled Extract Name" in DF.columns:
                 try:
-                    category = characteristic_categories['Label']
+                    category = characteristic_categories["Label"]
                 except KeyError:
-                    category = OntologyAnnotation(term='Label')
-                    characteristic_categories['Label'] = category
-                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().items():
-                    if lextract_name != '':
-                        lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                    category = OntologyAnnotation(term="Label")
+                    characteristic_categories["Label"] = category
+                for _, lextract_name in DF["Labeled Extract Name"].drop_duplicates().items():
+                    if lextract_name != "":
+                        lextract = Material(name=lextract_name, type_="Labeled Extract Name")
                         lextract.characteristics = [
-                            Characteristic(category=category, value=OntologyAnnotation(term=DF.loc[_, 'Label']))
+                            Characteristic(category=category, value=OntologyAnnotation(term=DF.loc[_, "Label"]))
                         ]
-                        other_material['Labeled Extract Name:' + lextract_name] = lextract
+                        other_material["Labeled Extract Name:" + lextract_name] = lextract
         except KeyError:
             pass
 
         for data_col in [x for x in DF.columns if x in _LABELS_DATA_NODES]:
-            filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
+            filenames = [x for x in DF[data_col].drop_duplicates() if x != ""]
+            data.update(dict(map(lambda x: (":".join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
@@ -160,12 +171,12 @@ class ProcessSequenceFactory:
 
         def get_node_by_label_and_key(labl, this_key):
             n = None
-            lk = labl + ':' + this_key
-            if labl == 'Source Name':
+            lk = labl + ":" + this_key
+            if labl == "Source Name":
                 n = sources[lk]
-            if labl == 'Sample Name':
+            if labl == "Sample Name":
                 n = samples[lk]
-            elif labl in ('Extract Name', 'Labeled Extract Name'):
+            elif labl in ("Extract Name", "Labeled Extract Name"):
                 n = other_material[lk]
             elif labl in _LABELS_DATA_NODES:
                 n = data[lk]
@@ -177,7 +188,6 @@ class ProcessSequenceFactory:
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:
-
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
@@ -199,8 +209,7 @@ class ProcessSequenceFactory:
                             pass  # skip if object not found
 
                     if material is not None:
-
-                        for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
+                        for charac_column in [c for c in column_group if c.startswith("Characteristics[")]:
                             category_key = next(iter(_RX_CHARACTERISTICS.findall(charac_column)))
                             try:
                                 category = characteristic_categories[category_key]
@@ -211,32 +220,28 @@ class ProcessSequenceFactory:
                             characteristic = Characteristic(category=category)
 
                             v, u = get_value(
-                                charac_column, column_group, object_series,
-                                ontology_source_map, unit_categories)
+                                charac_column, column_group, object_series, ontology_source_map, unit_categories
+                            )
 
                             characteristic.value = v
                             characteristic.unit = u
 
-                            if characteristic.category.term in [
-                                x.category.term
-                                for x in material.characteristics
-                            ]:
+                            if characteristic.category.term in [x.category.term for x in material.characteristics]:
                                 log.warning(
-                                    'Duplicate characteristic found for '
-                                    'material, skipping adding to material '
-                                    'object')
+                                    "Duplicate characteristic found for material, skipping adding to material object"
+                                )
                             else:
                                 material.characteristics.append(characteristic)
 
-                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        for comment_column in [c for c in column_group if c.startswith("Comment[")]:
                             comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
                             if comment_key not in [x.name for x in material.comments]:
                                 comment = Comment(name=comment_key, value=str(object_series[comment_column]))
                                 material.comments.append(comment)
 
                 for _, object_series in DF.drop_duplicates().iterrows():
-                    node_name = str(object_series['Sample Name'])
-                    node_key = ":".join(['Sample Name', node_name])
+                    node_name = str(object_series["Sample Name"])
+                    node_key = ":".join(["Sample Name", node_name])
                     material = None
                     try:
                         material = samples[node_key]
@@ -244,12 +249,12 @@ class ProcessSequenceFactory:
                         pass  # skip if object not found
 
                     if isinstance(material, Sample) and self.factors is not None:
-                        for fv_column in [c for c in DF.columns if c.startswith('Factor Value[')]:
+                        for fv_column in [c for c in DF.columns if c.startswith("Factor Value[")]:
                             category_key = next(iter(_RX_FACTOR_VALUE.findall(fv_column)))
                             factor_hits = [f for f in self.factors if f.name == category_key]
 
                             if len(factor_hits) != 1:
-                                raise ValueError('Could not resolve Study Factor from Factor Value ', category_key)
+                                raise ValueError("Could not resolve Study Factor from Factor Value ", category_key)
 
                             factor = factor_hits[0]
                             fv = FactorValue(factor_name=factor)
@@ -264,7 +269,7 @@ class ProcessSequenceFactory:
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     try:
                         data_file = get_node_by_label_and_key(object_label, str(object_series[object_label]))
-                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        for comment_column in [c for c in column_group if c.startswith("Comment[")]:
                             comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
                             if comment_key not in [x.name for x in data_file.comments]:
                                 comment = Comment(name=comment_key, value=str(object_series[comment_column]))
@@ -272,20 +277,15 @@ class ProcessSequenceFactory:
                     except KeyError:
                         pass  # skip if object not found
 
-            elif object_label.startswith('Protocol REF'):
+            elif object_label.startswith("Protocol REF"):
                 object_label_index = list(DF.columns).index(object_label)
 
                 # don't drop duplicates
                 for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(
-                        protocol_ref,
-                        column_group,
-                        _cg,
-                        DF.columns,
-                        object_series,
-                        object_index,
-                        DF)
+                        protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF
+                    )
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
@@ -301,13 +301,14 @@ class ProcessSequenceFactory:
                     output_proc_index = find_gt(proc_cols, object_label_index)
 
                     post_chained_protocol = any(
-                        col_name for col_name in DF.columns[(object_label_index + 1): output_node_index].values
-                        if col_name.startswith('Protocol REF')
+                        col_name
+                        for col_name in DF.columns[(object_label_index + 1) : output_node_index].values
+                        if col_name.startswith("Protocol REF")
                     )
 
-                    if (output_proc_index < output_node_index > -1 and not post_chained_protocol) \
-                            or (output_proc_index > output_node_index):
-
+                    if (output_proc_index < output_node_index > -1 and not post_chained_protocol) or (
+                        output_proc_index > output_node_index
+                    ):
                         output_node_label = DF.columns[output_node_index]
                         output_node_value = str(object_series[output_node_label])
                         node_key = output_node_value
@@ -324,8 +325,9 @@ class ProcessSequenceFactory:
                     input_proc_index = find_lt(proc_cols, object_label_index)
 
                     previous_chained_protocol = any(
-                        col_name for col_name in DF.columns[input_node_index: (object_label_index - 1)].values
-                        if col_name.startswith('Protocol REF')
+                        col_name
+                        for col_name in DF.columns[input_node_index : (object_label_index - 1)].values
+                        if col_name.startswith("Protocol REF")
                     )
 
                     if input_proc_index < input_node_index > -1 and not previous_chained_protocol:
@@ -344,13 +346,13 @@ class ProcessSequenceFactory:
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
                     if len(name_column_hits) == 1:
                         process.name = str(object_series[name_column_hits[0]])
-                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
+                    for pv_column in [c for c in column_group if c.startswith("Parameter Value[")]:
                         category_key = next(iter(_RX_PARAMETER_VALUE.findall(pv_column)))
                         if category_key not in [x.category.parameter_name.term for x in process.parameter_values]:
                             try:
                                 protocol = protocol_map[protocol_ref]
                             except KeyError:
-                                raise KeyError('Could not find protocol matching ', protocol_ref)
+                                raise KeyError("Could not find protocol matching ", protocol_ref)
 
                             param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
 
@@ -358,28 +360,26 @@ class ProcessSequenceFactory:
                                 category = param_hits[0]
                             else:
                                 raise ValueError(
-                                    'Could not resolve Protocol parameter '
-                                    'from Parameter Value ', category_key)
+                                    "Could not resolve Protocol parameter from Parameter Value ", category_key
+                                )
 
                             parameter_value = ParameterValue(category=category)
-                            v, u = get_value(pv_column,
-                                             column_group,
-                                             object_series,
-                                             ontology_source_map,
-                                             unit_categories)
+                            v, u = get_value(
+                                pv_column, column_group, object_series, ontology_source_map, unit_categories
+                            )
                             parameter_value.value = v
                             parameter_value.unit = u
                             process.parameter_values.append(parameter_value)
 
-                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                    for comment_column in [c for c in column_group if c.startswith("Comment[")]:
                         comment_key = next(iter(_RX_COMMENT.findall(comment_column)))
                         if comment_key not in [x.name for x in process.comments]:
                             process.comments.append(Comment(name=comment_key, value=str(object_series[comment_column])))
 
-                    for performer in [c for c in column_group if c == 'Performer']:
+                    for performer in [c for c in column_group if c == "Performer"]:
                         process.performer = str(object_series[performer])
 
-                    for date in [c for c in column_group if c == 'Date']:
+                    for date in [c for c in column_group if c == "Date"]:
                         process.date = str(object_series[date])
 
         for _, object_series in DF.iterrows():  # don't drop duplicates
@@ -390,13 +390,13 @@ class ProcessSequenceFactory:
                 # for each object, parse column group
                 object_label = column_group[0]
 
-                if object_label.startswith('Source Name'):
+                if object_label.startswith("Source Name"):
                     try:
                         source_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
 
-                if object_label.startswith('Sample Name'):
+                if object_label.startswith("Sample Name"):
                     try:
                         sample_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                     except KeyError:
@@ -405,7 +405,7 @@ class ProcessSequenceFactory:
                         if source_node_context not in sample_node_context.derives_from:
                             sample_node_context.derives_from.append(source_node_context)
 
-                if object_label.startswith('Protocol REF'):
+                if object_label.startswith("Protocol REF"):
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
                     process_key_sequence.append(process_key)

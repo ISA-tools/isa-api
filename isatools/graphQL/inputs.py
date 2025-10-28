@@ -1,9 +1,6 @@
-from graphene import InputObjectType, Argument, ID, List, String
-from isatools.graphQL.utils.validate import (
-    validate_input,
-    validate_outputs,
-    validate_characteristics
-)
+from graphene import ID, Argument, InputObjectType, List, String
+
+from isatools.graphQL.utils.validate import validate_characteristics, validate_input, validate_outputs
 
 
 class StringComparator(InputObjectType):
@@ -33,20 +30,24 @@ class ParameterValueInput(InputObjectType):
 
 class AssayParameters(InputObjectType):
     measurementType = Argument(StringComparator, name="measurementType", description="Type of measurement to filter on")
-    executesProtocol = Argument(StringComparator,
-                                name="executesProtocol",
-                                description="Type of protocol the process should executes")
+    executesProtocol = Argument(
+        StringComparator, name="executesProtocol", description="Type of protocol the process should executes"
+    )
     technologyType = Argument(StringComparator, name="technologyType", description="Type of technology to filter on")
-    treatmentGroup = Argument(List(ExposureParameters, description="Name/value representing the exposure factor value"),
-                              description="List of factor values representing an exposure to filter on",
-                              name="treatmentGroup")
-    characteristics = Argument(List(ExposureParameters),
-                               name="characteristics",
-                               description="characteristics of the sample to filter on")
+    treatmentGroup = Argument(
+        List(ExposureParameters, description="Name/value representing the exposure factor value"),
+        description="List of factor values representing an exposure to filter on",
+        name="treatmentGroup",
+    )
+    characteristics = Argument(
+        List(ExposureParameters), name="characteristics", description="characteristics of the sample to filter on"
+    )
     target = String(required=False, name="on", description="Type of inputs to apply the characteristics to")
-    parameterValues = Argument(ParameterValueInput,
-                               name="parameterValues",
-                               description="List specifying the parameters of the protocols to filter on ")
+    parameterValues = Argument(
+        ParameterValueInput,
+        name="parameterValues",
+        description="List specifying the parameters of the protocols to filter on ",
+    )
 
     @property
     def is_valid(self):
@@ -56,13 +57,15 @@ class AssayParameters(InputObjectType):
 class ProcessSequenceParameters(InputObjectType):
     executesProtocol = Argument(StringComparator, name="executesProtocol")
     treatmentGroup = Argument(List(ExposureParameters), name="treatmentGroup")
-    characteristics = Argument(List(ExposureParameters),
-                               name="characteristics",
-                               description="characteristics of the sample to filter on")
+    characteristics = Argument(
+        List(ExposureParameters), name="characteristics", description="characteristics of the sample to filter on"
+    )
     target = String(required=False, name="on", description="Type of inputs to apply the characteristics to")
-    parameterValues = Argument(ParameterValueInput,
-                               name="parameterValues",
-                               description="List specifying the parameters of the protocols to filter on ")
+    parameterValues = Argument(
+        ParameterValueInput,
+        name="parameterValues",
+        description="List specifying the parameters of the protocols to filter on ",
+    )
 
     @property
     def is_valid(self):
@@ -72,9 +75,9 @@ class ProcessSequenceParameters(InputObjectType):
 class OutputsParameters(InputObjectType):
     target = String(required=False, name="on", description="Type of output to apply the filters to")
     label = StringComparator(name="type", description="Name of the output to filter on")
-    treatmentGroup = Argument(List(ExposureParameters),
-                              name="treatmentGroup",
-                              description="List of exposure to filter on")
+    treatmentGroup = Argument(
+        List(ExposureParameters), name="treatmentGroup", description="List of exposure to filter on"
+    )
 
     @property
     def is_valid(self):
@@ -83,12 +86,12 @@ class OutputsParameters(InputObjectType):
 
 class InputsParameters(InputObjectType):
     target = String(required=False, name="on", description="Type of input to apply the filter to")
-    treatmentGroup = Argument(List(ExposureParameters),
-                              name="treatmentGroup",
-                              description="List describing the sample exposure")
-    characteristics = Argument(List(ExposureParameters),
-                               name="characteristics",
-                               description="characteristics of the sample to filter on")
+    treatmentGroup = Argument(
+        List(ExposureParameters), name="treatmentGroup", description="List describing the sample exposure"
+    )
+    characteristics = Argument(
+        List(ExposureParameters), name="characteristics", description="characteristics of the sample to filter on"
+    )
 
     @property
     def is_valid(self):

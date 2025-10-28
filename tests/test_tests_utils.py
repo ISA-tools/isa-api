@@ -1,110 +1,48 @@
-import unittest
-from isatools.tests import utils
 import os
+import unittest
+
 from lxml import etree
+
+from isatools.tests import utils
 
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
-        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
-                                "repository using "
-                                "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
-                                .format(utils.DATA_DIR))
+        raise FileNotFoundError(
+            "Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+            "repository using "
+            "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR)
+        )
 
 
 class TestUtils(unittest.TestCase):
-
     j1 = {
         "k1": "v1",
         "k2": "v2",
-        "k3": [
-            {
-                "@id": "id1",
-                "k1": "v1"
-            },
-            {
-                "@id": "id2",
-                "k1": "v2"
-            }
-        ],
-        "k4": [
-            {
-                "@id": "id1"
-            },
-            {
-                "@id": "id2"
-            }
-        ]
+        "k3": [{"@id": "id1", "k1": "v1"}, {"@id": "id2", "k1": "v2"}],
+        "k4": [{"@id": "id1"}, {"@id": "id2"}],
     }
 
     j1_no_id = {
         "k1": "v1",
         "k2": "v2",
-        "k3": [
-            {
-                "@id": "",
-                "k1": "v1"
-            },
-            {
-                "@id": "",
-                "k1": "v2"
-            }
-        ],
-        "k4": [
-            {
-                "@id": ""
-            },
-            {
-                "@id": ""
-            }
-        ]
+        "k3": [{"@id": "", "k1": "v1"}, {"@id": "", "k1": "v2"}],
+        "k4": [{"@id": ""}, {"@id": ""}],
     }
 
     j2 = {
-        "k3": [
-            {
-                "@id": "id2",
-                "k1": "v2"
-            },
-            {
-                "@id": "id1",
-                "k1": "v1"
-            }
-        ],
-        "k4": [
-            {
-                "@id": "id2"
-            },
-            {
-                "@id": "id1"
-            }
-        ],
+        "k3": [{"@id": "id2", "k1": "v2"}, {"@id": "id1", "k1": "v1"}],
+        "k4": [{"@id": "id2"}, {"@id": "id1"}],
         "k2": "v2",
-        "k1": "v1"
+        "k1": "v1",
     }
 
     j3 = {
-        "k3": [
-            {
-                "@id": "id2",
-                "k1": "v2"
-            },
-            {
-                "@id": "id1",
-                "k1": "v1"
-            }
-        ],
-        "k4": [
-            {
-                "@id": "id2"
-            },
-            {
-                "@id": "id1"
-            }
-        ],
+        "k3": [{"@id": "id2", "k1": "v2"}, {"@id": "id1", "k1": "v1"}],
+        "k4": [{"@id": "id2"}, {"@id": "id1"}],
         "k2": "v2",
         "k1": "v1",
-        "k5": "v1"
+        "k5": "v1",
     }
 
     x1 = """<root>
@@ -151,21 +89,23 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(utils.assert_json_equal(self.j1, self.j3))
 
     def test_assert_tab_content_equal_investigation(self):
-        with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab1:
-            with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab2:
+        with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "i_investigation.txt")) as i_tab1:
+            with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "i_investigation.txt")) as i_tab2:
                 self.assertTrue(utils.assert_tab_content_equal(i_tab1, i_tab2))
 
     def test_assert_tab_content_equal_investigation_except(self):
         with self.assertRaises(OSError) as context:
-            with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')) as i_tab1:
-                with open(os.path.join(utils.TAB_DATA_DIR, 'BII-S-3', 'i_gilbert.txt')) as i_tab2:
-                    self.assertEqual(utils.assert_tab_content_equal(i_tab1, i_tab2),
-                                     "Cannot save file into a non-existent directory: \
-                                     '/Users/philippe/Downloads/test-isa-for-release'")
+            with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "i_investigation.txt")) as i_tab1:
+                with open(os.path.join(utils.TAB_DATA_DIR, "BII-S-3", "i_gilbert.txt")) as i_tab2:
+                    self.assertEqual(
+                        utils.assert_tab_content_equal(i_tab1, i_tab2),
+                        "Cannot save file into a non-existent directory: \
+                                     '/Users/philippe/Downloads/test-isa-for-release'",
+                    )
 
     def test_assert_tab_content_equal_assay_table(self):
-        with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab1:
-            with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab2:
+        with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "s_BII-S-1.txt")) as s_tab1:
+            with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "s_BII-S-1.txt")) as s_tab2:
                 self.assertTrue(utils.assert_tab_content_equal(s_tab1, s_tab2))
 
     def test_assert_xml_equal(self):

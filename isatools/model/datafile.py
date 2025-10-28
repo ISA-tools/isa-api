@@ -1,7 +1,7 @@
-from isatools.model.comments import Commentable, Comment
-from isatools.model.sample import Sample
-from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.comments import Comment, Commentable
 from isatools.model.identifiable import Identifiable
+from isatools.model.process_sequence import ProcessSequenceNode
+from isatools.model.sample import Sample
 
 
 class DataFile(Commentable, ProcessSequenceNode, Identifiable):
@@ -15,8 +15,9 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None,
-                 checksum_type="", checksum_value=""):
+    def __init__(
+        self, filename="", id_="", label="", generated_from=None, comments=None, checksum_type="", checksum_value=""
+    ):
         # super().__init__(comments)
         Commentable.__init__(self, comments)
         ProcessSequenceNode.__init__(self)
@@ -31,10 +32,9 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
             self.__generated_from = generated_from
 
         self.__comments = comments or []
-        self.__comments.extend([
-            Comment(name="checksum type", value=checksum_type),
-            Comment(name="checksum", value=checksum_value)
-        ])
+        self.__comments.extend(
+            [Comment(name="checksum type", value=checksum_type), Comment(name="checksum", value=checksum_value)]
+        )
 
     @property
     def filename(self):
@@ -44,8 +44,9 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('{0}.name must be a str or None; got {1}:{2}'
-                                 .format(type(self).__name__, val, type(val)))
+            raise AttributeError(
+                "{0}.name must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+            )
         self.__filename = val
 
     @property
@@ -57,8 +58,8 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     def label(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                '{0}.label must be a str or None; got {1}:{2}'
-                .format(type(self).__name__, val, type(val)))
+                "{0}.label must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+            )
         else:
             self.__label = val
 
@@ -70,36 +71,40 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
 
     @generated_from.setter
     def generated_from(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__generated_from = list(val)
         else:
-            raise AttributeError('{0}.generated_from must be iterable containing Samples'.format(type(self).__name__))
+            raise AttributeError("{0}.generated_from must be iterable containing Samples".format(type(self).__name__))
 
     def __repr__(self):
-        return "isatools.model.DataFile(filename='{data_file.filename}', " \
-               "label='{data_file.label}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})" \
-            .format(data_file=self)
+        return (
+            "isatools.model.DataFile(filename='{data_file.filename}', "
+            "label='{data_file.label}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
-        return ("DataFile(\n\t"
-                "filename={data_file.filename}\n\t"
-                "label={data_file.label}\n\t"
-                "generated_from={num_generated_from} Sample objects\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return (
+            "DataFile(\n\t"
+            "filename={data_file.filename}\n\t"
+            "label={data_file.label}\n\t"
+            "generated_from={num_generated_from} Sample objects\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, DataFile) \
-            and self.filename == other.filename \
-            and self.label == other.label \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, DataFile)
+            and self.filename == other.filename
+            and self.label == other.label
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -109,15 +114,15 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
             "@id": self.id,
             "name": self.filename,
             "type": self.label,
-            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(data_file, ld)
 
     def from_dict(self, data_file):
-        self.id = data_file.get('@id', '')
-        self.filename = data_file.get('name', '')
-        self.label = data_file.get('type', '')
-        self.load_comments(data_file.get('comments', []))
+        self.id = data_file.get("@id", "")
+        self.filename = data_file.get("name", "")
+        self.label = data_file.get("type", "")
+        self.load_comments(data_file.get("comments", []))
 
         # TODO : missing generated_from property in dump/load methods
 
@@ -125,34 +130,35 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
 class RawDataFile(DataFile):
     """Represents a raw data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Raw Data File'
+        self.label = "Raw Data File"
 
     def __repr__(self):
-        return "isatools.model.RawDataFile(filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.RawDataFile(filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """RawDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, RawDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, RawDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -161,35 +167,36 @@ class RawDataFile(DataFile):
 class DerivedDataFile(DataFile):
     """Represents a derived data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Derived Data File'
+        self.label = "Derived Data File"
 
     def __repr__(self):
-        return "isatools.model.DerivedDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.DerivedDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """DerivedDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, DerivedDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, DerivedDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -198,34 +205,34 @@ class DerivedDataFile(DataFile):
 class RawSpectralDataFile(DataFile):
     """Represents a raw spectral data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Raw Spectral Data File'
+        self.label = "Raw Spectral Data File"
 
     def __repr__(self):
-        return "isatools.model.RawSpectralDataFile(filename='{0.filename}', " \
-               "generated_from={0.generated_from}, comments={0.comments})" \
-            .format(self)
+        return (
+            "isatools.model.RawSpectralDataFile(filename='{0.filename}', "
+            "generated_from={0.generated_from}, comments={0.comments})".format(self)
+        )
 
     def __str__(self):
         return """RawSpectralDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, RawSpectralDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, RawSpectralDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -234,35 +241,36 @@ class RawSpectralDataFile(DataFile):
 class DerivedArrayDataFile(DataFile):
     """Represents a derived array data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Derived Array Data File'
+        self.label = "Derived Array Data File"
 
     def __repr__(self):
-        return "isatools.model.DerivedArrayDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.DerivedArrayDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """DerivedArrayDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, DerivedArrayDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, DerivedArrayDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -271,35 +279,36 @@ class DerivedArrayDataFile(DataFile):
 class ArrayDataFile(DataFile):
     """Represents a array data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Array Data File'
+        self.label = "Array Data File"
 
     def __repr__(self):
-        return "isatools.model.ArrayDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.ArrayDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """ArrayDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, ArrayDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, ArrayDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -308,35 +317,36 @@ class ArrayDataFile(DataFile):
 class DerivedSpectralDataFile(DataFile):
     """Represents a derived spectral data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Derived Spectral Data File'
+        self.label = "Derived Spectral Data File"
 
     def __repr__(self):
-        return "isatools.model.DerivedSpectralDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.DerivedSpectralDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """DerivedSpectralDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, DerivedSpectralDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, DerivedSpectralDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -345,35 +355,36 @@ class DerivedSpectralDataFile(DataFile):
 class ProteinAssignmentFile(DataFile):
     """Represents a protein assignment file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Protein Assignment File'
+        self.label = "Protein Assignment File"
 
     def __repr__(self):
-        return "isatools.model.ProteinAssignmentFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.ProteinAssignmentFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """ProteinAssignmentFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, ProteinAssignmentFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, ProteinAssignmentFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -382,35 +393,36 @@ class ProteinAssignmentFile(DataFile):
 class PeptideAssignmentFile(DataFile):
     """Represents a peptide assignment file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Peptide Assignment File'
+        self.label = "Peptide Assignment File"
 
     def __repr__(self):
-        return "isatools.model.PeptideAssignmentFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.PeptideAssignmentFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """PeptideAssignmentFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, PeptideAssignmentFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, PeptideAssignmentFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -419,35 +431,36 @@ class PeptideAssignmentFile(DataFile):
 class DerivedArrayDataMatrixFile(DataFile):
     """Represents a derived array data matrix file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Derived Array Data Matrix File'
+        self.label = "Derived Array Data Matrix File"
 
     def __repr__(self):
-        return "isatools.model.DerivedArrayDataMatrixFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.DerivedArrayDataMatrixFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """DerivedArrayDataMatrixFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, DerivedArrayDataMatrixFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, DerivedArrayDataMatrixFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -457,35 +470,36 @@ class PostTranslationalModificationAssignmentFile(DataFile):
     """Represents a post translational modification assignment file in an
     experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Post Translational Modification Assignment File'
+        self.label = "Post Translational Modification Assignment File"
 
     def __repr__(self):
-        return "isatools.model.PostTranslationalModificationAssignmentFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.PostTranslationalModificationAssignmentFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """PostTranslationalModificationAssignmentFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, PostTranslationalModificationAssignmentFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, PostTranslationalModificationAssignmentFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -495,35 +509,36 @@ class AcquisitionParameterDataFile(DataFile):
     """Represents a acquisition parameter data file in an experimental
     graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Acquisition Parameter Data File'
+        self.label = "Acquisition Parameter Data File"
 
     def __repr__(self):
-        return "isatools.model.AcquisitionParameterDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.AcquisitionParameterDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """AcquisitionParameterDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, AcquisitionParameterDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, AcquisitionParameterDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -532,35 +547,36 @@ class AcquisitionParameterDataFile(DataFile):
 class FreeInductionDecayDataFile(DataFile):
     """Represents a free induction decay data file in an experimental graph."""
 
-    def __init__(self, filename='', id_='',
-                 generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+    def __init__(self, filename="", id_="", generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
 
-        self.label = 'Free Induction Decay Data File'
+        self.label = "Free Induction Decay Data File"
 
     def __repr__(self):
-        return "isatools.model.FreeInductionDecayDataFile(" \
-               "filename='{data_file.filename}', " \
-               "generated_from={data_file.generated_from}, " \
-               "comments={data_file.comments})".format(data_file=self)
+        return (
+            "isatools.model.FreeInductionDecayDataFile("
+            "filename='{data_file.filename}', "
+            "generated_from={data_file.generated_from}, "
+            "comments={data_file.comments})".format(data_file=self)
+        )
 
     def __str__(self):
         return """FreeInductionDecayDataFile(
     filename={data_file.filename}
     generated_from={num_generated_from} Sample objects
     comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from),
-            num_comments=len(self.comments))
+)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, FreeInductionDecayDataFile) \
-            and self.filename == other.filename \
-            and self.generated_from == other.generated_from \
+        return (
+            isinstance(other, FreeInductionDecayDataFile)
+            and self.filename == other.filename
+            and self.generated_from == other.generated_from
             and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other

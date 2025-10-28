@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from graphene.types import Scalar
 from graphql.language import ast
 
@@ -16,8 +17,7 @@ class DateTime(Scalar):
     @staticmethod
     def parse_literal(node):
         if isinstance(node, ast.StringValue):
-            return datetime.strptime(
-                node.value, "%Y-%m-%d")
+            return datetime.strptime(node.value, "%Y-%m-%d")
         else:
             raise Exception("You must provide a string containing a date")
 
@@ -50,4 +50,3 @@ class StringOrInt(Scalar):
             return node.value
         else:
             raise Exception("You must provide a string or integer")
-

@@ -1,4 +1,4 @@
-from logging import getLogger, DEBUG
+from logging import DEBUG, getLogger
 
-log = getLogger('isatools')
+log = getLogger("isatools")
 log.setLevel(DEBUG)

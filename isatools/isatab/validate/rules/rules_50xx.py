@@ -1,5 +1,5 @@
-from isatools.isatab.utils import get_num_study_groups
 from isatools.isatab.defaults import log
+from isatools.isatab.utils import get_num_study_groups
 from isatools.isatab.validate.store import validator
 
 
@@ -13,14 +13,14 @@ def check_study_groups(table, filename, study_group_size_in_comment):
     not
     """
     num_study_groups = get_num_study_groups(table, filename)
-    log.debug('Found {} study groups in {}'.format(num_study_groups, filename))
-    msg = 'Found {} study groups in {}'.format(num_study_groups, filename)
-    spl = 'Found {} study groups in {}'.format(num_study_groups, filename)
+    log.debug("Found {} study groups in {}".format(num_study_groups, filename))
+    msg = "Found {} study groups in {}".format(num_study_groups, filename)
+    spl = "Found {} study groups in {}".format(num_study_groups, filename)
     validator.add_info(message=msg, supplemental=spl, code=5001)
 
     if study_group_size_in_comment is not None and study_group_size_in_comment != num_study_groups:
-        msg = 'Reported study group size does not match table'.format(num_study_groups, filename)
-        spl = 'Study group size reported as {} but found {} in {}'
+        msg = "Reported study group size {} does not match table {}".format(num_study_groups, filename)
+        spl = "Study group size reported as {} but found {} in {}"
         spl = spl.format(study_group_size_in_comment, num_study_groups, filename)
         log.warning(spl)
         validator.add_warning(message=msg, supplemental=spl, code=5002)

@@ -1,5 +1,5 @@
-from typing import List, Any
 from abc import ABCMeta
+from typing import Any, List
 
 from isatools.model.context import LDSerializable
 
@@ -12,7 +12,7 @@ class Comment(LDSerializable, object):
         value: A string value for the comment.
     """
 
-    def __init__(self, name: str = '', value: str = ''):
+    def __init__(self, name: str = "", value: str = ""):
         LDSerializable.__init__(self)
         self.__name = name
         self.__value = value
@@ -25,7 +25,7 @@ class Comment(LDSerializable, object):
     @name.setter
     def name(self, val: str):
         if not isinstance(val, str):
-            raise AttributeError('Comment.name must be a string')
+            raise AttributeError("Comment.name must be a string")
         self.__name = val
 
     @property
@@ -36,7 +36,7 @@ class Comment(LDSerializable, object):
     @value.setter
     def value(self, val: str):
         if not isinstance(val, str):
-            raise AttributeError('Comment.value must be a string')
+            raise AttributeError("Comment.value must be a string")
         self.__value = val
 
     def __repr__(self):
@@ -55,15 +55,12 @@ class Comment(LDSerializable, object):
         return not self == other
 
     def to_dict(self, ld=False):
-        ontology_annotation = {
-            "name": self.name,
-            "value": self.value
-        }
+        ontology_annotation = {"name": self.name, "value": self.value}
         return self.update_isa_object(ontology_annotation, ld=ld)
 
     def from_dict(self, comment):
-        self.name = comment['name'] if 'name' in comment else ''
-        self.value = comment['value'] if 'value' in comment else ''
+        self.name = comment["name"] if "name" in comment else ""
+        self.value = comment["value"] if "value" in comment else ""
 
 
 class Commentable(LDSerializable, metaclass=ABCMeta):
@@ -85,7 +82,7 @@ class Commentable(LDSerializable, metaclass=ABCMeta):
     @comments.setter
     def comments(self, val: List[Comment]):
         if not isinstance(val, list):
-            raise AttributeError('Commentable.comments must be iterable containing Comments')
+            raise AttributeError("Commentable.comments must be iterable containing Comments")
         if val == [] or all(isinstance(x, Comment) for x in val):
             self.__comments = list(val)
 
@@ -123,13 +120,11 @@ class Commentable(LDSerializable, metaclass=ABCMeta):
         return comments[-1] if len(comments) > 0 else None
 
     def get_comment_names(self) -> List[str]:
-        """ Gets all the comments names
-        """
+        """Gets all the comments names"""
         return [x.name for x in self.comments]
 
     def get_comment_values(self) -> List[str]:
-        """ Gets all the comments values
-        """
+        """Gets all the comments values"""
         return [x.value for x in self.comments]
 
     def load_comments(self, comments_data):

@@ -1,15 +1,14 @@
-from unittest import TestCase
 import os
 from json import loads as json_loads
+from unittest import TestCase
 
 from isatools.database import *
-
 
 here = os.path.dirname(os.path.abspath(__file__))
 
 
 def get_investigation(filename):
-    with open(os.path.join(here, '..', "data", "json", filename, "%s.json" % filename)) as f:
+    with open(os.path.join(here, "..", "data", "json", filename, "%s.json" % filename)) as f:
         data = json_loads(f.read())
     investigation = Investigation()
     investigation.from_dict(data)
@@ -39,30 +38,32 @@ study_expected = initial_investigation.studies[0]
 
 
 class TestAssertions(TestCase):
-
     def test_investigation_base_assertions(self):
         self.assertEqual(
             sorted(investigation_from_db.ontology_source_references, key=lambda d: d.name),
-            sorted(initial_investigation.ontology_source_references, key=lambda d: d.name)
+            sorted(initial_investigation.ontology_source_references, key=lambda d: d.name),
         )
 
     def test_study_base_assertions(self):
         self.assertEqual(study_from_db.comments, study_expected.comments)
         self.assertEqual(
             sorted(study_from_db.publications, key=lambda d: d.title),
-            sorted(study_expected.publications, key=lambda d: d.title))
+            sorted(study_expected.publications, key=lambda d: d.title),
+        )
         self.assertEqual(
-            sorted(study_from_db.factors, key=lambda d: d.name),
-            sorted(study_expected.factors, key=lambda d: d.name))
+            sorted(study_from_db.factors, key=lambda d: d.name), sorted(study_expected.factors, key=lambda d: d.name)
+        )
         self.assertEqual(
-            sorted(study_from_db.units, key=lambda d: d.term),
-            sorted(study_expected.units, key=lambda d: d.term))
+            sorted(study_from_db.units, key=lambda d: d.term), sorted(study_expected.units, key=lambda d: d.term)
+        )
         self.assertEqual(
             sorted(study_from_db.design_descriptors, key=lambda d: d.term),
-            sorted(study_expected.design_descriptors, key=lambda d: d.term))
+            sorted(study_expected.design_descriptors, key=lambda d: d.term),
+        )
         self.assertEqual(
             sorted(study_from_db.other_material, key=lambda x: x.name),
-            sorted(study_expected.other_material, key=lambda x: x.name))
+            sorted(study_expected.other_material, key=lambda x: x.name),
+        )
 
     def test_study_sources_assertions(self):
         sources_1 = sorted(study_from_db.sources, key=lambda x: x.name)
@@ -131,12 +132,11 @@ class TestAssertions(TestCase):
             self.assertEqual(assay_1.measurement_type, assay_2.measurement_type)
             self.assertEqual(assay_1.technology_type, assay_2.technology_type)
             self.assertEqual(assay_1.technology_platform, assay_2.technology_platform)
-            self.assertEqual(
-                sorted(assay_1.units, key=lambda d: d.term),
-                sorted(assay_2.units, key=lambda d: d.term))
+            self.assertEqual(sorted(assay_1.units, key=lambda d: d.term), sorted(assay_2.units, key=lambda d: d.term))
             self.assertEqual(
                 sorted(assay_1.characteristic_categories, key=lambda d: d.term),
-                sorted(assay_2.characteristic_categories, key=lambda d: d.term))
+                sorted(assay_2.characteristic_categories, key=lambda d: d.term),
+            )
             process_sequence_1 = assay_1.process_sequence
             process_sequence_2 = assay_2.process_sequence
             for sequence_1 in process_sequence_1:

@@ -4,7 +4,6 @@ from isatools.model import ProcessSequenceNode
 
 
 class TestProcessSequenceNode(TestCase):
-
     def test_(self):
         ProcessSequenceNode.sequence_identifier = 0
         self.assertTrue(ProcessSequenceNode.sequence_identifier == 0)

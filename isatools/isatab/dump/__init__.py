@@ -1,2 +1,2 @@
-from isatools.isatab.dump.core import dump, dumps, dump_tables_to_dataframes
-from isatools.isatab.dump.write import write_study_table_files, write_assay_table_files, write_value_columns, flatten
+from isatools.isatab.dump.core import dump, dump_tables_to_dataframes, dumps
+from isatools.isatab.dump.write import flatten, write_assay_table_files, write_study_table_files, write_value_columns

@@ -1,19 +1,17 @@
 from abc import ABCMeta
 
-from isatools.model.comments import Commentable
-from isatools.model.process_sequence import ProcessSequenceNode
 from isatools.model.characteristic import Characteristic
-from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.comments import Commentable
 from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
+from isatools.model.ontology_annotation import OntologyAnnotation
+from isatools.model.process_sequence import ProcessSequenceNode
 
 
 class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta):
-    """Represents a generic material in an experimental graph.
-    """
+    """Represents a generic material in an experimental graph."""
 
-    def __init__(self, name='', id_='', type_='', characteristics=None,
-                 comments=None):  # , derives_from=None
+    def __init__(self, name="", id_="", type_="", characteristics=None, comments=None):  # , derives_from=None
         Commentable.__init__(self, comments=comments)
         ProcessSequenceNode.__init__(self)
         Identifiable.__init__(self)
@@ -37,8 +35,9 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError('{0}.name must be a str or None; got {1}:{2}'
-                                 .format(type(self).__name__, val, type(val)))
+            raise AttributeError(
+                "{0}.name must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+            )
         self.__name = val
 
     @property
@@ -49,9 +48,12 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     @type.setter
     def type(self, val):
         # TODO: use json_schema to get these values
-        if val is not None and (not isinstance(val, str) or val not in ['Extract Name', 'Labeled Extract Name']):
-            raise AttributeError('{0}.type must be a str in ("Extract Name", "Labeled Extract Name") or None; '
-                                 'got {1}:{2}'.format(type(self).__name__, val, type(val)))
+        if val is not None and (not isinstance(val, str) or val not in ["Extract Name", "Labeled Extract Name"]):
+            raise AttributeError(
+                '{0}.type must be a str in ("Extract Name", "Labeled Extract Name") or None; got {1}:{2}'.format(
+                    type(self).__name__, val, type(val)
+                )
+            )
         self.__type = val
 
     @property
@@ -62,12 +64,13 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
 
     @characteristics.setter
     def characteristics(self, val):
-        if val is not None and hasattr(val, '__iter__'):
+        if val is not None and hasattr(val, "__iter__"):
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError('{}.characteristics must be iterable containing Characteristics'
-                                 .format(type(self).__name__))
+            raise AttributeError(
+                "{}.characteristics must be iterable containing Characteristics".format(type(self).__name__)
+            )
 
     # @property
     # def derives_from(self):
@@ -82,26 +85,28 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     #     self.__derives_from = val
 
     def __eq__(self, other):
-        return isinstance(other, Material) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.type == other.type \
-               and self.comments == other.comments
-               # and self.derives_from == other.derives_from
+        return (
+            isinstance(other, Material)
+            and self.name == other.name
+            and self.characteristics == other.characteristics
+            and self.type == other.type
+            and self.comments == other.comments
+        )
+        # and self.derives_from == other.derives_from
 
     def to_dict(self, ld=False):
         material = {
-            '@id': self.id,
+            "@id": self.id,
             "name": self.name,
             "type": self.type,
             "characteristics": [characteristic.to_dict(ld=ld) for characteristic in self.characteristics],
-            "comments": [comment.to_dict(ld=ld) for comment in self.comments]
+            "comments": [comment.to_dict(ld=ld) for comment in self.comments],
         }
         return self.update_isa_object(material, ld)
 
     def from_dict(self, material):
         self.id = material["@id"]
-        self.name = material['name']
+        self.name = material["name"]
         self.type = material["type"]
         self.load_comments(material.get("comments", []))
 
@@ -110,7 +115,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             if isinstance(characteristic_data["value"], dict):
                 characteristic.value = OntologyAnnotation()
                 characteristic.value.from_dict(characteristic_data["value"])
-                characteristic.category = indexes.get_characteristic_category(characteristic_data['category']['@id'])
+                characteristic.category = indexes.get_characteristic_category(characteristic_data["category"]["@id"])
             if isinstance(characteristic_data["value"], (int, float)):
                 characteristic.value = characteristic_data["value"]
             if isinstance(characteristic_data["value"], str):
@@ -122,37 +127,39 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
 class Extract(Material):
     """Represents a extract material in an experimental graph."""
 
-    def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
-                         comments=comments)
+    def __init__(self, name="", id_="", characteristics=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, comments=comments)
 
-        self.type = 'Extract Name'
+        self.type = "Extract Name"
 
     def __repr__(self):
-        return ("isatools.model.Extract(name='{extract.name}', "
-                "type='{extract.type}', "
-                "characteristics={extract.characteristics}, "
-                "comments={extract.comments})").format(extract=self)
+        return (
+            "isatools.model.Extract(name='{extract.name}', "
+            "type='{extract.type}', "
+            "characteristics={extract.characteristics}, "
+            "comments={extract.comments})"
+        ).format(extract=self)
 
     def __str__(self):
-        return ("Extract(\n\t"
-                "name={extract.name}\n\t"
-                "type={extract.type}\n\t"
-                "characteristics={num_characteristics} Characteristic objects\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(extract=self,
-                         num_characteristics=len(self.characteristics),
-                         num_comments=len(self.comments))
+        return (
+            "Extract(\n\t"
+            "name={extract.name}\n\t"
+            "type={extract.type}\n\t"
+            "characteristics={num_characteristics} Characteristic objects\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(extract=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Extract) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.type == other.type \
-               and self.comments == other.comments
+        return (
+            isinstance(other, Extract)
+            and self.name == other.name
+            and self.characteristics == other.characteristics
+            and self.type == other.type
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -161,38 +168,39 @@ class Extract(Material):
 class LabeledExtract(Material):
     """Represents a labeled extract material in an experimental graph."""
 
-    def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
-                         comments=comments)
+    def __init__(self, name="", id_="", characteristics=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, comments=comments)
 
-        self.type = 'Labeled Extract Name'
+        self.type = "Labeled Extract Name"
 
     def __repr__(self):
-        return "isatools.model.LabeledExtract(name='{labeled_extract.name}'," \
-               " type='Labeled Extract Name', " \
-               "characteristics={labeled_extract.characteristics}, " \
-               "comments={labeled_extract.comments})" \
-            .format(labeled_extract=self)
+        return (
+            "isatools.model.LabeledExtract(name='{labeled_extract.name}',"
+            " type='Labeled Extract Name', "
+            "characteristics={labeled_extract.characteristics}, "
+            "comments={labeled_extract.comments})".format(labeled_extract=self)
+        )
 
     def __str__(self):
-        return ("LabeledExtract(\n\t"
-                "name={labeled_extract.name}\n\t"
-                "type=Labeled Extract Name\n\t"
-                "characteristics={num_characteristics} Characteristic objects\n\t"
-                "comments={num_comments} Comment objects\n)"
-                ).format(labeled_extract=self,
-                         num_characteristics=len(self.characteristics),
-                         num_comments=len(self.comments))
+        return (
+            "LabeledExtract(\n\t"
+            "name={labeled_extract.name}\n\t"
+            "type=Labeled Extract Name\n\t"
+            "characteristics={num_characteristics} Characteristic objects\n\t"
+            "comments={num_comments} Comment objects\n)"
+        ).format(labeled_extract=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, LabeledExtract) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.type == other.type \
-               and self.comments == other.comments
+        return (
+            isinstance(other, LabeledExtract)
+            and self.name == other.name
+            and self.characteristics == other.characteristics
+            and self.type == other.type
+            and self.comments == other.comments
+        )
 
     def __ne__(self, other):
         return not self == other

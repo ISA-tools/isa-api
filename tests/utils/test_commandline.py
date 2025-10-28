@@ -1,7 +1,7 @@
+import sys
 import unittest
 from contextlib import contextmanager
 from io import StringIO
-import sys
 
 
 @contextmanager
@@ -16,7 +16,6 @@ def captured_output():
 
 
 class TestCommandLineIsaTools(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -25,6 +24,7 @@ class TestCommandLineIsaTools(unittest.TestCase):
 
     def test_command_version(self):
         from isatools.__main__ import main
+
         with captured_output() as (out, err):
             with self.assertRaises(SystemExit):
                 main(argv=["--version"])
@@ -33,11 +33,14 @@ class TestCommandLineIsaTools(unittest.TestCase):
 
     def test_command_help(self):
         from isatools.__main__ import main
+
         with captured_output() as (out, err):
             with self.assertRaises(SystemExit):
                 main(argv=["--version"])
                 output = out.getvalue().strip()
-                self.assertEqual(output, """usage: isatools -c COMMAND [options]
+                self.assertEqual(
+                    output,
+                    """usage: isatools -c COMMAND [options]
 
 Create, convert, and manipulate ISA-formatted metadata
 
@@ -49,4 +52,5 @@ optional arguments:
   -o OUT_PATH           out (file will be written out here or written to
                         directory if ISA-Tab archive out)
   --version             show program's version number and exit
-  -v                    show more output""")
+  -v                    show more output""",
+                )

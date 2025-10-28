@@ -1,7 +1,7 @@
 from networkx import algorithms
 
-from isatools.model import Source, Sample, Process, Material, DataFile
 from isatools.isatab.defaults import log
+from isatools.model import DataFile, Material, Process, Sample, Source
 
 
 def _all_end_to_end_paths(G, start_nodes):
@@ -15,16 +15,13 @@ def _all_end_to_end_paths(G, start_nodes):
     # we know graphs start with Source or Sample and end with Process
     paths = []
     num_start_nodes = len(start_nodes)
-    message = 'Calculating for paths for {} start nodes: '.format(
-        num_start_nodes)
+    message = "Calculating for paths for {} start nodes: ".format(num_start_nodes)
     # log.info(start_nodes)
     start_node = G.indexes[start_nodes[0]]
     if isinstance(start_node, Source):
-        message = 'Calculating for paths for {} sources: '.format(
-            num_start_nodes)
+        message = "Calculating for paths for {} sources: ".format(num_start_nodes)
     elif isinstance(start_node, Sample):
-        message = 'Calculating for paths for {} samples: '.format(
-            num_start_nodes)
+        message = "Calculating for paths for {} samples: ".format(num_start_nodes)
     """if isa_logging.show_pbars:
         pbar = ProgressBar(
             min_value=0, max_value=num_start_nodes, widgets=[
@@ -37,13 +34,19 @@ def _all_end_to_end_paths(G, start_nodes):
         node = G.indexes[start]
         if isinstance(node, Source):
             # only look for Sample ends if start is a Source
-            for end in [x for x in algorithms.descendants(G, start) if
-                        isinstance(G.indexes[x], Sample) and len(G.out_edges(x)) == 0]:
+            for end in [
+                x
+                for x in algorithms.descendants(G, start)
+                if isinstance(G.indexes[x], Sample) and len(G.out_edges(x)) == 0
+            ]:
                 paths += list(algorithms.all_simple_paths(G, start, end))
         elif isinstance(node, Sample):
             # only look for Process ends if start is a Sample
-            for end in [x for x in algorithms.descendants(G, start) if
-                        isinstance(G.indexes[x], Process) and G.indexes[x].next_process is None]:
+            for end in [
+                x
+                for x in algorithms.descendants(G, start)
+                if isinstance(G.indexes[x], Process) and G.indexes[x].next_process is None
+            ]:
                 paths += list(algorithms.all_simple_paths(G, start, end))
     # log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
@@ -68,17 +71,16 @@ def _longest_path_and_attrs(paths, indexes):
             if isinstance(n, Source):
                 length += len(n.characteristics)
             elif isinstance(n, Sample):
-                length += (len(n.characteristics) + len(n.factor_values))
+                length += len(n.characteristics) + len(n.factor_values)
             elif isinstance(n, Material):
-                length += (len(n.characteristics))
+                length += len(n.characteristics)
             elif isinstance(n, Process):
-                length += len(
-                    [o for o in n.outputs if isinstance(o, DataFile)])
+                length += len([o for o in n.outputs if isinstance(o, DataFile)])
                 if n.date is not None:
                     length += 1
                 if n.performer is not None:
                     length += 1
-                if n.name != '':
+                if n.name != "":
                     length += 1
             if n.comments is not None:
                 length += len(n.comments)
@@ -99,8 +101,7 @@ def _get_start_end_nodes(G):
         if process.prev_process is None:
             for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
                 start_nodes.append(material)
-        outputs_no_data = [
-            m for m in process.outputs if not isinstance(m, DataFile)]
+        outputs_no_data = [m for m in process.outputs if not isinstance(m, DataFile)]
         if process.next_process is None:
             if len(outputs_no_data) == 0:
                 end_nodes.append(process)

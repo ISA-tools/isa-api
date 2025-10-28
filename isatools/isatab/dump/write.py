@@ -1,29 +1,29 @@
 from os import path
 
-from pandas import DataFrame
 from numpy import nan
+from pandas import DataFrame
 
-from isatools.constants import SYNONYMS, HEADER
-from isatools.model import (
-    OntologyAnnotation,
-    Investigation,
-    Source,
-    Process,
-    Sample,
-    load_protocol_types_info,
-    DataFile,
-    Material
-)
+from isatools.constants import HEADER, SYNONYMS
 from isatools.isatab.defaults import log
 from isatools.isatab.graph import _all_end_to_end_paths, _longest_path_and_attrs
-from isatools.model.utils import _build_paths_and_indexes
 from isatools.isatab.utils import (
-    get_comment_column,
-    get_pv_columns,
-    get_fv_columns,
     get_characteristic_columns,
-    get_object_column_map
+    get_comment_column,
+    get_fv_columns,
+    get_object_column_map,
+    get_pv_columns,
 )
+from isatools.model import (
+    DataFile,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    Process,
+    Sample,
+    Source,
+    load_protocol_types_info,
+)
+from isatools.model.utils import _build_paths_and_indexes
 
 
 def flatten(current_list) -> list:
@@ -34,7 +34,6 @@ def flatten(current_list) -> list:
     """
     flattened_list = []
     if current_list is not None:
-
         for sublist in current_list:
             if sublist is not None:
                 for item in sublist:
@@ -72,9 +71,7 @@ def write_study_table_files(inv_obj, output_dir):
         columns = []
 
         # start_nodes, end_nodes = _get_start_end_nodes(s_graph)
-        paths = _all_end_to_end_paths(
-            s_graph,
-            [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
+        paths = _all_end_to_end_paths(s_graph, [x for x in s_graph.nodes() if isinstance(s_graph.indexes[x], Source)])
 
         sample_in_path_count = 0
         protocol_in_path_count = 0
@@ -85,12 +82,8 @@ def write_study_table_files(inv_obj, output_dir):
             if isinstance(node, Source):
                 olabel = "Source Name"
                 columns.append(olabel)
-                columns += flatten(
-                    map(lambda x: get_characteristic_columns(olabel, x),
-                        node.characteristics))
-                columns += flatten(
-                    map(lambda x: get_comment_column(
-                        olabel, x), node.comments))
+                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
             elif isinstance(node, Process):
                 olabel = "Protocol REF.{}".format(protocol_in_path_count)
                 columns.append(olabel)
@@ -98,28 +91,20 @@ def write_study_table_files(inv_obj, output_dir):
                 if node.executes_protocol.name not in protnames.keys():
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
-                columns += flatten(map(lambda x: get_pv_columns(olabel, x),
-                                       node.parameter_values))
+                columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
                 if node.date is not None:
                     columns.append(olabel + ".Date")
                 if node.performer is not None:
                     columns.append(olabel + ".Performer")
-                columns += flatten(
-                    map(lambda x: get_comment_column(
-                        olabel, x), node.comments))
+                columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
 
             elif isinstance(node, Sample):
                 olabel = "Sample Name.{}".format(sample_in_path_count)
                 columns.append(olabel)
                 sample_in_path_count += 1
-                columns += flatten(
-                    map(lambda x: get_characteristic_columns(olabel, x),
-                        node.characteristics))
-                columns += flatten(
-                    map(lambda x: get_comment_column(
-                        olabel, x), node.comments))
-                columns += flatten(map(lambda x: get_fv_columns(olabel, x),
-                                       node.factor_values))
+                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
+                columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
         omap = get_object_column_map(columns, columns)
         # load into dictionary
@@ -137,10 +122,10 @@ def write_study_table_files(inv_obj, output_dir):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
-                        category_label = c.category.term if isinstance(c.category.term, str) \
-                            else c.category.term["annotationValue"]
-                        clabel = "{0}.Characteristics[{1}]".format(
-                            olabel, category_label)
+                        category_label = (
+                            c.category.term if isinstance(c.category.term, str) else c.category.term["annotationValue"]
+                        )
+                        clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
                         colabel = "{0}.Comment[{1}]".format(olabel, co.name)
@@ -155,7 +140,7 @@ def write_study_table_files(inv_obj, output_dir):
                             pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                             write_value_columns(df_dict, pvlabel, pv)
                         else:
-                            raise(ValueError, "Protocol Value has no valid parameter_name")
+                            raise (ValueError, "Protocol Value has no valid parameter_name")
                     if node.date is not None:
                         df_dict[olabel + ".Date"][-1] = node.date
                     if node.performer is not None:
@@ -169,17 +154,16 @@ def write_study_table_files(inv_obj, output_dir):
                     sample_in_path_count += 1
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
-                        category_label = c.category.term if isinstance(c.category.term, str) \
-                            else c.category.term["annotationValue"]
-                        clabel = "{0}.Characteristics[{1}]".format(
-                            olabel, category_label)
+                        category_label = (
+                            c.category.term if isinstance(c.category.term, str) else c.category.term["annotationValue"]
+                        )
+                        clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
                         colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                         df_dict[colabel][-1] = co.value
                     for fv in node.factor_values:
-                        fvlabel = "{0}.Factor Value[{1}]".format(
-                            olabel, fv.factor_name.name)
+                        fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
         """if isinstance(pbar, ProgressBar):
             pbar.finish()"""
@@ -191,15 +175,14 @@ def write_study_table_files(inv_obj, output_dir):
         # arbitrary sort on column 0
 
         for dup_item in set([x for x in columns if columns.count(x) > 1]):
-            for j, each in enumerate(
-                    [i for i, x in enumerate(columns) if x == dup_item]):
+            for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
                 columns[each] = dup_item + str(j)
 
         DF.columns = columns  # reset columns after checking for dups
 
         for i, col in enumerate(columns):
             if "Comment[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
+                columns[i] = col[col.rindex(".") + 1 :]
             elif col.endswith("Term Source REF"):
                 columns[i] = "Term Source REF"
             elif col.endswith("Term Accession Number"):
@@ -210,11 +193,11 @@ def write_study_table_files(inv_obj, output_dir):
                 if "material type" in col.lower():
                     columns[i] = "Material Type"
                 else:
-                    columns[i] = col[col.rindex(".") + 1:]
+                    columns[i] = col[col.rindex(".") + 1 :]
             elif "Factor Value[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
+                columns[i] = col[col.rindex(".") + 1 :]
             elif "Parameter Value[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
+                columns[i] = col[col.rindex(".") + 1 :]
             elif col.endswith("Date"):
                 columns[i] = "Date"
             elif col.endswith("Performer"):
@@ -234,12 +217,11 @@ def write_study_table_files(inv_obj, output_dir):
         log.debug("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
-        DF = DF.map(lambda x: nan if x == '' else x)
-        DF = DF.dropna(axis=1, how='all')
+        DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)
+        DF = DF.dropna(axis=1, how="all")
 
-        with open(path.join(output_dir, study_obj.filename), 'wb') as out_fp:
-            DF.to_csv(
-                path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
+        with open(path.join(output_dir, study_obj.filename), "wb") as out_fp:
+            DF.to_csv(path_or_buf=out_fp, index=False, sep="\t", encoding="utf-8")
 
 
 def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
@@ -265,7 +247,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
         protocol_types_dict[protocol] = attributes
         for synonym in attributes[SYNONYMS]:
             protocol_types_dict[synonym] = attributes
-    
+
     for study_obj in inv_obj.studies:
         for assay_obj in study_obj.assays:
             a_graph = assay_obj.graph
@@ -281,9 +263,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 log.info("No paths found, skipping writing assay file")
                 continue
             if _longest_path_and_attrs(paths, indexes) is None:
-                raise IOError(
-                    "Could not find any valid end-to-end paths in assay graph")
-            
+                raise IOError("Could not find any valid end-to-end paths in assay graph")
+
             protocol_in_path_count = 0
             output_label_in_path_counts = {}
             name_label_in_path_counts = {}
@@ -294,13 +275,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
-                    columns += flatten(
-                        map(lambda x: get_comment_column(olabel, x),
-                            node.comments))
+                    columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
                     if write_factor_values:
-                        columns += flatten(
-                            map(lambda x: get_fv_columns(olabel, x),
-                                node.factor_values))
+                        columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(protocol_in_path_count)
@@ -313,8 +290,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         columns.append(olabel + ".Date")
                     if node.performer is not None:
                         columns.append(olabel + ".Performer")
-                    columns += flatten(map(lambda x: get_pv_columns(olabel, x),
-                                           node.parameter_values))
+                    columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
                     if node.executes_protocol.protocol_type:
                         if isinstance(node.executes_protocol.protocol_type, OntologyAnnotation):
                             protocol_type = node.executes_protocol.protocol_type.term.lower()
@@ -335,19 +311,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             if protocol_type in protocol_types_dict["nucleic acid hybridization"][SYNONYMS]:
                                 columns.extend(["Array Design REF"])
 
-                    columns += flatten(
-                        map(lambda x: get_comment_column(olabel, x),
-                            node.comments))
+                    columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
                     # print(columns)
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
-                    columns += flatten(
-                        map(lambda x: get_characteristic_columns(olabel, x),
-                            node.characteristics))
-                    columns += flatten(
-                        map(lambda x: get_comment_column(olabel, x),
-                            node.comments))
+                    columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                    columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
 
                 elif isinstance(node, DataFile):
                     # pass  # handled in process
@@ -358,9 +328,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
                     columns.append(new_output_label)
                     output_label_in_path_counts[output_label] += 1
-                    columns += flatten(
-                        map(lambda x: get_comment_column(new_output_label, x),
-                            node.comments))
+                    columns += flatten(map(lambda x: get_comment_column(new_output_label, x), node.comments))
 
             omap = get_object_column_map(columns, columns)
 
@@ -411,7 +379,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                                 write_value_columns(df_dict, pvlabel, pv)
                             else:
-                                raise(ValueError, "Protocol Value has no valid parameter_name")
+                                raise (ValueError, "Protocol Value has no valid parameter_name")
                         for co in node.comments:
                             colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
@@ -435,8 +403,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(
-                                olabel, co.name)
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
                         if write_factor_values:
                             for fv in node.factor_values:
@@ -449,13 +416,15 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for c in node.characteristics:
                             if not c.category:
                                 continue
-                            category_label = c.category.term if isinstance(c.category.term, str) \
+                            category_label = (
+                                c.category.term
+                                if isinstance(c.category.term, str)
                                 else c.category.term["annotationValue"]
+                            )
                             clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
                             write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(
-                                olabel, co.name)
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
                             df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
@@ -469,8 +438,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         output_label_in_path_counts[output_label] += 1
 
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(
-                                new_output_label, co.name)
+                            colabel = "{0}.Comment[{1}]".format(new_output_label, co.name)
                             df_dict[colabel][-1] = co.value
 
             DF = DataFrame(columns=columns)
@@ -479,14 +447,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             try:
                 DF = DF.sort_values(by=DF.columns[0], ascending=True)
             except ValueError as e:
-                log.critical('Error thrown: column labels are: {}'.format(DF.columns))
-                log.critical('Error thrown: data is: {}'.format(DF))
+                log.critical("Error thrown: column labels are: {}".format(DF.columns))
+                log.critical("Error thrown: data is: {}".format(DF))
                 raise e
             # arbitrary sort on column 0
 
             for dup_item in set([x for x in columns if columns.count(x) > 1]):
-                for j, each in enumerate(
-                        [i for i, x in enumerate(columns) if x == dup_item]):
+                for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
                     columns[each] = ".".join([dup_item, str(j)])
 
             DF.columns = columns
@@ -504,21 +471,21 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     elif "label" in col.lower():
                         columns[i] = "Label"
                     else:
-                        columns[i] = col[col.rindex(".") + 1:]
+                        columns[i] = col[col.rindex(".") + 1 :]
                 elif "Factor Value[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
+                    columns[i] = col[col.rindex(".") + 1 :]
                 elif "Parameter Value[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
+                    columns[i] = col[col.rindex(".") + 1 :]
                 elif col.endswith("Date"):
                     columns[i] = "Date"
                 elif col.endswith("Performer"):
                     columns[i] = "Performer"
                 elif "Comment[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
+                    columns[i] = col[col.rindex(".") + 1 :]
                 elif "Protocol REF" in col:
                     columns[i] = "Protocol REF"
                 elif "." in col:
-                    columns[i] = col[:col.rindex(".")]
+                    columns[i] = col[: col.rindex(".")]
                 else:
                     for output_label in output_label_in_path_counts:
                         if output_label in col:
@@ -534,14 +501,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             log.debug("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
-            DF = DF.map(lambda x: nan if x == '' else x)
+            DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)
 
-            DF = DF.dropna(axis=1, how='all')
+            DF = DF.dropna(axis=1, how="all")
 
-            with open(path.join(
-                    output_dir, assay_obj.filename), 'wb') as out_fp:
-                DF.to_csv(path_or_buf=out_fp, index=False, sep='\t',
-                          encoding='utf-8')
+            with open(path.join(output_dir, assay_obj.filename), "wb") as out_fp:
+                DF.to_csv(path_or_buf=out_fp, index=False, sep="\t", encoding="utf-8")
 
 
 def write_value_columns(df_dict, label, x):
@@ -559,25 +524,49 @@ def write_value_columns(df_dict, label, x):
             df_dict[label + ".Unit"][-1] = x.unit.term
             df_dict[label + ".Unit.Term Source REF"][-1] = ""
             if x.unit.term_source:
-                if type(x.unit.term_source) == str:
+                if isinstance(x.unit.term_source, str):
                     df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source
                 elif x.unit.term_source.name:
                     df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source.name
 
-            df_dict[label + ".Unit.Term Accession Number"][-1] = \
-                x.unit.term_accession
+            df_dict[label + ".Unit.Term Accession Number"][-1] = x.unit.term_accession
         else:
             df_dict[label][-1] = x.value
             df_dict[label + ".Unit"][-1] = x.unit
-    elif isinstance(x.value, OntologyAnnotation):
+    elif isinstance(x.value, OntologyAnnotation) and x.unit:
+        # print("ONTO & UNIT:", x.value)
+        if isinstance(x.unit, OntologyAnnotation):
+            df_dict[label][-1] = x.value
+            df_dict[label + ".Unit"][-1] = x.unit.term
+            df_dict[label + ".Unit.Term Source REF"][-1] = ""
+            if x.unit.term_source:
+                if isinstance(x.unit.term_source, str):
+                    df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source
+                elif x.unit.term_source.name:
+                    df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source.name
+
         df_dict[label][-1] = x.value.term
-        df_dict[label + ".Term Source REF"][-1] = ""
         if x.value.term_source:
-            if type(x.value.term_source) == str:
+            if isinstance(x.value.term_source, str):
                 df_dict[label + ".Term Source REF"][-1] = x.value.term_source
             elif x.value.term_source.name:
                 df_dict[label + ".Term Source REF"][-1] = x.value.term_source.name
+        #     else:
+        #         df_dict[label + ".Term Source REF"][-1] = "_"
 
-        df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
+        # df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
+
+    elif isinstance(x.value, OntologyAnnotation):
+        df_dict[label][-1] = x.value.term
+        if x.value.term_source:
+            if isinstance(x.value.term_source, str):
+                df_dict[label + ".Term Source REF"][-1] = x.value.term_source
+            elif x.value.term_source.name:
+                df_dict[label + ".Term Source REF"][-1] = x.value.term_source.name
+        if x.value.term_accession:
+            df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
+    elif isinstance(x.value, str) and len(x.value) == 0 and x.unit:
+        df_dict[label][-1] = x.value
+        df_dict[label + ".Term Source REF"][-1] = ""
     else:
         df_dict[label][-1] = x.value

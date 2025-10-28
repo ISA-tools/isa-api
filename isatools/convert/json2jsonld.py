@@ -1,10 +1,10 @@
-import os
 import json
+import os
+
 from requests import get
 
 
 class ISALDSerializer:
-
     # TODO : use kwargs instead of default values;
 
     _instance = None
@@ -52,13 +52,12 @@ class ISALDSerializer:
         """
         Resolves the network into self.schemas and self.contexts
         """
-        schemas_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    "../resources/schemas/v1.0.1/")
-        path = os.path.join('./', schemas_path)
+        schemas_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../resources/schemas/v1.0.1/")
+        path = os.path.join("./", schemas_path)
         schemas_path = os.listdir(path)
         for schema_name in schemas_path:
             schema_path = os.path.join(path, schema_name)
-            with open(schema_path, 'r') as schema:
+            with open(schema_path, "r") as schema:
                 self.schemas[schema_name] = json.load(schema)
                 self.contexts[schema_name] = self._get_context_url(schema_name)
                 schema.close()
@@ -70,7 +69,7 @@ class ISALDSerializer:
         Defaults to False.
         """
         self.instance = instance
-        if isinstance(instance, str) and (instance.startswith('http://') or instance.startswith('https://')):
+        if isinstance(instance, str) and (instance.startswith("http://") or instance.startswith("https://")):
             self.instance = json.loads(get(instance).text)
         self.output = self._inject_ld(self.main_schema, {}, self.instance)
 
@@ -91,7 +90,7 @@ class ISALDSerializer:
         if not self.combined:
             return self._inject_ld_split(schema_name, output, instance)
         else:
-            filename = '../resources/json-context/%s/isa_%s_allinone_context.jsonld' % (self.ontology, self.ontology)
+            filename = "../resources/json-context/%s/isa_%s_allinone_context.jsonld" % (self.ontology, self.ontology)
             context_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
             with open(context_path) as f:
                 output = json.load(f)
@@ -107,8 +106,8 @@ class ISALDSerializer:
         :return: the output of the LD injection
         """
         props = self.schemas[schema_name]
-        if 'properties' in self.schemas[schema_name].keys():
-            props = self.schemas[schema_name]['properties']
+        if "properties" in self.schemas[schema_name].keys():
+            props = self.schemas[schema_name]["properties"]
         context_key = self._get_context_key(schema_name)
         output["@context"] = self._get_context_url(schema_name)
         if isinstance(reference, str):
@@ -118,36 +117,36 @@ class ISALDSerializer:
         for field in instance:
             if field in props:
                 field_props = props[field]
-                if 'type' in field_props.keys() and field_props['type'] == 'array':
-                    if 'items' in field_props.keys() and '$ref' in field_props['items']:
-                        ref = field_props['items']['$ref'].replace("#", "")
+                if "type" in field_props.keys() and field_props["type"] == "array":
+                    if "items" in field_props.keys() and "$ref" in field_props["items"]:
+                        ref = field_props["items"]["$ref"].replace("#", "")
                         for value in instance[field]:
                             value = self._inject_ld_split(ref, value, value)
                     else:
-                        if field == 'inputs':
-                            for input_val in instance['inputs']:
+                        if field == "inputs":
+                            for input_val in instance["inputs"]:
                                 ref = self._get_any_of_ref(input_val["@id"])
                                 if ref:
                                     input_val = self._inject_ld_split(ref, input_val, input_val)
-                        elif field == 'outputs':
-                            for output_val in instance['outputs']:
+                        elif field == "outputs":
+                            for output_val in instance["outputs"]:
                                 ref = self._get_any_of_ref(output_val["@id"])
                                 if ref:
                                     output_val = self._inject_ld_split(ref, output_val, output_val)
                         else:
-                            ref = field + '_schema.json'
+                            ref = field + "_schema.json"
                             self.schemas[ref] = field_props
                             for value in instance[field]:
                                 value = self._inject_ld_split(ref, value, value, schema_name)
-                elif 'type' in field_props.keys() and field_props['type'] == 'object':
-                    ref = field + '_schema.json'
+                elif "type" in field_props.keys() and field_props["type"] == "object":
+                    ref = field + "_schema.json"
                     self.schemas[ref] = field_props
                     instance[field] = self._inject_ld_split(ref, instance[field], instance[field], schema_name)
-                elif '$ref' in field_props.keys():
-                    ref = field_props['$ref'].replace("#", "")
+                elif "$ref" in field_props.keys():
+                    ref = field_props["$ref"].replace("#", "")
                     instance[field] = self._inject_ld_split(ref, instance[field], instance[field])
-                elif 'anyOf' in field_props.keys() and field == 'value' and isinstance(instance[field], dict):
-                    ref = [n for n in field_props['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
+                elif "anyOf" in field_props.keys() and field == "value" and isinstance(instance[field], dict):
+                    ref = [n for n in field_props["anyOf"] if "$ref" in n.keys()][0]["$ref"].replace("#", "")
                     instance[field] = self._inject_ld_split(ref, instance[field], instance[field])
             output[field] = instance[field]
         return output
@@ -161,41 +160,44 @@ class ISALDSerializer:
         :return: the output of the LD injection
         """
         output["@type"] = self._get_context_key(schema_name)
-        props = self.schemas[schema_name]['properties'] if 'properties' in self.schemas[schema_name].keys() \
+        props = (
+            self.schemas[schema_name]["properties"]
+            if "properties" in self.schemas[schema_name].keys()
             else self.schemas[schema_name]
+        )
         for field in instance:
             if field in props:
                 field_props = props[field]
-                if 'type' in field_props.keys() and field_props['type'] == 'array':
-                    if 'items' in field_props.keys() and '$ref' in field_props['items']:
-                        ref = field_props['items']['$ref'].replace("#", "")
+                if "type" in field_props.keys() and field_props["type"] == "array":
+                    if "items" in field_props.keys() and "$ref" in field_props["items"]:
+                        ref = field_props["items"]["$ref"].replace("#", "")
                         for value in instance[field]:
                             value = self._inject_ld_collapsed(ref, value, value)
                     else:
-                        if field == 'inputs':
-                            for input_val in instance['inputs']:
+                        if field == "inputs":
+                            for input_val in instance["inputs"]:
                                 ref = self._get_any_of_ref(input_val["@id"])
                                 if ref:
                                     input_val = self._inject_ld_collapsed(ref, input_val, input_val)
-                        elif field == 'outputs':
-                            for output_val in instance['outputs']:
+                        elif field == "outputs":
+                            for output_val in instance["outputs"]:
                                 ref = self._get_any_of_ref(output_val["@id"])
                                 if ref:
                                     output_val = self._inject_ld_collapsed(ref, output_val, output_val)
                         else:
-                            ref = field + '_schema.json'
+                            ref = field + "_schema.json"
                             self.schemas[ref] = field_props
                             for value in instance[field]:
                                 value = self._inject_ld_collapsed(ref, value, value)
-                elif 'type' in field_props.keys() and field_props['type'] == 'object':
-                    ref = field + '_schema.json'
+                elif "type" in field_props.keys() and field_props["type"] == "object":
+                    ref = field + "_schema.json"
                     self.schemas[ref] = field_props
                     instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
-                elif '$ref' in field_props.keys():
-                    ref = field_props['$ref'].replace("#", "")
+                elif "$ref" in field_props.keys():
+                    ref = field_props["$ref"].replace("#", "")
                     instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
-                elif 'anyOf' in field_props.keys() and field == 'value' and isinstance(instance[field], dict):
-                    ref = [n for n in field_props['anyOf'] if '$ref' in n.keys()][0]['$ref'].replace("#", "")
+                elif "anyOf" in field_props.keys() and field == "value" and isinstance(instance[field], dict):
+                    ref = [n for n in field_props["anyOf"] if "$ref" in n.keys()][0]["$ref"].replace("#", "")
                     instance[field] = self._inject_ld_collapsed(ref, instance[field], instance[field])
             output[field] = instance[field]
         return output
@@ -206,8 +208,10 @@ class ISALDSerializer:
         :param raw_name: the schema name
         :return: the corresponding context url
         """
-        context_url = "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/" \
-                      "resources/json-context/%s/isa_" % self.ontology
+        context_url = (
+            "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/"
+            "resources/json-context/%s/isa_" % self.ontology
+        )
         filename = "_%s_context.jsonld" % self.ontology
         return context_url + "isa_" + raw_name.replace("_schema.json", filename)
 

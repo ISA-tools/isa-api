@@ -1,5 +1,5 @@
 {
-    "id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/person_schema.json",
+    "$id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/person_schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title" : "ISA Person schema",
     "name" :  "ISA Person schema",
@@ -12,7 +12,13 @@
         "lastName" : { "type" : "string"},
         "firstName" : { "type" : "string"},
         "midInitials" : { "type" : "string" },
-        "email" : { "type" : "string", "format" : "email"},
+        "email" : {
+          "anyOf": [
+            { "type" : "string", "format": "email" },
+            { "type" : "string", "maxLength": 0 },
+            { "type": "null" }
+          ]
+        },
         "phone" : { "type": "string"},
         "fax" : { "type" : "string" },
         "address" : { "type" : "string" },

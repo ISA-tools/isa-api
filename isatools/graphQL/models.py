@@ -1,26 +1,21 @@
-from graphene import (
-    ObjectType,
-    String,
-    Schema as Sc,
-    List,
-    Field,
-    Argument
-)
+from graphene import Argument, Field, List, ObjectType, String
+from graphene import Schema as Sc
+
 from isatools.graphQL.custom_scalars import DateTime, StringOrInt
 from isatools.graphQL.inputs import (
     AssayParameters,
-    ProcessSequenceParameters,
-    OutputsParameters,
     InputsParameters,
-    StringComparator
+    OutputsParameters,
+    ProcessSequenceParameters,
+    StringComparator,
 )
 from isatools.graphQL.utils.search import (
     search_assays,
-    search_process_sequence,
+    search_data_files,
     search_inputs,
     search_outputs,
-    search_data_files,
-    search_parameter_values
+    search_parameter_values,
+    search_process_sequence,
 )
 
 
@@ -34,7 +29,7 @@ class ObjectType(ObjectType):
 
 
 class OntologySourceReference(ObjectType):
-    description = String(name='description')
+    description = String(name="description")
     file = String()
     name = String(name="name")
     version = String()
@@ -149,9 +144,9 @@ class Process(ObjectType):
 
     name = String(name="name")
     executes_protocol = Field(Protocol, name="executesProtocol")
-    parameter_values = List(ProtocolParameterValue,
-                            name="parameterValues",
-                            filters=Argument(ProcessSequenceParameters, required=False))
+    parameter_values = List(
+        ProtocolParameterValue, name="parameterValues", filters=Argument(ProcessSequenceParameters, required=False)
+    )
     performer = String()
     date = DateTime()
     previous_process = Field(lambda: Process, name="previousProcess")
@@ -181,11 +176,13 @@ class Assay(ObjectType):
     materials = Field(Materials)
     characteristic_categories = List(MaterialAttribute, name="characteristicCategories")
     unit_categories = List(OntologyAnnotation, name="unitCategories")
-    process_sequence = List(Process,
-                            name="processSequence",
-                            filters=Argument(ProcessSequenceParameters, required=False),
-                            operator=String(),
-                            description="List of processes attached to the assay")
+    process_sequence = List(
+        Process,
+        name="processSequence",
+        filters=Argument(ProcessSequenceParameters, required=False),
+        operator=String(),
+        description="List of processes attached to the assay",
+    )
 
     @staticmethod
     def resolve_data_files(parent, info, label=None):
@@ -223,7 +220,7 @@ class Investigation(ObjectType):
     filename = String()
     identifier = String()
     title = String()
-    description = String(name='description')
+    description = String(name="description")
     submissionDate = DateTime()
     publicReleaseDate = DateTime()
     ontology_source_references = List(OntologySourceReference, name="ontologySourceReferences")
@@ -235,10 +232,12 @@ class Investigation(ObjectType):
 class IsaQuery(ObjectType):
     investigation = Field(Investigation)
     studies = List(Study)
-    assays = List(Assay,
-                  filters=Argument(AssayParameters, description="Filters to apply to the assays"),
-                  operator=String(description="Should be AND or OR", default_value='AND'),
-                  description="A query that concatenates studies assays into a single list")
+    assays = List(
+        Assay,
+        filters=Argument(AssayParameters, description="Filters to apply to the assays"),
+        operator=String(description="Should be AND or OR", default_value="AND"),
+        description="A query that concatenates studies assays into a single list",
+    )
     investigation_instance = None
 
     @staticmethod
@@ -261,7 +260,6 @@ class IsaQuery(ObjectType):
 
 
 class Schema(Sc):
-
     @staticmethod
     def set_investigation(instance):
         IsaQuery.investigation_instance = instance

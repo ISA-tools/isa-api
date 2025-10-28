@@ -1,1 +1,1 @@
-from isatools.isatab.validate.core import validate, batch_validate
+from isatools.isatab.validate.core import batch_validate, validate
