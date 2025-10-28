@@ -2006,7 +2006,7 @@ sample1\textraction\te2\tscanning\td2"""
                 if proc.executes_protocol.name == "genomic DNA extraction - standard procedure 4"
             )
             extract = next(
-                mat for mat in nucleotide_sequencing_assay.materials["other_material"] if mat.name == "GSM255770.e1"
+                mat for mat in nucleotide_sequencing_assay.other_material if mat.name == "GSM255770.e1"
             )
             self.assertTrue(nucl_ac_extraction_process.next_process is gen_dna_extraction_process)
             self.assertEqual(len(gen_dna_extraction_process.outputs), 1)

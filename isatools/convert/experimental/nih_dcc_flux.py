@@ -281,7 +281,7 @@ def nihdcc2isa_convert(json_path, output_path):
                 material_out.characteristics.append(material_type)
 
                 study.assays[0].samples.append(material_in)
-                study.assays[0].materials["other_material"].append(material_in)
+                study.assays[0].other_material.append(material_in)
                 try:
                     material_separation_process
                 except NameError:
@@ -300,7 +300,7 @@ def nihdcc2isa_convert(json_path, output_path):
                     value=OntologyAnnotation(term=sample_json["type"], term_source=obi),
                 )
                 material_in.characteristics.append(material_type)
-                study.assays[0].materials["other_material"].append(material_in)
+                study.assays[0].other_material.append(material_in)
 
                 data_acq_process = Process(executes_protocol=study.get_prot(sample_json["protocol.id"]))
                 data_acq_process.name = sample_json["id"]
