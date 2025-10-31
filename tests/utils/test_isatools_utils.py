@@ -139,9 +139,27 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_sources, list)
         self.assertIsInstance(ontology_sources[0], OntologySource)
 
-    @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
-    def test_get_ontology(self):
-        ontology_source = ols.get_ols_ontology("efo")
+    # @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
+    def test_get_ontology0(self):
+        ontology_source = ols.get_ols_ontology("ado", 0)
+        self.assertIsInstance(ontology_source, OntologySource)
+        self.assertEqual(ontology_source.name, "ado")
+        self.assertIn("://www.ebi.ac.uk/ols", ontology_source.file)
+        self.assertIn("/api/ontologies/ado?lang=en", ontology_source.file)
+        self.assertIsInstance(ontology_source.version, str)
+        self.assertEqual(ontology_source.description, "Alzheimer's Disease Ontology (ADO)")
+
+    def test_get_ontology1(self):
+        ontology_source = ols.get_ols_ontology("stato", 1)
+        self.assertIsInstance(ontology_source, OntologySource)
+        self.assertEqual(ontology_source.name, "stato")
+        self.assertIn("://www.ebi.ac.uk/ols", ontology_source.file)
+        self.assertIn("/api/ontologies/stato?lang=en", ontology_source.file)
+        self.assertIsInstance(ontology_source.version, str)
+        self.assertEqual(ontology_source.description, "STATO: the statistical methods ontology")
+
+    def test_get_ontology2(self):
+        ontology_source = ols.get_ols_ontology("efo", 2)
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
         self.assertIn("://www.ebi.ac.uk/ols", ontology_source.file)
@@ -149,16 +167,27 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
-    @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
-    def test_search_for_term(self):
-        ontology_source = ols.get_ols_ontology("efo")
-        ontology_annotations = ols.search_ols("cell type", ontology_source)
+    # @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
+    def test_search_for_term_p0(self):
+        ontology_source = ols.get_ols_ontology("chmo", 0)
+        ontology_annotations = ols.search_ols("mobile phase", ontology_source)
         self.assertIsInstance(ontology_annotations, list)
         self.assertGreater(len(ontology_annotations), 0)
-        ontology_annotations = [oa for oa in ontology_annotations if oa.term == "cell type"]
+        ontology_annotations = [oa for oa in ontology_annotations if oa.term == "mobile phase"]
         self.assertIsInstance(ontology_annotations[-1], OntologyAnnotation)
-        self.assertEqual(ontology_annotations[-1].term, "cell type")
-        self.assertIn("http://www.ebi.ac.uk/efo/EFO_0000324", [oa.term_accession for oa in ontology_annotations])
+        self.assertEqual(ontology_annotations[-1].term, "mobile phase")
+        self.assertIn("http://purl.obolibrary.org/obo/CHMO_0000995", [oa.term_accession for oa in ontology_annotations])
+        self.assertEqual(ontology_annotations[-1].term_source, ontology_source)
+
+    def test_search_for_term_p1(self):
+        ontology_source = ols.get_ols_ontology("efo", 2)
+        ontology_annotations = ols.search_ols("time", ontology_source)
+        self.assertIsInstance(ontology_annotations, list)
+        self.assertGreater(len(ontology_annotations), 0)
+        ontology_annotations = [oa for oa in ontology_annotations if oa.term == "time"]
+        self.assertIsInstance(ontology_annotations[-1], OntologyAnnotation)
+        self.assertEqual(ontology_annotations[-1].term, "time")
+        self.assertIn("http://www.ebi.ac.uk/efo/EFO_0000721", [oa.term_accession for oa in ontology_annotations])
         self.assertEqual(ontology_annotations[-1].term_source, ontology_source)
 
 

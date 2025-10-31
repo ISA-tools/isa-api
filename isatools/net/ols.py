@@ -23,7 +23,7 @@ log = logging.getLogger("isatools")
 
 def get_ols_ontologies():
     """Returns a list of OntologySource objects according to what's in OLS"""
-    ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
+    ontologiesUri = OLS_API_BASE_URI + "/ontologies?" + str(OLS_PAGINATION_SIZE)
     log.debug(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     ontology_sources = []
@@ -43,9 +43,9 @@ def get_ols_ontologies():
     return ontology_sources
 
 
-def get_ols_ontology(ontology_name):
+def get_ols_ontology(ontology_name, page: int):
     """Returns a single OntologySource objects according to what's in OLS"""
-    ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
+    ontologiesUri = OLS_API_BASE_URI + "/ontologies?page=" + str(page) + "&size=" + str(OLS_PAGINATION_SIZE)
     log.debug(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     print("EMBEDDED: ", J["_embedded"]["ontologies"])
@@ -80,6 +80,8 @@ def search_ols(term, ontology_source):
 
     query = "{0}&queryFields=label&ontology={1}&exact=True".format(term, os_search)
     url += "?q={}".format(query)
+
+    print("OLS_URL", url)
     log.debug(url)
     import requests
 
