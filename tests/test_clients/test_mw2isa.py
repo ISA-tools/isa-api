@@ -1,8 +1,11 @@
+import json
 import logging
 import os
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import Mock, patch
 
 from isatools import isatab
 from isatools.net.mw2isa import mw2isa_convert
@@ -19,7 +22,31 @@ class mw2ISATest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    def test_conversion_ms(self):
+    def _load_fixture(self, name):
+        data_path = Path(__file__).parent / "fixtures" / name
+        return data_path.read_bytes()
+
+    def _make_requests_response(self, body_bytes, status=200, headers=None):
+        m = Mock()
+        m.status_code = status
+        m.content = body_bytes
+        m.text = body_bytes.decode("utf-8")
+
+        # Provide .json() for convenience if used by code
+        def _json():
+            return json.loads(m.text)
+
+        m.json = _json
+        m.headers = headers or {}
+        return m
+
+    @patch("isatools.net.mw2isa.mw2isa_convert")
+    def test_conversion_ms(self, mock_get):
+        def _side_effect():
+            return self._make_requests_response(self._load_fixture("ST000367.json"))
+
+        mock_get.side_effect = _side_effect
+
         success, study_id, validate = mw2isa_convert(
             studyid="ST000367", outputdir=self._tmp_dir, dl_option="no", validate_option=True
         )
@@ -37,8 +64,13 @@ class mw2ISATest(unittest.TestCase):
         else:
             self.fail("conversion failed, validation was not invoked")
 
-    def test_conversion_nmr(self):
-        report = {}
+    @patch("isatools.net.mw2isa.mw2isa_convert")
+    def test_conversion_nmr(self, mock_get):
+        def _side_effect():
+            return self._make_requests_response(self._load_fixture("ST000102.json"))
+
+        mock_get.side_effect = _side_effect
+
         success, study_id, validate = mw2isa_convert(
             studyid="ST000102", outputdir=self._tmp_dir, dl_option="no", validate_option=True
         )
@@ -50,13 +82,25 @@ class mw2ISATest(unittest.TestCase):
         else:
             self.assertFalse(success)
 
-    def test_conversion_invalid_id(self):
+    @patch("isatools.net.mw2isa.mw2isa_convert")
+    def test_conversion_invalid_id(self, mock_get):
+        def _side_effect():
+            return self._make_requests_response(self._load_fixture("TOTO.json"))
+
+        mock_get.side_effect = _side_effect
+
         success, study_id, validate = mw2isa_convert(
             studyid="TOTO", outputdir=self._tmp_dir, dl_option="no", validate_option=True
         )
         self.assertFalse(success)
 
-    def test_conversion_invalid_dloption(self):
+    @patch("isatools.net.mw2isa.mw2isa_convert")
+    def test_conversion_invalid_dloption(self, mock_get):
+        def _side_effect():
+            return self._make_requests_response(self._load_fixture("ST000102.json"))
+
+        mock_get.side_effect = _side_effect
+
         with self.assertRaises(Exception) as context:
             success, study_id, validate = mw2isa_convert(
                 studyid="ST000102", outputdir=self._tmp_dir, dl_option="TOTO", validate_option=False

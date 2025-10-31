@@ -82,12 +82,14 @@ def make_ontology_annotation_methods() -> None:
         if oa:
             return oa
         term_source_id = self.term_source.to_sql(session) if self.term_source else None
+        comments_objs = [c.to_sql(session) for c in self.comments]
+
         oa = OntologyAnnotation(
             ontology_annotation_id=self.id,
             annotation_value=self.term,
             term_accession=self.term_accession,
             term_source_id=term_source_id.ontology_source_id if term_source_id else None,
-            comments=[comment.to_sql() for comment in self.comments],
+            comments=comments_objs,
         )
         session.add(oa)
         return oa
