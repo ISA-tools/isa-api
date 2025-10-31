@@ -22,7 +22,6 @@ log = logging.getLogger("isatools")
 
 
 def get_ols_ontologies():
-    print("ONE")
     """Returns a list of OntologySource objects according to what's in OLS"""
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?" + str(OLS_PAGINATION_SIZE)
     log.debug(ontologiesUri)
@@ -45,7 +44,6 @@ def get_ols_ontologies():
 
 
 def get_ols_ontology(ontology_name, page: int):
-    print("TWO")
     """Returns a single OntologySource objects according to what's in OLS"""
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?page=" + str(page) + "&size=" + str(OLS_PAGINATION_SIZE)
     log.debug(ontologiesUri)
