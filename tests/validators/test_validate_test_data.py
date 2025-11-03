@@ -404,7 +404,7 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
         with open(os.path.join(utils.JSON_DATA_DIR, "create", "treatment_sequence_test.json")) as test_case_fp:
             with open(os.path.join(self.v2_create_schemas_path, "treatment_sequence_schema.json")) as fp:
                 treatment_sequence_schema = json.load(fp)
-            #res_path = pathlib.Path("file://", self.v2_create_schemas_path, "treatment_sequence_schema.json").as_uri()
+            # res_path = pathlib.Path("file://", self.v2_create_schemas_path, "treatment_sequence_schema.json").as_uri()
             # resolver = RefResolver(res_path, treatment_sequence_schema)
             # validator = Draft4Validator(treatment_sequence_schema, resolver=resolver)
             resources = []

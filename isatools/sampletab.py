@@ -8,6 +8,11 @@ isatools.model package.
 
 import io
 import logging
+
+# Suggestion to hide these warnings as not being useful:
+# https://stackoverflow.com/a/76306267
+# https://stackoverflow.com/a/79416245
+import warnings
 from io import StringIO
 from math import isnan
 
@@ -515,248 +520,249 @@ def dumps(investigation):
     """
 
     # build MSI section
-
-    metadata_DF = pd.DataFrame(
-        columns=(
-            "Submission Title",
-            "Submission Identifier",
-            "Submission Description",
-            "Submission Version",
-            "Submission Reference Layer",
-            "Submission Release Date",
-            "Submission Update Date",
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=pd.errors.PerformanceWarning)
+        metadata_DF = pd.DataFrame(
+            columns=(
+                "Submission Title",
+                "Submission Identifier",
+                "Submission Description",
+                "Submission Version",
+                "Submission Reference Layer",
+                "Submission Release Date",
+                "Submission Update Date",
+            )
         )
-    )
-    iversion_hits = [x for x in investigation.comments if x.name == "Submission Version"]
-    if len(iversion_hits) == 1:
-        investigation_version = iversion_hits[0].value
-    else:
-        investigation_version = ""
-    ireference_layer_hits = [x for x in investigation.comments if x.name == "Submission Reference Layer"]
-    if len(ireference_layer_hits) == 1:
-        investigation_reference_layer = ireference_layer_hits[0].value
-    else:
-        investigation_reference_layer = ""
-    iversion_update_date = [x for x in investigation.comments if x.name == "Submission Update Date"]
-    if len(iversion_update_date) == 1:
-        investigation_update_date = iversion_update_date[0].value
-    else:
-        investigation_update_date = ""
-    metadata_DF.loc[0] = [
-        investigation.title,
-        investigation.identifier,
-        investigation.description,
-        investigation_version,
-        investigation_reference_layer,
-        investigation.submission_date,
-        investigation_update_date,
-    ]
-
-    org_DF = pd.DataFrame(
-        columns=(
-            "Organization Name",
-            "Organization Address",
-            "Organization URI",
-            "Organization Email",
-            "Organization Role",
-        )
-    )
-    org_name_hits = [x for x in investigation.comments if x.name.startswith("Organization Name")]
-    org_address_hits = [x for x in investigation.comments if x.name.startswith("Organization Address")]
-    org_uri_hits = [x for x in investigation.comments if x.name.startswith("Organization URI")]
-    org_email_hits = [x for x in investigation.comments if x.name.startswith("Organization Email")]
-    org_role_hits = [x for x in investigation.comments if x.name.startswith("Organization Role")]
-    for i, org_name in enumerate(org_name_hits):
-        try:
-            org_name = org_name_hits[i].value
-        except IndexError:
-            org_name = ""
-        try:
-            org_address = org_address_hits[i].value
-        except IndexError:
-            org_address = ""
-        try:
-            org_uri = org_uri_hits[i].value
-        except IndexError:
-            org_uri = ""
-        try:
-            org_email = org_email_hits[i].value
-        except IndexError:
-            org_email = ""
-        try:
-            org_role = org_role_hits[i].value
-        except IndexError:
-            org_role = ""
-        org_DF.loc[i] = [org_name, org_address, org_uri, org_email, org_role]
-
-    people_DF = pd.DataFrame(
-        columns=("Person Last Name", "Person Initials", "Person First Name", "Person Email", "Person Role")
-    )
-    for i, contact in enumerate(investigation.contacts):
-        if len(contact.roles) == 1:
-            role = contact.roles[0].term
+        iversion_hits = [x for x in investigation.comments if x.name == "Submission Version"]
+        if len(iversion_hits) == 1:
+            investigation_version = iversion_hits[0].value
         else:
-            role = ""
-        people_DF.loc[i] = [contact.last_name, contact.mid_initials, contact.first_name, contact.email, role]
-
-    term_sources_DF = pd.DataFrame(columns=("Term Source Name", "Term Source URI", "Term Source Version"))
-    for i, term_source in enumerate(investigation.ontology_source_references):
-        term_sources_DF.loc[i] = [term_source.name, term_source.file, term_source.version]
-    msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
-    msi_DF = msi_DF.set_index("Submission Title").T
-    msi_DF = msi_DF.map(lambda x: np.nan if x == "" else x)
-    msi_memf = StringIO()
-    msi_DF.to_csv(path_or_buf=msi_memf, index=True, sep="\t", encoding="utf-8", index_label="Submission Title")
-    msi_memf.seek(0)
-
-    scd_DF = pd.DataFrame(
-        columns=(
-            "Sample Name",
-            "Sample Accession",
-            "Sample Description",
-            "Derived From",
-            "Group Name",
-            "Group Accession",
-        )
-    )
-
-    all_samples = []
-    for study in investigation.studies:
-        all_samples += study.sources
-        all_samples += study.samples
-
-    all_samples = list(set(all_samples))
-    if isa_logging.show_pbars:
-        pbar = ProgressBar(
-            min_value=0,
-            max_value=len(all_samples),
-            widgets=[
-                "Writing {} samples: ".format(len(all_samples)),
-                SimpleProgress(),
-                Bar(left=" |", right="| "),
-                ETA(),
-            ],
-        ).start()
-    else:
-
-        def pbar(x):
-            return x
-
-    for i, s in pbar(enumerate(all_samples)):
-        derived_from = ""
-        if isinstance(s, Sample) and s.derives_from is not None:
-            if len(s.derives_from) == 1:
-                derived_from_obj = s.derives_from[0]
-                derives_from_accession_hits = [
-                    x for x in derived_from_obj.characteristics if x.category.term == "Sample Accession"
-                ]
-                if len(derives_from_accession_hits) == 1:
-                    derived_from = derives_from_accession_hits[0].value
-                else:
-                    log.warning(
-                        "WARNING! No Sample Accession available so "
-                        "referencing Derived From relation using "
-                        'Sample Name "{}" instead'.format(derived_from_obj.name)
-                    )
-                    derived_from = derived_from_obj.name
-        sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
-        if len(sample_accession_hits) == 1:
-            sample_accession = sample_accession_hits[0].value
+            investigation_version = ""
+        ireference_layer_hits = [x for x in investigation.comments if x.name == "Submission Reference Layer"]
+        if len(ireference_layer_hits) == 1:
+            investigation_reference_layer = ireference_layer_hits[0].value
         else:
-            sample_accession = ""
-        sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
-        if len(sample_description_hits) == 1:
-            sample_description = sample_description_hits[0].value
+            investigation_reference_layer = ""
+        iversion_update_date = [x for x in investigation.comments if x.name == "Submission Update Date"]
+        if len(iversion_update_date) == 1:
+            investigation_update_date = iversion_update_date[0].value
         else:
-            sample_description = ""
-
-        if isinstance(s, Sample):
-            group_name_hits = [x for x in s.factor_values if x.factor_name.name == "Group Name"]
-            if len(group_name_hits) == 1:
-                group_name = group_name_hits[0].value
-            else:
-                group_name = ""
-            group_accession_hits = [x for x in s.factor_values if x.factor_name.name == "Group Accession"]
-            if len(group_accession_hits) == 1:
-                group_accession = group_accession_hits[0].value
-            else:
-                group_accession = ""
-        else:
-            group_name_hits = [x for x in s.characteristics if x.category.term == "Group Name"]
-            if len(group_name_hits) == 1:
-                group_name = group_name_hits[0].value
-            else:
-                group_name = ""
-            group_accession_hits = [x for x in s.characteristics if x.category.term == "Group Accession"]
-            if len(group_accession_hits) == 1:
-                group_accession = group_accession_hits[0].value
-            else:
-                group_accession = ""
-
-        scd_DF.loc[i, "Sample Name"] = s.name
-        scd_DF.loc[i, "Sample Accession"] = sample_accession
-        scd_DF.loc[i, "Sample Description"] = sample_description
-        scd_DF.loc[i, "Derived From"] = derived_from
-        scd_DF.loc[i, "Group Name"] = group_name
-        scd_DF.loc[i, "Group Accession"] = group_accession
-
-        characteristics = [
-            x
-            for x in s.characteristics
-            if x.category.term not in ["Sample Description", "Derived From", "Sample Accession"]
+            investigation_update_date = ""
+        metadata_DF.loc[0] = [
+            investigation.title,
+            investigation.identifier,
+            investigation.description,
+            investigation_version,
+            investigation_reference_layer,
+            investigation.submission_date,
+            investigation_update_date,
         ]
-        for characteristic in characteristics:
-            characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
-            if characteristic_label not in scd_DF.columns:
-                scd_DF[characteristic_label] = ""
-                for val_col in get_value_columns(characteristic_label, characteristic):
-                    scd_DF[val_col] = ""
-            if isinstance(characteristic.value, (int, float)) and characteristic.unit:
-                if isinstance(characteristic.unit, OntologyAnnotation):
-                    scd_DF.loc[i, characteristic_label] = characteristic.value
-                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
-                    scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"] = (
-                        characteristic.unit.term_source.name if characteristic.unit.term_source else ""
+
+        org_DF = pd.DataFrame(
+            columns=(
+                "Organization Name",
+                "Organization Address",
+                "Organization URI",
+                "Organization Email",
+                "Organization Role",
+            )
+        )
+        org_name_hits = [x for x in investigation.comments if x.name.startswith("Organization Name")]
+        org_address_hits = [x for x in investigation.comments if x.name.startswith("Organization Address")]
+        org_uri_hits = [x for x in investigation.comments if x.name.startswith("Organization URI")]
+        org_email_hits = [x for x in investigation.comments if x.name.startswith("Organization Email")]
+        org_role_hits = [x for x in investigation.comments if x.name.startswith("Organization Role")]
+        for i, org_name in enumerate(org_name_hits):
+            try:
+                org_name = org_name_hits[i].value
+            except IndexError:
+                org_name = ""
+            try:
+                org_address = org_address_hits[i].value
+            except IndexError:
+                org_address = ""
+            try:
+                org_uri = org_uri_hits[i].value
+            except IndexError:
+                org_uri = ""
+            try:
+                org_email = org_email_hits[i].value
+            except IndexError:
+                org_email = ""
+            try:
+                org_role = org_role_hits[i].value
+            except IndexError:
+                org_role = ""
+            org_DF.loc[i] = [org_name, org_address, org_uri, org_email, org_role]
+
+        people_DF = pd.DataFrame(
+            columns=("Person Last Name", "Person Initials", "Person First Name", "Person Email", "Person Role")
+        )
+        for i, contact in enumerate(investigation.contacts):
+            if len(contact.roles) == 1:
+                role = contact.roles[0].term
+            else:
+                role = ""
+            people_DF.loc[i] = [contact.last_name, contact.mid_initials, contact.first_name, contact.email, role]
+
+        term_sources_DF = pd.DataFrame(columns=("Term Source Name", "Term Source URI", "Term Source Version"))
+        for i, term_source in enumerate(investigation.ontology_source_references):
+            term_sources_DF.loc[i] = [term_source.name, term_source.file, term_source.version]
+        msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
+        msi_DF = msi_DF.set_index("Submission Title").T
+        msi_DF = msi_DF.map(lambda x: np.nan if x == "" else x)
+        msi_memf = StringIO()
+        msi_DF.to_csv(path_or_buf=msi_memf, index=True, sep="\t", encoding="utf-8", index_label="Submission Title")
+        msi_memf.seek(0)
+
+        scd_DF = pd.DataFrame(
+            columns=(
+                "Sample Name",
+                "Sample Accession",
+                "Sample Description",
+                "Derived From",
+                "Group Name",
+                "Group Accession",
+            )
+        )
+
+        all_samples = []
+        for study in investigation.studies:
+            all_samples += study.sources
+            all_samples += study.samples
+
+        all_samples = list(set(all_samples))
+        if isa_logging.show_pbars:
+            pbar = ProgressBar(
+                min_value=0,
+                max_value=len(all_samples),
+                widgets=[
+                    "Writing {} samples: ".format(len(all_samples)),
+                    SimpleProgress(),
+                    Bar(left=" |", right="| "),
+                    ETA(),
+                ],
+            ).start()
+        else:
+
+            def pbar(x):
+                return x
+
+        for i, s in pbar(enumerate(all_samples)):
+            derived_from = ""
+            if isinstance(s, Sample) and s.derives_from is not None:
+                if len(s.derives_from) == 1:
+                    derived_from_obj = s.derives_from[0]
+                    derives_from_accession_hits = [
+                        x for x in derived_from_obj.characteristics if x.category.term == "Sample Accession"
+                    ]
+                    if len(derives_from_accession_hits) == 1:
+                        derived_from = derives_from_accession_hits[0].value
+                    else:
+                        log.warning(
+                            "WARNING! No Sample Accession available so "
+                            "referencing Derived From relation using "
+                            'Sample Name "{}" instead'.format(derived_from_obj.name)
+                        )
+                        derived_from = derived_from_obj.name
+            sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
+            if len(sample_accession_hits) == 1:
+                sample_accession = sample_accession_hits[0].value
+            else:
+                sample_accession = ""
+            sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
+            if len(sample_description_hits) == 1:
+                sample_description = sample_description_hits[0].value
+            else:
+                sample_description = ""
+
+            if isinstance(s, Sample):
+                group_name_hits = [x for x in s.factor_values if x.factor_name.name == "Group Name"]
+                if len(group_name_hits) == 1:
+                    group_name = group_name_hits[0].value
+                else:
+                    group_name = ""
+                group_accession_hits = [x for x in s.factor_values if x.factor_name.name == "Group Accession"]
+                if len(group_accession_hits) == 1:
+                    group_accession = group_accession_hits[0].value
+                else:
+                    group_accession = ""
+            else:
+                group_name_hits = [x for x in s.characteristics if x.category.term == "Group Name"]
+                if len(group_name_hits) == 1:
+                    group_name = group_name_hits[0].value
+                else:
+                    group_name = ""
+                group_accession_hits = [x for x in s.characteristics if x.category.term == "Group Accession"]
+                if len(group_accession_hits) == 1:
+                    group_accession = group_accession_hits[0].value
+                else:
+                    group_accession = ""
+
+            scd_DF.loc[i, "Sample Name"] = s.name
+            scd_DF.loc[i, "Sample Accession"] = sample_accession
+            scd_DF.loc[i, "Sample Description"] = sample_description
+            scd_DF.loc[i, "Derived From"] = derived_from
+            scd_DF.loc[i, "Group Name"] = group_name
+            scd_DF.loc[i, "Group Accession"] = group_accession
+
+            characteristics = [
+                x
+                for x in s.characteristics
+                if x.category.term not in ["Sample Description", "Derived From", "Sample Accession"]
+            ]
+            for characteristic in characteristics:
+                characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
+                if characteristic_label not in scd_DF.columns:
+                    scd_DF[characteristic_label] = ""
+                    for val_col in get_value_columns(characteristic_label, characteristic):
+                        scd_DF[val_col] = ""
+                if isinstance(characteristic.value, (int, float)) and characteristic.unit:
+                    if isinstance(characteristic.unit, OntologyAnnotation):
+                        scd_DF.loc[i, characteristic_label] = characteristic.value
+                        scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
+                        scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"] = (
+                            characteristic.unit.term_source.name if characteristic.unit.term_source else ""
+                        )
+                        scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = (
+                            characteristic.unit.term_accession
+                        )
+                    else:
+                        scd_DF.loc[i, characteristic_label] = characteristic.value
+                        scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
+                elif isinstance(characteristic.value, OntologyAnnotation):
+                    scd_DF.loc[i, characteristic_label] = characteristic.value.term
+                    scd_DF.loc[i, characteristic_label + ".Term Source REF"] = (
+                        characteristic.value.term_source.name if characteristic.value.term_source else ""
                     )
-                    scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = (
-                        characteristic.unit.term_accession
-                    )
+                    scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = characteristic.value.term_accession
                 else:
                     scd_DF.loc[i, characteristic_label] = characteristic.value
-                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
-            elif isinstance(characteristic.value, OntologyAnnotation):
-                scd_DF.loc[i, characteristic_label] = characteristic.value.term
-                scd_DF.loc[i, characteristic_label + ".Term Source REF"] = (
-                    characteristic.value.term_source.name if characteristic.value.term_source else ""
-                )
-                scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = characteristic.value.term_accession
-            else:
-                scd_DF.loc[i, characteristic_label] = characteristic.value
 
-    scd_DF = scd_DF.map(lambda x: np.nan if x == "" else x)
-    columns = list(scd_DF.columns)
-    for i, col in enumerate(columns):
-        if col.endswith("Term Source REF"):
-            columns[i] = "Term Source REF"
-        elif col.endswith("Term Accession Number"):
-            columns[i] = "Term Source ID"
-        elif col.endswith("Unit"):
-            columns[i] = "Unit"
-    scd_DF.columns = columns
-    scd_memf = StringIO()
-    scd_DF.to_csv(path_or_buf=scd_memf, index=False, sep="\t", encoding="utf-8")
-    scd_memf.seek(0)
+        scd_DF = scd_DF.map(lambda x: np.nan if x == "" else x)
+        columns = list(scd_DF.columns)
+        for i, col in enumerate(columns):
+            if col.endswith("Term Source REF"):
+                columns[i] = "Term Source REF"
+            elif col.endswith("Term Accession Number"):
+                columns[i] = "Term Source ID"
+            elif col.endswith("Unit"):
+                columns[i] = "Unit"
+        scd_DF.columns = columns
+        scd_memf = StringIO()
+        scd_DF.to_csv(path_or_buf=scd_memf, index=False, sep="\t", encoding="utf-8")
+        scd_memf.seek(0)
 
-    sampletab_memf = StringIO()
-    sampletab_memf.write("[MSI]\n")
-    for line in msi_memf:
-        sampletab_memf.write(line.rstrip() + "\n")
-    sampletab_memf.write("[SCD]\n")
-    for line in scd_memf:
-        sampletab_memf.write(line.rstrip() + "\n")
-    sampletab_memf.seek(0)
+        sampletab_memf = StringIO()
+        sampletab_memf.write("[MSI]\n")
+        for line in msi_memf:
+            sampletab_memf.write(line.rstrip() + "\n")
+        sampletab_memf.write("[SCD]\n")
+        for line in scd_memf:
+            sampletab_memf.write(line.rstrip() + "\n")
+        sampletab_memf.seek(0)
 
-    return sampletab_memf.read()
+        return sampletab_memf.read()
 
 
 def dump(investigation, out_fp):
