@@ -1,5 +1,5 @@
 {
-  "publicReleaseDate": "",
+  "publicReleaseDate": "2000-01-01",
   "comments": [
     {
       "name": "Last Opened With Configuration",
@@ -11,7 +11,7 @@
     }
   ],
   "identifier": "BII-S-3",
-  "submissionDate": "",
+  "submissionDate": "2000-01-01",
   "description": "",
   "people": [],
   "studies": [
@@ -209,7 +209,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay4.1",
               "outputs": [
@@ -239,7 +239,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_21",
@@ -258,7 +258,7 @@
                 "@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -280,7 +280,7 @@
                 "@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -299,7 +299,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay1",
               "outputs": [
@@ -329,7 +329,7 @@
                 "@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -351,7 +351,7 @@
                 "@id": "#protocol/genomic_DNA_extraction_-_standard_procedure_4"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -373,7 +373,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_23",
@@ -389,7 +389,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay4.2",
               "outputs": [
@@ -416,7 +416,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay3.1",
               "outputs": [
@@ -446,7 +446,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction2",
@@ -487,7 +487,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_22",
@@ -506,7 +506,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction3",
@@ -544,7 +544,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay2",
               "outputs": [
@@ -574,7 +574,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction1",
@@ -615,7 +615,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_24",
@@ -631,7 +631,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay3.2",
               "outputs": [
@@ -661,7 +661,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction4",
@@ -962,7 +962,7 @@
                 "@id": "#protocol/mRNA_extraction_-_standard_procedure_3"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -984,7 +984,7 @@
                 "@id": "#protocol/mRNA_extraction_-_standard_procedure_3"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -1006,7 +1006,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction4",
@@ -1052,7 +1052,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.1",
               "outputs": [
@@ -1079,7 +1079,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.4",
               "outputs": [
@@ -1109,7 +1109,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_21",
@@ -1125,7 +1125,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.1",
               "outputs": [
@@ -1152,7 +1152,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.1",
               "outputs": [
@@ -1179,7 +1179,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.2",
               "outputs": [
@@ -1206,7 +1206,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.5",
               "outputs": [
@@ -1233,7 +1233,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.3",
               "outputs": [
@@ -1260,7 +1260,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.5",
               "outputs": [
@@ -1287,7 +1287,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.1",
               "outputs": [
@@ -1317,7 +1317,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction3",
@@ -1363,7 +1363,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.5",
               "outputs": [
@@ -1393,7 +1393,7 @@
                 "@id": "#protocol/mRNA_extraction_-_standard_procedure_3"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -1415,7 +1415,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction1",
@@ -1461,7 +1461,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.6",
               "outputs": [
@@ -1488,7 +1488,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.5",
               "outputs": [
@@ -1515,7 +1515,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.3",
               "outputs": [
@@ -1542,7 +1542,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.3",
               "outputs": [
@@ -1572,7 +1572,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_22",
@@ -1591,7 +1591,7 @@
                 "@id": "#protocol/mRNA_extraction_-_standard_procedure_3"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [
                 {
@@ -1610,7 +1610,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.6",
               "outputs": [
@@ -1637,7 +1637,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.6",
               "outputs": [
@@ -1664,7 +1664,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.3",
               "outputs": [
@@ -1691,7 +1691,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.6",
               "outputs": [
@@ -1718,7 +1718,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.2",
               "outputs": [
@@ -1748,7 +1748,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_23",
@@ -1764,7 +1764,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.2",
               "outputs": [
@@ -1794,7 +1794,7 @@
                 "@id": "#protocol/library_construction"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/library_construction2",
@@ -1840,7 +1840,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay6.4",
               "outputs": [
@@ -1867,7 +1867,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay7.4",
               "outputs": [
@@ -1897,7 +1897,7 @@
                 "@id": "#protocol/nucleic_acid_extraction_-_standard_procedure_2"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "outputs": [],
               "@id": "#process/nucleic_acid_extraction_-_standard_procedure_24",
@@ -1913,7 +1913,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay5.2",
               "outputs": [
@@ -1940,7 +1940,7 @@
                 "@id": "#protocol/pyrosequencing_-_standard_procedure_6"
               },
               "comments": [],
-              "date": "",
+              "date": "2000-01-01",
               "performer": "",
               "name": "assay8.4",
               "outputs": [
@@ -2479,7 +2479,7 @@
             "@id": "#protocol/environmental_material_collection_-_standard_procedure_1"
           },
           "comments": [],
-          "date": "",
+          "date": "2000-01-01",
           "performer": "",
           "outputs": [
             {
@@ -2509,7 +2509,7 @@
             "@id": "#protocol/environmental_material_collection_-_standard_procedure_1"
           },
           "comments": [],
-          "date": "",
+          "date": "2000-01-01",
           "performer": "",
           "outputs": [
             {
@@ -2539,7 +2539,7 @@
             "@id": "#protocol/environmental_material_collection_-_standard_procedure_1"
           },
           "comments": [],
-          "date": "",
+          "date": "2000-01-01",
           "performer": "",
           "outputs": [
             {
@@ -2569,7 +2569,7 @@
             "@id": "#protocol/environmental_material_collection_-_standard_procedure_1"
           },
           "comments": [],
-          "date": "",
+          "date": "2000-01-01",
           "performer": "",
           "outputs": [
             {
