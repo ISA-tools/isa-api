@@ -27,5 +27,5 @@ jobs:
         uv build
     - name: Publish
       run: |
-        echo "Publishing to PyPI..."
-        uv publish -t ${{ secrets.PYPI_TOKEN }}
+        echo "Publishing to TestPyPI..."
+        uv publish -t ${{ secrets.TEST_PYPI_TOKEN }}
