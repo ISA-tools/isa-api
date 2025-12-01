@@ -461,7 +461,7 @@ class TestIsaJson(unittest.TestCase):
         self.assertEqual(assays["materials"]["otherMaterials"][1]["type"], "Extract Name")
 
 
-    def test_json_load_and_dump_bii_s_test(self):
+    def test_json_load_and_dump_imagefile_test(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, "ISA-Image", "isa-image.json")) as isajson_fp:
             investigation = isajson.load(isajson_fp)
