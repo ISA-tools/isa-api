@@ -1,8 +1,8 @@
 # ISA-QL:
 
-ISA-QL is a syntax querying language built for the ISA model and based on [GraphQL](https://graphql.org/) and 
+ISA-QL is a syntax querying language built for the ISA model and based on [GraphQL](https://graphql.org/) and
 [Graphene](https://github.com/graphql-python/graphene).
-It provides a fast and easy programmatic access to the very complex and nested fields within an ISA Investigation as 
+It provides a fast and easy programmatic access to the very complex and nested fields within an ISA Investigation as
 well as the ability to filter attributes based on user inputs.
 It is bundled with the ISA-api python library and directly integrated as a method of ISA Investigation objects.
 
@@ -23,7 +23,7 @@ with open(investigation_filepath, "r") as investigation_file:
     investigation_file.close()
 ```
 
-One of the powerful features of GraphQL is its ability to self-document through so-called *introspection 
+One of the powerful features of GraphQL is its ability to self-document through so-called *introspection
 queries*. This allows interrogating an endpoint information about the queryable fields and their valid inputs.
 One such *introspection query* has already been written for ease of use and wrapped in the ``investigation.instropect()``
 method (see usage below.)
@@ -39,7 +39,7 @@ The *introspection query* is available from the ``/graphQL/queries/`` directory.
 ---
 
 ## Queryable Objects:
-There are 3 mains queryable objects at the root of the ISA-QL syntax: 
+There are 3 mains queryable objects at the root of the ISA-QL syntax:
 
 - the [investigation](#investigation)
 
@@ -58,7 +58,7 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax:
 | submissionDate              | Submission date of the investigation                 | DateTime                                                |
 | publicReleaseDate           | Public release date of the investigation             | DateTime                                                |
 | ontologySourceReferences    | Ontology source references used by the investigation | [OntologySourceReference](#OntologySourceReference)     |
-| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |  
+| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |
 | people                      | People to contact for the investigation              | [Person](#Person)                                       |
 | studies                     | Studies associated with the investigation            | [Study](#Study)                                       |
 
@@ -74,9 +74,9 @@ elif response.errors:
 ```
 
 As shown in the example above, the `query` is divided into two segments: the first one indicates which object we want to
-query (in this case an `investigation`). The second one, located between the second set of curly brackets indicates the 
-fields we want to retrieve. 
-Queryable fields can be simple, as shown in the example, or represent complex objects, which 
+query (in this case an `investigation`). The second one, located between the second set of curly brackets indicates the
+fields we want to retrieve.
+Queryable fields can be simple, as shown in the example, or represent complex objects, which
 also have their own queryable fields.
 
 ### The Studies query:
@@ -101,7 +101,7 @@ also have their own queryable fields.
 | characteristicCategories  | Categories of characteristics associated with this study  | [OntologyAnnotation](#OntologyAnnotation)  |
 | unitCategories            | Categories of units associated with the study             | [OntologyAnnotation](#OntologyAnnotation)  |
 
-We can reuse the previous query to request the same fields but this time for any of the studies present in the ISA document. 
+We can reuse the previous query to request the same fields but this time for any of the studies present in the ISA document.
 
 ```python
 query = '{ studies { title description identifier }}'
@@ -138,7 +138,7 @@ elif response.errors:
 | unitCategories              | Categories of units associated with this assay           | [OntologyAnnotation](#OntologyAnnotation)        |
 | processSequence             | Processes associated with this assay                     | [Process](#Process)                              |
 
-The assay query is usable on its own (in which cases, all assays from different studies will be concatenated in the same output) or as a field of a `studies` query. 
+The assay query is usable on its own (in which cases, all assays from different studies will be concatenated in the same output) or as a field of a `studies` query.
 
 The request below will retrieve the filename associated with the investigation, with each study in that investigation, and with each assay in each study.
 
@@ -155,25 +155,25 @@ elif response.errors:
 
 ###### Introduction to filters:
 The assay query is different from investigations and studies because it accepts parameters that will allow to
-filter them based on specific inputs. For instance, a user may want to retrieve only the assays performed using 
+filter them based on specific inputs. For instance, a user may want to retrieve only the assays performed using
 `nucleotide sequencing`.
 The `assays` query takes two inputs:
 - an operator: 'AND' or 'OR', it indicates how filters should be assembled. Its default value is always 'AND'.
-- a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied 
-  and an expression in the form of an object. This expression contains a key that indicates the operation to run and a 
+- a list of filters to assemble. Each filter contains a key that indicates to which field the filter should be applied
+  and an expression in the form of an object. This expression contains a key that indicates the operation to run and a
   value to compare with. Typically, this is how a filter would look like:
-  
+
 ```
 filters: {
   technologyType: { eq: "nucleotide sequencing" }
 }
 ```
 
-The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison operation should be executed. 
+The first key (`technologyType`) indicated which field to target. The second key (`eq`) indicates which comparison operation should be executed.
 
-- For strings, it can take the `eq` (equal) or `in` (includes) values. 
+- For strings, it can take the `eq` (equal) or `in` (includes) values.
 
-- For integers, it can be `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal). 
+- For integers, it can be `lt` (lower than), `lte` (lower than or equal), `gt` (greater than) or `gte` (greater than or equal).
 
 Finally, the string indicates the filter value is "nucleotide sequencing".
 
@@ -196,15 +196,15 @@ This query retrieves filename of assays for which the technology type includes t
 |------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
 | measurementType  | Type of measurement realised in the assay                                                        | String                                    | measurementType           | X                                         |
 | executesProtocol | Protocol executed by a process                                                                   | String                                    | process.executesProtocol  | X                                         |
-| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |   
+| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |
 | treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
 | characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
 | parameterValues  | Parameters values a process should comply with                                                   | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |
 | on               | Control to which input/output type the treatmentGroup and characteristics filters should apply   | String                                    | see controlled values     | "Sample", "Source, "DataFile", "Material" |
 
 
-Using the `operator` key, we can assemble multiple filters in a single query. 
-However, at this point the code becomes hard to maintain, and we suggest creating dedicated query files in the `.gql` format. 
+Using the `operator` key, we can assemble multiple filters in a single query.
+However, at this point the code becomes hard to maintain, and we suggest creating dedicated query files in the `.gql` format.
 
 We now want to retrieve ISA assay filenames given the following constraints:
 - the technology used is `nucleotide sequencing` (**exact match**)
@@ -391,7 +391,7 @@ elif response.errors:
 | submissionDate              | Submission date of the investigation                 | DateTime                                                |
 | publicReleaseDate           | Public release date of the investigation             | DateTime                                                |
 | ontologySourceReferences    | Ontology source references used by the investigation | [OntologySourceReference](#OntologySourceReference)     |
-| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |  
+| publications                | Publications associated with the investigation       | [Publication](#Publication)                             |
 | people                      | People to contact for the investigation              | [Person](#Person)                                       |
 | studies                     | Studies associated with the investigation            | [Study](#Studies)                                       |
 
@@ -435,7 +435,7 @@ elif response.errors:
 | Field name       |             Description                                |                                Type                                                  |
 |------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------|
 | name             | Name of the process                                    | String                                                                               |
-| executesProtocol | Protocol executed by the process                       | [Protocol](#Protocol)                                                                | 
+| executesProtocol | Protocol executed by the process                       | [Protocol](#Protocol)                                                                |
 | parameterValues  | Parameters used by the protocol of this process        | [ProtocolParameterValue](#ProtocolParameterValue)                                    |
 | performer        | Name of the person who executed the protocol           | String                                                                               |
 | date             | ?                                                      | DateTime                                                                             |
@@ -533,7 +533,7 @@ the main key represents the comparator. For example: `measurementType: {eq: "tra
 |------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------|-------------------------------------------|
 | measurementType  | Type of measurement realised in the assay                                                        | String                                    | measurementType           | X                                         |
 | executesProtocol | Protocol executed by a process                                                                   | String                                    | process.executesProtocol  | X                                         |
-| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |   
+| technologyType   | Type of technology used in the assay                                                             | String                                    | technologyType            | X                                         |
 | treatmentGroup   | Conditions the group was exposed to                                                              | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
 | characteristics  | Characteristics the material should comply with                                                  | [ExposureParameters](#ExposureParameters) | process.inputs            | X                                         |
 | parameterValues  | Parameters values a process should comply with                                                   | [ParameterValues](#ParameterValues)       | process.parameterValues   | X                                         |

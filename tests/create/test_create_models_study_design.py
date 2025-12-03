@@ -1043,8 +1043,8 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(
             str(self.cell),
             """StudyCell(
-               name=test epoch 0, 
-               elements=0 items, 
+               name=test epoch 0,
+               elements=0 items,
                )""",
         )
 
@@ -1706,7 +1706,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
             str(self.plan),
             """SampleAndAssayPlan(
         name=test plan,
-        sample_plan=set(), 
+        sample_plan=set(),
         assay_plan=set()
         )""",
         )
@@ -2154,7 +2154,7 @@ class StudyArmTest(unittest.TestCase):
 	unit=
 	comments=0 Comment objects
 ),
-               group_size=10, 
+               group_size=10,
                no. cells=0,
                no. sample_assay_plans=0
                )""",
@@ -2814,7 +2814,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(
             str(self.study_design),
             """StudyDesign(
-               identifier=None, 
+               identifier=None,
                name=Study Design,
                description=None,
                study_arms=[]

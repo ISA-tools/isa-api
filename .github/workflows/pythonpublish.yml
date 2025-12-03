@@ -20,7 +20,7 @@ jobs:
         cache-dependency-glob: uv.lock
     - name: Sync dependencies
       run: |
-        uv sync
+        uv sync --extra database
     - name: Build
       run: |
         echo "Running uv build..."
