@@ -51,17 +51,30 @@ dependencies = [
     "PyYAML~=6.0.2",
     "rdflib~=7.2.1",
     "python-dateutil~=2.9.0.post0",
-    "Flask>=3.1.1",
-    "flask_sqlalchemy>=3.0.2",
-    "SQLAlchemy~=2.0.31", #1.4.54
-    "graphene~=3.4.3",
-    "graphql-core~=3.2.6",
-    "ruff>=0.14.1",
-    "pytest-timeout>=2.4.0",
+    "graphene>=3.4.3,<4.0.0",
+    "pre-commit>=4.3.0",
 ]
 
 [project.optional-dependencies]
 notebook = ["bokeh~=3.4.2"]
+dev = [
+    "ruff>=0.14.1",
+    "pytest-timeout>=2.4.0",
+    "pytest>=8.3.5,<9.0.0",
+    "coveralls>=4.0.1",
+    "sure>=2.0.1",
+    "ddt>=1.7.2",
+    "deepdiff>=8.6.1",
+    "behave>=1.2.6",
+    "httpretty>=1.1.4",
+    "import-linter>=2.5.2",
+]
+database = [
+    "Flask>=3.1.1",
+    "flask_sqlalchemy>=3.0.2",
+    "SQLAlchemy~=2.0.31"
+]
+all = ["isatools[database,notebook]"]
 
 [project.urls]
 Code = "https://github.com/ISA-tools/isa-api"
@@ -79,20 +92,6 @@ build-backend = "uv_build"
 module-name = "isatools"
 module-root = ""
 # data = ["resources/**/*", "net/**/*"]
-
-[dependency-groups]
-dev = [
-    "pytest>=8.3.5,<9.0.0",
-    "coveralls>=4.0.1",
-    "sure>=2.0.1",
-    "ddt>=1.7.2",
-    "deepdiff>=8.6.1",
-    "behave>=1.2.6",
-    "httpretty>=1.1.4",
-    "import-linter>=2.5.2",
-    "ruff>=0.14.1",
-    "pre-commit>=4.0.1,<5",
-]
 
 
 [tool.setuptools-git-versioning]

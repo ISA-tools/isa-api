@@ -54,8 +54,12 @@ def get_ols_ontology(ontology_name, page: int):
             ontology_sources.append(
                 OntologySource(
                     name=ontology_source_json["ontologyId"],
-                    version=ontology_source_json["config"]["version"] if ontology_source_json["config"]["version"] else "",
-                    description=ontology_source_json["config"]["title"] if ontology_source_json["config"]["title"] else "",
+                    version=ontology_source_json["config"]["version"]
+                    if ontology_source_json["config"]["version"]
+                    else "",
+                    description=ontology_source_json["config"]["title"]
+                    if ontology_source_json["config"]["title"]
+                    else "",
                     file=ontology_source_json["_links"]["self"]["href"],
                 )
             )
@@ -77,7 +81,7 @@ def search_ols(term, ontology_source):
     query = "{0}&queryFields=label&ontology={1}&exact=True".format(term, os_search)
     url += "?q={}".format(query)
 
-    #print("OLS_URL", url)
+    # print("OLS_URL", url)
     log.debug(url)
     import requests
 
