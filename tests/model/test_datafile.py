@@ -81,6 +81,7 @@ class TestSubDataFile(TestCase):
     def setUp(self):
         self.types = {
             "RawDataFile": RawDataFile,
+            "ImageFile": ImageFile,
             "DerivedDataFile": DerivedDataFile,
             "RawSpectralDataFile": RawSpectralDataFile,
             "DerivedArrayDataFile": DerivedArrayDataFile,
@@ -92,6 +93,7 @@ class TestSubDataFile(TestCase):
             "PostTranslationalModificationAssignmentFile": PostTranslationalModificationAssignmentFile,
             "AcquisitionParameterDataFile": AcquisitionParameterDataFile,
             "FreeInductionDecayDataFile": FreeInductionDecayDataFile,
+            "MetaboliteAssignmentFile": MetaboliteAssignmentFile
         }
         self.classes = {}
         for filetype in self.types:

@@ -460,6 +460,18 @@ class TestIsaJson(unittest.TestCase):
         assays = [a for a in studies["assays"] if a["filename"] == "a_assay.txt"][0]
         self.assertEqual(assays["materials"]["otherMaterials"][1]["type"], "Extract Name")
 
+
+    def test_json_load_and_dump_imagefile_test(self):
+        # Load into ISA objects
+        with open(os.path.join(utils.JSON_DATA_DIR, "ISA-Image", "isa-image.json")) as isajson_fp:
+            investigation = isajson.load(isajson_fp)
+
+        # Dump into ISA JSON from ISA objects
+        investigation_reload = json.loads(json.dumps(investigation, cls=isajson.ISAJSONEncoder))
+        studies = [s for s in investigation_reload["studies"] if s["filename"] == "s_study.txt"][0]
+        assays = [a for a in studies["assays"] if a["filename"] == "a_assay.txt"][0]
+        self.assertEqual(assays["dataFiles"][1]["type"], "Image File")
+
     def test_json_load_and_dump_isa_labeled_extract(self):
         # Load into ISA objects
         with open(os.path.join(utils.JSON_DATA_DIR, "TEST-ISA-LabeledExtract1", "isa-test-le1.json")) as isajson_fp:

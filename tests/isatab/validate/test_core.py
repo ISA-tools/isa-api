@@ -43,6 +43,14 @@ class TestValidators(unittest.TestCase):
             report = validate(fp=data_file, config_dir=self.default_conf)
         self.assertEqual(len(report["warnings"]), 1)
 
+    def test_imaging(self):
+        data_path = path.join(path.dirname(path.abspath(__file__)), "..", "..", "data", "tab", "Imaging")
+        with open(path.join(data_path, "i_Investigation.txt"), "r") as data_file:
+            report = validate(fp=data_file, config_dir=self.default_conf)
+            print(report["errors"])
+        self.assertEqual(len(report["errors"]), 0)
+
+
     def test_print_rule(self):
         raw_rule = INVESTIGATION_RULES_MAPPING[0]
         rule = Rule(**raw_rule)
