@@ -448,6 +448,7 @@ def load_table_checks(df, filename):
                         "Hybridization Assay Name",
                         "Array Design REF",
                         "Scan Name",
+                        "Normalization Name",
                         "Data Transformation Name",
                     ]
                     and not _RX_PARAMETER_VALUE.match(col)
