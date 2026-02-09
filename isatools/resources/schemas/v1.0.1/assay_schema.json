@@ -20,7 +20,7 @@
     "dataFiles" : {
       "type": "array",
       "items" : {
-        "$ref": "data_schema.json#"
+        "$ref": "data_file_schema.json#"
       }
     },
     "materials": {
