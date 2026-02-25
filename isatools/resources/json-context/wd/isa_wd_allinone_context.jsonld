@@ -2,6 +2,7 @@
   "@context": {
     "@version": 1.1,
     "wd": "http://www.wikidata.org/entity/",
+    "wdp": "http://www.wikidata.org/prop/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "studies": "@nest",
@@ -70,35 +71,35 @@
       "@id": "wd:Q101965"
     },
     "roles": {
-      "@id": "wd:P257",
+      "@id": "wdp:P257",
       "@type": "wd:Q857525"
     },
     "firstName": {
-      "@id": "wd:P735",
+      "@id": "wdp:P735",
       "@type": "wd:Q202444"
     },
     "lastName": {
-      "@id": "wd:P734",
+      "@id": "wdp:P734",
       "@type": "wd:Q101352"
     },
     "midInitials": {
-      "@id": "wd:P735",
+      "@id": "wdp:P735",
       "@type": "wd:Q105844397"
     },
     "email": {
-      "@id": "wd:P968",
+      "@id": "wdp:P968",
       "@type": "wd:Q1273217"
     },
     "phone": {
-      "@id": "wd:P1329",
+      "@id": "wdp:P1329",
       "@type": "wd:Q7696507"
     },
     "fax": {
-      "@id": "wd:P2900",
+      "@id": "wdp:P2900",
       "@type": "wd:Q7696507"
     },
     "affiliation": {
-      "@id": "wd:P361",
+      "@id": "wdp:P361",
       "@type": "wd:Q43229"
     },
     "sources": {
@@ -114,11 +115,11 @@
       "@type": "wd:Q2075980"
     },
     "characteristics": {
-      "@id": "wd:P6532",
+      "@id": "wdp:P6532",
       "@type": "wd:Q3523867"
     },
     "type": {
-      "@id": "wd:P234",
+      "@id": "wdp:P234",
       "@type": "wd:ISA-Field-Type"
     },
     "name": {
@@ -138,111 +139,111 @@
       "@type": "wd:Q47574"
     },
     "annotationValue": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "rdfs:label"
     },
     "parameters": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q7247312"
     },
     "parameterValues": {
-      "@id": "wd:P527-paramvalues",
+      "@id": "wdp:P527-paramvalues",
       "@type": "wd:Q857525"
     },
     "factorValues": {
-      "@id": "wd:P527-factorValues",
+      "@id": "wdp:P527-factorValues",
       "@type": "wd:Q857525"
     },
     "termSource": {
-      "@id": "wd:P5967",
+      "@id": "wdp:P5967",
       "@type": "wd:Q324254"
     },
     "termAccession": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q1417099"
     },
     "processSequence": {
-      "@id": "wd:P527-Process-Sequence",
+      "@id": "wdp:P527-Process-Sequence",
       "@type": "wd:Q3249551"
     },
     "assays": {
-      "@id": "wd:P257",
+      "@id": "wdp:P257",
       "@type": "wd:Q739897"
     },
     "dataFiles": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q5227290"
     },
     "filename": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q5227290"
     },
     "technologyPlatform": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q11016"
     },
     "measurementType": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q11016_MT"
     },
     "technologyType": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q11016_TT"
     },
     "unitCategories": {
-      "@id": "wd:P8111_unitCat",
+      "@id": "wdp:P8111_unitCat",
       "@type": "wd:Q47574"
     },
     "characteristicCategories": {
-      "@id": "wd:P1552",
+      "@id": "wdp:P1552",
       "@type": "wd:Q937228"
     },
     "title": {
-      "@id": "wd:P1476",
+      "@id": "wdp:P1476",
       "@type": "wd:Q783521"
     },
     "description": {
-      "@id": "wd:P1552",
+      "@id": "wdp:P1552",
       "@type": "wd:Q1200750"
     },
     "submissionDate": {
-      "@id": "wd:P585",
+      "@id": "wdp:P585",
       "@type": "xsd:date"
     },
     "publicReleaseDate": {
-      "@id": "wd:P577",
+      "@id": "wdp:P577",
       "@type": "xsd:date"
     },
     "publications": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q591041"
     },
     "people": {
-      "@id": "wd:P50",
+      "@id": "wdp:P50",
       "@type": "wd:Q215627"
     },
     "studyDesignDescriptors": {
-      "@id": "wd:P5422-SDD",
+      "@id": "wdp:P5422-SDD",
       "@type": "wd:Q2334061"
     },
     "protocols": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q41689629"
     },
     "factors": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q2487752"
     },
     "factorName": {
-      "@id": "wd:P1448-FACTORNAME",
+      "@id": "wdp:P1448-FACTORNAME",
       "@type": "wd:Q857525"
     },
     "factorType": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q3707858"
     },
     "file": {
-      "@id": "wd:P7793",
+      "@id": "wdp:P7793",
       "@type": "wd:Q1144928"
     },
     "identifier": {
@@ -250,51 +251,51 @@
       "@type": "wd:Q170584"
     },
     "derivesFrom": {
-      "@id": "wd:P9072-derivesFrom",
+      "@id": "wdp:P9072-derivesFrom",
       "@type": "wd:Q53617407"
     },
     "executesProtocol": {
-      "@id": "wd:P2283-executes",
+      "@id": "wdp:P2283-executes",
       "@type": "wd:Q41689629"
     },
     "inputs": {
-      "@id": "wd:P2283-INPUT",
+      "@id": "wdp:P2283-INPUT",
       "@type": "wd:Q53617407"
     },
     "outputs": {
-      "@id": "wd:P1056-OUTPUT",
+      "@id": "wdp:P1056-OUTPUT",
       "@type": "wd:Q53617407"
     },
     "nextProcess": {
-      "@id": "wd:P156-NEXT",
+      "@id": "wdp:P156-NEXT",
       "@type": "wd:Q3249551"
     },
     "previousProcess": {
-      "@id": "wd:P155-PREV",
+      "@id": "wdp:P155-PREV",
       "@type": "wd:Q3249551"
     },
     "doi": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q25670"
     },
     "pubMedID": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q2082879"
     },
     "authorList": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q57971547"
     },
     "performer": {
-      "@id": "wd:P137-PERF",
+      "@id": "wdp:P137-PERF",
       "@type": "wd:Q215627"
     },
     "parameterName": {
-      "@id": "wd:P1448-PARAMNAME",
+      "@id": "wdp:P1448-PARAMNAME",
       "@type": "wd:Q857525"
     },
     "ontologySourceReferences": {
-      "@id": "wd:P2283",
+      "@id": "wdp:P2283",
       "@type": "wd:Q324254"
     }
   }

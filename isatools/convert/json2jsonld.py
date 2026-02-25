@@ -209,18 +209,21 @@ class ISALDSerializer:
         :return: the corresponding context url
         """
         context_url = (
-            "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/"
-            "resources/json-context/%s/isa_" % self.ontology
+            "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/%s/isa_"
+            # "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/"
+            # "resources/json-context/%s/isa_"
+            % self.ontology
         )
+
         filename = "_%s_context.jsonld" % self.ontology
-        return context_url + "isa_" + raw_name.replace("_schema.json", filename)
+        return context_url + raw_name.replace("_schema.json", filename)
 
     @staticmethod
     def _get_any_of_ref(input_val):
         """
         Return the corresponding schema reference or false
         :param input_val: value to evaluate
-        :return: False or a the schema reference string
+        :return: False or a schema reference string
         """
         return input_val.split("#")[1].split("/")[0] + "_schema.json"
 

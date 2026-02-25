@@ -2,14 +2,15 @@
   "@context": {
     "@language": "en",
     "wd": "http://www.wikidata.org/entity/",
+    "wdp": "http://www.wikidata.org/prop/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "ParameterValue": "wd:Q1207505",
     "category": {
-      "@id": "wd:",
+      "@id": "wdp:P527",
       "@type": "wd:Q3707858"
     },
     "value": {
-      "@id": "wd:P111",
+      "@id": "wdp:P111",
       "@type": "wd:Q184754"
     }
   }

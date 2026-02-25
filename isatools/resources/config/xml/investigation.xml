@@ -45,13 +45,13 @@
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Investigation PubMed ID" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="INVESTIGATION PUBLICATIONS">
             <description><![CDATA[The PubMed ID related to this publication (if available).]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Investigation Publication DOI" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="INVESTIGATION PUBLICATIONS">
             <description><![CDATA[The DOI related to this publication (if available).]]></description>
             <default-value><![CDATA[]]></default-value>
@@ -183,13 +183,13 @@
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Study PubMed ID" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="STUDY PUBLICATIONS">
             <description><![CDATA[The PubMed ID related to this publication (if available).]]></description>
             <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Study Publication DOI" data-type="String" is-file-field="false"
-            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
             is-forced-ontology="false" section="STUDY PUBLICATIONS">
             <description><![CDATA[The DOI related to this publication (if available).]]></description>
             <default-value><![CDATA[]]></default-value>

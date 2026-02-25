@@ -1,0 +1,2272 @@
+{
+    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_investigation_obo_context.jsonld",
+    "@type": "Investigation",
+    "comments": [],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [
+        {
+            "comments": [],
+            "description": "Chemical Entity of Biological Interest",
+            "file": "",
+            "name": "CHEBI",
+            "version": "",
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_source_reference_obo_context.jsonld",
+            "@type": "OntologySourceReference"
+        },
+        {
+            "comments": [],
+            "description": "Experimental Factor Ontology",
+            "file": "",
+            "name": "EFO",
+            "version": "",
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_source_reference_obo_context.jsonld",
+            "@type": "OntologySourceReference"
+        },
+        {
+            "comments": [],
+            "description": "Ontology for Biomedical Investigations",
+            "file": "",
+            "name": "OBI",
+            "version": "",
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_source_reference_obo_context.jsonld",
+            "@type": "OntologySourceReference"
+        },
+        {
+            "comments": [],
+            "description": "Phenotype and Trait Ontology",
+            "file": "",
+            "name": "PATO",
+            "version": "",
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_source_reference_obo_context.jsonld",
+            "@type": "OntologySourceReference"
+        },
+        {
+            "comments": [],
+            "description": "NCBI Taxonomy",
+            "file": "",
+            "name": "NCIBTaxon",
+            "version": "",
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_source_reference_obo_context.jsonld",
+            "@type": "OntologySourceReference"
+        }
+    ],
+    "people": [],
+    "publicReleaseDate": "2008-08-15T00:00:00Z",
+    "publications": [],
+    "studies": [
+        {
+            "assays": [
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                "annotationValue": "quantity",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                            "@type": "MaterialAttribute"
+                        }
+                    ],
+                    "comments": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843",
+                            "comments": [
+                                {
+                                    "name": "data_comment",
+                                    "value": "data_value",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                                    "@type": "Comment"
+                                }
+                            ],
+                            "name": "sequenced-data-0",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb",
+                            "comments": [
+                                {
+                                    "name": "data_comment",
+                                    "value": "data_value",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                                    "@type": "Comment"
+                                }
+                            ],
+                            "name": "sequenced-data-1",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/45cbae02-2614-411f-99a1-a2f46753855f",
+                            "comments": [
+                                {
+                                    "name": "data_comment",
+                                    "value": "data_value",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                                    "@type": "Comment"
+                                }
+                            ],
+                            "name": "sequenced-data-2",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3",
+                            "comments": [
+                                {
+                                    "name": "data_comment",
+                                    "value": "data_value",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                                    "@type": "Comment"
+                                }
+                            ],
+                            "name": "sequenced-data-3",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        }
+                    ],
+                    "filename": "a_gilbert-assay-Gx.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": "loads",
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "extract-0",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": "loads",
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "extract-1",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": "loads",
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "extract-2",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": "loads",
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "extract-3",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            }
+                        ],
+                        "samples": [
+                            {
+                                "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            }
+                        ],
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_assay_obo_context.jsonld",
+                        "@type": "materials"
+                    },
+                    "measurementType": {
+                        "@id": "#ontology_annotation/fb84d652-145e-4cc2-ba70-7aba85f23931",
+                        "annotationValue": "metagenome sequencing",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0002623",
+                        "termSource": "OBI",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/ac409267-0a87-4bdd-b23b-009933e9a889",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-0-sample collection",
+                            "nextProcess": {
+                                "@id": "#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Bob Denard",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-1-sample collection",
+                            "nextProcess": {
+                                "@id": "#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Bob Denard",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-2-sample collection",
+                            "nextProcess": {
+                                "@id": "#process/4bfd7af9-68b4-453c-9114-135b92595577",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Bob Denard",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-3-sample collection",
+                            "nextProcess": {
+                                "@id": "#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Bob Denard",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-0",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/ac409267-0a87-4bdd-b23b-009933e9a889",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-1",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/4bfd7af9-68b4-453c-9114-135b92595577",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-2",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/45cbae02-2614-411f-99a1-a2f46753855f",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-3",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "@id": "#ontology_annotation/cf0e9c7c-7c2a-4483-91c7-b81a062c5388",
+                        "annotationValue": "nucleotide sequencing",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0000626",
+                        "termSource": "OBI",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "unitCategories": [],
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_assay_obo_context.jsonld",
+                    "@type": "Assay"
+                },
+                {
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                            "characteristicType": {
+                                "@id": "#ontology_annotation/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                "annotationValue": "Label",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                            "@type": "MaterialAttribute"
+                        }
+                    ],
+                    "comments": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data_file/d112b432-f99d-4c82-aecb-bb464e390afb",
+                            "comments": [],
+                            "name": "sequenced-data-tx-0",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219",
+                            "comments": [],
+                            "name": "sequenced-data-tx-1",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7",
+                            "comments": [],
+                            "name": "sequenced-data-tx-2",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        },
+                        {
+                            "@id": "#data_file/10c2f829-d741-4e52-8642-e416a13aa134",
+                            "comments": [],
+                            "name": "sequenced-data-tx-3",
+                            "type": "Raw Data File",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                            "@type": "DataFile"
+                        }
+                    ],
+                    "filename": "a_gilbert-assay-Tx.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71",
+                                "characteristics": [],
+                                "comments": [],
+                                "name": "extract-0",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872",
+                                "characteristics": [],
+                                "comments": [],
+                                "name": "extract-1",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977",
+                                "characteristics": [],
+                                "comments": [],
+                                "name": "extract-2",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8",
+                                "characteristics": [],
+                                "comments": [],
+                                "name": "extract-3",
+                                "type": "Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/db477ebf-b7f9-4acf-8107-2de74d83cd09",
+                                            "annotationValue": "mid",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": "",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                            "@type": "OntologyAnnotation"
+                                        },
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "le-0",
+                                "type": "Labeled Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/c627f40b-9706-4340-8639-71481290e5b8",
+                                            "annotationValue": "mid",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": "",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                            "@type": "OntologyAnnotation"
+                                        },
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "le-1",
+                                "type": "Labeled Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/b1c596e4-7d9d-4db1-924e-d6e89eb83bbf",
+                                            "annotationValue": "mid",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": "",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                            "@type": "OntologyAnnotation"
+                                        },
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "le-2",
+                                "type": "Labeled Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            },
+                            {
+                                "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                            "@type": "MaterialAttribute"
+                                        },
+                                        "comments": [],
+                                        "value": {
+                                            "@id": "#ontology_annotation/da163ae0-3f26-481a-b94b-2e67c3ad14ad",
+                                            "annotationValue": "mid",
+                                            "comments": [],
+                                            "termAccession": "",
+                                            "termSource": "",
+                                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                            "@type": "OntologyAnnotation"
+                                        },
+                                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                        "@type": "MaterialAttributeValue"
+                                    }
+                                ],
+                                "comments": [],
+                                "name": "le-3",
+                                "type": "Labeled Extract Name",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                "@type": "Material"
+                            }
+                        ],
+                        "samples": [
+                            {
+                                "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            },
+                            {
+                                "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                "@type": "Sample"
+                            }
+                        ],
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_assay_obo_context.jsonld",
+                        "@type": "materials"
+                    },
+                    "measurementType": {
+                        "@id": "#ontology_annotation/8e48d284-0bc9-4efa-acd6-1786d078c803",
+                        "annotationValue": "transcription profiling",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0000424",
+                        "termSource": "OBI",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/9b19a15f-9c50-46a1-9862-3499206315b4",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-0-nucleic acid extraction",
+                            "nextProcess": {
+                                "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Joan Miro",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/2a607502-8faf-4759-84cd-c78e29bcd055",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-1-nucleic acid extraction",
+                            "nextProcess": {
+                                "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Joan Miro",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/5979a186-9d59-4621-acf8-e1316f71c59b",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-2-nucleic acid extraction",
+                            "nextProcess": {
+                                "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Joan Miro",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                                    "@type": "Sample"
+                                }
+                            ],
+                            "name": "process-3-nucleic acid extraction",
+                            "nextProcess": {
+                                "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "Joan Miro",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "process-0-mRNA extraction - standard procedure 3",
+                            "nextProcess": {
+                                "@id": "#process/07057a49-5035-41ac-83bc-741e243e9047",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/9b19a15f-9c50-46a1-9862-3499206315b4",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "process-1-mRNA extraction - standard procedure 3",
+                            "nextProcess": {
+                                "@id": "#process/5a1009e9-a634-46af-8448-f16f1edbf553",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/2a607502-8faf-4759-84cd-c78e29bcd055",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "process-2-mRNA extraction - standard procedure 3",
+                            "nextProcess": {
+                                "@id": "#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/5979a186-9d59-4621-acf8-e1316f71c59b",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "process-3-mRNA extraction - standard procedure 3",
+                            "nextProcess": {
+                                "@id": "#process/6503bb09-e224-4bdd-887f-7a61d2a48485",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/07057a49-5035-41ac-83bc-741e243e9047",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-tx-0",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/d112b432-f99d-4c82-aecb-bb464e390afb",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/5a1009e9-a634-46af-8448-f16f1edbf553",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-tx-1",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-tx-2",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        },
+                        {
+                            "@id": "#process/6503bb09-e224-4bdd-887f-7a61d2a48485",
+                            "comments": [],
+                            "date": "2008-08-15T00:00:00Z",
+                            "executesProtocol": {
+                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                                "@type": "Protocol"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_obo_context.jsonld",
+                                    "@type": "Material"
+                                }
+                            ],
+                            "name": "assay-name-tx-3",
+                            "outputs": [
+                                {
+                                    "@id": "#data_file/10c2f829-d741-4e52-8642-e416a13aa134",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_data_obo_context.jsonld",
+                                    "@type": "DataFile"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                                "@type": "Process"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                            "@type": "Process"
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "@id": "#ontology_annotation/39c7728e-e196-4dab-a8f5-88f8a9c3b931",
+                        "annotationValue": "nucleotide sequencing",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0000626",
+                        "termSource": "OBI",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "unitCategories": [],
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_assay_obo_context.jsonld",
+                    "@type": "Assay"
+                }
+            ],
+            "characteristicCategories": [
+                {
+                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                    "characteristicType": {
+                        "@id": "#ontology_annotation/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                        "annotationValue": "Organism",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                    "@type": "MaterialAttribute"
+                }
+            ],
+            "comments": [
+                {
+                    "name": "SRA Broker Name",
+                    "value": "OXFORD",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "SRA Center Name",
+                    "value": "OXFORD",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "SRA Center Project Name",
+                    "value": "OXFORD",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "SRA Lab Name",
+                    "value": "Oxford e-Research Centre",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "SRA Submission Action",
+                    "value": "ADD",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "Study Funding Agency",
+                    "value": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                },
+                {
+                    "name": "Study Grant Number",
+                    "value": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                    "@type": "Comment"
+                }
+            ],
+            "description": "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples.",
+            "factors": [
+                {
+                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                    "comments": [],
+                    "factorName": "compound",
+                    "factorType": {
+                        "@id": "#ontology_annotation/368c3e85-0ed9-4ee6-a7ed-1b6d585e0a45",
+                        "annotationValue": "chemical substance",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/CHEBI_59999",
+                        "termSource": "CHEBI",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                    "@type": "Factor"
+                },
+                {
+                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                    "comments": [],
+                    "factorName": "dose",
+                    "factorType": {
+                        "@id": "#ontology_annotation/c0656e5a-8eec-45b7-870a-54565703e7ff",
+                        "annotationValue": "dose",
+                        "comments": [],
+                        "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000428",
+                        "termSource": "EFO",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                    "@type": "Factor"
+                },
+                {
+                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                    "comments": [],
+                    "factorName": "collection time",
+                    "factorType": {
+                        "@id": "#ontology_annotation/cb15dad1-3348-4db0-bdea-c473702b7f97",
+                        "annotationValue": "time",
+                        "comments": [],
+                        "termAccession": "http://purl.obolibrary.org/obo/PATO_0000165",
+                        "termSource": "PATO",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                    "@type": "Factor"
+                }
+            ],
+            "filename": "s_BII-S-3-synthesis.txt",
+            "identifier": "BII-S-3-synth",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [
+                    {
+                        "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                        "characteristics": [],
+                        "comments": [],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                                "@type": "Source"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "high",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "may 13th, 2006",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "carbon dioxide",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            }
+                        ],
+                        "name": "GSM255770",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                        "@type": "Sample"
+                    },
+                    {
+                        "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                        "characteristics": [],
+                        "comments": [],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                                "@type": "Source"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "normal",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "may 13th, 2006",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "carbon dioxide",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            }
+                        ],
+                        "name": "GSM255771",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                        "@type": "Sample"
+                    },
+                    {
+                        "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                        "characteristics": [],
+                        "comments": [],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                                "@type": "Source"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "high",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "may 19th, 2006",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "carbon dioxide",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            }
+                        ],
+                        "name": "GSM255772",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                        "@type": "Sample"
+                    },
+                    {
+                        "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                        "characteristics": [],
+                        "comments": [],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                                "@type": "Source"
+                            }
+                        ],
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "normal",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "may 19th, 2006",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_obo_context.jsonld",
+                                    "@type": "Factor"
+                                },
+                                "value": "carbon dioxide",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_factor_value_obo_context.jsonld",
+                                "@type": "FactorValue"
+                            }
+                        ],
+                        "name": "GSM255773",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                        "@type": "Sample"
+                    }
+                ],
+                "sources": [
+                    {
+                        "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                    "@type": "MaterialAttribute"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/f153e29a-2b53-448b-b18b-1e9f651c102f",
+                                    "annotationValue": "marine metagenome",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
+                                    "termSource": "NCIBTaxon",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                    "@type": "OntologyAnnotation"
+                                },
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                "@type": "MaterialAttributeValue"
+                            }
+                        ],
+                        "comments": [],
+                        "name": "GSM255770",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                        "@type": "Source"
+                    },
+                    {
+                        "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                    "@type": "MaterialAttribute"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/7d93af72-daae-4ede-9c31-c245ab72b731",
+                                    "annotationValue": "marine metagenome",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
+                                    "termSource": "NCIBTaxon",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                    "@type": "OntologyAnnotation"
+                                },
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                "@type": "MaterialAttributeValue"
+                            }
+                        ],
+                        "comments": [],
+                        "name": "GSM255771",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                        "@type": "Source"
+                    },
+                    {
+                        "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                    "@type": "MaterialAttribute"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/3e8ef198-a256-49d5-aa6d-31fa8f6a41d4",
+                                    "annotationValue": "marine metagenome",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
+                                    "termSource": "NCIBTaxon",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                    "@type": "OntologyAnnotation"
+                                },
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                "@type": "MaterialAttributeValue"
+                            }
+                        ],
+                        "comments": [],
+                        "name": "GSM255772",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                        "@type": "Source"
+                    },
+                    {
+                        "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_obo_context.jsonld",
+                                    "@type": "MaterialAttribute"
+                                },
+                                "comments": [],
+                                "value": {
+                                    "@id": "#ontology_annotation/54cbc667-1178-4349-a379-a3791594de2a",
+                                    "annotationValue": "marine metagenome",
+                                    "comments": [],
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
+                                    "termSource": "NCIBTaxon",
+                                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                    "@type": "OntologyAnnotation"
+                                },
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_material_attribute_value_obo_context.jsonld",
+                                "@type": "MaterialAttributeValue"
+                            }
+                        ],
+                        "comments": [],
+                        "name": "GSM255773",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                        "@type": "Source"
+                    }
+                ],
+                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_study_obo_context.jsonld",
+                "@type": "materials"
+            },
+            "people": [
+                {
+                    "address": "Prospect Place, Plymouth, United Kingdom",
+                    "affiliation": "Plymouth Marine Laboratory",
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                            "@type": "Comment"
+                        }
+                    ],
+                    "email": "jagi@pml.ac.uk",
+                    "fax": "",
+                    "firstName": "Jack",
+                    "lastName": "Gilbert",
+                    "midInitials": "",
+                    "phone": "",
+                    "roles": [
+                        {
+                            "@id": "#ontology_annotation/f40f67ca-d98c-44ac-bb74-85ccc2270bf7",
+                            "annotationValue": "principal investigator role",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                            "@type": "OntologyAnnotation"
+                        },
+                        {
+                            "@id": "#ontology_annotation/92a7df9d-b93b-42f9-88be-203db30142d5",
+                            "annotationValue": "SRA Inform On Status",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                            "@type": "OntologyAnnotation"
+                        },
+                        {
+                            "@id": "#ontology_annotation/9155efb4-8739-4a62-99dd-99d272e59719",
+                            "annotationValue": "SRA Inform On Error",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                            "@type": "OntologyAnnotation"
+                        }
+                    ],
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_person_obo_context.jsonld",
+                    "@type": "Person"
+                },
+                {
+                    "address": "CEH Oxford, Oxford, United Kingdom",
+                    "affiliation": "NERC Centre for Ecology and Hydrology",
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_comment_obo_context.jsonld",
+                            "@type": "Comment"
+                        }
+                    ],
+                    "email": "",
+                    "fax": "",
+                    "firstName": "Dawn",
+                    "lastName": "Field",
+                    "midInitials": "",
+                    "phone": "",
+                    "roles": [
+                        {
+                            "@id": "#ontology_annotation/a4796732-ed45-4452-b9c4-a50a5ec2cc55",
+                            "annotationValue": "principal investigator role",
+                            "comments": [],
+                            "termAccession": "",
+                            "termSource": "",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                            "@type": "OntologyAnnotation"
+                        }
+                    ],
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_person_obo_context.jsonld",
+                    "@type": "Person"
+                }
+            ],
+            "processSequence": [
+                {
+                    "@id": "#process/cbb20e80-c310-4043-ac0d-51d30cee8ee7",
+                    "comments": [],
+                    "date": "2008-08-15T00:00:00Z",
+                    "executesProtocol": {
+                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                        "@type": "Protocol"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                            "@type": "Source"
+                        }
+                    ],
+                    "name": "process-0-sample collection",
+                    "outputs": [
+                        {
+                            "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                            "@type": "Sample"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Wang Li",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                    "@type": "Process"
+                },
+                {
+                    "@id": "#process/e8521bf2-b3ad-41e7-ba00-12c4dc761e66",
+                    "comments": [],
+                    "date": "2008-08-15T00:00:00Z",
+                    "executesProtocol": {
+                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                        "@type": "Protocol"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                            "@type": "Source"
+                        }
+                    ],
+                    "name": "process-1-sample collection",
+                    "outputs": [
+                        {
+                            "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                            "@type": "Sample"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Wang Li",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                    "@type": "Process"
+                },
+                {
+                    "@id": "#process/032d9426-e717-4fca-b8cf-16dae3eff420",
+                    "comments": [],
+                    "date": "2008-08-15T00:00:00Z",
+                    "executesProtocol": {
+                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                        "@type": "Protocol"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                            "@type": "Source"
+                        }
+                    ],
+                    "name": "process-2-sample collection",
+                    "outputs": [
+                        {
+                            "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                            "@type": "Sample"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Wang Li",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                    "@type": "Process"
+                },
+                {
+                    "@id": "#process/c2597778-4429-4152-8ea7-04b3e993672a",
+                    "comments": [],
+                    "date": "2008-08-15T00:00:00Z",
+                    "executesProtocol": {
+                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                        "@type": "Protocol"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_source_obo_context.jsonld",
+                            "@type": "Source"
+                        }
+                    ],
+                    "name": "process-3-sample collection",
+                    "outputs": [
+                        {
+                            "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_sample_obo_context.jsonld",
+                            "@type": "Sample"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": "Wang Li",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_process_obo_context.jsonld",
+                    "@type": "Process"
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                    "comments": [],
+                    "components": [],
+                    "description": "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
+                    "name": "sample collection",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/bcbc26ad-8c06-45ab-8fdd-8b8f7f453e06",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/e0aa004e-3666-4f18-9a41-2c9b1343de0f",
+                                "annotationValue": "filter pore size",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/caaaab24-8a64-4314-806e-1d02e9bebd24",
+                        "annotationValue": "sample collection",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/d15f0f18-b329-4faa-9530-2a554e638ce0",
+                    "comments": [],
+                    "components": [],
+                    "description": "aliquoting",
+                    "name": "aliquoting-0",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/d265265e-a173-445a-aa41-04114e796347",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/341d518c-4f38-4990-bf0d-27f6077cbab2",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/6012db28-1a03-4e1b-b32e-81e861c9a149",
+                        "annotationValue": "sample collection",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                    "comments": [],
+                    "components": [],
+                    "description": "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
+                    "name": "nucleic acid extraction",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/f788dc51-6f93-4f6f-b156-f33fca7dbcf8",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/9ec01fbd-f548-4c52-8759-68e7c8c6ed44",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/c418ea63-eeff-4414-ac40-ddb8ddb27d44",
+                        "annotationValue": "nucleic acid extraction",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                    "comments": [],
+                    "components": [],
+                    "description": "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006.",
+                    "name": "mRNA extraction - standard procedure 3",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/149284f1-1662-4bf0-8327-b1e52a06a1b6",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/988fccbe-5085-4554-8f2d-7a70d4783c08",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/888f8422-c18e-408b-9bf4-7fe78657b3aa",
+                        "annotationValue": "labeling",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/a83b783d-5193-42bb-8cd1-ff87fe6d3c84",
+                    "comments": [],
+                    "components": [],
+                    "description": "superscript+random hexamer primer",
+                    "name": "genomic DNA extraction - standard procedure 4",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/14826a9b-14d6-4a6b-ad56-b9f672c06489",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/2cdadd5e-80f6-4855-916b-6fdb66b9fb1b",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/d096e069-be2f-4e19-84fd-4bebc478a0d5",
+                        "annotationValue": "nucleic acid extraction",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/726d5e82-354b-4bd1-9173-8dd3969470d4",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "reverse transcription - standard procedure 5",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/5dc10038-e1e8-484c-ac3c-1348d895bd2b",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/10a61465-d589-48b3-bfc9-56d7ae8c940b",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/6b9652f3-1ee7-43c6-a442-074dc23622af",
+                        "annotationValue": "reverse transcription",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/e7fac638-64a1-4f86-adf5-ed1858e4c5c8",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "library construction",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/7629b4cf-70a5-477a-b05f-94056a3d0e04",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/4b9d898c-bb55-4c22-998c-a24c73cb6cd9",
+                                "annotationValue": "library strategy",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        },
+                        {
+                            "@id": "#protocol_parameter/937a2164-23a7-4cf9-aaba-bddba0f2507a",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/b02dab9e-e600-406d-b6a0-891b699efd01",
+                                "annotationValue": "library layout",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        },
+                        {
+                            "@id": "#protocol_parameter/d139de91-d5fa-4543-893a-2dadde43692e",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/78824b3a-c6eb-4695-a23e-c102ed2bb29c",
+                                "annotationValue": "library selection",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/e45724d9-a84e-4ba5-8175-11d35739b2c4",
+                        "annotationValue": "library construction",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                    "comments": [],
+                    "components": [],
+                    "description": "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
+                    "name": "nucleic acid sequencing",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/d7760686-ed95-483c-bfc7-b0704ae5ee0b",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/aaf5cb4d-1f12-419b-8866-d630baac1ad0",
+                                "annotationValue": "sequencing instrument",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/eb6b5435-9cf2-4ffb-8c3d-dff389f38ef1",
+                        "annotationValue": "nucleic acid sequencing",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                },
+                {
+                    "@id": "#protocol/c0b718e7-3b55-459f-8f2d-c481762342c3",
+                    "comments": [],
+                    "components": [],
+                    "description": "",
+                    "name": "sequence analysis - standard procedure 7",
+                    "parameters": [
+                        {
+                            "@id": "#protocol_parameter/5b99b6a8-4e76-4003-836a-aaa81d814262",
+                            "parameterName": {
+                                "@id": "#ontology_annotation/32fa9353-af37-4c3f-a8f6-4d1f40a91c7b",
+                                "annotationValue": "",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                                "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                                "@type": "OntologyAnnotation"
+                            },
+                            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_parameter_obo_context.jsonld",
+                            "@type": "ProtocolParameter"
+                        }
+                    ],
+                    "protocolType": {
+                        "@id": "#ontology_annotation/2dbbfd3d-fbdb-4bcc-8337-e6d9b6ffb8ba",
+                        "annotationValue": "data transformation",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "uri": "",
+                    "version": "",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_protocol_obo_context.jsonld",
+                    "@type": "Protocol"
+                }
+            ],
+            "publicReleaseDate": "2008-08-15T00:00:00Z",
+            "publications": [
+                {
+                    "authorList": "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I.",
+                    "comments": [],
+                    "doi": "https://doi.org/10.1371/journal.pone.0003042",
+                    "pubMedID": "https://pubmed.ncbi.nlm.nih.gov/18725995",
+                    "status": {
+                        "@id": "#ontology_annotation/77044141-f995-4b9a-87c0-005c7d9e739b",
+                        "annotationValue": "indexed in PubMed",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "title": "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_publication_obo_context.jsonld",
+                    "@type": "Publication"
+                },
+                {
+                    "authorList": "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I.",
+                    "comments": [],
+                    "doi": "http://doi.org/10.1111/j.1462-2920.2008.01745.x",
+                    "pubMedID": "https://pubmed.ncbi.nlm.nih.gov/18783384",
+                    "status": {
+                        "@id": "#ontology_annotation/a273e55f-f784-4f0e-a24b-5bfa49dc464c",
+                        "annotationValue": "indexed in PubMed",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                        "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                        "@type": "OntologyAnnotation"
+                    },
+                    "title": "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_publication_obo_context.jsonld",
+                    "@type": "Publication"
+                }
+            ],
+            "studyDesignDescriptors": [
+                {
+                    "@id": "#ontology_annotation/6c1d903f-313b-4364-814b-1aa2e00fe3d7",
+                    "annotationValue": "intervention design",
+                    "comments": [],
+                    "termAccession": "http://purl.obolibrary.org/obo/OBI_0000115",
+                    "termSource": "OBI",
+                    "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_ontology_annotation_obo_context.jsonld",
+                    "@type": "OntologyAnnotation"
+                }
+            ],
+            "submissionDate": "2008-08-15T00:00:00Z",
+            "title": "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment",
+            "unitCategories": [],
+            "@context": "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/obo/isa_study_obo_context.jsonld",
+            "@type": "Study"
+        }
+    ],
+    "submissionDate": "2008-08-15T00:00:00Z",
+    "title": ""
+}

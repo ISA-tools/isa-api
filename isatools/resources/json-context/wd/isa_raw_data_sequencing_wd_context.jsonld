@@ -2,22 +2,23 @@
   "@context": {
     "@language": "en",
     "wd": "http://www.wikidata.org/entity/",
+    "wdp": "http://www.wikidata.org/prop/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Data": "wd:Q5227290",
     "type": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q104514053"
     },
     "identifier": {
-      "@id": "wd:Q853614",
+      "@id": "wdp:Q853614",
       "@type": "wd:Q853614"
     },
     "name": {
-      "@id": "wd:P527",
+      "@id": "wdp:P527",
       "@type": "wd:Q82799"
     },
     "comments": {
-      "@id": "wd:P6607",
+      "@id": "wdp:P6607",
       "@type": "wd:Q58897583"
     }
   }
