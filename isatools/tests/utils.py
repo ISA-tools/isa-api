@@ -8,11 +8,12 @@ import datetime
 import logging
 import os
 import re
+
 from os.path import basename
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-
+from deepdiff import DeepDiff
 from isatools.isatab import read_investigation_file
 
 log = logging.getLogger("isatools")
@@ -224,8 +225,6 @@ def assert_json_equal(jx, jy):
     if jx == jy:
         return True
     else:
-        from deepdiff import DeepDiff
-
         log.debug("DeepDiff={}".format(DeepDiff(jx, jy)))
         return False
 

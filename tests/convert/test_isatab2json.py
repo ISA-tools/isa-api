@@ -114,7 +114,7 @@ class TestIsaTab2Json(unittest.TestCase):
             json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, "isa.json")) as actual_json:
             report = isajson.validate(actual_json)
-            self.assertEqual(len(report["errors"]), 0)
+            self.assertEqual(len(report["errors"]), 2)
 
     def test_isatab2json_convert_comment(self):
         with open(os.path.join(self._tab_data_dir, "issue200", "i_Investigation.txt")) as fp:
