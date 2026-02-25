@@ -549,7 +549,8 @@ def check_utf8(fp):
 def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
-        with open(investigation_schema_path) as fp:
+        with open(investigation_schema_path):
+
             resources = []
             investigation_schema_path = Path(investigation_schema_path)
             schemas_dir = investigation_schema_path.parent

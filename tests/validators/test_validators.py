@@ -484,11 +484,11 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
             report = isatab.validate(
                 fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR, log_level=self._reporting_level
             )
-            # self.assertIn(
-            #     {'supplemental': 'Found 4 study groups in s_MTBLS1.txt',
-            #      'code': 5001,
-            #      'message': 'Found 4 study groups in s_MTBLS1.txt'},
-            #     report['info'])
+            self.assertIn(
+                {'supplemental': 'Found 4 study groups in s_MTBLS1.txt',
+                 'code': 5001,
+                 'message': 'Found 4 study groups in s_MTBLS1.txt'},
+                report['info'])
 
 
 class TestBatchValidateIsaTab(unittest.TestCase):

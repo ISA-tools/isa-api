@@ -225,76 +225,76 @@ class MyTestCase(unittest.TestCase):
         )
 
         # A high-throughput phenotyping imaging based phenotyping assay
-        phenotype_assay_dict = OrderedDict(
-            [
-                ("measurement_type", OntologyAnnotation(term="phenotyping", term_source="", term_accession="")),
-                (
-                    "technology_type",
-                    OntologyAnnotation(term="high-throughput imaging", term_source="", term_accession=""),
-                ),
-                ("extraction", {}),
-                (
-                    "extract",
-                    [
-                        {
-                            "node_type": EXTRACT,
-                            "characteristics_category": OntologyAnnotation(
-                                term="extract type", term_source="", term_accession=""
-                            ),
-                            "characteristics_value": OntologyAnnotation(
-                                term="supernatant",
-                                term_source="OBI",
-                                term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
-                            ),
-                            "size": 1,
-                            "technical_replicates": None,
-                            "is_input_to_next_protocols": True,
-                        }
-                    ],
-                ),
-                (
-                    "phenotyping by high throughput imaging",
-                    {
-                        OntologyAnnotation(
-                            term="instrument",
-                            term_source="OBI",
-                            term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
-                        ): [OntologyAnnotation(term="lemnatech gigant")],
-                        OntologyAnnotation(
-                            term="acquisition_mode",
-                            term_source="OBI",
-                            term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
-                        ): [
-                            OntologyAnnotation(term="UV light"),
-                            OntologyAnnotation(term="near-IR light"),
-                            OntologyAnnotation(term="far-IR light"),
-                            OntologyAnnotation(term="visible light"),
-                        ],
-                        OntologyAnnotation(
-                            term="camera position",
-                            term_source="OBI",
-                            term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
-                        ): ["top", "120 degree", "240 degree", "360 degree"],
-                        OntologyAnnotation(
-                            term="imaging daily schedule",
-                            term_source="OBI",
-                            term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
-                        ): ["06.00", "19.00"],
-                    },
-                ),
-                (
-                    "raw_spectral_data_file",
-                    [
-                        {
-                            "node_type": DATA_FILE,
-                            "size": 1,
-                            "technical_replicates": 2,
-                            "is_input_to_next_protocols": False,
-                        }
-                    ],
-                ),
-            ]
-        )
+        # phenotype_assay_dict = OrderedDict(
+        #     [
+        #         ("measurement_type", OntologyAnnotation(term="phenotyping", term_source="", term_accession="")),
+        #         (
+        #             "technology_type",
+        #             OntologyAnnotation(term="high-throughput imaging", term_source="", term_accession=""),
+        #         ),
+        #         ("extraction", {}),
+        #         (
+        #             "extract",
+        #             [
+        #                 {
+        #                     "node_type": EXTRACT,
+        #                     "characteristics_category": OntologyAnnotation(
+        #                         term="extract type", term_source="", term_accession=""
+        #                     ),
+        #                     "characteristics_value": OntologyAnnotation(
+        #                         term="supernatant",
+        #                         term_source="OBI",
+        #                         term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
+        #                     ),
+        #                     "size": 1,
+        #                     "technical_replicates": None,
+        #                     "is_input_to_next_protocols": True,
+        #                 }
+        #             ],
+        #         ),
+        #         (
+        #             "phenotyping by high throughput imaging",
+        #             {
+        #                 OntologyAnnotation(
+        #                     term="instrument",
+        #                     term_source="OBI",
+        #                     term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
+        #                 ): [OntologyAnnotation(term="lemnatech gigant")],
+        #                 OntologyAnnotation(
+        #                     term="acquisition_mode",
+        #                     term_source="OBI",
+        #                     term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
+        #                 ): [
+        #                     OntologyAnnotation(term="UV light"),
+        #                     OntologyAnnotation(term="near-IR light"),
+        #                     OntologyAnnotation(term="far-IR light"),
+        #                     OntologyAnnotation(term="visible light"),
+        #                 ],
+        #                 OntologyAnnotation(
+        #                     term="camera position",
+        #                     term_source="OBI",
+        #                     term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
+        #                 ): ["top", "120 degree", "240 degree", "360 degree"],
+        #                 OntologyAnnotation(
+        #                     term="imaging daily schedule",
+        #                     term_source="OBI",
+        #                     term_accession="https://purl.obolibrary.org/obo/OBI_0100026",
+        #                 ): ["06.00", "19.00"],
+        #             },
+        #         ),
+        #         (
+        #             "raw_spectral_data_file",
+        #             [
+        #                 {
+        #                     "node_type": DATA_FILE,
+        #                     "size": 1,
+        #                     "technical_replicates": 2,
+        #                     "is_input_to_next_protocols": False,
+        #                 }
+        #             ],
+        #         ),
+        #     ]
+        # )
 
         # A RNA-Seq based transcription profiling assay
         rna_seq_assay_dict = OrderedDict(

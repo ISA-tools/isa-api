@@ -132,7 +132,7 @@ class TestIsaTabDump(unittest.TestCase):
             flatten(test_list)
 
     def test_isatab_get_pv_columns(self):
-        columns = []
+        # columns = []
         pp = ProtocolParameter(parameter_name="test_parameter_name")
         with self.assertRaises(AttributeError):
             pv = ParameterValue(category="test_parameter_name", value=3)
@@ -1073,9 +1073,9 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
 
         from isatools.model import _build_assay_graph
 
-        graph = _build_assay_graph(study.process_sequence)
-        graph1 = _build_assay_graph(assay1.process_sequence)
-        graph2 = _build_assay_graph(assay2.process_sequence)
+        _build_assay_graph(study.process_sequence)
+        # graph1 = _build_assay_graph(assay1.process_sequence)
+        # graph2 = _build_assay_graph(assay2.process_sequence)
 
         try:
             isatab.dump(investigation, self._tmp_dir)
