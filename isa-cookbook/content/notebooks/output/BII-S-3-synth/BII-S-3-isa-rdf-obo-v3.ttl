@@ -1,536 +1,8 @@
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf> a obo:OBI_0001933 ;
-    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606> a obo:OBI_0001933 ;
-    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9f42baa9-f471-41ba-9702-c8261b9cb606> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/10c2f829-d741-4e52-8642-e416a13aa134> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000590 "sequenced-data-tx-3"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000235 [ a obo:IAO_0000590 ;
-            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
-            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
-    obo:IAO_0000590 "sequenced-data-3"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/45cbae02-2614-411f-99a1-a2f46753855f> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000235 [ a obo:IAO_0000590 ;
-            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
-            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
-    obo:IAO_0000590 "sequenced-data-2"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000235 [ a obo:IAO_0000590 ;
-            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
-            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
-    obo:IAO_0000590 "sequenced-data-0"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000590 "sequenced-data-tx-2"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000590 "sequenced-data-tx-1"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000235 [ a obo:IAO_0000590 ;
-            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
-            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
-    obo:IAO_0000590 "sequenced-data-1"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d112b432-f99d-4c82-aecb-bb464e390afb> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
-    obo:IAO_0000590 "sequenced-data-tx-0"@en .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/10a61465-d589-48b3-bfc9-56d7ae8c940b> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2cdadd5e-80f6-4855-916b-6fdb66b9fb1b> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/32fa9353-af37-4c3f-a8f6-4d1f40a91c7b> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/341d518c-4f38-4990-bf0d-27f6077cbab2> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/368c3e85-0ed9-4ee6-a7ed-1b6d585e0a45> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/CHEBI_59999"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "CHEBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "chemical substance"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/39c7728e-e196-4dab-a8f5-88f8a9c3b931> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000626"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "OBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "nucleotide sequencing"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/4b9d898c-bb55-4c22-998c-a24c73cb6cd9> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "library strategy"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/6c1d903f-313b-4364-814b-1aa2e00fe3d7> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000115"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "OBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "intervention design"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/77044141-f995-4b9a-87c0-005c7d9e739b> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "indexed in PubMed"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/78824b3a-c6eb-4695-a23e-c102ed2bb29c> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "library selection"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "Organism"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/8e48d284-0bc9-4efa-acd6-1786d078c803> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000424"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "OBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "transcription profiling"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9155efb4-8739-4a62-99dd-99d272e59719> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "SRA Inform On Error"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/92a7df9d-b93b-42f9-88be-203db30142d5> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "SRA Inform On Status"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/956f50e7-a712-4a76-9bc2-90d51872470d> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "quantity"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/988fccbe-5085-4554-8f2d-7a70d4783c08> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9ec01fbd-f548-4c52-8759-68e7c8c6ed44> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 ""^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9f42baa9-f471-41ba-9702-c8261b9cb606> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "Label"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/a273e55f-f784-4f0e-a24b-5bfa49dc464c> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "indexed in PubMed"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/a4796732-ed45-4452-b9c4-a50a5ec2cc55> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "principal investigator role"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/aaf5cb4d-1f12-419b-8866-d630baac1ad0> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "sequencing instrument"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b02dab9e-e600-406d-b6a0-891b699efd01> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "library layout"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c0656e5a-8eec-45b7-870a-54565703e7ff> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://www.ebi.ac.uk/efo/EFO_0000428"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "EFO"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "dose"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/cb15dad1-3348-4db0-bdea-c473702b7f97> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/PATO_0000165"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "PATO"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "time"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/cf0e9c7c-7c2a-4483-91c7-b81a062c5388> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000626"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "OBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "nucleotide sequencing"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/e0aa004e-3666-4f18-9a41-2c9b1343de0f> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "filter pore size"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f40f67ca-d98c-44ac-bb74-85ccc2270bf7> a obo:OBI_0001933 ;
-    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        ""^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "principal investigator role"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/fb84d652-145e-4cc2-ba70-7aba85f23931> a obo:OBI_0001933 ;
-    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0002623"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
-        "OBI"^^obo:IAO_8000000 ;
-    obo:STATO_0000129 "metagenome sequencing"^^xsd:string .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/032d9426-e717-4fca-b8cf-16dae3eff420> a obo:BFO_0000015 ;
-    obo:IAO_0000235 "process-2-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/c2597778-4429-4152-8ea7-04b3e993672a> a obo:BFO_0000015 ;
-    obo:IAO_0000235 "process-3-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/cbb20e80-c310-4043-ac0d-51d30cee8ee7> a obo:BFO_0000015 ;
-    obo:IAO_0000235 "process-0-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e8521bf2-b3ad-41e7-ba00-12c4dc761e66> a obo:BFO_0000015 ;
-    obo:IAO_0000235 "process-1-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/726d5e82-354b-4bd1-9173-8dd3969470d4> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        ""^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5dc10038-e1e8-484c-ac3c-1348d895bd2b> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/a83b783d-5193-42bb-8cd1-ff87fe6d3c84> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "superscript+random hexamer primer"^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/14826a9b-14d6-4a6b-ad56-b9f672c06489> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/c0b718e7-3b55-459f-8f2d-c481762342c3> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        ""^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5b99b6a8-4e76-4003-836a-aaa81d814262> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/d15f0f18-b329-4faa-9530-2a554e638ce0> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "aliquoting"^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d265265e-a173-445a-aa41-04114e796347> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/e7fac638-64a1-4f86-adf5-ed1858e4c5c8> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        ""^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/7629b4cf-70a5-477a-b05f-94056a3d0e04>,
-        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/937a2164-23a7-4cf9-aaba-bddba0f2507a>,
-        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d139de91-d5fa-4543-893a-2dadde43692e> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/14826a9b-14d6-4a6b-ad56-b9f672c06489> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2cdadd5e-80f6-4855-916b-6fdb66b9fb1b> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/149284f1-1662-4bf0-8327-b1e52a06a1b6> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/988fccbe-5085-4554-8f2d-7a70d4783c08> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5b99b6a8-4e76-4003-836a-aaa81d814262> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/32fa9353-af37-4c3f-a8f6-4d1f40a91c7b> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5dc10038-e1e8-484c-ac3c-1348d895bd2b> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/10a61465-d589-48b3-bfc9-56d7ae8c940b> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/7629b4cf-70a5-477a-b05f-94056a3d0e04> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/4b9d898c-bb55-4c22-998c-a24c73cb6cd9> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/937a2164-23a7-4cf9-aaba-bddba0f2507a> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b02dab9e-e600-406d-b6a0-891b699efd01> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/bcbc26ad-8c06-45ab-8fdd-8b8f7f453e06> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/e0aa004e-3666-4f18-9a41-2c9b1343de0f> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d139de91-d5fa-4543-893a-2dadde43692e> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/78824b3a-c6eb-4695-a23e-c102ed2bb29c> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d265265e-a173-445a-aa41-04114e796347> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/341d518c-4f38-4990-bf0d-27f6077cbab2> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d7760686-ed95-483c-bfc7-b0704ae5ee0b> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/aaf5cb4d-1f12-419b-8866-d630baac1ad0> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/f788dc51-6f93-4f6f-b156-f33fca7dbcf8> a obo:OBI_0000785 ;
-    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9ec01fbd-f548-4c52-8759-68e7c8c6ed44> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/104b620b-dad7-48e4-873e-0147225ad969> a obo:OBI_0000750 ;
-    obo:IAO_0000235 "compound"^^obo:IAO_0000590 ;
-    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/368c3e85-0ed9-4ee6-a7ed-1b6d585e0a45> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374> a obo:OBI_0000750 ;
-    obo:IAO_0000235 "collection time"^^obo:IAO_0000590 ;
-    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/cb15dad1-3348-4db0-bdea-c473702b7f97> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164> a obo:OBI_0000750 ;
-    obo:IAO_0000235 "dose"^^obo:IAO_0000590 ;
-    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c0656e5a-8eec-45b7-870a-54565703e7ff> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d> a obo:OBI_0001933 ;
-    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/956f50e7-a712-4a76-9bc2-90d51872470d> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/475becd4-0e4d-4e7a-ad9f-4838807afe63> ;
-    obo:IAO_0000235 "process-3-nucleic acid extraction"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/07057a49-5035-41ac-83bc-741e243e9047> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34> ;
-    obo:IAO_0000235 "assay-name-tx-0"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ac409267-0a87-4bdd-b23b-009933e9a889> ;
-    obo:IAO_0000235 "assay-name-0"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/2a607502-8faf-4759-84cd-c78e29bcd055> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3> ;
-    obo:IAO_0000235 "process-1-nucleic acid extraction"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164> ;
-    obo:IAO_0000235 "assay-name-1"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/4bfd7af9-68b4-453c-9114-135b92595577> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e> ;
-    obo:IAO_0000235 "assay-name-2"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5979a186-9d59-4621-acf8-e1316f71c59b> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7> ;
-    obo:IAO_0000235 "process-2-nucleic acid extraction"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5a1009e9-a634-46af-8448-f16f1edbf553> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3> ;
-    obo:IAO_0000235 "assay-name-tx-1"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1> ;
-    obo:IAO_0000235 "process-3-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef> ;
-    obo:IAO_0000235 "assay-name-3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19> ;
-    obo:IAO_0000235 "process-1-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6503bb09-e224-4bdd-887f-7a61d2a48485> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/475becd4-0e4d-4e7a-ad9f-4838807afe63> ;
-    obo:IAO_0000235 "assay-name-tx-3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9b19a15f-9c50-46a1-9862-3499206315b4> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34> ;
-    obo:IAO_0000235 "process-0-nucleic acid extraction"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ac409267-0a87-4bdd-b23b-009933e9a889> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8> ;
-    obo:IAO_0000235 "process-0-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7> ;
-    obo:IAO_0000235 "assay-name-tx-2"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e> a obo:BFO_0000015 ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/4bfd7af9-68b4-453c-9114-135b92595577> ;
-    obo:IAO_0000235 "process-2-sample collection"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/2a607502-8faf-4759-84cd-c78e29bcd055> ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5a1009e9-a634-46af-8448-f16f1edbf553> ;
-    obo:IAO_0000235 "process-1-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9b19a15f-9c50-46a1-9862-3499206315b4> ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/07057a49-5035-41ac-83bc-741e243e9047> ;
-    obo:IAO_0000235 "process-0-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/475becd4-0e4d-4e7a-ad9f-4838807afe63> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a> ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6503bb09-e224-4bdd-887f-7a61d2a48485> ;
-    obo:IAO_0000235 "process-3-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7> a obo:BFO_0000015 ;
-    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5979a186-9d59-4621-acf8-e1316f71c59b> ;
-    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9> ;
-    obo:IAO_0000235 "process-2-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
-    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
-    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007."^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/f788dc51-6f93-4f6f-b156-f33fca7dbcf8> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006."^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/149284f1-1662-4bf0-8327-b1e52a06a1b6> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below."^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/d7760686-ed95-483c-bfc7-b0704ae5ee0b> .
-
-<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> a obo:OBI_0000272 ;
-    obo:IAO_0000235 ""^^obo:IAO_000012,
-        "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom."^^obo:IAO_0000300,
-        ""^^obo:IAO_0000577 ;
-    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/bcbc26ad-8c06-45ab-8fdd-8b8f7f453e06> .
-
-[] obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d> .
-
-[] a obo:OBI_0000066 ;
-    obo:BFO_0000051 [ a obo:OBI_0000066 ;
-            obo:BFO_0000055 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/726d5e82-354b-4bd1-9173-8dd3969470d4>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/a83b783d-5193-42bb-8cd1-ff87fe6d3c84>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/c0b718e7-3b55-459f-8f2d-c481762342c3>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/d15f0f18-b329-4faa-9530-2a554e638ce0>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/e7fac638-64a1-4f86-adf5-ed1858e4c5c8>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5> ;
-            obo:IAO_0000235 [ a obo:IAO_0000311 ;
-                    obo:EFO_0001742 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/77044141-f995-4b9a-87c0-005c7d9e739b> ;
-                    obo:IAO_0000321 "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."@en ;
-                    obo:IAO_0000590 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."@en ;
-                    obo:OBI_0001617 "https://pubmed.ncbi.nlm.nih.gov/18725995"@en ;
-                    obo:OBI_0002110 "https://doi.org/10.1371/journal.pone.0003042"@en ],
-                [ a obo:IAO_0000311 ;
-                    obo:EFO_0001742 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/a273e55f-f784-4f0e-a24b-5bfa49dc464c> ;
-                    obo:IAO_0000321 "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."@en ;
-                    obo:IAO_0000590 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters"@en ;
-                    obo:OBI_0001617 "https://pubmed.ncbi.nlm.nih.gov/18783384"@en ;
-                    obo:OBI_0002110 "http://doi.org/10.1111/j.1462-2920.2008.01745.x"@en ],
-                "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples."^^obo:IAO_0000300,
-                "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment"^^obo:OBI_0001622,
-                "s_BII-S-3-synthesis.txt"^^obo:STATO_0000002 ;
-            obo:IAO_0000577 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-synth> ;
-            obo:NCIT_C48206 [ a obo:NCBITaxon_9606 ;
-                    obo:IAO_0000235 ""^^obo:IAO_0000429,
-                        ""^^obo:NCIT_C25536,
-                        "Dawn"^^obo:NCIT_C40974,
-                        "Field"^^obo:NCIT_C40975,
-                        ""^^obo:NCIT_C40978,
-                        ""^^obo:NCIT_C42879 ;
-                    obo:RO_0000087 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/a4796732-ed45-4452-b9c4-a50a5ec2cc55> ],
-                [ a obo:NCBITaxon_9606 ;
-                    obo:IAO_0000235 "jagi@pml.ac.uk"^^obo:IAO_0000429,
-                        ""^^obo:NCIT_C25536,
-                        "Jack"^^obo:NCIT_C40974,
-                        "Gilbert"^^obo:NCIT_C40975,
-                        ""^^obo:NCIT_C40978,
-                        ""^^obo:NCIT_C42879 ;
-                    obo:RO_0000087 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9155efb4-8739-4a62-99dd-99d272e59719>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/92a7df9d-b93b-42f9-88be-203db30142d5>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f40f67ca-d98c-44ac-bb74-85ccc2270bf7> ] ;
-            obo:RO_0000057 [ a obo:RO_0000057 ] ;
-            obo:RO_0000086 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf> ;
-            obo:RO_0002012 [ a obo:OBI_0000070 ;
-                    obo:EFO_0004095 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/45cbae02-2614-411f-99a1-a2f46753855f>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb> ;
-                    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/cf0e9c7c-7c2a-4483-91c7-b81a062c5388>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/fb84d652-145e-4cc2-ba70-7aba85f23931>,
-                        ""^^obo:OBI_0000968 ;
-                    obo:IAO_0000590 "a_gilbert-assay-Gx.txt"^^obo:STATO_0000002 ;
-                    obo:OBI_0000047 [ a obo:OBI_0000047 ] ;
-                    obo:RO_0002012 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/4bfd7af9-68b4-453c-9114-135b92595577>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ac409267-0a87-4bdd-b23b-009933e9a889>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e> ],
-                [ a obo:OBI_0000070 ;
-                    obo:EFO_0004095 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/10c2f829-d741-4e52-8642-e416a13aa134>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d112b432-f99d-4c82-aecb-bb464e390afb> ;
-                    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/39c7728e-e196-4dab-a8f5-88f8a9c3b931>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/8e48d284-0bc9-4efa-acd6-1786d078c803>,
-                        ""^^obo:OBI_0000968 ;
-                    obo:IAO_0000590 "a_gilbert-assay-Tx.txt"^^obo:STATO_0000002 ;
-                    obo:OBI_0000047 [ a obo:OBI_0000047 ] ;
-                    obo:RO_0002012 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/07057a49-5035-41ac-83bc-741e243e9047>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/2a607502-8faf-4759-84cd-c78e29bcd055>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/475becd4-0e4d-4e7a-ad9f-4838807afe63>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5979a186-9d59-4621-acf8-e1316f71c59b>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5a1009e9-a634-46af-8448-f16f1edbf553>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6503bb09-e224-4bdd-887f-7a61d2a48485>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9b19a15f-9c50-46a1-9862-3499206315b4>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9>,
-                        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7> ],
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/032d9426-e717-4fca-b8cf-16dae3eff420>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/c2597778-4429-4152-8ea7-04b3e993672a>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/cbb20e80-c310-4043-ac0d-51d30cee8ee7>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e8521bf2-b3ad-41e7-ba00-12c4dc761e66> ;
-            obo:RO_0002537 "2008-08-15"^^xsd:date ;
-            obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/6c1d903f-313b-4364-814b-1aa2e00fe3d7>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/104b620b-dad7-48e4-873e-0147225ad969>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374>,
-                <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164> ] ;
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#investigation/44dcc451-4d63-4e4c-8aa7-01a027b48c67> a obo:OBI_0000066 ;
+    obo:BFO_0000051 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json> ;
     obo:IAO_0000235 ""^^obo:IAO_0000300,
         ""^^obo:OBI_0001622 ;
     obo:IAO_0000577 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json> ;
@@ -543,43 +15,13 @@
         [ a obo:IAO_8000000 ;
             obo:IAO_0000235 ""^^obo:EFO_0004095,
                 ""^^obo:IAO_0000129,
-                "NCBI Taxonomy"^^obo:IAO_0000300,
-                "NCIBTaxon"^^obo:IAO_0000590 ],
-        [ a obo:IAO_8000000 ;
-            obo:IAO_0000235 ""^^obo:EFO_0004095,
-                ""^^obo:IAO_0000129,
                 "Chemical Entity of Biological Interest"^^obo:IAO_0000300,
                 "CHEBI"^^obo:IAO_0000590 ],
         [ a obo:IAO_8000000 ;
             obo:IAO_0000235 ""^^obo:EFO_0004095,
                 ""^^obo:IAO_0000129,
-                "Phenotype and Trait Ontology"^^obo:IAO_0000300,
-                "PATO"^^obo:IAO_0000590 ],
-        [ a obo:IAO_8000000 ;
-            obo:IAO_0000235 ""^^obo:EFO_0004095,
-                ""^^obo:IAO_0000129,
-                "Experimental Factor Ontology"^^obo:IAO_0000300,
-                "EFO"^^obo:IAO_0000590 ] .
-
-[] a obo:OBI_0000066 ;
-    obo:IAO_0000235 ""^^obo:IAO_0000300 ;
-    obo:IAO_0000577 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json> ;
-    obo:RO_0002537 ""^^xsd:date ;
-    obo:STATO_0000001 [ a obo:IAO_8000000 ;
-            obo:IAO_0000235 ""^^obo:EFO_0004095,
-                ""^^obo:IAO_0000129,
                 "NCBI Taxonomy"^^obo:IAO_0000300,
                 "NCIBTaxon"^^obo:IAO_0000590 ],
-        [ a obo:IAO_8000000 ;
-            obo:IAO_0000235 ""^^obo:EFO_0004095,
-                ""^^obo:IAO_0000129,
-                "Chemical Entity of Biological Interest"^^obo:IAO_0000300,
-                "CHEBI"^^obo:IAO_0000590 ],
-        [ a obo:IAO_8000000 ;
-            obo:IAO_0000235 ""^^obo:EFO_0004095,
-                ""^^obo:IAO_0000129,
-                "Phenotype and Trait Ontology"^^obo:IAO_0000300,
-                "PATO"^^obo:IAO_0000590 ],
         [ a obo:IAO_8000000 ;
             obo:IAO_0000235 ""^^obo:EFO_0004095,
                 ""^^obo:IAO_0000129,
@@ -588,6 +30,546 @@
         [ a obo:IAO_8000000 ;
             obo:IAO_0000235 ""^^obo:EFO_0004095,
                 ""^^obo:IAO_0000129,
-                "Ontology for Biomedical Investigations"^^obo:IAO_0000300,
-                "OBI"^^obo:IAO_0000590 ] .
+                "Phenotype and Trait Ontology"^^obo:IAO_0000300,
+                "PATO"^^obo:IAO_0000590 ] .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#assay/b6938db5-5787-43d0-be91-676ac159158e> a obo:OBI_0000070 ;
+    obo:EFO_0004095 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/1637d635-3aa1-452c-9170-8355542a0418>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/5ea3546a-5378-478a-927d-fdabfbb144a7>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/68a031d6-43c8-4336-9736-cf83b003e3f4>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/9130eaf9-db0e-4315-b9db-a55446ed0256> ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/ec83485f-8f4c-4dd2-88c9-62eb68f9a58b>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/93ff32f9-79f1-429d-8c46-4553cb16d1c4>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b6938db5-5787-43d0-be91-676ac159158e>,
+        ""^^obo:OBI_0000968 ;
+    obo:IAO_0000590 "a_gilbert-assay-Tx.txt"^^obo:STATO_0000002 ;
+    obo:OBI_0000047 [ a obo:OBI_0000047 ] ;
+    obo:RO_0002012 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/53aee863-cfb4-47e1-8fd0-9731b7f84c75>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6f053ce4-4a61-4c48-b538-b3b638cdae2c>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/7a0081d9-5a70-406a-ac4d-9a4c43c98101>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/918c0aef-2b54-44d4-b04b-2284f0d6b658>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9be99891-2ff7-4daf-aae6-e84dc263c613>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/c054c0b5-4d09-44e1-8ac8-1c5fcf31aaca>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ceff48c7-b2f1-4feb-ba14-25891ff72e65>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/d43da66f-ec88-4e9f-b3f3-8a08bb180d8a>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dd511018-8c1a-4f68-9d71-e51634d7ab07>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/de85eb93-5952-4698-9d4d-eb38dfca284e>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e309fcf7-a023-4365-8b77-9d9603852ebe>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/f4d874bd-b76a-4ef8-bb55-d6ba32c6d76f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#assay/be91-676ac159158e-b6938db5-5787-43d0> a obo:OBI_0000070 ;
+    obo:EFO_0004095 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d1889d22-ae27-4af4-af50-7efdcaee53d1>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d32a29c5-a197-4f57-abd0-8fc5492d8fc9>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d72be1ea-b262-4a91-9e7d-65d209ffce9c>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/f52442a1-7d13-4a23-8461-11cfcc0c5b23> ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/f6dedc0f-caaa-4664-8103-7c882bc0302e>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/55f4f673-be05-4cf8-b3f6-2998a3f58d10>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f85e7cb7-79a5-4998-a614-d73acea19bc3>,
+        ""^^obo:OBI_0000968 ;
+    obo:IAO_0000590 "a_gilbert-assay-Gx.txt"^^obo:STATO_0000002 ;
+    obo:OBI_0000047 [ a obo:OBI_0000047 ] ;
+    obo:RO_0002012 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0f2c3ea3-e871-432d-9708-018d71a02110>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/226f6031-82ef-45e4-947a-c07febc91a4c>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/34a25272-2e1d-4a8b-a245-8e00aa2dbb09>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5407e702-08a1-4c19-85d5-0c44881e0090>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/a47879ac-5097-403f-a4b1-79c0dd2f7499>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bc13c457-4bb7-4f12-936e-7646ecfe6426>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e7a19615-ac57-4158-8a28-73cb0fbc4e78>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/fd2b2c72-3a93-4d7a-ba69-6c8cc236f7f7> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/460e7c08-e340-42db-9a64-d6e8c2cccf5e> a obo:OBI_0001933 ;
+    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/460e7c08-e340-42db-9a64-d6e8c2cccf5e> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/ec83485f-8f4c-4dd2-88c9-62eb68f9a58b> a obo:OBI_0001933 ;
+    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/ec83485f-8f4c-4dd2-88c9-62eb68f9a58b> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/f6dedc0f-caaa-4664-8103-7c882bc0302e> a obo:OBI_0001933 ;
+    obo:IAO_0000590 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f6dedc0f-caaa-4664-8103-7c882bc0302e> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/1637d635-3aa1-452c-9170-8355542a0418> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000590 "sequenced-data-tx-0"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/5ea3546a-5378-478a-927d-fdabfbb144a7> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000590 "sequenced-data-tx-2"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/68a031d6-43c8-4336-9736-cf83b003e3f4> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000590 "sequenced-data-tx-3"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/9130eaf9-db0e-4315-b9db-a55446ed0256> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000590 "sequenced-data-tx-1"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d1889d22-ae27-4af4-af50-7efdcaee53d1> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000235 [ a obo:IAO_0000590 ;
+            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
+            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
+    obo:IAO_0000590 "sequenced-data-1"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d32a29c5-a197-4f57-abd0-8fc5492d8fc9> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000235 [ a obo:IAO_0000590 ;
+            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
+            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
+    obo:IAO_0000590 "sequenced-data-0"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/d72be1ea-b262-4a91-9e7d-65d209ffce9c> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000235 [ a obo:IAO_0000590 ;
+            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
+            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
+    obo:IAO_0000590 "sequenced-data-3"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#data_file/f52442a1-7d13-4a23-8461-11cfcc0c5b23> a <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/DataFile> ;
+    obo:IAO_0000235 [ a obo:IAO_0000590 ;
+            obo:IAO_0000235 "data_comment"^^obo:IAO_0000590 ;
+            obo:IAO_0000590 "data_value"^^obo:IAO_0000300 ] ;
+    obo:IAO_0000590 "sequenced-data-2"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/0204e13a-4608-4acf-9545-2d434054d6e0> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/0bc60314-1184-427c-b6dc-6c27dfaaf8c0> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1bba180c-5288-4beb-b45e-6e98e3ab754e> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/PATO_0000165"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "PATO"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "time"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1c5fc66c-bdd5-4db0-94da-7ed839953593> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "indexed in PubMed"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1ff1cbaf-9d9d-4195-9698-9f1a4153cdba> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "library strategy"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/234aec2d-3ac3-4da5-8143-d95289b060f5> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2ce24fe9-9be1-4b41-8046-a5205466991b> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2f6d448e-0d5a-4a50-9346-3485e4e68510> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://www.ebi.ac.uk/efo/EFO_0000428"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "EFO"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "dose"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/3ead61a2-ccc4-4473-9f31-1e7d7daf6096> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "principal investigator role"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/411fe7cc-2637-4826-866c-2a2cf5637f4c> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "sequencing instrument"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/460e7c08-e340-42db-9a64-d6e8c2cccf5e> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "Organism"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/4b01dbd8-0db9-4679-a740-90f14fda544c> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "filter pore size"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/55f4f673-be05-4cf8-b3f6-2998a3f58d10> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0002623"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "OBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "metagenome sequencing"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/6bcfd414-7eaf-4c77-aed3-9aa6d40e1422> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/CHEBI_59999"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "CHEBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "chemical substance"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/78b0bc92-5bec-4180-adb2-2709a2afb948> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "principal investigator role"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/7b25f79d-9232-4f2d-bff1-18988f87b56c> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/810d2a4d-dacd-4e7d-b6e8-e03f0ef49ae9> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "library selection"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/84fdbf87-e709-424d-8f70-255657ae4931> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "library layout"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/93ff32f9-79f1-429d-8c46-4553cb16d1c4> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000626"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "OBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "nucleotide sequencing"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9f3d1c2f-bf8a-4798-9002-b88fd37c31f5> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "SRA Inform On Status"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b15438df-f679-423f-978e-1ee8e2961f85> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "indexed in PubMed"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b6938db5-5787-43d0-be91-676ac159158e> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000424"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "OBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "transcription profiling"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c477bf27-2928-4ab4-8cdd-8d28d0f68734> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "SRA Inform On Error"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c69c7e3b-bbd8-45d3-81fd-f0aa61b9378d> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 ""^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/ec83485f-8f4c-4dd2-88c9-62eb68f9a58b> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "Label"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f4ed4ce2-6bf0-46bf-ac65-5986d56a4f43> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000115"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "OBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "intervention design"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f6dedc0f-caaa-4664-8103-7c882bc0302e> a obo:OBI_0001933 ;
+    obo:IAO_0000235 ""^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        ""^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "quantity"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f85e7cb7-79a5-4998-a614-d73acea19bc3> a obo:OBI_0001933 ;
+    obo:IAO_0000235 "http://purl.obolibrary.org/obo/OBI_0000626"^^<http://purl.obolibrary.org/obo/IAO:0000578>,
+        "OBI"^^obo:IAO_8000000 ;
+    obo:STATO_0000129 "nucleotide sequencing"^^xsd:string .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#person/b14d509e-5eb0-48b8-9ed5-319d3d4dbc89> a obo:NCBITaxon_9606 ;
+    obo:IAO_0000235 "jagi@pml.ac.uk"^^obo:IAO_0000429,
+        ""^^obo:NCIT_C25536,
+        "Jack"^^obo:NCIT_C40974,
+        "Gilbert"^^obo:NCIT_C40975,
+        ""^^obo:NCIT_C40978,
+        ""^^obo:NCIT_C42879 ;
+    obo:RO_0000087 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/78b0bc92-5bec-4180-adb2-2709a2afb948>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/9f3d1c2f-bf8a-4798-9002-b88fd37c31f5>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c477bf27-2928-4ab4-8cdd-8d28d0f68734> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#person/f45a2726-fc06-4afc-ace9-5e0f3efec255> a obo:NCBITaxon_9606 ;
+    obo:IAO_0000235 ""^^obo:IAO_0000429,
+        ""^^obo:NCIT_C25536,
+        "Dawn"^^obo:NCIT_C40974,
+        "Field"^^obo:NCIT_C40975,
+        ""^^obo:NCIT_C40978,
+        ""^^obo:NCIT_C42879 ;
+    obo:RO_0000087 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/3ead61a2-ccc4-4473-9f31-1e7d7daf6096> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/582da4e1-5aa1-4618-844f-71c333b425eb> a obo:BFO_0000015 ;
+    obo:IAO_0000235 "process-1-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8388dd02-8fb5-401e-84a8-dcf2abfef1bc> a obo:BFO_0000015 ;
+    obo:IAO_0000235 "process-0-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8a83b5c8-d00d-41c5-82f3-e48d1c9e8aff> a obo:BFO_0000015 ;
+    obo:IAO_0000235 "process-2-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8cbc6e48-1ca3-4cdf-b04d-8b23990994bf> a obo:BFO_0000015 ;
+    obo:IAO_0000235 "process-3-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Wang Li"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/0692f75e-f6da-43df-84a0-6416b8456cf8> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "superscript+random hexamer primer"^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/3e3eee93-a1b7-424f-9c92-b3a726cac828> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/200740d5-96c5-47c9-9555-2c03183a6b19> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        ""^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/b0e10974-359a-436b-8d4d-d5a34166929e> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5304f1f1-25a2-47c9-9dee-d533d58696ba> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        ""^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/43385a95-cfb7-4feb-bfaa-e84a3979c2c7>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5466366c-1fdf-46a8-8962-566b475ae5a7>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/e601839e-1bda-483c-9698-7e1dd8c70487> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/b9108750-956b-4e25-a2b6-28cb0dbc1091> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "aliquoting"^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/1f0d7784-2d82-43a8-9f5c-d3276e1d84a1> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/d3ec59fe-4c1e-4b0a-8586-35afbb87aca9> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        ""^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/4af1d6a4-44af-4033-87bd-c1b426f16ae3> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/15723b3a-1f4d-4327-9e74-98998392ec3c> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/c69c7e3b-bbd8-45d3-81fd-f0aa61b9378d> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/1f0d7784-2d82-43a8-9f5c-d3276e1d84a1> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2ce24fe9-9be1-4b41-8046-a5205466991b> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/3a6ed770-e3d2-4269-a472-6872e7e5819d> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/4b01dbd8-0db9-4679-a740-90f14fda544c> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/3e3eee93-a1b7-424f-9c92-b3a726cac828> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/234aec2d-3ac3-4da5-8143-d95289b060f5> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/43385a95-cfb7-4feb-bfaa-e84a3979c2c7> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1ff1cbaf-9d9d-4195-9698-9f1a4153cdba> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/4af1d6a4-44af-4033-87bd-c1b426f16ae3> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/7b25f79d-9232-4f2d-bff1-18988f87b56c> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5466366c-1fdf-46a8-8962-566b475ae5a7> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/810d2a4d-dacd-4e7d-b6e8-e03f0ef49ae9> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5d493e2b-e145-4727-bd7c-ed98f528889f> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/0bc60314-1184-427c-b6dc-6c27dfaaf8c0> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/b0e10974-359a-436b-8d4d-d5a34166929e> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/0204e13a-4608-4acf-9545-2d434054d6e0> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/e601839e-1bda-483c-9698-7e1dd8c70487> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/84fdbf87-e709-424d-8f70-255657ae4931> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/f18d1448-8b1c-41f0-876c-2b0cfbd62785> a obo:OBI_0000785 ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/411fe7cc-2637-4826-866c-2a2cf5637f4c> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#publication/0a7100ef-e467-4280-92c2-0b5472da0d22> a obo:IAO_0000311 ;
+    obo:EFO_0001742 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/b15438df-f679-423f-978e-1ee8e2961f85> ;
+    obo:IAO_0000321 "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."@en ;
+    obo:IAO_0000590 "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities."@en ;
+    obo:OBI_0001617 "https://pubmed.ncbi.nlm.nih.gov/18725995"@en ;
+    obo:OBI_0002110 "https://doi.org/10.1371/journal.pone.0003042"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#publication/a16daf25-8148-458b-98d4-56194b0330a8> a obo:IAO_0000311 ;
+    obo:EFO_0001742 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1c5fc66c-bdd5-4db0-94da-7ed839953593> ;
+    obo:IAO_0000321 "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."@en ;
+    obo:IAO_0000590 "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters"@en ;
+    obo:OBI_0001617 "https://pubmed.ncbi.nlm.nih.gov/18783384"@en ;
+    obo:OBI_0002110 "http://doi.org/10.1111/j.1462-2920.2008.01745.x"@en .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/4543c90b-162d-4356-85cf-c9659340180c> a obo:OBI_0000750 ;
+    obo:IAO_0000235 "dose"^^obo:IAO_0000590 ;
+    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/2f6d448e-0d5a-4a50-9346-3485e4e68510> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/845f882c-aaa1-41c8-aa6a-58ba1428fff1> a obo:OBI_0000750 ;
+    obo:IAO_0000235 "compound"^^obo:IAO_0000590 ;
+    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/6bcfd414-7eaf-4c77-aed3-9aa6d40e1422> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/d5cc0253-7f3c-4979-979f-bc931c33f1d1> a obo:OBI_0000750 ;
+    obo:IAO_0000235 "collection time"^^obo:IAO_0000590 ;
+    obo:OBI_0000750 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/1bba180c-5288-4beb-b45e-6e98e3ab754e> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json> a obo:OBI_0000066 ;
+    obo:BFO_0000055 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/0692f75e-f6da-43df-84a0-6416b8456cf8>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/200740d5-96c5-47c9-9555-2c03183a6b19>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5304f1f1-25a2-47c9-9dee-d533d58696ba>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/b9108750-956b-4e25-a2b6-28cb0dbc1091>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/d3ec59fe-4c1e-4b0a-8586-35afbb87aca9> ;
+    obo:IAO_0000235 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#publication/0a7100ef-e467-4280-92c2-0b5472da0d22>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#publication/a16daf25-8148-458b-98d4-56194b0330a8>,
+        "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples."^^obo:IAO_0000300,
+        "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment"^^obo:OBI_0001622,
+        "s_BII-S-3-synthesis.txt"^^obo:STATO_0000002 ;
+    obo:IAO_0000577 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-synth> ;
+    obo:NCIT_C48206 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#person/b14d509e-5eb0-48b8-9ed5-319d3d4dbc89>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#person/f45a2726-fc06-4afc-ace9-5e0f3efec255> ;
+    obo:RO_0000057 [ a obo:RO_0000057 ] ;
+    obo:RO_0000086 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#characteristic_category/460e7c08-e340-42db-9a64-d6e8c2cccf5e> ;
+    obo:RO_0002012 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#assay/b6938db5-5787-43d0-be91-676ac159158e>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#assay/be91-676ac159158e-b6938db5-5787-43d0>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/582da4e1-5aa1-4618-844f-71c333b425eb>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8388dd02-8fb5-401e-84a8-dcf2abfef1bc>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8a83b5c8-d00d-41c5-82f3-e48d1c9e8aff>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/8cbc6e48-1ca3-4cdf-b04d-8b23990994bf> ;
+    obo:RO_0002537 "2008-08-15"^^xsd:date ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#ontology_annotation/f4ed4ce2-6bf0-46bf-ac65-5986d56a4f43>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/4543c90b-162d-4356-85cf-c9659340180c>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/845f882c-aaa1-41c8-aa6a-58ba1428fff1>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#study_factor/d5cc0253-7f3c-4979-979f-bc931c33f1d1> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0f2c3ea3-e871-432d-9708-018d71a02110> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/226f6031-82ef-45e4-947a-c07febc91a4c> ;
+    obo:IAO_0000235 "assay-name-1"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/226f6031-82ef-45e4-947a-c07febc91a4c> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/0f2c3ea3-e871-432d-9708-018d71a02110> ;
+    obo:IAO_0000235 "process-1-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/34a25272-2e1d-4a8b-a245-8e00aa2dbb09> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e7a19615-ac57-4158-8a28-73cb0fbc4e78> ;
+    obo:IAO_0000235 "assay-name-2"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/53aee863-cfb4-47e1-8fd0-9731b7f84c75> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/918c0aef-2b54-44d4-b04b-2284f0d6b658> ;
+    obo:IAO_0000235 "assay-name-tx-0"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5407e702-08a1-4c19-85d5-0c44881e0090> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/fd2b2c72-3a93-4d7a-ba69-6c8cc236f7f7> ;
+    obo:IAO_0000235 "assay-name-3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6f053ce4-4a61-4c48-b538-b3b638cdae2c> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e309fcf7-a023-4365-8b77-9d9603852ebe> ;
+    obo:IAO_0000235 "assay-name-tx-2"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/7a0081d9-5a70-406a-ac4d-9a4c43c98101> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/918c0aef-2b54-44d4-b04b-2284f0d6b658> ;
+    obo:IAO_0000235 "process-0-nucleic acid extraction"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/a47879ac-5097-403f-a4b1-79c0dd2f7499> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bc13c457-4bb7-4f12-936e-7646ecfe6426> ;
+    obo:IAO_0000235 "assay-name-0"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/bc13c457-4bb7-4f12-936e-7646ecfe6426> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/a47879ac-5097-403f-a4b1-79c0dd2f7499> ;
+    obo:IAO_0000235 "process-0-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/c054c0b5-4d09-44e1-8ac8-1c5fcf31aaca> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dd511018-8c1a-4f68-9d71-e51634d7ab07> ;
+    obo:IAO_0000235 "assay-name-tx-3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ceff48c7-b2f1-4feb-ba14-25891ff72e65> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9be99891-2ff7-4daf-aae6-e84dc263c613> ;
+    obo:IAO_0000235 "process-1-nucleic acid extraction"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/d43da66f-ec88-4e9f-b3f3-8a08bb180d8a> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9be99891-2ff7-4daf-aae6-e84dc263c613> ;
+    obo:IAO_0000235 "assay-name-tx-1"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/de85eb93-5952-4698-9d4d-eb38dfca284e> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e309fcf7-a023-4365-8b77-9d9603852ebe> ;
+    obo:IAO_0000235 "process-2-nucleic acid extraction"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e7a19615-ac57-4158-8a28-73cb0fbc4e78> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/34a25272-2e1d-4a8b-a245-8e00aa2dbb09> ;
+    obo:IAO_0000235 "process-2-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/f4d874bd-b76a-4ef8-bb55-d6ba32c6d76f> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dd511018-8c1a-4f68-9d71-e51634d7ab07> ;
+    obo:IAO_0000235 "process-3-nucleic acid extraction"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Joan Miro"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/fd2b2c72-3a93-4d7a-ba69-6c8cc236f7f7> a obo:BFO_0000015 ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/5407e702-08a1-4c19-85d5-0c44881e0090> ;
+    obo:IAO_0000235 "process-3-sample collection"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 "Bob Denard"^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/918c0aef-2b54-44d4-b04b-2284f0d6b658> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/7a0081d9-5a70-406a-ac4d-9a4c43c98101> ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/53aee863-cfb4-47e1-8fd0-9731b7f84c75> ;
+    obo:IAO_0000235 "process-0-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/9be99891-2ff7-4daf-aae6-e84dc263c613> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/ceff48c7-b2f1-4feb-ba14-25891ff72e65> ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/d43da66f-ec88-4e9f-b3f3-8a08bb180d8a> ;
+    obo:IAO_0000235 "process-1-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/dd511018-8c1a-4f68-9d71-e51634d7ab07> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/f4d874bd-b76a-4ef8-bb55-d6ba32c6d76f> ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/c054c0b5-4d09-44e1-8ac8-1c5fcf31aaca> ;
+    obo:IAO_0000235 "process-3-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/e309fcf7-a023-4365-8b77-9d9603852ebe> a obo:BFO_0000015 ;
+    obo:BFO_0000062 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/de85eb93-5952-4698-9d4d-eb38dfca284e> ;
+    obo:BFO_0000063 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#process/6f053ce4-4a61-4c48-b538-b3b638cdae2c> ;
+    obo:IAO_0000235 "process-2-mRNA extraction - standard procedure 3"^^obo:IAO_0000590 ;
+    obo:NCIT_C48206 ""^^obo:NCBITaxon_9606 ;
+    obo:RO_0000059 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/64d5e96f-26b7-4716-8c0d-09fb2bcd399f> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006."^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/15723b3a-1f4d-4327-9e74-98998392ec3c> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/8b9d3564-c4f8-4591-bc60-5d58d7de40f8> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007."^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/5d493e2b-e145-4727-bd7c-ed98f528889f> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/5bad0bd2-e357-4634-ae1b-22a7a5fccc03> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom."^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/3a6ed770-e3d2-4269-a472-6872e7e5819d> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol/cdf2695f-6212-4efd-b4ad-e120e19539de> a obo:OBI_0000272 ;
+    obo:IAO_0000235 ""^^obo:IAO_000012,
+        "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below."^^obo:IAO_0000300,
+        ""^^obo:IAO_0000577 ;
+    obo:STATO_0000001 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/output/BII-S-3-synth/BII-S-3-isa-rdf-obo-v3.json#protocol_parameter/f18d1448-8b1c-41f0-876c-2b0cfbd62785> .
 
