@@ -47,41 +47,41 @@ fragment TypeRef on __Type {
             kind
             name
             description
-#            ofType {
-#                name
-#                inputFields {
-#                    name
-#                    description
-#                    defaultValue
-#                    type {
-#                        kind
-#                        name
-#                        description
-#                        ofType {name}
-#                       inputFields {
-#                            name
-#                            description
-#                            defaultValue
-#                       }
-#                    }
-#                }
-#            }
-#            inputFields {
-#                name
-#                description
-#                defaultValue
-#                type {
-#                    kind
-#                    name
-#                    description
-#                    ofType {name}
-#                    inputFields {
-#                        name
-#                        description
-#                        defaultValue
-#                    }
-#                }
-#            }
+            ofType {
+                name
+                inputFields {
+                    name
+                    description
+                    defaultValue
+                    type {
+                        kind
+                        name
+                        description
+                        ofType {name}
+                       inputFields {
+                            name
+                            description
+                            defaultValue
+                       }
+                    }
+                }
+            }
+            inputFields {
+                name
+                description
+                defaultValue
+                type {
+                    kind
+                    name
+                    description
+                    ofType {name}
+                    inputFields {
+                        name
+                        description
+                        defaultValue
+                    }
+                }
+            }
         }
     }
 }

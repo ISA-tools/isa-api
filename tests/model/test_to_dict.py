@@ -1,5 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch
+
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Comment
