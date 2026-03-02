@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+from unittest.mock import patch
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Comment
@@ -29,44 +29,68 @@ contacts = [
     ),
     Person(first_name="first_name2"),
 ]
-expected_contacts = [
-    {
-        "address": "",
-        "affiliation": "",
-        "comments": [],
-        "email": "email1",
-        "fax": "",
-        "firstName": "first_name1",
-        "lastName": "last_name1",
-        "midInitials": "",
-        "phone": "",
-        "roles": [{"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}],
-    },
-    {
-        "address": "",
-        "affiliation": "",
-        "comments": [],
-        "email": "",
-        "fax": "",
-        "firstName": "first_name2",
-        "lastName": "",
-        "midInitials": "",
-        "phone": "",
-        "roles": [],
-    },
-]
-publications = [Publication(pubmed_id="pubmed_id", doi="doi", status="status", author_list="a, b, c")]
-expected_publications = [
-    {"authorList": "a, b, c", "comments": [], "doi": "doi", "pubMedID": "pubmed_id", "status": "status", "title": ""}
-]
+
 
 
 class TestSerialize(TestCase):
     def setUp(self):
         self.investigation = Investigation()
 
-    def test_investigation_to_dict(self):
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_investigation_to_dict(self, mock_uuid4):
+        contacts = [
+            Person(
+                id_="#person/" + mock_uuid4.return_value,
+                first_name="first_name1",
+                last_name="last_name1",
+                email="email1",
+                roles=[OntologyAnnotation(term="role1", id_="id1")],
+            ),
+            Person(first_name="first_name2", id_="#person/" + mock_uuid4.return_value),
+        ]
+
+        expected_contacts = [
+            {
+                "@id": "#person/" + mock_uuid4.return_value,
+                "address": "",
+                "affiliation": "",
+                "comments": [],
+                "email": "email1",
+                "fax": "",
+                "firstName": "first_name1",
+                "lastName": "last_name1",
+                "midInitials": "",
+                "phone": "",
+                "roles": [
+                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}],
+            },
+            {
+                "@id": "#person/" + mock_uuid4.return_value,  # "#person/mocked_UUID",
+                "address": "",
+                "affiliation": "",
+                "comments": [],
+                "email": "",
+                "fax": "",
+                "firstName": "first_name2",
+                "lastName": "",
+                "midInitials": "",
+                "phone": "",
+                "roles": [],
+            },
+        ]
+
+        publications = [Publication(id_="#publication/" + mock_uuid4.return_value,
+                                    pubmed_id="pubmed_id",
+                                    doi="doi",
+                                    status="status",
+                                    author_list="a, b, c")]
+
+        investigation = Investigation()
+
+        # self.assertEqual(investigation.id, "#investigation/" + mock_uuid4.return_value)
+
         expected_dict = {
+            "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "",
             "title": "",
             "publicReleaseDate": "",
@@ -76,15 +100,18 @@ class TestSerialize(TestCase):
             "ontologySourceReferences": [],
             "people": [],
             "publications": [],
-            "studies": [],
+            "studies": []
         }
-        self.assertEqual(self.investigation.to_dict(), expected_dict)
+
+        self.assertEqual(investigation.to_dict(), expected_dict)
 
         # Test string fields
+        expected_dict["@id"] = "#investigation/" + mock_uuid4.return_value
         expected_dict["identifier"] = "id_1"
         expected_dict["title"] = "Title"
         expected_dict["publicReleaseDate"] = "why am I a string ?"
         expected_dict["submissionDate"] = "why am I a string ?"
+        self.investigation.id = "#investigation/" + mock_uuid4.return_value
         self.investigation.title = "Title"
         self.investigation.identifier = "id_1"
         self.investigation.public_release_date = "why am I a string ?"
@@ -119,14 +146,62 @@ class TestSerialize(TestCase):
         self.assertEqual(self.investigation.to_dict(), expected_dict)
 
         # Test publications
+        expected_publications = [
+            {"@id": "#publication/" + mock_uuid4.return_value, "authorList": "a, b, c", "comments": [], "doi": "doi",
+             "pubMedID": "pubmed_id", "status": "status", "title": ""}
+        ]
+
         self.assertEqual(self.investigation.publications, [])
         self.investigation.publications = publications
         expected_dict["publications"] = expected_publications
-        self.assertEqual(expected_dict, self.investigation.to_dict())
+        self.assertEqual(self.investigation.to_dict(), expected_dict)
 
-    def test_study_to_dict(self):
-        study = Study()
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_study_to_dict(self, mock_uuid4):
+        expected_contacts = [
+            {
+                "@id": "#person/" + mock_uuid4.return_value,
+                "address": "",
+                "affiliation": "",
+                "comments": [],
+                "email": "email1",
+                "fax": "",
+                "firstName": "first_name1",
+                "lastName": "last_name1",
+                "midInitials": "",
+                "phone": "",
+                "roles": [
+                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}],
+            },
+            {
+                "@id": "#person/" + mock_uuid4.return_value,  # "#person/mocked_UUID",
+                "address": "",
+                "affiliation": "",
+                "comments": [],
+                "email": "",
+                "fax": "",
+                "firstName": "first_name2",
+                "lastName": "",
+                "midInitials": "",
+                "phone": "",
+                "roles": [],
+            },
+        ]
+
+        contacts = [
+            Person(
+                id_="#person/" + mock_uuid4.return_value,
+                first_name="first_name1",
+                last_name="last_name1",
+                email="email1",
+                roles=[OntologyAnnotation(term="role1", id_="id1")],
+            ),
+            Person(first_name="first_name2", id_="#person/" + mock_uuid4.return_value),
+        ]
+
+        study = Study(id_="#study/" + mock_uuid4.return_value)
         expected_dict = {
+            "@id": "#study/" + mock_uuid4.return_value,
             "filename": "",
             "identifier": "",
             "title": "",
@@ -148,6 +223,7 @@ class TestSerialize(TestCase):
         self.assertEqual(study.to_dict(), expected_dict)
 
         # Test string fields
+        # study.id_ = "#study/" + mock_uuid4.return_value,
         study.filename = "filename"
         study.identifier = "id_1"
         study.title = "Title"
@@ -173,7 +249,16 @@ class TestSerialize(TestCase):
         self.assertEqual(study.to_dict(), expected_dict)
 
         # Test publications
+        publications = [Publication(id_="#publication/" + mock_uuid4.return_value,
+                                    pubmed_id="pubmed_id",
+                                    doi="doi",
+                                    status="status",
+                                    author_list="a, b, c")]
         study.publications = publications
+        expected_publications = [
+            {"@id": "#publication/" + mock_uuid4.return_value, "authorList": "a, b, c", "comments": [], "doi": "doi",
+             "pubMedID": "pubmed_id", "status": "status", "title": ""}
+        ]
         expected_dict["publications"] = expected_publications
         self.assertEqual(study.to_dict(), expected_dict)
 

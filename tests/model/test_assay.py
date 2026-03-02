@@ -124,7 +124,7 @@ class TestAssay(TestCase):
 
     @patch("isatools.model.identifiable.uuid4", return_value="test_uuid")
     def test_to_dict(self, mock_uuid4):
-        study = Study()
+        study = Study(id_="#study/" + mock_uuid4.return_value)
         assay = Assay(
             filename="file",
             measurement_type=OntologyAnnotation(term="MT", id_="MT_ID"),

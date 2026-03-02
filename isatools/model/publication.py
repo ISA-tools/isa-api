@@ -1,8 +1,9 @@
 from isatools.model.comments import Commentable
+from isatools.model.identifiable import Identifiable
 from isatools.model.ontology_annotation import OntologyAnnotation
 
 
-class Publication(Commentable):
+class Publication(Commentable, Identifiable):
     """A publication associated with an investigation or study.
 
     Attributes:
@@ -17,9 +18,10 @@ class Publication(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, pubmed_id="", doi="", author_list="", title="", status=None, comments=None):
+    def __init__(self, id_="", pubmed_id="", doi="", author_list="", title="", status=None, comments=None):
         super().__init__(comments)
 
+        self.id = id_
         self.__pubmed_id = pubmed_id
         self.__doi = doi
         self.__author_list = author_list
@@ -127,6 +129,7 @@ class Publication(Commentable):
         if isinstance(self.status, OntologyAnnotation):
             status = self.status.to_dict()
         publication = {
+            "@id": self.id,
             "authorList": self.author_list,
             "doi": self.doi,
             "pubMedID": self.pubmed_id,
@@ -137,12 +140,12 @@ class Publication(Commentable):
         return self.update_isa_object(publication, ld=ld)
 
     def from_dict(self, publication):
+        self.id = publication.get("@id", "")
         self.author_list = publication["authorList"] if "authorList" in publication else ""
         self.doi = publication["doi"] if "doi" in publication else ""
         self.pubmed_id = publication["pubMedID"] if "pubMedID" in publication else ""
         self.title = publication["title"] if "title" in publication else ""
         self.load_comments(publication.get("comments", []))
-
         status = OntologyAnnotation()
         status.from_dict(publication.get("status", {}))
         self.status = status

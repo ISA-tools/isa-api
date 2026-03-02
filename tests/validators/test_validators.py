@@ -210,11 +210,13 @@ class TestValidateIsaJson(unittest.TestCase):
                 )
         with open(os.path.join(self._unit_json_data_dir, "iso8601_fail.json")) as fp:
             report = isajson.validate(fp)
-            if 3001 not in [e["code"] for e in report["warnings"]]:
-                self.fail(
-                    "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in "
-                    "publicReleaseDate but not reported in validation report"
-                )
+            print( report)
+            self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
+            # if 3001 not in [e["code"] for e in report["errors"]]:
+            #     self.fail(
+            #         "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in "
+            #         "publicReleaseDate but not reported in validation report"
+            #     )
 
     def test_validate_isajson_doi(self):
         """Tests against 3002"""

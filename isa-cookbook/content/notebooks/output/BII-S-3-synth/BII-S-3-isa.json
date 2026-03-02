@@ -48,9 +48,9 @@
                 {
                     "characteristicCategories": [
                         {
-                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d",
+                            "@id": "#characteristic_category/91e10b90-2341-4da6-a3f8-6f42c905d04a",
                             "characteristicType": {
-                                "@id": "#ontology_annotation/956f50e7-a712-4a76-9bc2-90d51872470d",
+                                "@id": "#ontology_annotation/91e10b90-2341-4da6-a3f8-6f42c905d04a",
                                 "annotationValue": "quantity",
                                 "comments": [],
                                 "termAccession": "",
@@ -61,7 +61,7 @@
                     "comments": [],
                     "dataFiles": [
                         {
-                            "@id": "#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843",
+                            "@id": "#data_file/b8ca22c9-d03d-4b12-8f7e-0a4d8229473e",
                             "comments": [
                                 {
                                     "name": "data_comment",
@@ -72,7 +72,7 @@
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb",
+                            "@id": "#data_file/3e3792a1-75aa-4c9c-bb2f-25b422423fbd",
                             "comments": [
                                 {
                                     "name": "data_comment",
@@ -83,7 +83,7 @@
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/45cbae02-2614-411f-99a1-a2f46753855f",
+                            "@id": "#data_file/ff912adb-159a-4e21-8403-341f2983d106",
                             "comments": [
                                 {
                                     "name": "data_comment",
@@ -94,7 +94,7 @@
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3",
+                            "@id": "#data_file/ba86e086-e5b3-4e37-a7e1-b4ef753fb2e9",
                             "comments": [
                                 {
                                     "name": "data_comment",
@@ -109,11 +109,11 @@
                     "materials": {
                         "otherMaterials": [
                             {
-                                "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f",
+                                "@id": "#material/6b45198a-5264-44fe-86ef-fcfbc9d3ac9f",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d"
+                                            "@id": "#characteristic_category/91e10b90-2341-4da6-a3f8-6f42c905d04a"
                                         },
                                         "comments": [],
                                         "value": "loads"
@@ -124,11 +124,11 @@
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a",
+                                "@id": "#material/f0a52a25-edc9-4f1f-be39-4dd169649903",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d"
+                                            "@id": "#characteristic_category/91e10b90-2341-4da6-a3f8-6f42c905d04a"
                                         },
                                         "comments": [],
                                         "value": "loads"
@@ -139,11 +139,11 @@
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951",
+                                "@id": "#material/eb507027-72b1-4324-aa3b-8c468c814866",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d"
+                                            "@id": "#characteristic_category/91e10b90-2341-4da6-a3f8-6f42c905d04a"
                                         },
                                         "comments": [],
                                         "value": "loads"
@@ -154,11 +154,11 @@
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5",
+                                "@id": "#material/c4702bbc-248a-4468-b5ef-4e3bd379a7f3",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/956f50e7-a712-4a76-9bc2-90d51872470d"
+                                            "@id": "#characteristic_category/91e10b90-2341-4da6-a3f8-6f42c905d04a"
                                         },
                                         "comments": [],
                                         "value": "loads"
@@ -171,21 +171,21 @@
                         ],
                         "samples": [
                             {
-                                "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3"
+                                "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c"
                             },
                             {
-                                "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3"
+                                "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13"
                             },
                             {
-                                "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912"
+                                "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3"
                             },
                             {
-                                "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235"
+                                "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0"
                             }
                         ]
                     },
                     "measurementType": {
-                        "@id": "#ontology_annotation/fb84d652-145e-4cc2-ba70-7aba85f23931",
+                        "@id": "#ontology_annotation/f561a9aa-f5f7-486f-abab-e7d9de51b9ff",
                         "annotationValue": "metagenome sequencing",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0002623",
@@ -193,201 +193,201 @@
                     },
                     "processSequence": [
                         {
-                            "@id": "#process/ac409267-0a87-4bdd-b23b-009933e9a889",
+                            "@id": "#process/b18407c5-f711-4966-aba1-fd526953f9ad",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                                "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3"
+                                    "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c"
                                 }
                             ],
                             "name": "process-0-sample collection",
                             "nextProcess": {
-                                "@id": "#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8"
+                                "@id": "#process/2c55af97-4b26-4951-b420-02dbd65da916"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f"
+                                    "@id": "#material/6b45198a-5264-44fe-86ef-fcfbc9d3ac9f"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Bob Denard"
                         },
                         {
-                            "@id": "#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164",
+                            "@id": "#process/a536893c-8ed8-4f95-a4e0-6f3d500bf034",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                                "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3"
+                                    "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13"
                                 }
                             ],
                             "name": "process-1-sample collection",
                             "nextProcess": {
-                                "@id": "#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19"
+                                "@id": "#process/a3c83c74-36dd-44c4-850c-8272542fadf9"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a"
+                                    "@id": "#material/f0a52a25-edc9-4f1f-be39-4dd169649903"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Bob Denard"
                         },
                         {
-                            "@id": "#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e",
+                            "@id": "#process/2fc9262e-d2fc-4901-888d-1faee7142329",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                                "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912"
+                                    "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3"
                                 }
                             ],
                             "name": "process-2-sample collection",
                             "nextProcess": {
-                                "@id": "#process/4bfd7af9-68b4-453c-9114-135b92595577"
+                                "@id": "#process/87bde4b9-d3f5-40b2-8490-c4b42ea160a9"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951"
+                                    "@id": "#material/eb507027-72b1-4324-aa3b-8c468c814866"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Bob Denard"
                         },
                         {
-                            "@id": "#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef",
+                            "@id": "#process/22c514e2-ee7f-4524-9953-40317578b2b5",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                                "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235"
+                                    "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0"
                                 }
                             ],
                             "name": "process-3-sample collection",
                             "nextProcess": {
-                                "@id": "#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1"
+                                "@id": "#process/52463cac-70a2-481d-b833-1316150bc067"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5"
+                                    "@id": "#material/c4702bbc-248a-4468-b5ef-4e3bd379a7f3"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Bob Denard"
                         },
                         {
-                            "@id": "#process/28eff082-f9f7-4ac1-92c1-7b4fc669f3f8",
+                            "@id": "#process/2c55af97-4b26-4951-b420-02dbd65da916",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/e1dc227a-5699-49d4-9899-489619d6ba6f"
+                                    "@id": "#material/6b45198a-5264-44fe-86ef-fcfbc9d3ac9f"
                                 }
                             ],
                             "name": "assay-name-0",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/6d2fc111-da82-4fc6-b65a-c53d2a8af843"
+                                    "@id": "#data_file/b8ca22c9-d03d-4b12-8f7e-0a4d8229473e"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/ac409267-0a87-4bdd-b23b-009933e9a889"
+                                "@id": "#process/b18407c5-f711-4966-aba1-fd526953f9ad"
                             }
                         },
                         {
-                            "@id": "#process/30b3f2f7-d842-4d4c-87d4-30d7538fea19",
+                            "@id": "#process/a3c83c74-36dd-44c4-850c-8272542fadf9",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/68c5215d-4016-4a17-b921-d2dabac2753a"
+                                    "@id": "#material/f0a52a25-edc9-4f1f-be39-4dd169649903"
                                 }
                             ],
                             "name": "assay-name-1",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/b083b28b-8dd4-4c75-b425-f0cdef5a39bb"
+                                    "@id": "#data_file/3e3792a1-75aa-4c9c-bb2f-25b422423fbd"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/6257e1c5-2cff-4fcb-89ee-28ce3e1b2164"
+                                "@id": "#process/a536893c-8ed8-4f95-a4e0-6f3d500bf034"
                             }
                         },
                         {
-                            "@id": "#process/4bfd7af9-68b4-453c-9114-135b92595577",
+                            "@id": "#process/87bde4b9-d3f5-40b2-8490-c4b42ea160a9",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/0bca9d06-bcc6-4a3f-8345-8430f6d5b951"
+                                    "@id": "#material/eb507027-72b1-4324-aa3b-8c468c814866"
                                 }
                             ],
                             "name": "assay-name-2",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/45cbae02-2614-411f-99a1-a2f46753855f"
+                                    "@id": "#data_file/ff912adb-159a-4e21-8403-341f2983d106"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/dfbe8069-0f45-4c2f-9a8c-2bc9bd60cf0e"
+                                "@id": "#process/2fc9262e-d2fc-4901-888d-1faee7142329"
                             }
                         },
                         {
-                            "@id": "#process/5e519e4d-34b1-4a8b-822c-06a42bd530c1",
+                            "@id": "#process/52463cac-70a2-481d-b833-1316150bc067",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/327215c6-2754-4050-8e69-7cc306d5bdc5"
+                                    "@id": "#material/c4702bbc-248a-4468-b5ef-4e3bd379a7f3"
                                 }
                             ],
                             "name": "assay-name-3",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/40df0a08-4217-45ef-a6a2-ae589e9f6fd3"
+                                    "@id": "#data_file/ba86e086-e5b3-4e37-a7e1-b4ef753fb2e9"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/5cb3becd-5dd3-4e4a-b336-eff2912795ef"
+                                "@id": "#process/22c514e2-ee7f-4524-9953-40317578b2b5"
                             }
                         }
                     ],
                     "technologyPlatform": "",
                     "technologyType": {
-                        "@id": "#ontology_annotation/cf0e9c7c-7c2a-4483-91c7-b81a062c5388",
+                        "@id": "#ontology_annotation/4a57e578-05f7-4a49-ada1-cdcb387e9fd8",
                         "annotationValue": "nucleotide sequencing",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0000626",
@@ -398,9 +398,9 @@
                 {
                     "characteristicCategories": [
                         {
-                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                            "@id": "#characteristic_category/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b",
                             "characteristicType": {
-                                "@id": "#ontology_annotation/9f42baa9-f471-41ba-9702-c8261b9cb606",
+                                "@id": "#ontology_annotation/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b",
                                 "annotationValue": "Label",
                                 "comments": [],
                                 "termAccession": "",
@@ -411,25 +411,25 @@
                     "comments": [],
                     "dataFiles": [
                         {
-                            "@id": "#data_file/d112b432-f99d-4c82-aecb-bb464e390afb",
+                            "@id": "#data_file/13d84b5e-50b7-4508-84ec-9725e05ebf49",
                             "comments": [],
                             "name": "sequenced-data-tx-0",
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219",
+                            "@id": "#data_file/0edf996b-171f-4a25-9eb9-5625423d99d3",
                             "comments": [],
                             "name": "sequenced-data-tx-1",
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7",
+                            "@id": "#data_file/c2761696-f289-48d7-8a1d-1bda59795411",
                             "comments": [],
                             "name": "sequenced-data-tx-2",
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "#data_file/10c2f829-d741-4e52-8642-e416a13aa134",
+                            "@id": "#data_file/605d1818-2480-4667-b865-a1d1c93f5a55",
                             "comments": [],
                             "name": "sequenced-data-tx-3",
                             "type": "Raw Data File"
@@ -439,43 +439,43 @@
                     "materials": {
                         "otherMaterials": [
                             {
-                                "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71",
+                                "@id": "#material/be5693c9-f50b-4394-b0c3-615510367bde",
                                 "characteristics": [],
                                 "comments": [],
                                 "name": "extract-0",
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872",
+                                "@id": "#material/acbcb0b6-ed43-4977-9fc0-0f07abf43740",
                                 "characteristics": [],
                                 "comments": [],
                                 "name": "extract-1",
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977",
+                                "@id": "#material/3c772dcf-3b6c-411a-a960-e953ae5da17f",
                                 "characteristics": [],
                                 "comments": [],
                                 "name": "extract-2",
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8",
+                                "@id": "#material/5c9c9db7-7695-4cf6-9457-58afe775c79f",
                                 "characteristics": [],
                                 "comments": [],
                                 "name": "extract-3",
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d",
+                                "@id": "#material/c6cab038-6f26-44ae-943e-6f9da7cf8f36",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606"
+                                            "@id": "#characteristic_category/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b"
                                         },
                                         "comments": [],
                                         "value": {
-                                            "@id": "#ontology_annotation/db477ebf-b7f9-4acf-8107-2de74d83cd09",
+                                            "@id": "#ontology_annotation/e792ad2b-8b85-449c-9515-63476e9d9615",
                                             "annotationValue": "mid",
                                             "comments": [],
                                             "termAccession": "",
@@ -488,15 +488,15 @@
                                 "type": "Labeled Extract Name"
                             },
                             {
-                                "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1",
+                                "@id": "#material/10d3ae0d-f2e5-40a6-8a9e-abc28f613605",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606"
+                                            "@id": "#characteristic_category/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b"
                                         },
                                         "comments": [],
                                         "value": {
-                                            "@id": "#ontology_annotation/c627f40b-9706-4340-8639-71481290e5b8",
+                                            "@id": "#ontology_annotation/2b044469-afe6-480b-b124-eaee52c5465c",
                                             "annotationValue": "mid",
                                             "comments": [],
                                             "termAccession": "",
@@ -509,15 +509,15 @@
                                 "type": "Labeled Extract Name"
                             },
                             {
-                                "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148",
+                                "@id": "#material/56c2f7e8-a8ea-4fa3-bba5-4a588bcf6506",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606"
+                                            "@id": "#characteristic_category/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b"
                                         },
                                         "comments": [],
                                         "value": {
-                                            "@id": "#ontology_annotation/b1c596e4-7d9d-4db1-924e-d6e89eb83bbf",
+                                            "@id": "#ontology_annotation/391a6a4e-cd35-4a27-8a7c-b9dd648feee1",
                                             "annotationValue": "mid",
                                             "comments": [],
                                             "termAccession": "",
@@ -530,15 +530,15 @@
                                 "type": "Labeled Extract Name"
                             },
                             {
-                                "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f",
+                                "@id": "#material/40159a07-9466-457f-8326-df9af0779e9c",
                                 "characteristics": [
                                     {
                                         "category": {
-                                            "@id": "#characteristic_category/9f42baa9-f471-41ba-9702-c8261b9cb606"
+                                            "@id": "#characteristic_category/2ec6c60a-383e-4d17-8c1e-4c2eac07c69b"
                                         },
                                         "comments": [],
                                         "value": {
-                                            "@id": "#ontology_annotation/da163ae0-3f26-481a-b94b-2e67c3ad14ad",
+                                            "@id": "#ontology_annotation/e0e733d5-9d8c-4789-895c-77637c1010b8",
                                             "annotationValue": "mid",
                                             "comments": [],
                                             "termAccession": "",
@@ -553,21 +553,21 @@
                         ],
                         "samples": [
                             {
-                                "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3"
+                                "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c"
                             },
                             {
-                                "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3"
+                                "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13"
                             },
                             {
-                                "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912"
+                                "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3"
                             },
                             {
-                                "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235"
+                                "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0"
                             }
                         ]
                     },
                     "measurementType": {
-                        "@id": "#ontology_annotation/8e48d284-0bc9-4efa-acd6-1786d078c803",
+                        "@id": "#ontology_annotation/a14fd39d-c516-4614-9a86-e126770afb73",
                         "annotationValue": "transcription profiling",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0000424",
@@ -575,309 +575,309 @@
                     },
                     "processSequence": [
                         {
-                            "@id": "#process/9b19a15f-9c50-46a1-9862-3499206315b4",
+                            "@id": "#process/653542d6-2ef1-4e40-bd85-d5c188397db1",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb"
+                                "@id": "#protocol/7a440f6f-dc3c-4eab-add4-f2998bfa6232"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3"
+                                    "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c"
                                 }
                             ],
                             "name": "process-0-nucleic acid extraction",
                             "nextProcess": {
-                                "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34"
+                                "@id": "#process/ac727244-569c-4357-8e88-35c4876c4ea6"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71"
+                                    "@id": "#material/be5693c9-f50b-4394-b0c3-615510367bde"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Joan Miro"
                         },
                         {
-                            "@id": "#process/2a607502-8faf-4759-84cd-c78e29bcd055",
+                            "@id": "#process/c03ac588-1eb6-4702-8039-fa4b6e5f248b",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb"
+                                "@id": "#protocol/7a440f6f-dc3c-4eab-add4-f2998bfa6232"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3"
+                                    "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13"
                                 }
                             ],
                             "name": "process-1-nucleic acid extraction",
                             "nextProcess": {
-                                "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3"
+                                "@id": "#process/a0c2e02b-893c-4c0f-ac3e-ef157776475b"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872"
+                                    "@id": "#material/acbcb0b6-ed43-4977-9fc0-0f07abf43740"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Joan Miro"
                         },
                         {
-                            "@id": "#process/5979a186-9d59-4621-acf8-e1316f71c59b",
+                            "@id": "#process/04cd9e28-f6fe-4a6a-8e4c-4942da160b2d",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb"
+                                "@id": "#protocol/7a440f6f-dc3c-4eab-add4-f2998bfa6232"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912"
+                                    "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3"
                                 }
                             ],
                             "name": "process-2-nucleic acid extraction",
                             "nextProcess": {
-                                "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7"
+                                "@id": "#process/2c00ae9a-860c-44c4-bc98-fa1cda07e3f0"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977"
+                                    "@id": "#material/3c772dcf-3b6c-411a-a960-e953ae5da17f"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Joan Miro"
                         },
                         {
-                            "@id": "#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a",
+                            "@id": "#process/4f2b6f6b-8c37-4059-af4c-fa7b4770b6d0",
                             "comments": [],
                             "date": "2008-08-15T00:00:00Z",
                             "executesProtocol": {
-                                "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb"
+                                "@id": "#protocol/7a440f6f-dc3c-4eab-add4-f2998bfa6232"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235"
+                                    "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0"
                                 }
                             ],
                             "name": "process-3-nucleic acid extraction",
                             "nextProcess": {
-                                "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63"
+                                "@id": "#process/f75ea6e1-1e23-4181-acdb-cff794256d56"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8"
+                                    "@id": "#material/5c9c9db7-7695-4cf6-9457-58afe775c79f"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "Joan Miro"
                         },
                         {
-                            "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34",
+                            "@id": "#process/ac727244-569c-4357-8e88-35c4876c4ea6",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296"
+                                "@id": "#protocol/746a8731-93f5-4330-9c0f-e51bc4d1b1b2"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/5f4e6e20-1b66-4f17-b5f5-4fa7024bcf71"
+                                    "@id": "#material/be5693c9-f50b-4394-b0c3-615510367bde"
                                 }
                             ],
                             "name": "process-0-mRNA extraction - standard procedure 3",
                             "nextProcess": {
-                                "@id": "#process/07057a49-5035-41ac-83bc-741e243e9047"
+                                "@id": "#process/e1ff7372-3697-438c-b963-14ff416e9d84"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d"
+                                    "@id": "#material/c6cab038-6f26-44ae-943e-6f9da7cf8f36"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/9b19a15f-9c50-46a1-9862-3499206315b4"
+                                "@id": "#process/653542d6-2ef1-4e40-bd85-d5c188397db1"
                             }
                         },
                         {
-                            "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3",
+                            "@id": "#process/a0c2e02b-893c-4c0f-ac3e-ef157776475b",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296"
+                                "@id": "#protocol/746a8731-93f5-4330-9c0f-e51bc4d1b1b2"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/cf4cc697-9692-418d-8696-7b0e17e59872"
+                                    "@id": "#material/acbcb0b6-ed43-4977-9fc0-0f07abf43740"
                                 }
                             ],
                             "name": "process-1-mRNA extraction - standard procedure 3",
                             "nextProcess": {
-                                "@id": "#process/5a1009e9-a634-46af-8448-f16f1edbf553"
+                                "@id": "#process/f13eaf11-f035-4876-bafa-94eb82677ddf"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1"
+                                    "@id": "#material/10d3ae0d-f2e5-40a6-8a9e-abc28f613605"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/2a607502-8faf-4759-84cd-c78e29bcd055"
+                                "@id": "#process/c03ac588-1eb6-4702-8039-fa4b6e5f248b"
                             }
                         },
                         {
-                            "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7",
+                            "@id": "#process/2c00ae9a-860c-44c4-bc98-fa1cda07e3f0",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296"
+                                "@id": "#protocol/746a8731-93f5-4330-9c0f-e51bc4d1b1b2"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/aa8c17f8-963d-4233-9a23-b6d894d12977"
+                                    "@id": "#material/3c772dcf-3b6c-411a-a960-e953ae5da17f"
                                 }
                             ],
                             "name": "process-2-mRNA extraction - standard procedure 3",
                             "nextProcess": {
-                                "@id": "#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9"
+                                "@id": "#process/899b79be-001d-4888-9b82-24cc87df7f61"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148"
+                                    "@id": "#material/56c2f7e8-a8ea-4fa3-bba5-4a588bcf6506"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/5979a186-9d59-4621-acf8-e1316f71c59b"
+                                "@id": "#process/04cd9e28-f6fe-4a6a-8e4c-4942da160b2d"
                             }
                         },
                         {
-                            "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63",
+                            "@id": "#process/f75ea6e1-1e23-4181-acdb-cff794256d56",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296"
+                                "@id": "#protocol/746a8731-93f5-4330-9c0f-e51bc4d1b1b2"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/53978e66-859d-4acf-997a-81cedf7586a8"
+                                    "@id": "#material/5c9c9db7-7695-4cf6-9457-58afe775c79f"
                                 }
                             ],
                             "name": "process-3-mRNA extraction - standard procedure 3",
                             "nextProcess": {
-                                "@id": "#process/6503bb09-e224-4bdd-887f-7a61d2a48485"
+                                "@id": "#process/9d75834f-40ea-41ad-887c-b4153fb73984"
                             },
                             "outputs": [
                                 {
-                                    "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f"
+                                    "@id": "#material/40159a07-9466-457f-8326-df9af0779e9c"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/0048ac20-a29c-42bd-8f55-a1cccd3f3e1a"
+                                "@id": "#process/4f2b6f6b-8c37-4059-af4c-fa7b4770b6d0"
                             }
                         },
                         {
-                            "@id": "#process/07057a49-5035-41ac-83bc-741e243e9047",
+                            "@id": "#process/e1ff7372-3697-438c-b963-14ff416e9d84",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/463e7d72-ce6e-4707-9726-ce65f11cd96d"
+                                    "@id": "#material/c6cab038-6f26-44ae-943e-6f9da7cf8f36"
                                 }
                             ],
                             "name": "assay-name-tx-0",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/d112b432-f99d-4c82-aecb-bb464e390afb"
+                                    "@id": "#data_file/13d84b5e-50b7-4508-84ec-9725e05ebf49"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/16ad9aae-22b3-4f98-b8da-4cbcbca7ad34"
+                                "@id": "#process/ac727244-569c-4357-8e88-35c4876c4ea6"
                             }
                         },
                         {
-                            "@id": "#process/5a1009e9-a634-46af-8448-f16f1edbf553",
+                            "@id": "#process/f13eaf11-f035-4876-bafa-94eb82677ddf",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/e4aa534b-9eca-47a9-82f2-97dbd4d271b1"
+                                    "@id": "#material/10d3ae0d-f2e5-40a6-8a9e-abc28f613605"
                                 }
                             ],
                             "name": "assay-name-tx-1",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/86f13280-38bc-4cfc-bc8e-b41769f9d219"
+                                    "@id": "#data_file/0edf996b-171f-4a25-9eb9-5625423d99d3"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/15fb8ace-6711-40d7-b6e9-d63bf78997c3"
+                                "@id": "#process/a0c2e02b-893c-4c0f-ac3e-ef157776475b"
                             }
                         },
                         {
-                            "@id": "#process/bd4a5563-1fb8-4864-9b08-347defa1bdd9",
+                            "@id": "#process/899b79be-001d-4888-9b82-24cc87df7f61",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/06e083c0-e4fc-49bd-a725-71d3c9129148"
+                                    "@id": "#material/56c2f7e8-a8ea-4fa3-bba5-4a588bcf6506"
                                 }
                             ],
                             "name": "assay-name-tx-2",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/81f4c9d6-a744-4944-ad0d-f8d49ea9b3d7"
+                                    "@id": "#data_file/c2761696-f289-48d7-8a1d-1bda59795411"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/ff0cf97f-ef62-4906-97d0-2808b957c4a7"
+                                "@id": "#process/2c00ae9a-860c-44c4-bc98-fa1cda07e3f0"
                             }
                         },
                         {
-                            "@id": "#process/6503bb09-e224-4bdd-887f-7a61d2a48485",
+                            "@id": "#process/9d75834f-40ea-41ad-887c-b4153fb73984",
                             "comments": [],
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed"
+                                "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78"
                             },
                             "inputs": [
                                 {
-                                    "@id": "#material/d04e6df2-c80c-47d3-b936-e761bc0a899f"
+                                    "@id": "#material/40159a07-9466-457f-8326-df9af0779e9c"
                                 }
                             ],
                             "name": "assay-name-tx-3",
                             "outputs": [
                                 {
-                                    "@id": "#data_file/10c2f829-d741-4e52-8642-e416a13aa134"
+                                    "@id": "#data_file/605d1818-2480-4667-b865-a1d1c93f5a55"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
-                                "@id": "#process/475becd4-0e4d-4e7a-ad9f-4838807afe63"
+                                "@id": "#process/f75ea6e1-1e23-4181-acdb-cff794256d56"
                             }
                         }
                     ],
                     "technologyPlatform": "",
                     "technologyType": {
-                        "@id": "#ontology_annotation/39c7728e-e196-4dab-a8f5-88f8a9c3b931",
+                        "@id": "#ontology_annotation/93aa4cac-edb8-445d-969c-5fc045f5683d",
                         "annotationValue": "nucleotide sequencing",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0000626",
@@ -888,9 +888,9 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                    "@id": "#characteristic_category/554d6edf-66d5-4678-9fe2-6d728453dfe3",
                     "characteristicType": {
-                        "@id": "#ontology_annotation/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf",
+                        "@id": "#ontology_annotation/554d6edf-66d5-4678-9fe2-6d728453dfe3",
                         "annotationValue": "Organism",
                         "comments": [],
                         "termAccession": "",
@@ -931,11 +931,11 @@
             "description": "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples.",
             "factors": [
                 {
-                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969",
+                    "@id": "#study_factor/66429f07-6258-4a25-a27e-21bff22f1810",
                     "comments": [],
                     "factorName": "compound",
                     "factorType": {
-                        "@id": "#ontology_annotation/368c3e85-0ed9-4ee6-a7ed-1b6d585e0a45",
+                        "@id": "#ontology_annotation/f447d5b0-be40-4a56-90ea-a7dfca27d6e5",
                         "annotationValue": "chemical substance",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/CHEBI_59999",
@@ -943,11 +943,11 @@
                     }
                 },
                 {
-                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164",
+                    "@id": "#study_factor/0a2f72b3-34e0-4e0e-8a30-30d6b6da11d2",
                     "comments": [],
                     "factorName": "dose",
                     "factorType": {
-                        "@id": "#ontology_annotation/c0656e5a-8eec-45b7-870a-54565703e7ff",
+                        "@id": "#ontology_annotation/996b63c4-dcee-471b-b7e5-be099ad9197a",
                         "annotationValue": "dose",
                         "comments": [],
                         "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000428",
@@ -955,11 +955,11 @@
                     }
                 },
                 {
-                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374",
+                    "@id": "#study_factor/506aace2-d140-40a5-bade-7ef5ba76d2f9",
                     "comments": [],
                     "factorName": "collection time",
                     "factorType": {
-                        "@id": "#ontology_annotation/cb15dad1-3348-4db0-bdea-c473702b7f97",
+                        "@id": "#ontology_annotation/f9d2e334-c3db-4082-8280-bae9f55e9a7e",
                         "annotationValue": "time",
                         "comments": [],
                         "termAccession": "http://purl.obolibrary.org/obo/PATO_0000165",
@@ -973,125 +973,125 @@
                 "otherMaterials": [],
                 "samples": [
                     {
-                        "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3",
+                        "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c",
                         "characteristics": [],
                         "comments": [],
                         "derivesFrom": [
                             {
-                                "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4"
+                                "@id": "#source/b48b096b-e333-4f48-ae65-6312702da07c"
                             }
                         ],
                         "factorValues": [
                             {
                                 "category": {
-                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164"
+                                    "@id": "#study_factor/66429f07-6258-4a25-a27e-21bff22f1810"
                                 },
-                                "value": "high"
+                                "value": "carbon dioxide"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374"
+                                    "@id": "#study_factor/506aace2-d140-40a5-bade-7ef5ba76d2f9"
                                 },
                                 "value": "may 13th, 2006"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969"
+                                    "@id": "#study_factor/0a2f72b3-34e0-4e0e-8a30-30d6b6da11d2"
                                 },
-                                "value": "carbon dioxide"
+                                "value": "high"
                             }
                         ],
                         "name": "GSM255770"
                     },
                     {
-                        "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3",
+                        "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13",
                         "characteristics": [],
                         "comments": [],
                         "derivesFrom": [
                             {
-                                "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303"
+                                "@id": "#source/c7df10f5-edf8-4c54-b054-579ebd8933fa"
                             }
                         ],
                         "factorValues": [
                             {
                                 "category": {
-                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164"
+                                    "@id": "#study_factor/66429f07-6258-4a25-a27e-21bff22f1810"
                                 },
-                                "value": "normal"
+                                "value": "carbon dioxide"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374"
+                                    "@id": "#study_factor/506aace2-d140-40a5-bade-7ef5ba76d2f9"
                                 },
                                 "value": "may 13th, 2006"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969"
+                                    "@id": "#study_factor/0a2f72b3-34e0-4e0e-8a30-30d6b6da11d2"
                                 },
-                                "value": "carbon dioxide"
+                                "value": "normal"
                             }
                         ],
                         "name": "GSM255771"
                     },
                     {
-                        "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912",
+                        "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3",
                         "characteristics": [],
                         "comments": [],
                         "derivesFrom": [
                             {
-                                "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7"
+                                "@id": "#source/8fae3165-ba7c-4abb-b9e5-9ba78827f51b"
                             }
                         ],
                         "factorValues": [
                             {
                                 "category": {
-                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164"
+                                    "@id": "#study_factor/66429f07-6258-4a25-a27e-21bff22f1810"
+                                },
+                                "value": "carbon dioxide"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/0a2f72b3-34e0-4e0e-8a30-30d6b6da11d2"
                                 },
                                 "value": "high"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374"
+                                    "@id": "#study_factor/506aace2-d140-40a5-bade-7ef5ba76d2f9"
                                 },
                                 "value": "may 19th, 2006"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969"
-                                },
-                                "value": "carbon dioxide"
                             }
                         ],
                         "name": "GSM255772"
                     },
                     {
-                        "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235",
+                        "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0",
                         "characteristics": [],
                         "comments": [],
                         "derivesFrom": [
                             {
-                                "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc"
+                                "@id": "#source/5fb67c2c-9a9e-4bcf-800d-a0971f5b7827"
                             }
                         ],
                         "factorValues": [
                             {
                                 "category": {
-                                    "@id": "#study_factor/b2680a2c-f00f-4915-9bec-bd6ab4f0a164"
+                                    "@id": "#study_factor/66429f07-6258-4a25-a27e-21bff22f1810"
+                                },
+                                "value": "carbon dioxide"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#study_factor/0a2f72b3-34e0-4e0e-8a30-30d6b6da11d2"
                                 },
                                 "value": "normal"
                             },
                             {
                                 "category": {
-                                    "@id": "#study_factor/606c6686-9bfd-4908-992f-2502eeeeb374"
+                                    "@id": "#study_factor/506aace2-d140-40a5-bade-7ef5ba76d2f9"
                                 },
                                 "value": "may 19th, 2006"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#study_factor/104b620b-dad7-48e4-873e-0147225ad969"
-                                },
-                                "value": "carbon dioxide"
                             }
                         ],
                         "name": "GSM255773"
@@ -1099,15 +1099,15 @@
                 ],
                 "sources": [
                     {
-                        "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4",
+                        "@id": "#source/b48b096b-e333-4f48-ae65-6312702da07c",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf"
+                                    "@id": "#characteristic_category/554d6edf-66d5-4678-9fe2-6d728453dfe3"
                                 },
                                 "comments": [],
                                 "value": {
-                                    "@id": "#ontology_annotation/f153e29a-2b53-448b-b18b-1e9f651c102f",
+                                    "@id": "#ontology_annotation/0b39a2dc-cf7e-4a7e-9df6-42b07375a59b",
                                     "annotationValue": "marine metagenome",
                                     "comments": [],
                                     "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
@@ -1119,15 +1119,15 @@
                         "name": "GSM255770"
                     },
                     {
-                        "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303",
+                        "@id": "#source/c7df10f5-edf8-4c54-b054-579ebd8933fa",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf"
+                                    "@id": "#characteristic_category/554d6edf-66d5-4678-9fe2-6d728453dfe3"
                                 },
                                 "comments": [],
                                 "value": {
-                                    "@id": "#ontology_annotation/7d93af72-daae-4ede-9c31-c245ab72b731",
+                                    "@id": "#ontology_annotation/036203c6-5c21-40d7-bc89-b62ce12c2c30",
                                     "annotationValue": "marine metagenome",
                                     "comments": [],
                                     "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
@@ -1139,15 +1139,15 @@
                         "name": "GSM255771"
                     },
                     {
-                        "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7",
+                        "@id": "#source/8fae3165-ba7c-4abb-b9e5-9ba78827f51b",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf"
+                                    "@id": "#characteristic_category/554d6edf-66d5-4678-9fe2-6d728453dfe3"
                                 },
                                 "comments": [],
                                 "value": {
-                                    "@id": "#ontology_annotation/3e8ef198-a256-49d5-aa6d-31fa8f6a41d4",
+                                    "@id": "#ontology_annotation/a42b482d-bf38-4db2-b194-0d8fe81957cb",
                                     "annotationValue": "marine metagenome",
                                     "comments": [],
                                     "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
@@ -1159,15 +1159,15 @@
                         "name": "GSM255772"
                     },
                     {
-                        "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc",
+                        "@id": "#source/5fb67c2c-9a9e-4bcf-800d-a0971f5b7827",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/8e46cafd-a5ef-4bed-aed8-8cfa7a02d6bf"
+                                    "@id": "#characteristic_category/554d6edf-66d5-4678-9fe2-6d728453dfe3"
                                 },
                                 "comments": [],
                                 "value": {
-                                    "@id": "#ontology_annotation/54cbc667-1178-4349-a379-a3791594de2a",
+                                    "@id": "#ontology_annotation/b0efa344-cf1a-4d80-9b9a-52a33ababe37",
                                     "annotationValue": "marine metagenome",
                                     "comments": [],
                                     "termAccession": "http://purl.obolibrary.org/obo/NCBITaxon_408172",
@@ -1198,21 +1198,21 @@
                     "phone": "",
                     "roles": [
                         {
-                            "@id": "#ontology_annotation/f40f67ca-d98c-44ac-bb74-85ccc2270bf7",
+                            "@id": "#ontology_annotation/7307a1ca-b478-4f6e-a3d3-f2835cf98dfb",
                             "annotationValue": "principal investigator role",
                             "comments": [],
                             "termAccession": "",
                             "termSource": ""
                         },
                         {
-                            "@id": "#ontology_annotation/92a7df9d-b93b-42f9-88be-203db30142d5",
+                            "@id": "#ontology_annotation/369c925b-6958-433b-b07d-044483cd0015",
                             "annotationValue": "SRA Inform On Status",
                             "comments": [],
                             "termAccession": "",
                             "termSource": ""
                         },
                         {
-                            "@id": "#ontology_annotation/9155efb4-8739-4a62-99dd-99d272e59719",
+                            "@id": "#ontology_annotation/b5ae4e24-479e-4237-a23c-6ae309c848bb",
                             "annotationValue": "SRA Inform On Error",
                             "comments": [],
                             "termAccession": "",
@@ -1237,7 +1237,7 @@
                     "phone": "",
                     "roles": [
                         {
-                            "@id": "#ontology_annotation/a4796732-ed45-4452-b9c4-a50a5ec2cc55",
+                            "@id": "#ontology_annotation/9240ac96-e6d6-4d80-9fc1-415047acc9c2",
                             "annotationValue": "principal investigator role",
                             "comments": [],
                             "termAccession": "",
@@ -1248,84 +1248,84 @@
             ],
             "processSequence": [
                 {
-                    "@id": "#process/cbb20e80-c310-4043-ac0d-51d30cee8ee7",
+                    "@id": "#process/3ebe366f-c9d7-4d11-9bed-1407b506c874",
                     "comments": [],
                     "date": "2008-08-15T00:00:00Z",
                     "executesProtocol": {
-                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                        "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                     },
                     "inputs": [
                         {
-                            "@id": "#source/d3dbf9aa-9d24-4736-929b-7624994608e4"
+                            "@id": "#source/b48b096b-e333-4f48-ae65-6312702da07c"
                         }
                     ],
                     "name": "process-0-sample collection",
                     "outputs": [
                         {
-                            "@id": "#sample/13015b75-f794-4f96-9845-c1be7a6728e3"
+                            "@id": "#sample/86d14249-8913-4999-af82-752f754b2d6c"
                         }
                     ],
                     "parameterValues": [],
                     "performer": "Wang Li"
                 },
                 {
-                    "@id": "#process/e8521bf2-b3ad-41e7-ba00-12c4dc761e66",
+                    "@id": "#process/bc5c4f17-1ab2-4448-93e9-4f16162c7fdd",
                     "comments": [],
                     "date": "2008-08-15T00:00:00Z",
                     "executesProtocol": {
-                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                        "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                     },
                     "inputs": [
                         {
-                            "@id": "#source/3177651d-de3c-48fb-9130-6fd1d0e7c303"
+                            "@id": "#source/c7df10f5-edf8-4c54-b054-579ebd8933fa"
                         }
                     ],
                     "name": "process-1-sample collection",
                     "outputs": [
                         {
-                            "@id": "#sample/ff80597a-0c3b-4ffe-a6c0-d53858b27cb3"
+                            "@id": "#sample/cfa1be05-5eba-4fbb-a96d-0ba9ca7f7e13"
                         }
                     ],
                     "parameterValues": [],
                     "performer": "Wang Li"
                 },
                 {
-                    "@id": "#process/032d9426-e717-4fca-b8cf-16dae3eff420",
+                    "@id": "#process/6e76881b-a064-49db-ac02-84e121f776ee",
                     "comments": [],
                     "date": "2008-08-15T00:00:00Z",
                     "executesProtocol": {
-                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                        "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                     },
                     "inputs": [
                         {
-                            "@id": "#source/e10e97bb-58a7-4124-a68b-7f3458353eb7"
+                            "@id": "#source/8fae3165-ba7c-4abb-b9e5-9ba78827f51b"
                         }
                     ],
                     "name": "process-2-sample collection",
                     "outputs": [
                         {
-                            "@id": "#sample/9bae5a43-bc3b-4de2-bde1-8545f6879912"
+                            "@id": "#sample/83688440-6bf9-4355-b237-c09a4f5fb3b3"
                         }
                     ],
                     "parameterValues": [],
                     "performer": "Wang Li"
                 },
                 {
-                    "@id": "#process/c2597778-4429-4152-8ea7-04b3e993672a",
+                    "@id": "#process/32f9a1ea-150c-4874-b3bb-1c1c29287782",
                     "comments": [],
                     "date": "2008-08-15T00:00:00Z",
                     "executesProtocol": {
-                        "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5"
+                        "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d"
                     },
                     "inputs": [
                         {
-                            "@id": "#source/086f3e8f-38a0-40d5-9c23-f76cc51af6cc"
+                            "@id": "#source/5fb67c2c-9a9e-4bcf-800d-a0971f5b7827"
                         }
                     ],
                     "name": "process-3-sample collection",
                     "outputs": [
                         {
-                            "@id": "#sample/dbd1c0c8-c0b8-4a3c-8143-cf2c1cfd3235"
+                            "@id": "#sample/6a7cc801-d538-4d50-8f4a-ac661ec609b0"
                         }
                     ],
                     "parameterValues": [],
@@ -1334,16 +1334,16 @@
             ],
             "protocols": [
                 {
-                    "@id": "#protocol/ea1a3e1b-5276-420e-bac4-e21dcc0d8ec5",
+                    "@id": "#protocol/58d70b0a-7cdd-427c-b6e4-c9182368025d",
                     "comments": [],
                     "components": [],
                     "description": "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
                     "name": "sample collection",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/bcbc26ad-8c06-45ab-8fdd-8b8f7f453e06",
+                            "@id": "#protocol_parameter/8d11657c-30f8-468e-878f-4bc282e54936",
                             "parameterName": {
-                                "@id": "#ontology_annotation/e0aa004e-3666-4f18-9a41-2c9b1343de0f",
+                                "@id": "#ontology_annotation/853cc380-957a-4bd6-8437-485eee36adcc",
                                 "annotationValue": "filter pore size",
                                 "comments": [],
                                 "termAccession": "",
@@ -1352,7 +1352,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/caaaab24-8a64-4314-806e-1d02e9bebd24",
+                        "@id": "#ontology_annotation/027716e9-84eb-4716-9bda-fae8d51f6e6c",
                         "annotationValue": "sample collection",
                         "comments": [],
                         "termAccession": "",
@@ -1362,16 +1362,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/d15f0f18-b329-4faa-9530-2a554e638ce0",
+                    "@id": "#protocol/6bb73b35-c624-4fbb-807c-dd539247d656",
                     "comments": [],
                     "components": [],
                     "description": "aliquoting",
                     "name": "aliquoting-0",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/d265265e-a173-445a-aa41-04114e796347",
+                            "@id": "#protocol_parameter/cd8615f1-3378-4e13-94b8-15c8c2fda90a",
                             "parameterName": {
-                                "@id": "#ontology_annotation/341d518c-4f38-4990-bf0d-27f6077cbab2",
+                                "@id": "#ontology_annotation/bc638ad2-7656-4541-99d9-3dee9d9bc721",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1380,7 +1380,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/6012db28-1a03-4e1b-b32e-81e861c9a149",
+                        "@id": "#ontology_annotation/bc4476c7-c0be-424c-ac57-0bf705f10926",
                         "annotationValue": "sample collection",
                         "comments": [],
                         "termAccession": "",
@@ -1390,16 +1390,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/24c9263b-d7ee-47d6-8c24-08706e7db9eb",
+                    "@id": "#protocol/7a440f6f-dc3c-4eab-add4-f2998bfa6232",
                     "comments": [],
                     "components": [],
                     "description": "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
                     "name": "nucleic acid extraction",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/f788dc51-6f93-4f6f-b156-f33fca7dbcf8",
+                            "@id": "#protocol_parameter/4a5e2923-eb0e-4664-9e5a-d717d49cec3e",
                             "parameterName": {
-                                "@id": "#ontology_annotation/9ec01fbd-f548-4c52-8759-68e7c8c6ed44",
+                                "@id": "#ontology_annotation/556bfee0-a48a-4a23-b992-82dc3f218688",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1408,7 +1408,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/c418ea63-eeff-4414-ac40-ddb8ddb27d44",
+                        "@id": "#ontology_annotation/cf1da5fd-2555-4521-b6ca-875d3d21b105",
                         "annotationValue": "nucleic acid extraction",
                         "comments": [],
                         "termAccession": "",
@@ -1418,16 +1418,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/41786c7f-7e15-4d19-8cba-d2dd77ca1296",
+                    "@id": "#protocol/746a8731-93f5-4330-9c0f-e51bc4d1b1b2",
                     "comments": [],
                     "components": [],
                     "description": "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006.",
                     "name": "mRNA extraction - standard procedure 3",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/149284f1-1662-4bf0-8327-b1e52a06a1b6",
+                            "@id": "#protocol_parameter/b876d6e8-461d-4ad8-a690-d8d89f5c466d",
                             "parameterName": {
-                                "@id": "#ontology_annotation/988fccbe-5085-4554-8f2d-7a70d4783c08",
+                                "@id": "#ontology_annotation/da77e7bc-e35a-425e-9fd0-15a1a7cf47f3",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1436,7 +1436,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/888f8422-c18e-408b-9bf4-7fe78657b3aa",
+                        "@id": "#ontology_annotation/ac755a83-9b2d-4768-b710-0249e8f1a0a0",
                         "annotationValue": "labeling",
                         "comments": [],
                         "termAccession": "",
@@ -1446,16 +1446,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/a83b783d-5193-42bb-8cd1-ff87fe6d3c84",
+                    "@id": "#protocol/a62b4abd-35be-45c8-8995-f14bcd845bb8",
                     "comments": [],
                     "components": [],
                     "description": "superscript+random hexamer primer",
                     "name": "genomic DNA extraction - standard procedure 4",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/14826a9b-14d6-4a6b-ad56-b9f672c06489",
+                            "@id": "#protocol_parameter/0d610aac-f0d5-475a-bece-f6c019003914",
                             "parameterName": {
-                                "@id": "#ontology_annotation/2cdadd5e-80f6-4855-916b-6fdb66b9fb1b",
+                                "@id": "#ontology_annotation/88d8632a-a7bf-4178-89ce-0d2e81aa468e",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1464,7 +1464,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/d096e069-be2f-4e19-84fd-4bebc478a0d5",
+                        "@id": "#ontology_annotation/1aa9b0b3-f92e-4a01-b16a-f7dbef66385f",
                         "annotationValue": "nucleic acid extraction",
                         "comments": [],
                         "termAccession": "",
@@ -1474,16 +1474,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/726d5e82-354b-4bd1-9173-8dd3969470d4",
+                    "@id": "#protocol/658b9d4b-e80e-4b40-bdeb-78d31b182851",
                     "comments": [],
                     "components": [],
                     "description": "",
                     "name": "reverse transcription - standard procedure 5",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/5dc10038-e1e8-484c-ac3c-1348d895bd2b",
+                            "@id": "#protocol_parameter/2935600d-320f-46c5-8815-5d882c4d6941",
                             "parameterName": {
-                                "@id": "#ontology_annotation/10a61465-d589-48b3-bfc9-56d7ae8c940b",
+                                "@id": "#ontology_annotation/8a595e71-954d-4739-997e-d7d9488fcab5",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1492,7 +1492,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/6b9652f3-1ee7-43c6-a442-074dc23622af",
+                        "@id": "#ontology_annotation/133ff199-7e7a-492c-b135-de5e475c0b60",
                         "annotationValue": "reverse transcription",
                         "comments": [],
                         "termAccession": "",
@@ -1502,16 +1502,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/e7fac638-64a1-4f86-adf5-ed1858e4c5c8",
+                    "@id": "#protocol/261303f1-0cc8-41f7-8f4c-671860a3e720",
                     "comments": [],
                     "components": [],
                     "description": "",
                     "name": "library construction",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/7629b4cf-70a5-477a-b05f-94056a3d0e04",
+                            "@id": "#protocol_parameter/ca31a24b-f5fe-40b5-8526-021256b8b60b",
                             "parameterName": {
-                                "@id": "#ontology_annotation/4b9d898c-bb55-4c22-998c-a24c73cb6cd9",
+                                "@id": "#ontology_annotation/a5f7cef6-d333-4567-8b04-8404ace7b9ed",
                                 "annotationValue": "library strategy",
                                 "comments": [],
                                 "termAccession": "",
@@ -1519,9 +1519,9 @@
                             }
                         },
                         {
-                            "@id": "#protocol_parameter/937a2164-23a7-4cf9-aaba-bddba0f2507a",
+                            "@id": "#protocol_parameter/7f4295f0-d175-4568-b80f-4b87bf462a31",
                             "parameterName": {
-                                "@id": "#ontology_annotation/b02dab9e-e600-406d-b6a0-891b699efd01",
+                                "@id": "#ontology_annotation/27fab46c-76f9-453f-9ec8-412752bdf94d",
                                 "annotationValue": "library layout",
                                 "comments": [],
                                 "termAccession": "",
@@ -1529,9 +1529,9 @@
                             }
                         },
                         {
-                            "@id": "#protocol_parameter/d139de91-d5fa-4543-893a-2dadde43692e",
+                            "@id": "#protocol_parameter/7c37715e-4692-42cf-ba03-bb722937c774",
                             "parameterName": {
-                                "@id": "#ontology_annotation/78824b3a-c6eb-4695-a23e-c102ed2bb29c",
+                                "@id": "#ontology_annotation/15c2e9b3-028f-4ab9-9b1f-f62c41e6c0ff",
                                 "annotationValue": "library selection",
                                 "comments": [],
                                 "termAccession": "",
@@ -1540,7 +1540,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/e45724d9-a84e-4ba5-8175-11d35739b2c4",
+                        "@id": "#ontology_annotation/b6ca1899-7438-42b7-8c75-93996ece9891",
                         "annotationValue": "library construction",
                         "comments": [],
                         "termAccession": "",
@@ -1550,16 +1550,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/bfdfe1fd-052b-47a0-b085-4ae29da950ed",
+                    "@id": "#protocol/dd7c2707-db22-47f0-9637-481cd3363b78",
                     "comments": [],
                     "components": [],
                     "description": "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
                     "name": "nucleic acid sequencing",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/d7760686-ed95-483c-bfc7-b0704ae5ee0b",
+                            "@id": "#protocol_parameter/d12753db-0698-4d1e-b179-d19d4a6934e2",
                             "parameterName": {
-                                "@id": "#ontology_annotation/aaf5cb4d-1f12-419b-8866-d630baac1ad0",
+                                "@id": "#ontology_annotation/49081bba-1335-431d-932c-200b25ccbbad",
                                 "annotationValue": "sequencing instrument",
                                 "comments": [],
                                 "termAccession": "",
@@ -1568,7 +1568,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/eb6b5435-9cf2-4ffb-8c3d-dff389f38ef1",
+                        "@id": "#ontology_annotation/d62e8acd-f16a-4100-83ef-b90471c244f0",
                         "annotationValue": "nucleic acid sequencing",
                         "comments": [],
                         "termAccession": "",
@@ -1578,16 +1578,16 @@
                     "version": ""
                 },
                 {
-                    "@id": "#protocol/c0b718e7-3b55-459f-8f2d-c481762342c3",
+                    "@id": "#protocol/f7e7935e-51ee-440f-831d-d09d2063f41b",
                     "comments": [],
                     "components": [],
                     "description": "",
                     "name": "sequence analysis - standard procedure 7",
                     "parameters": [
                         {
-                            "@id": "#protocol_parameter/5b99b6a8-4e76-4003-836a-aaa81d814262",
+                            "@id": "#protocol_parameter/b956b683-9f1b-4c54-8286-a83bd20215c6",
                             "parameterName": {
-                                "@id": "#ontology_annotation/32fa9353-af37-4c3f-a8f6-4d1f40a91c7b",
+                                "@id": "#ontology_annotation/e28cd4b9-e354-41f8-82fc-998aa69995f1",
                                 "annotationValue": "",
                                 "comments": [],
                                 "termAccession": "",
@@ -1596,7 +1596,7 @@
                         }
                     ],
                     "protocolType": {
-                        "@id": "#ontology_annotation/2dbbfd3d-fbdb-4bcc-8337-e6d9b6ffb8ba",
+                        "@id": "#ontology_annotation/16c2b606-b45a-4f6d-b6a7-5f8be1c0894d",
                         "annotationValue": "data transformation",
                         "comments": [],
                         "termAccession": "",
@@ -1614,7 +1614,7 @@
                     "doi": "https://doi.org/10.1371/journal.pone.0003042",
                     "pubMedID": "https://pubmed.ncbi.nlm.nih.gov/18725995",
                     "status": {
-                        "@id": "#ontology_annotation/77044141-f995-4b9a-87c0-005c7d9e739b",
+                        "@id": "#ontology_annotation/f2d44071-9bac-4656-8db7-55bdbd6d0e21",
                         "annotationValue": "indexed in PubMed",
                         "comments": [],
                         "termAccession": "",
@@ -1628,7 +1628,7 @@
                     "doi": "http://doi.org/10.1111/j.1462-2920.2008.01745.x",
                     "pubMedID": "https://pubmed.ncbi.nlm.nih.gov/18783384",
                     "status": {
-                        "@id": "#ontology_annotation/a273e55f-f784-4f0e-a24b-5bfa49dc464c",
+                        "@id": "#ontology_annotation/9156a0f2-a3d0-42b6-8ea6-d6b3a32be01d",
                         "annotationValue": "indexed in PubMed",
                         "comments": [],
                         "termAccession": "",
@@ -1639,7 +1639,7 @@
             ],
             "studyDesignDescriptors": [
                 {
-                    "@id": "#ontology_annotation/6c1d903f-313b-4364-814b-1aa2e00fe3d7",
+                    "@id": "#ontology_annotation/36260a57-3fbe-42d0-b575-3430f66e9fd3",
                     "annotationValue": "intervention design",
                     "comments": [],
                     "termAccession": "http://purl.obolibrary.org/obo/OBI_0000115",

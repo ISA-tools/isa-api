@@ -61,14 +61,14 @@ Study Factor Type	chemical substance	dose	time
 Study Factor Type Term Accession Number	http://purl.obolibrary.org/obo/CHEBI_59999	http://www.ebi.ac.uk/efo/EFO_0000428	http://purl.obolibrary.org/obo/PATO_0000165
 Study Factor Type Term Source REF	CHEBI	EFO	PATO
 STUDY ASSAYS
-Study Assay File Name	a_gilbert-assay-Gx.txt	a_gilbert-assay-Tx.txt	a_gilbert-assay-Gx.txt	a_gilbert-assay-Tx.txt
-Study Assay Measurement Type	metagenome sequencing	transcription profiling	metagenome sequencing	transcription profiling
-Study Assay Measurement Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0002623	http://purl.obolibrary.org/obo/OBI_0000424	http://purl.obolibrary.org/obo/OBI_0002623	http://purl.obolibrary.org/obo/OBI_0000424
-Study Assay Measurement Type Term Source REF	OBI	OBI	OBI	OBI
-Study Assay Technology Type	nucleotide sequencing	nucleotide sequencing	nucleotide sequencing	nucleotide sequencing
-Study Assay Technology Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000626	http://purl.obolibrary.org/obo/OBI_0000626	http://purl.obolibrary.org/obo/OBI_0000626	http://purl.obolibrary.org/obo/OBI_0000626
-Study Assay Technology Type Term Source REF	OBI	OBI	OBI	OBI
-Study Assay Technology Platform				
+Study Assay File Name	a_gilbert-assay-Gx.txt	a_gilbert-assay-Tx.txt
+Study Assay Measurement Type	metagenome sequencing	transcription profiling
+Study Assay Measurement Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0002623	http://purl.obolibrary.org/obo/OBI_0000424
+Study Assay Measurement Type Term Source REF	OBI	OBI
+Study Assay Technology Type	nucleotide sequencing	nucleotide sequencing
+Study Assay Technology Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000626	http://purl.obolibrary.org/obo/OBI_0000626
+Study Assay Technology Type Term Source REF	OBI	OBI
+Study Assay Technology Platform		
 STUDY PROTOCOLS
 Study Protocol Name	sample collection	aliquoting-0	nucleic acid extraction	mRNA extraction - standard procedure 3	genomic DNA extraction - standard procedure 4	reverse transcription - standard procedure 5	library construction	nucleic acid sequencing	sequence analysis - standard procedure 7
 Study Protocol Type	sample collection	sample collection	nucleic acid extraction	labeling	nucleic acid extraction	reverse transcription	library construction	nucleic acid sequencing	data transformation

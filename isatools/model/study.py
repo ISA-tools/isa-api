@@ -369,6 +369,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def to_dict(self, ld=False):
         study = {
+            "@id": self.id,
             "filename": self.filename,
             "identifier": self.identifier,
             "title": self.title,
