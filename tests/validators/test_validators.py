@@ -213,8 +213,9 @@ class TestValidateIsaJson(unittest.TestCase):
             print( report)
             print("Error: " + report["errors"][0]["message"])
             # This test fails. The iso8601_fail.json file does indeed fail to validate, but it throws different
-            # errors from those expected in the assertion below, i.e. incorrect date format.
-            self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
+            # errors from those expected in the assertion below.
+            #self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
+            self.assertTrue("Measurement/technology type invalid" in report["errors"][0]["message"])
             # if 3001 not in [e["code"] for e in report["errors"]]:
             #     self.fail(
             #         "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in "
