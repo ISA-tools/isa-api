@@ -96,6 +96,7 @@ class InvestigationTest(TestCase):
         self.assertEqual(introspection.data["schemas"]["types"][0]["name"], "IsaQuery")
         #print("\nTOTO", introspection.data["schemas"]["types"][0]["name"])
 
+
     def test_repr(self):
         self.assertEqual(
             "isatools.model.Investigation(identifier='', "

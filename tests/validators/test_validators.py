@@ -216,11 +216,7 @@ class TestValidateIsaJson(unittest.TestCase):
             # errors from those expected in the assertion below.
             #self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
             self.assertTrue("Measurement/technology type invalid" in report["errors"][0]["message"])
-            # if 3001 not in [e["code"] for e in report["errors"]]:
-            #     self.fail(
-            #         "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in "
-            #         "publicReleaseDate but not reported in validation report"
-            #     )
+
 
     def test_validate_isajson_doi(self):
         """Tests against 3002"""
