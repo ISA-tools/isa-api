@@ -56,11 +56,7 @@ fragment TypeRef on __Type {
                     type {
                         kind
                         name
-<<<<<<< rdf-test-mt
-                       description
-=======
                         description
->>>>>>> rdf-test
                         ofType {name}
                        inputFields {
                             name
