@@ -211,6 +211,9 @@ class TestValidateIsaJson(unittest.TestCase):
         with open(os.path.join(self._unit_json_data_dir, "iso8601_fail.json")) as fp:
             report = isajson.validate(fp)
             print( report)
+            print("Error: " + report["errors"][0]["message"])
+            # This test fails. The iso8601_fail.json file does indeed fail to validate, but it throws different
+            # errors from those expected in the assertion below, i.e. incorrect date format.
             self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
             # if 3001 not in [e["code"] for e in report["errors"]]:
             #     self.fail(
