@@ -131,13 +131,16 @@ class TestSerialize(TestCase):
         ]
         expected_dict["ontologySourceReferences"] = [
             {
+                "@id": "#ontology_source/" + mock_uuid4.return_value,
                 "name": "name1",
                 "version": "",
                 "comments": [{"name": "comment", "value": ""}],
                 "file": "",
                 "description": "",
             },
-            {"name": "name2", "version": "version2", "comments": [], "file": "", "description": ""},
+            {
+                "@id": "#ontology_source/" + mock_uuid4.return_value,
+                "name": "name2", "version": "version2", "comments": [], "file": "", "description": ""},
         ]
         self.assertEqual(self.investigation.to_dict(), expected_dict)
 
@@ -377,6 +380,7 @@ class LDTest(TestCase):
         osr_1 = OntologySource(
             name="osr_1", file="file_1", version="version_1", description="description_1", comments=[comment_3]
         )
+
         role = OntologyAnnotation(term="term_1", id_="oa1", comments=[comment_2])
         person = Person(first_name="first_name", last_name="last_name", mid_initials="mid_initials", roles=[role])
         publication = Publication(title="title", status=OntologyAnnotation(term="status", id_="status_id"), doi="doi")
@@ -426,6 +430,7 @@ class LDTest(TestCase):
             units=[OntologyAnnotation(term="unit", id_="unit_id")],
             assays=[assay],
         )
+        investigation = Investigation()
 
         self.investigation.comments = [comment_1]
         self.investigation.ontology_source_references = [osr_1]
@@ -436,6 +441,6 @@ class LDTest(TestCase):
         set_context(vocab="wd", all_in_one=False, local=False)
 
         inv_ld = self.investigation.to_ld()
-        investigation = Investigation()
+
         investigation.from_dict(inv_ld)
         self.assertEqual(investigation.to_dict(), self.investigation.to_dict())

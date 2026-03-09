@@ -75,6 +75,7 @@ class Study(Base):
         """
         characteristics_categories = get_characteristic_categories(self.characteristic_categories)
         return {
+            "@id": str(self.study_id),
             "title": self.title,
             "filename": self.filename,
             "identifier": self.identifier,

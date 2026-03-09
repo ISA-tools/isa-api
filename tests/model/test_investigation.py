@@ -175,6 +175,7 @@ class InvestigationTest(TestCase):
             "comments": [{"name": "comment", "value": "Hello world"}],
             "ontologySourceReferences": [
                 {
+                    "@id": "#ontology_source/" + mock_uuid4.return_value,
                     "name": "an ontology source",
                     "file": "file.txt",
                     "version": "0",
@@ -216,7 +217,7 @@ class InvestigationTest(TestCase):
             ],
             "studies": [
                 {
-                    "@id": "",
+                    "@id": "#study/" + mock_uuid4.return_value,
                     "filename": "",
                     "identifier": "",
                     "title": "",
