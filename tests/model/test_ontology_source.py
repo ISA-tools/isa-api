@@ -1,7 +1,8 @@
-from isatools.model.comments import Comment, Commentable
-from isatools.model.ontology_source import OntologySource
 from unittest import TestCase
 from unittest.mock import patch
+
+from isatools.model.comments import Comment, Commentable
+from isatools.model.ontology_source import OntologySource
 
 
 class TestOntologySource(TestCase):
