@@ -27,7 +27,7 @@ def find_measurement(measurement_type, expected_value, operator):
 def find_exposure_value(sample, expected_value, target):
     """
     Tests if a given sample contains the given factor value
-    :param sample: the sample too look at
+    :param sample: the sample to look at
     :param expected_value: the value to look for
     :param target: the target of sample to look into
     :return: {Boolean}
@@ -49,7 +49,7 @@ def find_exposure_value(sample, expected_value, target):
 def find_characteristics(sample, expected_value):
     """
     Tests if a given sample contains the given characteristics
-    :param sample: the sample too look at
+    :param sample: the sample to look at
     :param expected_value: the value to look for
     :return: {Boolean}
     """

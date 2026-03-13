@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.publication import Publication
@@ -8,7 +9,7 @@ expected_repr = "isatools.model.Publication(pubmed_id='', doi='', author_list=''
 
 class TestPublication(TestCase):
     def setUp(self):
-        self.publication = Publication()
+        self.publication = Publication(id_="pub1")
 
     def test_pubmed(self):
         self.assertTrue(self.publication.pubmed_id == "")
@@ -76,11 +77,19 @@ class TestPublication(TestCase):
         self.assertTrue(second_publication == third_publication)
         self.assertTrue(second_publication != self.publication)
 
-    def test_dict(self):
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_dict(self,  mock_uuid4):
         publication = Publication(
-            pubmed_id="pubmed_id", doi="doi", author_list="a, b, c", status=OntologyAnnotation(term="OA", id_="123")
+            pubmed_id="pubmed_id",
+            doi="doi",
+            author_list="a, b, c",
+            status=OntologyAnnotation(term="OA", id_="123")
         )
+
+        self.assertEqual(publication.id, "#publication/" + mock_uuid4.return_value)
+
         expected_dict = {
+            "@id": "#publication/" + mock_uuid4.return_value,
             "authorList": "a, b, c",
             "doi": "doi",
             "pubMedID": "pubmed_id",

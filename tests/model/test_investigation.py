@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.investigation import Investigation
 from isatools.model.ontology_source import OntologySource
@@ -10,7 +11,8 @@ class InvestigationTest(TestCase):
     def setUp(self):
         self.investigation = Investigation()
 
-    def test_init(self):
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_init(self, mock_uuid4):
         mocked_date = datetime(day=1, month=1, year=2017)
         ontology_source = OntologySource(name="name", file="file")
         study = Study(filename="file")
@@ -21,13 +23,12 @@ class InvestigationTest(TestCase):
             submission_date=mocked_date,
             public_release_date=mocked_date,
             ontology_source_references=[ontology_source],
-            studies=[study],
-            id_="#investigation/investigation_1",
+            studies=[study]
         )
         self.assertEqual("id", investigation.identifier)
         self.assertEqual("file", investigation.filename)
         self.assertEqual("T", investigation.title)
-        self.assertEqual("#investigation/investigation_1", investigation.id)
+        self.assertEqual("#investigation/" + mock_uuid4.return_value, investigation.id)
         self.assertEqual(mocked_date, investigation.submission_date)
         self.assertEqual(mocked_date, investigation.public_release_date)
         self.assertEqual(1, len(investigation.ontology_source_references))
@@ -90,8 +91,11 @@ class InvestigationTest(TestCase):
 
     def test_introspection(self):
         introspection = self.investigation.introspect()
+
         self.assertTrue(len(introspection.data["schemas"]["types"]) == 46)
         self.assertEqual(introspection.data["schemas"]["types"][0]["name"], "IsaQuery")
+        #print("\nTOTO", introspection.data["schemas"]["types"][0]["name"])
+
 
     def test_repr(self):
         self.assertEqual(
@@ -136,8 +140,15 @@ class InvestigationTest(TestCase):
         self.assertNotEqual(expected_other_investigation, self.investigation)
         self.assertNotEqual(hash(expected_other_investigation), hash(self.investigation))
 
-    def test_dict(self):
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_dict(self, mock_uuid4):
+
+        investigation = Investigation()
+
+        self.assertEqual(investigation.id, "#investigation/" + mock_uuid4.return_value)
+
         expected_dict = {
+            "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "",
             "title": "",
             "publicReleaseDate": "",
@@ -149,21 +160,23 @@ class InvestigationTest(TestCase):
             "publications": [],
             "studies": [],
         }
-        self.assertEqual(self.investigation.to_dict(), expected_dict)
+        self.assertEqual(investigation.to_dict(), expected_dict)
 
         investigation = Investigation()
         investigation.from_dict(expected_dict)
         self.assertEqual(investigation, self.investigation)
 
         expected_dict = {
+            "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "inv_identifier",
             "title": "inv_title",
-            "publicReleaseDate": "10/10/2022",
-            "submissionDate": "10/10/2022",
+            "publicReleaseDate": "2022-10-25",
+            "submissionDate": "2022-10-25",
             "description": "inv_description",
             "comments": [{"name": "comment", "value": "Hello world"}],
             "ontologySourceReferences": [
                 {
+                    "@id": "#ontology_source/" + mock_uuid4.return_value,
                     "name": "an ontology source",
                     "file": "file.txt",
                     "version": "0",
@@ -173,6 +186,7 @@ class InvestigationTest(TestCase):
             ],
             "people": [
                 {
+                    "@id": "#person/" + mock_uuid4.return_value,
                     "address": "",
                     "affiliation": "",
                     "firstName": "John",
@@ -187,6 +201,7 @@ class InvestigationTest(TestCase):
             ],
             "publications": [
                 {
+                    "@id":  "#publication/" + mock_uuid4.return_value,
                     "authorList": "a, b, c",
                     "doi": "doi",
                     "pubMedID": "pubmed_id",
@@ -203,6 +218,7 @@ class InvestigationTest(TestCase):
             ],
             "studies": [
                 {
+                    "@id": "#study/" + mock_uuid4.return_value,
                     "filename": "",
                     "identifier": "",
                     "title": "",

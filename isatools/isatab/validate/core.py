@@ -264,7 +264,7 @@ def validate_origin_mzml2isa(fp: TextIO) -> None:
 
     try:
         fp.seek(0)
-        report = utils.detect_isatab_process_pooling(fp)
+        utils.detect_isatab_process_pooling(fp)
     except BaseException:
         pass
 

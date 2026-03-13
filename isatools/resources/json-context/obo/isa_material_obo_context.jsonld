@@ -4,7 +4,7 @@
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Material": {
-      "@id": "obo:OBI_0000047"
+      "@id": "obo:COB_0000026"
     },
     "type": {
       "@id": "obo:RO_0000086",

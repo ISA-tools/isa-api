@@ -181,8 +181,11 @@ class TestPerson(TestCase):
             fax="fax",
             roles=[OntologyAnnotation(term="test_term", term_accession="test_term_accession")],
         )
-        self.assertEqual(person.id, "#person/mocked_UUID")
+
+        self.assertEqual(person.id, "#person/" + mock_uuid4.return_value)
+
         expected_dict = {
+            "@id": "#person/" + mock_uuid4.return_value,
             "address": "test_address",
             "affiliation": "affiliation",
             "comments": [],
@@ -194,7 +197,7 @@ class TestPerson(TestCase):
             "phone": "test_phone",
             "roles": [
                 {
-                    "@id": "#ontology_annotation/mocked_UUID",
+                    "@id": "#ontology_annotation/" + mock_uuid4.return_value,
                     "annotationValue": "test_term",
                     "termSource": "",
                     "termAccession": "test_term_accession",

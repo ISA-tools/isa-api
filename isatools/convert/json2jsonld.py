@@ -120,24 +120,24 @@ class ISALDSerializer:
                 if "type" in field_props.keys() and field_props["type"] == "array":
                     if "items" in field_props.keys() and "$ref" in field_props["items"]:
                         ref = field_props["items"]["$ref"].replace("#", "")
-                        for value in instance[field]:
-                            value = self._inject_ld_split(ref, value, value)
+                        for idx, value in enumerate(instance[field]):
+                            instance[field][idx] = self._inject_ld_split(ref, value, value)
                     else:
                         if field == "inputs":
-                            for input_val in instance["inputs"]:
+                            for idx, input_val in enumerate(instance["inputs"]):
                                 ref = self._get_any_of_ref(input_val["@id"])
                                 if ref:
-                                    input_val = self._inject_ld_split(ref, input_val, input_val)
+                                    instance["inputs"][idx] = self._inject_ld_split(ref, input_val, input_val)
                         elif field == "outputs":
-                            for output_val in instance["outputs"]:
+                            for idx, output_val in enumerate(instance["outputs"]):
                                 ref = self._get_any_of_ref(output_val["@id"])
                                 if ref:
-                                    output_val = self._inject_ld_split(ref, output_val, output_val)
+                                    instance["outputs"][idx] = self._inject_ld_split(ref, output_val, output_val)
                         else:
                             ref = field + "_schema.json"
                             self.schemas[ref] = field_props
-                            for value in instance[field]:
-                                value = self._inject_ld_split(ref, value, value, schema_name)
+                            for idx, value in enumerate(instance[field]):
+                                instance[field][idx] = self._inject_ld_split(ref, value, value, schema_name)
                 elif "type" in field_props.keys() and field_props["type"] == "object":
                     ref = field + "_schema.json"
                     self.schemas[ref] = field_props
@@ -171,24 +171,24 @@ class ISALDSerializer:
                 if "type" in field_props.keys() and field_props["type"] == "array":
                     if "items" in field_props.keys() and "$ref" in field_props["items"]:
                         ref = field_props["items"]["$ref"].replace("#", "")
-                        for value in instance[field]:
-                            value = self._inject_ld_collapsed(ref, value, value)
+                        for idx, value in enumerate(instance[field]):
+                            instance[field][idx] = self._inject_ld_collapsed(ref, value, value)
                     else:
                         if field == "inputs":
-                            for input_val in instance["inputs"]:
+                            for idx, input_val in enumerate(instance["inputs"]):
                                 ref = self._get_any_of_ref(input_val["@id"])
                                 if ref:
-                                    input_val = self._inject_ld_collapsed(ref, input_val, input_val)
+                                    instance["inputs"][idx] = self._inject_ld_collapsed(ref, input_val, input_val)
                         elif field == "outputs":
-                            for output_val in instance["outputs"]:
+                            for idx, output_val in enumerate(instance["outputs"]):
                                 ref = self._get_any_of_ref(output_val["@id"])
                                 if ref:
-                                    output_val = self._inject_ld_collapsed(ref, output_val, output_val)
+                                    instance["outputs"][idx] = self._inject_ld_collapsed(ref, output_val, output_val)
                         else:
                             ref = field + "_schema.json"
                             self.schemas[ref] = field_props
-                            for value in instance[field]:
-                                value = self._inject_ld_collapsed(ref, value, value)
+                            for idx, value in enumerate(instance[field]):
+                                instance[field][idx] = self._inject_ld_collapsed(ref, value, value)
                 elif "type" in field_props.keys() and field_props["type"] == "object":
                     ref = field + "_schema.json"
                     self.schemas[ref] = field_props
@@ -209,18 +209,21 @@ class ISALDSerializer:
         :return: the corresponding context url
         """
         context_url = (
-            "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/"
-            "resources/json-context/%s/isa_" % self.ontology
+            "https://raw.githubusercontent.com/ISA-tools/isa-api/refs/heads/master/isatools/resources/json-context/%s/isa_"
+            # "https://raw.githubusercontent.com/ISA-tools/isa-api/develop/isatools/"
+            # "resources/json-context/%s/isa_"
+            % self.ontology
         )
+
         filename = "_%s_context.jsonld" % self.ontology
-        return context_url + "isa_" + raw_name.replace("_schema.json", filename)
+        return context_url + raw_name.replace("_schema.json", filename)
 
     @staticmethod
     def _get_any_of_ref(input_val):
         """
         Return the corresponding schema reference or false
         :param input_val: value to evaluate
-        :return: False or a the schema reference string
+        :return: False or a schema reference string
         """
         return input_val.split("#")[1].split("/")[0] + "_schema.json"
 

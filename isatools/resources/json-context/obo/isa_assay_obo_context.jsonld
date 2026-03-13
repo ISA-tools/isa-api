@@ -35,12 +35,12 @@
       "@type": "obo:OBI_0000968"
     },
     "materials": {
-      "@id": "obo:OBI_0000047",
+      "@id": "obo:COB_0000026",
       "@type": "obo:BFO_0000040"
     },
     "othermaterials": {
-      "@id": "obo:OBI_0000047",
-      "@type": "OBI_0000047"
+      "@id": "obo:COB_0000026",
+      "@type": "obo:COB_0000026"
     },
     "characteristicCategories": {
       "@id": "obo:IAO_0000235",
