@@ -4,6 +4,7 @@ from typing import List
 from isatools.model.assay import Assay
 from isatools.model.comments import Commentable
 from isatools.model.factor_value import StudyFactor
+from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
 from isatools.model.logger import log
 from isatools.model.mixins import MetadataMixin, StudyAssayMixin
@@ -17,7 +18,7 @@ from isatools.model.sample import Sample
 from isatools.model.source import Source
 
 
-class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
+class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
     """Study is the central unit, containing information on the subject under
     study, its characteristics and any treatments applied.
 
@@ -396,6 +397,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def from_dict(self, study):
         indexes.reset_process()
+        self.id = study.get("@id", "")
         self.filename = study.get("filename", "")
         self.identifier = study.get("identifier", "")
         self.title = study.get("title", "")

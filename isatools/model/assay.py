@@ -1,5 +1,6 @@
 from isatools.model.comments import Commentable
 from isatools.model.datafile import DataFile
+from isatools.model.identifiable import Identifiable
 from isatools.model.loader_indexes import loader_states as indexes
 from isatools.model.material import Material
 from isatools.model.mixins import StudyAssayMixin
@@ -7,7 +8,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.process import Process
 
 
-class Assay(Commentable, StudyAssayMixin, object):
+class Assay(Commentable, Identifiable, StudyAssayMixin, object):
     """An Assay represents a test performed either on material taken from a
     subject or on a whole initial subject, producing qualitative or
     quantitative
@@ -38,6 +39,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     def __init__(
         self,
+        id_="",
         measurement_type=None,
         technology_type=None,
         technology_platform="",
@@ -72,6 +74,7 @@ class Assay(Commentable, StudyAssayMixin, object):
         self.__technology_platform = technology_platform
         self.data_files = data_files or []
 
+        self.id = id_
     @property
     def measurement_type(self):
         """:obj:`OntologyAnnotation: an ontology annotation representing the
@@ -200,6 +203,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     def to_dict(self, ld=False):
         assay = {
+            "@id": self.id,
             "measurementType": self.measurement_type.to_dict(ld=ld) if self.measurement_type else "",
             "technologyType": self.technology_type.to_dict(ld=ld) if self.technology_type else "",
             "technologyPlatform": self.technology_platform,
@@ -217,6 +221,7 @@ class Assay(Commentable, StudyAssayMixin, object):
         return self.update_isa_object(assay, ld)
 
     def from_dict(self, assay, isa_study):
+        self.id = assay.get("@id", "")
         self.technology_platform = assay.get("technologyPlatform", "")
         self.filename = assay.get("filename", "")
         self.load_comments(assay.get("comments", []))

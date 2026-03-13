@@ -57,7 +57,7 @@ class OntologyAnnotation(Base):
         return {
             "@id": self.ontology_annotation_id,
             "annotationValue": self.annotation_value,
-            "termSource": self.term_source_id if self.term_source_id else None,
+            "termSource": self.term_source.name if self.term_source else None,
             "termAccession": self.term_accession,
             "comments": [c.to_json() for c in self.comments],
         }

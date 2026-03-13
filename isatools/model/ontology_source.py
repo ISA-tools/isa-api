@@ -1,9 +1,10 @@
 from typing import Any, List
 
 from isatools.model.comments import Comment, Commentable
+from isatools.model.identifiable import Identifiable
 
 
-class OntologySource(Commentable):
+class OntologySource(Commentable, Identifiable):
     """An OntologySource describes the resource from which the value of an
     OntologyAnnotation is derived from.
 
@@ -18,10 +19,10 @@ class OntologySource(Commentable):
     """
 
     def __init__(
-        self, name: str, file: str = "", version: str = "", description: str = "", comments: List[Comment] = None
+        self, id_="", name: str = "", file: str = "", version: str = "", description: str = "", comments: List[Comment] = None
     ):
         super().__init__(comments)
-
+        self.id = id_
         self.__name = name
         self.__file = file
         self.__version = version
@@ -119,6 +120,7 @@ class OntologySource(Commentable):
 
     def to_dict(self, ld=False):
         ontology_source_ref = {
+            "@id": self.id,
             "name": self.name,
             "file": self.file,
             "version": self.version,
@@ -128,6 +130,7 @@ class OntologySource(Commentable):
         return self.update_isa_object(ontology_source_ref, ld=ld)
 
     def from_dict(self, ontology_source):
+        self.id = ontology_source.get("@id","")
         self.name = ontology_source["name"] if "name" in ontology_source else ""
         self.file = ontology_source["file"] if "file" in ontology_source else ""
         self.version = ontology_source["version"] if "version" in ontology_source else ""

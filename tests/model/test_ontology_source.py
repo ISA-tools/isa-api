@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 from isatools.model.comments import Comment, Commentable
 from isatools.model.ontology_source import OntologySource
@@ -84,7 +85,8 @@ class TestOntologySource(TestCase):
         self.assertTrue("OntologySource.name must be a str; got 1:<class 'int'>" in str(context.exception))
         self.assertIsNone(self.ontology_source.validate_field("test_name", "name"))
 
-    def test_dict(self):
+    @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
+    def test_dict(self,  mock_uuid4):
         ontology_source = OntologySource(
             name="name1",
             version="version1",
@@ -93,6 +95,7 @@ class TestOntologySource(TestCase):
             comments=[Comment(name="commentA", value="valueA")],
         )
         expected_dict = {
+            "@id": "#ontology_source/" + mock_uuid4.return_value,
             "name": "name1",
             "version": "version1",
             "comments": [{"name": "commentA", "value": "valueA"}],
