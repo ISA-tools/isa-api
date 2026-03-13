@@ -885,7 +885,11 @@ def check_measurement_technology_types(assay_json, configs):
         technology_type = assay_json["technologyType"]["annotationValue"]
         config = configs[(measurement_type, technology_type)]
         if config is None:
-            raise KeyError
+            raise KeyError(
+                "Could not find configuration for measurement type '{}' and technology type '{}'".format(
+                    measurement_type, technology_type
+                )
+            )
     except KeyError:
         errors.append(
             {
