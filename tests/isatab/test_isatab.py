@@ -1125,7 +1125,6 @@ class TestIsaTabLoad(unittest.TestCase):
         with open(os.path.join(self._tab_data_dir, "issue587", "i_Investigation.txt")) as fp:
             ISA = isatab.load(fp)
             self.assertEqual(ISA.ontology_source_references[0].name, "1")
-            # self.assertEqual(ISA.ontology_source_references[0].comments[0].value, "onto_stuff")
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, "sdata201414-isa1", "i_Investigation.txt"), encoding="utf-8") as fp:

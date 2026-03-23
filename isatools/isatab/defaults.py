@@ -32,8 +32,7 @@ def pbar(x):
 _RX_I_FILE_NAME = compile(r"i_(.*?)\.txt")
 _RX_DATA = compile(r"data\[(.*?)\]")
 _RX_COMMENT = compile(r"Comment\[(.*?)\]")
-_RX_DOI = compile(r"^(https://doi.org/)?(10\.\d{4,9}/[-._;()/:a-z0-9A-Z]+)$")  #
-# _RX_DOI = compile(r"10\.\d{4,9}/[-._;()/:a-z0-9A-Z]+") #
+_RX_DOI = compile(r"^(https://doi.org/)?(10\.\d{4,9}/[-._;()/:a-z0-9A-Z]+)$")
 _RX_PMID = compile(r"(^https://pubmed.ncbi.nlm.nih.gov/)?[0-9]{8}$")
 _RX_PMCID = compile(r"(^https://pmc.ncbi.nlm.nih.gov/articles/)?PMC[0-9]{8}$")
 _RX_CHARACTERISTICS = compile(r"Characteristics\[(.*?)\]")
