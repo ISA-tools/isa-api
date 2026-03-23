@@ -60,6 +60,8 @@ dependencies = [
     "graphql-core~=3.2.6",
     "ruff>=0.14.1",
     "pytest-timeout>=2.4.0",
+    "urllib3==2.6.0",
+    "tornado==6.5.5"
 ]
 
 [project.optional-dependencies]
@@ -88,7 +90,7 @@ dev = [
     "coveralls>=4.0.1",
     "sure>=2.0.1",
     "ddt>=1.7.2",
-    "deepdiff>=8.6.1",
+    "deepdiff>=8.6.2",
     "behave>=1.2.6",
     "httpretty>=1.1.4",
     "import-linter>=2.5.2",
