@@ -33,7 +33,7 @@ class OntologySource(Base):
         :return: The dictionary representation of the object taken from the database
         """
         return {
-            "id": self.ontology_source_id,
+            "@id": self.ontology_source_id,
             "name": self.name,
             "file": self.file,
             "version": self.version,
@@ -56,11 +56,11 @@ def make_ontology_source_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        ontology_source = session.get(OntologySource, self.name)
+        ontology_source = session.get(OntologySource, self.id)
         if ontology_source:
             return ontology_source
         ontology_source = OntologySource(
-            ontology_source_id=self.name,
+            ontology_source_id=self.id,
             name=self.name,
             file=self.file,
             version=self.version,

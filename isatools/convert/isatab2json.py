@@ -141,7 +141,7 @@ class ISATab2ISAjson_v1:
                 )
 
             # validate json
-            with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as json_fp:
+            with open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)):
                 # investigation_schema = json.load(json_fp)
                 # schema = DRAFT4.create_resource(investigation_schema)
                 # registry = Registry.with_resource(investigation_schema['id'], schema)

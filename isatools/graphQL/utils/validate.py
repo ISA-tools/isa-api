@@ -24,7 +24,7 @@ def validate_outputs(outputs):
 
 def validate_target(inputs, input_type):
     """
-    Validate the target depending of the input_type.
+    Validate the target depending on the input_type.
     :param inputs: the value to validate
     :param input_type: 'input' or 'output'
     :return: True or raise Exception

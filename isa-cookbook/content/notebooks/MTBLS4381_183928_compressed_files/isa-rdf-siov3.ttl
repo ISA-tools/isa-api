@@ -1,0 +1,386 @@
+@prefix sio: <http://semanticscience.org/ontology/sio.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#source/3d105be0-cc01-4070-b3b5-e8a0955c76bf> sio:000008 "PB"^^sio:000116 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/08e3f61e-1b8c-4c39-984f-5bd549a022cb> a sio:001166 ;
+    sio:000028 "Atlantic salmon"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/placeholder"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/0b9adfd2-5aa5-4541-9797-9a8e267a084b> a sio:001166 ;
+    sio:000028 "Guard column"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/1b0c27cb-6ec5-452c-b066-af3e1504d3e6> a sio:001166 ;
+    sio:000028 "HoloFood"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/placeholder"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2b18ef88-44fa-4f08-baaa-c758ed8cfd8d> a sio:001166 ;
+    sio:000028 "Chromatography Instrument"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2ef5ab58-e1d9-4e61-b8b0-d0e8382779f4> a sio:001166 ;
+    sio:000028 "nanoflow liquid chromatography-tandem mass spectrometry"^^<rdfs:label> ;
+    sio:000253 "CHMO"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/CHMO_0001834"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2f8109f1-1c55-4907-b445-078de221f77e> a sio:001166 ;
+    sio:000028 "author"^^<rdfs:label> ;
+    sio:000253 "NCIT"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/NCIT_C42781"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/32e8377e-79f3-4da7-a17a-5e4bd45d9ff3> a sio:001166 ;
+    sio:000028 "Host-Microbe Interactions"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/placeholder"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/38e585b2-378b-4c18-8028-53fbeb6f1cb5> a sio:001166 ;
+    sio:000028 "Metabolite identification"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/40f5de46-f35f-4fe0-ad2f-81db8e7c0980> a sio:001166 ;
+    sio:000028 "BioSamples"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/placeholder"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/4f2ec0c1-8d26-463c-8de2-54623be8e617> a sio:001166 ;
+    sio:000028 "In preparation"^^<rdfs:label> ;
+    sio:000253 "EFO"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/efo/EFO_0001795"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/596c262e-7ced-4505-9a40-521be5746851> a sio:001166 ;
+    sio:000028 "Scan m/z range"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/7655d5d6-06e9-4496-8cf5-5a34c3bdd59e> a sio:001166 ;
+    sio:000028 ""^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/772c2e5c-4b44-44d0-ba47-01d14bc05ecb> a sio:001166 ;
+    sio:000028 "Chromatography"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/7a94755c-7b07-4dff-98f9-91b00a041dc9> a sio:001166 ;
+    sio:000028 "Autosampler model"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/86759289-8419-4c3e-9593-b5eee28d3860> a sio:001166 ;
+    sio:000028 "Column model"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8700a150-9358-4d00-91d6-11e8470fd3f2> a sio:001166 ;
+    sio:000028 "Ion source"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8b5c886f-4a60-4a13-858f-c5938d5d8118> a sio:001166 ;
+    sio:000028 "Mass spectrometry"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8c51c2ee-cd8c-4192-9f96-aba774d4583d> a sio:001166 ;
+    sio:000028 "Intestinal Flora"^^<rdfs:label> ;
+    sio:000253 "NCIT"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/NCIT_C93019"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8fa3903e-9242-4204-8bbd-edeeef56542b> a sio:001166 ;
+    sio:000028 "Gut Content"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/placeholder"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/92f0e45a-574c-44a8-8568-cab29eb2644a> a sio:001166 ;
+    sio:000028 "Data transformation"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/a29eeec5-52d6-4ea5-8a33-487cf4199fed> a sio:001166 ;
+    sio:000028 "untargeted metabolites"^^<rdfs:label> ;
+    sio:000253 "MTBLS"^^sio:001391 ;
+    sio:000671 "http://www.ebi.ac.uk/metabolights/ontology/MTBLS_000279"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/a616698e-964e-449a-82a8-3dfce1292d95> a sio:001166 ;
+    sio:000028 "Post Extraction"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/ab889b4d-f10b-4f1b-b164-c57337cd49a7> a sio:001166 ;
+    sio:000028 ""^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/b28a95dd-1343-4b0c-86d0-99bb85ad7c38> a sio:001166 ;
+    sio:000028 "Column type"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/bbaa50ef-cf07-4c62-aedb-73853190d2d1> a sio:001166 ;
+    sio:000028 "Investigator"^^<rdfs:label> ;
+    sio:000253 "NCIT"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/NCIT_C25936"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/ca5412ce-7daf-4935-afea-7c32e5db673a> a sio:001166 ;
+    sio:000028 ""^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/cca85c2c-5149-4fd5-9c82-83e8ca51c1fd> a sio:001166 ;
+    sio:000028 "Derivatization"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/cdd4da18-e9cf-4fe2-9aee-bec3081ed854> a sio:001166 ;
+    sio:000028 "Sample collection"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/d1234dd7-70ee-46a8-8a85-3f824b7fc351> a sio:001166 ;
+    sio:000028 "Mass analyzer"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/d2bc6e80-e313-44ce-8f3e-d40ae6872e26> a sio:001166 ;
+    sio:000028 "Instrument"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/dc7251fc-99ca-490b-8b6c-75f6b5c3774d> a sio:001166 ;
+    sio:000028 "author"^^<rdfs:label> ;
+    sio:000253 "NCIT"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/NCIT_C42781"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/effa9c4a-5f9d-4302-82b6-047cff0c8b12> a sio:001166 ;
+    sio:000028 "intestine"^^<rdfs:label> ;
+    sio:000253 "BTO"^^sio:001391 ;
+    sio:000671 "http://purl.obolibrary.org/obo/BTO_0000648"^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/fefe43e0-646e-4e04-ba43-7bc3015c6c33> a sio:001166 ;
+    sio:000028 "Scan polarity"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/fff27a9f-c31a-4496-be0a-82658e63dd93> a sio:001166 ;
+    sio:000028 "Extraction"^^<rdfs:label> ;
+    sio:000253 ""^^sio:001391 ;
+    sio:000671 ""^^sio:000115 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/121fa7e5-eca9-4aa3-abd9-8a6cb0e6d229> a sio:001043 ;
+    sio:000008 "Sample collection"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/0342c543-cdd8-435d-8f8d-a59f21df6aad>,
+        "<p>In total 3 experimental trials were performed in the salmon system for the HoloFood project. Each trial has been designed to test the effect of novel sustainable feed additives to Atlantic salmon feed. We focused on 2 different types of additives that were tested in separate and independent trials.</p><p><br></p><p>The first additive we tested was fermented seaweed. Seaweed contains a large range of bioactive components as well as a dynamic and diverse microbial community on its surface biofilm (i.e., a natural probiotic package). The exact health effect of seaweed for salmon remains unknown. Fermenting the seaweed both stabilises the biomass and is expected to enrich the microbiome with Lactobacillus bacteria, which is well known to have a beneficial effect on gut health in warm-blooded animals, and here we hypothesise that this species may also be beneficial to teleost hosts.</p><p><br></p><p>We also tested the effect of replacing fish meal protein with blue mussel protein. The marine protein sources in the diets for salmonids have traditionally been fishmeal, but there is, however, an increasing pressure on the wild fish stock and at the same time an increasing demand from a rapidly growing sea farming industry. There is therefore an increasing need for alternative marine protein sources. Blue mussel meal can be one such source since it can be locally grown compared to wild resources that often also need to be shipped across continents. An overview of the experimental conditions and set-up is shown in the following paragraphs.</p><p><br></p><p><strong>Experimental conditions</strong></p><p>The experiments followed the EU principles for animal care and experimentation and experimental procedures were approved by the Food Authority in Norway as outlined in HoloFood Deliverables 13.3 and 13.4. All the staff involved in the experiment had appropriate training and qualifications to perform the required tasks. They had training in Quality Systems including data recording requirements and forms for completion of the study, QC techniques, relevant SOPs and specific protocol requirements prior to the experiment start.</p><p><br></p><p>All 3 experiments were conducted at LetSea land site aquaculture centre, at Bjørn, in Dønna, Norway, in cooperation with Lerøy Seafood Group. The fish tanks were all connected to a state-of-the-art flow-through water system with access to both freshwater and seawater. Fish were fed continually using 24 h mechanical band feeders, based on well-established feeding protocols developed by LetSea AS. The daily feeding amount was regularly reassessed based on the overfeed amount from the previous days for each tank, adjusted for 10% overfeeding. All tanks are equipped with a collection system of uneaten feed, which allows ad libitum feeding and ensures 5-10% overfeeding, depending on the size of the fish. Throughout the duration of the trials, skilled staff from LetSea AS were responsible for the daily maintenance and monitoring of the experiment.</p><p><br></p><p>All 3 experimental trials included an initial 2-weeks acclimation period followed by an ~60 days long growth phase or until fish have at least doubled their average weight at the start of the trial, as a doubling in weight is generally thought of as being adequate to detect statistically significant differences in growth rate and other relevant performance metrics.</p><p><br></p><p><strong>Experimental design</strong></p><p>To avoid the possible influence of parental effects, all juvenile salmon were randomised before distribution in such a way that each replicate tank received the same composition of potential full and half siblings. Feeding treatments were randomly assigned to each tank and each tank was given a codename with no relation to the actual experimental groups (e.g., names of planets). Each dietary treatment had 2 or 3 replicate tanks following a standard dose - response design where the control and maximum concentration of the feed additive has 3 replicates and with 2 replicates for intermediate concentrations. Here, the experimental design differed from conventional studies in that we also aimed to increase inter-individual genetic variability, thus improving the likelihood of identifying interactions between animal and microbial genomic features. Therefore, a total of 60 salmon were sampled from each feed category at the end of the trial despite the different number of replicate tanks. We also sampled a reference group of 60 salmon at the start of the trial before administering different feed types.</p><p><br></p><p><strong>Diets, additives and feeding</strong></p><p>In the experimental trials, health performance and growth were assessed in fish fed with 5 distinct diets: 4 experimental diets with incremental doses of the respective additives, and a commercial control diet without any experimental additives. Each feeding group was organised in tanks, in duplicates or triplicates depending on the respective concentration of the feed additive in the dose-response study design. Prior to the start of each trial, during the acclimation period, all fish will be fed with 'Energy X 75' (50 mg), a commercial feed from BioMar, which does not contain any of the experimental additives. During the experiment, a commercial feed from BioMar 'Energy X 200' (50 mg) will be fed to the control group. All diets are in the form of small compact pellets, and the feed provided ad libitum in every tank.</p><p><br></p><p><strong>Animal sampling</strong></p><p>For all the samplings, each fish being sampled was euthanised beforehand using an overdose of Finquel (MS-222), following established ethical requirements fulfilling all EU standards. After euthanisation, the distal gut, gill tissue, liver tissue and muscle samples were obtained - in the form of standardized Norwegian quality cuts (NQC) - and prior to any sampling, the live weight, fork length and gutted weight recorded. Tissues samples for the full holo-omics profiling were taken on day 0 (right before introducing the different diets) and on day 60 of the experiment. For this sampling, 6 sample types were sampled: gill, liver, muscle, distal gut epithelial tissue, distal gut epithelial cell scrapes, distal gut content, some of them will be sampled multiple times for different downstream purposes, giving a total of 11 samples per individual. Different aliquots were distributed and stored in adequate buffer solutions and/or in dry ice for downstream processes. The samples were transported to the corresponding destination and stored for long-term preservation at the most adequate temperature depending on the buffer and downstream purposes of each sample. Those samples were collected in order to perform heavy metal and fatty acids profiling, as well as histology assays. All the sampling tools and equipment used for each sample were sterile.</p><p><br></p><p><strong>Metabolomics</strong></p><p>Metabolomic samples were collected during the sampling for holo-omics profiling of each individual salmon. Several samples from the gut content were collected in order to generate metagenomic, metatranscriptomic and metabolomic data downstream from the salmon gut microbiome. Cells scrapes of the gut epithelial tissues were also sampled for 16S profiling of the gut microbiota. Tissue samples of the distal gut were collected in order to generate the host genome and host transcriptome for each individual. The gut sampling focused on the distal gut, which is the most responsive part of the intestine in relation to the diet. The gut content was obtained from each individual and stored in dry ice for downstream processing.</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/cdd4da18-e9cf-4fe2-9aee-bec3081ed854> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/2b3aad18-bd80-4191-9e3e-96cdc8a69fe1> a sio:001043 ;
+    sio:000008 "Data transformation"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/a7517db4-7e5a-447d-9fb1-57d93398b12b>,
+        "<p>The acquired data was processed using <strong>Compound Discoverer</strong> software version 3.2.0.421 (Thermo Scientific). ThermoFisher Scientific UHPLC-Orbitrap-MS/MS <strong>.raw</strong> files were converted into <strong>.mzML</strong> files using <strong>ProteoWizard[1]</strong>.</p><p><br></p><p><strong>Ref:</strong></p><p><strong>[1]</strong>&nbsp;Adusumilli R, Mallick P. Data Conversion with ProteoWizard msConvert. Methods Mol Biol. 2017;1550:339-368. doi:10.1007/978-1-4939-6747-6_23. PMID:28188540.</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/92f0e45a-574c-44a8-8568-cab29eb2644a> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/4120c3d1-caca-4410-8568-cc34401947ed> a sio:001043 ;
+    sio:000008 "Mass spectrometry"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/22a83698-11f7-4aa6-a65b-91703d237280>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/3eee7df7-2ed0-4602-a379-04de8cddf7ac>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/b0bd8354-557b-4e79-8eb3-bccbe4148d7a>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/c2d62994-27f9-4653-84f2-64951a0344a1>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/f8d6d560-80a6-488e-b520-9b9173c0f54e>,
+        "<p>The mass spectrometric analysis was performed with a Q Exactive HF Orbitrap (Thermo Scientific, Bremen, Germany) equipped with an EASYspray ion source operated at a spray voltage of 1.80 kV, a capillary temperature at 250 °C, S-lens RF level at 50 V and probe heater temperature at 350 °C. The instrument was operated in <strong>data-dependent acquisition</strong> mode (<strong>DDA</strong>) by automatically switching between MS and MS/MS fragmentation. Based on a survey MS scan in the Orbitrap, operated at a mass resolution of 240,000 at m/z 200 with a target of 1E^6 ions and a maximum injection time at 100 ms, the 10 most intense ions were selected for MS/MS fragmentation in subsequent scans. The selected ions were isolated at a m/z 0.4 window and higher-energy collision dissociation was done at 2 normalized collision energies (15 and 70) and fragments recorded in centroid mode at a resolution of 15,000 with a 50 ms max filling time and target of 1E^5 ions. An external mass calibration was carried out weekly, using a certified mixture of caffeine and Ultramark 1621 (ThermoFisher Scientific).</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8b5c886f-4a60-4a13-858f-c5938d5d8118> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/59daf91c-02ec-4dd6-b682-44601e779a28> a sio:001043 ;
+    sio:000008 "Chromatography"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/0267c8ef-6f54-49e9-a72c-7d06d69b8627>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/11e3326c-ee00-4964-9643-84e2664dfbc0>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/2d552358-313f-4cf1-ab93-4455ae1ca65b>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/65ba9490-b469-4660-a833-8a74326bcd62>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/7c77f2be-8d10-493c-97b9-4e901eafa491>,
+        "<p>Samples were analysed using an untargeted analysis workflow with a nanoLC-Orbitrap tandem high-resolution mass spectrometry system. For the LC separation, a Dionex UltiMate 3000 RSLCnano system (Thermo Scientific, Bremen, Germany) was used. The autosampler and columns were thermostated at 8 and 40 °C, respectively. An amount of 5 µL sample were loaded on a preconcentration trap (C18, 300 µm x 5 mm, 5 µm, 100 Å cartridge) and eluted onto an analytical column (75 µm x 250 mm, 2 µm C18) with a chromatographic triple-phasic 30 min gradient delivered at a 300 nL/min flow rate. The programmed gradient was 10% mobile phase B from 0.0 to 2.0 min, followed by a gradient reaching 95% B at 17.0 min with an additional 6.0 min plateau (23.0 min) and returning to 10% B at 23.5 min. The column was re-equilibrated with 10% B until 30.0 min. The loading solvents A and B were composed of water with 1% and 98% acetonitrile, respectively, and with 0.1% formic acid. The mobile phases A and B were composed of water with 2% and 98% acetonitrile, respectively, and 0.1% formic acid.</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/772c2e5c-4b44-44d0-ba47-01d14bc05ecb> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/8271ca42-71ff-4f6d-9ffa-5f67f6d49471> a sio:001043 ;
+    sio:000008 "Extraction"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/cd91d7dd-ad31-4181-9402-0cb7542cc08e>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/d474f811-c936-4a44-898a-c885d6598730>,
+        "<p>Samples were homogenized with ice-cold methanol:water:dichloromethane (1:1:2) in a 1:25 sample to solvent ratio. Homogenization was performed with bead beating under liquid nitrogen cooling (3 cycles at 4 m/s and 0 °C, each cycle for 10 s with 5 s dwell) using 1.4 mm ceramic beads and a Bead Ruptor Elite connected to an Omni BR-Cryo cooling unit (Omni International, USA). After centrifugation (20,000 x g, 10 min, 0 °C), 400 µL of the polar phase was collected and evaporated to dryness using a vacuum concentrator (SpeedVac SPD 1030, Thermo Scientific, Germany), and reconstituted in 200 µL of a 5% methanolic solution. In total 2 types of quality control samples were included - a) procedural blanks (PB) distributed across all samples and b) a quality control pool sample (QC) consisting of 20 µL from each sample extract.</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/fff27a9f-c31a-4496-be0a-82658e63dd93> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/bb923082-be41-43e7-a5ea-b5324a88a3da> a sio:001043 ;
+    sio:000008 "Metabolite identification"^^sio:000116 ;
+    sio:000028 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/5a35fbde-575d-44ab-b0eb-c2213f5bc8e5>,
+        "<p>For an increased deciphering of molecular spectres <strong>MZmine 2</strong> was applied for mass detection of MS1 and MS2 spectres,&nbsp;followed by chromatograms detection and deconvolution. Subsequently, detected isotopes and features were grouped according to a tolerance of mass-charges (m/z), retention time and the features were further aligned according to retention time and m/z. Lastly, only features with a MS2 spectrum were kept for further substructural analysis and <em>in silico</em> analysis.</p><p><br></p><p>A molecular network was created using the <strong>feature based molecular networking</strong> (<strong>FBMN</strong>) workflow on the <strong>Global Natural Product Social Molecular Networking</strong> (<strong>GNPS</strong>) platform (http://gnps.ucsd.edu)<strong>[1][2]</strong>&nbsp;combined with <strong>SIRIUS4</strong> and <strong>CSI:FingerID[3][4]</strong>, as previously described for fish intestinal metabolomics<strong>[5]</strong>.</p><p><br></p><p>In brief, to enhance identification of unknown metabolites, unsupervised substructures were discovered using <strong>MS2LDA[6][7]</strong>, and MS2 spectra were annotated <em>in silico</em> using <strong>Network Annotation Propagation</strong> (<strong>NAP</strong>)<strong>[7]</strong>. Furthermore, <strong>peptidic natural products</strong> (<strong>PNPs</strong>) were annotated <em>in silico</em>, using <strong>DEREPLICATOR[8]</strong>. Chemical classes were retrieved for all <strong>GNPS</strong> library hits and <em>in silico</em> structures using <strong>ClassyFire[9]</strong>. Finally, all structural annotations were combined within one network using <strong>MolNetEnhancer[10]</strong>.</p><p><br></p><p><strong>Refs:</strong></p><p><strong>[1]</strong> Wang M, Carver JJ, Phelan VV, Sanchez LM, Garg N, Peng Y, Nguyen DD, Watrous J, Kapono CA, Luzzatto-Knaan T, Porto C, Bouslimani A, Melnik AV, Meehan MJ, Liu WT, Crüsemann M, Boudreau PD, Esquenazi E, Sandoval-Calderón M, Kersten RD, Pace LA, Quinn RA, Duncan KR, Hsu CC, Floros DJ, Gavilan RG, Kleigrewe K, Northen T, Dutton RJ, Parrot D, Carlson EE, Aigle B, Michelsen CF, Jelsbak L, Sohlenkamp C, Pevzner P, Edlund A, McLean J, Piel J, Murphy BT, Gerwick L, Liaw CC, Yang YL, Humpf HU, Maansson M, Keyzers RA, Sims AC, Johnson AR, Sidebottom AM, Sedio BE, Klitgaard A, Larson CB, P CAB, Torres-Mendoza D, Gonzalez DJ, Silva DB, Marques LM, Demarque DP, Pociute E, O'Neill EC, Briand E, Helfrich EJN, Granatosky EA, Glukhov E, Ryffel F, Houson H, Mohimani H, Kharbush JJ, Zeng Y, Vorholt JA, Kurita KL, Charusanti P, McPhail KL, Nielsen KF, Vuong L, Elfeki M, Traxler MF, Engene N, Koyama N, Vining OB, Baric R, Silva RR, Mascuch SJ, Tomasi S, Jenkins S, Macherla V, Hoffman T, Agarwal V, Williams PG, Dai J, Neupane R, Gurr J, Rodríguez AMC, Lamsa A, Zhang C, Dorrestein K, Duggan BM, Almaliti J, Allard PM, Phapale P, Nothias LF, Alexandrov T, Litaudon M, Wolfender JL, Kyle JE, Metz TO, Peryea T, Nguyen DT, VanLeer D, Shinn P, Jadhav A, Müller R, Waters KM, Shi W, Liu X, Zhang L, Knight R, Jensen PR, Palsson BO, Pogliano K, Linington RG, Gutiérrez M, Lopes NP, Gerwick WH, Moore BS, Dorrestein PC, Bandeira N. Sharing and community curation of mass spectrometry data with Global Natural Products Social Molecular Networking. Nat Biotechnol. 2016 Aug 9;34(8):828-837. doi:10.1038/nbt.3597. PMID:27504778.</p><p><strong>[2]</strong> Watrous J, Roach P, Alexandrov T, Heath BS, Yang JY, Kersten RD, van der Voort M, Pogliano K, Gross H, Raaijmakers JM, Moore BS, Laskin J, Bandeira N, Dorrestein PC. Mass spectral molecular networking of living microbial colonies. Proc Natl Acad Sci U S A. 2012 Jun 26;109(26):E1743-52. doi:10.1073/pnas.1203689109. Epub 2012 May 14. PMID:22586093.</p><p><strong>[3]</strong> Dührkop K, Fleischauer M, Ludwig M, Aksenov AA, Melnik AV, Meusel M, Dorrestein PC, Rousu J, Böcker S. SIRIUS 4: a rapid tool for turning tandem mass spectra into metabolite structure information. Nat Methods. 2019 Apr;16(4):299-302. doi:10.1038/s41592-019-0344-8. Epub 2019 Mar 18. PMID:30886413.</p><p><strong>[4]</strong> Dührkop K, Shen H, Meusel M, Rousu J, Böcker S. Searching molecular structure databases with tandem mass spectra using CSI:FingerID. Proc Natl Acad Sci U S A. 2015 Oct 13;112(41):12580-5. doi:10.1073/pnas.1509788112. Epub 2015 Sep 21. PMID:26392543.</p><p><strong>[5] </strong>Rasmussen JA, Villumsen KR, Ernst M, Hansen M, Forberg T, Gopalakrishnan S, Gilbert MTP, Bojesen AM, Kristiansen K, Limborg MT. A multi-omics approach unravels metagenomic and metabolic alterations of a probiotic and synbiotic additive in rainbow trout (Oncorhynchus mykiss). Microbiome. 2022 Jan 30;10(1):21. doi:10.1186/s40168-021-01221-8. PMID:35094708.</p><p><strong>[6]</strong> van der Hooft JJ, Wandy J, Barrett MP, Burgess KE, Rogers S. Topic modeling for untargeted substructure exploration in metabolomics. Proc Natl Acad Sci U S A. 2016 Nov 29;113(48):13738-13743. doi:10.1073/pnas.1608041113. Epub 2016 Nov 16. PMID:27856765.</p><p><strong>[7]</strong> Rogers S, Ong CW, Wandy J, Ernst M, Ridder L, van der Hooft JJJ. Deciphering complex metabolite mixtures by unsupervised and supervised substructure discovery and semi-automated annotation from MS/MS spectra. Faraday Discuss. 2019 Aug 15;218(0):284-302. doi:10.1039/c8fd00235e. PMID:31120050.</p><p><strong>[8]</strong> Mohimani H, Gurevich A, Mikheenko A, Garg N, Nothias LF, Ninomiya A, Takada K, Dorrestein PC, Pevzner PA. Dereplication of peptidic natural products through database search of mass spectra. Nat Chem Biol. 2017 Jan;13(1):30-37. doi:10.1038/nchembio.2219. Epub 2016 Oct 31. PMID:27820803.</p><p><strong>[9] </strong>Djoumbou Feunang Y, Eisner R, Knox C, Chepelev L, Hastings J, Owen G, Fahy E, Steinbeck C, Subramanian S, Bolton E, Greiner R, Wishart DS. ClassyFire: automated chemical classification with a comprehensive, computable taxonomy. J Cheminform. 2016 Nov 4;8:61. doi:10.1186/s13321-016-0174-y. PMID:27867422.</p><p><strong>[10] </strong>Ernst M, Kang KB, Caraballo-Rodríguez AM, Nothias LF, Wandy J, Chen C, Wang M, Rogers S, Medema MH, Dorrestein PC, van der Hooft JJJ. MolNetEnhancer: Enhanced Molecular Networks by Integrating Metabolome Mining and Annotation Tools. Metabolites. 2019 Jul 16;9(7):144. doi:10.3390/metabo9070144. PMID:31315242.</p>"^^sio:000136 ;
+    sio:000205 ""^^sio:000186 ;
+    sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/38e585b2-378b-4c18-8028-53fbeb6f1cb5> ;
+    sio:000673 ""^^sio:000811 .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/0267c8ef-6f54-49e9-a72c-7d06d69b8627> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/7a94755c-7b07-4dff-98f9-91b00a041dc9> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/0342c543-cdd8-435d-8f8d-a59f21df6aad> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/ca5412ce-7daf-4935-afea-7c32e5db673a> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/11e3326c-ee00-4964-9643-84e2664dfbc0> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/b28a95dd-1343-4b0c-86d0-99bb85ad7c38> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/22a83698-11f7-4aa6-a65b-91703d237280> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/fefe43e0-646e-4e04-ba43-7bc3015c6c33> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/2d552358-313f-4cf1-ab93-4455ae1ca65b> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2b18ef88-44fa-4f08-baaa-c758ed8cfd8d> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/3eee7df7-2ed0-4602-a379-04de8cddf7ac> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/596c262e-7ced-4505-9a40-521be5746851> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/5a35fbde-575d-44ab-b0eb-c2213f5bc8e5> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/ab889b4d-f10b-4f1b-b164-c57337cd49a7> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/65ba9490-b469-4660-a833-8a74326bcd62> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/0b9adfd2-5aa5-4541-9797-9a8e267a084b> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/7c77f2be-8d10-493c-97b9-4e901eafa491> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/86759289-8419-4c3e-9593-b5eee28d3860> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/a7517db4-7e5a-447d-9fb1-57d93398b12b> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/7655d5d6-06e9-4496-8cf5-5a34c3bdd59e> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/b0bd8354-557b-4e79-8eb3-bccbe4148d7a> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/d1234dd7-70ee-46a8-8a85-3f824b7fc351> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/c2d62994-27f9-4653-84f2-64951a0344a1> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8700a150-9358-4d00-91d6-11e8470fd3f2> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/cd91d7dd-ad31-4181-9402-0cb7542cc08e> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/a616698e-964e-449a-82a8-3dfce1292d95> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/d474f811-c936-4a44-898a-c885d6598730> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/cca85c2c-5149-4fd5-9c82-83e8ca51c1fd> .
+
+<file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol_parameter/f8d6d560-80a6-488e-b520-9b9173c0f54e> a sio:000144 ;
+    sio:000008 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/d2bc6e80-e313-44ce-8f3e-d40ae6872e26> .
+
+[] sio:000008 "s_MTBLS4381.txt"^^sio:000396 ;
+    sio:000028 "<p>Testing the effect of blue mussel ensilage as a novel cost-efficient protein feed source for Atlantic salmon feed. Fermentation of novel raw materials for fish feed is a new practice with little prior experience of direct relevance to aquaculture and fish farming. In Trial A, an alternative marine compound is included in the feed, which is based on seaweed. In the trial were multiple inclusion levels used to investigate the effect of seaweed inclusion in an aquaculture setting.</p><p><br></p><p><strong>HoloFood Trial A</strong> - <strong>seaweed-dose response</strong>&nbsp;is reported in the current study&nbsp;<a href='https://www.ebi.ac.uk/metabolights/MTBLS4381' rel='noopener noreferrer' target='_blank'><strong>MTBLS4381</strong></a>.</p><p><strong>HoloFood Trial B - blue mussel-dose response</strong>&nbsp;is reported in&nbsp;<a href='https://www.ebi.ac.uk/metabolights/MTBLS4382' rel='noopener noreferrer' target='_blank'><strong>MTBLS4382</strong></a>.</p><p><strong>HoloFood Trial C</strong> - <strong>blue mussel ensilage-dose response</strong>&nbsp;is reported in&nbsp;<a href='https://www.ebi.ac.uk/metabolights/MTBLS4384' rel='noopener noreferrer' target='_blank'><strong>MTBLS4384</strong></a>.</p><p><strong>HoloFood Trial D</strong> - <strong>fermented seaweed open water-dose response</strong>&nbsp;is reported in&nbsp;<a href='https://www.ebi.ac.uk/metabolights/MTBLS6733' rel='noopener noreferrer' target='_blank'><strong>MTBLS6733</strong></a>.</p><p><strong>HoloFood Trial 1/2/3</strong>&nbsp;is reported in&nbsp;<a href='https://www.ebi.ac.uk/metabolights/MTBLS6988' rel='noopener noreferrer' target='_blank'><strong>MTBLS6988</strong></a>.</p><p><br></p><p><strong>Linked cross omic data sets:</strong></p><p>Nucleic acid data associated with this study are available in the European Nucleotide Archive (ENA): accession number&nbsp;<a href='https://www.ebi.ac.uk/ena/browser/view/PRJEB43192' rel='noopener noreferrer' target='_blank'>PRJEB43192</a>.</p><p>Metagenomic data associated with this study are available from MGnify under the Super Study '<a href='https://www.ebi.ac.uk/metagenomics/super-studies/holofood' rel='noopener noreferrer' target='_blank'>holofood</a>'.</p>"^^sio:000136 ;
+    sio:000060 [ a sio:001167 ;
+            sio:000008 "Revision Date"^^sio:000116 ;
+            sio:000300 "22/09/2025"^^xsd:string ],
+        [ a sio:001167 ;
+            sio:000008 "Revision Log"^^sio:000116 ;
+            sio:000300 "updating data license"^^xsd:string ],
+        [ a sio:001167 ;
+            sio:000008 "License"^^sio:000116 ;
+            sio:000300 "EMBL-EBI Terms of Use"^^xsd:string ],
+        [ a sio:001167 ;
+            sio:000008 "Revision"^^sio:000116 ;
+            sio:000300 "3"^^xsd:string ],
+        "Metabolomics to elucidate the effects of novel sustainable feed additives in the feed of farmed salmon (HoloFood Trial A - seaweed-dose response)"^^sio:000185 ;
+    sio:000253 [ a sio:000498 ;
+            sio:000008 "Varsha"^^sio:000181,
+                "Kale"^^sio:000182,
+                "vkale@ebi.ac.uk"^^sio:000304,
+                ""^^sio:001318,
+                ""^^sio:001319,
+                ""^^sio:001321 ;
+            sio:000095 ""^^sio:000012 ;
+            sio:000228 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/dc7251fc-99ca-490b-8b6c-75f6b5c3774d> ],
+        [ a sio:000498 ;
+            sio:000008 "Sandy"^^sio:000181,
+                "Rogers"^^sio:000182,
+                "sandyr@ebi.ac.uk"^^sio:000304,
+                ""^^sio:001318,
+                ""^^sio:001319,
+                ""^^sio:001321 ;
+            sio:000095 ""^^sio:000012 ;
+            sio:000228 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2f8109f1-1c55-4907-b445-078de221f77e> ],
+        [ a sio:000498 ;
+            sio:000008 "Jacob"^^sio:000181,
+                "Rasmussen"^^sio:000182,
+                "jacob.rasmussen@bio.ku.dk"^^sio:000304,
+                "A."^^sio:001318,
+                ""^^sio:001319,
+                ""^^sio:001321 ;
+            sio:000095 "Center of Evolutionary Hologenomics"^^sio:000012 ;
+            sio:000228 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/bbaa50ef-cf07-4c62-aedb-73853190d2d1> ] ;
+    sio:000255 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/08e3f61e-1b8c-4c39-984f-5bd549a022cb>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/1b0c27cb-6ec5-452c-b066-af3e1504d3e6>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/2ef5ab58-e1d9-4e61-b8b0-d0e8382779f4>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/32e8377e-79f3-4da7-a17a-5e4bd45d9ff3>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/40f5de46-f35f-4fe0-ad2f-81db8e7c0980>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8c51c2ee-cd8c-4192-9f96-aba774d4583d>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/8fa3903e-9242-4204-8bbd-edeeef56542b>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/a29eeec5-52d6-4ea5-8a33-487cf4199fed>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/effa9c4a-5f9d-4302-82b6-047cff0c8b12> ;
+    sio:000277 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/121fa7e5-eca9-4aa3-abd9-8a6cb0e6d229>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/2b3aad18-bd80-4191-9e3e-96cdc8a69fe1>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/4120c3d1-caca-4410-8568-cc34401947ed>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/59daf91c-02ec-4dd6-b682-44601e779a28>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/8271ca42-71ff-4f6d-9ffa-5f67f6d49471>,
+        <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#protocol/bb923082-be41-43e7-a5ea-b5324a88a3da> ;
+    sio:000628 [ a sio:000087 ;
+            sio:000028 "Jacob A. Rasmussen, Martin Hansen, Harald Sveier, Morten T. Limborg"@en ;
+            sio:000185 "Metabolomics to elucidate the effects of novel sustainable feed additives in the feed of farmed salmon"@en ;
+            sio:000223 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/isa-rdf.json#ontology_annotation/4f2ec0c1-8d26-463c-8de2-54623be8e617> ;
+            sio:000631 ""@en ] ;
+    sio:000671 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/MTBLS4381> ;
+    sio:001083 "25/02/2022"^^xsd:date ;
+    sio:001314 "13/06/2023"^^xsd:date .
+
+[] a sio:Q170584 ;
+    sio:000028 "Created using the MetaboLights Online Editor (MOE)"^^sio:000136 ;
+    sio:000060 [ a sio:001167 ;
+            sio:000008 "Created With Configuration"^^sio:000116 ;
+            sio:000300 "MetaboLightsConfig20150707"^^xsd:string ],
+        [ a sio:001167 ;
+            sio:000008 "Last Opened With Configuration"^^sio:000116 ;
+            sio:000300 "MetaboLightsConfig20150707"^^xsd:string ],
+        "Investigation"^^sio:000185 ;
+    sio:000628 [ a sio:001391 ;
+            sio:000008 "EFO"^^sio:000116 ;
+            sio:000028 "Experimental Factor Ontology"^^sio:000136 ;
+            sio:000060 "132"^^sio:000653 ;
+            sio:001277 "http://data.bioontology.org/ontologies/EFO"^^sio:000396 ],
+        [ a sio:001391 ;
+            sio:000008 "NCIT"^^sio:000116 ;
+            sio:000028 ""^^sio:000136 ;
+            sio:000060 ""^^sio:000653 ;
+            sio:001277 ""^^sio:000396 ],
+        [ a sio:001391 ;
+            sio:000008 "CHMO"^^sio:000116 ;
+            sio:000028 ""^^sio:000136 ;
+            sio:000060 ""^^sio:000653 ;
+            sio:001277 ""^^sio:000396 ],
+        [ a sio:001391 ;
+            sio:000008 "OBI"^^sio:000116 ;
+            sio:000028 "Ontology for Biomedical Investigations"^^sio:000136 ;
+            sio:000060 "29"^^sio:000653 ;
+            sio:001277 "http://data.bioontology.org/ontologies/OBI"^^sio:000396 ],
+        [ a sio:001391 ;
+            sio:000008 "MTBLS"^^sio:000116 ;
+            sio:000028 "User defined terms"^^sio:000136 ;
+            sio:000060 "1"^^sio:000653 ;
+            sio:001277 "https://www.ebi.ac.uk/metabolights/"^^sio:000396 ],
+        [ a sio:001391 ;
+            sio:000008 "BTO"^^sio:000116 ;
+            sio:000028 ""^^sio:000136 ;
+            sio:000060 ""^^sio:000653 ;
+            sio:001277 ""^^sio:000396 ] ;
+    sio:000671 <file:///Users/oerc0042/NDocuments/git/isa-api/isa-cookbook/content/notebooks/MTBLS4381_183928_compressed_files/MTBLS4381> ;
+    sio:001083 "25/02/2022"^^xsd:date ;
+    sio:001314 "13/06/2023"^^xsd:date .
+

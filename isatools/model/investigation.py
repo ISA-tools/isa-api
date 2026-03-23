@@ -252,6 +252,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
 
     def to_dict(self, ld=False):
         investigation = {
+            "@id": self.id,
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
@@ -269,6 +270,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         return self.to_dict(ld=True)
 
     def from_dict(self, investigation):
+        self.id = investigation.get("@id", "")
         self.identifier = investigation.get("identifier", "")
         self.title = investigation.get("title", "")
         self.public_release_date = investigation.get("publicReleaseDate", "")

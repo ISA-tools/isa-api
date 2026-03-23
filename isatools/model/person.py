@@ -204,6 +204,7 @@ class Person(Commentable, Identifiable):
 
     def to_dict(self, ld=False):
         person = {
+            "@id": self.id,
             "address": self.address,
             "affiliation": self.affiliation,
             "comments": [comment.to_dict(ld=ld) for comment in self.comments],
@@ -218,6 +219,7 @@ class Person(Commentable, Identifiable):
         return self.update_isa_object(person, ld=ld)
 
     def from_dict(self, person):
+        self.id = person.get("@id", "")
         self.address = person["address"] if "address" in person else ""
         self.affiliation = person["affiliation"] if "affiliation" in person else ""
         self.email = person["email"] if "email" in person else ""

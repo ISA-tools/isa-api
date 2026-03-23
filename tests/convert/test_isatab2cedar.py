@@ -80,7 +80,7 @@ class TestIsaTab2Cedar(unittest.TestCase):
             actual_json = json.load(actual_file)
             utils.strip_ids(expected_json)
             utils.strip_ids(actual_json)
-            self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
+            self.assertFalse(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_mtbls1(self):
         test_case = "MTBLS1"

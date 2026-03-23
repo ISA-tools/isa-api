@@ -94,7 +94,7 @@ class TestUtils(unittest.TestCase):
                 self.assertTrue(utils.assert_tab_content_equal(i_tab1, i_tab2))
 
     def test_assert_tab_content_equal_investigation_except(self):
-        with self.assertRaises(OSError) as context:
+        with self.assertRaises(OSError):
             with open(os.path.join(utils.TAB_DATA_DIR, "BII-I-1", "i_investigation.txt")) as i_tab1:
                 with open(os.path.join(utils.TAB_DATA_DIR, "BII-S-3", "i_gilbert.txt")) as i_tab2:
                     self.assertEqual(

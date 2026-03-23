@@ -27,6 +27,7 @@ from isatools.create.constants import (
     ASSAY_GRAPH_PREFIX,
     BASE_FACTORS,
     DATA_FILE,
+    DEFAULT_LABEL,
     DEFAULT_PERFORMER,
     DEFAULT_SOURCE_TYPE,
     DEFAULT_STUDY_IDENTIFIER,
@@ -2459,7 +2460,6 @@ class StudyDesign(object):
             processes.append(item)
         elif isinstance(item, Material):
             other_materials.append(item)
-            # characteristic_categories.append(item.characteristics)
             for charx in item.characteristics:
                 if charx.category not in characteristic_categories:
                     characteristic_categories.append(charx.category)
@@ -2654,7 +2654,7 @@ class StudyDesign(object):
             if node.type == LABELED_EXTRACT:
                 return LabeledExtract(
                     name="{}_S{}_LE-R{}".format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
-                    characteristics=node.characteristics,
+                    characteristics=list(node.characteristics) + [DEFAULT_LABEL],
                 )
             # under the hypothesis that we deal only with raw data files
             # derived data file would require a completely separate approach

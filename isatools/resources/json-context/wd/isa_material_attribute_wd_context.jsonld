@@ -2,7 +2,6 @@
   "@context": {
     "@language": "en",
     "wd": "http://www.wikidata.org/wiki/",
-    "wd": "https://www.wikidata.org/wiki/Property:",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "MaterialAttribute": "wd:Q3523867",
     "characteristicType": {

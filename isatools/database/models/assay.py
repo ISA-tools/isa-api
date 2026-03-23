@@ -57,6 +57,7 @@ class Assay(Base):
     def to_json(self):
         characteristic_categories = get_characteristic_categories(self.characteristic_categories)
         return {
+            "@id": str(self.assay_id),
             "filename": self.filename,
             "technologyPlatform": self.technology_platform,
             "measurementType": self.measurement_type.to_json(),

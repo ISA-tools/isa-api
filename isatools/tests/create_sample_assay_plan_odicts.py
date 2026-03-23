@@ -60,7 +60,7 @@ ms_assay_dict = OrderedDict(
             [
                 {
                     "node_type": LABELED_EXTRACT,
-                    "characteristics_category": OntologyAnnotation(term="labelled extract type"),
+                    "characteristics_category": OntologyAnnotation(term="label"),
                     "characteristics_value": "",
                     "size": 1,
                     "is_input_to_next_protocols": True,
@@ -126,7 +126,7 @@ annotated_ms_assay_dict = OrderedDict(
                 {
                     "node_type": LABELED_EXTRACT,
                     "characteristics_category": OntologyAnnotation(
-                        term="labelled extract type", term_accession="http://purl.obolibrary.org/obo/NCIT_C43386"
+                        term="label", term_accession="http://purl.obolibrary.org/obo/NCIT_C43386"
                     ),
                     "characteristics_value": OntologyAnnotation(term=""),
                     "size": 1,

@@ -45,7 +45,7 @@
     },
     "output": {
       "@id": "obo:RO_0002234",
-      "@type": "obo:/BFO_0000002"
+      "@type": "obo:BFO_0000002"
     },
     "performer": {
       "@id": "obo:NCIT_C48206",

@@ -152,25 +152,44 @@ class TestIsaGraph(unittest.TestCase):
 
 
 class TestOlsSearch(unittest.TestCase):
-    @patch("isatools.net.ols")
-    def test_get_ontologies(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
+    def _load_fixture(self, name):
+        data_path = Path(__file__).parent / "fixtures" / name
+        return data_path.read_bytes()
 
-        mock_get.side_effect = _side_effect
+    def _make_requests_response(self, body_bytes, status=200, headers=None):
+        m = Mock()
+        m.status_code = status
+        m.content = body_bytes
+        m.text = body_bytes.decode("utf-8")
 
+        def _json():
+            return json.loads(m.text)
+
+        m.json = _json
+        m.headers = headers or {}
+        return m
+
+    def _make_urlopen_response(self, body_bytes):
+        m = Mock()
+        m.read.return_value = body_bytes
+        return m
+
+    def _make_ols_search_response(self, docs):
+        body = {"response": {"docs": docs}}
+        return self._make_requests_response(json.dumps(body).encode("utf-8"))
+
+    @patch("isatools.net.ols.urlopen")
+    def test_get_ontologies(self, mock_urlopen):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
         ontology_sources = ols.get_ols_ontologies()
         self.assertGreater(len(ontology_sources), 0)
         self.assertIsInstance(ontology_sources, list)
         self.assertIsInstance(ontology_sources[0], OntologySource)
 
     # @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
-    @patch("isatools.net.ols")
-    def test_get_ontology0(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
-
-        mock_get.side_effect = _side_effect
+    @patch("isatools.net.ols.urlopen")
+    def test_get_ontology0(self, mock_urlopen):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
         ontology_source = ols.get_ols_ontology("ado", 0)
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "ado")
@@ -179,12 +198,9 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "Alzheimer's Disease Ontology (ADO)")
 
-    @patch("isatools.net.ols")
-    def test_get_ontology1(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
-
-        mock_get.side_effect = _side_effect
+    @patch("isatools.net.ols.urlopen")
+    def test_get_ontology1(self, mock_urlopen):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
         ontology_source = ols.get_ols_ontology("stato", 0)
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "stato")
@@ -193,12 +209,9 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "STATO: the statistical methods ontology")
 
-    @patch("isatools.net.ols")
-    def test_get_ontology2(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
-
-        mock_get.side_effect = _side_effect
+    @patch("isatools.net.ols.urlopen")
+    def test_get_ontology2(self, mock_urlopen):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
         ontology_source = ols.get_ols_ontology("efo", 0)
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
@@ -208,12 +221,16 @@ class TestOlsSearch(unittest.TestCase):
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
     # @unittest.skip("efo is not available from https://www.ebi.ac.uk/ols4/api/ontologies")
-    @patch("isatools.net.ols")
-    def test_search_for_term_p0(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
-
-        mock_get.side_effect = _side_effect
+    @patch("requests.get")
+    @patch("isatools.net.ols.urlopen")
+    def test_search_for_term_p0(self, mock_urlopen, mock_requests_get):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
+        mock_requests_get.return_value = self._make_ols_search_response(
+            [
+                {"label": "mobile phase", "iri": "http://purl.obolibrary.org/obo/CHMO_0000995"},
+                {"label": "mobile phase velocity", "iri": "http://example.org/CHMO_FAKE"},
+            ]
+        )
         ontology_source = ols.get_ols_ontology("chmo", 0)
         ontology_annotations = ols.search_ols("mobile phase", ontology_source)
         self.assertIsInstance(ontology_annotations, list)
@@ -224,12 +241,16 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIn("http://purl.obolibrary.org/obo/CHMO_0000995", [oa.term_accession for oa in ontology_annotations])
         self.assertEqual(ontology_annotations[-1].term_source, ontology_source)
 
-    @patch("isatools.net.ols")
-    def test_search_for_term_p1(self, mock_get):
-        def _side_effect():
-            return self._make_requests_response(self._load_fixture("ontologies.json"))
-
-        mock_get.side_effect = _side_effect
+    @patch("requests.get")
+    @patch("isatools.net.ols.urlopen")
+    def test_search_for_term_p1(self, mock_urlopen, mock_requests_get):
+        mock_urlopen.return_value = self._make_urlopen_response(self._load_fixture("ontologies.json"))
+        mock_requests_get.return_value = self._make_ols_search_response(
+            [
+                {"label": "time", "iri": "http://www.ebi.ac.uk/efo/EFO_0000721"},
+                {"label": "time series design", "iri": "http://www.ebi.ac.uk/efo/EFO_FAKE"},
+            ]
+        )
         ontology_source = ols.get_ols_ontology("efo", 0)
         ontology_annotations = ols.search_ols("time", ontology_source)
         self.assertIsInstance(ontology_annotations, list)

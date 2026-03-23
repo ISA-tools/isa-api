@@ -74,6 +74,7 @@ def check_dois(i_df_dict):
         if doi_str != "":
             if not _RX_DOI.match(doi_str):
                 spl = "Found {} in DOI field".format(doi_str)
+
                 validator.add_warning(message="DOI is not valid format", supplemental=spl, code=3002)
                 log.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
 

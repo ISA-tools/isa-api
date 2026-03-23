@@ -170,8 +170,11 @@ class LabeledExtract(Material):
 
     def __init__(self, name="", id_="", characteristics=None, comments=None):
         super().__init__(name=name, id_=id_, characteristics=characteristics, comments=comments)
-
+        charact_category = OntologyAnnotation(term="Label")
+        charact_value = OntologyAnnotation(term="Not specified")
+        label = Characteristic(category=charact_category, value=charact_value)
         self.type = "Labeled Extract Name"
+        self.characteristics.append(label)
 
     def __repr__(self):
         return (

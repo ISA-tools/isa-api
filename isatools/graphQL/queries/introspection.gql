@@ -1,6 +1,6 @@
 query introspection {
-    schemas: __schema {
-        types  {     ...FullType   }
+     schemas: __schema {
+        types {     ...FullType   }
     }
 }
 
@@ -16,7 +16,7 @@ fragment FullType on __Type {
             type { kind }
         }
     }
-    fields(includeDeprecated: true) {
+    fields(includeDeprecated: false) {
         name
         description
         args {...InputValue }
@@ -58,11 +58,11 @@ fragment TypeRef on __Type {
                         name
                         description
                         ofType {name}
-                        inputFields {
+                       inputFields {
                             name
                             description
                             defaultValue
-                        }
+                       }
                     }
                 }
             }

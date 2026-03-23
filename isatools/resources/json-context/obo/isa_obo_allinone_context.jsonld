@@ -39,7 +39,7 @@
       "@id": "obo:OBI_0001933"
     },
     "Material": {
-      "@id": "obo:OBI_0000047"
+      "@id": "obo:COB_0000026"
     },
     "OntologyAnnotation": {
       "@id": "obo:OBI_0001933"
@@ -118,7 +118,7 @@
       "@type": "obo:OBI_0100051"
     },
     "otherMaterials": {
-      "@id": "obo:OBI_0000047",
+      "@id": "obo:COB_0000026",
       "@type": "obo:OBI_0000423"
     },
     "characteristics": {
@@ -171,7 +171,7 @@
     },
     "dataFiles": {
       "@id": "obo:EFO_0004095",
-      "@type": "obo:OBI_0000047"
+      "@type": "obo:MS_1000577"
     },
     "filename": {
       "@id": "obo:IAO_0000590",

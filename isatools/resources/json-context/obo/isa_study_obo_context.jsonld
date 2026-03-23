@@ -4,7 +4,8 @@
     "obo": "http://purl.obolibrary.org/obo/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Study": {
-      "@id": "obo:OBI_0000066"
+      "@id": "obo:OBI_0000066",
+      "@type": "@id"
     },
     "filename": {
       "@id": "obo:IAO_0000235",

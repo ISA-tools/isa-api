@@ -132,7 +132,7 @@ class TestIsaTabDump(unittest.TestCase):
             flatten(test_list)
 
     def test_isatab_get_pv_columns(self):
-        columns = []
+        # columns = []
         pp = ProtocolParameter(parameter_name="test_parameter_name")
         with self.assertRaises(AttributeError):
             pv = ParameterValue(category="test_parameter_name", value=3)
@@ -1073,9 +1073,9 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
 
         from isatools.model import _build_assay_graph
 
-        graph = _build_assay_graph(study.process_sequence)
-        graph1 = _build_assay_graph(assay1.process_sequence)
-        graph2 = _build_assay_graph(assay2.process_sequence)
+        _build_assay_graph(study.process_sequence)
+        # graph1 = _build_assay_graph(assay1.process_sequence)
+        # graph2 = _build_assay_graph(assay2.process_sequence)
 
         try:
             isatab.dump(investigation, self._tmp_dir)
@@ -1120,6 +1120,11 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(ISA.studies[0].contacts[0].comments[0].name, "person comment")
 
             self.assertEqual(ISA.studies[0].factors[0].comments[0].value, "stf_cmt")
+
+    def test_isatab_load_issue587(self):
+        with open(os.path.join(self._tab_data_dir, "issue587", "i_Investigation.txt")) as fp:
+            ISA = isatab.load(fp)
+            self.assertEqual(ISA.ontology_source_references[0].name, "1")
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, "sdata201414-isa1", "i_Investigation.txt"), encoding="utf-8") as fp:
