@@ -53,9 +53,6 @@ from isatools.convert import (
     magetab2json as magetab2json_module,
 )
 from isatools.convert import (
-    mzml2isa as mzml2isa_module,
-)
-from isatools.convert import (
     sampletab2isatab as sampletab2isatab_module,
 )
 from isatools.convert import (
@@ -96,7 +93,6 @@ json2sampletab = json2sampletab_module
 json2sra = json2sra_module
 magetab2isatab = magetab2isatab_module
 magetab2json = magetab2json_module
-mzml2isa = mzml2isa_module
 sampletab2isatab = sampletab2isatab_module
 sampletab2json = sampletab2json_module
 
@@ -110,3 +106,14 @@ sra2isatab = sra2isatab_module
 
 # isatools.utils packages
 detect_graph_process_pooling = detect_graph_process_pooling_module
+
+
+def __getattr__(name):
+    if name == "mzml2isa":
+        # Lazy import to avoid pulling optional deps (fs/pkg_resources) at package import time.
+        from importlib import import_module
+
+        module = import_module("isatools.convert.mzml2isa")
+        globals()[name] = module
+        return module
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
