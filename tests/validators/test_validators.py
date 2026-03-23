@@ -210,7 +210,6 @@ class TestValidateIsaJson(unittest.TestCase):
                 )
         with open(os.path.join(self._unit_json_data_dir, "iso8601_fail.json")) as fp:
             report = isajson.validate(fp)
-
             # This test fails. The iso8601_fail.json file does indeed fail to validate, but it throws different
             # errors from those expected in the assertion below.
             self.assertTrue("Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
