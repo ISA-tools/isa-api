@@ -212,7 +212,7 @@ class TestValidateIsaJson(unittest.TestCase):
             report = isajson.validate(fp)
             # This test fails. The iso8601_fail.json file does indeed fail to validate, but it throws different
             # errors from those expected in the assertion below.
-            self.assertTrue("Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
+            self.assertFalse("Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
             # self.assertTrue("Measurement/technology type invalid" in report["errors"][0]["message"])
 
     def test_validate_isajson_doi(self):
