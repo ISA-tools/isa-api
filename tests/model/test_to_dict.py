@@ -32,7 +32,6 @@ contacts = [
 ]
 
 
-
 class TestSerialize(TestCase):
     def setUp(self):
         self.investigation = Investigation()
@@ -63,7 +62,8 @@ class TestSerialize(TestCase):
                 "midInitials": "",
                 "phone": "",
                 "roles": [
-                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}],
+                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}
+                ],
             },
             {
                 "@id": "#person/" + mock_uuid4.return_value,  # "#person/mocked_UUID",
@@ -80,11 +80,15 @@ class TestSerialize(TestCase):
             },
         ]
 
-        publications = [Publication(id_="#publication/" + mock_uuid4.return_value,
-                                    pubmed_id="pubmed_id",
-                                    doi="doi",
-                                    status="status",
-                                    author_list="a, b, c")]
+        publications = [
+            Publication(
+                id_="#publication/" + mock_uuid4.return_value,
+                pubmed_id="pubmed_id",
+                doi="doi",
+                status="status",
+                author_list="a, b, c",
+            )
+        ]
 
         investigation = Investigation()
 
@@ -101,7 +105,7 @@ class TestSerialize(TestCase):
             "ontologySourceReferences": [],
             "people": [],
             "publications": [],
-            "studies": []
+            "studies": [],
         }
 
         self.assertEqual(investigation.to_dict(), expected_dict)
@@ -140,7 +144,12 @@ class TestSerialize(TestCase):
             },
             {
                 "@id": "#ontology_source/" + mock_uuid4.return_value,
-                "name": "name2", "version": "version2", "comments": [], "file": "", "description": ""},
+                "name": "name2",
+                "version": "version2",
+                "comments": [],
+                "file": "",
+                "description": "",
+            },
         ]
         self.assertEqual(self.investigation.to_dict(), expected_dict)
 
@@ -151,8 +160,15 @@ class TestSerialize(TestCase):
 
         # Test publications
         expected_publications = [
-            {"@id": "#publication/" + mock_uuid4.return_value, "authorList": "a, b, c", "comments": [], "doi": "doi",
-             "pubMedID": "pubmed_id", "status": "status", "title": ""}
+            {
+                "@id": "#publication/" + mock_uuid4.return_value,
+                "authorList": "a, b, c",
+                "comments": [],
+                "doi": "doi",
+                "pubMedID": "pubmed_id",
+                "status": "status",
+                "title": "",
+            }
         ]
 
         self.assertEqual(self.investigation.publications, [])
@@ -175,7 +191,8 @@ class TestSerialize(TestCase):
                 "midInitials": "",
                 "phone": "",
                 "roles": [
-                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}],
+                    {"@id": "id1", "annotationValue": "role1", "termSource": "", "termAccession": "", "comments": []}
+                ],
             },
             {
                 "@id": "#person/" + mock_uuid4.return_value,  # "#person/mocked_UUID",
@@ -253,15 +270,26 @@ class TestSerialize(TestCase):
         self.assertEqual(study.to_dict(), expected_dict)
 
         # Test publications
-        publications = [Publication(id_="#publication/" + mock_uuid4.return_value,
-                                    pubmed_id="pubmed_id",
-                                    doi="doi",
-                                    status="status",
-                                    author_list="a, b, c")]
+        publications = [
+            Publication(
+                id_="#publication/" + mock_uuid4.return_value,
+                pubmed_id="pubmed_id",
+                doi="doi",
+                status="status",
+                author_list="a, b, c",
+            )
+        ]
         study.publications = publications
         expected_publications = [
-            {"@id": "#publication/" + mock_uuid4.return_value, "authorList": "a, b, c", "comments": [], "doi": "doi",
-             "pubMedID": "pubmed_id", "status": "status", "title": ""}
+            {
+                "@id": "#publication/" + mock_uuid4.return_value,
+                "authorList": "a, b, c",
+                "comments": [],
+                "doi": "doi",
+                "pubMedID": "pubmed_id",
+                "status": "status",
+                "title": "",
+            }
         ]
         expected_dict["publications"] = expected_publications
         self.assertEqual(study.to_dict(), expected_dict)
@@ -358,14 +386,19 @@ class TestSerialize(TestCase):
                     "@id": "extract_id",
                     "name": "extract",
                     "type": "Labeled Extract Name",
-                    "characteristics": [{'category': {'@id': '#characteristic_category/mocked_UUID'},
-                                                        'comments': [],
-                                                        'value': {'@id': '#ontology_annotation/mocked_UUID',
-                                                                  'annotationValue': 'Not '
-                                                                                     'specified',
-                                                                  'comments': [],
-                                                                  'termAccession': '',
-                                                                  'termSource': ''}}],
+                    "characteristics": [
+                        {
+                            "category": {"@id": "#characteristic_category/mocked_UUID"},
+                            "comments": [],
+                            "value": {
+                                "@id": "#ontology_annotation/mocked_UUID",
+                                "annotationValue": "Not specified",
+                                "comments": [],
+                                "termAccession": "",
+                                "termSource": "",
+                            },
+                        }
+                    ],
                     "comments": [],
                 }
             ],

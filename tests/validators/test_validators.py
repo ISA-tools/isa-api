@@ -213,9 +213,8 @@ class TestValidateIsaJson(unittest.TestCase):
 
             # This test fails. The iso8601_fail.json file does indeed fail to validate, but it throws different
             # errors from those expected in the assertion below.
-            self.assertTrue( "Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
+            self.assertTrue("Invalid JSON against ISA-JSON schemas" in report["errors"][0]["message"])
             # self.assertTrue("Measurement/technology type invalid" in report["errors"][0]["message"])
-
 
     def test_validate_isajson_doi(self):
         """Tests against 3002"""
@@ -490,10 +489,13 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                 fp=test_case_fp, config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR, log_level=self._reporting_level
             )
             self.assertIn(
-                {'supplemental': 'Found 4 study groups in s_MTBLS1.txt',
-                 'code': 5001,
-                 'message': 'Found 4 study groups in s_MTBLS1.txt'},
-                report['info'])
+                {
+                    "supplemental": "Found 4 study groups in s_MTBLS1.txt",
+                    "code": 5001,
+                    "message": "Found 4 study groups in s_MTBLS1.txt",
+                },
+                report["info"],
+            )
 
 
 class TestBatchValidateIsaTab(unittest.TestCase):

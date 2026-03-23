@@ -100,7 +100,7 @@ def check_pubmed_ids_format(i_df_dict):
         :return: None
         """
         if pubmed_id_str != "":
-            if (_RX_PMID.match(pubmed_id_str) is None): # and (_RX_PMCID.match(pubmed_id_str) is None)
+            if _RX_PMID.match(pubmed_id_str) is None:  # and (_RX_PMCID.match(pubmed_id_str) is None)
                 spl = "Found PubMedID {}".format(pubmed_id_str)
                 validator.add_warning(message="PubMed ID is not valid format", supplemental=spl, code=3003)
                 log.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))

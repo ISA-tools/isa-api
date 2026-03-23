@@ -30,7 +30,7 @@ warnings = []
 info = []
 
 # REGEXES
-#_RX_DOI = re.compile(r"^10\.\d{4,9}/[a-zA-Z0-9()-._;()/:]+$")
+# _RX_DOI = re.compile(r"^10\.\d{4,9}/[a-zA-Z0-9()-._;()/:]+$")
 # _RX_PMID = re.compile(r"[0-9]{8}")
 # _RX_PMCID = re.compile(r"PMC[0-9]{8}")
 _RX_DOI = re.compile(r"^(https://doi.org/)?(10\.\d{4,9}/[-._;()/:a-z0-9A-Z]+)$")
@@ -552,7 +552,6 @@ def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
         with open(investigation_schema_path):
-
             resources = []
             investigation_schema_path = Path(investigation_schema_path)
             schemas_dir = investigation_schema_path.parent

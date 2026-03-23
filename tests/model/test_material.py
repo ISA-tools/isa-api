@@ -60,7 +60,13 @@ class TestMaterial(TestCase):
     @patch("isatools.model.identifiable.uuid4", return_value="test_uuid")
     def test_to_dict(self, mock_uuid4):
         extract = Material(name="test_name")
-        expected_dict = {"@id": "#material/" + mock_uuid4.return_value, "type": "", "name": "test_name", "characteristics": [], "comments": []}
+        expected_dict = {
+            "@id": "#material/" + mock_uuid4.return_value,
+            "type": "",
+            "name": "test_name",
+            "characteristics": [],
+            "comments": [],
+        }
         self.assertEqual(extract.to_dict(), expected_dict)
 
 
@@ -94,7 +100,7 @@ class TestExtract(TestCase):
         self.assertTrue(first_extract != self.extract)
 
     @patch("isatools.model.identifiable.uuid4", return_value="test_uuid")
-    def test_to_dict(self,mock_uuid4):
+    def test_to_dict(self, mock_uuid4):
         extract = Extract(name="test_name", characteristics=[], comments=[])
         expected_dict = {
             "@id": "#extract/" + mock_uuid4.return_value,
@@ -117,9 +123,7 @@ class TestLabeledExtract(TestCase):
         self.assertTrue(self.labeled_extract.type == "Labeled Extract Name")
 
     def test_repr(self):
-        expected_str = (
-            "isatools.model.LabeledExtract(name='', type='Labeled Extract Name', characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term='Label', term_source=None, term_accession='', comments=[]), value=isatools.model.OntologyAnnotation(term='Not specified', term_source=None, term_accession='', comments=[]), unit=None, comments=[])], comments=[])"
-        )
+        expected_str = "isatools.model.LabeledExtract(name='', type='Labeled Extract Name', characteristics=[isatools.model.Characteristic(category=isatools.model.OntologyAnnotation(term='Label', term_source=None, term_accession='', comments=[]), value=isatools.model.OntologyAnnotation(term='Not specified', term_source=None, term_accession='', comments=[]), unit=None, comments=[])], comments=[])"
         # print("NOW:", self.labeled_extract.characteristics[0].category.term)
         # print(repr(self.labeled_extract))
         self.assertTrue(repr(self.labeled_extract) == expected_str)
@@ -149,13 +153,19 @@ class TestLabeledExtract(TestCase):
             "@id": "id1",
             "type": "Labeled Extract Name",
             "name": "test_name",
-            "characteristics": [{'category': {'@id': '#characteristic_category/' +  mock_uuid4.return_value},
-                      'comments': [],
-                      'value': {'@id': '#ontology_annotation/' + mock_uuid4.return_value,
-                                'annotationValue': 'Not specified',
-                                'comments': [],
-                                'termAccession': '',
-                                'termSource': ''}}],
+            "characteristics": [
+                {
+                    "category": {"@id": "#characteristic_category/" + mock_uuid4.return_value},
+                    "comments": [],
+                    "value": {
+                        "@id": "#ontology_annotation/" + mock_uuid4.return_value,
+                        "annotationValue": "Not specified",
+                        "comments": [],
+                        "termAccession": "",
+                        "termSource": "",
+                    },
+                }
+            ],
             "comments": [],
         }
         self.assertEqual(label_extract.to_dict(), expected_dict)

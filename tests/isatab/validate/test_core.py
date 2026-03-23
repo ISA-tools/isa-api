@@ -50,7 +50,6 @@ class TestValidators(unittest.TestCase):
         print(report["errors"])
         self.assertEqual(len(report["errors"]), 0)
 
-
     def test_print_rule(self):
         raw_rule = INVESTIGATION_RULES_MAPPING[0]
         rule = Rule(**raw_rule)
