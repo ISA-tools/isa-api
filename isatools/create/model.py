@@ -254,7 +254,7 @@ class Treatment(Element):
 
     def __str__(self):
         return """"{0}
-        (type={1},
+        (type={1}, 
         factor_values={2})
         """.format(self.__class__.__name__, self.type, sorted(self.factor_values, key=lambda x: repr(x)))
 
@@ -327,8 +327,8 @@ class StudyCell(object):
 
     def __str__(self):
         return """{0}(
-               name={name},
-               elements={elements_count} items,
+               name={name}, 
+               elements={elements_count} items, 
                )""".format(self.__class__.__name__, name=self.name, elements_count=len(self.elements))
 
     def __hash__(self):
@@ -799,12 +799,12 @@ class ProtocolNode(SequenceNode, Protocol):
 
     def __str__(self):
         return """{0}(
-        id={1.id},
-        name={1.name},
-        protocol_type={1.protocol_type},
-        uri={1.uri},
-        description={1.description},
-        version={1.version},
+        id={1.id}, 
+        name={1.name}, 
+        protocol_type={1.protocol_type}, 
+        uri={1.uri}, 
+        description={1.description}, 
+        version={1.version}, 
         parameter_values={1.parameter_values})
         """.format(self.__class__.__name__, self)
 
@@ -1011,7 +1011,7 @@ class QualityControl(object):
     def __str__(self):
         return """{0}(
         pre_run_sample_type={1}
-        post_run_sample_type={2}
+        post_run_sample_type={2} 
         interspersed_sample_types={3}
         )""".format(
             self.__class__.__name__,
@@ -1410,9 +1410,9 @@ class AssayGraph(object):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return """"{0}(
         id={1.id}
-        measurement_type={1.measurement_type}
+        measurement_type={1.measurement_type} 
         technology_type={1.technology_type}
-        nodes={1.nodes}
+        nodes={1.nodes} 
         links={2}
         )""".format(self.__class__.__name__, self, sorted(links, key=lambda link: (link[0], link[1])))
 
@@ -1604,7 +1604,7 @@ class SampleAndAssayPlan(object):
     def __str__(self):
         return """{0}(
         name={1.name},
-        sample_plan={1.sample_plan},
+        sample_plan={1.sample_plan}, 
         assay_plan={1.assay_plan}
         )""".format(self.__class__.__name__, self)
 
@@ -1848,7 +1848,7 @@ class StudyArm(object):
         return """{0}(
                name={name},
                source_type={source_type},
-               group_size={group_size},
+               group_size={group_size}, 
                no. cells={cells},
                no. sample_assay_plans={sample_assay_plans}
                )""".format(
@@ -2773,7 +2773,7 @@ class StudyDesign(object):
 
     def __str__(self):
         return """{0}(
-               identifier={identifier},
+               identifier={identifier}, 
                name={name},
                description={description},
                study_arms={study_arms}
