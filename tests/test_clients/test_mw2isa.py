@@ -54,7 +54,7 @@ class mw2ISATest(unittest.TestCase):
             log.info("conversion successful, invoking the validator for " + study_id)
             with open(os.path.join(self._tmp_dir, study_id, "i_investigation.txt")) as fp:
                 report = isatab.validate(fp)
-                # print(report)
+                print(report)
                 for error in report["errors"]:
                     # print("ERROR:", error)
                     # self.assertEqual(error['code'], 4014)

@@ -47,7 +47,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), "..", "..", "data", "tab", "Imaging")
         with open(path.join(data_path, "i_Investigation.txt"), "r") as data_file:
             report = validate(fp=data_file, config_dir=self.default_conf)
-            print(report["errors"])
+        print(report["errors"])
         self.assertEqual(len(report["errors"]), 0)
 
 

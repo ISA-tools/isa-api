@@ -358,7 +358,14 @@ class TestSerialize(TestCase):
                     "@id": "extract_id",
                     "name": "extract",
                     "type": "Labeled Extract Name",
-                    "characteristics": [],
+                    "characteristics": [{'category': {'@id': '#characteristic_category/mocked_UUID'},
+                                                        'comments': [],
+                                                        'value': {'@id': '#ontology_annotation/mocked_UUID',
+                                                                  'annotationValue': 'Not '
+                                                                                     'specified',
+                                                                  'comments': [],
+                                                                  'termAccession': '',
+                                                                  'termSource': ''}}],
                     "comments": [],
                 }
             ],

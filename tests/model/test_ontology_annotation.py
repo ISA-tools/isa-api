@@ -113,7 +113,7 @@ class TestOntologyAnnotation(TestCase):
 
         indexes.term_sources = {"test_source_name": OntologySource("test_source_name")}
         # ontology_annotation = OntologyAnnotation()
-        print("DICT:", expected_dict)
+        # print("DICT:", expected_dict)
         ontology_annotation.from_dict(expected_dict)
         # self.assertEqual(ontology_annotation.to_dict(), expected_dict)
         self.assertIsInstance(ontology_annotation.term_source, OntologySource)

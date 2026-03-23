@@ -121,6 +121,19 @@ DEFAULT_SOURCE_TYPE = Characteristic(
     ),
 )
 
+DEFAULT_LABEL = Characteristic(
+    category=OntologyAnnotation(
+        term="Label",
+        term_source=default_ontology_source_reference,
+        term_accession="http://purl.obolibrary.org/obo/CHEBI_35209",
+    ),
+    value=OntologyAnnotation(
+        term="Not specified",
+        term_source=default_ontology_source_reference,
+        term_accession="http://purl.obolibrary.org/obo/NCIT_C14225",
+    ),
+)
+
 
 def set_defaulttype_value(
     term="Human",

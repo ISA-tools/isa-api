@@ -30,10 +30,12 @@ warnings = []
 info = []
 
 # REGEXES
-_RX_DOI = re.compile(r"^10\.\d{4,9}/[a-zA-Z0-9()-._;()/:]+$")
-_RX_PMID = re.compile(r"[0-9]{8}")
-_RX_PMCID = re.compile(r"PMC[0-9]{8}")
-
+#_RX_DOI = re.compile(r"^10\.\d{4,9}/[a-zA-Z0-9()-._;()/:]+$")
+# _RX_PMID = re.compile(r"[0-9]{8}")
+# _RX_PMCID = re.compile(r"PMC[0-9]{8}")
+_RX_DOI = re.compile(r"^(https://doi.org/)?(10\.\d{4,9}/[-._;()/:a-z0-9A-Z]+)$")
+_RX_PMID = re.compile(r"(^https://pubmed.ncbi.nlm.nih.gov/)?[0-9]{8}$")
+_RX_PMCID = re.compile(r"(^https://pmc.ncbi.nlm.nih.gov/articles/)?PMC[0-9]{8}$")
 
 """Everything below here is for the validator"""
 

@@ -132,7 +132,7 @@ class TestAssay(TestCase):
             technology_type=OntologyAnnotation(term="TT", id_="TT_ID"),
         )
 
-        print("ID:", assay.id)
+        # print("ID:", assay.id)
         self.assertEqual(assay.id, "#assay/" + mock_uuid4.return_value)
 
         expected_dict = {
