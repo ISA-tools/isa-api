@@ -9,7 +9,6 @@ import datetime
 import itertools
 import json
 import logging
-import os
 import re
 import uuid
 from abc import ABC
@@ -20,7 +19,6 @@ from math import factorial
 from numbers import Number
 
 import networkx as nx
-import yaml
 
 from isatools.create import errors
 from isatools.create.constants import (
@@ -57,6 +55,7 @@ from isatools.create.constants import (
     WASHOUT,
     ZFILL_WIDTH,
     assays_opts,
+    get_study_creator_config,
 )
 from isatools.model import (
     AcquisitionParameterDataFile,
@@ -97,6 +96,23 @@ log = logging.getLogger("isatools")
 log.setLevel(logging.INFO)
 
 __author__ = "massi"
+
+_ALLOWED_DATA_FILE_CLASSES = {
+    RawDataFile,
+    RawSpectralDataFile,
+    ArrayDataFile,
+    FreeInductionDecayDataFile,
+    DerivedDataFile,
+    DerivedSpectralDataFile,
+    DerivedArrayDataFile,
+    ProteinAssignmentFile,
+    PeptideAssignmentFile,
+    DerivedArrayDataMatrixFile,
+    PostTranslationalModificationAssignmentFile,
+    AcquisitionParameterDataFile,
+}
+
+_DATA_FILE_CLASS_BY_NAME = {cls.__name__: cls for cls in _ALLOWED_DATA_FILE_CLASSES}
 
 
 def intersperse(lst, item):
@@ -215,8 +231,9 @@ class NonTreatment(Element):
     def update_duration(self, duration_value, duration_unit=None):
         if not isinstance(duration_value, Number):
             raise ValueError("duration_value must be a Number. Value provided is {0}".format(duration_value))
-        self.__duration.value = duration_value
-        self.__duration.unit = duration_unit
+        duration_factor_value = self.duration
+        duration_factor_value.value = duration_value
+        duration_factor_value.unit = duration_unit
 
 
 class Treatment(Element):
@@ -298,8 +315,9 @@ class Treatment(Element):
     def update_duration(self, duration_value, duration_unit=None):
         if not isinstance(duration_value, Number):
             raise ValueError("duration_value must be a Number. Value provided is {0}".format(duration_value))
-        self.__duration.value = duration_value
-        self.__duration.unit = duration_unit
+        duration_factor_value = self.duration
+        duration_factor_value.value = duration_value
+        duration_factor_value.unit = duration_unit
 
 
 class StudyCell(object):
@@ -2509,8 +2527,14 @@ class StudyDesign(object):
                                 for process in processes[::-1]
                                 if process.executes_protocol == previous_protocol_node
                             )
-                            assert isinstance(previous_process, Process)
-                            assert isinstance(item, Process)
+                            if not isinstance(previous_process, Process):
+                                raise TypeError(
+                                    "Expected Process instance for previous_process, got {}".format(
+                                        type(previous_process).__name__
+                                    )
+                                )
+                            if not isinstance(item, Process):
+                                raise TypeError("Expected Process instance for item, got {}".format(type(item).__name__))
                             log.debug("linking process {0} to process {1}".format(previous_process.name, item.name))
                             plink(previous_process, item)  # TODO check if this generates any issue
 
@@ -2530,8 +2554,14 @@ class StudyDesign(object):
                                 for process in processes[::-1]
                                 if process.executes_protocol == previous_protocol_node
                             )
-                            assert isinstance(previous_process, Process)
-                            assert isinstance(item, Process)
+                            if not isinstance(previous_process, Process):
+                                raise TypeError(
+                                    "Expected Process instance for previous_process, got {}".format(
+                                        type(previous_process).__name__
+                                    )
+                                )
+                            if not isinstance(item, Process):
+                                raise TypeError("Expected Process instance for item, got {}".format(type(item).__name__))
                             log.debug("linking process {0} to process {1}".format(previous_process.name, item.name))
                             plink(previous_process, item)  # TODO check if this generates any issue
         return processes, other_materials, characteristic_categories, data_files, item, counter
@@ -2675,22 +2705,8 @@ class StudyDesign(object):
                     log.debug(
                         "Assay conf. found: {}; {}; {};".format(measurement_type, technology_type, curr_assay_opt)
                     )
-                    isa_class = globals()[curr_assay_opt["raw data file"].replace(" ", "")]
-                    assert isa_class in {
-                        # expand this set if needed
-                        RawDataFile,
-                        RawSpectralDataFile,
-                        ArrayDataFile,
-                        FreeInductionDecayDataFile,
-                        DerivedDataFile,
-                        DerivedSpectralDataFile,
-                        DerivedArrayDataFile,
-                        ProteinAssignmentFile,
-                        PeptideAssignmentFile,
-                        DerivedArrayDataMatrixFile,
-                        PostTranslationalModificationAssignmentFile,
-                        AcquisitionParameterDataFile,
-                    }
+                    raw_data_file_name = curr_assay_opt["raw data file"].replace(" ", "")
+                    isa_class = _DATA_FILE_CLASS_BY_NAME.get(raw_data_file_name, RawDataFile)
                     file_extension = ".{}".format(node.extension) if node.extension else ""
                     return isa_class(
                         filename="{}_S{}_DAE_R{}_{}{}".format(
@@ -2710,12 +2726,7 @@ class StudyDesign(object):
         this is the core method to return the fully populated ISA Study object from the StudyDesign
         :return: isatools.model.Study
         """
-        with open(
-            os.path.join(os.path.dirname(__file__), "..", "resources", "config", "yaml", "study-creator-config.yml")
-        ) as yaml_file:
-            config = yaml.load(yaml_file, Loader=yaml.FullLoader)
-
-        study_config = config["study"]
+        study_config = get_study_creator_config()["study"]
         study = Study(
             identifier=self.identifier or identifier or DEFAULT_STUDY_IDENTIFIER,
             title=self.name,
@@ -2808,7 +2819,8 @@ class QualityControlService(object):
         :param in_place: boolean
         :return:
         """
-        assert isinstance(in_place, bool)
+        if not isinstance(in_place, bool):
+            raise TypeError("in_place must be a boolean")
         if not isinstance(study, Study):
             raise TypeError("study must be a valid Study object")
         if not isinstance(study_design, StudyDesign):
@@ -2818,7 +2830,8 @@ class QualityControlService(object):
             for cell, study_assay_plan in arm.arm_map.items():
                 if study_assay_plan:
                     for assay_graph in study_assay_plan.assay_plan:
-                        assert isinstance(assay_graph, AssayGraph)
+                        if not isinstance(assay_graph, AssayGraph):
+                            raise TypeError("assay_graph must be a valid AssayGraph object")
                         if assay_graph.quality_control:
                             # CHECK the assumption here is that an assay file can unequivocally be identified
                             # by StudyCell name, corresponding AssayGraph id and measurement type
@@ -2929,7 +2942,8 @@ class QualityControlService(object):
         if not isinstance(quality_control, QualityControl):
             raise TypeError()
         qc_pre = quality_control.pre_run_sample_type
-        assert isinstance(qc_pre, ProductNode)
+        if not isinstance(qc_pre, ProductNode):
+            raise TypeError("quality_control.pre_run_sample_type must be a ProductNode")
         cell_name = study_cell.name
         for i in range(qc_pre.size):
             dummy_source = QualityControlSource(
@@ -2976,7 +2990,8 @@ class QualityControlService(object):
                 qc_samples_interspersed[(sample_node, interspersing_interval)].append(sample)
         log.debug("Completed interspersed samples")
         qc_post = quality_control.post_run_sample_type
-        assert isinstance(qc_post, ProductNode)
+        if not isinstance(qc_post, ProductNode):
+            raise TypeError("quality_control.post_run_sample_type must be a ProductNode")
         for i in range(qc_post.size):
             dummy_source = QualityControlSource(
                 name="SRC-QC-POST_{}_{}_{}".format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
@@ -2986,7 +3001,7 @@ class QualityControlService(object):
                 name="SMP-QC-POST-{}_{}_{}".format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
                 factor_values=[],
                 characteristics=[
-                    qc_post.characteristics if i < len(qc_post.characteristics) else qc_post.characteristics[-1]
+                    qc_post.characteristics[i] if i < len(qc_post.characteristics) else qc_post.characteristics[-1]
                 ],
                 derives_from=[dummy_source],
             )

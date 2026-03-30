@@ -77,7 +77,7 @@ class ProcessSequenceFactory:
         """Create the process sequences from the table DataFrame
 
         :param DF: Table DataFrame
-        :return: List of Processes coressponding to the process sequences. The
+        :return: List of Processes corresponding to the process sequences. The
         Processes are linked appropriately to all other ISA content objects,
         such as Samples, DataFiles, and to each other.
         """
@@ -92,6 +92,11 @@ class ProcessSequenceFactory:
         characteristic_categories = {}
         unit_categories = {}
         samples = {}
+        columns = DF.columns
+        factor_by_name = dict(map(lambda x: (x.name, x), self.factors)) if self.factors is not None else {}
+        factor_value_columns = [c for c in columns if c.startswith("Factor Value[")]
+        factor_column_keys = [(fv_col, next(iter(_RX_FACTOR_VALUE.findall(fv_col)))) for fv_col in factor_value_columns]
+        col_index = {col: i for i, col in enumerate(columns)}
 
         if self.ontology_sources is not None:
             ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
@@ -157,17 +162,17 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        for data_col in [x for x in DF.columns if x in _LABELS_DATA_NODES]:
+        for data_col in [x for x in columns if x in _LABELS_DATA_NODES]:
             filenames = [x for x in DF[data_col].drop_duplicates() if x != ""]
             data.update(dict(map(lambda x: (":".join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
-        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-        proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
+        node_cols = [i for i, c in enumerate(columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+        proc_cols = [i for i, c in enumerate(columns) if c.startswith("Protocol REF")]
 
         try:
-            object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
+            object_column_map = get_object_column_map(DF.isatab_header, columns)
         except AttributeError:
-            object_column_map = get_object_column_map(DF.columns, DF.columns)
+            object_column_map = get_object_column_map(columns, columns)
 
         def get_node_by_label_and_key(labl, this_key):
             n = None
@@ -239,32 +244,6 @@ class ProcessSequenceFactory:
                                 comment = Comment(name=comment_key, value=str(object_series[comment_column]))
                                 material.comments.append(comment)
 
-                for _, object_series in DF.drop_duplicates().iterrows():
-                    node_name = str(object_series["Sample Name"])
-                    node_key = ":".join(["Sample Name", node_name])
-                    material = None
-                    try:
-                        material = samples[node_key]
-                    except KeyError:
-                        pass  # skip if object not found
-
-                    if isinstance(material, Sample) and self.factors is not None:
-                        for fv_column in [c for c in DF.columns if c.startswith("Factor Value[")]:
-                            category_key = next(iter(_RX_FACTOR_VALUE.findall(fv_column)))
-                            factor_hits = [f for f in self.factors if f.name == category_key]
-
-                            if len(factor_hits) != 1:
-                                raise ValueError("Could not resolve Study Factor from Factor Value ", category_key)
-
-                            factor = factor_hits[0]
-                            fv = FactorValue(factor_name=factor)
-                            v, u = get_value(fv_column, DF.columns, object_series, ontology_source_map, unit_categories)
-                            fv.value = v
-                            fv.unit = u
-                            fv_set = set(material.factor_values)
-                            fv_set.add(fv)
-                            material.factor_values = list(fv_set)
-
             elif object_label in _LABELS_DATA_NODES:
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     try:
@@ -278,13 +257,13 @@ class ProcessSequenceFactory:
                         pass  # skip if object not found
 
             elif object_label.startswith("Protocol REF"):
-                object_label_index = list(DF.columns).index(object_label)
+                object_label_index = col_index[object_label]
 
                 # don't drop duplicates
                 for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(
-                        protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF
+                        protocol_ref, column_group, _cg, columns, object_series, object_index, DF
                     )
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
@@ -302,14 +281,14 @@ class ProcessSequenceFactory:
 
                     post_chained_protocol = any(
                         col_name
-                        for col_name in DF.columns[(object_label_index + 1) : output_node_index].values
+                        for col_name in columns[(object_label_index + 1) : output_node_index].values
                         if col_name.startswith("Protocol REF")
                     )
 
                     if (output_proc_index < output_node_index > -1 and not post_chained_protocol) or (
                         output_proc_index > output_node_index
                     ):
-                        output_node_label = DF.columns[output_node_index]
+                        output_node_label = columns[output_node_index]
                         output_node_value = str(object_series[output_node_label])
                         node_key = output_node_value
                         output_node = None
@@ -326,12 +305,12 @@ class ProcessSequenceFactory:
 
                     previous_chained_protocol = any(
                         col_name
-                        for col_name in DF.columns[input_node_index : (object_label_index - 1)].values
+                        for col_name in columns[input_node_index : (object_label_index - 1)].values
                         if col_name.startswith("Protocol REF")
                     )
 
                     if input_proc_index < input_node_index > -1 and not previous_chained_protocol:
-                        input_node_label = DF.columns[input_node_index]
+                        input_node_label = columns[input_node_index]
                         input_node_value = str(object_series[input_node_label])
                         node_key = input_node_value
                         input_node = None
@@ -382,6 +361,29 @@ class ProcessSequenceFactory:
                     for date in [c for c in column_group if c == "Date"]:
                         process.date = str(object_series[date])
 
+        if self.factors is not None and factor_column_keys:
+            for _, object_series in DF.drop_duplicates().iterrows():
+                node_name = str(object_series.get("Sample Name", ""))
+                if node_name == "":
+                    continue
+                node_key = ":".join(["Sample Name", node_name])
+                material = samples.get(node_key)
+                if not isinstance(material, Sample):
+                    continue
+
+                for fv_column, category_key in factor_column_keys:
+                    factor = factor_by_name.get(category_key)
+                    if factor is None:
+                        raise ValueError("Could not resolve Study Factor from Factor Value ", category_key)
+
+                    fv = FactorValue(factor_name=factor)
+                    v, u = get_value(fv_column, columns, object_series, ontology_source_map, unit_categories)
+                    fv.value = v
+                    fv.unit = u
+                    fv_set = set(material.factor_values)
+                    fv_set.add(fv)
+                    material.factor_values = list(fv_set)
+
         for _, object_series in DF.iterrows():  # don't drop duplicates
             process_key_sequence = list()
             source_node_context = None
@@ -407,7 +409,7 @@ class ProcessSequenceFactory:
 
                 if object_label.startswith("Protocol REF"):
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = process_keygen(protocol_ref, column_group, _cg, columns, object_series, _, DF)
                     process_key_sequence.append(process_key)
 
                 if object_label in _LABELS_DATA_NODES:

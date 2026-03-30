@@ -3,12 +3,15 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from io import StringIO
+from itertools import zip_longest
 from os import path
 from re import compile
+from functools import lru_cache
 from typing import TextIO
 
 from numpy import nan
 from pandas import DataFrame, Series, merge, read_csv
+from pandas.errors import EmptyDataError
 
 from isatools.isatab.defaults import _RX_COMMENT, log
 from isatools.isatab.load.ProcessSequenceFactory import ProcessSequenceFactory
@@ -40,38 +43,34 @@ class ISATabReader:
 
     def __init__(self, fp: TextIO) -> None:
         """Constructor for the ISATabReader class"""
-        self.memory_file: TextIO = fp
+        self.source_file: TextIO = fp
+        self.__next_line: str | None = None
         self.dataframe_dict: dict[str, DataFrame | str, list[DataFrame]] = {}
 
-    def __del__(self) -> None:
-        """Destructor hook for the ISATabReader class. Called by the garbage collector. Makes sure the file-like
-        buffer object is closed even if the program crashes.
-        """
-        self.memory_file.close()
-
     @property
-    def memory_file(self) -> TextIO:
-        """Getter for the in memory file-like buffer object
+    def source_file(self) -> TextIO:
+        """Getter for the source file-like buffer object
 
         :return: A file-like buffer object
         """
-        return self.__memory_file
+        return self.__source_file
 
-    @memory_file.setter
-    def memory_file(self, fp: TextIO) -> None:
-        """Setter for the memory_file property. Reads the input file into memory, stripping out comments and
-        sets the memory_file property
+    @source_file.setter
+    def source_file(self, fp: TextIO) -> None:
+        """Setter for the source file property.
 
         :param fp: A file-like buffer object
         """
-        memory_file: StringIO = StringIO()
-        line: bool | str = True
-        while line:
-            line = fp.readline()
+        self.__source_file = fp
+
+    def __read_next_data_line(self) -> str:
+        """Read the next non-comment line from the source file."""
+        while True:
+            line = self.source_file.readline()
+            if not line:
+                return ""
             if not line.lstrip().startswith("#"):
-                memory_file.write(line)
-        memory_file.seek(0)
-        self.__memory_file = memory_file
+                return line
 
     def __peek(self) -> str:
         """Peek at the next line without moving to the next line. This function get the position of the next line,
@@ -79,10 +78,17 @@ class ISATabReader:
 
         :return: The next line past the current line
         """
-        position: int = self.memory_file.tell()
-        line: str = self.memory_file.readline()
-        self.memory_file.seek(position)
-        return line
+        if self.__next_line is None:
+            self.__next_line = self.__read_next_data_line()
+        return self.__next_line
+
+    def __readline(self) -> str:
+        """Read the next line, honoring the peek buffer."""
+        if self.__next_line is not None:
+            line = self.__next_line
+            self.__next_line = None
+            return line
+        return self.__read_next_data_line()
 
     def __read_tab_section(self, sec_key: str, next_sec_key: str) -> StringIO:
         """Slices a file by section delimited by section keys
@@ -91,14 +97,14 @@ class ISATabReader:
         :param next_sec_key: Delimiter key of end of section
         :return: A memory file of the section slice, as a string buffer object
         """
-        fileline: str = self.memory_file.readline()
+        fileline: str = self.__readline()
         normed_line: str = fileline.rstrip().strip('"')
         memory_file: StringIO = StringIO()
 
         if normed_line != sec_key:
-            raise IOError(f"Expected: {sec_key} section, but got: {normed_line}")
+            raise IOError(f"Invalid ISA-Tab section order: expected '{sec_key}', got '{normed_line}'")
         while self.__peek().rstrip() != next_sec_key:
-            fileline = self.memory_file.readline()
+            fileline = self.__readline()
             if not fileline:
                 break
             memory_file.write(fileline.rstrip() + "\n")
@@ -113,13 +119,18 @@ class ISATabReader:
         :return: A DataFrame corresponding to the file section
         """
         file_handler: StringIO = self.__read_tab_section(sec_key=current_section_key, next_sec_key=next_section_key)
-        df: DataFrame = (
-            read_csv(filepath_or_buffer=file_handler, names=range(0, 128), sep="\t", engine="python", encoding="utf-8")
-            .dropna(axis=1, how="all")
-            .T
-        )
+        try:
+            df: DataFrame = (
+                read_csv(filepath_or_buffer=file_handler, names=range(0,256),sep="\t", engine="python", encoding="utf-8", header=None)
+                .dropna(axis=1, how="all")
+                .T
+            )
+        except EmptyDataError:
+            return DataFrame()
         df.replace(nan, "", regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset study_index so it is accessible as column
+        if df.empty:
+            return df
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
         return df.reindex(df.index.drop(0))  # Return the re-indexed DataFrame
 
@@ -158,9 +169,14 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         - load: Load the investigation file into the Investigation object
     """
 
-    ontology_source_map: dict
-    skip_load_tables: bool = False
+    ontology_source_map: dict[str, OntologySource]
+    skip_load_tables: bool
     filepath: str
+
+    @staticmethod
+    @lru_cache(maxsize=64)
+    def _comment_columns(cols: tuple[str, ...]) -> tuple[str, ...]:
+        return tuple(x for x in cols if _RX_COMMENT.match(str(x)))
 
     def __get_ontology_source(self, term_source_ref) -> OntologySource | None:
         """Small wrapper to return an ontology source from the map or None if not found
@@ -185,7 +201,7 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         elif "Study Person Last Name" in contact_dataframe.columns:
             prefix = "Study "
         else:
-            raise KeyError
+            raise KeyError("Could not resolve contact section prefix from DataFrame columns")
 
         for current_row in contact_dataframe.to_dict(orient="records"):
             person: Person = Person(
@@ -216,7 +232,8 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         :return: A list of Comment objects as found in the section
         """
         comments: list[Comment] = []
-        for col in [x for x in section_df.columns if _RX_COMMENT.match(str(x))]:
+        comment_columns = ISATabLoaderMixin._comment_columns(tuple(map(str, section_df.columns)))
+        for col in comment_columns:
             for _, current_row in section_df.iterrows():
                 comments.append(Comment(name=next(iter(_RX_COMMENT.findall(col))), value=current_row[col]))
         return comments
@@ -230,7 +247,8 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         :return: A list of Comment objects
         """
         comments: list[Comment] = []
-        for col in [x for x in cols if _RX_COMMENT.match(str(x))]:
+        comment_columns = ISATabLoaderMixin._comment_columns(tuple(map(str, cols)))
+        for col in comment_columns:
             comments.append(Comment(name=next(iter(_RX_COMMENT.findall(col))), value=row[col]))
         return comments
 
@@ -255,17 +273,18 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         :return: A list of OntologyAnnotation objects
         """
         ontology_annotations: list[OntologyAnnotation] = []
+        vals_split: list[str] = vals.split(";")
         accession_split: list[str] = accessions.split(";")
         ts_refs_split: list[str] = ts_refs.split(";")
 
         # if no acc or ts_refs
         if accession_split == [""] and ts_refs_split == [""]:
-            for val in vals.split(";"):
+            for val in vals_split:
                 ontology_annotations.append(OntologyAnnotation(term=val))
         else:
-            for index, val in enumerate(vals.split(";")):
+            for val, accession, ts_ref in zip_longest(vals_split, accession_split, ts_refs_split, fillvalue=""):
                 ontology_annotation: OntologyAnnotation | None = self.get_ontology_annotation(
-                    val=val, accession=accessions.split(";")[index], ts_ref=ts_refs.split(";")[index]
+                    val=val, accession=accession, ts_ref=ts_ref
                 )
                 if ontology_annotation:
                     ontology_annotations.append(ontology_annotation)
@@ -280,7 +299,7 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         elif "Study PubMed ID" in section_df.columns:
             prefix = "Study "
         else:
-            raise KeyError
+            raise KeyError("Could not resolve publication section prefix from DataFrame columns")
 
         for _, current_row in section_df.iterrows():
             publication: Publication = Publication(
@@ -319,7 +338,7 @@ class ISATabLoaderStudyAssayMixin(metaclass=ABCMeta):
     """
 
     unknown_protocol_description: str = "This protocol was auto-generated where a protocol could not be determined."
-    protocol_map: dict[str, Protocol] = {}
+    protocol_map: dict[str, Protocol]
 
     def update_protocols(self, process: Process, study: Study, protocol_map) -> None:
         """Update the protocols in the process with the protocol map and binds it to the study in case of an
@@ -380,18 +399,26 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
 
     def __init__(self, file: TextIO | str, run: bool = True, skip_load_table: bool = False) -> None:
         """Constructor for the ISATabInvestigationLoader class"""
-        ISATabLoaderMixin.skip_load_tables = skip_load_table
+        self.skip_load_tables = skip_load_table
+        self.ontology_source_map = {}
+        self.filepath = ""
+        self.__owns_file = False
         self.__investigation: Investigation
         self.__df_dict: dict = {}
+        self.__file: TextIO | None = None
         self.file: TextIO = file
         if run:
             self.load()
 
-    def __del__(self, **kwargs) -> None:
-        """Destructor hook for the ISATabInvestigationLoader class. Called by the garbage collector. Makes sure
-        the file-like buffer object is closed even if the program crashes.
-        """
-        self.file.close()
+    def close(self) -> None:
+        if self.__owns_file and self.__file is not None and not self.__file.closed:
+            self.__file.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
 
     @property
     def investigation(self) -> Investigation:
@@ -418,17 +445,29 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         file_content: TextIO | None = None
         if isinstance(file, str):
             if path.isdir(file):
-                fnames: list = glob(path.join(file, "i_*.txt"))
-                assert len(fnames) == 1
+                fnames: list[str] = glob(path.join(file, "i_*.txt"))
+                if len(fnames) == 0:
+                    raise FileNotFoundError("No investigation file matching i_*.txt found in input directory")
+                if len(fnames) > 1:
+                    raise ValueError("Multiple investigation files matching i_*.txt found in input directory")
                 file_content = utf8_text_file_open(fnames[0])
+                self.__owns_file = True
+            elif path.isfile(file):
+                file_content = utf8_text_file_open(file)
+                self.__owns_file = True
+            else:
+                raise FileNotFoundError(f"Cannot resolve input path: {file}")
         elif hasattr(file, "read"):
             file_content = file
+            self.__owns_file = False
         else:
+            raise IOError("Cannot resolve input file")
+        if file_content is None:
             raise IOError("Cannot resolve input file")
         self.__file = file_content
         isatab_reader: ISATabReader = ISATabReader(file_content)
         self.__df_dict = isatab_reader.run()
-        ISATabLoaderMixin.filepath = self.file.name
+        self.filepath = getattr(self.file, "name", "")
 
     def __set_ontology_source(self, row: Series) -> None:
         """Sets the ontology source from the given row at the top of the investigation file in the investigation object
@@ -453,9 +492,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         """
         self.__investigation = Investigation()
         self.__df_dict["ontology_sources"].apply(lambda r: self.__set_ontology_source(r), axis=1)
-        ISATabLoaderMixin.ontology_source_map = dict(
-            map(lambda x: (x.name, x), self.__investigation.ontology_source_references)
-        )
+        self.ontology_source_map = dict(map(lambda x: (x.name, x), self.__investigation.ontology_source_references))
 
         if not self.__df_dict["investigation"].empty:
             row = self.__df_dict["investigation"].iloc[0]
@@ -472,7 +509,14 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         """Loads all the studies inside the investigation object"""
         for i, row in enumerate(self.__df_dict["studies"]):
             row = row.iloc[0]
-            study_loader: ISATabStudyLoader = ISATabStudyLoader(row, self.__df_dict, i)
+            study_loader: ISATabStudyLoader = ISATabStudyLoader(
+                row=row,
+                df_dict=self.__df_dict,
+                index=i,
+                ontology_source_map=self.ontology_source_map,
+                filepath=self.filepath,
+                skip_load_tables=self.skip_load_tables,
+            )
             study_loader.load()
             self.__investigation.studies.append(study_loader.study)
 
@@ -490,9 +534,20 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
     :param index: The study index of this study in this investigation
     """
 
-    def __init__(self, row: DataFrame, df_dict: dict, index: int) -> None:
+    def __init__(
+        self,
+        row: DataFrame,
+        df_dict: dict,
+        index: int,
+        ontology_source_map: dict[str, OntologySource],
+        filepath: str,
+        skip_load_tables: bool,
+    ) -> None:
         """Constructor for the ISATabStudyLoader class"""
-        ISATabLoaderStudyAssayMixin.protocol_map = {}
+        self.protocol_map = {}
+        self.ontology_source_map = ontology_source_map
+        self.filepath = filepath
+        self.skip_load_tables = skip_load_tables
 
         self.__study_index: int = index
         self.__row: DataFrame = row
@@ -567,14 +622,20 @@ class ISATabStudyLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
                 protocol.parameters.append(protocol_param)
             protocol.comments = self.get_comments_row(self.__protocols[self.__study_index].columns, row)
             protocols.append(protocol)
-            ISATabLoaderStudyAssayMixin.protocol_map[protocol.name] = protocol
+            self.protocol_map[protocol.name] = protocol
         return protocols
 
     def __create_assays(self):
         """Create the assays and bind them to the study object"""
         for _, row in self.__assays[self.__study_index].iterrows():
             assay_loader: ISATabAssayLoader = ISATabAssayLoader(
-                row, self.__assays[self.__study_index].columns, self.study
+                row=row,
+                columns=self.__assays[self.__study_index].columns,
+                study=self.study,
+                ontology_source_map=self.ontology_source_map,
+                filepath=self.filepath,
+                skip_load_tables=self.skip_load_tables,
+                protocol_map=self.protocol_map,
             )
             assay_loader.load()
             self.study.assays.append(assay_loader.assay)
@@ -631,11 +692,24 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
     :param study: The Study object to which this assay belongs (required to add protocols to the study)
     """
 
-    def __init__(self, row: Series, columns: list[str], study: Study) -> None:
+    def __init__(
+        self,
+        row: Series,
+        columns: list[str],
+        study: Study,
+        ontology_source_map: dict[str, OntologySource],
+        filepath: str,
+        skip_load_tables: bool,
+        protocol_map: dict[str, Protocol],
+    ) -> None:
         """Constructor for the ISATabAssayLoader class"""
         self.__row: Series = row
         self.__columns: list[str] = columns
         self.__study: Study = study
+        self.ontology_source_map = ontology_source_map
+        self.filepath = filepath
+        self.skip_load_tables = skip_load_tables
+        self.protocol_map = protocol_map
         self.assay: Assay | None = None
 
     def load(self):
@@ -676,7 +750,7 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
             self.update_protocols(process, self.__study, self.protocol_map)
 
 
-def load(isatab_path_or_ifile: TextIO, skip_load_tables: bool = False) -> Investigation:
+def load(isatab_path_or_ifile: TextIO | str, skip_load_tables: bool = False) -> Investigation:
     """Load an ISA-Tab into ISA Data Model objects
 
     :param isatab_path_or_ifile: Full path to an ISA-Tab directory or file-like
@@ -684,10 +758,8 @@ def load(isatab_path_or_ifile: TextIO, skip_load_tables: bool = False) -> Invest
     :param skip_load_tables: Whether to skip loading the table files
     :return: Investigation objects
     """
-    investigation_loader: ISATabInvestigationLoader = ISATabInvestigationLoader(
-        file=isatab_path_or_ifile, skip_load_table=skip_load_tables
-    )
-    return investigation_loader.investigation
+    with ISATabInvestigationLoader(file=isatab_path_or_ifile, skip_load_table=skip_load_tables) as loader:
+        return loader.investigation
 
 
 def merge_study_with_assay_tables(study_file_path: str, assay_file_path: str, target_file_path: str):
@@ -730,8 +802,8 @@ def load_table(fp):
         df = read_csv(fp, dtype=str, sep="\t", encoding="latin1").replace(nan, "")
     labels = df.columns
     new_labels = []
+    any_var_regex = compile(r".*\[(.*?)\]")
     for label in labels:
-        any_var_regex = compile(r".*\[(.*?)\]")
         hits = any_var_regex.findall(label)
         if len(hits) > 0:
             val = hits[0].strip()

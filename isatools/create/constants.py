@@ -1,5 +1,6 @@
 # NON TREATMENT TYPES
 import os
+from functools import lru_cache
 
 import yaml
 
@@ -92,34 +93,48 @@ EXTRACT_PREFIX = "EXTR"
 LABELED_EXTRACT_PREFIX = "LBLEXTR"
 ASSAY_GRAPH_PREFIX = "AT"  # AT stands for Assay Type
 
-with open(
-    os.path.join(os.path.dirname(__file__), "..", "resources", "config", "yaml", "study-creator-config.yml")
-) as yaml_file:
-    yaml_config = yaml.load(yaml_file, Loader=yaml.FullLoader)
+_YAML_CONFIG_DIR = os.path.join(os.path.dirname(__file__), "..", "resources", "config", "yaml")
+_STUDY_CREATOR_CONFIG_PATH = os.path.join(_YAML_CONFIG_DIR, "study-creator-config.yml")
+_ASSAY_OPTIONS_CONFIG_PATH = os.path.join(_YAML_CONFIG_DIR, "assay-options.yml")
+
+
+@lru_cache(maxsize=1)
+def get_study_creator_config():
+    with open(_STUDY_CREATOR_CONFIG_PATH, encoding="utf-8") as yaml_file:
+        return yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+
+@lru_cache(maxsize=1)
+def get_assay_options():
+    with open(_ASSAY_OPTIONS_CONFIG_PATH, encoding="utf-8") as yaml_file:
+        return yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+
+yaml_config = get_study_creator_config()
 default_ontology_source_reference = OntologySource(**yaml_config["study"]["ontology_source_references"][1])
 
 # constants specific to the sampling plan in the study generation from the study design
 RUN_ORDER = yaml_config["study"]["protocols"][0]["parameters"][0]
 STUDY_CELL = yaml_config["study"]["protocols"][0]["parameters"][1]
 
-with open(
-    os.path.join(os.path.dirname(__file__), "..", "resources", "config", "yaml", "assay-options.yml")
-) as yaml_file:
-    assays_opts = yaml.load(yaml_file, Loader=yaml.FullLoader)
+assays_opts = get_assay_options()
+
+def get_default_source_type(
+    term="Human",
+    term_accession="http://purl.obolibrary.org/obo/NCIT_C14225",
+    term_source=default_ontology_source_reference,
+):
+    return Characteristic(
+        category=OntologyAnnotation(
+            term="Study Subject",
+            term_source=default_ontology_source_reference,
+            term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",
+        ),
+        value=OntologyAnnotation(term=term, term_source=term_source, term_accession=term_accession),
+    )
 
 
-DEFAULT_SOURCE_TYPE = Characteristic(
-    category=OntologyAnnotation(
-        term="Study Subject",
-        term_source=default_ontology_source_reference,
-        term_accession="http://purl.obolibrary.org/obo/NCIT_C41189",
-    ),
-    value=OntologyAnnotation(
-        term="Human",
-        term_source=default_ontology_source_reference,
-        term_accession="http://purl.obolibrary.org/obo/NCIT_C14225",
-    ),
-)
+DEFAULT_SOURCE_TYPE = get_default_source_type()
 
 DEFAULT_LABEL = Characteristic(
     category=OntologyAnnotation(

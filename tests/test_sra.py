@@ -4,10 +4,12 @@ import os
 import shutil
 import tempfile
 import unittest
+from types import SimpleNamespace
 
 from lxml import etree
 
 from isatools import isajson, sra
+from isatools.model import OntologyAnnotation
 from isatools.tests import utils
 
 
@@ -146,3 +148,29 @@ class TestSraExport(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, "project_set.xml"), "rb") as out_fp:
             actual_project_set_xml_obj = etree.fromstring(out_fp.read())
             self.assertTrue(utils.assert_xml_equal(self._expected_project_set_xml_obj, actual_project_set_xml_obj))
+
+
+class TestSraHelpers(unittest.TestCase):
+    def test_extract_taxon_id(self):
+        self.assertEqual(sra._extract_taxon_id("NCBITAXON_9606"), "9606")
+        self.assertEqual(sra._extract_taxon_id("9606"), "9606")
+        self.assertEqual(sra._extract_taxon_id(""), "")
+
+    def test_get_pv_normalizes_ontology_and_numeric_values(self):
+        ontology_pv = SimpleNamespace(
+            category=SimpleNamespace(parameter_name=SimpleNamespace(term="library_source")),
+            value=OntologyAnnotation(term="TRANSCRIPTOMIC"),
+        )
+        numeric_pv = SimpleNamespace(
+            category=SimpleNamespace(parameter_name=SimpleNamespace(term="min_match")),
+            value=2,
+        )
+        process = SimpleNamespace(parameter_values=[ontology_pv, numeric_pv])
+
+        self.assertEqual(sra._get_pv(process, "library source"), "TRANSCRIPTOMIC")
+        self.assertEqual(sra._get_pv(process, "min_match"), "2")
+
+    def test_find_sample_in_ancestry_raises_on_missing_sample(self):
+        process = SimpleNamespace(inputs=[], prev_process=None)
+        with self.assertRaises(ValueError):
+            sra._find_sample_in_ancestry(process)

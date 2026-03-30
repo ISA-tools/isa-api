@@ -44,9 +44,7 @@ def dump(
         log.debug("investigation filename=", i_file_name)
         raise NameError("Investigation file must match pattern i_*.txt, got {}".format(i_file_name))
 
-    if path.exists(output_path):
-        fp = open(path.join(output_path, i_file_name), "wb")
-    else:
+    if not path.exists(output_path):
         log.debug("output_path=", i_file_name)
         raise FileNotFoundError("Can't find " + output_path)
 
@@ -57,125 +55,118 @@ def dump(
     # Process Investigation object first to write the investigation file
     investigation = isa_obj
 
-    # Write ONTOLOGY SOURCE REFERENCE section
-    ontology_source_references_df = _build_ontology_reference_section(investigation.ontology_source_references)
-    fp.write(bytearray("ONTOLOGY SOURCE REFERENCE\n", "utf-8"))
-    #  Need to set index_label as top left cell
-    ontology_source_references_df.to_csv(
-        path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Term Source Name"
-    )
+    with open(path.join(output_path, i_file_name), "w", encoding="utf-8") as fp:
+        # Write ONTOLOGY SOURCE REFERENCE section
+        ontology_source_references_df = _build_ontology_reference_section(investigation.ontology_source_references)
+        fp.write("ONTOLOGY SOURCE REFERENCE\n")
+        #  Need to set index_label as top left cell
+        ontology_source_references_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Term Source Name")
 
-    #  Write INVESTIGATION section
-    inv_df_cols = [
-        "Investigation Identifier",
-        "Investigation Title",
-        "Investigation Description",
-        "Investigation Submission Date",
-        "Investigation Public Release Date",
-    ]
-    for comment in sorted(investigation.comments, key=lambda x: x.name):
-        inv_df_cols.append("Comment[" + comment.name + "]")
-    investigation_df = DataFrame(columns=tuple(inv_df_cols))
-    inv_df_rows = [
-        investigation.identifier,
-        investigation.title,
-        investigation.description,
-        investigation.submission_date,
-        investigation.public_release_date,
-    ]
-    for comment in sorted(investigation.comments, key=lambda x: x.name):
-        inv_df_rows.append(comment.value)
-    investigation_df.loc[0] = inv_df_rows
-    investigation_df = investigation_df.set_index("Investigation Identifier").T
-    fp.write(bytearray("INVESTIGATION\n", "utf-8"))
-    investigation_df.to_csv(
-        path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Investigation Identifier"
-    )
-
-    # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = _build_publications_section_df(
-        prefix="Investigation", publications=investigation.publications
-    )
-    fp.write(bytearray("INVESTIGATION PUBLICATIONS\n", "utf-8"))
-    investigation_publications_df.to_csv(
-        path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Investigation PubMed ID"
-    )
-
-    # Write INVESTIGATION CONTACTS section
-    investigation_contacts_df = _build_contacts_section_df(contacts=investigation.contacts)
-    fp.write(bytearray("INVESTIGATION CONTACTS\n", "utf-8"))
-
-    investigation_contacts_df.to_csv(
-        path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Investigation Person Last Name"
-    )
-
-    # Write STUDY sections
-    for study in investigation.studies:
-        study_df_cols = [
-            "Study Identifier",
-            "Study Title",
-            "Study Description",
-            "Study Submission Date",
-            "Study Public Release Date",
-            "Study File Name",
+        #  Write INVESTIGATION section
+        inv_df_cols = [
+            "Investigation Identifier",
+            "Investigation Title",
+            "Investigation Description",
+            "Investigation Submission Date",
+            "Investigation Public Release Date",
         ]
-        if study.comments is not None:
-            for comment in sorted(study.comments, key=lambda x: x.name):
-                study_df_cols.append("Comment[" + comment.name + "]")
-        study_df = DataFrame(columns=tuple(study_df_cols))
-        study_df_row = [
-            study.identifier,
-            study.title,
-            study.description,
-            study.submission_date,
-            study.public_release_date,
-            study.filename,
+        for comment in sorted(investigation.comments, key=lambda x: x.name):
+            inv_df_cols.append("Comment[" + comment.name + "]")
+        investigation_df = DataFrame(columns=tuple(inv_df_cols))
+        inv_df_rows = [
+            investigation.identifier,
+            investigation.title,
+            investigation.description,
+            investigation.submission_date,
+            investigation.public_release_date,
         ]
-
-        if study.comments is not None:
-            for comment in sorted(study.comments, key=lambda x: x.name):
-                study_df_row.append(comment.value)
-        study_df.loc[0] = study_df_row
-        study_df = study_df.set_index("Study Identifier").T
-        fp.write(bytearray("STUDY\n", "utf-8"))
-        study_df.to_csv(path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Identifier")
-        study_design_descriptors_df = _build_design_descriptors_section(design_descriptors=study.design_descriptors)
-        fp.write(bytearray("STUDY DESIGN DESCRIPTORS\n", "utf-8"))
-        study_design_descriptors_df.to_csv(
-            path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Design Type"
+        for comment in sorted(investigation.comments, key=lambda x: x.name):
+            inv_df_rows.append(comment.value)
+        investigation_df.loc[0] = inv_df_rows
+        investigation_df = investigation_df.set_index("Investigation Identifier").T
+        fp.write("INVESTIGATION\n")
+        investigation_df.to_csv(
+            path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Investigation Identifier"
         )
 
-        # Write STUDY PUBLICATIONS section
-        study_publications_df = _build_publications_section_df(prefix="Study", publications=study.publications)
-        fp.write(bytearray("STUDY PUBLICATIONS\n", "utf-8"))
-        study_publications_df.to_csv(
-            path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study PubMed ID"
+        # Write INVESTIGATION PUBLICATIONS section
+        investigation_publications_df = _build_publications_section_df(
+            prefix="Investigation", publications=investigation.publications
+        )
+        fp.write("INVESTIGATION PUBLICATIONS\n")
+        investigation_publications_df.to_csv(
+            path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Investigation PubMed ID"
         )
 
-        # Write STUDY FACTORS section
-        study_factors_df = _build_factors_section_df(factors=study.factors)
-        fp.write(bytearray("STUDY FACTORS\n", "utf-8"))
-        study_factors_df.to_csv(path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Factor Name")
+        # Write INVESTIGATION CONTACTS section
+        investigation_contacts_df = _build_contacts_section_df(contacts=investigation.contacts)
+        fp.write("INVESTIGATION CONTACTS\n")
 
-        study_assays_df = _build_assays_section_df(assays=study.assays)
-        fp.write(bytearray("STUDY ASSAYS\n", "utf-8"))
-        study_assays_df.to_csv(
-            path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Assay File Name"
+        investigation_contacts_df.to_csv(
+            path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Investigation Person Last Name"
         )
 
-        # Write STUDY PROTOCOLS section
-        study_protocols_df = _build_protocols_section_df(protocols=study.protocols)
-        fp.write(bytearray("STUDY PROTOCOLS\n", "utf-8"))
-        study_protocols_df.to_csv(
-            path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Protocol Name"
-        )
+        # Write STUDY sections
+        for study in investigation.studies:
+            study_df_cols = [
+                "Study Identifier",
+                "Study Title",
+                "Study Description",
+                "Study Submission Date",
+                "Study Public Release Date",
+                "Study File Name",
+            ]
+            if study.comments is not None:
+                for comment in sorted(study.comments, key=lambda x: x.name):
+                    study_df_cols.append("Comment[" + comment.name + "]")
+            study_df = DataFrame(columns=tuple(study_df_cols))
+            study_df_row = [
+                study.identifier,
+                study.title,
+                study.description,
+                study.submission_date,
+                study.public_release_date,
+                study.filename,
+            ]
 
-        # Write STUDY CONTACTS section
-        study_contacts_df = _build_contacts_section_df(prefix="Study", contacts=study.contacts)
-        fp.write(bytearray("STUDY CONTACTS\n", "utf-8"))
-        study_contacts_df.to_csv(
-            path_or_buf=fp, mode="a", sep="\t", encoding="utf-8", index_label="Study Person Last Name"
-        )
+            if study.comments is not None:
+                for comment in sorted(study.comments, key=lambda x: x.name):
+                    study_df_row.append(comment.value)
+            study_df.loc[0] = study_df_row
+            study_df = study_df.set_index("Study Identifier").T
+            fp.write("STUDY\n")
+            study_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Identifier")
+            study_design_descriptors_df = _build_design_descriptors_section(design_descriptors=study.design_descriptors)
+            fp.write("STUDY DESIGN DESCRIPTORS\n")
+            study_design_descriptors_df.to_csv(
+                path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Design Type"
+            )
+
+            # Write STUDY PUBLICATIONS section
+            study_publications_df = _build_publications_section_df(prefix="Study", publications=study.publications)
+            fp.write("STUDY PUBLICATIONS\n")
+            study_publications_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study PubMed ID")
+
+            # Write STUDY FACTORS section
+            study_factors_df = _build_factors_section_df(factors=study.factors)
+            fp.write("STUDY FACTORS\n")
+            study_factors_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Factor Name")
+
+            study_assays_df = _build_assays_section_df(assays=study.assays)
+            fp.write("STUDY ASSAYS\n")
+            study_assays_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Assay File Name")
+
+            # Write STUDY PROTOCOLS section
+            study_protocols_df = _build_protocols_section_df(protocols=study.protocols)
+            fp.write("STUDY PROTOCOLS\n")
+            study_protocols_df.to_csv(path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Protocol Name")
+
+            # Write STUDY CONTACTS section
+            study_contacts_df = _build_contacts_section_df(prefix="Study", contacts=study.contacts)
+            fp.write("STUDY CONTACTS\n")
+            study_contacts_df.to_csv(
+                path_or_buf=fp, sep="\t", encoding="utf-8", index_label="Study Person Last Name"
+            )
 
     if skip_dump_tables:
         pass
@@ -183,7 +174,6 @@ def dump(
         write_study_table_files(investigation, output_path)
         write_assay_table_files(investigation, output_path, write_factor_values_in_assay_table)
 
-    fp.close()
     return investigation
 
 

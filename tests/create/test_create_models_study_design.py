@@ -261,10 +261,10 @@ class TreatmentTest(unittest.TestCase):
             },
         )
 
-    # def test_update_duration(self):
-    #     self.treatment.update_duration(10.0, None)
-    #     self.assertEqual(self.treatment.duration.value, 10.0)
-    #     # self.assertEqual(self.treatment.duration.unit, None)
+    def test_update_duration(self):
+        self.treatment.update_duration(10.0, None)
+        self.assertEqual(self.treatment.duration.value, 10.0)
+        self.assertEqual(self.treatment.duration.unit, None)
 
 
 class StudyCellTest(unittest.TestCase):
@@ -2972,6 +2972,22 @@ class QualityControlServiceTest(BaseStudyDesignTest):
         with self.assertRaises(TypeError, msg="study must be a valid StudyDesign object") as er_msg:
             test_qc2 = QualityControlService.augment_study(study_no_qc, sample)
             self.assertEqual(test_qc2, er_msg.exception.args[0])
+
+    def test_generate_quality_control_samples_post_run_characteristics_shape(self):
+        qc_sources, qc_samples_pre, qc_samples_interspersed, qc_samples_post, qc_processes = (
+            QualityControlService._generate_quality_control_samples(
+                quality_control=self.qc, study_cell=self.cell_single_treatment_00, sample_size=8
+            )
+        )
+        self.assertTrue(qc_sources)
+        self.assertTrue(qc_samples_pre)
+        self.assertTrue(qc_samples_post)
+        self.assertIsInstance(qc_samples_interspersed, dict)
+        self.assertTrue(qc_processes)
+        for sample in qc_samples_post:
+            self.assertIsInstance(sample.characteristics, list)
+            self.assertEqual(len(sample.characteristics), 1)
+            self.assertIsInstance(sample.characteristics[0], Characteristic)
 
 
 class TreatmentFactoryTest(unittest.TestCase):

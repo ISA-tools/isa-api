@@ -73,12 +73,13 @@ def _build_ontology_reference_section(ontologies: list = None) -> DataFrame:
     onto_src_ref_cols = ["Term Source Name", "Term Source File", "Term Source Version", "Term Source Description"]
     for comment_name in seen_comments.keys():
         onto_src_ref_cols.append("Comment[" + comment_name + "]")
-    onto_src_ref_df = DataFrame(columns=tuple(onto_src_ref_cols))
+    rows = []
     for i, ontology in enumerate(ontologies):
         log.debug("%s iteration, item=%s", i, ontology)
         onto_src_ref_df_row = [ontology.name, ontology.file, ontology.version, ontology.description]
         onto_src_ref_df_row = get_associated_comments(ontology, seen_comments, onto_src_ref_df_row)
-        onto_src_ref_df.loc[i] = onto_src_ref_df_row
+        rows.append(onto_src_ref_df_row)
+    onto_src_ref_df = DataFrame(rows, columns=tuple(onto_src_ref_cols))
     return onto_src_ref_df.set_index("Term Source Name").T
 
 
@@ -110,7 +111,7 @@ def _build_contacts_section_df(prefix="Investigation", contacts: list = None):
     seen_comments = get_seen_comments(contacts)
     for comment_name in seen_comments.keys():
         contacts_df_cols.append("Comment[" + comment_name + "]")
-    contacts_df = DataFrame(columns=tuple(contacts_df_cols))
+    rows = []
     for i, contact in enumerate(contacts):
         log.debug("%s iteration, item=%s", i, contact)
         roles_names, roles_accession_numbers, roles_source_refs = _build_roles_str(contact.roles)
@@ -129,7 +130,8 @@ def _build_contacts_section_df(prefix="Investigation", contacts: list = None):
         ]
         contacts_df_row = get_associated_comments(contact, seen_comments, contacts_df_row)
         log.debug("row=%s", contacts_df_row)
-        contacts_df.loc[i] = contacts_df_row
+        rows.append(contacts_df_row)
+    contacts_df = DataFrame(rows, columns=tuple(contacts_df_cols))
     return contacts_df.set_index(prefix + " Person Last Name").T
 
 
@@ -157,7 +159,7 @@ def _build_publications_section_df(prefix="Investigation", publications: list = 
     seen_comments = get_seen_comments(publications)
     for comment_name in seen_comments.keys():
         publications_df_cols.append("Comment[" + comment_name + "]")
-    this_publications_df = DataFrame(columns=tuple(publications_df_cols))
+    rows = []
 
     for i, publication in enumerate(publications):
         log.debug("%s iteration, item=%s", i, publication)
@@ -181,8 +183,9 @@ def _build_publications_section_df(prefix="Investigation", publications: list = 
         ]
         publications_df_row = get_associated_comments(publication, seen_comments, publications_df_row)
         log.debug("row=%s", publications_df_row)
-        this_publications_df.loc[i] = publications_df_row
+        rows.append(publications_df_row)
 
+    this_publications_df = DataFrame(rows, columns=tuple(publications_df_cols))
     return this_publications_df.set_index(prefix + " PubMed ID").T
 
 
@@ -214,7 +217,7 @@ def _build_protocols_section_df(protocols: list = None):
     seen_comments = get_seen_comments(protocols)
     for comment_name in seen_comments.keys():
         study_protocols_df_cols.append("Comment[" + comment_name + "]")
-    this_study_protocols_df = DataFrame(columns=tuple(study_protocols_df_cols))
+    rows = []
 
     protocol_type_term = ""
     protocol_type_term_accession = ""
@@ -283,8 +286,9 @@ def _build_protocols_section_df(protocols: list = None):
         ]
         study_protocols_df_row = get_associated_comments(protocol, seen_comments, study_protocols_df_row)
         log.debug("row=%s", study_protocols_df_row)
-        this_study_protocols_df.loc[i] = study_protocols_df_row
+        rows.append(study_protocols_df_row)
 
+    this_study_protocols_df = DataFrame(rows, columns=tuple(study_protocols_df_cols))
     return this_study_protocols_df.set_index("Study Protocol Name").T
 
 
@@ -312,7 +316,7 @@ def _build_assays_section_df(assays: list = None):
     seen_comments = get_seen_comments(assays)
     for comment_name in seen_comments.keys():
         study_assays_df_cols.append("Comment[" + comment_name + "]")
-    this_study_assays_df = DataFrame(columns=tuple(study_assays_df_cols))
+    rows = []
 
     for i, assay in enumerate(assays):
         term_sources = ["measurement_type", "technology_type"]
@@ -336,8 +340,9 @@ def _build_assays_section_df(assays: list = None):
         ]
         study_assays_df_row = get_associated_comments(assay, seen_comments, study_assays_df_row)
         log.debug("row=%s", study_assays_df_row)
-        this_study_assays_df.loc[i] = study_assays_df_row
+        rows.append(study_assays_df_row)
 
+    this_study_assays_df = DataFrame(rows, columns=tuple(study_assays_df_cols))
     return this_study_assays_df.set_index("Study Assay File Name").T
 
 
@@ -361,7 +366,7 @@ def _build_factors_section_df(factors: list = None):
     seen_comments = get_seen_comments(factors)
     for comment_name in seen_comments.keys():
         study_factors_df_cols.append("Comment[" + comment_name + "]")
-    this_study_factors_df = DataFrame(columns=tuple(study_factors_df_cols))
+    rows = []
     for i, factor in enumerate(factors):
         # TODO: duplicated code from magetab 251 to 261
         if factor.factor_type is not None:
@@ -383,8 +388,9 @@ def _build_factors_section_df(factors: list = None):
         ]
         study_factors_df_row = get_associated_comments(factor, seen_comments, study_factors_df_row)
         log.debug("row=%s", study_factors_df_row)
-        this_study_factors_df.loc[i] = study_factors_df_row
+        rows.append(study_factors_df_row)
 
+    this_study_factors_df = DataFrame(rows, columns=tuple(study_factors_df_cols))
     return this_study_factors_df.set_index("Study Factor Name").T
 
 
@@ -399,8 +405,7 @@ def _build_design_descriptors_section(design_descriptors: list = None):
     seen_comments = get_seen_comments(design_descriptors)
     for comment_name in seen_comments.keys():
         study_design_descriptors_df_cols.append("Comment[" + comment_name + "]")
-    this_study_design_descriptors_df = DataFrame(columns=tuple(study_design_descriptors_df_cols))
-
+    rows = []
     for i, design_descriptor in enumerate(design_descriptors):
         study_design_descriptors_df_row = [
             design_descriptor.term,
@@ -411,6 +416,7 @@ def _build_design_descriptors_section(design_descriptors: list = None):
             design_descriptor, seen_comments, study_design_descriptors_df_row
         )
         log.debug("row=%s", study_design_descriptors_df_row)
-        this_study_design_descriptors_df.loc[i] = study_design_descriptors_df_row
+        rows.append(study_design_descriptors_df_row)
 
+    this_study_design_descriptors_df = DataFrame(rows, columns=tuple(study_design_descriptors_df_cols))
     return this_study_design_descriptors_df.set_index("Study Design Type").T

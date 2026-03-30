@@ -148,7 +148,7 @@ rna_seq_dict = OrderedDict(
     ]
 )
 
-chip_seq_dict = rna_seq_dic = OrderedDict(
+chip_seq_dict = OrderedDict(
     [
         ("measurement_type", "chromatin modification profiling"),
         ("technology_type", "nucleic acid sequencing"),

@@ -32,16 +32,13 @@ def flatten(current_list) -> list:
     :param current_list: List
     :return: flattened_listL: List
     """
-    flattened_list = []
-    if current_list is not None:
-        for sublist in current_list:
-            if sublist is not None:
-                for item in sublist:
-                    flattened_list.append(item)
-            else:
-                raise ValueError
-    else:
+    if current_list is None:
         raise ValueError
+    flattened_list = []
+    for sublist in current_list:
+        if sublist is None:
+            raise ValueError
+        flattened_list.extend(sublist)
     return flattened_list
 
 
@@ -174,9 +171,16 @@ def write_study_table_files(inv_obj, output_dir):
         DF = DF.sort_values(by=DF.columns[0], ascending=True)
         # arbitrary sort on column 0
 
-        for dup_item in set([x for x in columns if columns.count(x) > 1]):
-            for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
-                columns[each] = dup_item + str(j)
+        dup_counts = {}
+        for col in columns:
+            dup_counts[col] = dup_counts.get(col, 0) + 1
+        for dup_item, count in dup_counts.items():
+            if count > 1:
+                j = 0
+                for i, col in enumerate(columns):
+                    if col == dup_item:
+                        columns[i] = dup_item + str(j)
+                        j += 1
 
         DF.columns = columns  # reset columns after checking for dups
 
@@ -452,9 +456,16 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 raise e
             # arbitrary sort on column 0
 
-            for dup_item in set([x for x in columns if columns.count(x) > 1]):
-                for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
-                    columns[each] = ".".join([dup_item, str(j)])
+            dup_counts = {}
+            for col in columns:
+                dup_counts[col] = dup_counts.get(col, 0) + 1
+            for dup_item, count in dup_counts.items():
+                if count > 1:
+                    j = 0
+                    for i, col in enumerate(columns):
+                        if col == dup_item:
+                            columns[i] = ".".join([dup_item, str(j)])
+                            j += 1
 
             DF.columns = columns
 

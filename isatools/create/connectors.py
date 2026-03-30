@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from copy import deepcopy
 
 from isatools.create.constants import (
     BASE_FACTORS,
@@ -232,7 +233,8 @@ def generate_assay_ord_dict_from_config(datascriptor_assay_config, arm_name, epo
     )
     for name, node in datascriptor_assay_config["workflow"]:
         prepared_nodes = None
-        assert isinstance(node, dict)
+        if not isinstance(node, dict):
+            raise TypeError("Each workflow node must be a dictionary. {} was provided.".format(type(node).__name__))
         if "#replicates" in node:
             # this is a ProtocolNode
             prepared_nodes = {}
@@ -336,7 +338,7 @@ def generate_study_design(datascriptor_study_config):
             )
             arm_map[cell] = sa_plan
         source_type = Characteristic(
-            category=DEFAULT_SOURCE_TYPE.category,
+            category=deepcopy(DEFAULT_SOURCE_TYPE.category),
             value=_map_ontology_annotation(
                 arm_dict.get("subjectType", None) or study_design_config.get("subjectType", None)
             ),
