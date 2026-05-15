@@ -142,7 +142,7 @@ class ISATab2CEDAR(object):
                 error_file_name = os.path.join(json_dir, "error.log")
                 with open(error_file_name, "w") as errorfile:
                     errorfile.write(e.message)
-#                    errorfile.write(e.cause)
+                    #                    errorfile.write(e.cause)
                     errorfile.close()
 
             if inv_identifier:

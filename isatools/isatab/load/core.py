@@ -185,7 +185,11 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         elif "Study Person Last Name" in contact_dataframe.columns:
             prefix = "Study "
         else:
-            raise KeyError
+            raise KeyError(
+                "Could not find Investigation Person Last Name "
+                "or Study Person Last Name in the contact "
+                "sections of the investigation file"
+            )
 
         for current_row in contact_dataframe.to_dict(orient="records"):
             person: Person = Person(
@@ -280,7 +284,11 @@ class ISATabLoaderMixin(metaclass=ABCMeta):
         elif "Study PubMed ID" in section_df.columns:
             prefix = "Study "
         else:
-            raise KeyError
+            raise KeyError(
+                "Could not find Investigation PubMed ID "
+                "or Study PubMed ID in the publication "
+                "sections of the investigation file"
+            )
 
         for _, current_row in section_df.iterrows():
             publication: Publication = Publication(

@@ -18,7 +18,7 @@ from isatools.model.utils import find as find_material
 
 
 class MetadataMixin(metaclass=ABCMeta):
-    """ Abstract mixin class to contain metadata fields found in Investigation
+    """Abstract mixin class to contain metadata fields found in Investigation
     and Study sections of ISA
 
     Attributes:
@@ -161,7 +161,7 @@ class MetadataMixin(metaclass=ABCMeta):
 
 
 class StudyAssayMixin(metaclass=ABCMeta):
-    """ Abstract mixin class to contain common fields found in Study
+    """Abstract mixin class to contain common fields found in Study
     and Assay sections of ISA
 
     Attributes:
@@ -251,7 +251,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             raise AttributeError("{}.sources must be iterable containing Sources".format(type(self).__name__))
 
     def add_source(self, name="", characteristics=None, comments=None):
-        """ Adds a new source to the source materials list.
+        """Adds a new source to the source materials list.
         :param string name: Source name
         :param list[Characteristics] characteristics: Characteristics about the Source
         :param list comments: Comments about the Source
@@ -260,7 +260,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         self.sources.append(s)
 
     def yield_sources(self, name=None):
-        """ Gets an iterator of matching sources for a given name.
+        """Gets an iterator of matching sources for a given name.
 
         Args:
             name: Source name
@@ -272,7 +272,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         return filter(lambda x: x, self.sources) if name is None else filter(lambda x: x.name == name, self.sources)
 
     def get_source(self, name):
-        """ Gets the first matching source material for a given name.
+        """Gets the first matching source material for a given name.
 
         Args:
             name: Source name
@@ -287,7 +287,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         return None
 
     def yield_sources_by_characteristic(self, characteristic=None):
-        """ Gets an iterator of matching sources for a given characteristic.
+        """Gets an iterator of matching sources for a given characteristic.
 
         Args:
             characteristic: Source characteristic
@@ -301,7 +301,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         return filter(lambda x: characteristic in x.characteristics, self.sources)
 
     def get_source_by_characteristic(self, characteristic):
-        """ Gets the first matching source material for a given characteristic.
+        """Gets the first matching source material for a given characteristic.
 
         Args:
             characteristic: Source characteristic
@@ -317,7 +317,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         return None
 
     def get_source_names(self):
-        """ Gets all the source names.
+        """Gets all the source names.
 
         Returns:
             :obj:`list` of str.
@@ -339,7 +339,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             raise AttributeError("{}.samples must be iterable containing Samples".format(type(self).__name__))
 
     def add_sample(self, name="", characteristics=None, factor_values=None, derives_from=None, comments=None):
-        """ Adds a new sample to the sample materials list.
+        """Adds a new sample to the sample materials list.
         :param string name: Sample name
         :param list[Characteristics] characteristics: Characteristics about the sample
         :param list comments: Comments about the sample
@@ -357,14 +357,14 @@ class StudyAssayMixin(metaclass=ABCMeta):
         self.samples.append(sample)
 
     def yield_samples(self, name=None):
-        """ Gets an iterator of matching samples for a given name.
+        """Gets an iterator of matching samples for a given name.
         :param string name: Sample name
         :return: object:`filter` of object:`Source` that can be iterated on.  If name is None, yields all samples.
         """
         return filter(lambda x: x, self.samples) if name is None else filter(lambda x: x.name == name, self.samples)
 
     def get_sample(self, name):
-        """ Gets the first matching sample material for a given name.
+        """Gets the first matching sample material for a given name.
 
         Args:
             name: Sample name
@@ -379,7 +379,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         return None
 
     def yield_samples_by_characteristic(self, characteristic=None):
-        """ Gets an iterator of matching samples for a given characteristic.
+        """Gets an iterator of matching samples for a given characteristic.
 
         Args:
             characteristic: Sample characteristic
@@ -394,7 +394,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             return filter(lambda x: characteristic in x.characteristics, self.samples)
 
     def get_sample_by_characteristic(self, characteristic):
-        """ Gets the first matching sample material for a given characteristic.
+        """Gets the first matching sample material for a given characteristic.
 
         Args:
             characteristic: Sample characteristic
@@ -411,7 +411,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             return None
 
     def yield_samples_by_factor_value(self, factor_value=None):
-        """ Gets an iterator of matching samples for a given factor_value.
+        """Gets an iterator of matching samples for a given factor_value.
 
         Args:
             factor_value: Sample factor value
@@ -426,7 +426,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             return filter(lambda x: factor_value in x.factor_values, self.samples)
 
     def get_sample_by_factor_value(self, factor_value):
-        """ Gets the first matching sample material for a given factor_value.
+        """Gets the first matching sample material for a given factor_value.
 
         Args:
             factor_value: Sample factor value
@@ -443,7 +443,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             return None
 
     def get_sample_names(self):
-        """ Gets all the sample names.
+        """Gets all the sample names.
 
         Returns:
             :obj:`list` of str.
@@ -465,7 +465,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             raise AttributeError("{}.other_material must be iterable containing Materials".format(type(self).__name__))
 
     def yield_materials_by_characteristic(self, characteristic=None):
-        """ Gets an iterator of matching materials for a given characteristic.
+        """Gets an iterator of matching materials for a given characteristic.
 
         Args:
             characteristic: Material characteristic
@@ -480,7 +480,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             return filter(lambda x: characteristic in x.characteristics, self.other_material)
 
     def get_material_by_characteristic(self, characteristic):
-        """ Gets the first matching material for a given
+        """Gets the first matching material for a given
         characteristic.
 
         Args:

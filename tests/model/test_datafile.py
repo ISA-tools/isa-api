@@ -93,7 +93,7 @@ class TestSubDataFile(TestCase):
             "PostTranslationalModificationAssignmentFile": PostTranslationalModificationAssignmentFile,
             "AcquisitionParameterDataFile": AcquisitionParameterDataFile,
             "FreeInductionDecayDataFile": FreeInductionDecayDataFile,
-            "MetaboliteAssignmentFile": MetaboliteAssignmentFile
+            "MetaboliteAssignmentFile": MetaboliteAssignmentFile,
         }
         self.classes = {}
         for filetype in self.types:

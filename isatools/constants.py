@@ -23,7 +23,7 @@ DATA_FILE_LABELS = [
     "Acquisition Parameter Data File",
     "Metabolite Assignment File",
     "Metabolite Identification File",
-    "Normalization Name"
+    "Normalization Name",
 ]
 
 _LABELS_DATA_NODES = [
