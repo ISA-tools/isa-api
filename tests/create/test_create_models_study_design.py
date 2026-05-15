@@ -1043,8 +1043,8 @@ class StudyCellTest(unittest.TestCase):
         self.assertEqual(
             str(self.cell),
             """StudyCell(
-               name=test epoch 0, 
-               elements=0 items, 
+               name=test epoch 0,
+               elements=0 items,
                )""",
         )
 
@@ -1706,7 +1706,7 @@ class SampleAndAssayPlanTest(unittest.TestCase):
             str(self.plan),
             """SampleAndAssayPlan(
         name=test plan,
-        sample_plan=set(), 
+        sample_plan=set(),
         assay_plan=set()
         )""",
         )
@@ -2154,7 +2154,7 @@ class StudyArmTest(unittest.TestCase):
 	unit=
 	comments=0 Comment objects
 ),
-               group_size=10, 
+               group_size=10,
                no. cells=0,
                no. sample_assay_plans=0
                )""",
@@ -2814,7 +2814,7 @@ class StudyDesignTest(BaseStudyDesignTest):
         self.assertEqual(
             str(self.study_design),
             """StudyDesign(
-               identifier=None, 
+               identifier=None,
                name=Study Design,
                description=None,
                study_arms=[]
@@ -3502,7 +3502,6 @@ class StudyDesignFactoryTest(unittest.TestCase):
         self.assertEqual(ex_cm.exception.args[0], "Map for NonTreatment screen is not correctly set.")
 
     def test_1(self):
-
         treatments_map = [
             (self.first_treatment, self.sample_assay_plan),
             (self.second_treatment, self.sample_assay_plan),
@@ -3755,7 +3754,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
     def test_compute_crossover_design_multi_element_cell_group_sizes_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
         with self.assertRaises(TypeError, msg="The group_sizes list has the wrong length") as ex_cm:
-             StudyDesignFactory.compute_crossover_design_multi_element_cell(
+            StudyDesignFactory.compute_crossover_design_multi_element_cell(
                 treatments,
                 self.sample_assay_plan,
                 group_sizes=(10, 15, 12, 15, 12),
@@ -3810,7 +3809,7 @@ class StudyDesignFactoryTest(unittest.TestCase):
     def test_compute_single_arm_design_multi_element_cell_group_sizes_error(self):
         treatments = [self.first_treatment, self.third_treatment, self.fourth_treatment]
         with self.assertRaises(TypeError, msg="The group_sizes list has the wrong length") as ex_cm:
-             StudyDesignFactory.compute_single_arm_design_multi_element_cell(
+            StudyDesignFactory.compute_single_arm_design_multi_element_cell(
                 treatments,
                 self.sample_assay_plan,
                 group_size=(10, 15, 12),

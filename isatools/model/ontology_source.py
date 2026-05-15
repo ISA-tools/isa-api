@@ -19,7 +19,13 @@ class OntologySource(Commentable, Identifiable):
     """
 
     def __init__(
-        self, id_="", name: str = "", file: str = "", version: str = "", description: str = "", comments: List[Comment] = None
+        self,
+        id_="",
+        name: str = "",
+        file: str = "",
+        version: str = "",
+        description: str = "",
+        comments: List[Comment] = None,
     ):
         super().__init__(comments)
         self.id = id_
@@ -130,7 +136,7 @@ class OntologySource(Commentable, Identifiable):
         return self.update_isa_object(ontology_source_ref, ld=ld)
 
     def from_dict(self, ontology_source):
-        self.id = ontology_source.get("@id","")
+        self.id = ontology_source.get("@id", "")
         self.name = ontology_source["name"] if "name" in ontology_source else ""
         self.file = ontology_source["file"] if "file" in ontology_source else ""
         self.version = ontology_source["version"] if "version" in ontology_source else ""
