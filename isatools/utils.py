@@ -335,14 +335,14 @@ def compute_study_factors_on_mtbls(tab_dir_root):
     :return: None, output writes to stdout
 
     Usage:
-        >>> compute_study_factors_on_mtbls('tests/data')
+        >>> compute_study_factors_on_mtbls('../tests/data')
         # if tests/data contains tests/data/MTBLS1, tests/data/MTBLS2 etc.
 
         To write to an output file:
         >>> import sys
         >>> stdout_console = sys.stdout  # save normal stdout
         >>> sys.stdout = open('out.txt')  # set to file
-        >>> compute_study_factors_on_mtbls('tests/data')
+        >>> compute_study_factors_on_mtbls('../tests/data')
         >>> sys.stdout = stdout_console  # reset stdout
     """
     for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:

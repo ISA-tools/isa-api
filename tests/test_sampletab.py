@@ -22,12 +22,13 @@ from isatools.tests import utils
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+            "Could not fine test data directory in {0}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR)
+            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
         )
 
 
+@unittest.skip("Skipping these tests following SAMPLETAB deprecation by EBI")
 class UnitSampleTabLoad(unittest.TestCase):
     def setUp(self):
         self._sampletab_data_dir = utils.SAMPLETAB_DATA_DIR
@@ -110,6 +111,7 @@ class UnitSampleTabLoad(unittest.TestCase):
             self.assertEqual(len(ISA.studies[0].process_sequence), 109)
 
 
+@unittest.skip("Skipping these tests following SAMPLETAB deprecation by EBI")
 class UnitSampleTabDump(unittest.TestCase):
     def setUp(self):
         self._sampletab_data_dir = utils.SAMPLETAB_DATA_DIR

@@ -21,8 +21,8 @@ jobs:
         cache-dependency-glob: uv.lock
     - name: Sync dependencies
       run: |
-        uv python pin ${{ matrix.python-version }} 
-        uv sync --group dev
+        uv python pin ${{ matrix.python-version }}
+        uv sync --extra database --extra dev
     - uses: astral-sh/ruff-action@v3
     - run: ruff check
     - run: ruff format

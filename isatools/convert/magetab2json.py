@@ -22,5 +22,5 @@ def convert(idf_file_path):
             ISA = isatab.load(isa_inv_fp)
     finally:
         shutil.rmtree(tmp)
-        if ISA is not None:
-            return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+    if ISA is not None:
+        return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
