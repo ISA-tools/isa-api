@@ -19,7 +19,7 @@ from isatools.isatab import read_investigation_file
 log = logging.getLogger("isatools")
 
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "tests", "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "data")
 
 JSON_DATA_DIR = os.path.join(DATA_DIR, "json")
 

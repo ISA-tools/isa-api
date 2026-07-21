@@ -47,9 +47,9 @@ from isatools.tests.utils import assert_tab_content_equal
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not find test data directory in {0}. Ensure you have cloned the ISAdatasets "
+            "Could not find test data directory in {0}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR)
+            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
         )
 
 

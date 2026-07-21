@@ -75,6 +75,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
         self.data_files = data_files or []
 
         self.id = id_
+
     @property
     def measurement_type(self):
         """:obj:`OntologyAnnotation: an ontology annotation representing the
