@@ -57,6 +57,7 @@ class TestGraphQLQueries(unittest.TestCase):
         response = investigation.execute_query(self.query, variables)
         self.assertTrue(not response.errors)
 
+    # @unittest.skip("Not working after fixing lint. Test data and/or expected value must be updated.")
     def test_introspection(self):
         response = investigation.introspect()
         print("\nTHERE: ", response)

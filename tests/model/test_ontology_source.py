@@ -86,7 +86,7 @@ class TestOntologySource(TestCase):
         self.assertIsNone(self.ontology_source.validate_field("test_name", "name"))
 
     @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
-    def test_dict(self,  mock_uuid4):
+    def test_dict(self, mock_uuid4):
         ontology_source = OntologySource(
             name="name1",
             version="version1",

@@ -20,6 +20,8 @@ from referencing import Registry
 from referencing.jsonschema import DRAFT202012
 
 from isatools.isajson.load import load
+from isatools.model.assay import Assay
+from isatools.model.study import Study
 
 __author__ = "djcomlab@gmail.com (David Johnson)"
 
@@ -887,7 +889,11 @@ def check_measurement_technology_types(assay_json, configs):
         technology_type = assay_json["technologyType"]["annotationValue"]
         config = configs[(measurement_type, technology_type)]
         if config is None:
-            raise KeyError
+            raise KeyError(
+                "Could not find configuration for measurement type '{}' and technology type '{}'".format(
+                    measurement_type, technology_type
+                )
+            )
     except KeyError:
         errors.append(
             {
@@ -982,17 +988,22 @@ def check_study_and_assay_graphs(study_json, configs):
 
 def check_study_groups(study_or_assay):
     samples = study_or_assay.samples
+    identifier = ""
+    if isinstance(study_or_assay, Study):
+        identifier = study_or_assay.identifier
+    elif isinstance(study_or_assay, Assay):
+        identifier = study_or_assay.id
     study_groups = set()
     for sample in samples:
         if len(sample.factor_values) > 0:
             factors = tuple(sample.factor_values)
             study_groups.add(factors)
     num_study_groups = len(study_groups)
-    log.info("Found {} study groups in {}".format(num_study_groups, study_or_assay.identifier))
+    log.info("Found {} study groups in {}".format(num_study_groups, identifier))
     info.append(
         {
-            "message": "Found {} study groups in {}".format(num_study_groups, study_or_assay.identifier),
-            "supplemental": "Found {} study groups in {}".format(num_study_groups, study_or_assay.identifier),
+            "message": "Found {} study groups in {}".format(num_study_groups, identifier),
+            "supplemental": "Found {} study groups in {}".format(num_study_groups, identifier),
             "code": 5001,
         }
     )
@@ -1002,10 +1013,10 @@ def check_study_groups(study_or_assay):
             warnings.append(
                 {
                     "message": "Reported study group size {} does not match table {}".format(
-                        num_study_groups, study_or_assay.identifier
+                        num_study_groups, identifier
                     ),
                     "supplemental": "Study group size reported as {} but found {} in {}".format(
-                        study_group_size_in_comment, num_study_groups, study_or_assay.identifier
+                        study_group_size_in_comment, num_study_groups, identifier
                     ),
                     "code": 5002,
                 }
@@ -1144,7 +1155,7 @@ def validate(
         log.fatal("(F) Something went very very wrong! :(")
     finally:
         handler.flush()
-        return {"errors": errors, "warnings": warnings, "validation_finished": True}
+    return {"errors": errors, "warnings": warnings, "validation_finished": True}
 
 
 def batch_validate(json_file_list):
