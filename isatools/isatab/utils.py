@@ -530,14 +530,14 @@ def get_value_columns(label, x):
     :return: List of column labels, e.g. ["Sample Name.Term Source REF",
     "Sample Name.Term Accession Number"]
     """
-    if isinstance(x.value, (int, float)) and x.unit:
+    labels = []
+    if isinstance(x.value, OntologyAnnotation):
+        labels.extend(["Term Source REF", "Term Accession Number"])
+    if x.unit:
+        labels.append("Unit")
         if isinstance(x.unit, OntologyAnnotation):
-            labels = ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
-            return map(lambda x: "{0}.{1}".format(label, x), labels)
-        return ["{0}.Unit".format(label)]
-    elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda y: "{0}.{1}".format(label, y), ["Term Source REF", "Term Accession Number"])
-    return []
+            labels.extend(["Unit.Term Source REF", "Unit.Term Accession Number"])
+    return ["{0}.{1}".format(label, suffix) for suffix in labels]
 
 
 def get_fv_columns(label, fv):

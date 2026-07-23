@@ -567,6 +567,6 @@ def write_value_columns(df_dict, label, x):
             df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
     elif isinstance(x.value, str) and len(x.value) == 0 and x.unit:
         df_dict[label][-1] = x.value
-        df_dict[label + ".Term Source REF"][-1] = ""
+        df_dict[label + ".Unit"][-1] = x.unit
     else:
         df_dict[label][-1] = x.value
