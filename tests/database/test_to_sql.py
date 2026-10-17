@@ -5,7 +5,7 @@ import unittest
 from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import Session
 
-from isatools.database import Comment, Investigation, OntologyAnnotation, Process, Publication, db
+from isatools.database import Characteristic, Comment, Investigation, OntologyAnnotation, Process, Publication, db
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -64,3 +64,14 @@ class TestToSQL(unittest.TestCase):
             session.commit()
             titles = session.scalars(select(Publication.get_table().title)).all()
             self.assertEqual(sorted(titles), ["First", "Second"])
+
+    def test_characteristic_without_value(self):
+        investigation = load_investigation("BII-I-1")
+        characteristics = investigation.studies[0].sources[0].characteristics
+        characteristics[0].value = None
+        with Session(make_engine(foreign_keys=True)) as session:
+            session.add(investigation.to_sql(session))
+            session.commit()
+            table = Characteristic.get_table()
+            empty = count(session, Characteristic, table.value_int.is_(None), table.value_id.is_(None))
+            self.assertEqual(empty, 1)
