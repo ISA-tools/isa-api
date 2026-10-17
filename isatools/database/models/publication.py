@@ -77,7 +77,6 @@ def make_publication_methods():
             comments=[comment.to_sql() for comment in self.comments],
         )
         session.add(publication)
-        session.commit()
         return publication
 
     setattr(PublicationModel, "to_sql", to_sql)

@@ -5,7 +5,7 @@ import unittest
 from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import Session
 
-from isatools.database import Comment, Investigation, Process, db
+from isatools.database import Comment, Investigation, Process, Publication, db
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,3 +48,11 @@ class TestToSQL(unittest.TestCase):
             session.commit()
             self.assertEqual(count(session, Investigation), 1)
             self.assertEqual(count(session, Process), len(processes))
+
+    def test_rollback_leaves_no_rows(self):
+        investigation = load_investigation("BII-I-1")
+        with Session(make_engine(foreign_keys=True)) as session:
+            investigation.to_sql(session)
+            session.rollback()
+            self.assertEqual(count(session, Process), 0)
+            self.assertEqual(count(session, Publication), 0)
