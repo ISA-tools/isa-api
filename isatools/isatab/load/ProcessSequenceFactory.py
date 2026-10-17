@@ -283,8 +283,9 @@ class ProcessSequenceFactory:
                 # don't drop duplicates
                 for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(
-                        protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF
+                    process_key = (
+                        _cg,
+                        process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF),
                     )
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
@@ -407,7 +408,10 @@ class ProcessSequenceFactory:
 
                 if object_label.startswith("Protocol REF"):
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = (
+                        _cg,
+                        process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF),
+                    )
                     process_key_sequence.append(process_key)
 
                 if object_label in _LABELS_DATA_NODES:
