@@ -115,7 +115,7 @@ def make_process_methods():
             performer=self.performer,
             date=cleaned_date,
             comments=[comment.to_sql() for comment in self.comments],
-            protocol_id=self.executes_protocol.id,
+            protocol=self.executes_protocol.to_sql(session),
             inputs=inputs,
             outputs=outputs,
             parameter_values=[parameter_value.to_sql(session) for parameter_value in self.parameter_values],

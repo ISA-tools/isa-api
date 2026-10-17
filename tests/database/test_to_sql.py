@@ -5,7 +5,7 @@ import unittest
 from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import Session
 
-from isatools.database import Comment, Investigation, db
+from isatools.database import Comment, Investigation, Process, db
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,3 +39,12 @@ class TestToSQL(unittest.TestCase):
             session.add(investigation.to_sql(session))
             session.commit()
             self.assertEqual(count(session, Comment, Comment.get_table().name == "test"), 3)
+
+    def test_foreign_keys_enforced(self):
+        investigation = load_investigation("BII-I-1")
+        processes = {p.id for s in investigation.studies for owner in [s] + s.assays for p in owner.process_sequence}
+        with Session(make_engine(foreign_keys=True)) as session:
+            session.add(investigation.to_sql(session))
+            session.commit()
+            self.assertEqual(count(session, Investigation), 1)
+            self.assertEqual(count(session, Process), len(processes))
