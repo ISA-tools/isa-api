@@ -5,7 +5,7 @@ import unittest
 from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import Session
 
-from isatools.database import Comment, Investigation, Process, Publication, db
+from isatools.database import Comment, Investigation, OntologyAnnotation, Process, Publication, db
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,3 +56,11 @@ class TestToSQL(unittest.TestCase):
             session.rollback()
             self.assertEqual(count(session, Process), 0)
             self.assertEqual(count(session, Publication), 0)
+
+    def test_publications_without_doi_stay_separate(self):
+        with Session(make_engine(foreign_keys=True)) as session:
+            for title in ("First", "Second"):
+                session.add(Publication(title=title, status=OntologyAnnotation(term="published")).to_sql(session))
+            session.commit()
+            titles = session.scalars(select(Publication.get_table().title)).all()
+            self.assertEqual(sorted(titles), ["First", "Second"])
