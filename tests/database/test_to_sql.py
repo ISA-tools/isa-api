@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import unittest
@@ -75,3 +76,13 @@ class TestToSQL(unittest.TestCase):
             table = Characteristic.get_table()
             empty = count(session, Characteristic, table.value_int.is_(None), table.value_id.is_(None))
             self.assertEqual(empty, 1)
+
+    def test_process_date(self):
+        investigation = load_investigation("BII-I-1")
+        process = investigation.studies[0].process_sequence[0]
+        process.date = "2008-08-15"
+        with Session(make_engine(foreign_keys=True)) as session:
+            session.add(investigation.to_sql(session))
+            session.commit()
+            stored = session.get(Process.get_table(), process.id)
+            self.assertEqual(stored.date, datetime.date(2008, 8, 15))

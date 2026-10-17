@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+import dateutil.parser as date
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, update
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
@@ -105,7 +106,7 @@ def make_process_methods():
             outputs.append(out_in)
 
         if self.date:
-            cleaned_date = self.date
+            cleaned_date = date.parse(self.date)
         else:
             cleaned_date = None
 
