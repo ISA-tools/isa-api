@@ -117,19 +117,25 @@ def make_characteristic_methods():
             characteristic["value_int"] = value
         elif isinstance(self.value, str):
             value = OntologyAnnotationModel(term=self.value)
-            characteristic["value_oa"] = value.to_sql(session)
+            oa = value.to_sql(session)
+            # Assign FK id instead of related object to avoid backref adding when characteristic
+            # is not yet in the session.
+            characteristic["value_id"] = oa.ontology_annotation_id
         elif self.value is not None:
-            characteristic["value_oa"] = self.value.to_sql(session)
+            oa = self.value.to_sql(session)
+            characteristic["value_id"] = oa.ontology_annotation_id
 
         if isinstance(self.unit, str):
             characteristic["unit_str"] = self.unit
         elif self.unit:
-            characteristic["unit_oa"] = self.unit.to_sql(session)
+            oa = self.unit.to_sql(session)
+            characteristic["unit_id"] = oa.ontology_annotation_id
 
         if isinstance(self.category, str):
             characteristic["category_str"] = self.category
         else:
-            characteristic["category_oa"] = self.category.to_sql(session)
+            oa = self.category.to_sql(session)
+            characteristic["category_id"] = oa.ontology_annotation_id
         return Characteristic(**characteristic)
 
     setattr(CharacteristicModel, "to_sql", to_sql)
