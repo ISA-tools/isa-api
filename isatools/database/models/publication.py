@@ -64,17 +64,18 @@ def make_publication_methods():
 
         :return: The SQLAlchemy object ready to committed to the database session.
         """
-        publication = session.get(Publication, publication_id)  # self.doi
+        # Use DOI as the primary identifier for publications when available.
+        publication_id_value = self.doi
+        publication = session.get(Publication, publication_id_value)
         if publication:
             return publication
         publication = Publication(
-            publication_id=publication_id,
-            # publication_id=self.doi,
+            publication_id=publication_id_value,
             author_list=self.author_list,
             doi=self.doi,
             pubmed_id=self.pubmed_id,
             title=self.title,
-            status=self.status.to_sql(session),
+            status=self.status.to_sql(session) if self.status else None,
             comments=[comment.to_sql() for comment in self.comments],
         )
         session.add(publication)
