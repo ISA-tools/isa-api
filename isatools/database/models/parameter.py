@@ -53,7 +53,8 @@ def make_parameter_methods() -> None:
         parameter = session.get(Parameter, self.id)
         if parameter:
             return parameter
-        parameter = Parameter(parameter_id=self.id, ontology_annotation=self.parameter_name.to_sql(session))
+        oa = self.parameter_name.to_sql(session)
+        parameter = Parameter(parameter_id=self.id, ontology_annotation_id=oa.ontology_annotation_id)
         session.add(parameter)
         return parameter
 

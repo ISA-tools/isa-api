@@ -78,7 +78,7 @@ def make_protocol_methods():
             version=self.version if self.version else "",
             comments=[comment.to_sql() for comment in self.comments],
             protocol_parameters=[parameter.to_sql(session) for parameter in self.parameters],
-            protocol_type=self.protocol_type.to_sql(session) if self.protocol_type else None,
+        protocol_type_id=self.protocol_type.to_sql(session).ontology_annotation_id if self.protocol_type else None,
         )
         session.add(protocol)
         return protocol

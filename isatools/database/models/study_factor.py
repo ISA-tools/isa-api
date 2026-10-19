@@ -47,7 +47,7 @@ def make_study_factor_methods():
         factor = StudyFactor(
             factor_id=self.id,
             name=self.name,
-            factor_type=self.factor_type.to_sql(session),
+            factor_type_id=self.factor_type.to_sql(session).ontology_annotation_id if self.factor_type else None,
             comments=[c.to_sql() for c in self.comments],
         )
 
