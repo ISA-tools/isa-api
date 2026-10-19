@@ -74,6 +74,13 @@ def make_sample_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
+        # Check identity map first to avoid triggering flushes
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, Sample) and obj.sample_id == self.id:
+                    return obj
+            except Exception:
+                pass
         sample = session.get(Sample, self.id)
         if sample:
             return sample

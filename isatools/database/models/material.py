@@ -60,6 +60,13 @@ def make_material_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
+        # Prefer in-session identity lookup to avoid unnecessary flushes that can trigger warnings.
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, Material) and obj.material_id == self.id:
+                    return obj
+            except Exception:
+                pass
         material = session.get(Material, self.id)
         if material:
             return material

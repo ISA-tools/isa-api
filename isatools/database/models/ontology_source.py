@@ -56,11 +56,16 @@ def make_ontology_source_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        # Avoid triggering autoflush when checking for existing ontology source
-        with session.no_autoflush:
-            ontology_source = session.get(OntologySource, self.id)
-            if ontology_source:
-                return ontology_source
+        # First check in-session identity map (pending/persistent) to avoid forcing a flush.
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, OntologySource) and obj.ontology_source_id == self.id:
+                    return obj
+            except Exception:
+                pass
+        ontology_source = session.get(OntologySource, self.id)
+        if ontology_source:
+            return ontology_source
         ontology_source = OntologySource(
             ontology_source_id=self.id,
             name=self.name,

@@ -80,10 +80,16 @@ def make_ontology_annotation_methods() -> None:
         """
         # Avoid triggering autoflush when checking for existing OA; some related objects may be
         # transient and not yet in the session. Use no_autoflush to prevent premature flushes/warnings.
-        with session.no_autoflush:
-            oa = session.get(OntologyAnnotation, self.id)
-            if oa:
-                return oa
+        # First check in-session identity map (pending/persistent) to avoid forcing a flush.
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, OntologyAnnotation) and obj.ontology_annotation_id == self.id:
+                    return obj
+            except Exception:
+                pass
+        oa = session.get(OntologyAnnotation, self.id)
+        if oa:
+            return oa
         term_source_id = self.term_source.to_sql(session) if self.term_source else None
         comments_objs = [c.to_sql() for c in self.comments]
 

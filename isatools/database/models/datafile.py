@@ -36,6 +36,13 @@ class Datafile(InputOutput):
 
 def make_datafile_methods():
     def to_sql(self, session: Session) -> Datafile:
+        # Check identity map first to avoid triggering flushes
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, Datafile) and obj.data_file_id == self.id:
+                    return obj
+            except Exception:
+                pass
         datafile = session.get(Datafile, self.id)
         if datafile:
             return datafile

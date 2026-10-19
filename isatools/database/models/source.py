@@ -63,6 +63,13 @@ def make_source_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
+        # Check identity map first to avoid triggering flushes
+        for obj in session.identity_map.values():
+            try:
+                if isinstance(obj, Source) and obj.source_id == self.id:
+                    return obj
+            except Exception:
+                pass
         source = session.get(Source, self.id)
         if source:
             return source
