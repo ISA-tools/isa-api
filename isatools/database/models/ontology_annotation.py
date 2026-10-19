@@ -78,9 +78,12 @@ def make_ontology_annotation_methods() -> None:
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        oa = session.get(OntologyAnnotation, self.id)
-        if oa:
-            return oa
+        # Avoid triggering autoflush when checking for existing OA; some related objects may be
+        # transient and not yet in the session. Use no_autoflush to prevent premature flushes/warnings.
+        with session.no_autoflush:
+            oa = session.get(OntologyAnnotation, self.id)
+            if oa:
+                return oa
         term_source_id = self.term_source.to_sql(session) if self.term_source else None
         comments_objs = [c.to_sql() for c in self.comments]
 
