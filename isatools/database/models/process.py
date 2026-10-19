@@ -110,13 +110,21 @@ def make_process_methods():
         else:
             cleaned_date = None
 
+        # Ensure protocol is converted to its SQL representation and use its id.
+        protocol_sql = None
+        if self.executes_protocol:
+            protocol_sql = self.executes_protocol.to_sql(session)
+            protocol_id_value = protocol_sql.protocol_id
+        else:
+            protocol_id_value = None
+
         process = Process(
             process_id=self.id,
             name=self.name,
             performer=self.performer,
             date=cleaned_date,
             comments=[comment.to_sql() for comment in self.comments],
-            protocol_id=self.executes_protocol.to_sql(session),  # self.executes_protocol.id,
+            protocol_id=protocol_id_value,
             inputs=inputs,
             outputs=outputs,
             parameter_values=[parameter_value.to_sql(session) for parameter_value in self.parameter_values],
