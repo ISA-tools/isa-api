@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """Utilities for logging in the ISA-API."""
 
-from __future__ import absolute_import
 
 import logging
 import os

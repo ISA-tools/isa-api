@@ -30,7 +30,7 @@ class ProtocolComponent(Commentable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("ProtocolComponent.name must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"ProtocolComponent.name must be a str or None; got {val}:{type(val)}")
         self.__name = val
 
     @property
@@ -43,18 +43,16 @@ class ProtocolComponent(Commentable):
     def component_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise AttributeError(
-                "ProtocolComponent.component_type must be a OntologyAnnotation, or None; got {0}:{1}".format(
-                    val, type(val)
-                )
+                f"ProtocolComponent.component_type must be a OntologyAnnotation, or None; got {val}:{type(val)}"
             )
         else:
             self.__component_type = val
 
     def __repr__(self):
         return (
-            "isatools.model.ProtocolComponent(name='{component.name}', "
-            "category={component_type}, "
-            "comments={component.comments})".format(component=self, component_type=repr(self.component_type))
+            f"isatools.model.ProtocolComponent(name='{self.name}', "
+            f"category={self.component_type!r}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):

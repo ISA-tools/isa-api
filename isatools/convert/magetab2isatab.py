@@ -22,7 +22,7 @@ def convert(idf_file_path, output_path):
         for sdrf_file in sdrf_files:
             table_files = parser.parse_sdrf_to_isa_table_files(os.path.join(os.path.dirname(idf_file_path), sdrf_file))
             for in_fp in table_files:
-                log.info("Writing {0} to {1}".format(in_fp.name, output_path))
+                log.info(f"Writing {in_fp.name} to {output_path}")
                 with open(os.path.join(output_path, in_fp.name), "w", encoding="utf-8") as out_fp:
                     out_fp.write(in_fp.read())
     log.info("Writing {0} to {1}".format("i_investigation.txt", output_path))

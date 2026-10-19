@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """The contents of this module are used solely for testing purposes in the
 isatools test suite that is not packaged with the PyPI distribution"""
 
-from __future__ import absolute_import
 
 import datetime
 import logging
@@ -78,13 +76,13 @@ def assert_tab_content_equal(fp_x, fp_y):
             return True
         except AssertionError as e:
             lbl = datetime.datetime.now()
-            x.to_csv("~/Downloads/test-isa-for-release/expected-{}.csv".format(lbl))
-            y.to_csv("~/Downloads/test-isa-for-release/actual-{}.csv".format(lbl))
-            log.error("Error thrown comparing two dataframes: {}".format(e))
-            log.error("x columns are: {}".format(x.columns))
-            log.error("y columns are: {}".format(y.columns))
-            log.error("x data are: {}".format(x.to_numpy()))
-            log.error("y data are: {}".format(y.to_numpy()))
+            x.to_csv(f"~/Downloads/test-isa-for-release/expected-{lbl}.csv")
+            y.to_csv(f"~/Downloads/test-isa-for-release/actual-{lbl}.csv")
+            log.error(f"Error thrown comparing two dataframes: {e}")
+            log.error(f"x columns are: {x.columns}")
+            log.error(f"y columns are: {y.columns}")
+            log.error(f"x data are: {x.to_numpy()}")
+            log.error(f"y data are: {y.to_numpy()}")
             return False
 
     if basename(fp_x.name).startswith("i_"):
@@ -225,7 +223,7 @@ def assert_json_equal(jx, jy):
     if jx == jy:
         return True
     else:
-        log.debug("DeepDiff={}".format(DeepDiff(jx, jy)))
+        log.debug(f"DeepDiff={DeepDiff(jx, jy)}")
         return False
 
 
@@ -251,10 +249,10 @@ def assert_xml_equal(x1, x2):
         return False
     else:
         for tag in x1tags:
-            tagcount1 = x1.xpath("count(//{})".format(tag))
-            tagcount2 = x2.xpath("count(//{})".format(tag))
+            tagcount1 = x1.xpath(f"count(//{tag})")
+            tagcount2 = x2.xpath(f"count(//{tag})")
             if tagcount1 != tagcount2:
-                log.debug("Counts of {0} tag do not match {1}:{2}".format(tag, int(tagcount1), int(tagcount2)))
+                log.debug(f"Counts of {tag} tag do not match {int(tagcount1)}:{int(tagcount2)}")
                 return False
         return True
 

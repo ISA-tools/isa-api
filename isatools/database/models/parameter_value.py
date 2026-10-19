@@ -74,5 +74,5 @@ def make_parameter_value_methods():
             parameter_value["value_int"] = self.value
         return ParameterValue(**parameter_value)
 
-    setattr(ParameterValueModel, "to_sql", to_sql)
-    setattr(ParameterValueModel, "get_table", make_get_table_method(ParameterValue))
+    ParameterValueModel.to_sql = to_sql
+    ParameterValueModel.get_table = make_get_table_method(ParameterValue)

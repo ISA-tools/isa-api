@@ -19,18 +19,18 @@ def check_table_files_read(i_df_dict, dir_context):
                 with utf8_text_file_open(path.join(dir_context, study_filename)):
                     pass
             except FileNotFoundError:
-                spl = "Study File {} does not appear to exist".format(study_filename)
+                spl = f"Study File {study_filename} does not appear to exist"
                 validator.add_error(message="Missing study tab file(s)", supplemental=spl, code=6)
-                log.error("(E) Study File {} does not appear to exist".format(study_filename))
+                log.error(f"(E) Study File {study_filename} does not appear to exist")
         for j, assay_filename in enumerate(i_df_dict["s_assays"][i]["Study Assay File Name"].tolist()):
             if assay_filename != "":
                 try:
                     with utf8_text_file_open(path.join(dir_context, assay_filename)):
                         pass
                 except FileNotFoundError:
-                    spl = "Assay File {} does not appear to exist".format(assay_filename)
+                    spl = f"Assay File {assay_filename} does not appear to exist"
                     validator.add_error(message="Missing assay tab file(s)", supplemental=spl, code=8)
-                    log.error("(E) Assay File {} does not appear to exist".format(assay_filename))
+                    log.error(f"(E) Assay File {assay_filename} does not appear to exist")
 
 
 def check_sample_names(study_sample_table, assay_tables=None):
@@ -51,4 +51,4 @@ def check_sample_names(study_sample_table, assay_tables=None):
                 spl = spl.format(assay_sample, assay_table.filename, study_sample_table.filename)
                 if assay_sample not in study_samples:
                     validator.add_warning(message="Missing Sample", supplemental=spl, code=1003)
-                    log.warning("(W) {}".format(spl))
+                    log.warning(f"(W) {spl}")

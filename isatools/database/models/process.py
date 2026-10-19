@@ -141,6 +141,6 @@ def make_process_methods():
         session.execute(statement)
         session.commit()
 
-    setattr(ProcessModel, "to_sql", to_sql)
-    setattr(ProcessModel, "update_plink", update_plink)
-    setattr(ProcessModel, "get_table", make_get_table_method(Process))
+    ProcessModel.to_sql = to_sql
+    ProcessModel.update_plink = update_plink
+    ProcessModel.get_table = make_get_table_method(Process)

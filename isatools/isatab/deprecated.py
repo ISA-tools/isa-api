@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for reading, writing and validating ISA-Tab.
 
 Functions for reading and writing ISA-Tab. ISA content is loaded into an
@@ -6,7 +5,6 @@ in-memory representation using the ISA Data Model implemented in the
 isatools.model package.
 """
 
-from __future__ import absolute_import
 
 import csv
 import glob
@@ -74,7 +72,7 @@ def find_in_between(a, x, y):
     return result
 
 
-class IsaTabParser(object):
+class IsaTabParser:
     """
     This replacement should be more robust than current
     i_*.txt file reader. Based on what I did for the
@@ -126,7 +124,7 @@ class IsaTabParser(object):
             isecdict.get("termsourcefile", []),
             isecdict.get("termsourceversion", []),
             isecdict.get("termsourcedescription"),
-            {k: isecdict[k] for k in isecdict.keys() if k.startswith("ontologysourcereference.")},
+            {k: isecdict[k] for k in isecdict if k.startswith("ontologysourcereference.")},
         )
         self.parse_investigation_section(
             isecdict.get("investigationidentifier", []),
@@ -134,7 +132,7 @@ class IsaTabParser(object):
             isecdict.get("investigationdescription", []),
             isecdict.get("investigationsubmissiondate", []),
             isecdict.get("investigationpublicreleasedate"),
-            {k: isecdict[k] for k in isecdict.keys() if k.startswith("investigation.")},
+            {k: isecdict[k] for k in isecdict if k.startswith("investigation.")},
         )
         self.parse_publications_section(
             self.ISA,
@@ -145,7 +143,7 @@ class IsaTabParser(object):
             isecdict.get("investigationpublicationstatus", []),
             isecdict.get("investigationpublicationstatustermsourceref", []),
             isecdict.get("investigationpublicationstatustermaccessionnumber"),
-            {k: isecdict[k] for k in isecdict.keys() if k.startswith("investigationpublications.")},
+            {k: isecdict[k] for k in isecdict if k.startswith("investigationpublications.")},
         )
         self.parse_people_section(
             self.ISA,
@@ -160,7 +158,7 @@ class IsaTabParser(object):
             isecdict.get("investigationpersonroles", []),
             isecdict.get("investigationpersonrolestermaccessionnumber", []),
             isecdict.get("investigationpersonrolestermsourceref"),
-            {k: isecdict[k] for k in isecdict.keys() if k.startswith("investigationcontacts.")},
+            {k: isecdict[k] for k in isecdict if k.startswith("investigationcontacts.")},
         )
 
         for ssecdict in ssecdicts:
@@ -350,9 +348,9 @@ def parse_in(in_filename, in_format="isa-tab"):
     """Parse the given input file using the in_format and return as ISA
     objects"""
 
-    log.debug("parsing {0} in format {1}".format(in_filename, in_format))
+    log.debug(f"parsing {in_filename} in format {in_format}")
 
-    log.debug("starting to parse {0}".format(in_filename))
+    log.debug(f"starting to parse {in_filename}")
 
     parser = IsaTabParser()
     parser.parse_investigation(in_filename)
@@ -391,7 +389,7 @@ def isatab_get_data_files_list_command(input_path, output, json_query=None, gala
 
     log.debug("dumping data files to %s", output.name)
     json.dump(list(data_files), output, indent=4)
-    log.info("Finished writing data files to {}".format(output))
+    log.info(f"Finished writing data files to {output}")
 
 
 def isatab_get_data_files_collection_command(input_path, output_path, json_query=None, galaxy_parameters_file=None):
@@ -432,9 +430,9 @@ def isatab_get_data_files_collection_command(input_path, output_path, json_query
     log.debug("copying data files to %s", output_path)
     for result in data_files:
         for data_file_name in result["data_files"]:
-            logging.info("Copying {}".format(data_file_name))
+            logging.info(f"Copying {data_file_name}")
             shutil.copy(os.path.join(input_path, data_file_name), output_path)
-    log.info("Finished writing data files to {}".format(output_path))
+    log.info(f"Finished writing data files to {output_path}")
 
 
 def slice_data_files(dir, factor_selection=None):
@@ -448,7 +446,7 @@ def slice_data_files(dir, factor_selection=None):
     results = []
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, "[a|s]_*")):
-        log.info("Loading {table_file}".format(table_file=table_file))
+        log.info(f"Loading {table_file}")
 
         with open(os.path.join(dir, table_file)) as fp:
             df = load_table(fp)
@@ -465,8 +463,8 @@ def slice_data_files(dir, factor_selection=None):
 
             else:
                 for factor_name, factor_value in factor_selection.items():
-                    if "Factor Value[{}]".format(factor_name) in list(df.columns.values):
-                        matches = df.loc[df["Factor Value[{factor}]".format(factor=factor_name)] == factor_value][
+                    if f"Factor Value[{factor_name}]" in list(df.columns.values):
+                        matches = df.loc[df[f"Factor Value[{factor_name}]"] == factor_value][
                             "Sample Name"
                         ].items()
 
@@ -550,9 +548,7 @@ def isatab_get_factor_values_command(input_path, factor, output):
     :return: None
     """
     log.info(
-        "Getting values for factor {factor} in study {input_path}. Writing to {output_file}.".format(
-            factor=factor, input_path=input_path, output_file=output.name
-        )
+        f"Getting values for factor {factor} in study {input_path}. Writing to {output.name}."
     )
     fvs = set()
 
@@ -562,8 +558,8 @@ def isatab_get_factor_values_command(input_path, factor, output):
         with open(os.path.join(input_path, table_file)) as fp:
             df = load_table(fp)
 
-            if "Factor Value[{factor}]".format(factor=factor_name) in list(df.columns.values):
-                for _, match in df["Factor Value[{factor}]".format(factor=factor_name)].iteritems():
+            if f"Factor Value[{factor_name}]" in list(df.columns.values):
+                for _, match in df[f"Factor Value[{factor_name}]"].iteritems():
                     try:
                         match = match.item()
                     except AttributeError:
@@ -574,7 +570,7 @@ def isatab_get_factor_values_command(input_path, factor, output):
                             fvs.add(match)
     if fvs is not None:
         json.dump(list(fvs), output, indent=4)
-        log.debug("Factor values written to {}".format(output))
+        log.debug(f"Factor values written to {output}")
     else:
         raise RuntimeError("Error getting factor values")
 
@@ -597,7 +593,7 @@ def filter_data(input_path, output_path, slice, filename_filter):
     source_dir = input_path
     if source_dir:
         if not os.path.exists(source_dir):
-            raise IOError("Source path does not exist!")
+            raise OSError("Source path does not exist!")
     data_files = []
     slice_json = slice
     for result in json.load(slice_json)["results"]:
@@ -608,9 +604,9 @@ def filter_data(input_path, output_path, slice, filename_filter):
     for filepath in filtered_files:
         if os.path.basename(filepath) in reduced_data_files:
             to_copy.append(filepath)
-    loglines.append("Using slice results from {}\n".format(slice_json))
+    loglines.append(f"Using slice results from {slice_json}\n")
     for filepath in to_copy:
-        loglines.append("Copying {}\n".format(os.path.basename(filepath)))
+        loglines.append(f"Copying {os.path.basename(filepath)}\n")
         # try:
         #     shutil.copyfile(
         #         filepath, os.path.join(output_path,
@@ -642,10 +638,10 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
         log.debug("Galaxy parameters:")
         log.debug(json.dumps(galaxy_parameters, indent=4))
     else:
-        raise IOError("Could not load Galaxy parameters file!")
+        raise OSError("Could not load Galaxy parameters file!")
     if source_dir:
         if not os.path.exists(source_dir):
-            raise IOError("Source path does not exist!")
+            raise OSError("Source path does not exist!")
     query = galaxy_parameters["query"]
     if debug:
         log.debug("Query is:")
@@ -653,7 +649,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     if source_dir:
         investigation = load(source_dir)
     else:
-        raise IOError("No source dir supplied")
+        raise OSError("No source dir supplied")
     # filter assays by mt/tt
     matching_assays = []
     mt = query.get("measurement_type").strip()
@@ -676,7 +672,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     for assay in matching_assays:
         assay_samples.extend(assay.samples)
     if debug:
-        log.debug("Total samples: {}".format(len(assay_samples)))
+        log.debug(f"Total samples: {len(assay_samples)}")
 
     # filter samples by fv
     factor_selection = {
@@ -760,7 +756,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
     final_samples = final_cv_samples
 
     if debug:
-        log.debug("Final number of samples: {}".format(len(final_samples)))
+        log.debug(f"Final number of samples: {len(final_samples)}")
     results = []
     for sample in final_samples:
         results.append({"sample_name": sample.name, "data_files": []})
@@ -769,7 +765,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
         if source_dir:
             table_files = glob.iglob(os.path.join(source_dir, "a_*"))
         else:
-            raise IOError("No source dir supplied")
+            raise OSError("No source dir supplied")
         for table_file in table_files:
             with open(table_file) as fp:
                 df = load_table(fp)
@@ -794,7 +790,7 @@ def query_isatab(source_dir, output, galaxy_parameters_file=None):
                 ]
                 if parameters_selection:
                     for p, v in parameters_selection.items():
-                        sample_pv_rows = sample_rows.loc[sample_rows["Parameter Value[{}]".format(p)] == v]
+                        sample_pv_rows = sample_rows.loc[sample_rows[f"Parameter Value[{p}]"] == v]
                         for node_label in data_node_labels:
                             if node_label in table_headers:
                                 data_files.extend(list(sample_pv_rows[node_label]))
@@ -821,7 +817,7 @@ def get_sources_for_sample(input_path, sample_name):
     for study in ISA.studies:
         for sample in study.samples:
             if sample.name == sample_name:
-                log.debug("found a hit: {sample_name}".format(sample_name=sample.name))
+                log.debug(f"found a hit: {sample.name}")
 
                 for source in sample.derives_from:
                     hits.append(source.name)
@@ -840,7 +836,7 @@ def get_study_groups(input_path):
     for factors_item in factors_summary:
         fvs = tuple(factors_item[k] for k in factors_item.keys() if k != "name")
 
-        if fvs in study_groups.keys():
+        if fvs in study_groups:
             study_groups[fvs].append(factors_item["name"])
         else:
             study_groups[fvs] = [factors_item["name"]]
@@ -924,7 +920,7 @@ def get_data_for_sample(input_path, sample_name):
         for assay in study.assays:
             for data in assay.data_files:
                 if sample_name in [x.name for x in data.generated_from]:
-                    log.info("found a hit: {filename}".format(filename=data.filename))
+                    log.info(f"found a hit: {data.filename}")
                     hits.append(data)
     return hits
 
@@ -1069,7 +1065,7 @@ def get_filtered_df_on_factors_list(input_path):
             k = k.replace(" ", "_").replace("[", "_").replace("]", "_")
             if isinstance(v, str):
                 v = v.replace(" ", "_").replace("[", "_").replace("]", "_")
-                query_str.append("{k} == '{v}' and ".format(k=k, v=v))
+                query_str.append(f"{k} == '{v}' and ")
 
         query_str = "".join(query_str)[:-4]
         queries.append(query_str)

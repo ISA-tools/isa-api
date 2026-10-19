@@ -1,4 +1,4 @@
-from __future__ import absolute_import, annotations
+from __future__ import annotations
 
 from os import path
 from typing import Callable, List
@@ -34,7 +34,7 @@ class Rule:
         self.executed = False
 
     def __str__(self):
-        return "rule={self.rule.__name__}, params={self.params}, identifier={self.identifier}".format(self=self)
+        return f"rule={self.rule.__name__}, params={self.params}, identifier={self.identifier}"
 
     def get_parameters(self, params: dict) -> list:
         """Wrapper to get the parameters for the rule function given a dict of parameters from a validator"""
@@ -78,11 +78,9 @@ class Rules:
         :return: the rule to execute
         """
         for rule_data in self.available_rules:
-            if isinstance(rule_name, str) and rule_data.identifier == rule_name:
+            if isinstance(rule_name, str) and rule_data.identifier == rule_name or isinstance(rule_name, Callable) and rule_data.rule == rule_name:
                 return rule_data
-            elif isinstance(rule_name, Callable) and rule_data.rule == rule_name:
-                return rule_data
-        raise ValueError("Rule not found: {}".format(rule_name))
+        raise ValueError(f"Rule not found: {rule_name}")
 
     def get_rules(self):
         """

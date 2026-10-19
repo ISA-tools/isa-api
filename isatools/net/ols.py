@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for connecting the Ontology Lookup Service.
 
 This module connects to the European Bioinformatics Institute's OLS.
@@ -6,7 +5,6 @@ If you have problems with it, check that it's working at
 https://www.ebi.ac.uk/ols4/
 """
 
-from __future__ import absolute_import
 
 import json
 import logging
@@ -78,8 +76,8 @@ def search_ols(term, ontology_source):
     elif isinstance(ontology_source, OntologySource):
         os_search = ontology_source.name
 
-    query = "{0}&queryFields=label&ontology={1}&exact=True".format(term, os_search)
-    url += "?q={}".format(query)
+    query = f"{term}&queryFields=label&ontology={os_search}&exact=True"
+    url += f"?q={query}"
 
     log.debug(url)
     import requests

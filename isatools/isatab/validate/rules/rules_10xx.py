@@ -32,9 +32,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df_dict, dir_context):
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df["Sample Name"])
                         if not assay_samples.issubset(study_samples):
-                            spl = ("Some samples in an assay file {} are not declared in the study file {}: {}").format(
-                                assay_filename, study_filename, list(assay_samples - study_samples)
-                            )
+                            spl = (f"Some samples in an assay file {assay_filename} are not declared in the study file {study_filename}: {list(assay_samples - study_samples)}")
                             msg = "Some samples are not declared in the study"
                             validator.add_error(message=msg, supplemental=spl, code=1013)
                 except FileNotFoundError:
@@ -107,9 +105,7 @@ def check_study_factor_usage(i_df_dict, dir_context):
         if len(study_factors_declared - study_factors_used) > 0:
             spl = "Some study factors declared in the investigation file  are not used in any assay file: "
             log.warning(
-                "(W) Some study factors declared in the investigation file  are not used in any assay file: {}".format(
-                    list(study_factors_declared - study_factors_used)
-                )
+                f"(W) Some study factors declared in the investigation file  are not used in any assay file: {list(study_factors_declared - study_factors_used)}"
             )
 
 
@@ -137,7 +133,7 @@ def check_protocol_usage(i_df_dict, dir_context):
                         spl = "protocols in study file {} are not declared in the investigation file: {}"
                         spl = spl.format(study_filename, diff)
                         validator.add_error(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                        log.error("(E) {}".format(spl))
+                        log.error(f"(E) {spl}")
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df_dict["s_assays"][i]["Study Assay File Name"].tolist()):
@@ -154,7 +150,7 @@ def check_protocol_usage(i_df_dict, dir_context):
                             spl = "protocols in study file {} are not declared in the investigation file: {}"
                             spl = spl.format(study_filename, diff)
                             validator.add_error(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                            log.error("(E) {}".format(spl))
+                            log.error(f"(E) {spl}")
                 except FileNotFoundError:
                     pass
 
@@ -179,11 +175,11 @@ def check_protocol_usage(i_df_dict, dir_context):
                     pass
         diff = protocols_declared - protocol_refs_used - {""}
         if len(diff) > 0:
-            spl = "protocols declared in the file {} are not used in any assay file: {}".format(study_filename, diff)
+            spl = f"protocols declared in the file {study_filename} are not used in any assay file: {diff}"
             warning = (
-                "(W) Some protocols declared in the investigation file are not used neither in the study file {}"
-                " nor in any related assay file: {}"
-            ).format(study_filename, list(diff))
+                f"(W) Some protocols declared in the investigation file are not used neither in the study file {study_filename}"
+                f" nor in any related assay file: {list(diff)}"
+            )
             validator.add_warning(message="Protocol declared but not used", supplemental=spl, code=1019)
             log.warning(warning)
 
@@ -217,9 +213,9 @@ def check_protocol_parameter_usage(i_df_dict, dir_context):
                     if not protocol_parameters_used.issubset(protocol_parameters_declared):
                         remain = list(protocol_parameters_used - protocol_parameters_declared)
                         error = (
-                            "(E) Some protocol parameters referenced in an study file {} are not declared in the "
-                            "investigation file: {}"
-                        ).format(study_filename, remain)
+                            f"(E) Some protocol parameters referenced in an study file {study_filename} are not declared in the "
+                            f"investigation file: {remain}"
+                        )
                         log.error(error)
             except FileNotFoundError:
                 pass
@@ -236,9 +232,9 @@ def check_protocol_parameter_usage(i_df_dict, dir_context):
                         if not protocol_parameters_used.issubset(protocol_parameters_declared):
                             remain = list(protocol_parameters_used - protocol_parameters_declared)
                             error = (
-                                "(E) Some protocol parameters referenced in an assay file {} are not declared in "
-                                "the investigation file: {}"
-                            ).format(assay_filename, remain)
+                                f"(E) Some protocol parameters referenced in an assay file {assay_filename} are not declared in "
+                                f"the investigation file: {remain}"
+                            )
                             log.error(error)
                 except FileNotFoundError:
                     pass
@@ -268,8 +264,8 @@ def check_protocol_parameter_usage(i_df_dict, dir_context):
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
             warning = (
-                "(W) Some protocol parameters declared in the investigation file are not used in any assay file: {}"
-            ).format(list(protocol_parameters_declared - protocol_parameters_used))
+                f"(W) Some protocol parameters declared in the investigation file are not used in any assay file: {list(protocol_parameters_declared - protocol_parameters_used)}"
+            )
             log.warning(warning)
 
 
@@ -283,7 +279,7 @@ def check_protocol_names(i_df_dict):
         for i, protocol_name in enumerate(study_protocols_df["Study Protocol Name"].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
             if protocol_name == "" or "Unnamed: " in protocol_name:
-                validator.add_warning(message="Protocol missing name", supplemental="pos={}".format(i), code=1010)
+                validator.add_warning(message="Protocol missing name", supplemental=f"pos={i}", code=1010)
                 warning = "(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in ISA-tab"
                 warning = warning.format(i)
                 log.warning(warning)
@@ -301,11 +297,11 @@ def check_protocol_parameter_names(i_df_dict):
             if len(protocol_parameters_names.split(sep=";")) > 1:
                 for protocol_parameter_name in protocol_parameters_names.split(sep=";"):
                     if protocol_parameter_name == "" or "Unnamed: " in protocol_parameter_name:
-                        spl = "Protocol Parameter at pos={}".format(i)
+                        spl = f"Protocol Parameter at pos={i}"
                         warning = (
-                            "(W) A Protocol Parameter used in Protocol position {} is missing a Name, "
+                            f"(W) A Protocol Parameter used in Protocol position {i} is missing a Name, "
                             "so can't be referenced in ISA-tab"
-                        ).format(i)
+                        )
                         validator.add_warning(message="Protocol Parameter missing name", supplemental=spl, code=1011)
                         log.warning(warning)
 
@@ -320,7 +316,7 @@ def check_study_factor_names(i_df_dict):
         for i, factor_name in enumerate(study_factors_df["Study Factor Name"].tolist()):
             # DataFrames labels empty cells as 'Unnamed: n'
             if factor_name == "" or "Unnamed: " in factor_name:
-                spl = "Study Factor pos={}".format(i)
+                spl = f"Study Factor pos={i}"
                 warning = "(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab"
                 warning = warning.format(i)
                 validator.add_warning(message="Study Factor missing name", supplemental=spl, code=1012)
@@ -346,9 +342,9 @@ def check_unit_field(table, cfg):
         :return: True if the unit cells are OK, False if not
         """
         if cell_has_value(cell_value) or cell_has_value(unit_value):
-            local_spl = "Field '{}' has a unit but not a value in the file '{}'".format(cfield.header, filename)
+            local_spl = f"Field '{cfield.header}' has a unit but not a value in the file '{filename}'"
             validator.add_warning(message="Cell found has unit but no value", supplemental=local_spl, code=4999)
-            log.warning("(W) {}".format(local_spl))
+            log.warning(f"(W) {local_spl}")
             return False
         return True
 
@@ -368,9 +364,9 @@ def check_unit_field(table, cfg):
             if rindx < len(table.columns):
                 rheader = table.columns[rindx]
             if rheader is None or rheader.lower() != "unit":
-                spl = "The field '{}' in the file '{}' misses a required 'Unit' column".format(header, table.filename)
+                spl = f"The field '{header}' in the file '{table.filename}' misses a required 'Unit' column"
                 validator.add_warning(message="Cell requires a Unit", supplemental=spl, code=4999)
-                log.warning("(W) {}".format(spl))
+                log.warning(f"(W) {spl}")
                 result = False
             else:
                 for irow in range(len(table.index)):
