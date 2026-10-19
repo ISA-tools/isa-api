@@ -62,12 +62,17 @@ def make_parameter_value_methods():
 
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
-        parameter_value = {"unit": self.unit.to_sql(session) if self.unit else None, "category_id": self.category.id}
+        parameter_value = {
+            "unit_id": self.unit.to_sql(session).ontology_annotation_id if self.unit else None,
+            "category_id": self.category.id if self.category else None,
+        }
         if isinstance(self.value, str):
             value = OntologyAnnotationModel(term=self.value)
-            parameter_value["value_oa"] = value.to_sql(session=session)
+            oa = value.to_sql(session=session)
+            parameter_value["value_id"] = oa.ontology_annotation_id
         elif isinstance(self.value, OntologyAnnotationModel):
-            parameter_value["value_oa"] = self.value.to_sql(session=session)
+            oa = self.value.to_sql(session=session)
+            parameter_value["value_id"] = oa.ontology_annotation_id
         elif isinstance(self.value, int):
             parameter_value["value_int"] = float(self.value)
         elif isinstance(self.value, float):

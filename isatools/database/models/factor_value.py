@@ -80,7 +80,7 @@ def make_factor_value_methods():
         :return: The SQLAlchemy object ready to be committed to the database session.
         """
         factor_value = {
-            "factor_name": self.factor_name.to_sql(session),
+            "factor_name_id": self.factor_name.to_sql(session).factor_id if self.factor_name else None,
             "comments": [comment.to_sql() for comment in self.comments],
         }
         value = self.value if self.value else ""
@@ -89,9 +89,11 @@ def make_factor_value_methods():
         elif isinstance(value, str):
             factor_value["value_str"] = value
         elif isinstance(value, OntologyAnnotationModel):
-            factor_value["value_oa"] = value.to_sql(session)
+            oa = value.to_sql(session)
+            factor_value["value_oa_id"] = oa.ontology_annotation_id
         if self.unit:
-            factor_value["factor_unit"] = self.unit.to_sql(session)
+            oa = self.unit.to_sql(session)
+            factor_value["factor_unit_id"] = oa.ontology_annotation_id
         return FactorValue(**factor_value)
 
     setattr(FactorValueModel, "to_sql", to_sql)
