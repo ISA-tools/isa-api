@@ -24,10 +24,7 @@ try:
             db.drop_all()
             db.create_all()
             db.session.add(investigation.to_sql(session=db.session))
-            # Avoid Query-triggered autoflush here; the object we're adding may be incomplete
-            # and cause a premature flush that raises ProgrammingError. Use no_autoflush.
-            with db.session.no_autoflush:
-                _investigation = db.session.query(Investigation.get_table()).first().to_json()
+            _investigation = db.session.query(Investigation.get_table()).first().to_json()
             another_investigation = Investigation()
             another_investigation.from_dict(_investigation)
             db.session.commit()
