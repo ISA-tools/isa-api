@@ -85,10 +85,10 @@ def write_study_table_files(inv_obj, output_dir):
                 columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
                 columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
             elif isinstance(node, Process):
-                olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                olabel = f"Protocol REF.{protocol_in_path_count}"
                 columns.append(olabel)
                 protocol_in_path_count += 1
-                if node.executes_protocol.name not in protnames.keys():
+                if node.executes_protocol.name not in protnames:
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
                 columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
@@ -99,7 +99,7 @@ def write_study_table_files(inv_obj, output_dir):
                 columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
 
             elif isinstance(node, Sample):
-                olabel = "Sample Name.{}".format(sample_in_path_count)
+                olabel = f"Sample Name.{sample_in_path_count}"
                 columns.append(olabel)
                 sample_in_path_count += 1
                 columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
@@ -111,7 +111,7 @@ def write_study_table_files(inv_obj, output_dir):
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
         for path_ in paths:
-            for k in df_dict.keys():  # add a row per path
+            for k in df_dict:  # add a row per path
                 df_dict[k].extend([""])
 
             sample_in_path_count = 0
@@ -125,19 +125,19 @@ def write_study_table_files(inv_obj, output_dir):
                         category_label = (
                             c.category.term if isinstance(c.category.term, str) else c.category.term["annotationValue"]
                         )
-                        clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
+                        clabel = f"{olabel}.Characteristics[{category_label}]"
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
-                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        colabel = f"{olabel}.Comment[{co.name}]"
                         df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                    olabel = f"Protocol REF.{protocol_in_path_count}"
                     protocol_in_path_count += 1
                     df_dict[olabel][-1] = node.executes_protocol.name
                     for pv in node.parameter_values:
                         if pv.category:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                            pvlabel = f"{olabel}.Parameter Value[{pv.category.parameter_name.term}]"
                             write_value_columns(df_dict, pvlabel, pv)
                         else:
                             raise (ValueError, "Protocol Value has no valid parameter_name")
@@ -146,24 +146,24 @@ def write_study_table_files(inv_obj, output_dir):
                     if node.performer is not None:
                         df_dict[olabel + ".Performer"][-1] = node.performer
                     for co in node.comments:
-                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        colabel = f"{olabel}.Comment[{co.name}]"
                         df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Sample):
-                    olabel = "Sample Name.{}".format(sample_in_path_count)
+                    olabel = f"Sample Name.{sample_in_path_count}"
                     sample_in_path_count += 1
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
                         category_label = (
                             c.category.term if isinstance(c.category.term, str) else c.category.term["annotationValue"]
                         )
-                        clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
+                        clabel = f"{olabel}.Characteristics[{category_label}]"
                         write_value_columns(df_dict, clabel, c)
                     for co in node.comments:
-                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        colabel = f"{olabel}.Comment[{co.name}]"
                         df_dict[colabel][-1] = co.value
                     for fv in node.factor_values:
-                        fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
+                        fvlabel = f"{olabel}.Factor Value[{fv.factor_name.name}]"
                         write_value_columns(df_dict, fvlabel, fv)
         """if isinstance(pbar, ProgressBar):
             pbar.finish()"""
@@ -194,9 +194,7 @@ def write_study_table_files(inv_obj, output_dir):
                     columns[i] = "Material Type"
                 else:
                     columns[i] = col[col.rindex(".") + 1 :]
-            elif "Factor Value[" in col:
-                columns[i] = col[col.rindex(".") + 1 :]
-            elif "Parameter Value[" in col:
+            elif "Factor Value[" in col or "Parameter Value[" in col:
                 columns[i] = col[col.rindex(".") + 1 :]
             elif col.endswith("Date"):
                 columns[i] = "Date"
@@ -207,14 +205,14 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        log.debug("Rendered {} paths".format(len(DF.index)))
+        log.debug(f"Rendered {len(DF.index)} paths")
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
             log.debug("Dropping duplicates...")
             DF = DF_no_dups
 
-        log.debug("Writing {} rows".format(len(DF.index)))
+        log.debug(f"Writing {len(DF.index)} rows")
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
         DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)
@@ -263,7 +261,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 log.info("No paths found, skipping writing assay file")
                 continue
             if _longest_path_and_attrs(paths, indexes) is None:
-                raise IOError("Could not find any valid end-to-end paths in assay graph")
+                raise OSError("Could not find any valid end-to-end paths in assay graph")
 
             protocol_in_path_count = 0
             output_label_in_path_counts = {}
@@ -280,10 +278,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
                 elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                    olabel = f"Protocol REF.{protocol_in_path_count}"
                     columns.append(olabel)
                     protocol_in_path_count += 1
-                    if node.executes_protocol.name not in protnames.keys():
+                    if node.executes_protocol.name not in protnames:
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
                     if node.date is not None:
@@ -339,7 +337,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 return x
 
             for path_ in pbar(paths):
-                for k in df_dict.keys():  # add a row per path
+                for k in df_dict:  # add a row per path
                     df_dict[k].extend([""])
 
                 protocol_in_path_count = 0
@@ -348,7 +346,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 for node_index in path_:
                     node = indexes[node_index]
                     if isinstance(node, Process):
-                        olabel = "Protocol REF.{}".format(protocol_in_path_count)
+                        olabel = f"Protocol REF.{protocol_in_path_count}"
                         protocol_in_path_count += 1
                         df_dict[olabel][-1] = node.executes_protocol.name
                         if node.executes_protocol.protocol_type:
@@ -376,12 +374,12 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             df_dict[olabel + ".Performer"][-1] = node.performer
                         for pv in node.parameter_values:
                             if pv.category:
-                                pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                                pvlabel = f"{olabel}.Parameter Value[{pv.category.parameter_name.term}]"
                                 write_value_columns(df_dict, pvlabel, pv)
                             else:
                                 raise (ValueError, "Protocol Value has no valid parameter_name")
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            colabel = f"{olabel}.Comment[{co.name}]"
                             df_dict[colabel][-1] = co.value
 
                         # for output in [x for x in node.outputs if isinstance(x, DataFile)]:
@@ -403,11 +401,11 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         # sample_in_path_count += 1
                         df_dict[olabel][-1] = node.name
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            colabel = f"{olabel}.Comment[{co.name}]"
                             df_dict[colabel][-1] = co.value
                         if write_factor_values:
                             for fv in node.factor_values:
-                                fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
+                                fvlabel = f"{olabel}.Factor Value[{fv.factor_name.name}]"
                                 write_value_columns(df_dict, fvlabel, fv)
 
                     elif isinstance(node, Material):
@@ -421,10 +419,10 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                                 if isinstance(c.category.term, str)
                                 else c.category.term["annotationValue"]
                             )
-                            clabel = "{0}.Characteristics[{1}]".format(olabel, category_label)
+                            clabel = f"{olabel}.Characteristics[{category_label}]"
                             write_value_columns(df_dict, clabel, c)
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            colabel = f"{olabel}.Comment[{co.name}]"
                             df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
@@ -438,7 +436,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         output_label_in_path_counts[output_label] += 1
 
                         for co in node.comments:
-                            colabel = "{0}.Comment[{1}]".format(new_output_label, co.name)
+                            colabel = f"{new_output_label}.Comment[{co.name}]"
                             df_dict[colabel][-1] = co.value
 
             DF = DataFrame(columns=columns)
@@ -447,8 +445,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             try:
                 DF = DF.sort_values(by=DF.columns[0], ascending=True)
             except ValueError as e:
-                log.critical("Error thrown: column labels are: {}".format(DF.columns))
-                log.critical("Error thrown: data is: {}".format(DF))
+                log.critical(f"Error thrown: column labels are: {DF.columns}")
+                log.critical(f"Error thrown: data is: {DF}")
                 raise e
             # arbitrary sort on column 0
 
@@ -472,9 +470,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         columns[i] = "Label"
                     else:
                         columns[i] = col[col.rindex(".") + 1 :]
-                elif "Factor Value[" in col:
-                    columns[i] = col[col.rindex(".") + 1 :]
-                elif "Parameter Value[" in col:
+                elif "Factor Value[" in col or "Parameter Value[" in col:
                     columns[i] = col[col.rindex(".") + 1 :]
                 elif col.endswith("Date"):
                     columns[i] = "Date"
@@ -492,13 +488,13 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns[i] = output_label
                             break
 
-            log.debug("Rendered {} paths".format(len(DF.index)))
+            log.debug(f"Rendered {len(DF.index)} paths")
             if len(DF.index) > 1:
                 if len(DF.index) > len(DF.drop_duplicates().index):
                     log.debug("Dropping duplicates...")
                     DF = DF.drop_duplicates()
 
-            log.debug("Writing {} rows".format(len(DF.index)))
+            log.debug(f"Writing {len(DF.index)} rows")
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
             DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)

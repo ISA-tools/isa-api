@@ -91,7 +91,7 @@ class TestValidators(unittest.TestCase):
         rule = "12000"
         expected_error = {
             "message": "Unknown/System Error",
-            "supplemental": "The validator could not identify what the error is: Rule not found: {}".format(rule),
+            "supplemental": f"The validator could not identify what the error is: Rule not found: {rule}",
             "code": 0,
         }
         rules["investigation"]["rules_to_run"] = (*DEFAULT_INVESTIGATION_RULES, rule)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """
 Convert ISA-Tab to W4M tables
 
@@ -43,13 +42,13 @@ class FilenameTemplate(Template):
 
 
 def error(msg):
-    err = "ERROR: {}".format(msg)
+    err = f"ERROR: {msg}"
 
     if __name__ == "__main__":
         print(err, file=sys.stderr)
         sys.exit(1)
     else:
-        raise (IOError(err))
+        raise (OSError(err))
 
 
 # Information message {{{1
@@ -57,7 +56,7 @@ def error(msg):
 
 
 def info(msg):
-    inf = "INFO: {}".format(msg)
+    inf = f"INFO: {msg}"
 
     if __name__ == "__main__":
         print(inf)
@@ -165,9 +164,7 @@ def select_study(investigation_file, study_filename=None):
     # More than one study and no study specified
     if len(investigation.studies) > 1 and study_filename is None:
         error(
-            'The investigation file "{}" contains more than one study. You need to select one of them.'.format(
-                investigation_file
-            )
+            f'The investigation file "{investigation_file}" contains more than one study. You need to select one of them.'
         )
 
     # Search for specified study
@@ -180,7 +177,7 @@ def select_study(investigation_file, study_filename=None):
 
         # Specified study not found
         if study is None:
-            error('Study "{0}" not found in investigation file "{1}".'.format(study_filename, investigation_file))
+            error(f'Study "{study_filename}" not found in investigation file "{investigation_file}".')
 
     # Take first one
     if study is None and len(investigation.studies) > 0:
@@ -232,16 +229,14 @@ def get_data_file(assay):
         if m is not None:
             if data_filename is not None:
                 error(
-                    'Found two data files ("{0}" and "{1}") in assay "{2}".'.format(
-                        data_filename, df.filename, assay.filename
-                    )
+                    f'Found two data files ("{data_filename}" and "{df.filename}") in assay "{assay.filename}".'
                 )
             info('Found data file "' + df.filename + '".')
             data_filename = df.filename
 
     # No data file
     if data_filename is None:
-        error('Found no data file in assay "{}".'.format(assay.filename))
+        error(f'Found no data file in assay "{assay.filename}".')
 
     return data_filename
 
@@ -368,7 +363,7 @@ def get_investigation_file(input_dir):
 
     # File found
     investigation_file = investigation_files[0]
-    info('Found investigation file "{}".'.format(investigation_file))
+    info(f'Found investigation file "{investigation_file}".')
 
     return investigation_file
 
@@ -484,7 +479,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None, all_assays=
     if study is None:
         info("No studies found in investigation file.")
         return
-    info('Processing study "{}".'.format(study.filename))
+    info(f'Processing study "{study.filename}".')
 
     # Select assays
     assays = select_assays(study=study, assay_filename=assay_filename, all_assays=all_assays)
@@ -492,7 +487,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None, all_assays=
     # Loop on all assays
     w4m_assays = []
     for assay in assays:
-        info('Processing assay "{}".'.format(assay.filename))
+        info(f'Processing assay "{assay.filename}".')
         study_df = get_study_df(input_dir, study)
         assay_df = get_assay_df(input_dir, assay)
         measures_df = get_measures_df(input_dir, assay)

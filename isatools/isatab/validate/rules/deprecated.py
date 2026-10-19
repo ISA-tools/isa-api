@@ -91,14 +91,12 @@ def check_term_source_refs_in_investigation(i_df):
             validator_warnings.append(
                 {
                     "message": "Missing Term Source",
-                    "supplemental": "Ontology sources missing {}".format(list(diff)),
+                    "supplemental": f"Ontology sources missing {list(diff)}",
                     "code": 3009,
                 }
             )
             log.warning(
-                "(W) In {} one or more of {} has not been declared in {}.{} section".format(
-                    column_label, section_term_source_refs, section_label, pos
-                )
+                f"(W) In {column_label} one or more of {section_term_source_refs} has not been declared in {section_label}.{pos} section"
             )
 
     i_publication_status_term_source_ref = [
@@ -109,14 +107,14 @@ def check_term_source_refs_in_investigation(i_df):
         validator_warnings.append(
             {
                 "message": "Missing Term Source",
-                "supplemental": "Ontology sources missing {}".format(list(diff)),
+                "supplemental": f"Ontology sources missing {list(diff)}",
                 "code": 3009,
             }
         )
         log.warning(
-            "(W) Investigation Publication Status Term Source REF {} "
+            f"(W) Investigation Publication Status Term Source REF {i_publication_status_term_source_ref} "
             "has not been declared in ONTOLOGY SOURCE "
-            "REFERENCE section".format(i_publication_status_term_source_ref)
+            "REFERENCE section"
         )
     i_person_roles_term_source_ref = [
         i for i in i_df["i_contacts"]["Investigation Person Roles Term Source REF"].tolist() if i != ""
@@ -126,14 +124,14 @@ def check_term_source_refs_in_investigation(i_df):
         validator_warnings.append(
             {
                 "message": "Missing Term Source",
-                "supplemental": "Ontology sources missing {}".format(list(diff)),
+                "supplemental": f"Ontology sources missing {list(diff)}",
                 "code": 3009,
             }
         )
         log.warning(
-            "(W) Investigation Person Roles Term Source REF {} has "
+            f"(W) Investigation Person Roles Term Source REF {i_person_roles_term_source_ref} has "
             "not been declared in ONTOLOGY SOURCE "
-            "REFERENCE section".format(i_person_roles_term_source_ref)
+            "REFERENCE section"
         )
 
     for i, study_df in enumerate(i_df["studies"]):
@@ -180,29 +178,21 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                 if isinstance(row, float):
                                     if not math.isnan(row):
                                         sup_msg = (
-                                            "Ontology sources missing {} at "
-                                            "column position {} and row {} "
-                                            "in {} not declared in ontology "
-                                            "sources {}".format(
-                                                row + 1,
-                                                object_index[x],
-                                                y + 1,
-                                                study_filename,
-                                                list(ontology_sources_list),
-                                            )
+                                            f"Ontology sources missing {row + 1} at "
+                                            f"column position {object_index[x]} and row {y + 1} "
+                                            f"in {study_filename} not declared in ontology "
+                                            f"sources {list(ontology_sources_list)}"
                                         )
                                         validator_warnings.append(
                                             {"message": "Missing Term Source", "supplemental": sup_msg, "code": 3009}
                                         )
                                         oslist = ontology_sources_list
                                         log.warning(
-                                            "(W) Term Source REF {} "
-                                            "at column position {} "
-                                            "and row {} in {} not "
+                                            f"(W) Term Source REF {row + 1} "
+                                            f"at column position {object_index[x]} "
+                                            f"and row {y + 1} in {study_filename} not "
                                             "declared in ontology "
-                                            "sources {}".format(
-                                                row + 1, object_index[x], y + 1, study_filename, list(oslist)
-                                            )
+                                            f"sources {list(oslist)}"
                                         )
                                 else:
                                     oslist = ontology_sources_list
@@ -210,23 +200,19 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                         {
                                             "message": "Missing Term Source",
                                             "supplemental": "Ontology sources "
-                                            "missing {} at column "
-                                            "position {} and "
-                                            "row {} in {} not "
+                                            f"missing {row + 1} at column "
+                                            f"position {object_index[x]} and "
+                                            f"row {y + 1} in {study_filename} not "
                                             "declared in ontology "
-                                            "sources {}".format(
-                                                row + 1, object_index[x], y + 1, study_filename, list(oslist)
-                                            ),
+                                            f"sources {list(oslist)}",
                                             "code": 3009,
                                         }
                                     )
                                     log.warning(
-                                        "(W) Term Source REF {} at "
-                                        "column position {} and row "
-                                        "{} in {} not in declared "
-                                        "ontology sources {}".format(
-                                            row + 1, object_index[x], y + 1, study_filename, list(oslist)
-                                        )
+                                        f"(W) Term Source REF {row + 1} at "
+                                        f"column position {object_index[x]} and row "
+                                        f"{y + 1} in {study_filename} not in declared "
+                                        f"ontology sources {list(oslist)}"
                                     )
             except FileNotFoundError:
                 pass
@@ -253,13 +239,11 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                 oslist = ontology_sources_list
                                                 sup_msg = (
                                                     "Ontology sources "
-                                                    "missing {} at column "
-                                                    "position {} and "
-                                                    "row {} in {} not "
+                                                    f"missing {row + 1} at column "
+                                                    f"position {object_index[x]} and "
+                                                    f"row {y + 1} in {study_filename} not "
                                                     "declared in ontology "
-                                                    "sources {}".format(
-                                                        row + 1, object_index[x], y + 1, study_filename, list(oslist)
-                                                    )
+                                                    f"sources {list(oslist)}"
                                                 )
                                                 validator_warnings.append(
                                                     {
@@ -269,27 +253,19 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                     }
                                                 )
                                                 log.warning(
-                                                    "(W) Term Source REF {} "
-                                                    "at column position {} "
-                                                    "and row {} in {} not "
+                                                    f"(W) Term Source REF {row + 1} "
+                                                    f"at column position {object_index[x]} "
+                                                    f"and row {y + 1} in {study_filename} not "
                                                     "declared in ontology "
-                                                    "sources {}".format(
-                                                        row + 1, object_index[x], y + 1, study_filename, list(oslist)
-                                                    )
+                                                    f"sources {list(oslist)}"
                                                 )
                                         else:
                                             sup_msg = (
                                                 "Ontology sources missing "
-                                                "{} at column position {} "
-                                                "and row {} in {} not "
+                                                f"{row + 1} at column position {object_index[x]} "
+                                                f"and row {y + 1} in {study_filename} not "
                                                 "declared in ontology "
-                                                "sources {}".format(
-                                                    row + 1,
-                                                    object_index[x],
-                                                    y + 1,
-                                                    study_filename,
-                                                    list(ontology_sources_list),
-                                                )
+                                                f"sources {list(ontology_sources_list)}"
                                             )
                                             validator_warnings.append(
                                                 {
@@ -299,16 +275,10 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                 }
                                             )
                                             log.warning(
-                                                "(W) Term Source REF {} at "
-                                                "column position {} and row "
-                                                "{} in {} not in declared "
-                                                "ontology sources {}".format(
-                                                    row + 1,
-                                                    object_index[x],
-                                                    y + 1,
-                                                    study_filename,
-                                                    list(ontology_sources_list),
-                                                )
+                                                f"(W) Term Source REF {row + 1} at "
+                                                f"column position {object_index[x]} and row "
+                                                f"{y + 1} in {study_filename} not in declared "
+                                                f"ontology sources {list(ontology_sources_list)}"
                                             )
                     except FileNotFoundError:
                         pass
@@ -371,16 +341,12 @@ def check_study_table_against_config(s_df, protocols_declared, config):
             validator_warnings.append(
                 {
                     "message": "The column order in assay table is not valid",
-                    "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}".format(
-                        fields[x], object[1], object[0]
-                    ),
+                    "supplemental": f"Unexpected heading found. Expected {fields[x]} but found {object[1]} at column number {object[0]}",
                     "code": 4005,
                 }
             )
             log.warning(
-                "(W) Unexpected heading found. Expected {} but found {} at column number {}".format(
-                    fields[x], object[1], object[0]
-                )
+                f"(W) Unexpected heading found. Expected {fields[x]} but found {object[1]} at column number {object[0]}"
             )
 
     # Second, check if Protocol REFs are of valid types
@@ -445,16 +411,12 @@ def check_assay_table_against_config(s_df, config):
             validator_warnings.append(
                 {
                     "message": "The column order in assay table is not valid",
-                    "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}".format(
-                        fields[x], current_object[1], current_object[0]
-                    ),
+                    "supplemental": f"Unexpected heading found. Expected {fields[x]} but found {current_object[1]} at column number {current_object[0]}",
                     "code": 4005,
                 }
             )
             log.warning(
-                "(W) Unexpected heading found. Expected {} but found {} at column number {}".format(
-                    fields[x], current_object[1], current_object[0]
-                )
+                f"(W) Unexpected heading found. Expected {fields[x]} but found {current_object[1]} at column number {current_object[0]}"
             )
 
 
@@ -476,14 +438,12 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
             validator_warnings.append(
                 {
                     "message": "A required column in assay table is not present",
-                    "supplemental": "In {} the required column {} missing from column headings".format(
-                        filename, required_field
-                    ),
+                    "supplemental": f"In {filename} the required column {required_field} missing from column headings",
                     "code": 4010,
                 }
             )
             log.warning(
-                "(W) In {} the required column {} missing from column headings".format(filename, required_field)
+                f"(W) In {filename} the required column {required_field} missing from column headings"
             )
         else:
             # Now check that the required column cells all have values, Rules
@@ -493,14 +453,14 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                     validator_warnings.append(
                         {
                             "message": "A required cell value is missing",
-                            "supplemental": "Cell at row {} in column '{}' has no value".format(y, required_field),
+                            "supplemental": f"Cell at row {y} in column '{required_field}' has no value",
                             "code": 4012,
                         }
                     )
                     log.warning(
-                        "(W) Cell at row {} in column '{}' has no "
+                        f"(W) Cell at row {y} in column '{required_field}' has no "
                         "value, but it is required by the "
-                        "configuration".format(y, required_field)
+                        "configuration"
                     )
 
     # Check if protocol ref column values are consistently structured
@@ -513,11 +473,11 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
             validator_warnings.append(
                 {
                     "message": "Multiple protocol references in Protocol REF column",
-                    "supplemental": "Multiple protocol references {} are found in {}".format(prots_found, each),
+                    "supplemental": f"Multiple protocol references {prots_found} are found in {each}",
                     "code": 4999,
                 }
             )
-            log.warning("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
+            log.warning(f"(W) Multiple protocol references {prots_found} are found in {each}")
             log.warning("(W) Only one protocol reference should be used in a Protocol REF column.")
 
 
@@ -542,7 +502,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                     df = load_table(s_fp)
                     config = configs[("[sample]", "")]
                     log.debug(
-                        "Checking study file {} against default study table configuration...".format(study_filename)
+                        f"Checking study file {study_filename} against default study table configuration..."
                     )
                     check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
             except FileNotFoundError:
@@ -559,9 +519,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                         lowered_tt = technology_type.lower()
                         config = configs[(lowered_mt, lowered_tt)]
                         log.debug(
-                            "Checking assay file {} against default table configuration ({}, {})...".format(
-                                assay_filename, measurement_type, technology_type
-                            )
+                            f"Checking assay file {assay_filename} against default table configuration ({measurement_type}, {technology_type})..."
                         )
                         check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
                         # check_assay_table_with_config(df, protocols, config,

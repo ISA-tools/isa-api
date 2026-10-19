@@ -36,7 +36,7 @@ class Publication(Commentable, Identifiable):
     @pubmed_id.setter
     def pubmed_id(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Publication.pubmed_id must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Publication.pubmed_id must be a str or None; got {val}:{type(val)}")
         self.__pubmed_id = val
 
     @property
@@ -47,7 +47,7 @@ class Publication(Commentable, Identifiable):
     @doi.setter
     def doi(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Publication.doi must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Publication.doi must be a str or None; got {val}:{type(val)}")
         self.__doi = val
 
     @property
@@ -58,7 +58,7 @@ class Publication(Commentable, Identifiable):
     @author_list.setter
     def author_list(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Publication.author_list must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Publication.author_list must be a str or None; got {val}:{type(val)}")
         self.__author_list = val
 
     @property
@@ -69,7 +69,7 @@ class Publication(Commentable, Identifiable):
     @title.setter
     def title(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Publication.title must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Publication.title must be a str or None; got {val}:{type(val)}")
         self.__title = val
 
     @property
@@ -82,19 +82,19 @@ class Publication(Commentable, Identifiable):
     def status(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise AttributeError(
-                "Publication.status must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+                f"Publication.status must be a OntologyAnnotation or None; got {val}:{type(val)}"
             )
         self.__status = val
 
     def __repr__(self):
         return (
             "isatools.model.Publication("
-            "pubmed_id='{publication.pubmed_id}', "
-            "doi='{publication.doi}', "
-            "author_list='{publication.author_list}', "
-            "title='{publication.title}', status={status}, "
-            "comments={publication.comments})"
-        ).format(publication=self, status=repr(self.status))
+            f"pubmed_id='{self.pubmed_id}', "
+            f"doi='{self.doi}', "
+            f"author_list='{self.author_list}', "
+            f"title='{self.title}', status={self.status!r}, "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         return (

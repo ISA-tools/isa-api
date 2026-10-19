@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """ISA-specific exceptions"""
 
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Storage Adapter for accessing ISA content in GitHub"""
 
 import base64

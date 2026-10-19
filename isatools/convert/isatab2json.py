@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert ISA-Tab to ISA-JSON"""
 
 import glob
@@ -294,7 +293,7 @@ class ISATab2ISAjson_v1:
         term_source_array = object[inv_or_study + type + " Term Source REF"].split(";")
         term_accession_array = object[inv_or_study + type + " Term Accession Number"].split(";")
         onto_annotations = []
-        for i in range(0, len(name_array)):
+        for i in range(len(name_array)):
             if not name_array[i]:
                 continue
             onto_ann = self.createOntologyAnnotation(name_array[i], term_source_array[i], term_accession_array[i])
