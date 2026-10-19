@@ -109,12 +109,15 @@ uv run pre-commit
 # run package and module dependencies
 uv run lint-imports
 
+# Note: `lint-imports` is provided by the development extras (import-linter).
+# Install developer tools with: `uv sync --extra dev` before running this command if missing.
+
 # list all possible linters. selected linters are defined in pyproject.toml
 uv run ruff linter
 
 # run lint tool
 uv run ruff check
-
+```
 # check specific linter
 uv run ruff check --select I
 
