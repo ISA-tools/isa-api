@@ -80,8 +80,12 @@ def make_assay_methods():
         return Assay(
             filename=self.filename,
             technology_platform=self.technology_platform,
-            measurement_type_id=self.measurement_type.to_sql(session).ontology_annotation_id if self.measurement_type else None,
-            technology_type_id=self.technology_type.to_sql(session).ontology_annotation_id if self.technology_type else None,
+            measurement_type_id=self.measurement_type.to_sql(session).ontology_annotation_id
+            if self.measurement_type
+            else None,
+            technology_type_id=self.technology_type.to_sql(session).ontology_annotation_id
+            if self.technology_type
+            else None,
             unit_categories=[uc.to_sql(session) for uc in self.units],
             characteristic_categories=[cc.to_sql(session) for cc in self.characteristic_categories],
             samples=[sample.to_sql(session) for sample in self.samples],

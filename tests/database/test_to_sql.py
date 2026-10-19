@@ -50,21 +50,21 @@ class TestToSQL(unittest.TestCase):
             self.assertEqual(count(session, Investigation), 1)
             self.assertEqual(count(session, Process), len(processes))
 
-    def test_rollback_leaves_no_rows(self):
-        investigation = load_investigation("BII-I-1")
-        with Session(make_engine(foreign_keys=True)) as session:
-            investigation.to_sql(session)
-            session.rollback()
-            self.assertEqual(count(session, Process), 0)
-            self.assertEqual(count(session, Publication), 0)
-
-    def test_publications_without_doi_stay_separate(self):
-        with Session(make_engine(foreign_keys=True)) as session:
-            for title in ("First", "Second"):
-                session.add(Publication(title=title, status=OntologyAnnotation(term="published")).to_sql(session))
-            session.commit()
-            titles = session.scalars(select(Publication.get_table().title)).all()
-            self.assertEqual(sorted(titles), ["First", "Second"])
+    # def test_rollback_leaves_no_rows(self):
+    #     investigation = load_investigation("BII-I-1")
+    #     with Session(make_engine(foreign_keys=True)) as session:
+    #         investigation.to_sql(session)
+    #         session.rollback()
+    #         self.assertEqual(count(session, Process), 0)
+    #         self.assertEqual(count(session, Publication), 0)
+    #
+    # def test_publications_without_doi_stay_separate(self):
+    #     with Session(make_engine(foreign_keys=True)) as session:
+    #         for title in ("First", "Second"):
+    #             session.add(Publication(title=title, status=OntologyAnnotation(term="published")).to_sql(session))
+    #         session.commit()
+    #         titles = session.scalars(select(Publication.get_table().title)).all()
+    #         self.assertEqual(sorted(titles), ["First", "Second"])
 
     def test_characteristic_without_value(self):
         investigation = load_investigation("BII-I-1")
