@@ -28,7 +28,6 @@ class Assay(Base):
     # Relationships back reference
     studies: Mapped[list["Study"]] = relationship("Study", secondary=study_assays, back_populates="assays")
 
-
     # Relationship many-to-one
     measurement_type_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
     measurement_type: Mapped["OntologyAnnotation"] = relationship(

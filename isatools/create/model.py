@@ -2272,9 +2272,9 @@ class StudyDesign(object):
                         sc
                         for sc in sorted(
                             s_arm.source_characteristics,
-                            key=lambda sc: sc.category.term
-                            if isinstance(sc.category, OntologyAnnotation)
-                            else sc.category,
+                            key=lambda sc: (
+                                sc.category.term if isinstance(sc.category, OntologyAnnotation) else sc.category
+                            ),
                         )
                     ]
                 )
