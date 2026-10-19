@@ -28,6 +28,7 @@ class Assay(Base):
     # Relationships back reference
     studies: Mapped[list["Study"]] = relationship("Study", secondary=study_assays, back_populates="assays")
 
+
     # Relationship many-to-one
     measurement_type_id: Mapped[str] = Column(String, ForeignKey("ontology_annotation.ontology_annotation_id"))
     measurement_type: Mapped["OntologyAnnotation"] = relationship(
@@ -88,7 +89,7 @@ def make_assay_methods():
             materials=[material.to_sql(session) for material in self.other_material],
             datafiles=[datafile.to_sql(session) for datafile in self.data_files],
             process_sequence=[process.to_sql(session) for process in self.process_sequence],
-            comments=[comment.to_sql(session) for comment in self.comments],
+            comments=[comment.to_sql() for comment in self.comments],
         )
 
     setattr(AssayModel, "to_sql", to_sql)

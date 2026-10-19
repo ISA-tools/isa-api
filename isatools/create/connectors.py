@@ -306,6 +306,7 @@ def generate_study_design(datascriptor_study_config):
     :param datascriptor_study_config: dict
     :return: isatools.create.StudyDesign
     """
+    # TODO: Investigate Alignment with ISA-API REST Service.
     study_design_config = datascriptor_study_config["design"]
     arms = []
     for arm_ix, arm_dict in enumerate(study_design_config["arms"]["selected"]):

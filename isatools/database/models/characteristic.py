@@ -115,21 +115,21 @@ def make_characteristic_methods():
             if isinstance(self.value, int):
                 value = float(self.value)
             characteristic["value_int"] = value
-        elif not isinstance(self.value, str):
-            characteristic["value_oa"] = self.value.to_sql(session)
-        else:
+        elif isinstance(self.value, str):
             value = OntologyAnnotationModel(term=self.value)
             characteristic["value_oa"] = value.to_sql(session)
+        elif self.value is not None:
+            characteristic["value_oa"] = self.value.to_sql(session)
 
         if isinstance(self.unit, str):
             characteristic["unit_str"] = self.unit
         elif self.unit:
-            characteristic["unit_id"] = self.unit.id
+            characteristic["unit_oa"] = self.unit.to_sql(session)
 
         if isinstance(self.category, str):
             characteristic["category_str"] = self.category
         else:
-            characteristic["category_id"] = self.category.id
+            characteristic["category_oa"] = self.category.to_sql(session)
         return Characteristic(**characteristic)
 
     setattr(CharacteristicModel, "to_sql", to_sql)
