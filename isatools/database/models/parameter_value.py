@@ -72,7 +72,9 @@ def make_parameter_value_methods():
             parameter_value["value_int"] = float(self.value)
         elif isinstance(self.value, float):
             parameter_value["value_int"] = self.value
-        return ParameterValue(**parameter_value)
+        parameter_value_obj = ParameterValue(**parameter_value)
+        session.add(parameter_value_obj)
+        return parameter_value_obj
 
     ParameterValueModel.to_sql = to_sql
     ParameterValueModel.get_table = make_get_table_method(ParameterValue)

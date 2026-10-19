@@ -92,7 +92,9 @@ def make_factor_value_methods():
             factor_value["value_oa"] = value.to_sql(session)
         if self.unit:
             factor_value["factor_unit"] = self.unit.to_sql(session)
-        return FactorValue(**factor_value)
+        factor_value_obj = FactorValue(**factor_value)
+        session.add(factor_value_obj)
+        return factor_value_obj
 
     FactorValueModel.to_sql = to_sql
     FactorValueModel.get_table = make_get_table_method(FactorValue)
