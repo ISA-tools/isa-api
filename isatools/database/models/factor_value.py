@@ -81,7 +81,7 @@ def make_factor_value_methods():
         """
         factor_value = {
             "factor_name": self.factor_name.to_sql(session),
-            "comments": [comment.to_sql(session) for comment in self.comments],
+            "comments": [comment.to_sql() for comment in self.comments],
         }
         value = self.value if self.value else ""
         if isinstance(value, int) or isinstance(value, float):

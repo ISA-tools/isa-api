@@ -88,7 +88,7 @@ def make_assay_methods():
             materials=[material.to_sql(session) for material in self.other_material],
             datafiles=[datafile.to_sql(session) for datafile in self.data_files],
             process_sequence=[process.to_sql(session) for process in self.process_sequence],
-            comments=[comment.to_sql(session) for comment in self.comments],
+            comments=[comment.to_sql() for comment in self.comments],
         )
 
     AssayModel.to_sql = to_sql
