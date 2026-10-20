@@ -165,8 +165,8 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         fvs = set()
         for table_file in glob.iglob(path.join(self.output_dir, "[a|s]_*")):
             df = self.dataframes[table_file]
-            if "Factor Value[{factor}]".format(factor=factor_name) in list(df.columns.values):
-                for _, match in df["Factor Value[{factor}]".format(factor=factor_name)].items():
+            if f"Factor Value[{factor_name}]" in list(df.columns.values):
+                for _, match in df[f"Factor Value[{factor_name}]"].items():
                     try:
                         match = match.item()
                     except AttributeError:
@@ -208,7 +208,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
         study_groups = {}
         for factor in factors_summary:
             fvs = tuple(factor[k] for k in factor.keys() if k != "name")
-            if fvs in study_groups.keys():
+            if fvs in study_groups:
                 study_groups[fvs].append(factor["name"])
             else:
                 study_groups[fvs] = [factor["name"]]
@@ -381,7 +381,7 @@ class MTBLSInvestigation(MTBLSInvestigationBase):
             raise RuntimeError("Error getting data files with isatools")
         log.debug("dumping data files to %s", output.name)
         dump(list(data_files), output, indent=4)
-        log.info("Finished writing data files to {}".format(output))
+        log.info(f"Finished writing data files to {output}")
 
     """ Not Tested """
 

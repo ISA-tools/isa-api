@@ -80,5 +80,5 @@ def make_publication_methods():
         session.add(publication)
         return publication
 
-    setattr(PublicationModel, "to_sql", to_sql)
-    setattr(PublicationModel, "get_table", make_get_table_method(Publication))
+    PublicationModel.to_sql = to_sql
+    PublicationModel.get_table = make_get_table_method(Publication)

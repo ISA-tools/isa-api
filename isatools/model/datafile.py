@@ -45,7 +45,7 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     def filename(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                "{0}.name must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+                f"{type(self).__name__}.name must be a str or None; got {val}:{type(val)}"
             )
         self.__filename = val
 
@@ -58,7 +58,7 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     def label(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                "{0}.label must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+                f"{type(self).__name__}.label must be a str or None; got {val}:{type(val)}"
             )
         else:
             self.__label = val
@@ -75,24 +75,24 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__generated_from = list(val)
         else:
-            raise AttributeError("{0}.generated_from must be iterable containing Samples".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.generated_from must be iterable containing Samples")
 
     def __repr__(self):
         return (
-            "isatools.model.DataFile(filename='{data_file.filename}', "
-            "label='{data_file.label}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"isatools.model.DataFile(filename='{self.filename}', "
+            f"label='{self.label}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
         return (
             "DataFile(\n\t"
-            "filename={data_file.filename}\n\t"
-            "label={data_file.label}\n\t"
-            "generated_from={num_generated_from} Sample objects\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+            f"filename={self.filename}\n\t"
+            f"label={self.label}\n\t"
+            f"generated_from={len(self.generated_from)} Sample objects\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))
@@ -137,17 +137,17 @@ class RawDataFile(DataFile):
 
     def __repr__(self):
         return (
-            "isatools.model.RawDataFile(filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"isatools.model.RawDataFile(filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """RawDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""RawDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -175,17 +175,17 @@ class DerivedDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.DerivedDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """DerivedDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""DerivedDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -212,16 +212,16 @@ class ImageFile(DataFile):
 
     def __repr__(self):
         return (
-            "isatools.model.ImageFile(filename='{0.filename}', "
-            "generated_from={0.generated_from}, comments={0.comments})".format(self)
+            f"isatools.model.ImageFile(filename='{self.filename}', "
+            f"generated_from={self.generated_from}, comments={self.comments})"
         )
 
     def __str__(self):
-        return """ImageFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""ImageFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -248,16 +248,16 @@ class RawSpectralDataFile(DataFile):
 
     def __repr__(self):
         return (
-            "isatools.model.RawSpectralDataFile(filename='{0.filename}', "
-            "generated_from={0.generated_from}, comments={0.comments})".format(self)
+            f"isatools.model.RawSpectralDataFile(filename='{self.filename}', "
+            f"generated_from={self.generated_from}, comments={self.comments})"
         )
 
     def __str__(self):
-        return """RawSpectralDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""RawSpectralDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -285,17 +285,17 @@ class DerivedArrayDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.DerivedArrayDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """DerivedArrayDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""DerivedArrayDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -323,17 +323,17 @@ class ArrayDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.ArrayDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """ArrayDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""ArrayDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -361,17 +361,17 @@ class DerivedSpectralDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.DerivedSpectralDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """DerivedSpectralDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""DerivedSpectralDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -399,17 +399,17 @@ class ProteinAssignmentFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.ProteinAssignmentFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """ProteinAssignmentFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""ProteinAssignmentFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -437,17 +437,17 @@ class PeptideAssignmentFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.PeptideAssignmentFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """PeptideAssignmentFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""PeptideAssignmentFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -475,17 +475,17 @@ class MetaboliteAssignmentFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.MetaboliteAssignmentFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """MetaboliteAssignmentFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""MetaboliteAssignmentFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -513,17 +513,17 @@ class DerivedArrayDataMatrixFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.DerivedArrayDataMatrixFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """DerivedArrayDataMatrixFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""DerivedArrayDataMatrixFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -552,17 +552,17 @@ class PostTranslationalModificationAssignmentFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.PostTranslationalModificationAssignmentFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """PostTranslationalModificationAssignmentFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""PostTranslationalModificationAssignmentFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -591,17 +591,17 @@ class AcquisitionParameterDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.AcquisitionParameterDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """AcquisitionParameterDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""AcquisitionParameterDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -629,17 +629,17 @@ class FreeInductionDecayDataFile(DataFile):
     def __repr__(self):
         return (
             "isatools.model.FreeInductionDecayDataFile("
-            "filename='{data_file.filename}', "
-            "generated_from={data_file.generated_from}, "
-            "comments={data_file.comments})".format(data_file=self)
+            f"filename='{self.filename}', "
+            f"generated_from={self.generated_from}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """FreeInductionDecayDataFile(
-    filename={data_file.filename}
-    generated_from={num_generated_from} Sample objects
-    comments={num_comments} Comment objects
-)""".format(data_file=self, num_generated_from=len(self.generated_from), num_comments=len(self.comments))
+        return f"""FreeInductionDecayDataFile(
+    filename={self.filename}
+    generated_from={len(self.generated_from)} Sample objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))

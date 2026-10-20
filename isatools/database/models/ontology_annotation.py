@@ -94,5 +94,5 @@ def make_ontology_annotation_methods() -> None:
         session.add(oa)
         return oa
 
-    setattr(OntologyAnnotationModel, "to_sql", to_sql)
-    setattr(OntologyAnnotationModel, "get_table", make_get_table_method(OntologyAnnotation))
+    OntologyAnnotationModel.to_sql = to_sql
+    OntologyAnnotationModel.get_table = make_get_table_method(OntologyAnnotation)

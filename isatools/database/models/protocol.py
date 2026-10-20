@@ -83,5 +83,5 @@ def make_protocol_methods():
         session.add(protocol)
         return protocol
 
-    setattr(ProtocolModel, "to_sql", to_sql)
-    setattr(ProtocolModel, "get_table", make_get_table_method(Protocol))
+    ProtocolModel.to_sql = to_sql
+    ProtocolModel.get_table = make_get_table_method(Protocol)

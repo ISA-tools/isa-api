@@ -91,5 +91,5 @@ def make_assay_methods():
             comments=[comment.to_sql() for comment in self.comments],
         )
 
-    setattr(AssayModel, "to_sql", to_sql)
-    setattr(AssayModel, "get_table", make_get_table_method(Assay))
+    AssayModel.to_sql = to_sql
+    AssayModel.get_table = make_get_table_method(Assay)

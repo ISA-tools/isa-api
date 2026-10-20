@@ -11,9 +11,9 @@ from isatools.tests.utils import assert_tab_content_equal
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the data "
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -29,50 +29,46 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_source_split_study_table(self):
         with open(os.path.join(self._json_data_dir, "TEST-ISA-source-split.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
-        with open(os.path.join(self._tmp_dir, "s_TEST-Template1-Splitting.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "TEST-ISA-source-split", "s_TEST-Template1-Splitting.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "s_TEST-Template1-Splitting.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "TEST-ISA-source-split", "s_TEST-Template1-Splitting.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_source_split_assay_table(self):
         with open(os.path.join(self._json_data_dir, "TEST-ISA-source-split.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
         with open(
             os.path.join(self._tmp_dir, "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt")
-        ) as out_fp:
-            with open(
-                os.path.join(
-                    self._tab_data_dir,
-                    "TEST-ISA-source-split",
-                    "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
-                )
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        ) as out_fp, open(
+            os.path.join(
+                self._tab_data_dir,
+                "TEST-ISA-source-split",
+                "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
+            )
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_sample_pool_study_table(self):
         with open(os.path.join(self._json_data_dir, "TEST-ISA-sample-pool.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
-        with open(os.path.join(self._tmp_dir, "s_TEST-Template3-Splitting.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "TEST-ISA-sample-pool", "s_TEST-Template3-Splitting.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "s_TEST-Template3-Splitting.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "TEST-ISA-sample-pool", "s_TEST-Template3-Splitting.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_sample_pool_assay_table(self):
         with open(os.path.join(self._json_data_dir, "TEST-ISA-sample-pool.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
             with open(
                 os.path.join(self._tmp_dir, "a_test-template3-splitting_transcription_profiling_DNA_microarray.txt")
-            ) as out_fp:
-                with open(
-                    os.path.join(
-                        self._tab_data_dir,
-                        "TEST-ISA-sample-pool",
-                        "a_test-template3-splitting_transcription_profiling_DNA_microarray.txt",
-                    )
-                ) as reference_fp:
-                    self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+            ) as out_fp, open(
+                os.path.join(
+                    self._tab_data_dir,
+                    "TEST-ISA-sample-pool",
+                    "a_test-template3-splitting_transcription_profiling_DNA_microarray.txt",
+                )
+            ) as reference_fp:
+                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_s_3_investigation(self):
         with open(os.path.join(self._json_data_dir, "BII-S-3", "BII-S-3.json")) as json_fp:
@@ -98,11 +94,10 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_s_3_assay_table_Gx(self):
         with open(os.path.join(self._json_data_dir, "BII-S-3", "BII-S-3.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
-        with open(os.path.join(self._tmp_dir, "a_gilbert-assay-Gx.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "BII-S-3_written_by_isatab", "a_gilbert-assay-Gx.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "a_gilbert-assay-Gx.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "BII-S-3_written_by_isatab", "a_gilbert-assay-Gx.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_s_7_investigation(self):
         with open(os.path.join(self._json_data_dir, "BII-S-7", "BII-S-7.json")) as json_fp:
@@ -132,11 +127,10 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_i_1_investigation(self):
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, "i_investigation.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "i_investigation.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "i_investigation.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "i_investigation.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_i_1_study_table(self):
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:
@@ -155,22 +149,20 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_i_1_assay_table_metabolome(self):
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, "a_metabolome.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_metabolome1.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "a_metabolome.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_metabolome1.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_i_1_assay_table_microarray(self):
         # FIXME: ArrayExpress comments come out twice (on Assay AND Derived Data File output from assay),
         #  missing Data Transformation Name and Factor Values
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, "a_microarray.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_microarray.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "a_microarray.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_microarray.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_i_1_assay_table_proteome(self):
         # FIXME: Same duplication problem as above
@@ -184,11 +176,10 @@ class TestJson2IsaTab(unittest.TestCase):
         # FIXME: Has inserted Protocol REFs but Array Design REF, Scan Name, Factor Values
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, "a_transcriptome.txt")) as out_fp:
-            with open(
-                os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_transcriptome.txt")
-            ) as reference_fp:
-                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
+        with open(os.path.join(self._tmp_dir, "a_transcriptome.txt")) as out_fp, open(
+            os.path.join(self._tab_data_dir, "BII-I-1_written_by_isatab", "a_transcriptome.txt")
+        ) as reference_fp:
+            self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_write_factor_values_in_assay_table(self):
         with open(os.path.join(self._json_data_dir, "BII-I-1", "BII-I-1.json")) as json_fp:

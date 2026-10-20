@@ -129,8 +129,10 @@ def make_characteristic_methods():
         if isinstance(self.category, str):
             characteristic["category_str"] = self.category
         else:
-            characteristic["category_oa"] = self.category.to_sql(session)
-        return Characteristic(**characteristic)
+            characteristic["category_id"] = self.category.id
+        characteristic_obj = Characteristic(**characteristic)
+        session.add(characteristic_obj)
+        return characteristic_obj
 
-    setattr(CharacteristicModel, "to_sql", to_sql)
-    setattr(CharacteristicModel, "get_table", make_get_table_method(Characteristic))
+    CharacteristicModel.to_sql = to_sql
+    CharacteristicModel.get_table = make_get_table_method(Characteristic)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for reading and writing MAGE-TAB.
 
 Functions for reading and writing MAGE-TAB. MAGE-TAB content is loaded into an
@@ -6,7 +5,6 @@ in-memory representation using the ISA Data Model implemented in the
 isatools.model package.
 """
 
-from __future__ import absolute_import
 
 import copy
 import csv
@@ -349,7 +347,7 @@ def write_sdrf_table_files(i, output_path):
     for study in i.studies:
         for assay in [x for x in study.assays if x.technology_type.term.lower() == "dna microarray"]:
             sdrf_filename = study.filename[2:-3] + assay.filename[2:-3] + "sdrf.txt"
-            log.debug("Writing {}".format(sdrf_filename))
+            log.debug(f"Writing {sdrf_filename}")
             try:
                 isatab.merge_study_with_assay_tables(
                     os.path.join(tmp, study.filename),
@@ -357,7 +355,7 @@ def write_sdrf_table_files(i, output_path):
                     os.path.join(output_path, sdrf_filename),
                 )
             except FileNotFoundError:
-                raise IOError("There was a problem merging intermediate ISA-Tab files into SDRF")
+                raise OSError("There was a problem merging intermediate ISA-Tab files into SDRF")
 
 
 def dump(inv_obj, output_path):
@@ -375,7 +373,7 @@ def dump(inv_obj, output_path):
         write_idf_file(inv_obj, output_path=output_path)
         write_sdrf_table_files(i=inv_obj, output_path=output_path)
     else:
-        raise IOError("Input must contain at least one assay of type DNA microarray, halt writing MAGE-TAB")
+        raise OSError("Input must contain at least one assay of type DNA microarray, halt writing MAGE-TAB")
     return inv_obj
 
 
@@ -467,7 +465,7 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
         return squashstr(key)
 
 
-class MageTabParser(object):
+class MageTabParser:
     """The MAGE-TAB parser
     This parses MAGE-TAB IDF and SDRF files into the Python ISA model.
     It does some best-effort inferences on missing
@@ -676,7 +674,7 @@ class MageTabParser(object):
                 self.ISA.studies[-1].publications.append(publication)
 
     def parse_experiment_description(self, descriptions):
-        log.info("Descriptions are: {}".format(descriptions))
+        log.info(f"Descriptions are: {descriptions}")
         for description in zip_longest(descriptions, fillvalue=""):
             self.ISA.studies[-1].description = description[-1]
             break  # because there should only be one or zero rows
@@ -844,17 +842,9 @@ class MageTabParser(object):
             # do some preliminary cleanup of the table
             columns_to_keep = []
             for i, col in enumerate(df.columns):
-                if col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith("protocol ref"):
-                    pass
-                    # drop term source ref column that appears
-                    # after protocol ref
-                elif col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith(
+                if col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith("protocol ref") or col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith(
                     "array design ref"
-                ):
-                    pass
-                    # drop term source ref column that appears after
-                    # array design ref
-                elif col.lower().startswith("technology type"):
+                ) or col.lower().startswith("technology type"):
                     pass
                     # drop technology type column / in java code it moves it
                     # 1 to the right of assay name column
