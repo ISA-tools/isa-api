@@ -1,6 +1,5 @@
 """Tests on isatab.py package"""
 
-from __future__ import absolute_import
 
 import os
 import shutil
@@ -47,9 +46,9 @@ from isatools.tests.utils import assert_tab_content_equal
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not find test data directory in {0}. Ensure you have cloned the data "
+            f"Could not find test data directory in {utils.DATA_DIR}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -1008,38 +1007,38 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
             # material as output
 
             extraction_process1.inputs.append(sample)
-            material1 = Material(name="extract-{}".format(i))
+            material1 = Material(name=f"extract-{i}")
             material1.type = "Extract Name"
             extraction_process1.outputs.append(material1)
 
             extraction_process2.inputs.append(sample)
-            material2 = Material(name="methyl-extract-{}".format(i))
+            material2 = Material(name=f"methyl-extract-{i}")
             material2.type = "Extract Name"
             extraction_process2.outputs.append(material2)
 
             # create a sequencing process that executes the sequencing protocol
 
             sequencing_process1 = Process(executes_protocol=sequencing_protocol)
-            sequencing_process1.name = "assay-name-{}".format(i)
+            sequencing_process1.name = f"assay-name-{i}"
             sequencing_process1.inputs.append(extraction_process1.outputs[0])
 
             # Sequencing process usually has an output data file
 
             datafile1 = DataFile(
-                filename="sequenced-data-{}".format(i), label="Raw Data File", generated_from=[material1]
+                filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[material1]
             )
             sequencing_process1.outputs.append(datafile1)
 
             # create a sequencing process that executes the sequencing protocol
 
             sequencing_process2 = Process(executes_protocol=sequencing_protocol_methyl)
-            sequencing_process2.name = "methyl-assay-name-{}".format(i)
+            sequencing_process2.name = f"methyl-assay-name-{i}"
             sequencing_process2.inputs.append(extraction_process2.outputs[0])
 
             # Sequencing process usually has an output data file
 
             datafile2 = DataFile(
-                filename="methyl-sequenced-data-{}".format(i), label="Raw Data File", generated_from=[material1]
+                filename=f"methyl-sequenced-data-{i}", label="Raw Data File", generated_from=[material1]
             )
             sequencing_process2.outputs.append(datafile2)
 
@@ -1079,7 +1078,7 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
 
         try:
             isatab.dump(investigation, self._tmp_dir)
-        except IOError as ioe:
+        except OSError as ioe:
             print("ERROR: ", ioe)
 
 

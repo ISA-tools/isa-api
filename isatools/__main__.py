@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Main entry point for running from the command-line.
 
 This module provides the main entry point for running ISA-API functions from
@@ -54,8 +53,8 @@ def main(argv=None):
     args = p.parse_args(argv or sys.argv[1:])
 
     if args.verbose:
-        print("{} input: {}".format(os.linesep, args.in_path))
-        print("output: {}".format(args.out_path))
+        print(f"{os.linesep} input: {args.in_path}")
+        print(f"output: {args.out_path}")
 
     if args.cmd == "isatab2json":
         from isatools.convert import isatab2json
@@ -79,9 +78,8 @@ def main(argv=None):
     elif args.cmd == "sampletab2json":
         from isatools.convert import sampletab2json
 
-        with open(args.in_path) as in_fp:
-            with open(args.out_path, "w") as out_fp:
-                sampletab2json.convert(in_fp, out_fp)
+        with open(args.in_path) as in_fp, open(args.out_path, "w") as out_fp:
+            sampletab2json.convert(in_fp, out_fp)
 
 
 if __name__ == "__main__":

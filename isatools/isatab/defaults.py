@@ -47,7 +47,7 @@ BASE_DIR = path.dirname(__file__)
 default_config_dir = path.join(BASE_DIR, "..", "resources", "config", "xml")
 
 
-class _Defaults(object):
+class _Defaults:
     """An internal object to hold defaults for ISA-Tab features"""
 
     def __init__(self):

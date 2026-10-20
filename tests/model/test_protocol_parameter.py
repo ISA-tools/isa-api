@@ -32,7 +32,7 @@ class TestProtocolParameter(TestCase):
             "term_accession='', "
             "comments=[])"
         )
-        expected_str = "isatools.model.ProtocolParameter(parameter_name={0}, comments=[])".format(param_name)
+        expected_str = f"isatools.model.ProtocolParameter(parameter_name={param_name}, comments=[])"
         self.assertEqual(protocol_parameter.__repr__(), expected_str)
         self.assertTrue(hash(protocol_parameter) == hash(expected_str))
 

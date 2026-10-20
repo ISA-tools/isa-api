@@ -26,7 +26,7 @@ def build_html_summary(summary: list) -> str:
         for item in [x for x in item.items() if x[0] != "sample_name"]:
             study_factors.append(": ".join([item[0], item[1]]))
         study_group = ", ".join(study_factors)
-        if study_group not in study_groups.keys():
+        if study_group not in study_groups:
             study_groups[study_group] = []
         study_groups[study_group].append(sample_name)
     summary_table = "<table>"
@@ -34,11 +34,9 @@ def build_html_summary(summary: list) -> str:
     for item in study_groups.items():
         study_group = item[0]
         num_samples = len(item[1])
-        summary_table += "<tr><td>{study_group}</td><td>{num_samples}</td>".format(
-            study_group=study_group, num_samples=num_samples
-        )
+        summary_table += f"<tr><td>{study_group}</td><td>{num_samples}</td>"
     summary_table += "</table>"
-    html_summary = """
+    html_summary = f"""
 <html>
 <head>
 <title>ISA-Tab Factors Summary</title>
@@ -47,5 +45,5 @@ def build_html_summary(summary: list) -> str:
 {summary_table}
 </body>
 </html>
-""".format(summary_table=summary_table)
+"""
     return html_summary

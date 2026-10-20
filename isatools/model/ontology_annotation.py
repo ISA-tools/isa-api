@@ -43,7 +43,7 @@ class OntologyAnnotation(Commentable, Identifiable):
     @term.setter
     def term(self, val: str):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("OntologyAnnotation.term must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"OntologyAnnotation.term must be a str or None; got {val}:{type(val)}")
         self.__term = val
 
     @property
@@ -56,7 +56,7 @@ class OntologyAnnotation(Commentable, Identifiable):
     def term_source(self, val: OntologySource):
         if val is not None and not isinstance(val, OntologySource):
             raise AttributeError(
-                "OntologyAnnotation.term_source must be a OntologySource or None; got {0}:{1}".format(val, type(val))
+                f"OntologyAnnotation.term_source must be a OntologySource or None; got {val}:{type(val)}"
             )
         self.__term_source = val
 
@@ -74,34 +74,34 @@ class OntologyAnnotation(Commentable, Identifiable):
     def __repr__(self):
         return (
             "isatools.model.OntologyAnnotation("
-            "term='{ontology_annotation.term}', "
-            "term_source={term_source}, "
-            "term_accession='{ontology_annotation.term_accession}', "
-            "comments={ontology_annotation.comments})"
-        ).format(ontology_annotation=self, term_source=repr(self.term_source))
+            f"term='{self.term}', "
+            f"term_source={self.term_source!r}, "
+            f"term_accession='{self.term_accession}', "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         if not isinstance(self.term_source, str) and isinstance(self.term_source, OntologySource):
             return (
                 "OntologyAnnotation(\n\t"
-                "term={ontology_annotation.term}\n\t"
-                "term_source={term_source_ref}\n\t"
-                "term_accession={ontology_annotation.term_accession}\n\t"
-                "comments={num_comments} Comment objects\n)"
-            ).format(ontology_annotation=self, term_source_ref=self.term_source.name, num_comments=len(self.comments))
+                f"term={self.term}\n\t"
+                f"term_source={self.term_source.name}\n\t"
+                f"term_accession={self.term_accession}\n\t"
+                f"comments={len(self.comments)} Comment objects\n)"
+            )
         else:
             return (
                 "OntologyAnnotation(\n\t"
-                "term={ontology_annotation.term}\n\t"
-                "term_source={term_source_ref}\n\t"
-                "term_accession={ontology_annotation.term_accession}\n\t"
-                "comments={num_comments} Comment objects\n)"
-            ).format(ontology_annotation=self, term_source_ref=self.term_source, num_comments=len(self.comments))
+                f"term={self.term}\n\t"
+                f"term_source={self.term_source}\n\t"
+                f"term_accession={self.term_accession}\n\t"
+                f"comments={len(self.comments)} Comment objects\n)"
+            )
 
     def __hash__(self):
         return hash(repr(self))
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, OntologyAnnotation)
             and self.term == other.term
@@ -110,7 +110,7 @@ class OntologyAnnotation(Commentable, Identifiable):
             and self.comments == other.comments
         )
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self == other
 
     def to_dict(self, ld=False):
@@ -133,6 +133,6 @@ class OntologyAnnotation(Commentable, Identifiable):
         self.term_accession = ontology_annotation.get("termAccession", "")
         self.load_comments(ontology_annotation.get("comments", []))
 
-        if "termSource" in ontology_annotation and ontology_annotation["termSource"]:
+        if ontology_annotation.get("termSource"):
             source = indexes.get_term_source(ontology_annotation["termSource"])
             self.term_source = source

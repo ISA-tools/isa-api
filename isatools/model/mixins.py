@@ -69,7 +69,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__filename = val
         else:
-            raise AttributeError("{0}.filename must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.filename must be a string")
 
     @property
     def identifier(self):
@@ -81,7 +81,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__identifier = val
         else:
-            raise AttributeError("{0}.identifier must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.identifier must be a string")
 
     @property
     def title(self):
@@ -93,7 +93,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__title = val
         else:
-            raise AttributeError("{0}.title must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.title must be a string")
 
     @property
     def description(self):
@@ -105,7 +105,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__description = val
         else:
-            raise AttributeError("{0}.description must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.description must be a string")
 
     @property
     def submission_date(self):
@@ -117,7 +117,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__submission_date = val
         else:
-            raise AttributeError("{0}.submission_date must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.submission_date must be a string")
 
     @property
     def public_release_date(self):
@@ -129,7 +129,7 @@ class MetadataMixin(metaclass=ABCMeta):
         if val is not None and isinstance(val, str):
             self.__public_release_date = val
         else:
-            raise AttributeError("{0}.public_release_date must be a string".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.public_release_date must be a string")
 
     @property
     def publications(self):
@@ -143,7 +143,7 @@ class MetadataMixin(metaclass=ABCMeta):
                 self.__publications = list(val)
         else:
             raise AttributeError(
-                "{0}.publications must be iterable containing Publications".format(type(self).__name__)
+                f"{type(self).__name__}.publications must be iterable containing Publications"
             )
 
     @property
@@ -157,7 +157,7 @@ class MetadataMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Person) for x in val):
                 self.__contacts = list(val)
         else:
-            raise AttributeError("{0}.contacts must be iterable containing Person objects".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.contacts must be iterable containing Person objects")
 
 
 class StudyAssayMixin(metaclass=ABCMeta):
@@ -220,7 +220,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
     def filename(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                "{0}.filename must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+                f"{type(self).__name__}.filename must be a str or None; got {val}:{type(val)}"
             )
         self.__filename = val
 
@@ -235,7 +235,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__units = list(val)
         else:
-            raise AttributeError("{}.units must be iterable containing OntologyAnnotations".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.units must be iterable containing OntologyAnnotations")
 
     @property
     def sources(self):
@@ -248,7 +248,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Source) for x in val):
                 self.__materials["sources"] = list(val)
         else:
-            raise AttributeError("{}.sources must be iterable containing Sources".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.sources must be iterable containing Sources")
 
     def add_source(self, name="", characteristics=None, comments=None):
         """Adds a new source to the source materials list.
@@ -336,7 +336,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Sample) for x in val):
                 self.__materials["samples"] = list(val)
         else:
-            raise AttributeError("{}.samples must be iterable containing Samples".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.samples must be iterable containing Samples")
 
     def add_sample(self, name="", characteristics=None, factor_values=None, derives_from=None, comments=None):
         """Adds a new sample to the sample materials list.
@@ -462,7 +462,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Material) for x in val):
                 self.__materials["other_material"] = list(val)
         else:
-            raise AttributeError("{}.other_material must be iterable containing Materials".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.other_material must be iterable containing Materials")
 
     def yield_materials_by_characteristic(self, characteristic=None):
         """Gets an iterator of matching materials for a given characteristic.
@@ -520,7 +520,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 self.__process_sequence = list(val)
         else:
             raise AttributeError(
-                "{}.process_sequence must be iterable containing Processes".format(type(self).__name__)
+                f"{type(self).__name__}.process_sequence must be iterable containing Processes"
             )
 
     @property
@@ -536,9 +536,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
                 self.__characteristic_categories = list(val)
         else:
             raise AttributeError(
-                "{}.characteristic_categories must be iterable containing OntologyAnnotation".format(
-                    type(self).__name__
-                )
+                f"{type(self).__name__}.characteristic_categories must be iterable containing OntologyAnnotation"
             )
 
     @property
@@ -551,7 +549,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
 
     @graph.setter
     def graph(self, graph):
-        raise AttributeError("{}.graph is not settable".format(type(self).__name__))
+        raise AttributeError(f"{type(self).__name__}.graph is not settable")
 
     def shuffle_materials(self, attribute):
         """
@@ -578,7 +576,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
         if attribute == "samples" or attribute == "sources":
             target_material = [x for x in getattr(self, attribute)]
         else:
-            target_material = [x for x in getattr(self, "other_material") if getattr(x, "type") == attribute]
+            target_material = [x for x in self.other_material if x.type == attribute]
 
         shuffle(target_material)
         mat_index = 0

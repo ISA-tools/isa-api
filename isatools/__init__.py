@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """isatools meta-module for importing various submodules.
 
 This module allows users to import submodules without having to use fully
@@ -16,9 +15,7 @@ Example:
         $ from isatools import isatab2json
 """
 
-from __future__ import absolute_import
 
-#
 from isatools.convert import (
     isatab2cedar as isatab2cedar_module,
 )
@@ -58,9 +55,6 @@ from isatools.convert import (
 from isatools.convert import (
     sampletab2json as sampletab2json_module,
 )
-
-#
-#
 from isatools.net import (
     biocrates2isatab as biocrates2isatab_module,
 )

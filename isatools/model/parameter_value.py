@@ -42,7 +42,7 @@ class ParameterValue(Commentable):
     def category(self, val):
         if val is not None and not isinstance(val, ProtocolParameter):
             raise AttributeError(
-                "ParameterValue.category must be a ProtocolParameter or None; got {0}:{1}".format(val, type(val))
+                f"ParameterValue.category must be a ProtocolParameter or None; got {val}:{type(val)}"
             )
         self.__category = val
 
@@ -56,9 +56,7 @@ class ParameterValue(Commentable):
     def value(self, val):
         if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
             raise AttributeError(
-                "ParameterValue.value must be a string, numeric, an OntologyAnnotation, or None; got {0}:{1}".format(
-                    val, type(val)
-                )
+                f"ParameterValue.value must be a string, numeric, an OntologyAnnotation, or None; got {val}:{type(val)}"
             )
         self.__value = val
 
@@ -71,15 +69,13 @@ class ParameterValue(Commentable):
     def unit(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise AttributeError(
-                "ParameterValue.unit must be a OntologyAnnotation, or None; got {0}:{1}".format(val, type(val))
+                f"ParameterValue.unit must be a OntologyAnnotation, or None; got {val}:{type(val)}"
             )
         self.__unit = val
 
     def __repr__(self):
         return (
-            "isatools.model.ParameterValue(category={category}, value={value}, unit={unit}, comments={comments})"
-        ).format(
-            category=repr(self.category), value=repr(self.value), unit=repr(self.unit), comments=repr(self.comments)
+            f"isatools.model.ParameterValue(category={self.category!r}, value={self.value!r}, unit={self.unit!r}, comments={self.comments!r})"
         )
 
     def __str__(self):

@@ -36,7 +36,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     def name(self, val):
         if val is not None and not isinstance(val, str):
             raise AttributeError(
-                "{0}.name must be a str or None; got {1}:{2}".format(type(self).__name__, val, type(val))
+                f"{type(self).__name__}.name must be a str or None; got {val}:{type(val)}"
             )
         self.__name = val
 
@@ -50,9 +50,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
         # TODO: use json_schema to get these values
         if val is not None and (not isinstance(val, str) or val not in ["Extract Name", "Labeled Extract Name"]):
             raise AttributeError(
-                '{0}.type must be a str in ("Extract Name", "Labeled Extract Name") or None; got {1}:{2}'.format(
-                    type(self).__name__, val, type(val)
-                )
+                f'{type(self).__name__}.type must be a str in ("Extract Name", "Labeled Extract Name") or None; got {val}:{type(val)}'
             )
         self.__type = val
 
@@ -69,7 +67,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
                 self.__characteristics = list(val)
         else:
             raise AttributeError(
-                "{}.characteristics must be iterable containing Characteristics".format(type(self).__name__)
+                f"{type(self).__name__}.characteristics must be iterable containing Characteristics"
             )
 
     # @property
@@ -134,20 +132,20 @@ class Extract(Material):
 
     def __repr__(self):
         return (
-            "isatools.model.Extract(name='{extract.name}', "
-            "type='{extract.type}', "
-            "characteristics={extract.characteristics}, "
-            "comments={extract.comments})"
-        ).format(extract=self)
+            f"isatools.model.Extract(name='{self.name}', "
+            f"type='{self.type}', "
+            f"characteristics={self.characteristics}, "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         return (
             "Extract(\n\t"
-            "name={extract.name}\n\t"
-            "type={extract.type}\n\t"
-            "characteristics={num_characteristics} Characteristic objects\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(extract=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
+            f"name={self.name}\n\t"
+            f"type={self.type}\n\t"
+            f"characteristics={len(self.characteristics)} Characteristic objects\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))
@@ -178,20 +176,20 @@ class LabeledExtract(Material):
 
     def __repr__(self):
         return (
-            "isatools.model.LabeledExtract(name='{labeled_extract.name}',"
+            f"isatools.model.LabeledExtract(name='{self.name}',"
             " type='Labeled Extract Name', "
-            "characteristics={labeled_extract.characteristics}, "
-            "comments={labeled_extract.comments})".format(labeled_extract=self)
+            f"characteristics={self.characteristics}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
         return (
             "LabeledExtract(\n\t"
-            "name={labeled_extract.name}\n\t"
+            f"name={self.name}\n\t"
             "type=Labeled Extract Name\n\t"
-            "characteristics={num_characteristics} Characteristic objects\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(labeled_extract=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
+            f"characteristics={len(self.characteristics)} Characteristic objects\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))

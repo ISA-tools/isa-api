@@ -23,9 +23,10 @@ jobs:
       run: |
         uv python pin ${{ matrix.python-version }}
         uv sync --extra database --extra dev
-    - uses: astral-sh/ruff-action@v3
-    - run: ruff check
-    - run: ruff format
+    - name: Check with Ruff
+      run: uv run --locked --extra database --extra dev ruff check --config pyproject.toml
+    - name: Format with Ruff
+      run: uv run --locked --extra database --extra dev ruff format --config pyproject.toml
     - name: Test with python unittest
       run: |
         uv run --python ${{ matrix.python-version }} pytest
