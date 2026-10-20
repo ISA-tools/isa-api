@@ -2022,6 +2022,28 @@ sample1\textraction\te2\tscanning\td2"""
             expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
             self.assertIn(expected_chained_protocol_snippet, dumps_out)
 
+    def test_protocol_refs_sharing_name_values(self):
+        factory = ProcessSequenceFactory(
+            study_protocols=[
+                Protocol(name="mass spectrometry"),
+                Protocol(name="data transformation"),
+                Protocol(name="metabolite identification"),
+            ]
+        )
+        table_to_load = (
+            "Sample Name\tProtocol REF\tMS Assay Name\tRaw Data File\tProtocol REF\tNormalization Name"
+            "\tProtocol REF\tData Transformation Name\tDerived Data File\n"
+            "sample1\tmass spectrometry\tsample1\ts1.raw\tdata transformation\tsample1"
+            "\tmetabolite identification\tsample1\tresult.tsv\n"
+            "sample2\tmass spectrometry\tsample2\ts2.raw\tdata transformation\tsample2"
+            "\tmetabolite identification\tsample2\tresult.tsv"
+        )
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep="\t"))
+        processes = factory.create_from_df(DF)[4]
+        self.assertEqual(len(processes), 6)
+        for process in processes.values():
+            self.assertIsNot(process.next_process, process)
+
 
 class TestTransposedTabParser(unittest.TestCase):
     def setUp(self):
