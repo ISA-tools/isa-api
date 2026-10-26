@@ -36,7 +36,7 @@ class FactorValue(Commentable):
     def factor_name(self, val):
         if val is not None and not isinstance(val, StudyFactor):
             raise AttributeError(
-                "FactorValue.factor_name must be a StudyFactor or None; got {0}:{1}".format(val, type(val))
+                f"FactorValue.factor_name must be a StudyFactor or None; got {val}:{type(val)}"
             )
         self.__factor_name = val
 
@@ -50,9 +50,7 @@ class FactorValue(Commentable):
     def value(self, val):
         if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
             raise AttributeError(
-                "FactorValue.value must be a string, numeric, an OntologyAnnotation, or None; got {0}:{1}".format(
-                    val, type(val)
-                )
+                f"FactorValue.value must be a string, numeric, an OntologyAnnotation, or None; got {val}:{type(val)}"
             )
         self.__value = val
 
@@ -66,14 +64,12 @@ class FactorValue(Commentable):
         # FIXME can this be a string as well?
         if val is not None and not isinstance(val, (OntologyAnnotation, str)):
             raise AttributeError(
-                "FactorValue.unit must be an OntologyAnnotation, o string, or None; got {0}:{1}".format(val, type(val))
+                f"FactorValue.unit must be an OntologyAnnotation, o string, or None; got {val}:{type(val)}"
             )
         self.__unit = val
 
     def __repr__(self):
-        return ("isatools.model.FactorValue(factor_name={factor_name}, value={value}, unit={unit})").format(
-            factor_name=repr(self.factor_name), value=repr(self.value), unit=repr(self.unit)
-        )
+        return (f"isatools.model.FactorValue(factor_name={self.factor_name!r}, value={self.value!r}, unit={self.unit!r})")
 
     def __str__(self):
         return ("FactorValue(\n\tfactor_name={factor_name}\n\tvalue={value}\n\tunit={unit}\n)").format(
@@ -132,7 +128,7 @@ class FactorValue(Commentable):
                     self.unit = None
                 self.value = value_data
             elif not isinstance(value_data, str):
-                raise IOError("Unexpected type in factor value")
+                raise OSError("Unexpected type in factor value")
             else:
                 self.value = value_data
                 self.unit = None
@@ -166,7 +162,7 @@ class StudyFactor(Commentable, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("StudyFactor.name must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"StudyFactor.name must be a str or None; got {val}:{type(val)}")
         self.__name = val
 
     @property
@@ -179,15 +175,15 @@ class StudyFactor(Commentable, Identifiable):
     def factor_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise AttributeError(
-                "StudyFactor.factor_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+                f"StudyFactor.factor_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
             )
         self.__factor_type = val
 
     def __repr__(self):
         return (
-            "isatools.model.StudyFactor(name='{study_factor.name}', "
-            "factor_type={factor_type}, comments={study_factor.comments})"
-        ).format(study_factor=self, factor_type=repr(self.factor_type))
+            f"isatools.model.StudyFactor(name='{self.name}', "
+            f"factor_type={self.factor_type!r}, comments={self.comments})"
+        )
 
     def __str__(self):
         return (

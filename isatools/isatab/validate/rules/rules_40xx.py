@@ -34,7 +34,7 @@ def check_investigation_against_config(i_df_dict, configs):
             spl = "A property value in {} of investigation file at column {} is required"
             spl = spl.format(column, value_index + 1)
         validator.add_error(message=message, supplemental=spl, code=code)
-        log.error("(E) {}".format(spl))
+        log.error(f"(E) {spl}")
 
     def check_section_against_required_fields_one_value(section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
@@ -76,13 +76,13 @@ def load_config(config_dir):
     try:
         configs = isatab_configurator.load(config_dir)
     except FileNotFoundError:
-        spl = "On loading {}".format(config_dir)
+        spl = f"On loading {config_dir}"
         validator.add_error(message="Configurations could not be loaded", supplemental=spl, code=4001)
-        log.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
+        log.error(f"(E) FileNotFoundError on trying to load from {config_dir}")
     if configs is None:
-        spl = "On loading {}".format(config_dir)
+        spl = f"On loading {config_dir}"
         validator.add_error(message="Configurations could not be loaded", supplemental=spl, code=4001)
-        log.error("(E) Could not load configurations from {}".format(config_dir))
+        log.error(f"(E) Could not load configurations from {config_dir}")
     else:
         for k in configs.keys():
             message = "Loaded table configuration '{}' for measurement and technology {}"
@@ -105,15 +105,15 @@ def check_measurement_technology_types(i_df_dict, configs):
 
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
-                lowered_mt = measurement_types[x].lower()
+                lowered_mt = measurement_type.lower()
                 lowered_tt = technology_types[x].lower()
                 if (lowered_mt, lowered_tt) not in configs.keys():
                     spl = "Measurement {}/technology {}, STUDY.{}, STUDY ASSAY.{}"
-                    spl = spl.format(measurement_types[x], technology_types[x], i, x)
+                    spl = spl.format(measurement_type, technology_types[x], i, x)
                     error = (
-                        "(E) Could not load configuration for measurement type '{}' and technology type '{}' "
-                        "for STUDY.{}, STUDY ASSAY.{}'"
-                    ).format(measurement_types[x], technology_types[x], i, x)
+                        f"(E) Could not load configuration for measurement type '{measurement_type}' and technology type '{technology_types[x]}' "
+                        f"for STUDY.{i}, STUDY ASSAY.{x}'"
+                    )
                     validator.add_error(message="Measurement/technology type invalid", supplemental=spl, code=4002)
                     log.error(error)
 
@@ -129,9 +129,9 @@ def check_factor_value_presence(table):
         for x, cell_value in enumerate(table.fillna("")[factor_field]):
             if cell_value == "":
                 msg = "A required node factor value is missing value"
-                spl = "Missing value for '{}' at row {} in {}".format(factor_field, str(x), table.filename)
+                spl = f"Missing value for '{factor_field}' at row {x!s} in {table.filename}"
                 validator.add_warning(message=msg, supplemental=spl, code=4007)
-                log.warning("(W) {}".format(spl))
+                log.warning(f"(W) {spl}")
 
 
 def check_required_fields(table, cfg):
@@ -145,13 +145,13 @@ def check_required_fields(table, cfg):
         found_field = [i for i in table.columns if i.lower() == fheader.lower()]
         if len(found_field) == 0:
             msg = "A required column in assay table is not present"
-            spl = "Required field '{}' not found in the file '{}'".format(fheader, table.filename)
+            spl = f"Required field '{fheader}' not found in the file '{table.filename}'"
             validator.add_warning(message=msg, supplemental=spl, code=4010)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
         elif len(found_field) > 1:
-            spl = "Field '{}' cannot have multiple values in the file '{}'".format(fheader, table.filename)
+            spl = f"Field '{fheader}' cannot have multiple values in the file '{table.filename}'"
             validator.add_warning(message="Multiple columns found", supplemental=spl, code=4013)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
 
 
 def check_field_values(table, cfg):
@@ -170,8 +170,8 @@ def check_field_values(table, cfg):
         :return: Returns True if OK, False if not OK
         """
 
-        spl = "Missing value for the required field '{}' in the file '{}'".format(cfg_field.header, table.filename)
-        warning = "(W) {}".format(spl)
+        spl = f"Missing value for the required field '{cfg_field.header}' in the file '{table.filename}'"
+        warning = f"(W) {spl}"
 
         # First check if the value is required by config
         if isinstance(cell_value, float):
@@ -220,14 +220,14 @@ def check_field_values(table, cfg):
             spl = "Unknown data type '{}' for field '{}' in the file '{}'"
             spl = spl.format(data_type, cfg_field.header, table.filename)
             validator.add_warning(message="Unknown data type found", supplemental=spl, code=4011)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
             return False
         if not is_valid_value:
             msg = "A value does not correspond to the correct data type"
             spl = "Invalid value '{}' for type '{}' of the field '{}'"
             spl = spl.format(cell_value, data_type, cfg_field.header)
             validator.add_warning(message=msg, supplemental=spl, code=4011)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
             if data_type == "list":
                 log.warning("(W) Value must be one of: " + cfg_field.list_values)
         return is_valid_value
@@ -235,7 +235,7 @@ def check_field_values(table, cfg):
     result = True
     for irow in range(len(table.index)):
         ncols = len(table.columns)
-        for icol in range(0, ncols):
+        for icol in range(ncols):
             cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
             if len(cfields) == 1:
                 cfield = cfields[0]
@@ -294,11 +294,9 @@ def check_protocol_fields(table, cfg, proto_map):
                     for proto_name in proto_names:
                         proto_type = proto_map.get(proto_name)
                         if not proto_type and proto_name:
-                            spl = ("Could not find protocol type for protocol name '{}' in file '{}'").format(
-                                proto_name, table.filename
-                            )
+                            spl = (f"Could not find protocol type for protocol name '{proto_name}' in file '{table.filename}'")
                             validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
-                            log.warning("(W) {}".format(spl))
+                            log.warning(f"(W) {spl}")
                         else:
                             fprotos.append(proto_type)
 
@@ -310,7 +308,7 @@ def check_protocol_fields(table, cfg, proto_map):
                     )
                     spl = spl.format(str(list(invalid_protos)), cleft.header, cright.header, table.filename)
                     validator.add_warning(message="Missing Protocol declaration", supplemental=spl, code=1007)
-                    log.warning("(W) {}".format(spl))
+                    log.warning(f"(W) {spl}")
 
 
 def load_table_checks(df, filename):
@@ -332,46 +330,44 @@ def load_table_checks(df, filename):
             and not _RX_FACTOR_VALUE.match(column)
             and not _RX_COMMENT.match(column)
         ):
-            error_msg = "Unrecognised column heading {} at column position {} in table file {}".format(
-                column, x, filename
-            )
+            error_msg = f"Unrecognised column heading {column} at column position {x} in table file {filename}"
             log.error(error_msg)
             error = {"message": "Unrecognised header", "supplemental": error_msg, "code": 4014}
             validator.add_error(**error)
 
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
+                log.warning(f"(W) In file {filename}, label {column} is missing a name")
                 warning = {
                     "message": "Missing name in Comment[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
+                    "supplemental": f"In file {filename}, label {column} is missing a name",
                     "code": 4014,
                 }
                 validator.add_warning(**warning)
         if _RX_CHARACTERISTICS.match(column):
             if len(_RX_CHARACTERISTICS.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
+                log.warning(f"(W) In file {filename}, label {column} is missing a name")
                 warning = {
                     "message": "Missing name in Characteristics[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
+                    "supplemental": f"In file {filename}, label {column} is missing a name",
                     "code": 4014,
                 }
                 validator.add_warning(**warning)
         if _RX_PARAMETER_VALUE.match(column):
             if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
+                log.warning(f"(W) In file {filename}, label {column} is missing a name")
                 warning = {
                     "message": "Missing name in Parameter Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
+                    "supplemental": f"In file {filename}, label {column} is missing a name",
                     "code": 4014,
                 }
                 validator.add_warning(**warning)
         if _RX_FACTOR_VALUE.match(column):
             if len(_RX_FACTOR_VALUE.findall(column)) == 0:
-                log.warning("(W) In file {}, label {} is missing a name".format(filename, column))
+                log.warning(f"(W) In file {filename}, label {column} is missing a name")
                 warning = {
                     "message": "Missing name in Factor Value[] label",
-                    "supplemental": "In file {}, label {} is missing a name".format(filename, column),
+                    "supplemental": f"In file {filename}, label {column} is missing a name",
                     "code": 4014,
                 }
                 validator.add_warning(**warning)
@@ -428,8 +424,8 @@ def load_table_checks(df, filename):
                 ):
                     spl = (
                         "(E) Expected only Characteristics, "
-                        "Factor Values or Comments following {} "
-                        "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename)
+                        f"Factor Values or Comments following {prop_name} "
+                        f"columns but found {col} at offset {x + 1} in file {filename}"
                     )
                     log.error(spl)
                     error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
@@ -454,9 +450,7 @@ def load_table_checks(df, filename):
                     and not _RX_PARAMETER_VALUE.match(col)
                     and not _RX_COMMENT.match(col)
                 ):
-                    spl = "(E) Unexpected column heading following {} column. Found {} at offset {} in file {}".format(
-                        prop_name, col, x + 1, filename
-                    )
+                    spl = f"(E) Unexpected column heading following {prop_name} column. Found {col} at offset {x + 1} in file {filename}"
                     log.error(spl)
                     error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
                     validator.add_error(**error)
@@ -469,8 +463,8 @@ def load_table_checks(df, filename):
                 ):
                     spl = (
                         "(E) Expected only Characteristics, "
-                        "Comments following {} "
-                        "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename)
+                        f"Comments following {prop_name} "
+                        f"columns but found {col} at offset {x + 1} in file {filename}"
                     )
                     log.error(spl)
                     error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
@@ -482,8 +476,8 @@ def load_table_checks(df, filename):
                         if col not in ["Term Source REF", "Term Accession Number"]:
                             spl = (
                                 "(E) Unexpected column heading "
-                                "following {} column. Found {} at "
-                                "offset {} in file {}".format(prop_name, col, x + 1, filename)
+                                f"following {prop_name} column. Found {col} at "
+                                f"offset {x + 1} in file {filename}"
                             )
                             log.error(spl)
                             error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
@@ -498,32 +492,28 @@ def load_table_checks(df, filename):
                         ):
                             spl = (
                                 "(E) Expected only Characteristics, "
-                                "Comments following {} "
-                                "columns but found {} at offset {} in file {}".format(prop_name, col, x + 1, filename)
+                                f"Comments following {prop_name} "
+                                f"columns but found {col} at offset {x + 1} in file {filename}"
                             )
                             log.error(spl)
                             error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
                             validator.add_error(**error)
             else:
-                spl = "Expected Label column after Labeled Extract Name but none found in file {}".format(filename)
+                spl = f"Expected Label column after Labeled Extract Name but none found in file {filename}"
                 log.error(spl)
                 error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
                 validator.add_error(**error)
         elif prop_name in DATA_FILE_LABELS:
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
-                    spl = "(E) Expected only Comments following {} columns but found {} at offset {} in file {}".format(
-                        prop_name, col, x + 1, filename
-                    )
+                    spl = f"(E) Expected only Comments following {prop_name} columns but found {col} at offset {x + 1} in file {filename}"
                     log.error(spl)
                     error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
                     validator.add_error(**error)
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ["Term Source REF", "Term Accession Number"]:
-                    spl = "(E) Unexpected column heading following {} column. Found {} at offset {} in file {}".format(
-                        prop_name, col, x + 1, filename
-                    )
+                    spl = f"(E) Unexpected column heading following {prop_name} column. Found {col} at offset {x + 1} in file {filename}"
                     log.error(spl)
                     error = {"message": "Unrecognised header", "supplemental": spl, "code": 4014}
                     validator.add_error(**error)

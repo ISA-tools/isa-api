@@ -68,9 +68,7 @@ def search_assays(assays, filters, operator):
             if not found_assay:
                 found.append(False)
 
-        if operator == "AND" and False not in list(set(found)):
-            output.append(assay_type)
-        elif operator == "OR" and True in found:
+        if operator == "AND" and False not in list(set(found)) or operator == "OR" and True in found:
             output.append(assay_type)
     return output
 
@@ -143,9 +141,7 @@ def search_process_sequence(process_sequence, filters, operator):
             append_process.append(True in found if len(found) > 0 else False)
 
         append_process = list(set(append_process))
-        if operator == "AND" and False not in append_process:
-            processes.append(process)
-        elif operator == "OR" and True in append_process:
+        if operator == "AND" and False not in append_process or operator == "OR" and True in append_process:
             processes.append(process)
 
     return processes
@@ -181,9 +177,7 @@ def search_inputs(process_inputs, filters, operator):
                 found.append(True)
             else:
                 found.append(False)
-        if operator == "AND" and False not in found and len(found) > 0:
-            outputs.append(input_data)
-        elif operator == "OR" and True in found:
+        if operator == "AND" and False not in found and len(found) > 0 or operator == "OR" and True in found:
             outputs.append(input_data)
     return outputs
 

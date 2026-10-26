@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 import logging
 from glob import glob
@@ -39,7 +38,7 @@ def load_investigation(fp):
 
         if not labels_expected.issubset(labels_found):
             missing_labels = labels_expected - labels_found
-            spl = "In {} section, expected labels {} not found in {}".format(section, missing_labels, labels_found)
+            spl = f"In {section} section, expected labels {missing_labels} not found in {labels_found}"
             msg = "Label not found"
             message_handler.add_error(message=msg, supplemental=spl, code=5)
         if len(labels_found - labels_expected) > 0:
@@ -48,10 +47,10 @@ def load_investigation(fp):
             for label in extra_labels:
                 if _RX_COMMENT.match(label) is None:
                     msg = "Invalid label found in investigation file"
-                    spl = "In {} section, label {} is not allowed".format(section, label)
+                    spl = f"In {section} section, label {label} is not allowed"
                     message_handler.add_error(message=msg, supplemental=spl, code=5)
                 elif len(_RX_COMMENT.findall(label)) == 0:
-                    spl = "In {} section, label {} is missing a name".format(section, label)
+                    spl = f"In {section} section, label {label} is missing a name"
                     msg = "Missing name in Comment[] label"
                     message_handler.add_error(message=msg, supplemental=spl, code=5)
 
@@ -94,12 +93,11 @@ def load_investigation(fp):
         "Investigation Person Address",
         "Investigation Person Affiliation",
         "Investigation Person Roles",
-        "Investigation Person Roles",
         "Investigation Person Roles Term Accession Number",
         "Investigation Person Roles Term Source REF",
     }
     check_labels("INVESTIGATION CONTACTS", labels_expected, df_dict["i_contacts"])
-    for i in range(0, len(df_dict["studies"])):
+    for i in range(len(df_dict["studies"])):
         log.debug("Loading STUDY section")
         labels_expected = {
             "Study Identifier",
@@ -183,7 +181,6 @@ def load_investigation(fp):
             "Study Person Address",
             "Study Person Affiliation",
             "Study Person Roles",
-            "Study Person Roles",
             "Study Person Roles Term Accession Number",
             "Study Person Roles Term Source REF",
         }
@@ -245,7 +242,7 @@ def validate(
                 validate_origin_mzml2isa(fp=fp)
         validated = True
     except (Exception, ParserError, SystemError, ValueError) as e:
-        spl = "The validator could not identify what the error is: {}".format(str(e))
+        spl = f"The validator could not identify what the error is: {e!s}"
         message_handler.add_error(message="Unknown/System Error", supplemental=spl, code=0)
     return {
         "errors": message_handler.errors,
@@ -285,10 +282,10 @@ def batch_validate(tab_dir_list):
     """
     batch_report = {"batch_report": []}
     for tab_dir in tab_dir_list:
-        log.info("***Validating {}***\n".format(tab_dir))
+        log.info(f"***Validating {tab_dir}***\n")
         i_files = glob(path.join(tab_dir, "i_*.txt"))
         if len(i_files) != 1:
-            log.warning("Could not find an investigation file, skipping {}".format(tab_dir))
+            log.warning(f"Could not find an investigation file, skipping {tab_dir}")
         else:
             with utf8_text_file_open(i_files[0]) as fp:
                 batch_report["batch_report"].append({"filename": fp.name, "report": validate(fp)})

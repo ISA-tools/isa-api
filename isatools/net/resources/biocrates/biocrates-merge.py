@@ -72,24 +72,19 @@ def merge():
     # them without further alignment heuristic
 
     metabolites = list(set(metabolites))
-    for element in metabolites:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in metabolites)
 
     plate_set = list(set(plate_set))
-    for element in plate_set:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in plate_set)
 
     projects = list(set(projects))
-    for element in projects:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in projects)
 
     samples = list(set(samples))
-    for element in samples:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in samples)
 
     contacts = list(set(contacts))
-    for element in contacts:
-        fh.write(str(element.encode("utf-8")))
+    fh.writelines(str(element.encode("utf-8")) for element in contacts)
 
     fh.write("</data>")
     fh.close()

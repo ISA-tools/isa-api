@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """Functions for importing SRA from various sources"""
 
-from __future__ import absolute_import
 
 import functools
 import logging
@@ -159,7 +157,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                         df_list.append(df.from_csv(a_path, sep="\t"))
                         remove(a_path)
                     merged_a_file = pd.concat(df_list)
-                    merged_a_file.to_csv(path.join(dir_name, acc_number, "a_{}.txt".format(acc_number)), sep="\t")
+                    merged_a_file.to_csv(path.join(dir_name, acc_number, f"a_{acc_number}.txt"), sep="\t")
 
                 with ZipFile(buffer, "w") as zip_file:
                     zipdir(dir_name, zip_file)

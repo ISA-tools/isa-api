@@ -30,7 +30,7 @@ class ISALDSerializer:
 
     def __new__(cls, json_instance, ontology="obo"):
         if cls._instance is None:
-            cls._instance = super(ISALDSerializer, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def set_contexts_method(self, combined):

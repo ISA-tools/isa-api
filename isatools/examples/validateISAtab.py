@@ -24,7 +24,7 @@ def main(args):
     for i in range(1, len(args)):
         print("-" * 75)
         if not os.path.isfile(args[i]):
-            print("Cannot open file {}, skipping".format(args[i]))
+            print(f"Cannot open file {args[i]}, skipping")
             skipped += 1
             numfiles += 1
         else:
@@ -35,18 +35,16 @@ def main(args):
                 if numerrors > 0:
                     invalid += 1
                 print(
-                    "Validator found {} errors and {} warnings in this ISA-Tab archive".format(numerrors, numwarnings)
+                    f"Validator found {numerrors} errors and {numwarnings} warnings in this ISA-Tab archive"
                 )
                 totalerrors += numerrors
                 totalwarnings += numwarnings
                 numfiles += 1
         print("-" * 75)
     print(
-        "Validated {} ISA-Tab archives, {} valid ISA-Tab archives, {} invalid ISA-Tab archives".format(
-            numfiles - skipped, numfiles - invalid - skipped, invalid
-        )
+        f"Validated {numfiles - skipped} ISA-Tab archives, {numfiles - invalid - skipped} valid ISA-Tab archives, {invalid} invalid ISA-Tab archives"
     )
-    print("Found {} errors and {} warnings in across all ISA-Tab archives".format(totalerrors, totalwarnings))
+    print(f"Found {totalerrors} errors and {totalwarnings} warnings in across all ISA-Tab archives")
 
     if invalid > 0:
         sys.exit(1)

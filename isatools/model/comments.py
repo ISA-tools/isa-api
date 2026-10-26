@@ -4,7 +4,7 @@ from typing import Any, List
 from isatools.model.context import LDSerializable
 
 
-class Comment(LDSerializable, object):
+class Comment(LDSerializable):
     """A Comment allows arbitrary annotation of all Commentable ISA classes
 
     Attributes:
@@ -40,18 +40,18 @@ class Comment(LDSerializable, object):
         self.__value = val
 
     def __repr__(self):
-        return "isatools.model.Comment(name='{comment.name}', value='{comment.value}')".format(comment=self)
+        return f"isatools.model.Comment(name='{self.name}', value='{self.value}')"
 
     def __str__(self):
-        return "Comment(\n\tname={comment.name}\n\tvalue={comment.value})".format(comment=self)
+        return f"Comment(\n\tname={self.name}\n\tvalue={self.value})"
 
     def __hash__(self):
         return hash(repr(self))
 
-    def __eq__(self, other: Any):
+    def __eq__(self, other: object):
         return isinstance(other, Comment) and self.name == other.name and self.value == other.value
 
-    def __ne__(self, other: Any):
+    def __ne__(self, other: object):
         return not self == other
 
     def to_dict(self, ld=False):

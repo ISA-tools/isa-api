@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
 format for describing experimental metdata.
@@ -26,7 +25,6 @@ This is a biased representation of the Study and Assay files which focuses on
 collapsing the data across the samples and raw data.
 """
 
-from __future__ import with_statement
 
 import bisect
 import collections
@@ -371,12 +369,12 @@ class StudyAssayParser:
 
                     input_values = [line[hgroups[x][0]] for i, x in enumerate(input_indices)]
                     input_node_indices = [
-                        self._build_node_index(input_headers[i], input_values[i]) for i, x in enumerate(input_values)
+                        self._build_node_index(input_headers[i], x) for i, x in enumerate(input_values)
                     ]
 
                     output_values = [line[hgroups[x][0]] for i, x in enumerate(output_indices)]
                     output_node_indices = [
-                        self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)
+                        self._build_node_index(output_headers[i], x) for i, x in enumerate(output_values)
                     ]
 
                     qualifier_indices_string = "-".join(qualifier_values)
@@ -468,8 +466,7 @@ class StudyAssayParser:
                     # len(process_node.outputs))
                     line_number += 1
                     process_nodes[unique_process_name] = process_node
-                else:
-                    line_number += 1
+                line_number += 1
                 # study.process_nodes = process_nodes
         return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
