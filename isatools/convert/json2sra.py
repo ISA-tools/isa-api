@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert ISA-JSON to SRA-XML"""
 
 import logging
@@ -24,8 +23,8 @@ def convert(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=No
         if len(report.get("errors")) > 0:
             log.fatal("Could not proceed with conversion as there are some validation errors. Check log.")
             return
-    log.info("Loading isajson {}".format(json_fp.name))
+    log.info(f"Loading isajson {json_fp.name}")
     isa = isajson.load(fp=json_fp)
-    log.info("Exporting SRA to {}".format(path))
-    log.debug("Using SRA settings {}".format(sra_settings))
+    log.info(f"Exporting SRA to {path}")
+    log.debug(f"Using SRA settings {sra_settings}")
     sra.export(isa, path, sra_settings=sra_settings, datafilehashes=datafilehashes)

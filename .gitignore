@@ -1,5 +1,6 @@
 _build/
 old-tests/
+ISAdatasets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -123,7 +124,7 @@ features/test_outputs
 # jenv local file (for Java Versions)
 .java-version
 
-# never commit test data directory, as it comes from ISA-tools/ISAdatasets!
+# never commit test data directory, as it comes from ISA-tools/data!
 tests/data
 
 # ignore virtual environment in subdirectory

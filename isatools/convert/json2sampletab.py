@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert ISA-JSON to SampleTab"""
 
 import logging

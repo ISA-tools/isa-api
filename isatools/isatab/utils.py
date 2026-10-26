@@ -37,7 +37,7 @@ class IsaTabDataFrame(DataFrame):
     """
 
     def __init__(self, *args, **kw):
-        super(IsaTabDataFrame, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
     @property
     def _constructor(self):
@@ -56,13 +56,13 @@ class IsaTabDataFrame(DataFrame):
             if clean_label.lower() in label.strip().lower():
                 return clean_label
             elif _RX_CHARACTERISTICS.match(label):
-                return "Characteristics[{val}]".format(val=next(iter(_RX_CHARACTERISTICS.findall(label))))
+                return f"Characteristics[{next(iter(_RX_CHARACTERISTICS.findall(label)))}]"
             elif _RX_PARAMETER_VALUE.match(label):
-                return "Parameter Value[{val}]".format(val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
+                return f"Parameter Value[{next(iter(_RX_PARAMETER_VALUE.findall(label)))}]"
             elif _RX_FACTOR_VALUE.match(label):
-                return "Factor Value[{val}]".format(val=next(iter(_RX_FACTOR_VALUE.findall(label))))
+                return f"Factor Value[{next(iter(_RX_FACTOR_VALUE.findall(label)))}]"
             elif _RX_COMMENT.match(label):
-                return "Comment[{val}]".format(val=next(iter(_RX_COMMENT.findall(label))))
+                return f"Comment[{next(iter(_RX_COMMENT.findall(label)))}]"
 
     @property
     def isatab_header(self):
@@ -73,7 +73,7 @@ class IsaTabDataFrame(DataFrame):
         return list(map(lambda x: self._clean_label(x), self.columns))
 
 
-class TransposedTabParser(object):
+class TransposedTabParser:
     """Parser for transposed tables, such as the ISA-Tab investigation table,
     or the MAGE-TAB IDF table. The headings are in column 0 with values,
     perhaps multiple, reading in columns towards the right. These tables do
@@ -100,7 +100,7 @@ class TransposedTabParser(object):
             self.log_level = defaults.log_level
         else:
             if not isinstance(tab_options, dict):
-                raise TypeError("tab_options must be dict, not {}".format(type(tab_options)))
+                raise TypeError(f"tab_options must be dict, not {type(tab_options)}")
             self.log_level = log_level
 
         self._ttable_dict = dict(header=list(), table=dict())
@@ -144,9 +144,9 @@ def strip_comments(in_fp):
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
     for line in in_fp.readlines():
-        log.debug("processing line: {}".format(line))
+        log.debug(f"processing line: {line}")
         if line.lstrip().startswith("#"):
-            log.debug("stripping line: {}".format(line))
+            log.debug(f"stripping line: {line}")
         elif len(line.strip()) > 0:
             out_fp.write(line)
     out_fp.seek(0)
@@ -270,9 +270,7 @@ def cell_has_value(cell):
             return True
         return False
     else:
-        if cell.strip() == "":
-            return False
-        elif "Unnamed: " in cell:
+        if cell.strip() == "" or "Unnamed: " in cell:
             return False
         return True
 
@@ -290,7 +288,7 @@ def get_num_study_groups(study_sample_table, study_filename):
     if factor_columns:
         num_study_groups = len(study_sample_table[factor_columns].drop_duplicates())
     else:
-        log.debug("No study factors found in {}".format(study_filename))
+        log.debug(f"No study factors found in {study_filename}")
     return num_study_groups
 
 
@@ -359,7 +357,7 @@ def get_characteristic_columns(label, c):
         columns = ["{0}.Characteristics[{1}]".format(label, c.category.term["annotationValue"])]
         columns.extend(get_value_columns(columns[0], c))
     else:
-        columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
+        columns = [f"{label}.Characteristics[{c.category.term}]"]
         columns.extend(get_value_columns(columns[0], c))
 
     return columns
@@ -372,7 +370,7 @@ def get_comment_column(label, c):
     :param c: The object of interest
     :return: List of column labels
     """
-    columns = ["{0}.Comment[{1}]".format(label, c.name)]
+    columns = [f"{label}.Comment[{c.name}]"]
     return columns
 
 
@@ -386,7 +384,7 @@ def get_pv_columns(label, pv):
     columns = None
     try:
         if pv.category is not None:
-            columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+            columns = [f"{label}.Parameter Value[{pv.category.parameter_name.term}]"]
             # print(columns)
         else:
             raise ValueError
@@ -533,10 +531,10 @@ def get_value_columns(label, x):
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             labels = ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
-            return map(lambda x: "{0}.{1}".format(label, x), labels)
-        return ["{0}.Unit".format(label)]
+            return map(lambda x: f"{label}.{x}", labels)
+        return [f"{label}.Unit"]
     elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda y: "{0}.{1}".format(label, y), ["Term Source REF", "Term Accession Number"])
+        return map(lambda y: f"{label}.{y}", ["Term Source REF", "Term Accession Number"])
     return []
 
 
@@ -548,6 +546,6 @@ def get_fv_columns(label, fv):
     e.g. "Sample Name"
     :return: List of column labels
     """
-    columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
+    columns = [f"{label}.Factor Value[{fv.factor_name.name}]"]
     columns.extend(get_value_columns(columns[0], fv))
     return columns

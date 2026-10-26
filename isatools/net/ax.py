@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for retrieving metadata from ArrayExpress.
 
 This module connects to the European Bioinformatics Institute's
@@ -6,7 +5,6 @@ ArrayExpress database. If you have problems with it, check that
 it's working at http://www.ebi.ac.uk/arrayexpress/
 """
 
-from __future__ import absolute_import
 
 import csv
 import ftplib
@@ -44,7 +42,7 @@ def get(arrayexpress_id, target_dir=None):
     idbits = arrayexpress_id.split("-")
     exp_type = idbits[1]
 
-    log.info("Setting up ftp with {}".format(EBI_FTP_SERVER))
+    log.info(f"Setting up ftp with {EBI_FTP_SERVER}")
     ftp = ftplib.FTP(EBI_FTP_SERVER)
     log.info("Logging in as anonymous user...")
     response = ftp.login()
@@ -52,18 +50,16 @@ def get(arrayexpress_id, target_dir=None):
     if "230" in response:  # 230 means Login successful
         log.info("Log in successful!")
         try:
-            logging.info("Looking for experiment '{}'".format(arrayexpress_id))
+            logging.info(f"Looking for experiment '{arrayexpress_id}'")
             ftp.cwd(
-                "{base_dir}/{exp_type}/{arrayexpress_id}".format(
-                    base_dir=AX_EXPERIMENT_BASE_DIR, exp_type=exp_type, arrayexpress_id=arrayexpress_id
-                )
+                f"{AX_EXPERIMENT_BASE_DIR}/{exp_type}/{arrayexpress_id}"
             )
             # this won't get set if there is no remote file or the ftp.cwd fails
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
-                log.info("Using directory '{}'".format(target_dir))
+                log.info(f"Using directory '{target_dir}'")
 
-            idf_filename = "{}.idf.txt".format(arrayexpress_id)
+            idf_filename = f"{arrayexpress_id}.idf.txt"
             with open(os.path.join(target_dir, idf_filename), "wb") as out_file:
                 log.info(
                     "Retrieving file '{}'".format(
@@ -122,7 +118,7 @@ def get(arrayexpress_id, target_dir=None):
                                 ftp.retrbinary("RETR " + sdrf_filename, out_file.write)
         except ftplib.error_perm as ftperr:
             log.fatal(
-                "Could not retrieve ArrayExpress study '{study}': {error}".format(study=arrayexpress_id, error=ftperr)
+                f"Could not retrieve ArrayExpress study '{arrayexpress_id}': {ftperr}"
             )
         finally:
             ftp.close()
@@ -152,16 +148,16 @@ def get_isatab(arrayexpress_id, target_dir=None):
         tmp_dir = get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
         if target_dir is None:
             target_dir = tempfile.mkdtemp()
-            log.info("Using directory '{}'".format(target_dir))
-        fp = Path(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id)))
+            log.info(f"Using directory '{target_dir}'")
+        fp = Path(os.path.join(tmp_dir, f"{arrayexpress_id}.idf.txt"))
         if fp.is_file():
             with fp.open("rb") as f:
-                log.info("File {} content: {}".format(fp.absolute(), f.read()))
+                log.info(f"File {fp.absolute()} content: {f.read()}")
         else:
-            log.critical("File {} does not exist!!".format(fp.absolute()))
-        magetab2isatab.convert(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id)), output_path=target_dir)
+            log.critical(f"File {fp.absolute()} does not exist!!")
+        magetab2isatab.convert(os.path.join(tmp_dir, f"{arrayexpress_id}.idf.txt"), output_path=target_dir)
     except Exception as e:
-        log.fatal("Something went wrong: {}".format(e))
+        log.fatal(f"Something went wrong: {e}")
         log.fatal(traceback.format_exc())
     finally:
         shutil.rmtree(tmp_dir)
@@ -185,9 +181,9 @@ def getj(arrayexpress_id):
     mage_json = None
     try:
         get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
-        mage_json = magetab2json.convert(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id)))
+        mage_json = magetab2json.convert(os.path.join(tmp_dir, f"{arrayexpress_id}.idf.txt"))
     except Exception as e:
-        log.fatal("Something went wrong: {}".format(e))
+        log.fatal(f"Something went wrong: {e}")
     finally:
         shutil.rmtree(tmp_dir)
         return mage_json

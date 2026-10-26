@@ -3,7 +3,6 @@ Model objects for storing study design settings, for consumption by
 function or factory to create ISA model objects.
 """
 
-from __future__ import absolute_import
 
 import datetime
 import itertools
@@ -123,7 +122,7 @@ class Element(ABC):
         self.__type = None
 
     def __repr__(self):
-        return "Element(type={0})".format(self.type)
+        return f"Element(type={self.type})"
 
     def __str__(self):
         return repr(self)
@@ -165,24 +164,22 @@ class NonTreatment(Element):
     """
 
     def __init__(self, element_type=ELEMENT_TYPES["SCREEN"], duration_value=0.0, duration_unit=None):
-        super(NonTreatment, self).__init__()
+        super().__init__()
         if element_type not in ELEMENT_TYPES.values():
-            raise ValueError("element treatment type provided: {}".format(element_type))
+            raise ValueError(f"element treatment type provided: {element_type}")
         self.__type = element_type
         if not isinstance(duration_value, Number):
-            raise ValueError("duration_value must be a Number. Value provided is {0}".format(duration_value))
+            raise ValueError(f"duration_value must be a Number. Value provided is {duration_value}")
         self.__duration = FactorValue(factor_name=DURATION_FACTOR, value=duration_value, unit=duration_unit)
 
     def __repr__(self):
-        return "{0}.{1}(type={2}, duration={3})".format(
-            self.__class__.__module__, self.__class__.__name__, repr(self.type), repr(self.duration)
-        )
+        return f"{self.__class__.__module__}.{self.__class__.__name__}(type={self.type!r}, duration={self.duration!r})"
 
     def __str__(self):
-        return """{0}(
-            type={1},
-            duration={2}
-        )""".format(self.__class__.__name__, repr(self.type), repr(self.duration))
+        return f"""{self.__class__.__name__}(
+            type={self.type!r},
+            duration={self.duration!r}
+        )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -214,7 +211,7 @@ class NonTreatment(Element):
 
     def update_duration(self, duration_value, duration_unit=None):
         if not isinstance(duration_value, Number):
-            raise ValueError("duration_value must be a Number. Value provided is {0}".format(duration_value))
+            raise ValueError(f"duration_value must be a Number. Value provided is {duration_value}")
         self.__duration.value = duration_value
         self.__duration.unit = duration_unit
 
@@ -232,10 +229,10 @@ class Treatment(Element):
         :param element_type: treatment type
         :param factor_values: set of isatools.model.v1.FactorValue
         """
-        super(Treatment, self).__init__()
+        super().__init__()
         if not isinstance(element_type, (str, OntologyAnnotation)):
             raise ValueError(
-                "intervention_type must be string or OntologyAnnotation. {} was provided.".format(element_type)
+                f"intervention_type must be string or OntologyAnnotation. {element_type} was provided."
             )
         self.__type = element_type
 
@@ -245,18 +242,13 @@ class Treatment(Element):
             self.factor_values = factor_values
 
     def __repr__(self):
-        return "{0}.{1}(type={2}, factor_values={3})".format(
-            self.__class__.__module__,
-            self.__class__.__name__,
-            self.type,
-            sorted(self.factor_values, key=lambda x: repr(x)),
-        )
+        return f"{self.__class__.__module__}.{self.__class__.__name__}(type={self.type}, factor_values={sorted(self.factor_values, key=lambda x: repr(x))})"
 
     def __str__(self):
-        return """"{0}
-        (type={1},
-        factor_values={2})
-        """.format(self.__class__.__name__, self.type, sorted(self.factor_values, key=lambda x: repr(x)))
+        return f""""{self.__class__.__name__}
+        (type={self.type},
+        factor_values={sorted(self.factor_values, key=lambda x: repr(x))})
+        """
 
     def __hash__(self):
         return hash(repr(self))
@@ -297,12 +289,12 @@ class Treatment(Element):
 
     def update_duration(self, duration_value, duration_unit=None):
         if not isinstance(duration_value, Number):
-            raise ValueError("duration_value must be a Number. Value provided is {0}".format(duration_value))
+            raise ValueError(f"duration_value must be a Number. Value provided is {duration_value}")
         self.__duration.value = duration_value
         self.__duration.unit = duration_unit
 
 
-class StudyCell(object):
+class StudyCell:
     """
     A StudyCell consists of a set of Elements who can be Treatment or NonTreatment Elements
     Under the current design all elements in a a cell are intended to be concomitant
@@ -318,18 +310,13 @@ class StudyCell(object):
             self.elements = elements
 
     def __repr__(self):
-        return "{0}.{1}(name={name}, elements={elements}, )".format(
-            self.__class__.__module__,
-            self.__class__.__name__,
-            name=self.name,
-            elements=[sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements],
-        )
+        return f"{self.__class__.__module__}.{self.__class__.__name__}(name={self.name}, elements={[sorted(el, key=lambda e: hash(e)) if isinstance(el, set) else el for el in self.elements]}, )"
 
     def __str__(self):
-        return """{0}(
-               name={name},
-               elements={elements_count} items,
-               )""".format(self.__class__.__name__, name=self.name, elements_count=len(self.elements))
+        return f"""{self.__class__.__name__}(
+               name={self.name},
+               elements={len(self.elements)} items,
+               )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -566,7 +553,7 @@ class CharacteristicEncoder(json.JSONEncoder):
         return self.characteristic(obj)
 
 
-class CharacteristicDecoder(object):
+class CharacteristicDecoder:
     @staticmethod
     def loads_ontology_annotation(ontology_annotation_dict):
         term_source = None
@@ -643,7 +630,7 @@ class StudyCellEncoder(json.JSONEncoder):
             return {"name": obj.name, "elements": [self.element(el) for el in obj.elements]}
 
 
-class StudyCellDecoder(object):
+class StudyCellDecoder:
     def __init__(self):
         pass
 
@@ -684,7 +671,7 @@ class StudyCellDecoder(object):
                 pass  # treatment
             else:
                 pass  # raise error
-            log.debug("Element has no 'isTreatment' property: {}".format(element_struct))
+            log.debug(f"Element has no 'isTreatment' property: {element_struct}")
             raise ke
 
     def loads_cells(self, json_dict):
@@ -693,7 +680,7 @@ class StudyCellDecoder(object):
             try:
                 cell.insert_element(self.loads_element(element))
             except ValueError as e:
-                log.error("Element triggers error: {0}".format(element))
+                log.error(f"Element triggers error: {element}")
                 raise e
         return cell
 
@@ -792,21 +779,21 @@ class ProtocolNode(SequenceNode, Protocol):
 
     def __repr__(self):
         return (
-            "{0}.{1}(id={2.id}, name={2.name}, protocol_type={2.protocol_type}, "
-            "uri={2.uri}, description={2.description}, version={2.version}, "
-            "parameter_values={2.parameter_values})".format(self.__class__.__module__, self.__class__.__name__, self)
+            f"{self.__class__.__module__}.{self.__class__.__name__}(id={self.id}, name={self.name}, protocol_type={self.protocol_type}, "
+            f"uri={self.uri}, description={self.description}, version={self.version}, "
+            f"parameter_values={self.parameter_values})"
         )
 
     def __str__(self):
-        return """{0}(
-        id={1.id},
-        name={1.name},
-        protocol_type={1.protocol_type},
-        uri={1.uri},
-        description={1.description},
-        version={1.version},
-        parameter_values={1.parameter_values})
-        """.format(self.__class__.__name__, self)
+        return f"""{self.__class__.__name__}(
+        id={self.id},
+        name={self.name},
+        protocol_type={self.protocol_type},
+        uri={self.uri},
+        description={self.description},
+        version={self.version},
+        parameter_values={self.parameter_values})
+        """
 
     def __hash__(self):
         return hash(repr(self))
@@ -862,17 +849,17 @@ class ProductNode(SequenceNode):
 
     def __repr__(self):
         return (
-            "{0}.{1}(id={2.id}, type={2.type}, name={2.name}, "
-            "characteristics={2.characteristics}, size={2.size}, "
-            "extension={2.extension})".format(self.__class__.__module__, self.__class__.__name__, self)
+            f"{self.__class__.__module__}.{self.__class__.__name__}(id={self.id}, type={self.type}, name={self.name}, "
+            f"characteristics={self.characteristics}, size={self.size}, "
+            f"extension={self.extension})"
         )
 
     def __str__(self):
-        return """{0}(
-        id={1.id},
-        type={1.type},
-        name={1.name},
-        )""".format(self.__class__.__name__, self)
+        return f"""{self.__class__.__name__}(
+        id={self.id},
+        type={self.type},
+        name={self.name},
+        )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -965,10 +952,10 @@ class QualityControlSample(Sample):
     ALLOWED_QC_SAMPLE_TYPES = [QC_SAMPLE_TYPE_PRE_RUN, QC_SAMPLE_TYPE_INTERSPERSED, QC_SAMPLE_TYPE_POST_RUN]
 
     def __init__(self, **kwargs):
-        log.debug("KWARGS are: {0}".format(kwargs))
+        log.debug(f"KWARGS are: {kwargs}")
         qc_sample_type = kwargs.get("qc_sample_type", None)
         _kwargs = {key: val for key, val in kwargs.items() if key != "qc_sample_type"}
-        super(QualityControlSample, self).__init__(**_kwargs)
+        super().__init__(**_kwargs)
         self.__qc_sample_type = None
         if qc_sample_type:
             self.qc_sample_type = qc_sample_type
@@ -984,7 +971,7 @@ class QualityControlSample(Sample):
         self.__qc_sample_type = qc_sample_type
 
 
-class QualityControl(object):
+class QualityControl:
     """
     This class captures information about a Quality Control Check. It comes attached to an Assay Graph object
     """
@@ -1002,23 +989,16 @@ class QualityControl(object):
 
     def __repr__(self):
         return (
-            "{0}.{1}(pre_run_sample_type={2.pre_run_sample_type}, post_run_sample_type={2.post_run_sample_type}, "
-            "interspersed_sample_types={2.interspersed_sample_types})".format(
-                self.__class__.__module__, self.__class__.__name__, self
-            )
+            f"{self.__class__.__module__}.{self.__class__.__name__}(pre_run_sample_type={self.pre_run_sample_type}, post_run_sample_type={self.post_run_sample_type}, "
+            f"interspersed_sample_types={self.interspersed_sample_types})"
         )
 
     def __str__(self):
-        return """{0}(
-        pre_run_sample_type={1}
-        post_run_sample_type={2}
-        interspersed_sample_types={3}
-        )""".format(
-            self.__class__.__name__,
-            self.pre_run_sample_type.id if self.pre_run_sample_type else None,
-            self.post_run_sample_type.id if self.post_run_sample_type else None,
-            [(elem.id, n) for elem, n in self.interspersed_sample_types],
-        )
+        return f"""{self.__class__.__name__}(
+        pre_run_sample_type={self.pre_run_sample_type.id if self.pre_run_sample_type else None}
+        post_run_sample_type={self.post_run_sample_type.id if self.post_run_sample_type else None}
+        interspersed_sample_types={[(elem.id, n) for elem, n in self.interspersed_sample_types]}
+        )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -1076,7 +1056,7 @@ class QualityControl(object):
         self.__interspersed_sample_types.append((sample_type, interspersing_interval))
 
 
-class AssayGraph(object):
+class AssayGraph:
     """
     The AssayGraph captures the structure and information of an assay workflow
     (e.g sample derivatives extraction, labelling, and the instrument analysis itself)
@@ -1166,7 +1146,7 @@ class AssayGraph(object):
                 pv_names, pv_all_values = list(node_params.keys()), list(node_params.values())
                 pv_combinations = itertools.product(*[val for val in pv_all_values])
                 for i, pv_combination in enumerate(pv_combinations):
-                    log.debug("pv_combination: {0}".format(pv_combination))
+                    log.debug(f"pv_combination: {pv_combination}")
                     if not previous_nodes:
                         protocol_node = ProtocolNode(
                             id_=str(uuid.uuid4())
@@ -1244,7 +1224,7 @@ class AssayGraph(object):
         second_term = (
             self.technology_type.term if isinstance(self.technology_type, OntologyAnnotation) else self.technology_type
         )
-        return "{}-{}".format(first_term, second_term)
+        return f"{first_term}-{second_term}"
 
     @property
     def nodes(self):
@@ -1397,24 +1377,19 @@ class AssayGraph(object):
     def __repr__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
         return (
-            "{0}.{1}(id={2.id}, measurement_type={2.measurement_type}, technology_type={2.technology_type}, "
-            "nodes={2.nodes}, links={3}, quality_control={2.quality_control})".format(
-                self.__class__.__module__,
-                self.__class__.__name__,
-                self,
-                sorted(links, key=lambda link: (link[0], link[1])),
-            )
+            f"{self.__class__.__module__}.{self.__class__.__name__}(id={self.id}, measurement_type={self.measurement_type}, technology_type={self.technology_type}, "
+            f"nodes={self.nodes}, links={sorted(links, key=lambda link: (link[0], link[1]))}, quality_control={self.quality_control})"
         )
 
     def __str__(self):
         links = [(start_node.id, end_node.id) for start_node, end_node in self.links]
-        return """"{0}(
-        id={1.id}
-        measurement_type={1.measurement_type}
-        technology_type={1.technology_type}
-        nodes={1.nodes}
-        links={2}
-        )""".format(self.__class__.__name__, self, sorted(links, key=lambda link: (link[0], link[1])))
+        return f""""{self.__class__.__name__}(
+        id={self.id}
+        measurement_type={self.measurement_type}
+        technology_type={self.technology_type}
+        nodes={self.nodes}
+        links={sorted(links, key=lambda link: (link[0], link[1]))}
+        )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -1434,10 +1409,10 @@ class AssayGraph(object):
 
 
 def get_full_class_name(instance):
-    return "{0}.{1}".format(instance.__class__.__module__, instance.__class__.__name__)
+    return f"{instance.__class__.__module__}.{instance.__class__.__name__}"
 
 
-class SampleAndAssayPlan(object):
+class SampleAndAssayPlan:
     """
     A SampleAndAssayPlan contains metadata about both the sample and assay plan to be applied to a specific
     StudyCell.
@@ -1550,7 +1525,7 @@ class SampleAndAssayPlan(object):
         res = cls(name)
         for i, sample_type_dict in enumerate(sample_type_dicts):
             sample_node = ProductNode(
-                id_=str(uuid.uuid4()) if use_guids else "{0}_{1}".format(SAMPLE, str(i).zfill(3)),
+                id_=str(uuid.uuid4()) if use_guids else f"{SAMPLE}_{str(i).zfill(3)}",
                 name=SAMPLE,
                 node_type=sample_type_dict["node_type"],
                 size=sample_type_dict["size"],
@@ -1573,16 +1548,14 @@ class SampleAndAssayPlan(object):
                 if use_guids
                 else "{}{}".format(ASSAY_GRAPH_PREFIX, assay_plan_dict["id"])
                 if "id" in assay_plan_dict
-                else "{}{}".format(ASSAY_GRAPH_PREFIX, str(i).zfill(n_digits(len(assay_plan_dicts)))),
+                else f"{ASSAY_GRAPH_PREFIX}{str(i).zfill(n_digits(len(assay_plan_dicts)))}",
                 quality_control=quality_controls[i] if len(quality_controls) > i else None,
             )
             res.add_assay_graph_to_plan(assay_graph)
             assay_map[assay_graph] = assay_plan_dict
         for sample_node in res.sample_plan:
             for assay_graph in res.assay_plan:
-                if "selected_sample_types" not in assay_map[assay_graph]:
-                    res.add_element_to_map(sample_node, assay_graph)
-                elif any(
+                if "selected_sample_types" not in assay_map[assay_graph] or any(
                     map(
                         lambda char: char.value in assay_map[assay_graph]["selected_sample_types"],
                         sample_node.characteristics,
@@ -1597,16 +1570,14 @@ class SampleAndAssayPlan(object):
         for [st, ags] in self.sample_to_assay_map.items():
             s2a_map[st] = sorted({ag.id for ag in ags})
         sample_plan = sorted(self.sample_plan, key=lambda s_t: s_t.id)
-        return "{0}.{1}(name={2.name}, sample_plan={4}, assay_plan={2.assay_plan}, sample_to_assay_map={3})".format(
-            self.__class__.__module__, self.__class__.__name__, self, s2a_map, sample_plan
-        )
+        return f"{self.__class__.__module__}.{self.__class__.__name__}(name={self.name}, sample_plan={sample_plan}, assay_plan={self.assay_plan}, sample_to_assay_map={s2a_map})"
 
     def __str__(self):
-        return """{0}(
-        name={1.name},
-        sample_plan={1.sample_plan},
-        assay_plan={1.assay_plan}
-        )""".format(self.__class__.__name__, self)
+        return f"""{self.__class__.__name__}(
+        name={self.name},
+        sample_plan={self.sample_plan},
+        assay_plan={self.assay_plan}
+        )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -1706,7 +1677,7 @@ class SampleAndAssayPlanEncoder(json.JSONEncoder):
             }
 
 
-class SampleAndAssayPlanDecoder(object):
+class SampleAndAssayPlanDecoder:
     @staticmethod
     def loads_parameter_value(pv_dict):
         pv_name = pv_dict["name"]
@@ -1788,7 +1759,7 @@ class SampleAndAssayPlanDecoder(object):
         return self.loads_sample_and_assay_plan(json_dict)
 
 
-class StudyArm(object):
+class StudyArm:
     """
     Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAndAssayPlan
     We call this mapping arm_map
@@ -1845,20 +1816,13 @@ class StudyArm(object):
         )
 
     def __str__(self):
-        return """{0}(
-               name={name},
-               source_type={source_type},
-               group_size={group_size},
-               no. cells={cells},
-               no. sample_assay_plans={sample_assay_plans}
-               )""".format(
-            self.__class__.__name__,
-            name=self.name,
-            group_size=self.group_size,
-            source_type=self.source_type,
-            cells=len([cell.name for cell in self.cells]),
-            sample_assay_plans=len([plan.name for plan in sorted(self.sample_assay_plans)]),
-        )
+        return f"""{self.__class__.__name__}(
+               name={self.name},
+               source_type={self.source_type},
+               group_size={self.group_size},
+               no. cells={len([cell.name for cell in self.cells])},
+               no. sample_assay_plans={len([plan.name for plan in sorted(self.sample_assay_plans)])}
+               )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -1921,7 +1885,7 @@ class StudyArm(object):
         if isinstance(group_size, int) and group_size >= 0:
             self.__group_size = group_size
         else:
-            raise AttributeError("group_size must be a positive integer; {0} provided".format(group_size))
+            raise AttributeError(f"group_size must be a positive integer; {group_size} provided")
 
     @property
     def arm_map(self):
@@ -1977,9 +1941,9 @@ class StudyArm(object):
         :return:
         """
         if not isinstance(cell, StudyCell):
-            raise TypeError("{0} is not a StudyCell object".format(cell))
+            raise TypeError(f"{cell} is not a StudyCell object")
         if sample_assay_plan is not None and not isinstance(sample_assay_plan, SampleAndAssayPlan):
-            raise TypeError("{0} is not a SampleAndAssayPlans object".format(sample_assay_plan))
+            raise TypeError(f"{sample_assay_plan} is not a SampleAndAssayPlans object")
         if self.is_completed():
             raise ValueError(errors.COMPLETE_ARM_ERROR_MESSAGE)
         if cell.contains_non_treatment_element_by_type(SCREEN):
@@ -2024,7 +1988,7 @@ class StudyArmEncoder(json.JSONEncoder):
             characteristic_encoder = CharacteristicEncoder()
             study_cell_encoder = StudyCellEncoder()
             sample_assay_plan_encoder = SampleAndAssayPlanEncoder()
-            log.debug("StudyArm source_type is: {0}".format(o.source_type))
+            log.debug(f"StudyArm source_type is: {o.source_type}")
             res = dict(
                 name=o.name,
                 groupSize=o.group_size,
@@ -2049,7 +2013,7 @@ class StudyArmEncoder(json.JSONEncoder):
             return res
 
 
-class StudyArmDecoder(object):
+class StudyArmDecoder:
     def __init__(self):
         self.characteristic_decoder = CharacteristicDecoder()
         self.cell_decoder = StudyCellDecoder()
@@ -2088,7 +2052,7 @@ class StudyArmDecoder(object):
         return self.loads_arm(json_dict)
 
 
-class StudyDesign(object):
+class StudyDesign:
     """
     Top-level class for the isatools.create module, and the study design planning.
     A class representing a study design, which is composed of a collection of
@@ -2188,9 +2152,9 @@ class StudyDesign(object):
         :param study_arm: StudyArm
         """
         if not isinstance(study_arm, StudyArm):
-            raise TypeError("{0}: {1}".format(errors.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR, study_arm))
+            raise TypeError(f"{errors.ADD_STUDY_ARM_PARAMETER_TYPE_ERROR}: {study_arm}")
         if any({arm for arm in self.study_arms if arm.name == study_arm.name}):
-            raise ValueError("{0}".format(errors.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR))
+            raise ValueError(f"{errors.ADD_STUDY_ARM_NAME_ALREADY_PRESENT_ERROR}")
         self.__study_arms.add(study_arm)
 
     @property
@@ -2219,9 +2183,9 @@ class StudyDesign(object):
         """
         idarr = []
         if group_id != "":
-            idarr.append("{}-{}{}".format(study_identifier, GROUP_PREFIX, group_id))  # study group
+            idarr.append(f"{study_identifier}-{GROUP_PREFIX}{group_id}")  # study group
         if subject_number != "":
-            idarr.append("{}{}".format(SUBJECT_PREFIX, subject_number))
+            idarr.append(f"{SUBJECT_PREFIX}{subject_number}")
         return "_".join(idarr).replace(" ", "-")
 
     @staticmethod
@@ -2236,16 +2200,16 @@ class StudyDesign(object):
         """
         idarr = []
         if source_name != "":
-            idarr.append("{}".format(source_name))
+            idarr.append(f"{source_name}")
         if cell_name != "":
-            idarr.append("{}".format(cell_name))
+            idarr.append(f"{cell_name}")
         # smparr = []
         # smparr.append('{}'.format(SAMPLE_PREFIX))
-        smparr = ["{}".format(SAMPLE_PREFIX)]
+        smparr = [f"{SAMPLE_PREFIX}"]
         if sample_type != "":
             smparr.append(sample_type)
         if sample_number != "":
-            smparr.append("#{}".format(sample_number))
+            smparr.append(f"#{sample_number}")
         idarr.append("-".join(smparr))
         return "_".join(idarr).replace(" ", "-")
 
@@ -2272,9 +2236,9 @@ class StudyDesign(object):
                         sc
                         for sc in sorted(
                             s_arm.source_characteristics,
-                            key=lambda sc: sc.category.term
-                            if isinstance(sc.category, OntologyAnnotation)
-                            else sc.category,
+                            key=lambda sc: (
+                                sc.category.term if isinstance(sc.category, OntologyAnnotation) else sc.category
+                            ),
                         )
                     ]
                 )
@@ -2353,7 +2317,7 @@ class StudyDesign(object):
                             if isinstance(sample_type.value, OntologyAnnotation)
                             else sample_type.value
                         )
-                        for samp_idx in range(0, sampling_size):
+                        for samp_idx in range(sampling_size):
                             sample = Sample(
                                 name=self._idgen_samples(source.name, cell.name, str(samp_idx + 1), sample_term),
                                 factor_values=factor_values,
@@ -2395,9 +2359,9 @@ class StudyDesign(object):
                             try:
                                 samples_grouped_by_assay_graph[assay_graph] += sample_batches[sample_node]
                             except AttributeError:
-                                log.error("Assay graph is: {}".format(assay_graph))
+                                log.error(f"Assay graph is: {assay_graph}")
                                 problematic_sample_group = samples_grouped_by_assay_graph[assay_graph]
-                                log.error("Sample bach for assay graph is: {}".format(problematic_sample_group))
+                                log.error(f"Sample bach for assay graph is: {problematic_sample_group}")
                 epoch_nb += 1
         # generate assays
         for assay_graph in unique_assay_types:
@@ -2445,7 +2409,7 @@ class StudyDesign(object):
             characteristic_categories = []
         if processes is None:
             processes = []
-        log.debug("# processes: {0} - ix: {1}".format(len(processes), start_node_index))
+        log.debug(f"# processes: {len(processes)} - ix: {start_node_index}")
         counter = StudyDesign._increment_counter_by_node_type(counter, node)
         item = StudyDesign._isa_objects_factory(
             node,
@@ -2476,7 +2440,7 @@ class StudyDesign(object):
                 else 1
             )
             for jj in range(size):
-                log.debug("ii = {} - jj = {}".format(ii, jj))
+                log.debug(f"ii = {ii} - jj = {jj}")
                 # counter += 1
                 processes, other_materials, characteristic_categories, data_files, next_item, counter = (
                     StudyDesign._generate_isa_elements_from_node(
@@ -2511,7 +2475,7 @@ class StudyDesign(object):
                             )
                             assert isinstance(previous_process, Process)
                             assert isinstance(item, Process)
-                            log.debug("linking process {0} to process {1}".format(previous_process.name, item.name))
+                            log.debug(f"linking process {previous_process.name} to process {item.name}")
                             plink(previous_process, item)  # TODO check if this generates any issue
 
                     else:
@@ -2532,7 +2496,7 @@ class StudyDesign(object):
                             )
                             assert isinstance(previous_process, Process)
                             assert isinstance(item, Process)
-                            log.debug("linking process {0} to process {1}".format(previous_process.name, item.name))
+                            log.debug(f"linking process {previous_process.name} to process {item.name}")
                             plink(previous_process, item)  # TODO check if this generates any issue
         return processes, other_materials, characteristic_categories, data_files, item, counter
 
@@ -2550,14 +2514,10 @@ class StudyDesign(object):
             measurement_type=measurement_type,
             technology_type=technology_type,
             filename=urlify(
-                "a_{0}_{1}_{2}.txt".format(
-                    assay_graph.id,
-                    measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type,
-                    technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type,
-                )
+                f"a_{assay_graph.id}_{measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type}_{technology_type.term if isinstance(technology_type, OntologyAnnotation) else technology_type}.txt"
             ),
         )
-        log.debug("assay measurement type: {0} - technology type: {1}".format(measurement_type, assay.technology_type))
+        log.debug(f"assay measurement type: {measurement_type} - technology type: {assay.technology_type}")
         # assay.samples = assay_samples
         # assay.sources = {source for sample in assay_samples for source in sample.derives_from}
         # assay.process_sequence = sampling_processes
@@ -2565,13 +2525,13 @@ class StudyDesign(object):
             size = (
                 node.size if isinstance(node, ProductNode) else node.replicates if isinstance(node, ProtocolNode) else 1
             )
-            log.debug("Size: {0}".format(size))
+            log.debug(f"Size: {size}")
 
             for j, sample in enumerate(assay_samples):
-                log.debug("Iteration: {0} - Sample: {1}".format(i, sample.name))
+                log.debug(f"Iteration: {i} - Sample: {sample.name}")
                 for k in range(size):
                     ix = i * len(assay_samples) * size + j * size + k
-                    log.debug("i = {0}, j = {1}, k={2}, ix={3}".format(i, j, k, ix))
+                    log.debug(f"i = {i}, j = {j}, k={k}, ix={ix}")
                     processes, other_materials, characteristic_categories, data_files, _, __ = (
                         StudyDesign._generate_isa_elements_from_node(
                             node,
@@ -2592,9 +2552,7 @@ class StudyDesign(object):
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
                     log.debug(
-                        "i={0}, i={1}, num_processes={2}, num_assay_files={3}".format(
-                            i, j, len(processes), len(data_files)
-                        )
+                        f"i={i}, i={j}, num_processes={len(processes)}, num_assay_files={len(data_files)}"
                     )
             final_list = set(assay.characteristic_categories)
             assay.characteristic_categories.clear()
@@ -2642,25 +2600,25 @@ class StudyDesign(object):
         if isinstance(node, ProductNode):
             if node.type == SAMPLE:
                 return Sample(
-                    name="{}_S{}_Sample-R{}".format(assay_file_prefix, start_node_index, counter[SAMPLE]),
+                    name=f"{assay_file_prefix}_S{start_node_index}_Sample-R{counter[SAMPLE]}",
                     characteristics=node.characteristics,
                 )
 
             if node.type == EXTRACT:
                 return Extract(
-                    name="{}_S{}_Extract-R{}".format(assay_file_prefix, start_node_index, counter[EXTRACT]),
+                    name=f"{assay_file_prefix}_S{start_node_index}_Extract-R{counter[EXTRACT]}",
                     characteristics=node.characteristics,
                 )
             if node.type == LABELED_EXTRACT:
                 return LabeledExtract(
-                    name="{}_S{}_LE-R{}".format(assay_file_prefix, start_node_index, counter[LABELED_EXTRACT]),
+                    name=f"{assay_file_prefix}_S{start_node_index}_LE-R{counter[LABELED_EXTRACT]}",
                     characteristics=list(node.characteristics) + [DEFAULT_LABEL],
                 )
             # under the hypothesis that we deal only with raw data files
             # derived data file would require a completely separate approach
             if node.type == DATA_FILE:
                 try:
-                    log.debug("Assay conf. found: {}; {};".format(measurement_type, technology_type))
+                    log.debug(f"Assay conf. found: {measurement_type}; {technology_type};")
                     m_type_term = (
                         measurement_type.term if isinstance(measurement_type, OntologyAnnotation) else measurement_type
                     )
@@ -2673,7 +2631,7 @@ class StudyDesign(object):
                         if opt["measurement type"] == m_type_term and opt["technology type"] == t_type_term
                     )
                     log.debug(
-                        "Assay conf. found: {}; {}; {};".format(measurement_type, technology_type, curr_assay_opt)
+                        f"Assay conf. found: {measurement_type}; {technology_type}; {curr_assay_opt};"
                     )
                     isa_class = globals()[curr_assay_opt["raw data file"].replace(" ", "")]
                     assert isa_class in {
@@ -2691,18 +2649,14 @@ class StudyDesign(object):
                         PostTranslationalModificationAssignmentFile,
                         AcquisitionParameterDataFile,
                     }
-                    file_extension = ".{}".format(node.extension) if node.extension else ""
+                    file_extension = f".{node.extension}" if node.extension else ""
                     return isa_class(
-                        filename="{}_S{}_DAE_R{}_{}{}".format(
-                            assay_file_prefix, start_node_index, counter[node.name], urlify(node.name), file_extension
-                        )
+                        filename=f"{assay_file_prefix}_S{start_node_index}_DAE_R{counter[node.name]}_{urlify(node.name)}{file_extension}"
                     )
                 except StopIteration:
-                    file_extension = ".{}".format(node.extension) if node.extension else ""
+                    file_extension = f".{node.extension}" if node.extension else ""
                     return RawDataFile(
-                        filename="{}_S{}_DAE_R{}_{}{}".format(
-                            assay_file_prefix, start_node_index, counter[node.name], urlify(node.name), file_extension
-                        )
+                        filename=f"{assay_file_prefix}_S{start_node_index}_DAE_R{counter[node.name]}_{urlify(node.name)}{file_extension}"
                     )
 
     def generate_isa_study(self, identifier=None):
@@ -2752,38 +2706,23 @@ class StudyDesign(object):
 
     def __repr__(self):
         return (
-            "{0}.{1}("
-            "identifier={identifier}, "
-            "name={name}, "
-            "design_type={design_type}, "
-            "description={description} "
-            "source_type={source_type}, "
-            "study_arms={study_arms}"
-            ")".format(
-                self.__class__.__module__,
-                self.__class__.__name__,
-                study_arms=self.study_arms,
-                identifier=self.identifier,
-                name=self.name,
-                design_type=self.design_type,
-                description=self.description,
-                source_type=self.source_type,
-            )
+            f"{self.__class__.__module__}.{self.__class__.__name__}("
+            f"identifier={self.identifier}, "
+            f"name={self.name}, "
+            f"design_type={self.design_type}, "
+            f"description={self.description} "
+            f"source_type={self.source_type}, "
+            f"study_arms={self.study_arms}"
+            ")"
         )
 
     def __str__(self):
-        return """{0}(
-               identifier={identifier},
-               name={name},
-               description={description},
-               study_arms={study_arms}
-               )""".format(
-            self.__class__.__name__,
-            description=self.description,
-            study_arms=[arm.name for arm in list(self.study_arms)],
-            identifier=self.identifier,
-            name=self.name,
-        )
+        return f"""{self.__class__.__name__}(
+               identifier={self.identifier},
+               name={self.name},
+               description={self.description},
+               study_arms={[arm.name for arm in list(self.study_arms)]}
+               )"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -2795,7 +2734,7 @@ class StudyDesign(object):
         return not self == other
 
 
-class QualityControlService(object):
+class QualityControlService:
     def __init__(self):
         pass
 
@@ -2849,9 +2788,7 @@ class QualityControlService(object):
                                 if isinstance(sample, Sample)
                             }
                             log.debug(
-                                "Number of input samples for assay {0} are {1}".format(
-                                    assay_filename, len(samples_in_assay_to_expand)
-                                )
+                                f"Number of input samples for assay {assay_filename} are {len(samples_in_assay_to_expand)}"
                             )
                             (
                                 qc_sources,
@@ -2920,7 +2857,7 @@ class QualityControlService(object):
         :param performer:
         :return:
         """
-        log.debug("Quality control sample size = {0}".format(sample_size))
+        log.debug(f"Quality control sample size = {sample_size}")
         qc_sources = []
         qc_samples_pre_run = []
         qc_samples_post_run = []
@@ -2933,11 +2870,11 @@ class QualityControlService(object):
         cell_name = study_cell.name
         for i in range(qc_pre.size):
             dummy_source = QualityControlSource(
-                name="SRC-QC-PRE-{}_{}_{}".format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+                name=f"SRC-QC-PRE-{cell_name}_{SOURCE_QC_SOURCE_NAME}_{str(i).zfill(4)}"
             )
             qc_sources.append(dummy_source)
             sample = QualityControlSample(
-                name="SMP-QC-PRE-{}_{}_{}".format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
+                name=f"SMP-QC-PRE-{cell_name}_{QC_SAMPLE_NAME}_{str(i).zfill(4)}",
                 factor_values=[],
                 characteristics=[
                     qc_pre.characteristics[i] if i < len(qc_pre.characteristics) else qc_pre.characteristics[-1]
@@ -2959,16 +2896,16 @@ class QualityControlService(object):
             qc_processes.append(process)
         log.debug("Completed pre-batch samples")
         for sample_node, interspersing_interval in quality_control.interspersed_sample_types:
-            log.debug("sample node is {0}".format(sample_node))
-            log.debug("interspersing interval is {0}, sample size is {1}".format(interspersing_interval, sample_size))
+            log.debug(f"sample node is {sample_node}")
+            log.debug(f"interspersing interval is {interspersing_interval}, sample size is {sample_size}")
             qc_samples_interspersed[(sample_node, interspersing_interval)] = []
             for i in range(interspersing_interval, sample_size, interspersing_interval):
                 dummy_source = QualityControlSource(
-                    name="SRC-QC-INT-{}_{}_{}".format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+                    name=f"SRC-QC-INT-{cell_name}_{SOURCE_QC_SOURCE_NAME}_{str(i).zfill(4)}"
                 )
                 qc_sources.append(dummy_source)
                 sample = QualityControlSample(
-                    name="SMP-QC-INT-{}_{}_{}".format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
+                    name=f"SMP-QC-INT-{cell_name}_{QC_SAMPLE_NAME}_{str(i).zfill(4)}",
                     factor_values=[],
                     characteristics=sample_node.characteristics,
                     derives_from=[dummy_source],
@@ -2979,11 +2916,11 @@ class QualityControlService(object):
         assert isinstance(qc_post, ProductNode)
         for i in range(qc_post.size):
             dummy_source = QualityControlSource(
-                name="SRC-QC-POST_{}_{}_{}".format(cell_name, SOURCE_QC_SOURCE_NAME, str(i).zfill(4))
+                name=f"SRC-QC-POST_{cell_name}_{SOURCE_QC_SOURCE_NAME}_{str(i).zfill(4)}"
             )
             qc_sources.append(dummy_source)
             sample = QualityControlSample(
-                name="SMP-QC-POST-{}_{}_{}".format(cell_name, QC_SAMPLE_NAME, str(i).zfill(4)),
+                name=f"SMP-QC-POST-{cell_name}_{QC_SAMPLE_NAME}_{str(i).zfill(4)}",
                 factor_values=[],
                 characteristics=[
                     qc_post.characteristics if i < len(qc_post.characteristics) else qc_post.characteristics[-1]
@@ -3025,7 +2962,7 @@ class StudyDesignEncoder(json.JSONEncoder):
             }
 
 
-class StudyDesignDecoder(object):
+class StudyDesignDecoder:
     def __init__(self):
         self.arm_decoder = StudyArmDecoder()
 
@@ -3046,7 +2983,7 @@ class StudyDesignDecoder(object):
         return study_design
 
 
-class TreatmentFactory(object):
+class TreatmentFactory:
     """
     A factory class to build a set of Treatments given an intervention_type and a set of factors.
     """
@@ -3080,7 +3017,7 @@ class TreatmentFactory(object):
             elif isinstance(factor_value, Iterable):
                 current_factors.update(factor_value)
         else:
-            raise KeyError("The factor {} is not present in the design".format(factor.name))
+            raise KeyError(f"The factor {factor.name} is not present in the design")
 
     def compute_full_factorial_design(self):
         """
@@ -3103,7 +3040,7 @@ class TreatmentFactory(object):
             return set()
 
 
-class StudyDesignFactory(object):
+class StudyDesignFactory:
     """
     A factory class to build a set of study arms.
     """
@@ -3134,7 +3071,7 @@ class StudyDesignFactory(object):
                 or not nt_map[0].type == nt_type
                 or not (nt_map[1] is None or isinstance(nt_map[1], SampleAndAssayPlan))
             ):
-                raise TypeError("Map for NonTreatment {0} is not correctly set.".format(nt_type))
+                raise TypeError(f"Map for NonTreatment {nt_type} is not correctly set.")
 
     @staticmethod
     def _validate_maps_multi_element_cell(
@@ -3149,7 +3086,7 @@ class StudyDesignFactory(object):
         if not isinstance(sample_assay_plan, SampleAndAssayPlan):
             raise TypeError(errors.TREATMENT_MAP_ERROR)
         if washout and (not isinstance(washout, NonTreatment) or not washout.type == WASHOUT):
-            raise TypeError("{0} is not a valid NonTreatment of type WASHOUT".format(washout))
+            raise TypeError(f"{washout} is not a valid NonTreatment of type WASHOUT")
         for nt_map, nt_type in [(screen_map, SCREEN), (run_in_map, RUN_IN), (follow_up_map, FOLLOW_UP)]:
             if nt_map is None:
                 continue
@@ -3159,7 +3096,7 @@ class StudyDesignFactory(object):
                 or not nt_map[0].type == nt_type
                 or not (nt_map[1] is None or isinstance(nt_map[1], SampleAndAssayPlan))
             ):
-                raise TypeError("Map for NonTreatment {0} is not correctly set.".format(nt_type))
+                raise TypeError(f"Map for NonTreatment {nt_type} is not correctly set.")
 
     @staticmethod
     def compute_crossover_design(
@@ -3200,7 +3137,7 @@ class StudyDesignFactory(object):
 
             if screen_map:
                 study_cell = StudyCell(
-                    "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[screen_map[0]]
+                    f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
                 )
                 arm_map.append([study_cell, screen_map[1]])
                 counter += 1
@@ -3208,7 +3145,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[run_in_map[0]]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
                         ),
                         run_in_map[1],
                     ]
@@ -3219,7 +3156,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[treatment]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[treatment]
                         ),
                         sa_plan,
                     ]
@@ -3229,7 +3166,7 @@ class StudyDesignFactory(object):
                     arm_map.append(
                         [
                             StudyCell(
-                                "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)),
+                                f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}",
                                 elements=[washout_map[0]],
                             ),
                             washout_map[1],
@@ -3240,7 +3177,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)),
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}",
                             elements=[follow_up_map[0]],
                         ),
                         follow_up_map[1],
@@ -3248,7 +3185,7 @@ class StudyDesignFactory(object):
                 )
 
             group_size = group_sizes if isinstance(group_sizes, int) else group_sizes[i]
-            arm = StudyArm("ARM_{0}".format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            arm = StudyArm(f"ARM_{str(i).zfill(2)}", group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
 
@@ -3292,7 +3229,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[screen_map[0]]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
                         ),
                         screen_map[1],
                     ]
@@ -3302,7 +3239,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[run_in_map[0]]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
                         ),
                         run_in_map[1],
                     ]
@@ -3310,7 +3247,7 @@ class StudyDesignFactory(object):
                 counter += 1
             arm_map.append(
                 [
-                    StudyCell("ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[treatment]),
+                    StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[treatment]),
                     sample_plans[i],
                 ]
             )
@@ -3319,14 +3256,14 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)),
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}",
                             elements=[follow_up_map[0]],
                         ),
                         follow_up_map[1],
                     ]
                 )
             group_size = group_sizes if isinstance(group_sizes, int) else group_sizes[i]
-            arm = StudyArm("ARM_{0}".format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            arm = StudyArm(f"ARM_{str(i).zfill(2)}", group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
 
@@ -3366,22 +3303,22 @@ class StudyDesignFactory(object):
         arm_map = []
         if screen_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[screen_map[0]]), screen_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
             )
             counter += 1
         if run_in_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[run_in_map[0]]), run_in_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
             )
             counter += 1
         for j, treatment in enumerate(treatments):
             sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
-            arm_map.append([StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[treatment]), sa_plan])
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[treatment]), sa_plan])
             counter += 1
             if washout_map and j < len(treatments) - 1:  # do not add a washout after the last treatment cell
                 arm_map.append(
                     [
-                        StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[washout_map[0]]),
+                        StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[washout_map[0]]),
                         washout_map[1],
                     ]
                 )
@@ -3389,7 +3326,7 @@ class StudyDesignFactory(object):
         if follow_up_map:
             arm_map.append(
                 [
-                    StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[follow_up_map[0]]),
+                    StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[follow_up_map[0]]),
                     follow_up_map[1],
                 ]
             )
@@ -3426,18 +3363,18 @@ class StudyDesignFactory(object):
         arm_map = []
         if screen_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[screen_map[0]]), screen_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
             )
             counter += 1
         if run_in_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[run_in_map[0]]), run_in_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
             )
             counter += 1
         concomitant_treatments = set(treatments)
         arm_map.append(
             [
-                StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[concomitant_treatments]),
+                StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[concomitant_treatments]),
                 sample_assay_plan,
             ]
         )
@@ -3445,7 +3382,7 @@ class StudyDesignFactory(object):
         if follow_up_map:
             arm_map.append(
                 [
-                    StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[follow_up_map[0]]),
+                    StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[follow_up_map[0]]),
                     follow_up_map[1],
                 ]
             )
@@ -3495,7 +3432,7 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[screen_map[0]]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
                         ),
                         screen_map[1],
                     ]
@@ -3505,14 +3442,14 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)), elements=[run_in_map[0]]
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
                         ),
                         run_in_map[1],
                     ]
                 )
                 counter += 1
             multi_element_cell = StudyCell(
-                "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)),
+                f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}",
                 elements=intersperse(permutation, washout) if washout else permutation,
             )
             arm_map.append([multi_element_cell, sample_assay_plan])
@@ -3521,14 +3458,14 @@ class StudyDesignFactory(object):
                 arm_map.append(
                     [
                         StudyCell(
-                            "ARM_{0}_CELL_{1}".format(str(i).zfill(2), str(counter).zfill(2)),
+                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}",
                             elements=[follow_up_map[0]],
                         ),
                         follow_up_map[1],
                     ]
                 )
             group_size = group_sizes if isinstance(group_sizes, int) else group_sizes[i]
-            arm = StudyArm("ARM_{0}".format(str(i).zfill(2)), group_size=group_size, arm_map=OrderedDict(arm_map))
+            arm = StudyArm(f"ARM_{str(i).zfill(2)}", group_size=group_size, arm_map=OrderedDict(arm_map))
             design.add_study_arm(arm)
         return design
 
@@ -3565,16 +3502,16 @@ class StudyDesignFactory(object):
         arm_map = []
         if screen_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[screen_map[0]]), screen_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
             )
             counter += 1
         if run_in_map:
             arm_map.append(
-                [StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[run_in_map[0]]), run_in_map[1]]
+                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
             )
             counter += 1
         multi_element_cell = StudyCell(
-            "ARM_00_CELL_{0}".format(str(counter).zfill(2)),
+            f"ARM_00_CELL_{str(counter).zfill(2)}",
             elements=intersperse(treatments, washout) if washout else treatments,
         )
         arm_map.append([multi_element_cell, sample_assay_plan])
@@ -3582,7 +3519,7 @@ class StudyDesignFactory(object):
         if follow_up_map:
             arm_map.append(
                 [
-                    StudyCell("ARM_00_CELL_{0}".format(str(counter).zfill(2)), elements=[follow_up_map[0]]),
+                    StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[follow_up_map[0]]),
                     follow_up_map[1],
                 ]
             )

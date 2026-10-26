@@ -48,7 +48,7 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Sample.name must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Sample.name must be a str or None; got {val}:{type(val)}")
         self.__name = val
 
     @property
@@ -110,27 +110,21 @@ class Sample(Commentable, ProcessSequenceNode, Identifiable):
 
     def __repr__(self):
         return (
-            "isatools.model.Sample(name='{sample.name}', "
-            "characteristics={sample.characteristics}, "
-            "factor_values={sample.factor_values}, "
-            "derives_from={sample.derives_from}, "
-            "comments={sample.comments})"
-        ).format(sample=self)
+            f"isatools.model.Sample(name='{self.name}', "
+            f"characteristics={self.characteristics}, "
+            f"factor_values={self.factor_values}, "
+            f"derives_from={self.derives_from}, "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         return (
             "Sample(\n\t"
-            "name={sample.name}\n\t"
-            "characteristics={num_characteristics} Characteristic objects\n\t"
-            "factor_values={num_factor_values} FactorValue objects\n\t"
-            "derives_from={num_derives_from} Source objects\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(
-            sample=self,
-            num_characteristics=len(self.characteristics),
-            num_factor_values=len(self.factor_values),
-            num_derives_from=len(self.derives_from),
-            num_comments=len(self.comments),
+            f"name={self.name}\n\t"
+            f"characteristics={len(self.characteristics)} Characteristic objects\n\t"
+            f"factor_values={len(self.factor_values)} FactorValue objects\n\t"
+            f"derives_from={len(self.derives_from)} Source objects\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
         )
 
     def __hash__(self):

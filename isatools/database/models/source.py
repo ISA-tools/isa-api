@@ -75,5 +75,5 @@ def make_source_methods():
         session.add(source)
         return source
 
-    setattr(SourceModel, "to_sql", to_sql)
-    setattr(SourceModel, "get_table", make_get_table_method(Source))
+    SourceModel.to_sql = to_sql
+    SourceModel.get_table = make_get_table_method(Source)

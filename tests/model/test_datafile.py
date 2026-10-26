@@ -109,9 +109,7 @@ class TestSubDataFile(TestCase):
             filename = "file_" + filetype.lower()
             self.assertEqual(datafile.label, name)
 
-            expected_repr = "isatools.model.{0}(filename='{1}', generated_from=[], comments=[])".format(
-                filetype, filename
-            )
+            expected_repr = f"isatools.model.{filetype}(filename='{filename}', generated_from=[], comments=[])"
             self.assertEqual(repr(datafile), expected_repr)
             self.assertEqual(hash(datafile), hash(expected_repr))
 
@@ -122,11 +120,11 @@ class TestSubDataFile(TestCase):
             filename = "file_" + filetype.lower()
             self.assertEqual(datafile.label, name)
 
-            expected_str = """{0}(
-    filename={1}
+            expected_str = f"""{filetype}(
+    filename={filename}
     generated_from=0 Sample objects
     comments=0 Comment objects
-)""".format(filetype, filename)
+)"""
             self.assertEqual(str(datafile), expected_str)
 
     def test_equalities(self):
