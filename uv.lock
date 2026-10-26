@@ -2481,7 +2481,6 @@ dependencies = [
     { name = "attrs" },
     { name = "rpds-py" },
     { name = "typing-extensions", version = "4.16.0", source = { registry = "https://pypi.org/simple" } },
- develop
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2f/db/98b5c277be99dd18bfd91dd04e1b759cad18d1a338188c936e92f921c7e2/referencing-0.36.2.tar.gz", hash = "sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa", size = 74744, upload-time = "2025-01-25T08:48:16.138Z" }
 wheels = [
