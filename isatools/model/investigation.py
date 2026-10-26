@@ -11,7 +11,7 @@ from isatools.model.publication import Publication
 from isatools.model.study import Study
 
 
-class Investigation(Commentable, MetadataMixin, Identifiable, object):
+class Investigation(Commentable, MetadataMixin, Identifiable):
     """An investigation maintains metadata about the project context and links
     to one or more studies. There can only be 1 Investigation in an ISA
     descriptor. Investigations have the following properties:
@@ -195,39 +195,32 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     def __repr__(self):
         return (
             "isatools.model.Investigation("
-            "identifier='{investigation.identifier}', "
-            "filename='{investigation.filename}', "
-            "title='{investigation.title}', "
-            "submission_date='{investigation.submission_date}', "
-            "public_release_date='{investigation.public_release_date}', "
+            f"identifier='{self.identifier}', "
+            f"filename='{self.filename}', "
+            f"title='{self.title}', "
+            f"submission_date='{self.submission_date}', "
+            f"public_release_date='{self.public_release_date}', "
             "ontology_source_references="
-            "{investigation.ontology_source_references}, "
-            "publications={investigation.publications}, "
-            "contacts={investigation.contacts}, "
-            "studies={investigation.studies}, "
-            "comments={investigation.comments})".format(investigation=self)
+            f"{self.ontology_source_references}, "
+            f"publications={self.publications}, "
+            f"contacts={self.contacts}, "
+            f"studies={self.studies}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """Investigation(
-    identifier={investigation.identifier}
-    filename={investigation.filename}
-    title={investigation.title}
-    submission_date={investigation.submission_date}
-    public_release_date={investigation.public_release_date}
-    ontology_source_references={num_ontology_source_references} OntologySources
-    publications={num_publications} Publication objects
-    contacts={num_contacts} Person objects
-    studies={num_studies} Study objects
-    comments={num_comments} Comment objects
-)""".format(
-            investigation=self,
-            num_ontology_source_references=len(self.ontology_source_references),
-            num_publications=len(self.publications),
-            num_contacts=len(self.contacts),
-            num_studies=len(self.studies),
-            num_comments=len(self.comments),
-        )
+        return f"""Investigation(
+    identifier={self.identifier}
+    filename={self.filename}
+    title={self.title}
+    submission_date={self.submission_date}
+    public_release_date={self.public_release_date}
+    ontology_source_references={len(self.ontology_source_references)} OntologySources
+    publications={len(self.publications)} Publication objects
+    contacts={len(self.contacts)} Person objects
+    studies={len(self.studies)} Study objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))

@@ -84,5 +84,5 @@ def make_person_methods():
             comments=[comment.to_sql() for comment in self.comments],
         )
 
-    setattr(PersonModel, "to_sql", to_sql)
-    setattr(PersonModel, "get_table", make_get_table_method(Person))
+    PersonModel.to_sql = to_sql
+    PersonModel.get_table = make_get_table_method(Person)

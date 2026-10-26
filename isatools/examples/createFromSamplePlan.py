@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from isatools import isatab
 from isatools.create.model import (

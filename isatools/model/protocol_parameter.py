@@ -31,20 +31,20 @@ class ProtocolParameter(Commentable, Identifiable):
             self.__parameter_name = OntologyAnnotation(term=val)
         else:
             error_msg = (
-                "ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation or None; got {0}:{1}"
-            ).format(val, type(val))
+                f"ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation or None; got {val}:{type(val)}"
+            )
             raise AttributeError(error_msg)
 
     def __repr__(self):
         return (
-            "isatools.model.ProtocolParameter(parameter_name={parameter_name}, comments={parameter.comments})"
-        ).format(parameter=self, parameter_name=repr(self.parameter_name))
+            f"isatools.model.ProtocolParameter(parameter_name={self.parameter_name!r}, comments={self.comments})"
+        )
 
     def __str__(self):
         parameter_name = self.parameter_name.term if self.parameter_name else ""
         return (
-            "ProtocolParameter(\n\tparameter_name={parameter_name}\n\tcomments={num_comments} Comment objects\n)"
-        ).format(parameter_name=parameter_name, num_comments=len(self.comments))
+            f"ProtocolParameter(\n\tparameter_name={parameter_name}\n\tcomments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))

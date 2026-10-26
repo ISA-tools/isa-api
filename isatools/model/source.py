@@ -37,7 +37,7 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Source.name must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Source.name must be a str or None; got {val}:{type(val)}")
         else:
             self.__name = val
 
@@ -72,18 +72,18 @@ class Source(Commentable, ProcessSequenceNode, Identifiable):
 
     def __repr__(self):
         return (
-            "isatools.model.Source(name='{source.name}', "
-            "characteristics={source.characteristics}, "
-            "comments={source.comments})".format(source=self)
+            f"isatools.model.Source(name='{self.name}', "
+            f"characteristics={self.characteristics}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
         return (
             "Source(\n\t"
-            "name={source.name}\n\t"
-            "characteristics={num_characteristics} Characteristic objects\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(source=self, num_characteristics=len(self.characteristics), num_comments=len(self.comments))
+            f"name={self.name}\n\t"
+            f"characteristics={len(self.characteristics)} Characteristic objects\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))

@@ -57,12 +57,12 @@ log.setLevel(logging.INFO)
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
     def handle_inner_lists(el):
-        log.debug("el = {}".format(el))
+        log.debug(f"el = {el}")
         if isinstance(el, list):
-            log.debug("El is list, returning el[0]:{}".format(el[0]))
+            log.debug(f"El is list, returning el[0]:{el[0]}")
             return handle_inner_lists(el[0])
         else:
-            log.debug("El is not list, returning el: {}".format(el))
+            log.debug(f"El is not list, returning el: {el}")
             return el
 
     if isinstance(o, dict):
@@ -71,10 +71,10 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
         if isinstance(o, list):
             return sorted((ordered(x) for x in o if x is not None), key=handle_inner_lists)
     except TypeError as e:
-        log.error("Object who raised error is {}".format(o))
-        log.error("Object which raised error is of type {}".format(type(o)))
+        log.error(f"Object who raised error is {o}")
+        log.error(f"Object which raised error is of type {type(o)}")
         for x in o:
-            log.error("x = {}; type(x) = {}".format(x, type(x)))
+            log.error(f"x = {x}; type(x) = {type(x)}")
         raise e
     return o
 
@@ -481,7 +481,7 @@ class CharacteristicDecoderTest(unittest.TestCase):
 
 class StudyCellEncoderTest(BaseTestCase):
     def setUp(self):
-        return super(StudyCellEncoderTest, self).setUp()
+        return super().setUp()
 
     def test_encode_single_treatment_cell(self):
         actual_json_cell = json.loads(json.dumps(self.cell_single_treatment_00, cls=StudyCellEncoder))
@@ -519,7 +519,7 @@ class StudyCellEncoderTest(BaseTestCase):
 
 class StudyCellDecoderTest(BaseTestCase):
     def setUp(self):
-        return super(StudyCellDecoderTest, self).setUp()
+        return super().setUp()
 
     def test_decode_single_treatment_cell(self):
         decoder = StudyCellDecoder()
@@ -699,7 +699,7 @@ class SampleAndAssayPlanEncoderAndDecoderTest(unittest.TestCase):
 
 class StudyArmEncoderTest(BaseTestCase):
     def setUp(self):
-        return super(StudyArmEncoderTest, self).setUp()
+        return super().setUp()
 
     def test_encode_arm_with_single_element_cells(self):
         actual_json_arm = json.loads(json.dumps(self.single_treatment_cell_arm, cls=StudyArmEncoder))
@@ -727,7 +727,7 @@ class StudyArmEncoderTest(BaseTestCase):
 
 class StudyArmDecoderTest(BaseTestCase):
     def setUp(self):
-        return super(StudyArmDecoderTest, self).setUp()
+        return super().setUp()
 
     def test_decode_arm_with_single_element_cells(self):
         decoder = StudyArmDecoder()
@@ -766,14 +766,14 @@ class StudyArmDecoderTest(BaseTestCase):
             json_text = json.dumps(json.load(expected_json_fp))
             actual_arm = decoder.loads(json_text)
         self.assertIsInstance(actual_arm, StudyArm)
-        log.debug("Expected Arm source type: {}".format(self.multi_treatment_cell_arm_mouse.source_type))
-        log.debug("Actual Arm source type: {}".format(actual_arm.source_type))
+        log.debug(f"Expected Arm source type: {self.multi_treatment_cell_arm_mouse.source_type}")
+        log.debug(f"Actual Arm source type: {actual_arm.source_type}")
         self.assertEqual(self.multi_treatment_cell_arm_mouse, actual_arm)
 
 
 class StudyDesignEncoderTest(BaseTestCase):
     def setUp(self):
-        super(StudyDesignEncoderTest, self).setUp()
+        super().setUp()
         self.three_arm_study_design = StudyDesign(
             name=TEST_STUDY_DESIGN_NAME_THREE_ARMS,
             description="This is a study design with three single-element arms",
@@ -826,7 +826,7 @@ class StudyDesignEncoderTest(BaseTestCase):
 
 class StudyDesignDecoderTest(BaseTestCase):
     def setUp(self):
-        super(StudyDesignDecoderTest, self).setUp()
+        super().setUp()
         self.three_arm_study_design = StudyDesign(
             name=TEST_STUDY_DESIGN_NAME_THREE_ARMS,
             study_arms={

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for reading and writing SampleTab.
 
 Functions for reading and writing SampleTab. SampleTab content is loaded into
@@ -69,7 +68,7 @@ def _read_tab_section(f, sec_key, next_sec_key=None):
     if normed_line[len(normed_line) - 1] == '"':
         normed_line = normed_line[: len(normed_line) - 1]
     if not normed_line == sec_key:
-        raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
+        raise OSError("Expected: " + sec_key + " section, but got: " + normed_line)
     memf = io.StringIO()
     while not _peek(f=f).rstrip() == next_sec_key:
         line = f.readline()
@@ -94,7 +93,7 @@ def read_sampletab_msi(fp):
         :return: DataFrame of the MSI section
         """
         f = strip_comments(f)
-        df = pd.read_csv(f, names=range(0, 128), sep="\t", engine="python", encoding="utf-8").dropna(axis=1, how="all")
+        df = pd.read_csv(f, names=range(128), sep="\t", engine="python", encoding="utf-8").dropna(axis=1, how="all")
         # load MSI section
         df = df.T  # transpose MSI section
         df = df.map(lambda x: np.nan if x == "" else x)
@@ -270,11 +269,11 @@ def load(FP):
     ):
         ISA.comments.extend(
             [
-                Comment(name="Organization Name.{}".format(i), value=row["Organization Name"]),
-                Comment(name="Organization Address.{}".format(i), value=row["Organization Address"]),
-                Comment(name="Organization URI.{}".format(i), value=row["Organization URI"]),
-                Comment(name="Organization Email.{}".format(i), value=row["Organization Email"]),
-                Comment(name="Organization Role.{}".format(i), value=row["Organization Role"]),
+                Comment(name=f"Organization Name.{i}", value=row["Organization Name"]),
+                Comment(name=f"Organization Address.{i}", value=row["Organization Address"]),
+                Comment(name=f"Organization URI.{i}", value=row["Organization URI"]),
+                Comment(name=f"Organization Email.{i}", value=row["Organization Email"]),
+                Comment(name=f"Organization Role.{i}", value=row["Organization Role"]),
             ]
         )
 
@@ -282,7 +281,7 @@ def load(FP):
     FP = strip_comments(FP)
     scd_df = pd.read_csv(_read_tab_section(f=FP, sec_key="[SCD]"), sep="\t", encoding="utf-8").fillna("")
 
-    study = Study(filename="s_{}.txt".format(ISA.identifier))
+    study = Study(filename=f"s_{ISA.identifier}.txt")
     study.protocols = [Protocol(name="sample collection", protocol_type=OntologyAnnotation(term="sample collection"))]
     protocol_map = {
         "sample collection": Protocol(
@@ -347,7 +346,7 @@ class GenericSampleTabProcessSequenceFactory:
         try:
             cproject = DF["Characteristic[project]"].drop_duplicates()
             if len(cproject.index) == 1:
-                log.info("{} project type".format(cproject.iloc[0]))
+                log.info(f"{cproject.iloc[0]} project type")
         except KeyError:
             log.info("Assuming default project type")
 
@@ -375,7 +374,7 @@ class GenericSampleTabProcessSequenceFactory:
         except KeyError:
             pass
 
-        for sample_key in samples.keys():
+        for sample_key in samples:
             sample = samples[sample_key]
 
             row = DF[DF["Sample Accession"] == sample_key].iloc[0]
@@ -637,7 +636,7 @@ def dumps(investigation):
                 min_value=0,
                 max_value=len(all_samples),
                 widgets=[
-                    "Writing {} samples: ".format(len(all_samples)),
+                    f"Writing {len(all_samples)} samples: ",
                     SimpleProgress(),
                     Bar(left=" |", right="| "),
                     ETA(),
@@ -662,7 +661,7 @@ def dumps(investigation):
                         log.warning(
                             "WARNING! No Sample Accession available so "
                             "referencing Derived From relation using "
-                            'Sample Name "{}" instead'.format(derived_from_obj.name)
+                            f'Sample Name "{derived_from_obj.name}" instead'
                         )
                         derived_from = derived_from_obj.name
             sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
@@ -712,7 +711,7 @@ def dumps(investigation):
                 if x.category.term not in ["Sample Description", "Derived From", "Sample Accession"]
             ]
             for characteristic in characteristics:
-                characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
+                characteristic_label = f"Characteristic[{characteristic.category.term}]"
                 if characteristic_label not in scd_DF.columns:
                     scd_DF[characteristic_label] = ""
                     for val_col in get_value_columns(characteristic_label, characteristic):
@@ -790,12 +789,12 @@ def get_value_columns(label, x):
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             return map(
-                lambda x: "{0}.{1}".format(label, x), ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
+                lambda x: f"{label}.{x}", ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"]
             )
         else:
-            return ["{0}.Unit".format(label)]
+            return [f"{label}.Unit"]
     elif isinstance(x.value, OntologyAnnotation):
-        return map(lambda x: "{0}.{1}".format(label, x), ["Term Source REF", "Term Accession Number"])
+        return map(lambda x: f"{label}.{x}", ["Term Source REF", "Term Accession Number"])
     else:
         return []
 

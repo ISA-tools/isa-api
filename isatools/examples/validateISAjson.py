@@ -24,7 +24,7 @@ def main(args):
     for i in range(1, len(args)):
         print("-" * 75)
         if not os.path.isfile(args[i]):
-            print("Cannot open file {}, skipping".format(args[i]))
+            print(f"Cannot open file {args[i]}, skipping")
             skipped += 1
             numfiles += 1
         else:
@@ -34,17 +34,15 @@ def main(args):
                 numwarnings = len(report["warnings"])
                 if numerrors > 0:
                     invalid += 1
-                print("Validator found {} errors and {} warnings in this ISA-JSON file".format(numerrors, numwarnings))
+                print(f"Validator found {numerrors} errors and {numwarnings} warnings in this ISA-JSON file")
                 totalerrors += numerrors
                 totalwarnings += numwarnings
                 numfiles += 1
         print("-" * 75)
     print(
-        "Validated {} ISA-JSONs, {} valid ISA-JSONs, {} invalid ISA-JSONs".format(
-            numfiles - skipped, numfiles - invalid - skipped, invalid
-        )
+        f"Validated {numfiles - skipped} ISA-JSONs, {numfiles - invalid - skipped} valid ISA-JSONs, {invalid} invalid ISA-JSONs"
     )
-    print("Found {} errors and {} warnings in across all ISA-JSONs".format(totalerrors, totalwarnings))
+    print(f"Found {totalerrors} errors and {totalwarnings} warnings in across all ISA-JSONs")
 
     if invalid > 0:
         sys.exit(1)

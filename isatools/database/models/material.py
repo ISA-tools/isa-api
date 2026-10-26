@@ -74,5 +74,5 @@ def make_material_methods():
         session.add(material)
         return material
 
-    setattr(MaterialModel, "to_sql", to_sql)
-    setattr(MaterialModel, "get_table", make_get_table_method(Material))
+    MaterialModel.to_sql = to_sql
+    MaterialModel.get_table = make_get_table_method(Material)

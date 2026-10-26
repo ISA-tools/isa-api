@@ -1,6 +1,5 @@
 """Tests on isatools.utils package"""
 
-from __future__ import absolute_import
 
 import json
 import logging
@@ -25,11 +24,11 @@ log = logging.getLogger("isatools")
 def setUpModule():
     if not os.path.exists(test_utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. "
+            f"Could not fine test data directory in {test_utils.DATA_DIR}. "
             "Ensure you have cloned the data "
             "repository using git clone -b tests "
             "--single-branch git@github.com:ISA-tools/"
-            "data {0}".format(test_utils.DATA_DIR)
+            f"data {test_utils.DATA_DIR}"
         )
 
 
@@ -135,13 +134,13 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                J = mtbls.getj("MTBLS{}".format(i))
+                J = mtbls.getj(f"MTBLS{i}")
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
                     utils.detect_graph_process_pooling(study.graph)
                     for assay in study.assays:
                         utils.detect_graph_process_pooling(assay.graph)
-            except IOError:
+            except OSError:
                 log.error("IO Error, skipping...")
             except KeyError:
                 log.error("KeyError, skipping...")
@@ -1321,7 +1320,7 @@ class TestIsaTabFixer(unittest.TestCase):
         i_table_path = os.path.join(self._tmp_dir, "BII-S-3", "i_gilbert.txt")
         fixer = utils.IsaTabFixer(i_table_path)
         fixer.remove_unused_protocols()
-        with open("{}.fix".format(i_table_path)) as fixed_i_fp:
+        with open(f"{i_table_path}.fix") as fixed_i_fp:
             investigation = isatab.load(fixed_i_fp)
             study = investigation.studies[-1]
             unused_protocol1 = study.get_prot("reverse transcription - standard procedure 5")

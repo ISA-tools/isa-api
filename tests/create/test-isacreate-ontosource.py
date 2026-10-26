@@ -307,7 +307,7 @@ class MyTestCase(unittest.TestCase):
                         term_source="OBI",
                         term_accession="https://purl.obolibrary.org/obo/OBI_000066",
                     ),
-                ),  #
+                ),
                 (
                     "technology_type",
                     OntologyAnnotation(
@@ -315,7 +315,7 @@ class MyTestCase(unittest.TestCase):
                         term_source="OBI",
                         term_accession="https://purl.obolibrary.org/obo/OBI_0000234",
                     ),
-                ),  #
+                ),
                 ("extraction", {}),
                 (
                     "extract",

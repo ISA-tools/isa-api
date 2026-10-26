@@ -1,6 +1,6 @@
 version = 1
-revision = 5
-requires-python = ">=3.10, <4"
+revision = 3
+requires-python = ">=3.9, <4"
 resolution-markers = [
     "python_full_version >= '3.12'",
     "python_full_version == '3.11.*'",
@@ -1384,7 +1384,7 @@ requires-dist = [
     { name = "rdflib", specifier = ">=7.2.1" },
     { name = "requests", marker = "python_full_version < '3.10'", specifier = ">=2.32.0" },
     { name = "requests", marker = "python_full_version >= '3.10'", specifier = ">=2.34.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.1" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.20" },
     { name = "setuptools", specifier = ">=77.0.3,<81" },
     { name = "sqlalchemy", marker = "extra == 'database'", specifier = "~=2.0.31" },
     { name = "sure", marker = "extra == 'dev'", specifier = ">=2.0.1" },
