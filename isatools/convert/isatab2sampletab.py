@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert ISA-Tab to SampleTab"""
 
 import logging

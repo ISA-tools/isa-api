@@ -31,9 +31,9 @@ from isatools.tests import utils
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR)
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -255,19 +255,19 @@ def create_descriptor(use_strings_for_characteristic_categories=False):
         # material as output
 
         extraction_process.inputs.append(sample)
-        material = Material(name="extract-{}".format(i))
+        material = Material(name=f"extract-{i}")
         material.type = "Extract Name"
         extraction_process.outputs.append(material)
 
         # create a sequencing process that executes the sequencing protocol
 
         sequencing_process = Process(executes_protocol=sequencing_protocol)
-        sequencing_process.name = "assay-name-{}".format(i)
+        sequencing_process.name = f"assay-name-{i}"
         sequencing_process.inputs.append(extraction_process.outputs[0])
 
         # Sequencing process usually has an output data file
 
-        datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File", generated_from=[sample])
+        datafile = DataFile(filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[sample])
         sequencing_process.outputs.append(datafile)
 
         # ensure Processes are linked
@@ -459,7 +459,6 @@ class TestIsaJson(unittest.TestCase):
         studies = [s for s in investigation_reload["studies"] if s["filename"] == "s_study.txt"][0]
         assays = [a for a in studies["assays"] if a["filename"] == "a_assay.txt"][0]
         self.assertEqual(assays["materials"]["otherMaterials"][1]["type"], "Extract Name")
-
 
     def test_json_load_and_dump_imagefile_test(self):
         # Load into ISA objects

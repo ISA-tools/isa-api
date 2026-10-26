@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """Various utility functions for ISA-API."""
 
-from __future__ import absolute_import
 
 import csv
 import json
@@ -33,10 +31,10 @@ def format_report_csv(report):
         output = "Validation=success\n"
 
     for warning in report["warnings"]:
-        output += str("{},{},{}\n").format(warning["code"], warning["message"], warning["supplemental"])
+        output += "{},{},{}\n".format(warning["code"], warning["message"], warning["supplemental"])
 
     for error in report["errors"]:
-        output += str("{},{},{}\n").format(error["code"], error["message"], error["supplemental"])
+        output += "{},{},{}\n".format(error["code"], error["message"], error["supplemental"])
     return output
 
 
@@ -71,14 +69,14 @@ def detect_isatab_process_pooling(fp):
     ISA = isatab.load(fp)
 
     for study in ISA.studies:
-        log.info("Checking {}".format(study.filename))
+        log.info(f"Checking {study.filename}")
         pooling_list = detect_graph_process_pooling(study.graph)
 
         if len(pooling_list) > 0:
             report.append({study.filename: pooling_list})
 
         for assay in study.assays:
-            log.info("Checking {}".format(assay.filename))
+            log.info(f"Checking {assay.filename}")
             pooling_list = detect_graph_process_pooling(assay.graph)
 
             if len(pooling_list) > 0:
@@ -104,10 +102,10 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
     protocol_ref_indices = [x for x, y in enumerate(df.columns) if df[y][0] == protocol_ref_to_unpool]
 
     if len(protocol_ref_indices) != 1:
-        raise IndexError("Could not find Protocol REF with provided value {}".format(protocol_ref_to_unpool))
+        raise IndexError(f"Could not find Protocol REF with provided value {protocol_ref_to_unpool}")
     distindex = []
 
-    for i in range(0, len(df.index)):
+    for i in range(len(df.index)):
         distindex.append(str(uuid.uuid4())[:8])
 
     protocol_ref_index = protocol_ref_indices[0]
@@ -120,7 +118,7 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             break
 
     if name_header is not None:
-        log.debug("Are you sure you want to add a column of hash values in {}? Y/(N)".format(name_header))
+        log.debug(f"Are you sure you want to add a column of hash values in {name_header}? Y/(N)")
         confirm = input()
         if confirm == "Y":
             df[name_header] = distindex
@@ -274,10 +272,10 @@ def pyisatabify(dataframe):
             if attrcontext == "factorvalue":
                 pycolumns.append(pyvar(attrcontext))
             else:
-                pycolumns.append("{0}__{1}".format(nodecontext, pyvar(attrcontext)))
+                pycolumns.append(f"{nodecontext}__{pyvar(attrcontext)}")
 
         elif squashedcol.startswith(("term", "unit")) and nodecontext is not None and attrcontext is not None:
-            pycolumns.append("{0}__{1}_{2}".format(nodecontext, pyvar(attrcontext), pyvar(squashedcol)))
+            pycolumns.append(f"{nodecontext}__{pyvar(attrcontext)}_{pyvar(squashedcol)}")
 
         col2pymap[column] = pycolumns[-1]
     return col2pymap
@@ -304,11 +302,11 @@ def factor_query_isatab(df, q):
     for factor_query in qlist:
         factor_value = factor_query.split(" == ")
 
-        fmt_query_part = "Factor_Value_{0}_ == '{1}'".format(pyvar(factor_value[0]), factor_value[1])
+        fmt_query_part = f"Factor_Value_{pyvar(factor_value[0])}_ == '{factor_value[1]}'"
         fmt_query.append(fmt_query_part)
 
     fmt_query = " and ".join(fmt_query)
-    log.debug("running query: {}".format(fmt_query))
+    log.debug(f"running query: {fmt_query}")
     return df.query(fmt_query)
 
 
@@ -322,9 +320,9 @@ def check_loadable(tab_dir_root):
     for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:
         try:
             isatab.load(os.path.join(tab_dir_root, mtbls_dir))
-            log.debug("{} load OK".format(mtbls_dir))
+            log.debug(f"{mtbls_dir} load OK")
         except Exception as e:
-            log.debug("{0} load FAIL, reason: {1}".format(mtbls_dir, e))
+            log.debug(f"{mtbls_dir} load FAIL, reason: {e}")
 
 
 def compute_study_factors_on_mtbls(tab_dir_root):
@@ -335,14 +333,14 @@ def compute_study_factors_on_mtbls(tab_dir_root):
     :return: None, output writes to stdout
 
     Usage:
-        >>> compute_study_factors_on_mtbls('tests/data')
+        >>> compute_study_factors_on_mtbls('../tests/data')
         # if tests/data contains tests/data/MTBLS1, tests/data/MTBLS2 etc.
 
         To write to an output file:
         >>> import sys
         >>> stdout_console = sys.stdout  # save normal stdout
         >>> sys.stdout = open('out.txt')  # set to file
-        >>> compute_study_factors_on_mtbls('tests/data')
+        >>> compute_study_factors_on_mtbls('../tests/data')
         >>> sys.stdout = stdout_console  # reset stdout
     """
     for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:
@@ -355,7 +353,7 @@ def compute_study_factors_on_mtbls(tab_dir_root):
 
 
 # TODO: is this any useful at all? (by Massi 18/11/2020)
-class IsaTabAnalyzer(object):
+class IsaTabAnalyzer:
     """A utility to analyze ISA-Tabs"""
 
     def __init__(self, path):
@@ -438,12 +436,10 @@ class IsaTabAnalyzer(object):
                                     fmt_query = []
                                     for factor_query in qlist:
                                         factor_value = factor_query.split(" == ")
-                                        fmt_query_part = "Factor_Value_{0}_ == '{1}'".format(
-                                            pyvar(factor_value[0]), factor_value[1]
-                                        )
+                                        fmt_query_part = f"Factor_Value_{pyvar(factor_value[0])}_ == '{factor_value[1]}'"
                                         fmt_query.append(fmt_query_part)
                                     fmt_query = " and ".join(fmt_query)
-                                    log.debug("running query: {}".format(fmt_query))
+                                    log.debug(f"running query: {fmt_query}")
                                     df2 = merged_df.query(fmt_query)
                                     data_column = [
                                         x
@@ -459,7 +455,7 @@ class IsaTabAnalyzer(object):
                                         )
                                     )
                                 except Exception as e:
-                                    log.debug("error in query, {}".format(e))
+                                    log.debug(f"error in query, {e}")
                     study_design_report[-1]["assays"].append(assay_report)
         return study_design_report
 
@@ -473,29 +469,27 @@ class IsaTabAnalyzer(object):
         print("-------------------------------------------")
         print("Investigation stats")
         print("-------------------------------------------")
-        print("Num ontologies declared: {}".format(len(isa.ontology_source_references)))
-        print("Num studies: {}".format(len(isa.studies)))
-        print("Total study assays: {}".format(reduce(lambda x, y: len(x.assays) + len(y.assays), isa.studies)))
-        print("Num investigation publications: {}".format(len(isa.publications)))
+        print(f"Num ontologies declared: {len(isa.ontology_source_references)}")
+        print(f"Num studies: {len(isa.studies)}")
+        print(f"Total study assays: {reduce(lambda x, y: len(x.assays) + len(y.assays), isa.studies)}")
+        print(f"Num investigation publications: {len(isa.publications)}")
         print(
-            "Total study publications: {}".format(
-                reduce(lambda x, y: len(x.publications) + len(y.publications), isa.studies)
-            )
+            f"Total study publications: {reduce(lambda x, y: len(x.publications) + len(y.publications), isa.studies)}"
         )
-        print("Num study people: {}".format(len(isa.contacts)))
-        print("Total study people: {}".format(reduce(lambda x, y: len(x.contacts) + len(y.contacts), isa.studies)))
+        print(f"Num study people: {len(isa.contacts)}")
+        print(f"Total study people: {reduce(lambda x, y: len(x.contacts) + len(y.contacts), isa.studies)}")
         for study in isa.studies:
             print("-------------------------------------------")
-            print("Study stats for {}".format(study.filename))
+            print(f"Study stats for {study.filename}")
             print("-------------------------------------------")
-            print("Num assays: {}".format(len(study.assays)))
+            print(f"Num assays: {len(study.assays)}")
             from collections import Counter
 
             counter = Counter()
             for material in study.sources + study.samples + study.other_material:
                 counter.update(material.characteristics)
             for k, v in counter.items():
-                print("{characteristic} used {num} times".format(characteristic=k, num=v))
+                print(f"{k} used {v} times")
 
 
 def batch_fix_isatabs(settings):
@@ -525,7 +519,7 @@ def batch_fix_isatabs(settings):
     :return: None
     """
     for table_file_path in settings.keys():
-        log.debug("Fixing {table_file_path}...".format(table_file_path=table_file_path))
+        log.debug(f"Fixing {table_file_path}...")
         fixer = IsaTabFixer(table_file_path=table_file_path)
         fixer.fix_factor(
             factor_name=settings[table_file_path]["factor"], protocol_ref=settings[table_file_path]["protocol_ref"]
@@ -547,7 +541,7 @@ def urlify(s):
     return s
 
 
-class IsaTabFixer(object):
+class IsaTabFixer:
     """Utilities to fix ISA-Tabs"""
 
     def __init__(self, table_file_path):
@@ -577,12 +571,7 @@ class IsaTabFixer(object):
                         field_names[i] = field_name[field_name.rindex(".") + 1 :]
                     except ValueError:
                         pass
-            elif "Factor Value[" in field_name:
-                try:
-                    field_names[i] = field_name[field_name.rindex(".") + 1 :]
-                except ValueError:
-                    pass
-            elif "Parameter Value[" in field_name:
+            elif "Factor Value[" in field_name or "Parameter Value[" in field_name:
                 try:
                     field_names[i] = field_name[field_name.rindex(".") + 1 :]
                 except ValueError:
@@ -622,7 +611,7 @@ class IsaTabFixer(object):
         field_names = list(table_file_df.columns)
         clean_field_names = self.clean_isatab_field_names(field_names)
 
-        factor_index = clean_field_names.index("Factor Value[{}]".format(factor_name))
+        factor_index = clean_field_names.index(f"Factor Value[{factor_name}]")
         source_name_index = clean_field_names.index("Source Name")
 
         if (
@@ -630,7 +619,7 @@ class IsaTabFixer(object):
             and "Term Source REF" in field_names[factor_index + 1]
             and "Term Accession" in field_names[factor_index + 2]
         ):
-            log.debug("Moving Factor Value[{}] with term columns".format(factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with term columns")
             # move Factor Value and Term Source REF and Term Accession columns
             field_names.insert(source_name_index + 1, field_names[factor_index])
             field_names.insert(source_name_index + 2, field_names[factor_index + 1 + 1])
@@ -645,7 +634,7 @@ class IsaTabFixer(object):
             and "Term Source REF" in field_names[factor_index + 2]
             and "Term Accession" in field_names[factor_index + 3]
         ):
-            log.debug("Moving Factor Value[{}] with unit term columns".format(factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with unit term columns")
             # move Factor Value and Unit as ontology annotation
             field_names.insert(source_name_index + 1, field_names[factor_index])
             field_names.insert(source_name_index + 2, field_names[factor_index + 1 + 1])
@@ -657,7 +646,7 @@ class IsaTabFixer(object):
             del field_names[factor_index + 2 + 2]  # del Term Source REF
             del field_names[factor_index + 3 + 1]  # del Term Accession
         elif factor_index < len(field_names) and "Unit" in field_names[factor_index + 1]:
-            log.debug("Moving Factor Value[{}] with unit column".format(factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with unit column")
             # move Factor Value and Unit columns
             field_names.insert(source_name_index + 1, field_names[factor_index])
             field_names.insert(source_name_index + 2, field_names[factor_index + 1 + 1])
@@ -665,7 +654,7 @@ class IsaTabFixer(object):
             del field_names[factor_index + 2]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 1]  # del Unit
         else:  # move only the Factor Value column
-            log.debug("Moving Factor Value[{}]".format(factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}]")
             field_names.insert(source_name_index + 1, field_names[factor_index])
             del field_names[factor_index]  # del Factor Value[{}]
 
@@ -693,7 +682,7 @@ class IsaTabFixer(object):
         field_names = list(table_file_df.columns)
         clean_field_names = self.clean_isatab_field_names(field_names)
 
-        factor_index = clean_field_names.index("Factor Value[{factor_name}]".format(factor_name=factor_name))
+        factor_index = clean_field_names.index(f"Factor Value[{factor_name}]")
 
         with open(self.path) as tfile_fp:
             next(tfile_fp)
@@ -703,14 +692,14 @@ class IsaTabFixer(object):
             ).index(protocol_ref)
 
         if protocol_ref_index < 0:
-            raise IOError("Could not find protocol ref matching {protocol_ref}".format(protocol_ref=protocol_ref))
+            raise OSError(f"Could not find protocol ref matching {protocol_ref}")
 
         if (
             factor_index < len(field_names)
             and "Term Source REF" in field_names[factor_index + 1]
             and "Term Accession" in field_names[factor_index + 2]
         ):
-            log.debug("Moving Factor Value[{}] with term columns".format(factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with term columns")
             # move Factor Value and Term Source REF and Term Accession columns
             field_names.insert(protocol_ref_index + 1, field_names[factor_index])
             field_names.insert(protocol_ref_index + 2, field_names[factor_index + 1 + 1])
@@ -724,7 +713,7 @@ class IsaTabFixer(object):
             and "Term Source REF" in field_names[factor_index + 2]
             and "Term Accession" in field_names[factor_index + 3]
         ):
-            log.debug("Moving Factor Value[{factor_name}] with unit term columns".format(factor_name=factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with unit term columns")
             # move Factor Value and Unit as ontology annotation
             field_names.insert(protocol_ref_index + 1, field_names[factor_index])
             field_names.insert(protocol_ref_index + 2, field_names[factor_index + 1 + 1])
@@ -735,14 +724,14 @@ class IsaTabFixer(object):
             del field_names[factor_index + 2 + 2]  # del Term Source REF
             del field_names[factor_index + 3 + 1]  # del Term Accession
         elif factor_index < len(field_names) and "Unit" in field_names[factor_index + 1]:
-            log.debug("Moving Factor Value[{factor_name}] with unit column".format(factor_name=factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}] with unit column")
             # move Factor Value and Unit columns
             field_names.insert(protocol_ref_index + 1, field_names[factor_index])
             field_names.insert(protocol_ref_index + 2, field_names[factor_index + 1 + 1])
             del field_names[factor_index + 2]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 1]  # del Unit
         else:  # move only the Factor Value column
-            log.debug("Moving Factor Value[{factor_name}]".format(factor_name=factor_name))
+            log.debug(f"Moving Factor Value[{factor_name}]")
             field_names.insert(protocol_ref_index + 1, field_names[factor_index])
             del field_names[factor_index]  # del Factor Value[{}]
 
@@ -759,15 +748,15 @@ class IsaTabFixer(object):
         study = investigation.studies[-1]
         protocol = study.get_prot(protocol_ref)
         if protocol is None:
-            raise AttributeError("No protocol with name {protocol_ref} was found".format(protocol_ref=protocol_ref))
+            raise AttributeError(f"No protocol with name {protocol_ref} was found")
         protocol.add_param(factor_name)
         factor = study.get_factor(factor_name)
         if factor is None:
-            raise AttributeError("No factor with name {factor_name} was found".format(factor_name=factor_name))
+            raise AttributeError(f"No factor with name {factor_name} was found")
         else:
             study.del_factor(name=factor_name, are_you_sure=True)
 
-        study.filename = "{study_filename}.fix".format(study_filename=study.filename)
+        study.filename = f"{study.filename}.fix"
 
         isatab.dump(
             investigation,
@@ -777,7 +766,7 @@ class IsaTabFixer(object):
         )
 
         with open(
-            os.path.join(os.path.dirname(self.path), "{s_filename}.fix".format(s_filename=os.path.basename(self.path))),
+            os.path.join(os.path.dirname(self.path), f"{os.path.basename(self.path)}.fix"),
             "wb",
         ) as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep="\t", encoding="utf-8")
@@ -801,11 +790,9 @@ class IsaTabFixer(object):
                         unused_protocol_names.remove(process.executes_protocol.name)
                     except KeyError:
                         pass
-            log.info("Unused protocols: {}".format(unused_protocol_names))
+            log.info(f"Unused protocols: {unused_protocol_names}")
             log.info(
-                "Location of unused protocols: {}".format(
-                    list(map(lambda pr: True if pr.name in unused_protocol_names else False, study.protocols))
-                )
+                f"Location of unused protocols: {list(map(lambda pr: True if pr.name in unused_protocol_names else False, study.protocols))}"
             )
             # remove these protocols from study.protocols
             """
@@ -816,13 +803,13 @@ class IsaTabFixer(object):
             study.protocols = clean_protocols_list
             """
             clean_protocols = [pr for pr in study.protocols if pr.name not in unused_protocol_names]
-            log.info("Clean protocol list: {}".format([pr.name for pr in clean_protocols]))
+            log.info(f"Clean protocol list: {[pr.name for pr in clean_protocols]}")
             study.protocols = clean_protocols
-            log.info("Clean study.protocols: {}".format([pr.name for pr in study.protocols]))
+            log.info(f"Clean study.protocols: {[pr.name for pr in study.protocols]}")
         isatab.dump(
             investigation,
             output_path=os.path.dirname(self.path),
-            i_file_name="{filename}.fix".format(filename=os.path.basename(self.path)),
+            i_file_name=f"{os.path.basename(self.path)}.fix",
             skip_dump_tables=True,
         )
 

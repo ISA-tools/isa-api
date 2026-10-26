@@ -70,5 +70,5 @@ def make_ontology_source_methods() -> None:
         # session.commit()
         return ontology_source
 
-    setattr(OntologySourceModel, "to_sql", to_sql)
-    setattr(OntologySourceModel, "get_table", make_get_table_method(OntologySource))
+    OntologySourceModel.to_sql = to_sql
+    OntologySourceModel.get_table = make_get_table_method(OntologySource)

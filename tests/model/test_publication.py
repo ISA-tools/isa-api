@@ -78,12 +78,9 @@ class TestPublication(TestCase):
         self.assertTrue(second_publication != self.publication)
 
     @patch("isatools.model.identifiable.uuid4", return_value="mocked_UUID")
-    def test_dict(self,  mock_uuid4):
+    def test_dict(self, mock_uuid4):
         publication = Publication(
-            pubmed_id="pubmed_id",
-            doi="doi",
-            author_list="a, b, c",
-            status=OntologyAnnotation(term="OA", id_="123")
+            pubmed_id="pubmed_id", doi="doi", author_list="a, b, c", status=OntologyAnnotation(term="OA", id_="123")
         )
 
         self.assertEqual(publication.id, "#publication/" + mock_uuid4.return_value)

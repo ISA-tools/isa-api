@@ -8,7 +8,7 @@ from isatools.model.ontology_annotation import OntologyAnnotation
 from isatools.model.process import Process
 
 
-class Assay(Commentable, Identifiable, StudyAssayMixin, object):
+class Assay(Commentable, Identifiable, StudyAssayMixin):
     """An Assay represents a test performed either on material taken from a
     subject or on a whole initial subject, producing qualitative or
     quantitative
@@ -75,6 +75,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
         self.data_files = data_files or []
 
         self.id = id_
+
     @property
     def measurement_type(self):
         """:obj:`OntologyAnnotation: an ontology annotation representing the
@@ -85,7 +86,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
     def measurement_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise AttributeError(
-                "Assay.measurement_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+                f"Assay.measurement_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
             )
         else:
             self.__measurement_type = val
@@ -100,7 +101,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
     def technology_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise AttributeError(
-                "Assay.technology_type must be a OntologyAnnotation or None; got {0}:{1}".format(val, type(val))
+                f"Assay.technology_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
             )
         else:
             self.__technology_type = val
@@ -113,7 +114,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
     @technology_platform.setter
     def technology_platform(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Assay.technology_platform must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Assay.technology_platform must be a str or None; got {val}:{type(val)}")
         else:
             self.__technology_platform = val
 
@@ -128,21 +129,19 @@ class Assay(Commentable, Identifiable, StudyAssayMixin, object):
             if val == [] or all(isinstance(x, DataFile) for x in val):
                 self.__data_files = list(val)
         else:
-            raise AttributeError("{0}.data_files must be iterable containing DataFiles".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.data_files must be iterable containing DataFiles")
 
     def __repr__(self):
         return (
-            "isatools.model.Assay(measurement_type={measurement_type}, "
-            "technology_type={technology_type}, "
-            "technology_platform='{assay.technology_platform}', "
-            "filename='{assay.filename}', data_files={assay.data_files}, "
-            "samples={assay.samples}, "
-            "process_sequence={assay.process_sequence}, "
-            "other_material={assay.other_material}, "
-            "characteristic_categories={assay.characteristic_categories},"
-            " comments={assay.comments}, units={assay.units})".format(
-                assay=self, measurement_type=repr(self.measurement_type), technology_type=repr(self.technology_type)
-            )
+            f"isatools.model.Assay(measurement_type={self.measurement_type!r}, "
+            f"technology_type={self.technology_type!r}, "
+            f"technology_platform='{self.technology_platform}', "
+            f"filename='{self.filename}', data_files={self.data_files}, "
+            f"samples={self.samples}, "
+            f"process_sequence={self.process_sequence}, "
+            f"other_material={self.other_material}, "
+            f"characteristic_categories={self.characteristic_categories},"
+            f" comments={self.comments}, units={self.units})"
         )
 
     def __str__(self):

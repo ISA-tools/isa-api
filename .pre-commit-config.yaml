@@ -7,43 +7,43 @@ repos:
   - id: validate-pyproject
     name: 🔍 Validate pyproject.toml
 - repo: https://github.com/gitleaks/gitleaks
-  rev: v8.28.0
+  rev: v8.30.0
   hooks:
   - id: gitleaks
     name: "🔒 Security · Detect hardcoded secrets"
-- repo: https://github.com/hukkin/mdformat
-  rev: 0.7.22
-  hooks:
-  - id: mdformat
-    name: "🟢  Markdown · Format markdown"
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v6.0.0
   hooks:
   - id: check-added-large-files
     name: 🟢  Check large files
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
     args: [ "--maxkb=2000" ]
   - id: check-toml
     name: 🟢  Check toml files
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
   - id: check-json
     name: 🟢  Check json files
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
   - id: pretty-format-json
     name: 🟢  Format json files
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
     args:
     - "--autofix"
     - "--indent=4"
     - "--no-sort-keys"
   - id: check-yaml
     name: 🟢  Check yaml files
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
     args:
     - --unsafe
   - id: end-of-file-fixer
     name: 🟢 Check end of file character
-    exclude: resources/.+\.(js|css)$
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
   - id: trailing-whitespace
     name: 🟢  Check trailing whitespaces
-    exclude: (tests/data/.+|resources/.+\.(js|css))$
+    exclude: features/.+|isa-cookbook/.+|docs/.+|isatools/net/.+|isatools/resources/.+|tests/data/.+
 - repo: https://github.com/astral-sh/uv-pre-commit
-  rev: 0.9.1
+  rev: 0.9.15
   hooks:
   - id: uv-lock
     name: ✅ Check uv.lock file
@@ -54,7 +54,7 @@ repos:
     name: 🔍 Detect missing __init__.py files
     args: [ "--create", "--track", "--python-folders", "isatools" ]
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.14.0
+  rev: v0.14.7
   hooks:
   - id: ruff-check
     name: 🔍 Check Format with Ruff
@@ -64,7 +64,7 @@ repos:
   - id: ruff-format
     name: 🐍 python · Format with Ruff
 - repo: https://github.com/seddonym/import-linter.git
-  rev: "v2.5.2"
+  rev: "v2.7"
   hooks:
   - id: import-linter
     name: 🪵 architecture and package structure check (lint-imports)

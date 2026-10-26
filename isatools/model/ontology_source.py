@@ -19,7 +19,13 @@ class OntologySource(Commentable, Identifiable):
     """
 
     def __init__(
-        self, id_="", name: str = "", file: str = "", version: str = "", description: str = "", comments: List[Comment] = None
+        self,
+        id_="",
+        name: str = "",
+        file: str = "",
+        version: str = "",
+        description: str = "",
+        comments: List[Comment] = None,
     ):
         super().__init__(comments)
         self.id = id_
@@ -46,7 +52,7 @@ class OntologySource(Commentable, Identifiable):
         @param field_name: the name of the field to validate
         """
         if not isinstance(val, str):
-            raise AttributeError("OntologySource.{0} must be a str; got {1}:{2}".format(field_name, val, type(val)))
+            raise AttributeError(f"OntologySource.{field_name} must be a str; got {val}:{type(val)}")
 
     @name.setter
     def name(self, val):
@@ -85,22 +91,22 @@ class OntologySource(Commentable, Identifiable):
 
     def __repr__(self):
         return (
-            "isatools.model.OntologySource(name='{ontology_source.name}', "
-            "file='{ontology_source.file}', "
-            "version='{ontology_source.version}', "
-            "description='{ontology_source.description}', "
-            "comments={ontology_source.comments})"
-        ).format(ontology_source=self)
+            f"isatools.model.OntologySource(name='{self.name}', "
+            f"file='{self.file}', "
+            f"version='{self.version}', "
+            f"description='{self.description}', "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         return (
             "OntologySource(\n\t"
-            "name={ontology_source.name}\n\t"
-            "file={ontology_source.file}\n\t"
-            "version={ontology_source.version}\n\t"
-            "description={ontology_source.description}\n\t"
-            "comments={num_comments} Comment objects\n)"
-        ).format(ontology_source=self, num_comments=len(self.comments))
+            f"name={self.name}\n\t"
+            f"file={self.file}\n\t"
+            f"version={self.version}\n\t"
+            f"description={self.description}\n\t"
+            f"comments={len(self.comments)} Comment objects\n)"
+        )
 
     def __hash__(self):
         return hash(repr(self))
@@ -130,7 +136,7 @@ class OntologySource(Commentable, Identifiable):
         return self.update_isa_object(ontology_source_ref, ld=ld)
 
     def from_dict(self, ontology_source):
-        self.id = ontology_source.get("@id","")
+        self.id = ontology_source.get("@id", "")
         self.name = ontology_source["name"] if "name" in ontology_source else ""
         self.file = ontology_source["file"] if "file" in ontology_source else ""
         self.version = ontology_source["version"] if "version" in ontology_source else ""

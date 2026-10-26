@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*
 """Convert MAGE-TAB to ISA-JSON"""
 
-from __future__ import absolute_import
 
 import json
 import os
@@ -22,5 +20,5 @@ def convert(idf_file_path):
             ISA = isatab.load(isa_inv_fp)
     finally:
         shutil.rmtree(tmp)
-        if ISA is not None:
-            return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+    if ISA is not None:
+        return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))

@@ -108,7 +108,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     def executes_protocol(self, val):
         if val is not None and not isinstance(val, Protocol):
             raise AttributeError(
-                "Process.executes_protocol must be a Protocol or None; got {0}:{1}".format(val, type(val))
+                f"Process.executes_protocol must be a Protocol or None; got {val}:{type(val)}"
             )
         self.__executes_protocol = val
 
@@ -191,7 +191,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @prev_process.setter
     def prev_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise AttributeError("Process.prev_process must be a Process or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Process.prev_process must be a Process or None; got {val}:{type(val)}")
         else:
             self.__prev_process = val
 
@@ -204,19 +204,19 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @next_process.setter
     def next_process(self, val):
         if val is not None and not isinstance(val, Process):
-            raise AttributeError("Process.next_process must be a Process or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Process.next_process must be a Process or None; got {val}:{type(val)}")
         else:
             self.__next_process = val
 
     def __repr__(self):
         return (
-            '{0}.{1}(id="{2.id}". name="{2.name}", executes_protocol={2.executes_protocol}, '
-            'date="{2.date}", performer="{2.performer}", inputs={2.inputs}, outputs={2.outputs}'
+            f'{self.__class__.__module__}.{self.__class__.__name__}(id="{self.id}". name="{self.name}", executes_protocol={self.executes_protocol}, '
+            f'date="{self.date}", performer="{self.performer}", inputs={self.inputs}, outputs={self.outputs}'
             ")"
-        ).format(self.__class__.__module__, self.__class__.__name__, self)
+        )
 
     def __str__(self):
-        return """{0}(name={1.name})""".format(self.__class__.__name__, self)
+        return f"""{self.__class__.__name__}(name={self.name})"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -243,9 +243,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
             if param.value is not None or len(str(param.value)) > 0:
                 if isinstance(param.value, OntologyAnnotation):
                     value = param.value.to_dict(ld=ld)
-                elif isinstance(param.value, (int, float)):
-                    value = param.value
-                elif isinstance(param.value, str):
+                elif isinstance(param.value, (int, float)) or isinstance(param.value, str):
                     value = param.value
                 else:
                     value = "N/A"  # param.value
@@ -301,7 +299,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                 except KeyError:
                     pass
             if input_ is None:
-                raise IOError("Could not find input node in sources or samples dicts: " + input_data["@id"])
+                raise OSError("Could not find input node in sources or samples dicts: " + input_data["@id"])
             self.inputs.append(input_)
 
         # Outputs
@@ -317,7 +315,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                 except KeyError:
                     pass
             if output is None:
-                raise IOError("Could not find output node in sources or samples dicts: " + output_data["@id"])
+                raise OSError("Could not find output node in sources or samples dicts: " + output_data["@id"])
             self.outputs.append(output)
 
     def from_assay_dict(self, process, technology_type):
@@ -349,7 +347,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
                         io_data_target.replace("s", ""),
                         io_data["@id"],
                     )
-                    raise IOError(error_msg)
+                    raise OSError(error_msg)
                 getattr(self, io_data_target).append(io_value)
 
         # Parameter values

@@ -14,9 +14,8 @@ log.disabled = True
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
-            "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}".format(utils.DATA_DIR)
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned the data repository using "
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -308,7 +307,7 @@ class TestValidateIsaJson(unittest.TestCase):
         """Tests against 4001"""
         try:
             isajson.load_config(os.path.join(self._configs_json_data_dir))
-        except IOError as e:
+        except OSError as e:
             self.fail("Could not load config because... " + str(e))
 
     def test_validate_isajson_get_config(self):
@@ -319,7 +318,7 @@ class TestValidateIsaJson(unittest.TestCase):
                 self.fail("There was a problem and config is null")
             else:
                 self.assertIsNotNone(configs[("metagenome sequencing", "nucleotide sequencing")])
-        except IOError as e:
+        except OSError as e:
             self.fail("Could not load config because... " + str(e))
 
     def test_validate_isajson_study_config_validation(self):
