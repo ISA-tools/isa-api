@@ -13,13 +13,13 @@ def check_filenames_present(i_df_dict: dict) -> None:
     """
     for s_pos, study_df in enumerate(i_df_dict["studies"]):
         if study_df.iloc[0]["Study File Name"] == "":
-            validator.add_warning(message="Missing Study File Name", supplemental="STUDY.{}".format(s_pos), code=3005)
-            log.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
+            validator.add_warning(message="Missing Study File Name", supplemental=f"STUDY.{s_pos}", code=3005)
+            log.warning(f"(W) A study filename is missing for STUDY.{s_pos}")
         for a_pos, filename in enumerate(i_df_dict["s_assays"][s_pos]["Study Assay File Name"].tolist()):
             if filename == "":
-                spl = "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos)
+                spl = f"STUDY.{s_pos}, STUDY ASSAY.{a_pos}"
                 validator.add_warning.append(message="Missing assay file name", supplemental=spl, code=3005)
-                log.warning("(W) An assay filename is missing for STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos))
+                log.warning(f"(W) An assay filename is missing for STUDY.{s_pos}, STUDY ASSAY.{a_pos}")
 
 
 def check_date_formats(i_df_dict):
@@ -39,9 +39,9 @@ def check_date_formats(i_df_dict):
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
-                spl = "Found {} in date field".format(date_str)
+                spl = f"Found {date_str} in date field"
                 validator.add_warning(message="Date is not ISO8601 formatted", supplemental=spl, code=3001)
-                log.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
+                log.warning(f"(W) Date {date_str} does not conform to ISO8601 format")
 
     release_date_vals = i_df_dict["investigation"]["Investigation Public Release Date"].tolist()
     if len(release_date_vals) > 0:
@@ -73,10 +73,10 @@ def check_dois(i_df_dict):
         """
         if doi_str != "":
             if not _RX_DOI.match(doi_str):
-                spl = "Found {} in DOI field".format(doi_str)
+                spl = f"Found {doi_str} in DOI field"
 
                 validator.add_warning(message="DOI is not valid format", supplemental=spl, code=3002)
-                log.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
+                log.warning(f"(W) DOI {doi_str} does not conform to DOI format")
 
     for doi in i_df_dict["i_publications"]["Investigation Publication DOI"].tolist():
         check_doi(doi)
@@ -100,9 +100,9 @@ def check_pubmed_ids_format(i_df_dict):
         """
         if pubmed_id_str != "":
             if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
-                spl = "Found PubMedID {}".format(pubmed_id_str)
+                spl = f"Found PubMedID {pubmed_id_str}"
                 validator.add_warning(message="PubMed ID is not valid format", supplemental=spl, code=3003)
-                log.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
+                log.warning(f"(W) PubMed ID {pubmed_id_str} is not valid format")
 
     for doi in i_df_dict["i_publications"]["Investigation PubMed ID"].tolist():
         check_pubmed_id(str(doi))
@@ -120,7 +120,7 @@ def check_ontology_sources(i_df_dict):
     term_source_refs = []
     for i, ontology_source_name in enumerate(i_df_dict["ontology_sources"]["Term Source Name"].tolist()):
         if ontology_source_name == "" or "Unnamed: " in ontology_source_name:
-            spl = "pos={}".format(i)
+            spl = f"pos={i}"
             warn = "(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be referenced"
             validator.add_warning(message="Ontology Source missing name ref", supplemental=spl, code=3008)
             log.warning(warn.format(i))
@@ -157,18 +157,18 @@ def check_ontology_fields(table, cfg, tsrs):
         ):
             msg = "Missing Term Source REF in annotation or missing Term Source Name"
             spl = (
-                "Incomplete values for ontology headers, for the field '{}' in the file '{}'. Check that all the "
+                f"Incomplete values for ontology headers, for the field '{config_field.header}' in the file '{filename}'. Check that all the "
                 "label/accession/source are provided."
-            ).format(config_field.header, filename)
+            )
             validator.add_warning(message=msg, supplemental=spl, code=3008)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
             return_value = False
         if cell_has_value(source) and source not in tsrs:
             spl = (
-                "Term Source REF, for the field '{}' in the file '{}' does not refer to a declared Ontology Source."
-            ).format(cfield.header, filename)
+                f"Term Source REF, for the field '{cfield.header}' in the file '{filename}' does not refer to a declared Ontology Source."
+            )
             validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
-            log.warning("(W) {}".format(spl))
+            log.warning(f"(W) {spl}")
             return_value = False
         return return_value
 

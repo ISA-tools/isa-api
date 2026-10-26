@@ -57,5 +57,5 @@ def make_parameter_methods() -> None:
         session.add(parameter)
         return parameter
 
-    setattr(ParameterModel, "to_sql", to_sql)
-    setattr(ParameterModel, "get_table", make_get_table_method(Parameter))
+    ParameterModel.to_sql = to_sql
+    ParameterModel.get_table = make_get_table_method(Parameter)

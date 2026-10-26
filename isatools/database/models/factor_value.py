@@ -81,7 +81,7 @@ def make_factor_value_methods():
         """
         factor_value = {
             "factor_name": self.factor_name.to_sql(session),
-            "comments": [comment.to_sql(session) for comment in self.comments],
+            "comments": [comment.to_sql() for comment in self.comments],
         }
         value = self.value if self.value else ""
         if isinstance(value, int) or isinstance(value, float):
@@ -92,7 +92,9 @@ def make_factor_value_methods():
             factor_value["value_oa"] = value.to_sql(session)
         if self.unit:
             factor_value["factor_unit"] = self.unit.to_sql(session)
-        return FactorValue(**factor_value)
+        factor_value_obj = FactorValue(**factor_value)
+        session.add(factor_value_obj)
+        return factor_value_obj
 
-    setattr(FactorValueModel, "to_sql", to_sql)
-    setattr(FactorValueModel, "get_table", make_get_table_method(FactorValue))
+    FactorValueModel.to_sql = to_sql
+    FactorValueModel.get_table = make_get_table_method(FactorValue)

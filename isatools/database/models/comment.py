@@ -92,5 +92,5 @@ def make_comment_methods() -> None:
         """
         return Comment(name=self.name, value=self.value)
 
-    setattr(CommentModel, "to_sql", to_sql)
-    setattr(CommentModel, "get_table", make_get_table_method(Comment))
+    CommentModel.to_sql = to_sql
+    CommentModel.get_table = make_get_table_method(Comment)

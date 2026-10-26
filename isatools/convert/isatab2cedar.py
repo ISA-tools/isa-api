@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*
 """Convert ISA-Tab to CEDAR JSON"""
 
-from __future__ import absolute_import
 
 import json
 import logging
@@ -25,12 +23,12 @@ log = logging.getLogger("isatools")
 CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/cedar")
 
 
-class ISATab2CEDAR(object):
+class ISATab2CEDAR:
     def __init__(self, primary_source):
         self.primary_source = primary_source
 
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
-        log.info("Convert ISA datasets in folder {}.".format(work_dir))
+        log.info(f"Convert ISA datasets in folder {work_dir}.")
         path = os.path.abspath(work_dir)
         folders = [f for f in listdir(path) if isdir(join(path, f))]
 
@@ -38,12 +36,12 @@ class ISATab2CEDAR(object):
             self.createCEDARjson(CEDAR_SCHEMA_PATH, join(path, folder), json_dir, inv_identifier)
 
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
-        log.info("Converting ISA to CEDAR model for {}".format(work_dir))
+        log.info(f"Converting ISA to CEDAR model for {work_dir}")
         schema_file = "investigation_template.json"
         with open(join(CEDAR_SCHEMA_PATH, schema_file)) as json_fp:
             investigation_schema = json.load(json_fp)
         if investigation_schema is None:
-            raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH, schema_file)))
+            raise OSError(f"Could not load schema from {join(CEDAR_SCHEMA_PATH, schema_file)}")
 
         resources = []
         schemas_dir = Path(CEDAR_SCHEMA_PATH)

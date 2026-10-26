@@ -33,9 +33,7 @@ def preprocess(DF):
     for i in process_node_name_indices:
         if not columns[find_lt(all_cols_indicies, i)].startswith("Protocol REF"):
             log.info(
-                "warning: Protocol REF missing between '{}' and '{}'".format(
-                    columns[find_lt(all_cols_indicies, i)], columns[i]
-                )
+                f"warning: Protocol REF missing between '{columns[find_lt(all_cols_indicies, i)]}' and '{columns[i]}'"
             )
             missing_process_indices.append(i)
 
@@ -55,7 +53,7 @@ def preprocess(DF):
         )
         DF.insert(
             i,
-            "Protocol REF.{}".format(num_protocol_refs + offset),
+            f"Protocol REF.{num_protocol_refs + offset}",
             "unknown" if inferred_protocol_type == "" else inferred_protocol_type,
         )
         DF.isatab_header.insert(i, "Protocol REF")
@@ -283,8 +281,9 @@ class ProcessSequenceFactory:
                 # don't drop duplicates
                 for object_index, object_series in DF.iterrows():
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(
-                        protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF
+                    process_key = (
+                        _cg,
+                        process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, object_index, DF),
                     )
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
@@ -293,7 +292,7 @@ class ProcessSequenceFactory:
                         process = processes[process_key]
                     except KeyError:
                         # TODO: Fix name formatting using protocol type or pattern
-                        process_name = "process-{}-{}".format(object_index, protocol_ref)
+                        process_name = f"process-{object_index}-{protocol_ref}"
                         process = Process(executes_protocol=protocol_ref, name=process_name)
                         processes.update(dict([(process_key, process)]))
 
@@ -407,7 +406,10 @@ class ProcessSequenceFactory:
 
                 if object_label.startswith("Protocol REF"):
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = (
+                        _cg,
+                        process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF),
+                    )
                     process_key_sequence.append(process_key)
 
                 if object_label in _LABELS_DATA_NODES:

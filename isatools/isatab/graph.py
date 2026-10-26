@@ -15,13 +15,13 @@ def _all_end_to_end_paths(G, start_nodes):
     # we know graphs start with Source or Sample and end with Process
     paths = []
     num_start_nodes = len(start_nodes)
-    message = "Calculating for paths for {} start nodes: ".format(num_start_nodes)
+    message = f"Calculating for paths for {num_start_nodes} start nodes: "
     # log.info(start_nodes)
     start_node = G.indexes[start_nodes[0]]
     if isinstance(start_node, Source):
-        message = "Calculating for paths for {} sources: ".format(num_start_nodes)
+        message = f"Calculating for paths for {num_start_nodes} sources: "
     elif isinstance(start_node, Sample):
-        message = "Calculating for paths for {} samples: ".format(num_start_nodes)
+        message = f"Calculating for paths for {num_start_nodes} samples: "
     """if isa_logging.show_pbars:
         pbar = ProgressBar(
             min_value=0, max_value=num_start_nodes, widgets=[

@@ -27,9 +27,9 @@ def universal_filecmp(f1, f2):
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned "
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned "
             "the data repository using git clone -b tests "
-            "--single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"--single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -59,7 +59,7 @@ class TestIsatab2w4m(unittest.TestCase):
             self.assertTrue(os.path.exists(output_file))
             self.assertTrue(
                 universal_filecmp(output_file, ref_file),
-                'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file),
+                f'Output file "{output_file}" differs from reference file "{ref_file}".',
             )
 
     # Test MTBLS30
@@ -101,7 +101,7 @@ class TestIsatab2w4m(unittest.TestCase):
             self.assertTrue(os.path.exists(output_files[x]))
         self.assertTrue(
             universal_filecmp(output_files[x], ref_files[x]),
-            'Output file "{0}" differs from reference file "{1}".'.format(output_files[x], ref_files[x]),
+            f'Output file "{output_files[x]}" differs from reference file "{ref_files[x]}".',
         )
 
     # Test MTBLS404 NA filtering
@@ -142,9 +142,9 @@ class TestIsatab2w4m(unittest.TestCase):
             isatab2w4m.convert(
                 input_dir=os.path.join(utils.TAB_DATA_DIR, test_dir),
                 output_dir=self._tmp_dir,
-                sample_output="%s-w4m-sample-metadata-{0}.tsv".format(assay),
-                variable_output="%s-w4m-variable-metadata-{0}.tsv".format(assay),
-                matrix_output="%s-w4m-sample-variable-matrix-{0}.tsv".format(assay),
+                sample_output=f"%s-w4m-sample-metadata-{assay}.tsv",
+                variable_output=f"%s-w4m-variable-metadata-{assay}.tsv",
+                matrix_output=f"%s-w4m-sample-variable-matrix-{assay}.tsv",
                 assay_filename=assay,
             )
 
@@ -157,5 +157,5 @@ class TestIsatab2w4m(unittest.TestCase):
                 self.assertTrue(os.path.exists(output_file))
                 self.assertTrue(
                     universal_filecmp(output_file, ref_file),
-                    'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file),
+                    f'Output file "{output_file}" differs from reference file "{ref_file}".',
                 )

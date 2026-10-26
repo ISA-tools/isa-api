@@ -151,5 +151,5 @@ def make_study_methods():
             assays=[assay.to_sql(session) for assay in self.assays],
         )
 
-    setattr(StudyModel, "to_sql", to_sql)
-    setattr(StudyModel, "get_table", make_get_table_method(Study))
+    StudyModel.to_sql = to_sql
+    StudyModel.get_table = make_get_table_method(Study)

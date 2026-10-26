@@ -1,6 +1,5 @@
 """Tests on isatab.py package"""
 
-from __future__ import absolute_import
 
 import os
 import shutil
@@ -47,9 +46,9 @@ from isatools.tests.utils import assert_tab_content_equal
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not find test data directory in {0}. Ensure you have cloned the data "
+            f"Could not find test data directory in {utils.DATA_DIR}. Ensure you have cloned the data "
             "repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -1008,38 +1007,38 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
             # material as output
 
             extraction_process1.inputs.append(sample)
-            material1 = Material(name="extract-{}".format(i))
+            material1 = Material(name=f"extract-{i}")
             material1.type = "Extract Name"
             extraction_process1.outputs.append(material1)
 
             extraction_process2.inputs.append(sample)
-            material2 = Material(name="methyl-extract-{}".format(i))
+            material2 = Material(name=f"methyl-extract-{i}")
             material2.type = "Extract Name"
             extraction_process2.outputs.append(material2)
 
             # create a sequencing process that executes the sequencing protocol
 
             sequencing_process1 = Process(executes_protocol=sequencing_protocol)
-            sequencing_process1.name = "assay-name-{}".format(i)
+            sequencing_process1.name = f"assay-name-{i}"
             sequencing_process1.inputs.append(extraction_process1.outputs[0])
 
             # Sequencing process usually has an output data file
 
             datafile1 = DataFile(
-                filename="sequenced-data-{}".format(i), label="Raw Data File", generated_from=[material1]
+                filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[material1]
             )
             sequencing_process1.outputs.append(datafile1)
 
             # create a sequencing process that executes the sequencing protocol
 
             sequencing_process2 = Process(executes_protocol=sequencing_protocol_methyl)
-            sequencing_process2.name = "methyl-assay-name-{}".format(i)
+            sequencing_process2.name = f"methyl-assay-name-{i}"
             sequencing_process2.inputs.append(extraction_process2.outputs[0])
 
             # Sequencing process usually has an output data file
 
             datafile2 = DataFile(
-                filename="methyl-sequenced-data-{}".format(i), label="Raw Data File", generated_from=[material1]
+                filename=f"methyl-sequenced-data-{i}", label="Raw Data File", generated_from=[material1]
             )
             sequencing_process2.outputs.append(datafile2)
 
@@ -1079,7 +1078,7 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
 
         try:
             isatab.dump(investigation, self._tmp_dir)
-        except IOError as ioe:
+        except OSError as ioe:
             print("ERROR: ", ioe)
 
 
@@ -2022,6 +2021,28 @@ sample1\textraction\te2\tscanning\td2"""
             dumps_out = isatab.dumps(investigation)
             expected_chained_protocol_snippet = """Sample Name\tProtocol REF\tProtocol REF\tExtract Name"""
             self.assertIn(expected_chained_protocol_snippet, dumps_out)
+
+    def test_protocol_refs_sharing_name_values(self):
+        factory = ProcessSequenceFactory(
+            study_protocols=[
+                Protocol(name="mass spectrometry"),
+                Protocol(name="data transformation"),
+                Protocol(name="metabolite identification"),
+            ]
+        )
+        table_to_load = (
+            "Sample Name\tProtocol REF\tMS Assay Name\tRaw Data File\tProtocol REF\tNormalization Name"
+            "\tProtocol REF\tData Transformation Name\tDerived Data File\n"
+            "sample1\tmass spectrometry\tsample1\ts1.raw\tdata transformation\tsample1"
+            "\tmetabolite identification\tsample1\tresult.tsv\n"
+            "sample2\tmass spectrometry\tsample2\ts2.raw\tdata transformation\tsample2"
+            "\tmetabolite identification\tsample2\tresult.tsv"
+        )
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep="\t"))
+        processes = factory.create_from_df(DF)[4]
+        self.assertEqual(len(processes), 6)
+        for process in processes.values():
+            self.assertIsNot(process.next_process, process)
 
 
 class TestTransposedTabParser(unittest.TestCase):

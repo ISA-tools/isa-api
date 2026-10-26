@@ -112,15 +112,15 @@ def modify_investigation(fp):
         extraction_process = Process(executes_protocol=extraction_protocol)
 
         extraction_process.inputs.append(sample)
-        material = Material(name="extract-{}".format(i))
+        material = Material(name=f"extract-{i}")
         material.type = "Extract Name"
         extraction_process.outputs.append(material)
 
         sequencing_process = Process(executes_protocol=sequencing_protocol)
-        sequencing_process.name = "assay-name-{}".format(i)
+        sequencing_process.name = f"assay-name-{i}"
         sequencing_process.inputs.append(extraction_process.outputs[0])
 
-        datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
+        datafile = DataFile(filename=f"sequenced-data-{i}", label="Raw Data File")
         sequencing_process.outputs.append(datafile)
 
         extraction_process.next_process = sequencing_process
