@@ -33,8 +33,6 @@ MZML_DATA_DIR = os.path.join(DATA_DIR, "mzml")
 
 NIH_DCC_DATA_DIR = os.path.join(DATA_DIR, "nihdcc")
 
-SAMPLETAB_DATA_DIR = os.path.join(DATA_DIR, "sampletab")
-
 CONFIGS_DATA_DIR = os.path.join(DATA_DIR, "configs")
 
 SCHEMAS_DATA_DIR = os.path.join(DATA_DIR, "schemas")
