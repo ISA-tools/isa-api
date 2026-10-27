@@ -11,7 +11,6 @@ from os import listdir, path, remove, walk
 from shutil import rmtree
 from zipfile import ZipFile
 
-
 __author__ = "massi"
 
 DESTINATION_DIR = "output"
