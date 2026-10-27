@@ -69,48 +69,6 @@ default it is set to `validate_first=True`.
 
 ***
 
-## Converting ISA content to SampleTab
-
-
-```{warning}
-
-As of July 2020, EBI Biosample has decommissioned SampleTab format and now only accepts submission via a REST API.
-Future releases of the ISA-API will support this mode of data deposition.
-```
-
-To export metadata from SampleTab files (e.g. for EBI BioSamples
-database), you can do the following to export a ISA-Tab to SampleTab:
-
-```python
-from isatools.convert import isatab2sampletab
-
-with open('your/path/to/i_investigation.txt', 'r') as input_investigation_file:
-    with open('your/path/to/sampletab.txt', 'w') as output_sampletab_file:
-        isatab2sampletab.convert(input_investigation_file, output_sampletab_file)
-```
-
-To export an ISA JSON file to SampleTab, you can do:
-
-```python
-from isatools.convert import isatab2sampletab
-
-with open('your/path/to/i_investigation.txt', 'r') as input_investigation_file:
-    with open('your/path/to/sampletab.txt', 'w') as output_sampletab_file:
-        isatab2sampletab.convert(input_investigation_file, output_sampletab_file)
-```
-
-You can also dump SampleTab content directly from ISA Python objects:
-
-```python
-from isatools import sampletab
-
-with open('your/path/to/sampletab.txt', 'w') as output_sampletab:
-    # Note: ISA would be a previously loaded or constructed root Investigation object
-    sampletab.dump(ISA, output_sampletab)
-```
-
-***
-
 ## Exporting ISA content to MAGE-TAB
 
 To export metadata to MAGE-TAB files (e.g. for EBI ArrayExpress
@@ -123,7 +81,7 @@ with open('your/path/to/i_investigation.txt', 'r') as input_investigation_file:
     isatab2magetab.convert(input_investigation_file, 'your/output/path/')
 ```
 
-To export an ISA JSON file to SampleTab, you can do:
+To export an ISA JSON file to MAGE-TAB, you can do:
 
 ```python
 from isatools.convert import json2magetab

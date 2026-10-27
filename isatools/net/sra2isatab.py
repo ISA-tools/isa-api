@@ -1,28 +1,15 @@
 """Functions for importing SRA from various sources"""
 
 
-import functools
 import logging
 import pdb
 import re
 import subprocess
 import tempfile
-import warnings
 from io import BytesIO
 from os import listdir, path, remove, walk
 from shutil import rmtree
 from zipfile import ZipFile
-
-
-def deprecated(func):
-    @functools.wraps(func)
-    def new_func(*args, **kwargs):
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn("Call to deprecated function %s." % func.__name__, category=DeprecationWarning, stacklevel=2)
-        warnings.simplefilter("default", DeprecationWarning)
-        return func(*args, **kwargs)
-
-    return new_func
 
 
 __author__ = "massi"
@@ -47,34 +34,6 @@ def format_acc_numbers(sra_acc_numbers):
     sra_acc_numbers = sra_acc_numbers.split(",") if isinstance(sra_acc_numbers, str) else sra_acc_numbers
     sra_acc_numbers = [elem.strip().upper() for elem in sra_acc_numbers]
     return [elem for elem in sra_acc_numbers if _RX_ACCESSION_VALIDATION.match(elem)]
-
-
-@deprecated
-def create_isatab_xslt(sra_acc_numbers, saxon_jar_path=None):
-    """
-    THIS METHOD IS DEPRECATED. USE sra_to_isatab_batch_convert INSTEAD.
-    Given one or more SRA accession numbers (either to studies or submisssions),
-    retrieve the files from the European Nucleotide Archive (ENA) server
-    and convert them to ISA-tab using an XSL 2.0 transformation.
-    The XSLT is invoked using an executable script.
-
-    Notice: this method depend on SAXON XSLT Processor
-
-    Parameters:
-         :param sra_acc_numbers (str or list) - if a string must contain only
-            comma separated valid SRA accession numbers
-         :param saxon_jar_path str - if provided, must be a valid path
-            pointing to SAXON Java JAR file. Otherwise, the
-            default Saxon HE JAR will be used, if installed
-
-
-    Returns:
-        :returns zipfile.ZipFile if at least one of the SRA instances has been
-            successfully converted
-        :returns the output error otherwise (should this me modified?)
-
-    """
-    raise DeprecationWarning("create_isatab_xslt() is deprecated, please use sra_to_isatab_batch_convert() instead")
 
 
 def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EXECUTABLE):
