@@ -82,7 +82,6 @@ database = [
 ]
 all = ["isatools[database,notebook]"]
 
-
 [project.urls]
 Code = "https://github.com/ISA-tools/isa-api"
 "Bug Tracker" = "https://github.com/ISA-tools/isa-api/issues"
