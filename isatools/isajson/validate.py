@@ -1089,7 +1089,6 @@ def validate(
         handler.flush()
         if "(E)" in stream.getvalue():
             log.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
-            return stream
         fp.seek(0)  # reset file pointer
         log.info("Checking study and assay graphs...")
         for study_json in isa_json["studies"]:

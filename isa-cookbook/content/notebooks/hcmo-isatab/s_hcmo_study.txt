@@ -1,0 +1,17 @@
+Source Name	Characteristics[organism]	Characteristics[sex]	Protocol REF	Parameter Value[cage #]	Protocol REF	Sample Name	Comment[treatment]	Factor Value[drug]	Factor Value[environment]	Factor Value[monitoring day]	Unit	Term Source REF	Term Accession Number
+animal-1	Mus musculus	male	growth protocol	A	sample collection	animal-1-sample-1	vehicle-standard	vehicle	standard	1	day		
+animal-2	Mus musculus	female	growth protocol	A	sample collection	animal-2-sample-1	vehicle-standard	vehicle	standard	1	day		
+animal-3	Mus musculus	male	growth protocol	B	sample collection	animal-3-sample-1	vehicle-enriched	vehicle	enriched	1	day		
+animal-4	Mus musculus	female	growth protocol	B	sample collection	animal-4-sample-1	vehicle-enriched	vehicle	enriched	1	day		
+animal-5	Mus musculus	male	growth protocol	C	sample collection	animal-5-sample-1	active-standard	active	standard	1	day		
+animal-6	Mus musculus	female	growth protocol	C	sample collection	animal-6-sample-1	active-standard	active	standard	1	day		
+animal-7	Mus musculus	male	growth protocol	D	sample collection	animal-7-sample-1	active-enriched	active	enriched	1	day		
+animal-8	Mus musculus	female	growth protocol	D	sample collection	animal-8-sample-1	active-enriched	active	enriched	1	day		
+animal-1	Mus musculus	male	growth protocol	A		animal-1	vehicle-standard	vehicle	standard	1	day		
+animal-2	Mus musculus	female	growth protocol	A		animal-2	vehicle-standard	vehicle	standard	1	day		
+animal-3	Mus musculus	male	growth protocol	B		animal-3	vehicle-enriched	vehicle	enriched	1	day		
+animal-4	Mus musculus	female	growth protocol	B		animal-4	vehicle-enriched	vehicle	enriched	1	day		
+animal-5	Mus musculus	male	growth protocol	C		animal-5	active-standard	active	standard	1	day		
+animal-6	Mus musculus	female	growth protocol	C		animal-6	active-standard	active	standard	1	day		
+animal-7	Mus musculus	male	growth protocol	D		animal-7	active-enriched	active	enriched	1	day		
+animal-8	Mus musculus	female	growth protocol	D		animal-8	active-enriched	active	enriched	1	day		
