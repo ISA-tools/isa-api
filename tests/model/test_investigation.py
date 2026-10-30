@@ -1,4 +1,3 @@
-import unittest
 from datetime import datetime
 from unittest import TestCase
 from unittest.mock import patch
@@ -90,7 +89,6 @@ class InvestigationTest(TestCase):
         data = data.data
         self.assertEqual(data, {"investigation": {"title": "Title"}})
 
-    @unittest.skip("Not working after fixing lint. Test data and/or expected value must be updated.")
     def test_introspection(self):
         introspection = self.investigation.introspect()
         self.assertIsNotNone(introspection)
