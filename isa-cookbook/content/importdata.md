@@ -35,14 +35,14 @@ database), you can do the following to import a MAGE-TAB to ISA-Tab:
 ```python
 from isatools.convert import magetab2isatab
 with open('your/path/to/magetab.idf.txt', 'r') as input_magetab:
-    magetab2isatab.convert(input_sampletab, 'tmp/')
+    magetab2isatab.convert(input_magetab, 'tmp/')
 ```
 
 To import a MAGE-TAB to ISA JSON, you can do:
 
 ```python
-from isatools.convert import sampletab2json
-with open('your/path/to/magetab.idf.txt', 'r') as input_sampletab:
+from isatools.convert import magetab2json
+with open('your/path/to/magetab.idf.txt', 'r') as input_magetab:
     with open('your/path/to/myjson.json', 'w') as output_json:
         magetab2json.convert(input_magetab, output_json)
 ```
@@ -144,41 +144,5 @@ integrates with the `mzml2isa` tool from
 ```python
 from isatools.convert import mzml2isa
 mzml2isa.convert('your/path/to/mzml/files/', 'tmp/', "My Study ID")
-```
-
-***
-
-### Importing SampleTab to ISA
-
-```{warning}
-
-As of July 2020, EBI Biosample has decommissioned SampleTab format and now only accepts submission via a REST API.
-Future releases of the ISA-API will support this mode of data deposition.
-```
-
-To import metadata from SampleTab files (e.g. from EBI BioSamples
-database), you can do the following to import a SampleTab to ISA-Tab:
-
-```python
-from isatools.convert import sampletab2isatab
-with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
-    sampletab2isatab.convert(input_sampletab, 'tmp/')
-```
-
-To import a SampleTab to ISA JSON, you can do:
-
-```python
-from isatools.convert import sampletab2json
-with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
-    with open('your/path/to/myjson.json', 'w') as output_json:
-        sampletab2json.convert(input_sampletab, output_json)
-```
-
-You can also load SampleTab content directly into ISA Python objects:
-
-```python
-from isatools import sampletab
-with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
-    ISA = sampletab.load(input_sampletab)
 ```
 
