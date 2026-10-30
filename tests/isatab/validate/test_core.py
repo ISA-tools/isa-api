@@ -86,7 +86,7 @@ class TestValidators(unittest.TestCase):
         data_path = path.join(path.dirname(path.abspath(__file__)), "..", "..", "data", "tab", "BII-S-3")
         with open(path.join(data_path, "i_gilbert.txt"), "r") as data_file:
             r = validate(data_file, rules=rules)
-        self.assertEqual(len(r["warnings"]), 2)
+        self.assertEqual(len(r["warnings"]), 3)
 
         rule = "12000"
         expected_error = {
