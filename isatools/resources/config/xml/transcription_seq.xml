@@ -23,7 +23,7 @@
             </generated-value-template>
         </field>
         <protocol-field protocol-type="library construction"/>
-        <field header="Parameter Value[library layout]" data-type="List" is-file-field="false" is-multiple-value="false"
+        <field header="Parameter Value[library_layout]" data-type="List" is-file-field="false" is-multiple-value="false"
                is-required="true" is-hidden="false" is-forced-ontology="false">
             <description>
                 <![CDATA[specifies whether to expect single, paired, or other configuration of reads.]]></description>

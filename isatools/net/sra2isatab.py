@@ -74,8 +74,9 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
         for acc_number in formatted_sra_acc_numbers:
             try:
+                # TODO: Remove temporary subprocess output capture once Saxon diagnosis is complete.
                 if acc_number.startswith("SRA") or acc_number.startswith("ERA"):
-                    res = subprocess.call(
+                    res = subprocess.run(
                         [
                             "java",
                             "-jar",
@@ -84,11 +85,13 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                             STUDY_XSL_FILE,
                             "acc-number=" + acc_number,
                             "outputdir=" + destination_dir,
-                        ]
+                        ],
+                        capture_output=True,
+                        text=True,
                     )
 
                 elif acc_number.startswith("SRP") or acc_number.startswith("ERP"):
-                    res = subprocess.call(
+                    res = subprocess.run(
                         [
                             "java",
                             "-jar",
@@ -97,10 +100,21 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                             SUBMISSION_XSL_FILE,
                             "acc-number=" + acc_number,
                             "outputdir=" + destination_dir,
-                        ]
+                        ],
+                        capture_output=True,
+                        text=True,
                     )
 
-                log.info("Subprocess Saxon exited with code: %d", res)
+                # TODO: Remove temporary diagnostics at ERROR level once Saxon diagnosis is complete.
+                # ERROR ensures the diagnostics are visible with the default logging configuration.
+                log.error(
+                    "Saxon diagnostics for %s: exit code %d\nstdout:\n%s\nstderr:\n%s",
+                    acc_number,
+                    res.returncode,
+                    res.stdout,
+                    res.stderr,
+                )
+                log.info("Subprocess Saxon exited with code: %d", res.returncode)
 
                 # post-process concatenation of a_ files written out
                 output_folder = path.join(dir_name, acc_number)

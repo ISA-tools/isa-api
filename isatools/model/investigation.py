@@ -247,6 +247,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable):
         investigation = {
             "@id": self.id,
             "identifier": self.identifier,
+            "filename": self.filename,
             "title": self.title,
             "description": self.description,
             "publicReleaseDate": self.public_release_date,
@@ -264,6 +265,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable):
 
     def from_dict(self, investigation):
         self.id = investigation.get("@id", "")
+        self.filename = investigation.get("filename", "")
         self.identifier = investigation.get("identifier", "")
         self.title = investigation.get("title", "")
         self.public_release_date = investigation.get("publicReleaseDate", "")

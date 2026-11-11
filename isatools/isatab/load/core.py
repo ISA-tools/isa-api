@@ -468,6 +468,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         if not self.__df_dict["investigation"].empty:
             row = self.__df_dict["investigation"].iloc[0]
             self.__investigation.identifier = str(row["Investigation Identifier"])
+            self.__investigation.filename = path.basename(self.file.name)
             self.__investigation.title = row["Investigation Title"]
             self.__investigation.description = row["Investigation Description"]
             self.__investigation.submission_date = row["Investigation Submission Date"]

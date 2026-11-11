@@ -12,6 +12,7 @@ class TestISAJsonDump(TestCase):
         expected_dict = {
             "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "",
+            "filename": "",
             "title": "",
             "description": "",
             "publicReleaseDate": "",
