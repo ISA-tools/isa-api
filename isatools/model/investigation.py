@@ -246,8 +246,8 @@ class Investigation(Commentable, MetadataMixin, Identifiable):
     def to_dict(self, ld=False):
         investigation = {
             "@id": self.id,
-            "filename": self.filename,
             "identifier": self.identifier,
+            "filename": self.filename,
             "title": self.title,
             "description": self.description,
             "publicReleaseDate": self.public_release_date,
