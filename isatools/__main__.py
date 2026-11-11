@@ -38,7 +38,7 @@ def main(argv=None):
         dest="cmd",
         help="isatools API command to run",
         required=True,
-        choices=["isatab2json", "json2isatab", "sampletab2isatab", "sampletab2json"],
+        choices=["isatab2json", "json2isatab"],
     )
     p.add_argument("-i", dest="in_path", help="in  (files or directory will be read from here)", required=True)
     p.add_argument(
@@ -68,18 +68,6 @@ def main(argv=None):
 
         with open(args.in_path) as in_fp:
             json2isatab.convert(in_fp, args.out_path)
-
-    elif args.cmd == "sampletab2isatab":
-        from isatools.convert import sampletab2isatab
-
-        with open(args.in_path) as in_fp:
-            sampletab2isatab.convert(in_fp, args.out_path)
-
-    elif args.cmd == "sampletab2json":
-        from isatools.convert import sampletab2json
-
-        with open(args.in_path) as in_fp, open(args.out_path, "w") as out_fp:
-            sampletab2json.convert(in_fp, out_fp)
 
 
 if __name__ == "__main__":

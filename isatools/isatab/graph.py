@@ -22,13 +22,6 @@ def _all_end_to_end_paths(G, start_nodes):
         message = f"Calculating for paths for {num_start_nodes} sources: "
     elif isinstance(start_node, Sample):
         message = f"Calculating for paths for {num_start_nodes} samples: "
-    """if isa_logging.show_pbars:
-        pbar = ProgressBar(
-            min_value=0, max_value=num_start_nodes, widgets=[
-                message, SimpleProgress(), Bar(left=" |", right="| "),
-                ETA()]).start()
-    else:
-        def pbar(x): return x"""
     for start in start_nodes:
         # Find ends
         node = G.indexes[start]
