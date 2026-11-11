@@ -44,7 +44,7 @@ Create, convert, and manipulate ISA-formatted metadata
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c {isatab2json,json2isatab,sampletab2isatab,sampletab2json}
+  -c {isatab2json,json2isatab}
                         isatools API command to run
   -i IN_PATH            in (files or directory will be read from here)
   -o OUT_PATH           out (file will be written out here or written to

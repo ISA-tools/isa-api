@@ -432,7 +432,6 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                 report["info"],
             )
 
-    @unittest.skip("Not working after fixing lint. Test data and/or expected value must be updated.")
     def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
         test_case = "BII-I-1"
         with open(
@@ -443,7 +442,7 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
             )
             self.assertIn(
                 {
-                    "message": "Reported study group size does not match table",
+                    "message": "Reported study group size 18 does not match table s_BII-S-1.txt",
                     "supplemental": "Study group size reported as 7 but found 18 in s_BII-S-1.txt",
                     "code": 5002,
                 },
