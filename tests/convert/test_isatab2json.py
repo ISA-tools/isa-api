@@ -23,9 +23,9 @@ class TestIsaTab2Json(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
-
-    # def tearDown(self):
-    #     shutil.rmtree(self._tmp_dir)
+        print(self._tmp_dir)
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
 
     def test_isatab2json_convert_bii_i_1(self):
         test_case = "BII-I-1"
@@ -125,8 +125,8 @@ class TestIsaTab2Json(unittest.TestCase):
             json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, "isa.json")) as actual_json:
             report = isajson.validate(actual_json)
-            # self.assertEqual(len(report["errors"]), 0)
-            print(report["errors"])
+            self.assertEqual(len(report["errors"]), 0)
+
 
     def test_isatab2json_convert_comment(self):
         with open(os.path.join(self._tab_data_dir, "issue200", "i_Investigation.txt")) as fp:
