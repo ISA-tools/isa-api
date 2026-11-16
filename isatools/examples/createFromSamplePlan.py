@@ -1,4 +1,3 @@
-
 from isatools import isatab
 from isatools.create.model import (
     SampleAndAssayPlan,

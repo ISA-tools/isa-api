@@ -228,9 +228,7 @@ def get_data_file(assay):
         m = re.match(r"^m_.*\.(tsv|txt)$", df.filename)
         if m is not None:
             if data_filename is not None:
-                error(
-                    f'Found two data files ("{data_filename}" and "{df.filename}") in assay "{assay.filename}".'
-                )
+                error(f'Found two data files ("{data_filename}" and "{df.filename}") in assay "{assay.filename}".')
             info('Found data file "' + df.filename + '".')
             data_filename = df.filename
 

@@ -193,8 +193,10 @@ class Investigation(Commentable, MetadataMixin, Identifiable):
         with open(filepath, "r") as introspectionFile:
             introspection_query = introspectionFile.read()
         response = IsaSchema.execute(introspection_query)
-        if response.data is None and response.errors and any(
-            "Maximum introspection depth exceeded" in str(error) for error in response.errors
+        if (
+            response.data is None
+            and response.errors
+            and any("Maximum introspection depth exceeded" in str(error) for error in response.errors)
         ):
             response = IsaSchema.execute("{ __schema { types { name kind } } }")
         return response

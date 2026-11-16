@@ -442,9 +442,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                     "code": 4010,
                 }
             )
-            log.warning(
-                f"(W) In {filename} the required column {required_field} missing from column headings"
-            )
+            log.warning(f"(W) In {filename} the required column {required_field} missing from column headings")
         else:
             # Now check that the required column cells all have values, Rules
             # 4003-4008
@@ -501,9 +499,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                 with utf8_text_file_open(path.join(dir_context, study_filename)) as s_fp:
                     df = load_table(s_fp)
                     config = configs[("[sample]", "")]
-                    log.debug(
-                        f"Checking study file {study_filename} against default study table configuration..."
-                    )
+                    log.debug(f"Checking study file {study_filename} against default study table configuration...")
                     check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
             except FileNotFoundError:
                 pass

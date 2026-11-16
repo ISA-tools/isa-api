@@ -1,6 +1,5 @@
 """Convert MAGE-TAB to ISA-JSON"""
 
-
 import json
 import os
 import shutil

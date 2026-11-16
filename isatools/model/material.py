@@ -35,9 +35,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                f"{type(self).__name__}.name must be a str or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"{type(self).__name__}.name must be a str or None; got {val}:{type(val)}")
         self.__name = val
 
     @property
@@ -66,9 +64,7 @@ class Material(Commentable, ProcessSequenceNode, Identifiable, metaclass=ABCMeta
             if val == [] or all(isinstance(x, Characteristic) for x in val):
                 self.__characteristics = list(val)
         else:
-            raise AttributeError(
-                f"{type(self).__name__}.characteristics must be iterable containing Characteristics"
-            )
+            raise AttributeError(f"{type(self).__name__}.characteristics must be iterable containing Characteristics")
 
     # @property
     # def derives_from(self):

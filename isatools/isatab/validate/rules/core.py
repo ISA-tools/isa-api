@@ -78,7 +78,12 @@ class Rules:
         :return: the rule to execute
         """
         for rule_data in self.available_rules:
-            if isinstance(rule_name, str) and rule_data.identifier == rule_name or isinstance(rule_name, Callable) and rule_data.rule == rule_name:
+            if (
+                isinstance(rule_name, str)
+                and rule_data.identifier == rule_name
+                or isinstance(rule_name, Callable)
+                and rule_data.rule == rule_name
+            ):
                 return rule_data
         raise ValueError(f"Rule not found: {rule_name}")
 

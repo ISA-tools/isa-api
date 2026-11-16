@@ -1,6 +1,5 @@
 """Convert ISA-Tab to CEDAR JSON"""
 
-
 import json
 import logging
 import os

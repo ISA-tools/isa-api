@@ -85,9 +85,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin):
     @measurement_type.setter
     def measurement_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise AttributeError(
-                f"Assay.measurement_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"Assay.measurement_type must be a OntologyAnnotation or None; got {val}:{type(val)}")
         else:
             self.__measurement_type = val
 
@@ -100,9 +98,7 @@ class Assay(Commentable, Identifiable, StudyAssayMixin):
     @technology_type.setter
     def technology_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
-            raise AttributeError(
-                f"Assay.technology_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"Assay.technology_type must be a OntologyAnnotation or None; got {val}:{type(val)}")
         else:
             self.__technology_type = val
 

@@ -46,9 +46,10 @@ class TestMzml2IsaTab(unittest.TestCase):
         )
         self.assertEqual(len(report["warnings"]), 8)
         self.assertEqual(len(report["errors"]), 2)
-        with open(os.path.join(self._tmp_dir, f"s_{study_id}.txt")) as out_fp, open(
-            os.path.join(self._tab_data_dir, study_id + "-partial", f"s_{study_id}.txt")
-        ) as reference_fp:
+        with (
+            open(os.path.join(self._tmp_dir, f"s_{study_id}.txt")) as out_fp,
+            open(os.path.join(self._tab_data_dir, study_id + "-partial", f"s_{study_id}.txt")) as reference_fp,
+        ):
             self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_mzml2isa_convert_assay_table(self):
@@ -59,13 +60,14 @@ class TestMzml2IsaTab(unittest.TestCase):
         self.assertTrue(report["validation_finished"])
         self.assertEqual(len(report["warnings"]), 8)
         self.assertEqual(len(report["errors"]), 2)
-        with open(
-            os.path.join(self._tmp_dir, f"a_{study_id}_metabolite_profiling_mass_spectrometry.txt")
-        ) as out_fp, open(
-            os.path.join(
-                self._tab_data_dir,
-                study_id + "-partial",
-                f"a_{study_id}_metabolite_profiling_mass_spectrometry.txt",
-            )
-        ) as reference_fp:
+        with (
+            open(os.path.join(self._tmp_dir, f"a_{study_id}_metabolite_profiling_mass_spectrometry.txt")) as out_fp,
+            open(
+                os.path.join(
+                    self._tab_data_dir,
+                    study_id + "-partial",
+                    f"a_{study_id}_metabolite_profiling_mass_spectrometry.txt",
+                )
+            ) as reference_fp,
+        ):
             self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))

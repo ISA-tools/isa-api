@@ -5,7 +5,6 @@ Don't forget to read the ISA-JSON spec:
 https://isa-specs.readthedocs.io/en/latest/isajson.html
 """
 
-
 import glob
 import json
 import logging
@@ -194,9 +193,7 @@ def check_process_protocol_ids_usage(study_json):
                 "code": 1007,
             }
         )
-        log.error(
-            f"(E) There are protocol IDs {list(diff)} used in a study or assay process sequence not declared"
-        )
+        log.error(f"(E) There are protocol IDs {list(diff)} used in a study or assay process sequence not declared")
     elif len(set(protocol_ids_declared) - set(protocol_ids_used)) > 0:
         diff = set(protocol_ids_declared) - set(protocol_ids_used)
         warnings.append(
@@ -1104,15 +1101,11 @@ def validate(
                 check_study_groups(assay)
         log.info("Finished validation...")
     except KeyError as k:
-        errors.append(
-            {"message": "JSON Error", "supplemental": f"Error when reading JSON; key: {k!s}", "code": 2}
-        )
+        errors.append({"message": "JSON Error", "supplemental": f"Error when reading JSON; key: {k!s}", "code": 2})
         log.fatal("(F) There was an error when trying to read the JSON")
         log.fatal("Key: " + str(k))
     except ValueError as v:
-        errors.append(
-            {"message": "JSON Error", "supplemental": f"Error when parsing JSON; key: {v!s}", "code": 2}
-        )
+        errors.append({"message": "JSON Error", "supplemental": f"Error when parsing JSON; key: {v!s}", "code": 2})
         log.fatal("(F) There was an error when trying to parse the JSON")
         log.fatal("Value: " + str(v))
     except SystemError as e:

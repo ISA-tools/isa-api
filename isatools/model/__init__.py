@@ -12,6 +12,7 @@ Todo:
 .. _ISA Model and Serialization Specs 1.0: http://isa-specs.readthedocs.io/
 
 """
+
 from isatools.model.assay import Assay
 from isatools.model.characteristic import Characteristic
 from isatools.model.comments import Comment, Commentable
