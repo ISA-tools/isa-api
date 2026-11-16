@@ -1,6 +1,5 @@
 """Tests on isatools.utils package"""
 
-
 import json
 import logging
 import os

@@ -107,9 +107,7 @@ class Process(Commentable, ProcessSequenceNode, Identifiable):
     @executes_protocol.setter
     def executes_protocol(self, val):
         if val is not None and not isinstance(val, Protocol):
-            raise AttributeError(
-                f"Process.executes_protocol must be a Protocol or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"Process.executes_protocol must be a Protocol or None; got {val}:{type(val)}")
         self.__executes_protocol = val
 
     @property

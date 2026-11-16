@@ -3,7 +3,6 @@ Model objects for storing study design settings, for consumption by
 function or factory to create ISA model objects.
 """
 
-
 import datetime
 import itertools
 import json
@@ -231,9 +230,7 @@ class Treatment(Element):
         """
         super().__init__()
         if not isinstance(element_type, (str, OntologyAnnotation)):
-            raise ValueError(
-                f"intervention_type must be string or OntologyAnnotation. {element_type} was provided."
-            )
+            raise ValueError(f"intervention_type must be string or OntologyAnnotation. {element_type} was provided.")
         self.__type = element_type
 
         if factor_values is None:
@@ -2551,9 +2548,7 @@ class StudyDesign:
                     assay.characteristic_categories.extend(characteristic_categories)
                     assay.process_sequence.extend(processes)
                     assay.data_files.extend(data_files)
-                    log.debug(
-                        f"i={i}, i={j}, num_processes={len(processes)}, num_assay_files={len(data_files)}"
-                    )
+                    log.debug(f"i={i}, i={j}, num_processes={len(processes)}, num_assay_files={len(data_files)}")
             final_list = set(assay.characteristic_categories)
             assay.characteristic_categories.clear()
             assay.characteristic_categories.extend(final_list)
@@ -2630,9 +2625,7 @@ class StudyDesign:
                         for opt in assays_opts
                         if opt["measurement type"] == m_type_term and opt["technology type"] == t_type_term
                     )
-                    log.debug(
-                        f"Assay conf. found: {measurement_type}; {technology_type}; {curr_assay_opt};"
-                    )
+                    log.debug(f"Assay conf. found: {measurement_type}; {technology_type}; {curr_assay_opt};")
                     isa_class = globals()[curr_assay_opt["raw data file"].replace(" ", "")]
                     assert isa_class in {
                         # expand this set if needed
@@ -3136,17 +3129,13 @@ class StudyDesignFactory:
             arm_map = []
 
             if screen_map:
-                study_cell = StudyCell(
-                    f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
-                )
+                study_cell = StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]])
                 arm_map.append([study_cell, screen_map[1]])
                 counter += 1
             if run_in_map:
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]),
                         run_in_map[1],
                     ]
                 )
@@ -3155,9 +3144,7 @@ class StudyDesignFactory:
                 sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[treatment]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[treatment]),
                         sa_plan,
                     ]
                 )
@@ -3228,9 +3215,7 @@ class StudyDesignFactory:
             if screen_map:
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]),
                         screen_map[1],
                     ]
                 )
@@ -3238,9 +3223,7 @@ class StudyDesignFactory:
             if run_in_map:
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]),
                         run_in_map[1],
                     ]
                 )
@@ -3302,14 +3285,10 @@ class StudyDesignFactory:
         counter = 0
         arm_map = []
         if screen_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]])
             counter += 1
         if run_in_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]])
             counter += 1
         for j, treatment in enumerate(treatments):
             sa_plan = next(el for el in treatments_map if el[0] == treatment)[1]
@@ -3362,14 +3341,10 @@ class StudyDesignFactory:
         counter = 0
         arm_map = []
         if screen_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]])
             counter += 1
         if run_in_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]])
             counter += 1
         concomitant_treatments = set(treatments)
         arm_map.append(
@@ -3431,9 +3406,7 @@ class StudyDesignFactory:
             if screen_map:
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]),
                         screen_map[1],
                     ]
                 )
@@ -3441,9 +3414,7 @@ class StudyDesignFactory:
             if run_in_map:
                 arm_map.append(
                     [
-                        StudyCell(
-                            f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]
-                        ),
+                        StudyCell(f"ARM_{str(i).zfill(2)}_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]),
                         run_in_map[1],
                     ]
                 )
@@ -3501,14 +3472,10 @@ class StudyDesignFactory:
         counter = 0
         arm_map = []
         if screen_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[screen_map[0]]), screen_map[1]])
             counter += 1
         if run_in_map:
-            arm_map.append(
-                [StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]]
-            )
+            arm_map.append([StudyCell(f"ARM_00_CELL_{str(counter).zfill(2)}", elements=[run_in_map[0]]), run_in_map[1]])
             counter += 1
         multi_element_cell = StudyCell(
             f"ARM_00_CELL_{str(counter).zfill(2)}",

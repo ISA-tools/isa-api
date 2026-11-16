@@ -57,9 +57,7 @@ class DataFile(Commentable, ProcessSequenceNode, Identifiable):
     @label.setter
     def label(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                f"{type(self).__name__}.label must be a str or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"{type(self).__name__}.label must be a str or None; got {val}:{type(val)}")
         else:
             self.__label = val
 

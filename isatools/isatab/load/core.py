@@ -468,6 +468,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         if not self.__df_dict["investigation"].empty:
             row = self.__df_dict["investigation"].iloc[0]
             self.__investigation.identifier = str(row["Investigation Identifier"])
+            self.__investigation.filename = path.basename(self.file.name)
             self.__investigation.title = row["Investigation Title"]
             self.__investigation.description = row["Investigation Description"]
             self.__investigation.submission_date = row["Investigation Submission Date"]
@@ -649,15 +650,19 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
     def load(self):
         """Create the assay object from the dataframes"""
         self.assay = Assay(
-            filename=self.__row["Study Assay File Name"], measurement_type=self.get_ontology_annotation(
-                    self.__row["Study Assay Measurement Type"],
-                    self.__row["Study Assay Measurement Type Term Accession Number"],
-                    self.__row["Study Assay Measurement Type Term Source REF"],
-                ), technology_type=self.get_ontology_annotation(
-                    self.__row["Study Assay Technology Type"],
-                    self.__row["Study Assay Technology Type Term Accession Number"],
-                    self.__row["Study Assay Technology Type Term Source REF"],
-                ), technology_platform=self.__row["Study Assay Technology Platform"], comments=self.get_comments_row(self.__columns, self.__row)
+            filename=self.__row["Study Assay File Name"],
+            measurement_type=self.get_ontology_annotation(
+                self.__row["Study Assay Measurement Type"],
+                self.__row["Study Assay Measurement Type Term Accession Number"],
+                self.__row["Study Assay Measurement Type Term Source REF"],
+            ),
+            technology_type=self.get_ontology_annotation(
+                self.__row["Study Assay Technology Type"],
+                self.__row["Study Assay Technology Type Term Accession Number"],
+                self.__row["Study Assay Technology Type Term Source REF"],
+            ),
+            technology_platform=self.__row["Study Assay Technology Platform"],
+            comments=self.get_comments_row(self.__columns, self.__row),
         )
         if not self.skip_load_tables:
             self.load_tables()

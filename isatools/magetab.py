@@ -5,7 +5,6 @@ in-memory representation using the ISA Data Model implemented in the
 isatools.model package.
 """
 
-
 import copy
 import csv
 import logging
@@ -842,9 +841,13 @@ class MageTabParser:
             # do some preliminary cleanup of the table
             columns_to_keep = []
             for i, col in enumerate(df.columns):
-                if col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith("protocol ref") or col.lower().startswith("term source ref") and df.columns[i - 1].lower().startswith(
-                    "array design ref"
-                ) or col.lower().startswith("technology type"):
+                if (
+                    col.lower().startswith("term source ref")
+                    and df.columns[i - 1].lower().startswith("protocol ref")
+                    or col.lower().startswith("term source ref")
+                    and df.columns[i - 1].lower().startswith("array design ref")
+                    or col.lower().startswith("technology type")
+                ):
                     pass
                     # drop technology type column / in java code it moves it
                     # 1 to the right of assay name column

@@ -142,9 +142,7 @@ class MetadataMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Publication) for x in val):
                 self.__publications = list(val)
         else:
-            raise AttributeError(
-                f"{type(self).__name__}.publications must be iterable containing Publications"
-            )
+            raise AttributeError(f"{type(self).__name__}.publications must be iterable containing Publications")
 
     @property
     def contacts(self):
@@ -219,9 +217,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
     @filename.setter
     def filename(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError(
-                f"{type(self).__name__}.filename must be a str or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"{type(self).__name__}.filename must be a str or None; got {val}:{type(val)}")
         self.__filename = val
 
     @property
@@ -519,9 +515,7 @@ class StudyAssayMixin(metaclass=ABCMeta):
             if val == [] or all(isinstance(x, Process) for x in val):
                 self.__process_sequence = list(val)
         else:
-            raise AttributeError(
-                f"{type(self).__name__}.process_sequence must be iterable containing Processes"
-            )
+            raise AttributeError(f"{type(self).__name__}.process_sequence must be iterable containing Processes")
 
     @property
     def characteristic_categories(self):

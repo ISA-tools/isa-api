@@ -150,9 +150,7 @@ class Person(Commentable, Identifiable):
             if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
                 self.__roles = list(val)
         else:
-            raise AttributeError(
-                f"{type(self).__name__}.roles must be iterable containing OntologyAnnotations"
-            )
+            raise AttributeError(f"{type(self).__name__}.roles must be iterable containing OntologyAnnotations")
 
     def __repr__(self):
         return (

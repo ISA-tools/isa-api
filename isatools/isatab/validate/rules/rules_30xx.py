@@ -164,9 +164,7 @@ def check_ontology_fields(table, cfg, tsrs):
             log.warning(f"(W) {spl}")
             return_value = False
         if cell_has_value(source) and source not in tsrs:
-            spl = (
-                f"Term Source REF, for the field '{cfield.header}' in the file '{filename}' does not refer to a declared Ontology Source."
-            )
+            spl = f"Term Source REF, for the field '{cfield.header}' in the file '{filename}' does not refer to a declared Ontology Source."
             validator.add_warning(message="Term Source REF reference broken", supplemental=spl, code=3011)
             log.warning(f"(W) {spl}")
             return_value = False

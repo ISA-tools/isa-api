@@ -1293,9 +1293,7 @@ class QualityControlTest(unittest.TestCase):
         pre_run_sample_type={self.pre_run_sample_type.id}
         post_run_sample_type={self.post_run_sample_type.id}
         interspersed_sample_types=[('{self.dummy_sample_type.id}',{20})]
-        )""".replace(
-                " ", ""
-            ),
+        )""".replace(" ", ""),
         )
 
 

@@ -1,0 +1,17 @@
+{
+  "measurementType": "phenotyping",
+  "technologyType": "home cage monitoring",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "home cage monitoring",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "home cage monitoring"
+  ],
+  "description": [
+    "(Sample)->(home cage monitoring)->(DataFiles)"
+  ]
+}

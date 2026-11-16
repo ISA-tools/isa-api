@@ -5,7 +5,6 @@ If you have problems with it, check that it's working at
 https://www.ncbi.nlm.nih.gov/pubmed/
 """
 
-
 import logging
 
 from Bio import Entrez, Medline

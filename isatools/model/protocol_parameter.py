@@ -30,15 +30,11 @@ class ProtocolParameter(Commentable, Identifiable):
         elif isinstance(val, str):
             self.__parameter_name = OntologyAnnotation(term=val)
         else:
-            error_msg = (
-                f"ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation or None; got {val}:{type(val)}"
-            )
+            error_msg = f"ProtocolParameter.parameter_name must be either a string or an OntologyAnnotation or None; got {val}:{type(val)}"
             raise AttributeError(error_msg)
 
     def __repr__(self):
-        return (
-            f"isatools.model.ProtocolParameter(parameter_name={self.parameter_name!r}, comments={self.comments})"
-        )
+        return f"isatools.model.ProtocolParameter(parameter_name={self.parameter_name!r}, comments={self.comments})"
 
     def __str__(self):
         parameter_name = self.parameter_name.term if self.parameter_name else ""

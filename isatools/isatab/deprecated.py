@@ -5,7 +5,6 @@ in-memory representation using the ISA Data Model implemented in the
 isatools.model package.
 """
 
-
 import csv
 import glob
 import json
@@ -464,9 +463,7 @@ def slice_data_files(dir, factor_selection=None):
             else:
                 for factor_name, factor_value in factor_selection.items():
                     if f"Factor Value[{factor_name}]" in list(df.columns.values):
-                        matches = df.loc[df[f"Factor Value[{factor_name}]"] == factor_value][
-                            "Sample Name"
-                        ].items()
+                        matches = df.loc[df[f"Factor Value[{factor_name}]"] == factor_value]["Sample Name"].items()
 
                         for indx, match in matches:
                             sample_name = match
@@ -547,9 +544,7 @@ def isatab_get_factor_values_command(input_path, factor, output):
     :param output: File-like buffer object to write JSON results to
     :return: None
     """
-    log.info(
-        f"Getting values for factor {factor} in study {input_path}. Writing to {output.name}."
-    )
+    log.info(f"Getting values for factor {factor} in study {input_path}. Writing to {output.name}.")
     fvs = set()
 
     factor_name = factor

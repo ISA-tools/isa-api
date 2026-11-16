@@ -32,7 +32,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df_dict, dir_context):
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df["Sample Name"])
                         if not assay_samples.issubset(study_samples):
-                            spl = (f"Some samples in an assay file {assay_filename} are not declared in the study file {study_filename}: {list(assay_samples - study_samples)}")
+                            spl = f"Some samples in an assay file {assay_filename} are not declared in the study file {study_filename}: {list(assay_samples - study_samples)}"
                             msg = "Some samples are not declared in the study"
                             validator.add_error(message=msg, supplemental=spl, code=1013)
                 except FileNotFoundError:
@@ -263,9 +263,7 @@ def check_protocol_parameter_usage(i_df_dict, dir_context):
                 except FileNotFoundError:
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
-            warning = (
-                f"(W) Some protocol parameters declared in the investigation file are not used in any assay file: {list(protocol_parameters_declared - protocol_parameters_used)}"
-            )
+            warning = f"(W) Some protocol parameters declared in the investigation file are not used in any assay file: {list(protocol_parameters_declared - protocol_parameters_used)}"
             log.warning(warning)
 
 

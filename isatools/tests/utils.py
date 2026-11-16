@@ -1,7 +1,6 @@
 """The contents of this module are used solely for testing purposes in the
 isatools test suite that is not packaged with the PyPI distribution"""
 
-
 import datetime
 import logging
 import os
