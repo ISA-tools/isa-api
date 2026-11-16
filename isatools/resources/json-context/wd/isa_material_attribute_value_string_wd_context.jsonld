@@ -1,7 +1,7 @@
 {
   "@context": {
     "@language": "en",
-    "wd": "http://www.wikidata.org/wiki/",
+    "wd": "http://www.wikidata.org/entity/",
     "wdp": "http://www.wikidata.org/prop/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "MaterialAttributeValue": "wd:Q951437",

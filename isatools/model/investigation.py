@@ -182,15 +182,22 @@ class Investigation(Commentable, MetadataMixin, Identifiable):
     @staticmethod
     def introspect():
         """
-        Executes the introspection query to get the schemas properties
+        Executes the introspection query to get the schemas properties.
+        A shallow introspection query is used because Graphene rejects deeply
+        nested recursive introspection requests with
+        "Maximum introspection depth exceeded".
         :return: a response to the introspection query
         """
         project_root = os.path.dirname(os.path.realpath(__file__))
         filepath = os.path.join(project_root, os.path.join("../graphQL/queries", "introspection.gql"))
         with open(filepath, "r") as introspectionFile:
             introspection_query = introspectionFile.read()
-            introspectionFile.close()
-        return IsaSchema.execute(introspection_query)
+        response = IsaSchema.execute(introspection_query)
+        if response.data is None and response.errors and any(
+            "Maximum introspection depth exceeded" in str(error) for error in response.errors
+        ):
+            response = IsaSchema.execute("{ __schema { types { name kind } } }")
+        return response
 
     def __repr__(self):
         return (

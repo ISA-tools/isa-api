@@ -1,6 +1,5 @@
 """Tests on isatab.py package"""
 
-
 import os
 import shutil
 import tempfile

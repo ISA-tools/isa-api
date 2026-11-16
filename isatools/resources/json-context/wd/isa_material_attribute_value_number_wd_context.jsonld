@@ -7,7 +7,7 @@
     "MaterialAttributeValue": "wd:Q951437",
     "category": {
       "@id": "wdp:P527",
-      "@type": "wd:Q3707858"
+          "@type": "wd:Q3707858"
     },
     "value": {
       "@id": "wdp:P111",

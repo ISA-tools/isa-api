@@ -1,0 +1,578 @@
+{
+  "$id": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/isatools/resources/schemas/isa_model_version_1_0_schemas/core/isa_model_schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ISA model schema",
+  "name": "ISA model schema",
+  "description": "Single JSON Schema equivalent to the ISA model version 1.0 core object schemas.",
+  "$ref": "#/$defs/Investigation",
+  "$defs": {
+    "DateString": {
+      "anyOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "string", "format": "date" },
+        { "type": "string", "maxLength": 0 }
+      ]
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Comment"] },
+        "name": { "type": "string" },
+        "value": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "OntologyAnnotation": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["OntologyAnnotation"] },
+        "annotationValue": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "number" }
+          ]
+        },
+        "termSource": {
+          "type": "string",
+          "description": "The abbreviated ontology name. It should correspond to one of the sources as specified in the ontologySourceReference section of the Investigation."
+        },
+        "termAccession": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "OntologySourceReference": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["OntologySourceReference"] },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        },
+        "description": { "type": "string" },
+        "file": { "type": "string" },
+        "name": { "type": "string" },
+        "version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Organization": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Organization"] },
+        "name": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Person"] },
+        "lastName": { "type": "string" },
+        "firstName": { "type": "string" },
+        "midInitials": { "type": "string" },
+        "email": {
+          "anyOf": [
+            { "type": "string", "format": "email" },
+            { "type": "string", "maxLength": 0 },
+            { "type": "null" }
+          ]
+        },
+        "phone": { "type": "string" },
+        "fax": { "type": "string" },
+        "address": { "type": "string" },
+        "affiliation": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OntologyAnnotation" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Publication": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Publication"] },
+        "pubMedID": { "type": "string" },
+        "doi": { "type": "string" },
+        "authorList": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Factor": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Factor"] },
+        "factorName": { "type": "string" },
+        "factorType": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "FactorValue": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["FactorValue"] },
+        "category": { "$ref": "#/$defs/Factor" },
+        "value": {
+          "anyOf": [
+            { "$ref": "#/$defs/OntologyAnnotation" },
+            { "type": "string" },
+            { "type": "number" }
+          ]
+        },
+        "unit": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "MaterialAttribute": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["MaterialAttribute"] },
+        "characteristicType": { "$ref": "#/$defs/OntologyAnnotation" }
+      },
+      "additionalProperties": false
+    },
+    "MaterialAttributeValue": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["MaterialAttributeValue"] },
+        "category": { "$ref": "#/$defs/MaterialAttribute" },
+        "value": {
+          "anyOf": [
+            { "$ref": "#/$defs/OntologyAnnotation" },
+            { "type": "string" },
+            { "type": "number" }
+          ]
+        },
+        "unit": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Data"] },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Raw Data File",
+            "Derived Data File",
+            "Image File",
+            "Acquisition Parameter Data File",
+            "Derived Spectral Data File",
+            "Protein Assignment File",
+            "Raw Spectral Data File",
+            "Peptide Assignment File",
+            "Array Data File",
+            "Derived Array Data File",
+            "Post Translational Modification Assignment File",
+            "Derived Array Data Matrix File",
+            "Free Induction Decay Data File",
+            "Metabolite Assignment File",
+            "Array Data Matrix File"
+          ]
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Source": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Source"] },
+        "name": { "type": "string" },
+        "characteristics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialAttributeValue" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Sample": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Sample"] },
+        "name": { "type": "string" },
+        "characteristics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialAttributeValue" }
+        },
+        "factorValues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/FactorValue" }
+        },
+        "derivesFrom": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Source" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Material": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Material"] },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Extract Name",
+            "Labeled Extract Name"
+          ]
+        },
+        "characteristics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialAttributeValue" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProcessParameterValue": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["ProcessParameterValue"] },
+        "category": { "$ref": "#/$defs/ProtocolParameter" },
+        "value": {
+          "anyOf": [
+            { "$ref": "#/$defs/OntologyAnnotation" },
+            { "type": "string" },
+            { "type": "number" }
+          ]
+        },
+        "unit": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProtocolParameter": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["ProtocolParameter"] },
+        "parameterName": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProtocolComponent": {
+      "type": "object",
+      "properties": {
+        "componentName": { "type": "string" },
+        "componentType": { "$ref": "#/$defs/OntologyAnnotation" },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Protocol": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Protocol"] },
+        "name": { "type": "string" },
+        "protocolType": { "$ref": "#/$defs/OntologyAnnotation" },
+        "description": { "type": "string" },
+        "uri": { "type": "string", "format": "uri-reference" },
+        "version": { "type": "string" },
+        "parameters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProtocolParameter" }
+        },
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProtocolComponent" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProcessInputOutputItem": {
+      "anyOf": [
+        { "$ref": "#/$defs/Source" },
+        { "$ref": "#/$defs/Sample" },
+        { "$ref": "#/$defs/Data" },
+        { "$ref": "#/$defs/Material" }
+      ]
+    },
+    "ProcessOutputItem": {
+      "anyOf": [
+        { "$ref": "#/$defs/Sample" },
+        { "$ref": "#/$defs/Data" },
+        { "$ref": "#/$defs/Material" }
+      ]
+    },
+    "Process": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Process"] },
+        "name": { "type": "string" },
+        "executesProtocol": { "$ref": "#/$defs/Protocol" },
+        "parameterValues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProcessParameterValue" }
+        },
+        "performer": { "type": "string" },
+        "date": { "$ref": "#/$defs/DateString" },
+        "previousProcess": { "$ref": "#/$defs/Process" },
+        "nextProcess": { "$ref": "#/$defs/Process" },
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProcessInputOutputItem" }
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProcessOutputItem" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Assay": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Assay"] },
+        "filename": { "type": "string" },
+        "measurementType": { "$ref": "#/$defs/OntologyAnnotation" },
+        "technologyType": { "$ref": "#/$defs/OntologyAnnotation" },
+        "technologyPlatform": { "type": "string" },
+        "dataFiles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Data" }
+        },
+        "materials": {
+          "type": "object",
+          "properties": {
+            "samples": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/Sample" }
+            },
+            "otherMaterials": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/Material" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "characteristicCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialAttribute" }
+        },
+        "unitCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OntologyAnnotation" }
+        },
+        "processSequence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Process" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Study": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Study"] },
+        "filename": { "type": "string" },
+        "identifier": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "submissionDate": { "$ref": "#/$defs/DateString" },
+        "publicReleaseDate": { "$ref": "#/$defs/DateString" },
+        "publications": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Publication" }
+        },
+        "people": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Person" }
+        },
+        "studyDesignDescriptors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OntologyAnnotation" }
+        },
+        "protocols": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Protocol" }
+        },
+        "materials": {
+          "type": "object",
+          "properties": {
+            "sources": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/Source" }
+            },
+            "samples": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/Sample" }
+            },
+            "otherMaterials": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/Material" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "processSequence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Process" }
+        },
+        "assays": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Assay" }
+        },
+        "factors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Factor" }
+        },
+        "characteristicCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialAttribute" }
+        },
+        "unitCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OntologyAnnotation" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Investigation": {
+      "type": "object",
+      "properties": {
+        "@id": { "type": "string", "format": "uri-reference" },
+        "@context": { "type": "string", "format": "uri-reference" },
+        "@type": { "type": "string", "enum": ["Investigation"] },
+        "filename": { "type": "string" },
+        "identifier": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "submissionDate": { "$ref": "#/$defs/DateString" },
+        "publicReleaseDate": { "$ref": "#/$defs/DateString" },
+        "ontologySourceReferences": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OntologySourceReference" }
+        },
+        "publications": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Publication" }
+        },
+        "people": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Person" }
+        },
+        "studies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Study" }
+        },
+        "comments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Comment" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
