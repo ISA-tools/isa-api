@@ -8,7 +8,7 @@
     },
     "filename": {
       "@id": "obo:IAO_0000590",
-      "@type": ""
+      "@type": "obo:STATO_0000002"
     },
     "identifier": {
       "@id": "obo:IAO_0000577",
