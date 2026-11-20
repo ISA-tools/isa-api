@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15' ]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Download Test Data
@@ -22,16 +22,16 @@ jobs:
     - name: Sync dependencies
       run: |
         uv python pin ${{ matrix.python-version }}
-        uv sync --extra database --extra dev
+        uv sync --extra all --extra dev
     - name: Check with Ruff
-      run: uv run --locked --extra database --extra dev ruff check --config pyproject.toml
+      run: uv run --locked --extra all --extra dev ruff check --config pyproject.toml
     - name: Format with Ruff
-      run: uv run --locked --extra database --extra dev ruff format --config pyproject.toml
+      run: uv run --locked --extra all --extra dev ruff format --config pyproject.toml
     - name: Test with python unittest
       run: |
-        uv run --python ${{ matrix.python-version }} pytest
-        uv run --python ${{ matrix.python-version }} coverage run -m unittest discover -s tests/
-        uv run --python ${{ matrix.python-version }} coverage report -m
+        uv run --python ${{ matrix.python-version }} --extra all --extra dev pytest
+        uv run --python ${{ matrix.python-version }} --extra all --extra dev coverage run -m unittest discover -s tests/
+        uv run --python ${{ matrix.python-version }} --extra all --extra dev coverage report -m
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
       with:

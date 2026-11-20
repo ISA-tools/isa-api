@@ -19,6 +19,7 @@ import sys
 from string import Template
 
 import numpy
+from pandas import __version__ as pandas_version
 
 from isatools import isatab as ISATAB
 from isatools.utils import utf8_text_file_open
@@ -248,7 +249,11 @@ def get_data_file(assay):
 def load_df(path):
     df = ISATAB.read_tfile(path)
     # df = df.map(lambda x: numpy.nan if x == "" else x)
-    df = df.map(lambda x: numpy.nan if x == "" else x).infer_objects(copy=False)
+    df = df.map(lambda x: numpy.nan if x == "" else x)
+    if int(pandas_version.split(".", 1)[0]) < 3:
+        df = df.infer_objects(copy=False)
+    else:
+        df = df.infer_objects()
     return df
 
 
