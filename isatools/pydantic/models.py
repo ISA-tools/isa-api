@@ -15,10 +15,10 @@ from __future__ import annotations
 import abc
 import pathlib
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from datetime import date, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Optional, Union
 from uuid import uuid4
 
 from isatools.model import Investigation as ISAToolsInvestigation
@@ -53,6 +53,7 @@ try:
         StrictFloat,
         StrictInt,
         ValidationInfo,
+        field_validator,
         model_serializer,
         model_validator,
     )
@@ -61,7 +62,6 @@ try:
     PYDANTIC_ENABLED = True
 except ImportError as exc:
     pass
-    # raise ImportError("Install the JSON-LD extra with `pip install 'isatools[pydantic]'`.") from exc
 
 if PYDANTIC_ENABLED:
     URIString = Annotated[str, Field(description="URI or URI reference as specified by the source schema")]
@@ -84,11 +84,11 @@ if PYDANTIC_ENABLED:
         """Options used when parsing ISA JSON into Pydantic models."""
 
         jsonld_config: Annotated[
-            Union[None, JsonLdConfiguration],
+            Optional[JsonLdConfiguration],
             Field(description="Context lookup settings used to attach JSON-LD metadata to recognized model types."),
         ] = None
         generate_ids: Annotated[
-            Union[None, bool],
+            Optional[bool],
             Field(description="Generate an identifier for ISA entities that do not already have one."),
         ] = None
 
@@ -96,11 +96,11 @@ if PYDANTIC_ENABLED:
         """Options that control JSON-LD metadata and empty-field handling during serialization."""
 
         jsonld_config: Annotated[
-            Union[None, JsonLdConfiguration],
+            Optional[JsonLdConfiguration],
             Field(description="Context lookup settings used to include JSON-LD metadata for recognized model types."),
         ] = None
         ignore_empty_fields: Annotated[
-            Union[None, bool],
+            Optional[bool],
             Field(description="Omit fields whose values are null, empty strings, or empty collections."),
         ] = None
 
@@ -117,10 +117,10 @@ if PYDANTIC_ENABLED:
     class JsonLdModel(CamelCaseModel):
         """Adds optional JSON-LD context and type metadata to an ISA JSON model."""
 
-        context: Annotated[str, Field(description="JSON-LD context property (@context).")] = Field(
+        context: Annotated[Optional[str], Field(description="JSON-LD context property (@context).")] = Field(
             default=None, alias="@context"
         )
-        object_type: Annotated[str, Field(description="JSON-LD object type property (@type).", alias="@type")] = Field(
+        object_type: Annotated[Optional[str], Field(description="JSON-LD object type property (@type).", alias="@type")] = Field(
             default=None, alias="@type"
         )
 
@@ -233,7 +233,7 @@ if PYDANTIC_ENABLED:
             extra="forbid",
         )
 
-        id: Annotated[str, Field(description="JSON-LD identifier property (@id).")] = Field(default=None, alias="@id")
+        id: Annotated[Optional[str], Field(description="JSON-LD identifier property (@id).")] = Field(default=None, alias="@id")
 
         @model_validator(mode="after")
         def set_id_field(self, info: ValidationInfo) -> ISAModel:
@@ -247,34 +247,43 @@ if PYDANTIC_ENABLED:
         """A named free-text annotation attached to an ISA object."""
 
         name: Annotated[
-            str, Field(description="Comment label, unique within its containing ISA section or object.")
+            Optional[str], Field(description="Comment label, unique within its containing ISA section or object.")
         ] = None
-        value: Annotated[str, Field(description="Text recorded for this comment label.")] = None
+        value: Annotated[Optional[str], Field(description="Text recorded for this comment label.")] = None
 
     class Commentable(ISAModel):
         """Mixin for ISA schema objects with a ``comments`` array."""
 
         comments: Annotated[
-            list[Comment], Field(description="Comments associated with this object, as defined by its schema.")
+            Optional[list[Comment]], Field(description="Comments associated with this object, as defined by its schema.")
         ] = Field(default_factory=list)
 
     class OntologyAnnotation(Commentable):
         """An ontology-backed or free-text value with optional source and accession."""
 
         annotation_value: Annotated[
-            AnnotationValue,
+            Optional[AnnotationValue],
             Field(description="The term label or literal value; values may be text or numeric."),
         ] = None
         term_source: Annotated[
-            str,
+            Optional[str],
             Field(
                 description="Short name of the terminology source, matching a declared ontology source when available.",
             ),
         ] = None
         term_accession: Annotated[
-            URIString,
+            Optional[URIString],
             Field(description="Accession or URI identifying the term in its terminology source."),
         ] = None
+
+        @field_validator("term_source", mode="before")
+        @classmethod
+        def set_term_source_field(cls, val: Any) -> ISAModel:
+            if isinstance(val, str):
+                return val or None
+            if isinstance(val, Mapping):
+                return val.get("name") or None
+            return str(val) or None
 
     ScalarValue = Annotated[
         Union[OntologyAnnotation, StrictInt, StrictFloat, str],
@@ -285,49 +294,49 @@ if PYDANTIC_ENABLED:
         """A terminology or ontology resource used to qualify annotations in an investigation."""
 
         description: Annotated[
-            str,
+            Optional[str],
             Field(description="Text that distinguishes or describes this terminology resource."),
         ] = None
         file: Annotated[
-            str,
+            Optional[str],
             Field(description="Location of the terminology resource, given as a file name or URI."),
         ] = None
         name: Annotated[
-            str,
+            Optional[str],
             Field(description="Short name used to refer to this terminology source elsewhere in the investigation."),
         ] = None
         version: Annotated[
-            str,
+            Optional[str],
             Field(description="Version of the terminology resource used for the study."),
         ] = None
 
     class Organization(ISAModel):
         """An organization associated with an ISA person or investigation."""
 
-        name: Annotated[str, Field(description="Organization name.")] = None
+        name: Annotated[Optional[str], Field(description="Organization name.")] = None
 
     class Person(Commentable):
         """A person associated with an investigation or study, including contact details and roles."""
 
-        last_name: Annotated[str, Field(description="Person's family name.")] = None
-        first_name: Annotated[str, Field(description="Person's given name.")] = None
+        last_name: Annotated[Optional[str], Field(description="Person's family name.")] = None
+        first_name: Annotated[Optional[str], Field(description="Person's given name.")] = None
         mid_initials: Annotated[
-            str,
+            Optional[str],
             Field(description="Middle initials, if provided."),
         ] = None
         email: Annotated[
-            Union[str, None],
+            Optional[str],
             Field(description="Email address for contacting the person."),
         ] = None
-        phone: Annotated[str, Field(description="Telephone number for contacting the person.")] = None
-        fax: Annotated[str, Field(description="Fax number for contacting the person.")] = None
-        address: Annotated[str, Field(description="Postal or institutional address for the person.")] = None
+        phone: Annotated[Optional[str], Field(description="Telephone number for contacting the person.")] = None
+        fax: Annotated[Optional[str], Field(description="Fax number for contacting the person.")] = None
+        address: Annotated[Optional[str], Field(description="Postal or institutional address for the person.")] = None
         affiliation: Annotated[
-            str,
+            Optional[str],
             Field(description="Organization or institution with which the person is affiliated."),
         ] = None
         roles: Annotated[
-            list[OntologyAnnotation],
+            Optional[list[OntologyAnnotation]],
             Field(description="One or more roles the person has in this ISA context."),
         ] = Field(default_factory=list)
 
@@ -335,17 +344,17 @@ if PYDANTIC_ENABLED:
         """A publication associated with an investigation or study."""
 
         pub_med_id: Annotated[
-            str,
+            Optional[str],
             Field(alias="pubMedID", description="PubMed identifier for the publication, when available."),
         ] = None
-        doi: Annotated[str, Field(description="Digital Object Identifier (DOI) for the publication.")] = None
+        doi: Annotated[Optional[str], Field(description="Digital Object Identifier (DOI) for the publication.")] = None
         author_list: Annotated[
-            str,
+            Optional[str],
             Field(description="Publication author list as text."),
         ] = None
-        title: Annotated[str, Field(description="Title of the publication.")] = None
+        title: Annotated[Optional[str], Field(description="Title of the publication.")] = None
         status: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Publication status, such as published, submitted, or in preparation."),
         ] = None
 
@@ -353,7 +362,7 @@ if PYDANTIC_ENABLED:
         """A category that names a material characteristic, such as organism or strain."""
 
         characteristic_type: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Term naming the characteristic category."),
         ] = None
 
@@ -361,11 +370,11 @@ if PYDANTIC_ENABLED:
         """An experimental factor, or independent variable, declared for a study."""
 
         factor_name: Annotated[
-            str,
+            Optional[str],
             Field(description="Name used to identify this factor and its values."),
         ] = None
         factor_type: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Term describing the kind of factor, such as dose or time."),
         ] = None
 
@@ -373,7 +382,7 @@ if PYDANTIC_ENABLED:
         """A parameter category declared for a protocol and used to label parameter values."""
 
         parameter_name: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Term naming this protocol parameter category."),
         ] = None
 
@@ -381,43 +390,43 @@ if PYDANTIC_ENABLED:
         """A named instrument, software package, detector, reagent, or other protocol component."""
 
         component_name: Annotated[
-            str,
+            Optional[str],
             Field(description="Name of the protocol component."),
         ] = None
         component_type: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Term classifying the protocol component, such as instrument or software."),
         ] = None
 
     class Protocol(Commentable):
         """A named procedure referenced by process records in a study or assay."""
 
-        name: Annotated[str, Field(description="Protocol name used as a reference within the ISA document.")] = None
+        name: Annotated[Optional[str], Field(description="Protocol name used as a reference within the ISA document.")] = None
         protocol_type: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Term classifying the protocol, such as sample collection or extraction."),
         ] = None
         description: Annotated[
-            str,
+            Optional[str],
             Field(description="Free-text description of how the protocol is performed."),
         ] = None
-        uri: Annotated[URIString, Field(description="URI for an external resource describing the protocol.")] = None
-        version: Annotated[str, Field(description="Protocol version identifier.")] = None
+        uri: Annotated[Optional[URIString], Field(description="URI for an external resource describing the protocol.")] = None
+        version: Annotated[Optional[str], Field(description="Protocol version identifier.")] = None
         parameters: Annotated[
-            list[ProtocolParameter],
+            Optional[list[ProtocolParameter]],
             Field(description="Parameter categories whose values may be recorded when the protocol is applied."),
         ] = Field(default_factory=list)
         components: Annotated[
-            list[ProtocolComponent],
+            Optional[list[ProtocolComponent]],
             Field(description="Components used by or associated with the protocol."),
         ] = Field(default_factory=list)
 
     class Data(Commentable):
         """A data file, such as raw, derived, image, or spectral data."""
 
-        name: Annotated[str, Field(description="File name or URI identifying the data file.")] = None
+        name: Annotated[Optional[str], Field(description="File name or URI identifying the data file.")] = None
         data_type: Annotated[
-            Literal[
+            Optional[Literal[
                 "Raw Data File",
                 "Derived Data File",
                 "Image File",
@@ -433,7 +442,7 @@ if PYDANTIC_ENABLED:
                 "Free Induction Decay Data File",
                 "Metabolite Assignment File",
                 "Array Data Matrix File",
-            ],
+            ]],
             Field(description="Category of data represented by the file."),
         ] = Field(default=None, alias="type")
 
@@ -441,11 +450,11 @@ if PYDANTIC_ENABLED:
         """Shared value and unit fields for characteristics, factors, and parameters."""
 
         value: Annotated[
-            ScalarValue,
+            Optional[ScalarValue],
             Field(description="Qualitative or quantitative value, optionally represented by an ontology term."),
         ] = None
         unit: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="Unit qualifying a numeric value, optionally represented by an ontology term."),
         ] = None
 
@@ -473,7 +482,7 @@ if PYDANTIC_ENABLED:
         )
 
         category: Annotated[
-            MaterialAttribute,
+            Optional[MaterialAttribute],
             Field(description="Characteristic category that gives this value its meaning."),
         ] = None
 
@@ -481,7 +490,7 @@ if PYDANTIC_ENABLED:
         """Value of a study factor for a material, such as a sample."""
 
         category: Annotated[
-            Factor,
+            Optional[Factor],
             Field(description="Factor declaration that gives this value its meaning."),
         ] = None
 
@@ -489,46 +498,46 @@ if PYDANTIC_ENABLED:
         """Value of a protocol parameter recorded for a process application."""
 
         category: Annotated[
-            ProtocolParameter,
+            Optional[ProtocolParameter],
             Field(description="Protocol parameter declaration that gives this value its meaning."),
         ] = None
 
     class Source(Commentable):
         """Starting biological material from which samples in a study are derived."""
 
-        name: Annotated[str, Field(description="Source name used to identify the material in the study graph.")] = None
+        name: Annotated[Optional[str], Field(description="Source name used to identify the material in the study graph.")] = None
         characteristics: Annotated[
-            list[MaterialAttributeValue],
+            Optional[list[MaterialAttributeValue]],
             Field(description="Characteristics describing the source material."),
         ] = Field(default_factory=list)
 
     class Sample(Commentable):
         """A material produced or used in a study, excluding assay extracts and labeled extracts."""
 
-        name: Annotated[str, Field(description="Sample name used to identify the material in the study graph.")] = None
+        name: Annotated[Optional[str], Field(description="Sample name used to identify the material in the study graph.")] = None
         characteristics: Annotated[
-            list[MaterialAttributeValue],
+            Optional[list[MaterialAttributeValue]],
             Field(description="Characteristics describing the sample material."),
         ] = Field(default_factory=list)
         factor_values: Annotated[
-            list[FactorValue],
+            Optional[list[FactorValue]],
             Field(description="Values assigned to study factors for this sample."),
         ] = Field(default_factory=list)
         derives_from: Annotated[
-            list[Source],
+            Optional[list[Source]],
             Field(description="Source materials from which this sample derives."),
         ] = Field(default_factory=list)
 
     class Material(Commentable):
         """An assay material that is neither a source nor a sample, such as an extract."""
 
-        name: Annotated[str, Field(description="Material name used to identify the extract or labeled extract.")] = None
+        name: Annotated[Optional[str], Field(description="Material name used to identify the extract or labeled extract.")] = None
         material_type: Annotated[
-            Literal["Extract Name", "Labeled Extract Name"],
+            Optional[Literal["Extract Name", "Labeled Extract Name"]],
             Field(description="Whether this material is an extract or a labeled extract."),
         ] = Field(default=None, alias="type")
         characteristics: Annotated[
-            list[MaterialAttributeValue],
+            Optional[list[MaterialAttributeValue]],
             Field(description="Characteristics describing the material."),
         ] = Field(default_factory=list)
 
@@ -536,15 +545,15 @@ if PYDANTIC_ENABLED:
         """Material nodes declared in the study: sources, samples, and other materials."""
 
         sources: Annotated[
-            list[Source],
+            Optional[list[Source]],
             Field(description="Starting biological materials for the study."),
         ] = Field(default_factory=list)
         samples: Annotated[
-            list[Sample],
+            Optional[list[Sample]],
             Field(description="Samples declared for the study."),
         ] = Field(default_factory=list)
         other_materials: Annotated[
-            list[Material],
+            Optional[list[Material]],
             Field(description="Other study materials, excluding sources and samples."),
         ] = Field(default_factory=list)
 
@@ -552,121 +561,121 @@ if PYDANTIC_ENABLED:
         """Material nodes declared in an assay: samples and other assay materials."""
 
         samples: Annotated[
-            list[Sample],
+            Optional[list[Sample]],
             Field(description="Samples that enter or are referenced by the assay workflow."),
         ] = Field(default_factory=list)
         other_materials: Annotated[
-            list[Material],
+            Optional[list[Material]],
             Field(description="Other assay materials, such as extracts and labeled extracts."),
         ] = Field(default_factory=list)
 
     class Process(Commentable):
         """An application of a protocol that links input materials to output materials or data."""
 
-        name: Annotated[str, Field(description="Optional name distinguishing this process application.")] = None
+        name: Annotated[Optional[str], Field(description="Optional name distinguishing this process application.")] = None
         executes_protocol: Annotated[
-            Protocol,
+            Optional[Protocol],
             Field(description="Protocol applied by this process."),
         ] = None
         parameter_values: Annotated[
-            list[ProcessParameterValue],
+            Optional[list[ProcessParameterValue]],
             Field(description="Parameter values recorded for this protocol application."),
         ] = Field(default_factory=list)
-        performer: Annotated[str, Field(description="Name of the operator who carried out the process.")] = None
+        performer: Annotated[Optional[str], Field(description="Name of the operator who carried out the process.")] = None
         date: Annotated[
-            DateValue, Field(description="Date the protocol was performed, preferably in ISO 8601 format.")
+            Optional[DateValue], Field(description="Date the protocol was performed, preferably in ISO 8601 format.")
         ] = None
         previous_process: Annotated[
-            Process,
+            Optional[Process],
             Field(description="Process that immediately precedes this process, when known."),
         ] = None
         next_process: Annotated[
-            Process,
+            Optional[Process],
             Field(description="Process that immediately follows this process, when known."),
         ] = None
         inputs: Annotated[
-            list[Union[Source, Sample, Data, Material]],
+            Optional[list[Union[Source, Sample, Data, Material]]],
             Field(description="Materials or data consumed by this process."),
         ] = Field(default_factory=list)
         outputs: Annotated[
-            list[Union[Sample, Data, Material]],
+            Optional[list[Union[Sample, Data, Material]]],
             Field(description="Samples, materials, or data produced by this process."),
         ] = Field(default_factory=list)
 
     class Assay(Commentable):
         """Metadata and workflow for one assay, including materials, processes, and data files."""
 
-        filename: Annotated[str, Field(description="Name or URI of the assay table file, when available.")] = None
+        filename: Annotated[Optional[str], Field(description="Name or URI of the assay table file, when available.")] = None
         measurement_type: Annotated[
-            OntologyAnnotation,
+            Optional[OntologyAnnotation],
             Field(description="What the assay measures, such as gene expression or protein identification."),
         ] = None
         technology_type: Annotated[
-            OntologyAnnotation, Field(description="Technology used to make the measurement, such as mass spectrometry.")
+            Optional[OntologyAnnotation], Field(description="Technology used to make the measurement, such as mass spectrometry.")
         ] = None
-        technology_platform: Annotated[str, Field(description="Manufacturer and platform name used for the assay.")] = (
+        technology_platform: Annotated[Optional[str], Field(description="Manufacturer and platform name used for the assay.")] = (
             None
         )
         data_files: Annotated[
-            list[Data], Field(description="Raw, derived, image, or other data files associated with the assay.")
+            Optional[list[Data]], Field(description="Raw, derived, image, or other data files associated with the assay.")
         ] = Field(default_factory=list)
         materials: Annotated[
-            AssayMaterials, Field(description="Samples and other materials represented in the assay workflow.")
+            Optional[AssayMaterials], Field(description="Samples and other materials represented in the assay workflow.")
         ] = None
         characteristic_categories: Annotated[
-            list[MaterialAttribute],
+            Optional[list[MaterialAttribute]],
             Field(description="Characteristic categories used by materials in this assay."),
         ] = Field(default_factory=list)
         unit_categories: Annotated[
-            list[OntologyAnnotation],
+            Optional[list[OntologyAnnotation]],
             Field(description="Units used by numeric values in this assay."),
         ] = Field(default_factory=list)
         process_sequence: Annotated[
-            list[Process], Field(description="Ordered process applications that make up the assay workflow.")
+            Optional[list[Process]], Field(description="Ordered process applications that make up the assay workflow.")
         ] = Field(default_factory=list)
 
     class Study(Commentable):
         """Study metadata and the materials, protocols, factors, processes, and assays it defines."""
 
-        filename: Annotated[str, Field(description="Name or URI of the study table file, when available.")] = None
-        identifier: Annotated[str, Field(description="Study identifier, supplied by the user or an archive.")] = None
-        title: Annotated[str, Field(description="Concise title describing the study's purpose.")] = None
-        description: Annotated[str, Field(description="Text describing the study's objectives or goals.")] = None
-        submission_date: Annotated[DateValue, Field(description="Date the study was submitted to an archive.")] = None
+        filename: Annotated[Optional[str], Field(description="Name or URI of the study table file, when available.")] = None
+        identifier: Annotated[Optional[str], Field(description="Study identifier, supplied by the user or an archive.")] = None
+        title: Annotated[Optional[str], Field(description="Concise title describing the study's purpose.")] = None
+        description: Annotated[Optional[str], Field(description="Text describing the study's objectives or goals.")] = None
+        submission_date: Annotated[Optional[DateValue], Field(description="Date the study was submitted to an archive.")] = None
         public_release_date: Annotated[
-            DateValue, Field(description="Date the study was or is intended to be released publicly.")
+            Optional[DateValue], Field(description="Date the study was or is intended to be released publicly.")
         ] = None
-        publications: Annotated[list[Publication], Field(description="Publications associated with this study.")] = (
+        publications: Annotated[Optional[list[Publication]], Field(description="Publications associated with this study.")] = (
             Field(default_factory=list)
         )
-        people: Annotated[list[Person], Field(description="People associated with or responsible for the study.")] = (
+        people: Annotated[Optional[list[Person]], Field(description="People associated with or responsible for the study.")] = (
             Field(default_factory=list)
         )
         study_design_descriptors: Annotated[
-            list[OntologyAnnotation],
+            Optional[list[OntologyAnnotation]],
             Field(description="Terms classifying the overall experimental design."),
         ] = Field(default_factory=list)
         protocols: Annotated[
-            list[Protocol], Field(description="Protocols referenced by processes in the study and its assays.")
+            Optional[list[Protocol]], Field(description="Protocols referenced by processes in the study and its assays.")
         ] = Field(default_factory=list)
         materials: Annotated[
-            Materials, Field(description="Sources, samples, and other materials declared for the study.")
+            Optional[Materials], Field(description="Sources, samples, and other materials declared for the study.")
         ] = None
         process_sequence: Annotated[
-            list[Process], Field(description="Study-level process applications and their material flow.")
+            Optional[list[Process]], Field(description="Study-level process applications and their material flow.")
         ] = Field(default_factory=list)
-        assays: Annotated[list[Assay], Field(description="Assays associated with this study.")] = Field(
+        assays: Annotated[Optional[list[Assay]], Field(description="Assays associated with this study.")] = Field(
             default_factory=list
         )
-        factors: Annotated[list[Factor], Field(description="Independent variables declared for the study.")] = Field(
+        factors: Annotated[Optional[list[Factor]], Field(description="Independent variables declared for the study.")] = Field(
             default_factory=list
         )
         characteristic_categories: Annotated[
-            list[MaterialAttribute],
+            Optional[list[MaterialAttribute]],
             Field(description="Characteristic categories used by study materials."),
         ] = Field(default_factory=list)
         unit_categories: Annotated[
-            list[OntologyAnnotation],
+            Optional[list[OntologyAnnotation]],
             Field(description="Units used by numeric values in the study."),
         ] = Field(default_factory=list)
 
@@ -677,32 +686,32 @@ if PYDANTIC_ENABLED:
         publications, contacts, and terminology sources.
         """
 
-        filename: Annotated[str, Field(description="Name or URI of the investigation file, when available.")] = None
+        filename: Annotated[Optional[str], Field(description="Name or URI of the investigation file, when available.")] = None
         identifier: Annotated[
-            str, Field(description="Repository accession or other identifier for the investigation.")
+            Optional[str], Field(description="Repository accession or other identifier for the investigation.")
         ] = None
-        title: Annotated[str, Field(description="Concise title describing the investigation.")] = None
-        description: Annotated[str, Field(description="Text describing the overall investigation.")] = None
+        title: Annotated[Optional[str], Field(description="Concise title describing the investigation.")] = None
+        description: Annotated[Optional[str], Field(description="Text describing the overall investigation.")] = None
         submission_date: Annotated[
-            DateValue, Field(description="Date the investigation was submitted to a repository.")
+            Optional[DateValue], Field(description="Date the investigation was submitted to a repository.")
         ] = None
         public_release_date: Annotated[
-            DateValue, Field(description="Date the investigation was or is intended to be released publicly.")
+            Optional[DateValue], Field(description="Date the investigation was or is intended to be released publicly.")
         ] = None
         ontology_source_references: Annotated[
-            list[OntologySourceReference],
+            Optional[list[OntologySourceReference]],
             Field(description="Terminology sources used to qualify terms elsewhere in the investigation."),
         ] = Field(default_factory=list)
         publications: Annotated[
-            list[Publication], Field(description="Publications associated with the investigation.")
+            Optional[list[Publication]], Field(description="Publications associated with the investigation.")
         ] = Field(default_factory=list)
         people: Annotated[
-            list[Person], Field(description="People associated with or responsible for the investigation.")
+            Optional[list[Person]], Field(description="People associated with or responsible for the investigation.")
         ] = Field(default_factory=list)
-        studies: Annotated[list[Study], Field(description="Studies grouped within this investigation.")] = Field(
+        studies: Annotated[Optional[list[Study]], Field(description="Studies grouped within this investigation.")] = Field(
             default_factory=list
         )
-        comments: Annotated[list[Comment], Field(description="Free-text comments attached to the investigation.")] = (
+        comments: Annotated[Optional[list[Comment]], Field(description="Free-text comments attached to the investigation.")] = (
             Field(default_factory=list)
         )
 
