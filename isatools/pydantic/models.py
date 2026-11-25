@@ -13,6 +13,7 @@ Example::
 from __future__ import annotations
 
 import abc
+import pathlib
 import re
 from collections.abc import Iterable
 from datetime import date, datetime
@@ -21,20 +22,13 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal, Union
 from uuid import uuid4
 
 from isatools.model import Investigation as ISAToolsInvestigation
+from isatools.pydantic.constants import JSON_CONTEXT_ROOT_DIR, JSONLD_CONTEXT_FOLDER_MAPPING, JSONLD_RAW_DOWNLOAD_URL
 
 if TYPE_CHECKING:
     from isatools.model import Investigation as ISAToolsInvestigation
 
-_JSONLD_CONTEXT_MAP: dict[str, dict[str, Union[None, str]]] = {}
-_JSON_CONTEXT_ROOT_DIR = Path(__file__).resolve().parent.parent / "resources" / "json-context"
-OBO_CONTEXT_DIR = _JSON_CONTEXT_ROOT_DIR / "obo"
-OBO_CONTEXT_ID_FILE_PREFIX = f"file://{OBO_CONTEXT_DIR}/"
-OBO_CONTEXT_FILENAME_MATCH_PATTERN = f"isa_(.+)_obo_context.jsonld"
 
-
-WIKIDATA_CONTEXT_DIR = _JSON_CONTEXT_ROOT_DIR / "wd"
-WIKIDATA_CONTEXT_ID_FILE_PREFIX = f"file://{WIKIDATA_CONTEXT_DIR}/"
-WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN = f"isa_(.+)_wd_context.jsonld"
+jsonld_context_map: dict[str, dict[str, Union[None, str]]] = {}
 
 JSONLD_ENABLED = False
 
@@ -762,26 +756,61 @@ if PYDANTIC_ENABLED:
 
         def to_jsonld_expanded(
             self,
-            serialization_options: Union[None, SerializationOptions],
+            ontology: Union[None, Literal["obo", "sdo", "w3c", "wdt", "isaterms"]] = None,
+            serialization_options: Union[None, SerializationOptions] = None,
             jsonld_expand_options: Union[None, dict] = None,
+            use_file_context_id_prefix: bool = False,
         ) -> list[dict]:
-            """Expand an ISA Investigation as JSON-LD."""
+            """Serialize and expand this Investigation as JSON-LD.
+
+            Provide either an ontology name to build a JSON-LD configuration,
+            or ``serialization_options`` with an existing configuration.
+            """
             if not JSONLD_ENABLED:
                 raise Exception("install 'isatools[pydantic,jsonld]' and use python >=3.10")
+            if (not ontology and not serialization_options) or (ontology and serialization_options):
+                raise Exception("One of them must be provided: ontology, serialization_options")
+            if serialization_options and not serialization_options.jsonld_config:
+                raise Exception("JSONLD configuration is not provided in serialization_options")
 
+            if not serialization_options:
+                jsonld_config = self.get_jsonld_config(
+                    ontology=ontology, use_file_context_id_prefix=use_file_context_id_prefix
+                )
+                serialization_options = SerializationOptions(jsonld_config=jsonld_config, ignore_empty_fields=True)
             inv_dict = self.to_dict(options=serialization_options)
             return jsonld.expand(inv_dict, options=jsonld_expand_options or {})
 
         def to_rdf_dataset(
             self,
-            serialization_options: Union[None, SerializationOptions],
+            ontology: Union[None, Literal["obo", "sdo", "w3c", "wdt", "isaterms"]] = None,
+            serialization_options: Union[None, SerializationOptions] = None,
             jsonld_expand_options: Union[None, dict] = None,
             rdf_options: Union[None, dict] = None,
+            use_file_context_id_prefix: bool = False,
         ) -> rdflib.Dataset:
-            """Convert an ISA Investigation dictionary directly to RDF text."""
+            """Convert this Investigation to an RDFLib dataset.
+
+            The Investigation is serialized and expanded as JSON-LD, converted
+            to N-Quads, and parsed into an ``rdflib.Dataset``. Provide either
+            an ontology name to build a JSON-LD configuration, or
+            ``serialization_options`` with an existing configuration.
+            """
             if not JSONLD_ENABLED:
                 raise Exception("install 'isatools[pydantic,jsonld]' and use python >=3.10")
-            _serialization_options = serialization_options.model_copy()
+            if (not ontology and not serialization_options) or (ontology and serialization_options):
+                raise Exception("One of them must be provided: ontology, serialization_options")
+            if serialization_options and not serialization_options.jsonld_config:
+                raise Exception("JSONLD configuration is not provided in serialization_options")
+
+            if not serialization_options:
+                jsonld_config = self.get_jsonld_config(
+                    ontology=ontology, use_file_context_id_prefix=use_file_context_id_prefix
+                )
+                _serialization_options = SerializationOptions(jsonld_config=jsonld_config, ignore_empty_fields=True)
+            else:
+                _serialization_options = serialization_options.model_copy()
+
             _serialization_options.ignore_empty_fields = True
             jsonld_document = self.to_jsonld_expanded(
                 serialization_options=_serialization_options, jsonld_expand_options=jsonld_expand_options
@@ -850,6 +879,24 @@ if PYDANTIC_ENABLED:
 
             return value
 
+        @staticmethod
+        def get_jsonld_config(
+            ontology: Literal["obo", "sdo", "w3c", "wdt", "isaterms"], use_file_context_id_prefix: bool = False
+        ) -> JsonLdConfiguration:
+            folder_name = JSONLD_CONTEXT_FOLDER_MAPPING.get(ontology)
+            jsonld_dir = Path(JSON_CONTEXT_ROOT_DIR) / folder_name
+            context_id_prefix = f"{JSONLD_RAW_DOWNLOAD_URL}/{folder_name}/"
+            if use_file_context_id_prefix:
+                context_id_prefix = f"file://{jsonld_dir}/"
+
+            if not folder_name:
+                raise Exception("Unsupported JSONLD context")
+            return JsonLdConfiguration(
+                jsonld_dir=jsonld_dir,
+                filename_match_pattern=f"isa_(.+)_{folder_name}_context.jsonld",
+                context_id_prefix=context_id_prefix,
+            )
+
     __all__ = [
         "Assay",
         "AssayMaterials",
@@ -904,7 +951,7 @@ if PYDANTIC_ENABLED:
     ]
 
     def fetch_jsonld_context_map(
-        jsonld_dir: Union[Path, str], filename_match_pattern: str, context_id_prefix: str
+        jsonld_dir: Union[pathlib.Path, str], filename_match_pattern: str, context_id_prefix: str
     ) -> dict[str, Union[None, dict[str, str]]]:
         """Return model-name to context-file mappings.
 
@@ -914,11 +961,11 @@ if PYDANTIC_ENABLED:
         Returns:
             A mapping from Pydantic model class name to its context file path.
         """
-        context_map: Union[None, dict[str, str]] = _JSONLD_CONTEXT_MAP.get(context_id_prefix, None)
+        context_map: Union[None, dict[str, str]] = jsonld_context_map.get(context_id_prefix, None)
         if context_map is not None:
             return context_map
         context_map = {}
-        context_dir = jsonld_dir if isinstance(jsonld_dir, Path) else Path(jsonld_dir)
+        context_dir = jsonld_dir if isinstance(jsonld_dir, pathlib.Path) else pathlib.Path(jsonld_dir)
 
         files = sorted(context_dir.glob("*.jsonld"))
 
@@ -938,16 +985,5 @@ if PYDANTIC_ENABLED:
                         variant = name.replace(snake_name, "", 1).strip("_")
                         context_map[model_name][variant] = context_id_prefix + path.name
 
-        _JSONLD_CONTEXT_MAP[context_id_prefix] = context_map
+        jsonld_context_map[context_id_prefix] = context_map
         return context_map
-
-    WIKIDATA_CONTEXT_ID_MAP = fetch_jsonld_context_map(
-        jsonld_dir=WIKIDATA_CONTEXT_DIR,
-        filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-        context_id_prefix=WIKIDATA_CONTEXT_ID_FILE_PREFIX,
-    )
-    OBO_CONTEXT_ID_MAP = fetch_jsonld_context_map(
-        jsonld_dir=OBO_CONTEXT_DIR,
-        filename_match_pattern=OBO_CONTEXT_FILENAME_MATCH_PATTERN,
-        context_id_prefix=OBO_CONTEXT_ID_FILE_PREFIX,
-    )

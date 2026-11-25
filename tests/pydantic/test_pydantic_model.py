@@ -15,11 +15,7 @@ if PYDANTIC_ENABLED:
 
     from isatools.model import Investigation as ISAToolsInvestigation
     from isatools.pydantic.models import (
-        WIKIDATA_CONTEXT_DIR,
-        WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-        WIKIDATA_CONTEXT_ID_FILE_PREFIX,
         Investigation,
-        JsonLdConfiguration,
         LoadOptions,
         SerializationOptions,
     )
@@ -27,11 +23,7 @@ if PYDANTIC_ENABLED:
     class TestPydanticModel(unittest.TestCase):
         def setUp(self):
             self.test_data = pathlib.Path(__file__).resolve().parents[1] / "data/json/BII-S-3/BII-S-3-2.json"
-            self.jsonld_config = JsonLdConfiguration(
-                jsonld_dir=WIKIDATA_CONTEXT_DIR,
-                filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-                context_id_prefix=WIKIDATA_CONTEXT_ID_FILE_PREFIX,
-            )
+            self.jsonld_config = Investigation.get_jsonld_config("wdt", use_file_context_id_prefix=True)
 
         def test_load_from_file(self):
             investigation = Investigation.from_file(
@@ -136,11 +128,7 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
     class TestJsonLdModel(unittest.TestCase):
         def setUp(self):
             self.test_data = pathlib.Path(__file__).resolve().parents[1] / "data/json/BII-S-3/BII-S-3-2.json"
-            self.jsonld_config = JsonLdConfiguration(
-                jsonld_dir=WIKIDATA_CONTEXT_DIR,
-                filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-                context_id_prefix=WIKIDATA_CONTEXT_ID_FILE_PREFIX,
-            )
+            self.jsonld_config = Investigation.get_jsonld_config("wdt", use_file_context_id_prefix=True)
 
         def test_to_dict_jsonld_expanded(self):
             jsonld_expand_options = {
@@ -163,24 +151,27 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
                 "base": "https://raw.githubusercontent.com/ISA-tools/isa-api",
             }
             rdf_options = {
-                "base": "https://raw.githubusercontent.com/ISA-tools/isa-api",
+                "base": "https://raw.githubusercontent.com/ISA-tools/isa-api/",
             }
             investigation = Investigation.from_file(
                 self.test_data,
                 options=LoadOptions(jsonld_config=self.jsonld_config, generate_ids=True),
             )
-            serialization_options = SerializationOptions(jsonld_config=self.jsonld_config, ignore_empty_fields=True)
 
             rdf_dataset: rdflib.Dataset = investigation.to_rdf_dataset(
-                serialization_options=serialization_options,
+                ontology="wdt",
                 jsonld_expand_options=jsonld_expand_options,
                 rdf_options=rdf_options,
+                use_file_context_id_prefix=True,
             )
-            wd_namespace = rdflib.Namespace(WIKIDATA_CONTEXT_ID_FILE_PREFIX)
+            wdp_namespace = rdflib.Namespace("http://www.wikidata.org/prop/")
+            wd_namespace = rdflib.Namespace("http://www.wikidata.org/wiki/")
+            wde_namespace = rdflib.Namespace("http://www.wikidata.org/entity/")
             isa_namespace = rdflib.Namespace("https://raw.githubusercontent.com/ISA-tools/isa-api")
+            rdf_dataset.bind("wdp", wdp_namespace)
             rdf_dataset.bind("wd", wd_namespace)
+            rdf_dataset.bind("wde", wde_namespace)
             rdf_dataset.bind("isa", isa_namespace)
-
             serialized = rdf_dataset.serialize(format="turtle", encoding="utf-8")
             rdf_str = serialized.decode("utf-8") if isinstance(serialized, bytes) else serialized
             assert rdf_str

@@ -43,30 +43,23 @@ For example, when ISA JSON is already available in memory, use::
    investigation_from_text = Investigation.from_str(isa_text)
    investigation_from_bytes = Investigation.from_bytes(isa_bytes)
 
-JSON-LD identifiers can be generated while loading. JSON-LD context and type
+JSON-LD identifiers can be generated while loading. JSON-LD config and type
 metadata are included in serialization when a matching context is configured::
 
    from isatools.pydantic import Investigation
    from isatools.pydantic.models import (
        JsonLdConfiguration,
        LoadOptions,
-       SerializationOptions,
-       WIKIDATA_CONTEXT_DIR,
-       WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-       WIKIDATA_CONTEXT_ID_FILE_PREFIX,
+       SerializationOptions
    )
 
-   context = JsonLdConfiguration(
-       jsonld_dir=WIKIDATA_CONTEXT_DIR,
-       filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
-       context_id_prefix=WIKIDATA_CONTEXT_ID_FILE_PREFIX,
-   )
+   jsonld_config = Investigation.get_jsonld_config("wdt", use_file_context_id_prefix=True)
    investigation = Investigation.from_file(
        "i_investigation.json",
-       options=LoadOptions(jsonld_config=context, generate_ids=True),
+       options=LoadOptions(jsonld_config=jsonld_config, generate_ids=True),
    )
    serialization = SerializationOptions(
-       jsonld_config=context,
+       jsonld_config=jsonld_config,
        ignore_empty_fields=True,
    )
    jsonld_dict = investigation.to_dict(options=serialization)
@@ -96,9 +89,11 @@ contacts to the ``people`` fields in the Pydantic representation.
 JSON-LD expansion and RDF
 -------------------------
 
-The ``jsonld`` extra installs PyLD and RDFLib. Use ``to_jsonld_expanded`` to
-expand the compact JSON-LD document, or ``to_rdf_dataset`` to produce an
-``rdflib.Dataset``::
+The ``jsonld`` extra installs PyLD and RDFLib. Both methods serialize the
+Investigation using a JSON-LD context and expand it. Supply either ``ontology``
+to select a built-in context, or ``serialization_options`` containing a
+``jsonld_config``. The two arguments are mutually exclusive. For example, use
+the built-in ``wdt`` context to expand JSON-LD or create an RDFLib dataset::
 
    from pyld import FileDocumentLoader
 
@@ -107,18 +102,20 @@ expand the compact JSON-LD document, or ``to_rdf_dataset`` to produce an
        "base": "https://example.org/isa",
    }
    expanded = investigation.to_jsonld_expanded(
-       serialization_options=serialization,
+       ontology="wdt",
        jsonld_expand_options=jsonld_options,
    )
    dataset = investigation.to_rdf_dataset(
-       serialization_options=serialization,
+       ontology="wdt",
        jsonld_expand_options=jsonld_options,
        rdf_options={"base": "https://example.org/isa"},
    )
 
-Both methods require JSON-LD contexts for the properties being expanded.
-``to_rdf_dataset`` converts through expanded JSON-LD and parses the resulting
-N-Quads into an RDFLib dataset.
+``jsonld_expand_options`` are passed to PyLD's expansion operation.
+``to_rdf_dataset`` converts the expanded document to N-Quads, then parses that
+into an ``rdflib.Dataset``; ``rdf_options`` are passed to PyLD's RDF
+conversion. When using custom contexts, provide them through a configured
+``SerializationOptions`` instead of ``ontology``.
 
 Scope
 -----
