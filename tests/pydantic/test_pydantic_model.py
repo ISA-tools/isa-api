@@ -122,8 +122,8 @@ if PYDANTIC_ENABLED:
 
 
 if PYDANTIC_ENABLED and JSONLD_ENABLED:
-    from ddt import data, ddt
     import rdflib
+    from ddt import data, ddt
     from pyld import FileDocumentLoader
 
     @ddt
