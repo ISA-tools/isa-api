@@ -8,7 +8,7 @@ JSON_CONTEXT_ROOT_DIR = pathlib.Path(__file__).resolve().parents[1] / "resources
 JSONLD_CONTEXT_FOLDER_MAPPING: dict[str, str] = {
     "obo": "obo",
     "wdt": "wd",
-    "sdo": "sdo",
-    "w3c": "w3c",
+    "sio": "sio",
+    "w3c": "sdo",
     "isaterms": "isaterms",
 }

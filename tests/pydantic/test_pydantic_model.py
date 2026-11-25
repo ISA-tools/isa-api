@@ -122,9 +122,11 @@ if PYDANTIC_ENABLED:
 
 
 if PYDANTIC_ENABLED and JSONLD_ENABLED:
+    from ddt import data, ddt
     import rdflib
     from pyld import FileDocumentLoader
 
+    @ddt
     class TestJsonLdModel(unittest.TestCase):
         def setUp(self):
             self.test_data = pathlib.Path(__file__).resolve().parents[1] / "data/json/BII-S-3/BII-S-3-2.json"
@@ -145,7 +147,8 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
             )
             assert jsonld_document
 
-        def test_to_rdf(self):
+        @data("obo", "sio", "w3c", "wdt")
+        def test_to_rdf(self, ontology):
             jsonld_expand_options = {
                 "documentLoader": FileDocumentLoader(),
                 "base": "https://raw.githubusercontent.com/ISA-tools/isa-api",
@@ -159,18 +162,12 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
             )
 
             rdf_dataset: rdflib.Dataset = investigation.to_rdf_dataset(
-                ontology="wdt",
+                ontology=ontology,
                 jsonld_expand_options=jsonld_expand_options,
                 rdf_options=rdf_options,
                 use_file_context_id_prefix=True,
             )
-            wdp_namespace = rdflib.Namespace("http://www.wikidata.org/prop/")
-            wd_namespace = rdflib.Namespace("http://www.wikidata.org/wiki/")
-            wde_namespace = rdflib.Namespace("http://www.wikidata.org/entity/")
             isa_namespace = rdflib.Namespace("https://raw.githubusercontent.com/ISA-tools/isa-api")
-            rdf_dataset.bind("wdp", wdp_namespace)
-            rdf_dataset.bind("wd", wd_namespace)
-            rdf_dataset.bind("wde", wde_namespace)
             rdf_dataset.bind("isa", isa_namespace)
             serialized = rdf_dataset.serialize(format="turtle", encoding="utf-8")
             rdf_str = serialized.decode("utf-8") if isinstance(serialized, bytes) else serialized

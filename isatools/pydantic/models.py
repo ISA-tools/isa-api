@@ -707,30 +707,64 @@ if PYDANTIC_ENABLED:
         )
 
         @classmethod
-        def from_dict(cls, investigation_dict: dict, options: Union[None, LoadOptions] = None) -> Investigation:
+        def from_dict(
+            cls,
+            investigation_dict: Annotated[
+                dict[str, Any], Field(description="ISA JSON object containing investigation data.")
+            ],
+            options: Annotated[
+                Union[None, LoadOptions],
+                Field(description="Optional settings for JSON-LD metadata and generated identifiers during loading."),
+            ] = None,
+        ) -> Investigation:
             """Validate an ISA JSON-shaped dictionary as an Investigation."""
             return Investigation.model_validate(investigation_dict, context=options)
 
         @classmethod
         def from_bytes(
-            cls, json_data: Union[bytes, bytearray], options: Union[None, LoadOptions] = None
+            cls,
+            json_data: Annotated[Union[bytes, bytearray], Field(description="UTF-8 encoded ISA JSON document bytes.")],
+            options: Annotated[
+                Union[None, LoadOptions],
+                Field(description="Optional settings for JSON-LD metadata and generated identifiers during loading."),
+            ] = None,
         ) -> Investigation:
             """Parse serialized ISA JSON bytes into an Investigation."""
             return Investigation.model_validate_json(json_data, context=options)
 
         @classmethod
-        def from_str(cls, json_data: str, options: Union[None, LoadOptions] = None) -> Investigation:
+        def from_str(
+            cls,
+            json_data: Annotated[str, Field(description="Serialized ISA JSON document text.")],
+            options: Annotated[
+                Union[None, LoadOptions],
+                Field(description="Optional settings for JSON-LD metadata and generated identifiers during loading."),
+            ] = None,
+        ) -> Investigation:
             """Parse serialized ISA JSON str into an Investigation."""
             return Investigation.model_validate_json(json_data, context=options)
 
         @classmethod
-        def from_file(cls, file: Union[str, Path], options: Union[None, LoadOptions] = None) -> Investigation:
+        def from_file(
+            cls,
+            file: Annotated[Union[str, Path], Field(description="Path to the ISA JSON document to read.")],
+            options: Annotated[
+                Union[None, LoadOptions],
+                Field(description="Optional settings for JSON-LD metadata and generated identifiers during loading."),
+            ] = None,
+        ) -> Investigation:
             """Read and validate an ISA JSON document from a file path."""
             if isinstance(file, str):
                 file = Path(file)
             return cls.from_bytes(file.read_bytes(), options=options)
 
-        def to_dict(self, options: Union[None, SerializationOptions] = None) -> dict[str, Any]:
+        def to_dict(
+            self,
+            options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Optional settings for JSON-LD metadata and empty-field handling."),
+            ] = None,
+        ) -> dict[str, Any]:
             """Serialize to a dictionary using ISA JSON aliases.
 
             Args:
@@ -738,28 +772,58 @@ if PYDANTIC_ENABLED:
             """
             return self.model_dump(context=options, by_alias=True, exclude_none=True)
 
-        def to_file(self, file: Union[str, Path], options: Union[None, SerializationOptions] = None) -> None:
+        def to_file(
+            self,
+            file: Annotated[Union[str, Path], Field(description="Path where the ISA JSON document will be written.")],
+            options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Optional settings for JSON-LD metadata and empty-field handling."),
+            ] = None,
+        ) -> None:
             """Write this Investigation as ISA JSON to a file path."""
             if isinstance(file, str):
                 file = Path(file)
             content = self.model_dump_json(context=options, by_alias=True, exclude_none=True)
             file.write_text(content)
 
-        def to_bytes(self, options: Union[None, SerializationOptions] = None) -> bytes:
+        def to_bytes(
+            self,
+            options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Optional settings for JSON-LD metadata and empty-field handling."),
+            ] = None,
+        ) -> bytes:
             """Serialize this Investigation to UTF-8 encoded ISA JSON bytes."""
             return self.to_str(options=options).encode()
 
-        def to_str(self, options: Union[None, SerializationOptions] = None) -> str:
-            """Serialize this Investigation to UTF-8 encoded ISA JSON bytes."""
+        def to_str(
+            self,
+            options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Optional settings for JSON-LD metadata and empty-field handling."),
+            ] = None,
+        ) -> str:
+            """Serialize this Investigation to an ISA JSON string."""
             content = self.model_dump_json(context=options, indent=2, by_alias=True, exclude_none=True)
             return content
 
         def to_jsonld_expanded(
             self,
-            ontology: Union[None, Literal["obo", "sdo", "w3c", "wdt", "isaterms"]] = None,
-            serialization_options: Union[None, SerializationOptions] = None,
-            jsonld_expand_options: Union[None, dict] = None,
-            use_file_context_id_prefix: bool = False,
+            ontology: Annotated[
+                Union[None, Literal["obo", "sio", "w3c", "wdt", "isaterms"]],
+                Field(description="Built-in JSON-LD context to use when serialization_options is not supplied."),
+            ] = None,
+            serialization_options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Settings with a JSON-LD config; cannot be combined with ontology."),
+            ] = None,
+            jsonld_expand_options: Annotated[
+                Union[None, dict[str, Any]], Field(description="Options passed to PyLD's JSON-LD expansion operation.")
+            ] = None,
+            use_file_context_id_prefix: Annotated[
+                bool,
+                Field(description="Use local file URLs as context ID prefixes when building the built-in context."),
+            ] = False,
         ) -> list[dict]:
             """Serialize and expand this Investigation as JSON-LD.
 
@@ -783,11 +847,24 @@ if PYDANTIC_ENABLED:
 
         def to_rdf_dataset(
             self,
-            ontology: Union[None, Literal["obo", "sdo", "w3c", "wdt", "isaterms"]] = None,
-            serialization_options: Union[None, SerializationOptions] = None,
-            jsonld_expand_options: Union[None, dict] = None,
-            rdf_options: Union[None, dict] = None,
-            use_file_context_id_prefix: bool = False,
+            ontology: Annotated[
+                Union[None, Literal["obo", "sio", "w3c", "wdt", "isaterms"]],
+                Field(description="Built-in JSON-LD context to use when serialization_options is not supplied."),
+            ] = None,
+            serialization_options: Annotated[
+                Union[None, SerializationOptions],
+                Field(description="Settings with a JSON-LD config; cannot be combined with ontology."),
+            ] = None,
+            jsonld_expand_options: Annotated[
+                Union[None, dict[str, Any]], Field(description="Options passed to PyLD's JSON-LD expansion operation.")
+            ] = None,
+            rdf_options: Annotated[
+                Union[None, dict[str, Any]], Field(description="Options passed to PyLD's RDF conversion operation.")
+            ] = None,
+            use_file_context_id_prefix: Annotated[
+                bool,
+                Field(description="Use local file URLs as context ID prefixes when building the built-in context."),
+            ] = False,
         ) -> rdflib.Dataset:
             """Convert this Investigation to an RDFLib dataset.
 
@@ -825,7 +902,13 @@ if PYDANTIC_ENABLED:
             return dataset
 
         @classmethod
-        def from_isatools_model(cls, investigation: object) -> Investigation:
+        def from_isatools_model(
+            cls,
+            investigation: Annotated[
+                ISAToolsInvestigation,
+                Field(description="An existing isatools.model.Investigation instance to convert."),
+            ],
+        ) -> Investigation:
             """Create this model from an ``isatools.model.Investigation``.
 
             The ISA model's ``to_dict`` method supplies the JSON-compatible shape
@@ -881,7 +964,13 @@ if PYDANTIC_ENABLED:
 
         @staticmethod
         def get_jsonld_config(
-            ontology: Literal["obo", "sdo", "w3c", "wdt", "isaterms"], use_file_context_id_prefix: bool = False
+            ontology: Annotated[
+                Literal["obo", "sio", "w3c", "wdt", "isaterms"],
+                Field(description="Name of the built-in ontology context to load."),
+            ],
+            use_file_context_id_prefix: Annotated[
+                bool, Field(description="Use local file URLs as context ID prefixes instead of remote URLs.")
+            ] = False,
         ) -> JsonLdConfiguration:
             folder_name = JSONLD_CONTEXT_FOLDER_MAPPING.get(ontology)
             jsonld_dir = Path(JSON_CONTEXT_ROOT_DIR) / folder_name
