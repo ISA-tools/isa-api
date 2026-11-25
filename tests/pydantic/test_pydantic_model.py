@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
+import pathlib
 import unittest
-from pathlib import Path
 
 import isatools
 from isatools.pydantic.models import JSONLD_ENABLED, PYDANTIC_ENABLED
@@ -26,7 +26,7 @@ if PYDANTIC_ENABLED:
 
     class TestPydanticModel(unittest.TestCase):
         def setUp(self):
-            self.test_data = Path(__file__).resolve().parent / "fixtures" / "i_investigation.json"
+            self.test_data = pathlib.Path(__file__).resolve().parents[1] / "data/json/BII-S-3/BII-S-3-2.json"
             self.jsonld_config = JsonLdConfiguration(
                 jsonld_dir=WIKIDATA_CONTEXT_DIR,
                 filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
@@ -118,7 +118,13 @@ if PYDANTIC_ENABLED:
 
             pydantic_dict = pydantic_investigation.to_dict()
             isatools_dict = isatools_investigation.to_dict()
-            schema = Path(isatools.__file__).parent / "resources" / "schemas" / "isa_model_version_1_0_schemas" / "core"
+            schema = (
+                pathlib.Path(isatools.__file__).parent
+                / "resources"
+                / "schemas"
+                / "isa_model_version_1_0_schemas"
+                / "core"
+            )
             validate_with_isa_json_schema(pydantic_dict, schema=schema)
             validate_with_isa_json_schema(isatools_dict, schema=schema)
 
@@ -129,7 +135,7 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
 
     class TestJsonLdModel(unittest.TestCase):
         def setUp(self):
-            self.test_data = Path(__file__).resolve().parent / "fixtures" / "i_investigation.json"
+            self.test_data = pathlib.Path(__file__).resolve().parents[1] / "data/json/BII-S-3/BII-S-3-2.json"
             self.jsonld_config = JsonLdConfiguration(
                 jsonld_dir=WIKIDATA_CONTEXT_DIR,
                 filename_match_pattern=WIKIDATA_CONTEXT_FILENAME_MATCH_PATTERN,
@@ -152,7 +158,6 @@ if PYDANTIC_ENABLED and JSONLD_ENABLED:
             assert jsonld_document
 
         def test_to_rdf(self):
-
             jsonld_expand_options = {
                 "documentLoader": FileDocumentLoader(),
                 "base": "https://raw.githubusercontent.com/ISA-tools/isa-api",
