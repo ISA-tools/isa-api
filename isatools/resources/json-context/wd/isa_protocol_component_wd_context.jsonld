@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@language": "en",
+    "wd": "http://www.wikidata.org/entity/",
+    "wdp": "http://www.wikidata.org/prop/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ProtocolComponent": "wd:Q66310131",
+    "componentName": {
+      "@id": "wdp:P1448",
+      "@type": "wd:Q857525"
+    },
+    "componentType": {
+      "@id": "wdp:P31",
+      "@type": "wd:Q190087"
+    },
+    
+    "comments": {
+      "@id": "wdp:P6607",
+      "@type": "wd:Q58897583"
+    }
+  }
+}

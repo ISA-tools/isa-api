@@ -2,6 +2,7 @@ from os import path
 
 from numpy import nan
 from pandas import DataFrame
+from pandas import __version__ as pandas_version
 
 from isatools.constants import HEADER, SYNONYMS
 from isatools.isatab.defaults import log
@@ -24,6 +25,12 @@ from isatools.model import (
     load_protocol_types_info,
 )
 from isatools.model.utils import _build_paths_and_indexes
+
+
+def _infer_objects_without_eager_copy(df):
+    if int(pandas_version.split(".", 1)[0]) < 3:
+        return df.infer_objects(copy=False)
+    return df.infer_objects()
 
 
 def flatten(current_list) -> list:
@@ -215,7 +222,7 @@ def write_study_table_files(inv_obj, output_dir):
         log.debug(f"Writing {len(DF.index)} rows")
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
-        DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)
+        DF = _infer_objects_without_eager_copy(DF.map(lambda x: nan if x == "" else x))
         DF = DF.dropna(axis=1, how="all")
 
         with open(path.join(output_dir, study_obj.filename), "wb") as out_fp:
@@ -497,7 +504,7 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
             log.debug(f"Writing {len(DF.index)} rows")
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
-            DF = DF.map(lambda x: nan if x == "" else x).infer_objects(copy=False)
+            DF = _infer_objects_without_eager_copy(DF.map(lambda x: nan if x == "" else x))
 
             DF = DF.dropna(axis=1, how="all")
 
