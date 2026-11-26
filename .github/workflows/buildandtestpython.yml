@@ -9,6 +9,8 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Download Test Data
@@ -21,7 +23,6 @@ jobs:
         cache-dependency-glob: uv.lock
     - name: Sync dependencies
       run: |
-        uv python pin ${{ matrix.python-version }}
         uv sync --extra database --extra dev
     - name: Check with Ruff
       run: uv run --locked --extra database --extra dev ruff check --config pyproject.toml
@@ -29,9 +30,9 @@ jobs:
       run: uv run --locked --extra database --extra dev ruff format --config pyproject.toml
     - name: Test with python unittest
       run: |
-        uv run --python ${{ matrix.python-version }} pytest
-        uv run --python ${{ matrix.python-version }} coverage run -m unittest discover -s tests/
-        uv run --python ${{ matrix.python-version }} coverage report -m
+        uv run pytest
+        uv run coverage run -m unittest discover -s tests/
+        uv run coverage report -m
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
       with:
