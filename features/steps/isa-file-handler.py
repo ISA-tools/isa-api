@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime, timezone
 from io import BytesIO, StringIO
+from unittest import TestCase
 from urllib.parse import urljoin
 from zipfile import ZipFile, is_zipfile
 
@@ -10,7 +11,6 @@ import httpretty
 from behave import *
 from lxml import etree
 from requests.exceptions import HTTPError
-from sure import expect
 
 from isatools.net.storage_adapter import CONTENTS, REPOS, IsaGitHubStorageAdapter
 
@@ -75,7 +75,7 @@ def step_impl_03(context):
         httpretty.POST, auth_url, body=json.dumps(auth_res_body), content_type="application/json", status=201
     )
     context.isa_adapter = IsaGitHubStorageAdapter(context.username, context.password)
-    expect(httpretty.has_request()).to.be.true
+    assert httpretty.has_request()
 
 
 @then("it should instantiate an authenticated connector instance")
@@ -83,8 +83,8 @@ def step_impl_04(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.isa_adapter.is_authenticated).to.be.true
-    expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
+    assert context.isa_adapter.is_authenticated
+    assert context.isa_adapter.token == AUTH_TOKEN
 
 
 @given("an authenticated storage adapter")
@@ -98,8 +98,8 @@ def step_impl_05(context):
         httpretty.POST, auth_url, body=json.dumps(auth_res_body), content_type="application/json", status=201
     )
     context.isa_adapter = IsaGitHubStorageAdapter("uname", "password")
-    expect(context.isa_adapter.is_authenticated).to.be.true
-    expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
+    assert context.isa_adapter.is_authenticated
+    assert context.isa_adapter.token == AUTH_TOKEN
 
 
 @step('a file object named "{remote_source}" in the remote repository "{repo_name}" owned by "{owner_name}"')
@@ -170,7 +170,7 @@ def step_impl_09(context):
         ref=branch,
     )
 
-    expect(httpretty.has_request()).to.be.true
+    assert httpretty.has_request()
 
 
 @then("it should download the files contained within the directory")
@@ -180,9 +180,10 @@ def step_impl_10(context):
     """
     out_dir = os.path.join(context.destination_path, context.source_path.split("/")[-1])
     # expect the destination to have been saved as a directory
-    expect(os.path.isdir(out_dir)).to.be.true
+    assert os.path.isdir(out_dir)
     # expect each item in the directory to have been saved as a file
-    [expect(os.path.isfile(os.path.join(out_dir, item["name"]))).to.be.true for item in context.items_in_dir]
+    for item in context.items_in_dir:
+        assert os.path.isfile(os.path.join(out_dir, item["name"]))
 
 
 @step("it should return a binary stream with the zipped content of the directory")
@@ -190,14 +191,14 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.res).to.be.a(BytesIO)
+    assert isinstance(context.res, BytesIO)
     dir_name = context.source_path.split("/")[-1]
     file_names = [os.path.join(dir_name, item["name"]) for item in context.items_in_dir]
     with ZipFile(context.res) as zip_file:
-        expect(len(zip_file.namelist())).to.be.greater_than(0)
+        assert len(zip_file.namelist()) > 0
 
         # the zip file should contain all the files listed in the source directory (i.e. in the directory JSON profile)
-        expect(set(zip_file.namelist())).to.equal(set(file_names))
+        assert set(zip_file.namelist()) == set(file_names)
 
 
 @when("the file object is a ZIP archive")
@@ -244,8 +245,8 @@ def step_impl_11(context):
         ref=branch,
     )
 
-    expect(context.res).to.be.true
-    expect(httpretty.has_request()).to.be.true
+    assert context.res
+    assert httpretty.has_request()
 
 
 @then("it should download it as it is")
@@ -255,11 +256,11 @@ def step_impl_12(context):
     """
     out_file = os.path.join(context.destination_path, context.source_path.split("/")[-1])
     # file should have been saved
-    expect(os.path.isfile(out_file)).to.be.true
+    assert os.path.isfile(out_file)
     with open(out_file, "rb") as zip_file:
         written_zip_content = zip_file.read()
 
-    expect(written_zip_content).to.equal(context.zip_content)
+    assert written_zip_content == context.zip_content
 
 
 @when("the source file points to an ISA-TAB JSON file")
@@ -303,11 +304,11 @@ def step_impl_13(context):
         ref=branch,
     )
 
-    expect(httpretty.has_request()).to.be.true
-    expect(httpretty.last_request().method).to.equal("GET")
+    assert httpretty.has_request()
+    assert httpretty.last_request().method == "GET"
     branch = context.branch_name if hasattr(context, "branch_name") else "master"
     path = encoded_file_url.replace(GITHUB_API_URL, "") + "?ref=" + branch
-    expect(httpretty.last_request().path).to.equal(path)
+    assert httpretty.last_request().path == path
 
 
 @then("it should download it as a JSON file")
@@ -316,11 +317,11 @@ def step_impl_14(context):
     :type context: behave.runner.Context
     """
     out_file = os.path.join(context.destination_path, context.source_path.split("/")[-1])
-    expect(os.path.isfile(out_file)).to.be.true
+    assert os.path.isfile(out_file)
     with open(out_file) as json_file:
         written_json_dataset = json.load(json_file)
 
-    expect(written_json_dataset).to.equal(context.json_isa_dataset_raw)
+    assert written_json_dataset == context.json_isa_dataset_raw
 
 
 @step("it should return the JSON content as a dictionary")
@@ -328,8 +329,8 @@ def step_impl_14_02(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.res).to.be.a(dict)
-    expect(context.res).to.equal(context.json_isa_dataset_raw)
+    assert isinstance(context.res, dict)
+    assert context.res == context.json_isa_dataset_raw
 
 
 @when("the source file points to an ISA-TAB XML configuration file")
@@ -372,11 +373,11 @@ def step_impl_15(context):
         ref=branch,
     )
 
-    expect(httpretty.has_request()).to.be.true
-    expect(httpretty.last_request().method).to.equal("GET")
+    assert httpretty.has_request()
+    assert httpretty.last_request().method == "GET"
     branch = context.branch_name if hasattr(context, "branch_name") else "master"
     path = encoded_file_url.replace(GITHUB_API_URL, "") + "?ref=" + branch
-    expect(httpretty.last_request().path).to.equal(path)
+    assert httpretty.last_request().path == path
 
 
 @then("it should download it as an XML file")
@@ -385,17 +386,13 @@ def step_impl_16(context):
     :type context: behave.runner.Context
     """
     out_file_path = os.path.join(context.destination_path, context.source_path.split("/")[-1])
-    # written_xml_config_content = etree.parse(out_file)
-    # expect(set(written_xml_config_content.getroot().itertext()))\
-    #    .to.equal(set(context.config_xml_content.getroot().itertext()))
     with open(out_file_path) as xml_file:
         written_xml_text = xml_file.read()
     # test equality of input and output
-    expect(written_xml_text).to.equal(context.xml_text)
+    assert written_xml_text == context.xml_text
     # test that the stored output is valid XML
-    # expect(etree.parse(StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
     xml = etree.parse(StringIO(written_xml_text))
-    expect(etree.iselement(xml.getroot())).to.be.true
+    assert etree.iselement(xml.getroot())
 
 
 @step("it should return it as an XML object")
@@ -403,8 +400,8 @@ def step_impl_17(context):
     """
     :type context: behave.runner.Context
     """
-    expect(etree.iselement(context.res.getroot())).to.be.true
-    expect(etree.tostring(context.res)).to.equal(etree.tostring(context.xml))
+    assert etree.iselement(context.res.getroot())
+    assert etree.tostring(context.res) == etree.tostring(context.xml)
 
 
 @when("it is none of the allowed file types - JSON, XML, ZIP - nor a directory")
@@ -445,7 +442,7 @@ def step_impl_18(context):
         repository=context.repo_name,
         ref=branch,
     )
-    expect(httpretty.has_request()).to.be.true
+    assert httpretty.has_request()
 
 
 @then("it should not save the file")
@@ -454,7 +451,7 @@ def step_impl_19(context):
     :type context: behave.runner.Context
     """
     out_file_path = os.path.join(context.destination_path, context.source_path.split("/")[-1])
-    expect(os.path.exists(out_file_path)).to.be.false
+    assert not os.path.exists(out_file_path)
 
 
 @step("it should return a falsey value")
@@ -462,7 +459,7 @@ def step_impl_20(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.res).to.be.false
+    assert not context.res
 
 
 @when("the remote source does not exist")
@@ -485,7 +482,7 @@ def step_impl_21(context):
         )
     except HTTPError:
         pass
-    expect(httpretty.has_request()).to.be.true
+    assert httpretty.has_request()
 
 
 @step("it should raise an error")
@@ -495,9 +492,10 @@ def step_impl_22(context):
     :type context: behave.runner.Context
     """
     httpretty.register_uri(httpretty.GET, context.download_url, body=json.dumps(context.not_found_payload), status=404)
-    expect(context.isa_adapter.retrieve).when.called_with(
-        context.source_path,
-        destination=context.destination_path,
-        owner=context.owner_name,
-        repository=context.repo_name,
-    ).to.throw(HTTPError)
+    with TestCase().assertRaises(HTTPError):
+        context.isa_adapter.retrieve(
+            context.source_path,
+            destination=context.destination_path,
+            owner=context.owner_name,
+            repository=context.repo_name,
+        )

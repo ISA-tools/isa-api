@@ -5,7 +5,6 @@ If you have problems with it, check that it's working at
 https://www.ebi.ac.uk/ols4/
 """
 
-
 import json
 import logging
 from urllib.request import urlopen

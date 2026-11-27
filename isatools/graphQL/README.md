@@ -30,6 +30,7 @@ method (see usage below.)
 
 ```python
 from json import dumps
+
 documentation = investigation.introspect()
 print(dumps(documentation.data, indent=1))
 ```
@@ -65,7 +66,7 @@ There are 3 mains queryable objects at the root of the ISA-QL syntax:
 Below is a simple example on how to get an investigation title, description and identifier, in that order.
 
 ```python
-query = '{ investigation { title description identifier }}'
+query = "{ investigation { title description identifier }}"
 response = investigation.execute_query(query)
 if response.data:
     print(dumps(response.data, indent=1))
@@ -104,7 +105,7 @@ also have their own queryable fields.
 We can reuse the previous query to request the same fields but this time for any of the studies present in the ISA document.
 
 ```python
-query = '{ studies { title description identifier }}'
+query = "{ studies { title description identifier }}"
 response = investigation.execute_query(query)
 if response.data:
     print(dumps(response.data, indent=1))
@@ -119,9 +120,9 @@ description and identifier of all the studies associated with it.
 query = "{ investigation { title studies { title description identifier }}}"
 response = investigation.execute_query(query)
 if response.data:
-  print(dumps(response.data, indent=1))
+    print(dumps(response.data, indent=1))
 elif response.errors:
-  print(response.errors)
+    print(response.errors)
 ```
 
 ### The Assays query:
@@ -146,9 +147,9 @@ The request below will retrieve the filename associated with the investigation, 
 query = "{ investigation { filename studies { filename assays { filename }}}}"
 response = investigation.execute_query(query)
 if response.data:
-  print(dumps(response.data, indent=1))
+    print(dumps(response.data, indent=1))
 elif response.errors:
-  print(response.errors)
+    print(response.errors)
 ```
 
 #### Filter parameters:
@@ -183,9 +184,9 @@ We can now apply this filter to a real query:
 query = '{ assays(filters: technologyType: { in: "nucleotide seq" }){ filename }}'
 response = investigation.execute_query(query)
 if response.data:
-  print(dumps(response.data, indent=1))
+    print(dumps(response.data, indent=1))
 elif response.errors:
-  print(response.errors)
+    print(response.errors)
 ```
 
 This query retrieves filename of assays for which the technology type includes the string "nucleotide seq".
@@ -255,9 +256,9 @@ with open(query_filepath, "r") as query_file:
     query_file.close()
 response = investigation.execute_query(query)
 if response.data:
-  print(dumps(response.data, indent=1))
+    print(dumps(response.data, indent=1))
 elif response.errors:
-  print(response.errors)
+    print(response.errors)
 ```
 
 We now want to be able to harvest user inputs and dynamically pass values to the query instead of using plain strings.
@@ -313,23 +314,18 @@ from isatools.isatab import load
 here_path = path.dirname(path.realpath(__file__))
 investigation_filepath = path.join(here_path, path.join("DIRNAME", "INVESTIGATION.txt"))
 with open(investigation_filepath, "r") as investigation_file:
-  investigation = load(investigation_file)
-  investigation_file.close()
+    investigation = load(investigation_file)
+    investigation_file.close()
 query_filepath = path.join(here_path, "my_query.gql")
 with open(query_filepath, "r") as query_file:
     query = query_file.read()
     query_file.close()
-variables = {
-  "technologyType": "nucleotide sequencing",
-  "compound": "carbon dioxide",
-  "dose": "low",
-  "source": "liver"
-}
+variables = {"technologyType": "nucleotide sequencing", "compound": "carbon dioxide", "dose": "low", "source": "liver"}
 response = investigation.execute_query(query, variables)
 if response.data:
-  print(dumps(response.data, indent=1))
+    print(dumps(response.data, indent=1))
 elif response.errors:
-  print(response.errors)
+    print(response.errors)
 ```
 
 ---

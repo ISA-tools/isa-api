@@ -5,7 +5,6 @@ ArrayExpress database. If you have problems with it, check that
 it's working at http://www.ebi.ac.uk/arrayexpress/
 """
 
-
 import csv
 import ftplib
 import logging
@@ -51,9 +50,7 @@ def get(arrayexpress_id, target_dir=None):
         log.info("Log in successful!")
         try:
             logging.info(f"Looking for experiment '{arrayexpress_id}'")
-            ftp.cwd(
-                f"{AX_EXPERIMENT_BASE_DIR}/{exp_type}/{arrayexpress_id}"
-            )
+            ftp.cwd(f"{AX_EXPERIMENT_BASE_DIR}/{exp_type}/{arrayexpress_id}")
             # this won't get set if there is no remote file or the ftp.cwd fails
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
@@ -117,9 +114,7 @@ def get(arrayexpress_id, target_dir=None):
                                 )
                                 ftp.retrbinary("RETR " + sdrf_filename, out_file.write)
         except ftplib.error_perm as ftperr:
-            log.fatal(
-                f"Could not retrieve ArrayExpress study '{arrayexpress_id}': {ftperr}"
-            )
+            log.fatal(f"Could not retrieve ArrayExpress study '{arrayexpress_id}': {ftperr}")
         finally:
             ftp.close()
             return target_dir

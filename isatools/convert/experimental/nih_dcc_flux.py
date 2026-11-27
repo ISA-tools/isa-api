@@ -1,4 +1,3 @@
-
 import json
 import os
 
@@ -386,9 +385,7 @@ def nihdcc2isa_convert(json_path, output_path):
         records.append(record)
 
     try:
-        with open(
-            f"{output_path}/{studyid}-maf-data-nih-dcc-json.txt", "w"
-        ) as fh:
+        with open(f"{output_path}/{studyid}-maf-data-nih-dcc-json.txt", "w") as fh:
             fh.writelines(data_rec_header)
             fh.writelines("\n")
             for item in records:

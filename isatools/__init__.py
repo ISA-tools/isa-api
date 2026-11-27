@@ -15,7 +15,6 @@ Example:
         $ from isatools import isatab2json
 """
 
-
 from isatools.convert import (
     isatab2cedar as isatab2cedar_module,
 )

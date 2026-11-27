@@ -148,6 +148,7 @@ class InvestigationTest(TestCase):
         expected_dict = {
             "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "",
+            "filename": "",
             "title": "",
             "publicReleaseDate": "",
             "submissionDate": "",
@@ -167,6 +168,7 @@ class InvestigationTest(TestCase):
         expected_dict = {
             "@id": "#investigation/" + mock_uuid4.return_value,
             "identifier": "inv_identifier",
+            "filename": "inv_filename",
             "title": "inv_title",
             "publicReleaseDate": "2022-10-25",
             "submissionDate": "2022-10-25",

@@ -1,6 +1,5 @@
 """Tests on isatab.py package"""
 
-
 import os
 import shutil
 import tempfile
@@ -1024,9 +1023,7 @@ source1\tspecimen\tHuman\tNCBITAXON\thttp://purl.bioontology.org/ontology/STY/T0
 
             # Sequencing process usually has an output data file
 
-            datafile1 = DataFile(
-                filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[material1]
-            )
+            datafile1 = DataFile(filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[material1])
             sequencing_process1.outputs.append(datafile1)
 
             # create a sequencing process that executes the sequencing protocol

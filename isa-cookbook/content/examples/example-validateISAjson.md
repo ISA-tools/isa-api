@@ -15,8 +15,7 @@ import os
 
 
 def main(args):
-    """usage: validateISAjson.py inputfile1 [inputfile2 ...]
-    """
+    """usage: validateISAjson.py inputfile1 [inputfile2 ...]"""
     if len(args) < 1:
         print(main.__doc__)
         sys.exit(1)
@@ -37,8 +36,8 @@ def main(args):
         else:
             with open(args[i]) as fp:
                 report = isajson.validate(fp)
-                numerrors = len(report['errors'])
-                numwarnings = len(report['warnings'])
+                numerrors = len(report["errors"])
+                numwarnings = len(report["warnings"])
                 if numerrors > 0:
                     invalid += 1
                 print("Validator found {} errors and {} warnings in this ISA-JSON file".format(numerrors, numwarnings))
@@ -46,13 +45,17 @@ def main(args):
                 totalwarnings += numwarnings
                 numfiles += 1
     print("---------------------------------------------------------------------------")
-    print("Validated {} ISA-JSONs, {} valid ISA-JSONs, {} invalid ISA-JSONs"
-          .format(numfiles - skipped, numfiles - invalid - skipped, invalid))
+    print(
+        "Validated {} ISA-JSONs, {} valid ISA-JSONs, {} invalid ISA-JSONs".format(
+            numfiles - skipped, numfiles - invalid - skipped, invalid
+        )
+    )
     print("Found {} errors and {} warnings in across all ISA-JSONs".format(totalerrors, totalwarnings))
 
     if invalid > 0:
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv)
 ```

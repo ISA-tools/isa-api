@@ -1,6 +1,5 @@
 """Various utility functions for ISA-API."""
 
-
 import csv
 import json
 import logging
@@ -436,7 +435,9 @@ class IsaTabAnalyzer:
                                     fmt_query = []
                                     for factor_query in qlist:
                                         factor_value = factor_query.split(" == ")
-                                        fmt_query_part = f"Factor_Value_{pyvar(factor_value[0])}_ == '{factor_value[1]}'"
+                                        fmt_query_part = (
+                                            f"Factor_Value_{pyvar(factor_value[0])}_ == '{factor_value[1]}'"
+                                        )
                                         fmt_query.append(fmt_query_part)
                                     fmt_query = " and ".join(fmt_query)
                                     log.debug(f"running query: {fmt_query}")

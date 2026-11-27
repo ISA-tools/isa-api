@@ -81,9 +81,7 @@ class Publication(Commentable, Identifiable):
     @status.setter
     def status(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError(
-                f"Publication.status must be a OntologyAnnotation or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"Publication.status must be a OntologyAnnotation or None; got {val}:{type(val)}")
         self.__status = val
 
     def __repr__(self):

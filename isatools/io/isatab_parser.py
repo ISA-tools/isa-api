@@ -25,7 +25,6 @@ This is a biased representation of the Study and Assay files which focuses on
 collapsing the data across the samples and raw data.
 """
 
-
 import bisect
 import collections
 import csv

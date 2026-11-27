@@ -35,9 +35,7 @@ class FactorValue(Commentable):
     @factor_name.setter
     def factor_name(self, val):
         if val is not None and not isinstance(val, StudyFactor):
-            raise AttributeError(
-                f"FactorValue.factor_name must be a StudyFactor or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"FactorValue.factor_name must be a StudyFactor or None; got {val}:{type(val)}")
         self.__factor_name = val
 
     @property
@@ -69,7 +67,7 @@ class FactorValue(Commentable):
         self.__unit = val
 
     def __repr__(self):
-        return (f"isatools.model.FactorValue(factor_name={self.factor_name!r}, value={self.value!r}, unit={self.unit!r})")
+        return f"isatools.model.FactorValue(factor_name={self.factor_name!r}, value={self.value!r}, unit={self.unit!r})"
 
     def __str__(self):
         return ("FactorValue(\n\tfactor_name={factor_name}\n\tvalue={value}\n\tunit={unit}\n)").format(
@@ -174,9 +172,7 @@ class StudyFactor(Commentable, Identifiable):
     @factor_type.setter
     def factor_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
-            raise AttributeError(
-                f"StudyFactor.factor_type must be a OntologyAnnotation or None; got {val}:{type(val)}"
-            )
+            raise AttributeError(f"StudyFactor.factor_type must be a OntologyAnnotation or None; got {val}:{type(val)}")
         self.__factor_type = val
 
     def __repr__(self):

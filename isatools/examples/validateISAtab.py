@@ -34,9 +34,7 @@ def main(args):
                 numwarnings = len(report["warnings"])
                 if numerrors > 0:
                     invalid += 1
-                print(
-                    f"Validator found {numerrors} errors and {numwarnings} warnings in this ISA-Tab archive"
-                )
+                print(f"Validator found {numerrors} errors and {numwarnings} warnings in this ISA-Tab archive")
                 totalerrors += numerrors
                 totalwarnings += numwarnings
                 numfiles += 1

@@ -29,13 +29,7 @@ def validate_with_isa_json_schema(json_dict: dict, schema: None | str | Path | d
     omitted, the bundled ISA model v1.0 core schemas are used.
     """
     if schema is None:
-        schema = (
-            Path(isatools.__file__).parent
-            / "resources"
-            / "schemas"
-            / "isa_model_version_1_0_schemas"
-            / "core"
-        )
+        schema = Path(isatools.__file__).parent / "resources" / "schemas" / "isa_model_version_1_0_schemas" / "core"
 
     if isinstance(schema, dict):
         schema_resource = DRAFT202012.create_resource(schema)
@@ -63,9 +57,7 @@ def validate_with_isa_json_schema(json_dict: dict, schema: None | str | Path | d
             schema_directory = schema
             schema_path = schema_directory / "investigation_schema.json"
             if not schema_path.is_file():
-                raise ValueError(
-                    f"schema directory does not contain investigation_schema.json: {schema_directory}"
-                )
+                raise ValueError(f"schema directory does not contain investigation_schema.json: {schema_directory}")
         elif schema.is_file():
             schema_path = schema
             schema_directory = schema.parent

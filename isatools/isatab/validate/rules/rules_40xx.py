@@ -294,7 +294,7 @@ def check_protocol_fields(table, cfg, proto_map):
                     for proto_name in proto_names:
                         proto_type = proto_map.get(proto_name)
                         if not proto_type and proto_name:
-                            spl = (f"Could not find protocol type for protocol name '{proto_name}' in file '{table.filename}'")
+                            spl = f"Could not find protocol type for protocol name '{proto_name}' in file '{table.filename}'"
                             validator.add_warning(message="Missing Protocol Declaration", supplemental=spl, code=1007)
                             log.warning(f"(W) {spl}")
                         else:
