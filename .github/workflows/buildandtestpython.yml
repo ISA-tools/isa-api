@@ -21,6 +21,10 @@ jobs:
       with:
         enable-cache: true
         cache-dependency-glob: uv.lock
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes libxml2-dev libxslt1-dev
     - name: Sync dependencies
       run: |
         uv sync --extra database --extra dev
