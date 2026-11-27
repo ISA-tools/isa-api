@@ -6,9 +6,20 @@
     "description": "JSON-schema representing an ISA model Protocol object",
     "type": "object",
     "properties": {
-        "@id": { "type": "string", "format": "uri-reference" },
-        "@context": { "type": "string", "format": "uri-reference"},
-        "@type" : { "type": "string", "enum": ["Protocol"] },
+        "@id": {
+            "type": "string",
+            "format": "uri-reference"
+        },
+        "@context": {
+            "type": "string",
+            "format": "uri-reference"
+        },
+        "@type": {
+            "type": "string",
+            "enum": [
+                "Protocol"
+            ]
+        },
         "name": {
             "type": "string"
         },
@@ -34,27 +45,13 @@
         "components": {
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "componentName": {
-                        "type": "string"
-                    },
-                    "componentType": {
-                        "$ref": "ontology_annotation_schema.json#"
-                    },
-                    "comments" : {
-                        "type": "array",
-                        "items": {
-                             "$ref": "comment_schema.json#"
-                        }
-                    }
-                }
+                "$ref": "protocol_component_schema.json#"
             }
         },
-        "comments" : {
+        "comments": {
             "type": "array",
             "items": {
-                 "$ref": "comment_schema.json#"
+                "$ref": "comment_schema.json#"
             }
         }
     },
