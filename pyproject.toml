@@ -66,7 +66,6 @@ dev = [
     "pytest-timeout>=2.4.0",
     "pytest>=8.3.5,<9.0.0",
     "coveralls>=4.0.1",
-    "sure>=2.0.1",
     "ddt>=1.7.2",
     "deepdiff>=8.6.1",
     "behave>=1.2.6",
