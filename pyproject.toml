@@ -190,3 +190,8 @@ forbidden_modules = [
 ignore_imports = [
 
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.6",
+]

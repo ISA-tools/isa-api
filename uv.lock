@@ -1346,6 +1346,11 @@ pydantic = [
     { name = "pydantic" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.15.0" },
@@ -1411,6 +1416,9 @@ requires-dist = [
     { name = "sqlalchemy", marker = "extra == 'database'", specifier = "~=2.0.31" },
 ]
 provides-extras = ["notebook", "pydantic", "jsonld", "dev", "database", "all"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.17.6" }]
 
 [[package]]
 name = "iso8601"
