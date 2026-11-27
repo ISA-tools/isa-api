@@ -3,7 +3,7 @@ name = "isatools"
 version = "0.14.3"
 description = "Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments"
 readme = "README.md"
-requires-python = ">=3.9,<4"
+requires-python = ">=3.11.5,<4"
 
 license = "CPAL-1.0"
 license-files = ["LICENSE.txt"]
@@ -24,16 +24,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "setuptools>=77.0.3,<81",
-    'numpy~=2.0.2 ; python_version < "3.10"',
-    'numpy~=2.2.4,<3.0.0 ; python_version >= "3.10"',
+    'numpy~=2.2.4 ; python_version >= "3.10" and python_version < "3.14"',
+    'numpy>=2.3.3,<3 ; python_version >= "3.14"',
     'networkx>=3.2,<3.3 ; python_version < "3.10"',
     'networkx>=3.4.2 ; python_version >= "3.10"',
     "jsonschema>=4.23.0,<5",
@@ -46,6 +44,7 @@ dependencies = [
     "chardet>=5.2.0",
     "jinja2>=3.1.4",
     "beautifulsoup4>=4.14.2",
+    "soupsieve>=4.1.3",
     "ddt~=1.7.2",
     "deepdiff~=8.6.1",
     "mzml2isa==1.1.1",
@@ -67,7 +66,6 @@ dev = [
     "pytest-timeout>=2.4.0",
     "pytest>=8.3.5,<9.0.0",
     "coveralls>=4.0.1",
-    "sure>=2.0.1",
     "ddt>=1.7.2",
     "deepdiff>=8.6.1",
     "behave>=1.2.6",
