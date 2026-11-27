@@ -18,7 +18,6 @@ def step_impl_2(context):
     """
     :type context: behave.runner.Context
     """
-    pass
 
 
 @then("it should return a ZIP file object")
@@ -26,7 +25,6 @@ def step_impl_3(context):
     """
     :type context: behave.runner.Context
     """
-    pass
 
 
 @step("the ZIP file should contain as many directories as the element in the list")
@@ -34,7 +32,6 @@ def step_impl_4(context):
     """
     :type context: behave.runner.Context
     """
-    pass
 
 
 @step("nothing else")

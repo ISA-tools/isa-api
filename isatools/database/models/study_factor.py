@@ -54,5 +54,5 @@ def make_study_factor_methods():
         session.add(factor)
         return factor
 
-    setattr(StudyFactorModel, "to_sql", to_sql)
-    setattr(StudyFactorModel, "get_table", make_get_table_method(StudyFactor))
+    StudyFactorModel.to_sql = to_sql
+    StudyFactorModel.get_table = make_get_table_method(StudyFactor)

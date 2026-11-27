@@ -17,7 +17,7 @@ class MTBLSDownloader:
 
     def __new__(cls) -> None:
         if cls._instance is None:
-            cls._instance = super(MTBLSDownloader, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls.ftp = cls.__connect()
         return cls._instance
 
@@ -79,7 +79,7 @@ def slice_data_files(dir, factor_selection=None):
     results = []
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, "[a|s]_*")):
-        log.info("Loading {table_file}".format(table_file=table_file))
+        log.info(f"Loading {table_file}")
 
         with open(table_file, encoding="utf-8") as fp:
             df = isatab.load_table(fp)

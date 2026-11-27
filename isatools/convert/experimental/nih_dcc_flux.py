@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import json
 import os
 
@@ -39,7 +37,7 @@ def nihdcc2isa_convert(json_path, output_path):
     project_set_json = dcc_json.get("project")
 
     if len(project_set_json) == 0:
-        raise IOError("No project found in input JSON")
+        raise OSError("No project found in input JSON")
 
     # print(next(iter(project_set_json)))
     project_json = next(iter(project_set_json.values()))
@@ -122,7 +120,7 @@ def nihdcc2isa_convert(json_path, output_path):
                         technology_type=OntologyAnnotation(
                             term="mass spectrometry", term_source=obi, term_accession="https://purl.org/obo/OBI_1"
                         ),
-                        filename="a_assay_ms_{count}.txt".format(count=i),
+                        filename=f"a_assay_ms_{i}.txt",
                     )
                 )
 
@@ -387,16 +385,14 @@ def nihdcc2isa_convert(json_path, output_path):
         records.append(record)
 
     try:
-        with open(
-            "{output_path}/{study_id}-maf-data-nih-dcc-json.txt".format(output_path=output_path, study_id=studyid), "w"
-        ) as fh:
+        with open(f"{output_path}/{studyid}-maf-data-nih-dcc-json.txt", "w") as fh:
             fh.writelines(data_rec_header)
             fh.writelines("\n")
             for item in records:
                 fh.writelines(item)
                 fh.writelines("\n")
         isatab.dump(investigation, output_path=output_path)
-    except IOError:
+    except OSError:
         print("Error: in main() method can't open file or write data")
 
     return True

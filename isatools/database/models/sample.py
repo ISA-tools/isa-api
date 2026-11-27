@@ -88,5 +88,5 @@ def make_sample_methods():
         session.add(sample)
         return sample
 
-    setattr(SampleModel, "to_sql", to_sql)
-    setattr(SampleModel, "get_table", make_get_table_method(Sample))
+    SampleModel.to_sql = to_sql
+    SampleModel.get_table = make_get_table_method(Sample)

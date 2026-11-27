@@ -12,9 +12,9 @@ from isatools.tests import utils
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the "
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned the "
             "data repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -23,6 +23,7 @@ class TestIsaTab2Json(unittest.TestCase):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
+        print(self._tmp_dir)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
@@ -62,6 +63,17 @@ class TestIsaTab2Json(unittest.TestCase):
 
     def test_isatab2json_convert_mtbls1(self):
         test_case = "MTBLS1"
+        actual_json = isatab2json.convert(
+            os.path.join(self._tab_data_dir, test_case), validate_first=False, use_new_parser=True
+        )
+        with open(os.path.join(self._tmp_dir, "isa.json"), "w") as out_fp:
+            json.dump(actual_json, out_fp)
+        with open(os.path.join(self._tmp_dir, "isa.json")) as actual_json:
+            report = isajson.validate(actual_json)
+            self.assertEqual(len(report["errors"]), 0)
+
+    def test_isatab2json_convert_hcmo(self):
+        test_case = "HCMO"
         actual_json = isatab2json.convert(
             os.path.join(self._tab_data_dir, test_case), validate_first=False, use_new_parser=True
         )
@@ -114,8 +126,7 @@ class TestIsaTab2Json(unittest.TestCase):
             json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, "isa.json")) as actual_json:
             report = isajson.validate(actual_json)
-            # self.assertEqual(len(report["errors"]), 0)
-            print(report["errors"])
+            self.assertEqual(len(report["errors"]), 0)
 
     def test_isatab2json_convert_comment(self):
         with open(os.path.join(self._tab_data_dir, "issue200", "i_Investigation.txt")) as fp:

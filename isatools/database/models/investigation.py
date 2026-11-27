@@ -97,5 +97,5 @@ def make_investigation_methods() -> None:
             ],
         )
 
-    setattr(InvestigationModel, "to_sql", to_sql)
-    setattr(InvestigationModel, "get_table", make_get_table_method(Investigation))
+    InvestigationModel.to_sql = to_sql
+    InvestigationModel.get_table = make_get_table_method(Investigation)

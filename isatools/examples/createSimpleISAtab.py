@@ -193,19 +193,19 @@ def create_descriptor():
         # material as output
 
         extraction_process.inputs.append(sample)
-        material = Material(name="extract-{}".format(i))
+        material = Material(name=f"extract-{i}")
         material.type = "Extract Name"
         extraction_process.outputs.append(material)
 
         # create a sequencing process that executes the sequencing protocol
 
         sequencing_process = Process(executes_protocol=sequencing_protocol)
-        sequencing_process.name = "assay-name-{}".format(i)
+        sequencing_process.name = f"assay-name-{i}"
         sequencing_process.inputs.append(extraction_process.outputs[0])
 
         # Sequencing process usually has an output data file
 
-        datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File", generated_from=[sample])
+        datafile = DataFile(filename=f"sequenced-data-{i}", label="Raw Data File", generated_from=[sample])
         sequencing_process.outputs.append(datafile)
 
         # ensure Processes are linked forward and backward

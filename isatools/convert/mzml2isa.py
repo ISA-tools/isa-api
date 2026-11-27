@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert mzML to ISA-Tab"""
 
 import logging
@@ -21,8 +20,8 @@ def convert(mzml_folder, out_folder, study_id, validate_output=False):
     :param validate_output: Flag to indicate whether to validate the generated
                             ISA-Tab
     """
-    logger.info("mzML2ISA package version: {}".format(__version__))
-    print("mzML2ISA package version: {}".format(__version__))
+    logger.info(f"mzML2ISA package version: {__version__}")
+    print(f"mzML2ISA package version: {__version__}")
     print(logger)
 
     if not os.path.exists(mzml_folder):

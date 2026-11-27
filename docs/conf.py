@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # ISA Specifications documentation build configuration file, created by
 # sphinx-quickstart on Tue Sep 13 10:32:51 2016.

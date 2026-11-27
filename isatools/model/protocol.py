@@ -83,7 +83,7 @@ class Protocol(Commentable, Identifiable):
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Protocol.name must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Protocol.name must be a str or None; got {val}:{type(val)}")
         self.__name = val
 
     @property
@@ -96,9 +96,7 @@ class Protocol(Commentable, Identifiable):
     def protocol_type(self, val):
         if val is not None and not isinstance(val, (str, OntologyAnnotation)):
             raise AttributeError(
-                "Protocol.protocol_type must be a OntologyAnnotation, a string or None; got {0}:{1}".format(
-                    val, type(val)
-                )
+                f"Protocol.protocol_type must be a OntologyAnnotation, a string or None; got {val}:{type(val)}"
             )
         elif isinstance(val, str) or val is None:
             if val is None:
@@ -115,7 +113,7 @@ class Protocol(Commentable, Identifiable):
     @description.setter
     def description(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Protocol.description must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Protocol.description must be a str or None; got {val}:{type(val)}")
         self.__description = val
 
     @property
@@ -126,7 +124,7 @@ class Protocol(Commentable, Identifiable):
     @uri.setter
     def uri(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Protocol.uri must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Protocol.uri must be a str or None; got {val}:{type(val)}")
         self.__uri = val
 
     @property
@@ -137,7 +135,7 @@ class Protocol(Commentable, Identifiable):
     @version.setter
     def version(self, val):
         if val is not None and not isinstance(val, str):
-            raise AttributeError("Protocol.version must be a str or None; got {0}:{1}".format(val, type(val)))
+            raise AttributeError(f"Protocol.version must be a str or None; got {val}:{type(val)}")
         self.__version = val
 
     @property
@@ -197,13 +195,13 @@ class Protocol(Commentable, Identifiable):
 
     def __repr__(self):
         return (
-            "isatools.model.Protocol(name='{protocol.name}', "
-            "protocol_type={protocol_type}, "
-            "uri='{protocol.uri}', version='{protocol.version}', "
-            "parameters={protocol.parameters}, "
-            "components={protocol.components}, "
-            "comments={protocol.comments})"
-        ).format(protocol=self, protocol_type=repr(self.protocol_type))
+            f"isatools.model.Protocol(name='{self.name}', "
+            f"protocol_type={self.protocol_type!r}, "
+            f"uri='{self.uri}', version='{self.version}', "
+            f"parameters={self.parameters}, "
+            f"components={self.components}, "
+            f"comments={self.comments})"
+        )
 
     def __str__(self):
         return (

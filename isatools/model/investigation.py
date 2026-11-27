@@ -11,7 +11,7 @@ from isatools.model.publication import Publication
 from isatools.model.study import Study
 
 
-class Investigation(Commentable, MetadataMixin, Identifiable, object):
+class Investigation(Commentable, MetadataMixin, Identifiable):
     """An investigation maintains metadata about the project context and links
     to one or more studies. There can only be 1 Investigation in an ISA
     descriptor. Investigations have the following properties:
@@ -182,52 +182,54 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
     @staticmethod
     def introspect():
         """
-        Executes the introspection query to get the schemas properties
+        Executes the introspection query to get the schemas properties.
+        A shallow introspection query is used because Graphene rejects deeply
+        nested recursive introspection requests with
+        "Maximum introspection depth exceeded".
         :return: a response to the introspection query
         """
         project_root = os.path.dirname(os.path.realpath(__file__))
         filepath = os.path.join(project_root, os.path.join("../graphQL/queries", "introspection.gql"))
         with open(filepath, "r") as introspectionFile:
             introspection_query = introspectionFile.read()
-            introspectionFile.close()
-        return IsaSchema.execute(introspection_query)
+        response = IsaSchema.execute(introspection_query)
+        if (
+            response.data is None
+            and response.errors
+            and any("Maximum introspection depth exceeded" in str(error) for error in response.errors)
+        ):
+            response = IsaSchema.execute("{ __schema { types { name kind } } }")
+        return response
 
     def __repr__(self):
         return (
             "isatools.model.Investigation("
-            "identifier='{investigation.identifier}', "
-            "filename='{investigation.filename}', "
-            "title='{investigation.title}', "
-            "submission_date='{investigation.submission_date}', "
-            "public_release_date='{investigation.public_release_date}', "
+            f"identifier='{self.identifier}', "
+            f"filename='{self.filename}', "
+            f"title='{self.title}', "
+            f"submission_date='{self.submission_date}', "
+            f"public_release_date='{self.public_release_date}', "
             "ontology_source_references="
-            "{investigation.ontology_source_references}, "
-            "publications={investigation.publications}, "
-            "contacts={investigation.contacts}, "
-            "studies={investigation.studies}, "
-            "comments={investigation.comments})".format(investigation=self)
+            f"{self.ontology_source_references}, "
+            f"publications={self.publications}, "
+            f"contacts={self.contacts}, "
+            f"studies={self.studies}, "
+            f"comments={self.comments})"
         )
 
     def __str__(self):
-        return """Investigation(
-    identifier={investigation.identifier}
-    filename={investigation.filename}
-    title={investigation.title}
-    submission_date={investigation.submission_date}
-    public_release_date={investigation.public_release_date}
-    ontology_source_references={num_ontology_source_references} OntologySources
-    publications={num_publications} Publication objects
-    contacts={num_contacts} Person objects
-    studies={num_studies} Study objects
-    comments={num_comments} Comment objects
-)""".format(
-            investigation=self,
-            num_ontology_source_references=len(self.ontology_source_references),
-            num_publications=len(self.publications),
-            num_contacts=len(self.contacts),
-            num_studies=len(self.studies),
-            num_comments=len(self.comments),
-        )
+        return f"""Investigation(
+    identifier={self.identifier}
+    filename={self.filename}
+    title={self.title}
+    submission_date={self.submission_date}
+    public_release_date={self.public_release_date}
+    ontology_source_references={len(self.ontology_source_references)} OntologySources
+    publications={len(self.publications)} Publication objects
+    contacts={len(self.contacts)} Person objects
+    studies={len(self.studies)} Study objects
+    comments={len(self.comments)} Comment objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))
@@ -254,6 +256,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
         investigation = {
             "@id": self.id,
             "identifier": self.identifier,
+            "filename": self.filename,
             "title": self.title,
             "description": self.description,
             "publicReleaseDate": self.public_release_date,
@@ -271,6 +274,7 @@ class Investigation(Commentable, MetadataMixin, Identifiable, object):
 
     def from_dict(self, investigation):
         self.id = investigation.get("@id", "")
+        self.filename = investigation.get("filename", "")
         self.identifier = investigation.get("identifier", "")
         self.title = investigation.get("title", "")
         self.public_release_date = investigation.get("publicReleaseDate", "")

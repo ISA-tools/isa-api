@@ -13,13 +13,13 @@ def check_study_groups(table, filename, study_group_size_in_comment):
     not
     """
     num_study_groups = get_num_study_groups(table, filename)
-    log.debug("Found {} study groups in {}".format(num_study_groups, filename))
-    msg = "Found {} study groups in {}".format(num_study_groups, filename)
-    spl = "Found {} study groups in {}".format(num_study_groups, filename)
+    log.debug(f"Found {num_study_groups} study groups in {filename}")
+    msg = f"Found {num_study_groups} study groups in {filename}"
+    spl = f"Found {num_study_groups} study groups in {filename}"
     validator.add_info(message=msg, supplemental=spl, code=5001)
 
     if study_group_size_in_comment is not None and study_group_size_in_comment != num_study_groups:
-        msg = "Reported study group size {} does not match table {}".format(num_study_groups, filename)
+        msg = f"Reported study group size {num_study_groups} does not match table {filename}"
         spl = "Study group size reported as {} but found {} in {}"
         spl = spl.format(study_group_size_in_comment, num_study_groups, filename)
         log.warning(spl)

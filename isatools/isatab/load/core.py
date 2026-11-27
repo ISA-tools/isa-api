@@ -96,7 +96,7 @@ class ISATabReader:
         memory_file: StringIO = StringIO()
 
         if normed_line != sec_key:
-            raise IOError(f"Expected: {sec_key} section, but got: {normed_line}")
+            raise OSError(f"Expected: {sec_key} section, but got: {normed_line}")
         while self.__peek().rstrip() != next_sec_key:
             fileline = self.memory_file.readline()
             if not fileline:
@@ -114,12 +114,12 @@ class ISATabReader:
         """
         file_handler: StringIO = self.__read_tab_section(sec_key=current_section_key, next_sec_key=next_section_key)
         df: DataFrame = (
-            read_csv(filepath_or_buffer=file_handler, names=range(0, 128), sep="\t", engine="python", encoding="utf-8")
+            read_csv(filepath_or_buffer=file_handler, names=range(128), sep="\t", engine="python", encoding="utf-8")
             .dropna(axis=1, how="all")
             .T
         )
-        df.replace(nan, "", regex=True, inplace=True)  # Strip out the nan entries
-        df.reset_index(inplace=True)  # Reset study_index so it is accessible as column
+        df = df.replace(nan, "", regex=True)  # Strip out the nan entries
+        df.reset_index()  # Reset study_index so it is accessible as column
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
         return df.reindex(df.index.drop(0))  # Return the re-indexed DataFrame
 
@@ -432,7 +432,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         elif hasattr(file, "read"):
             file_content = file
         else:
-            raise IOError("Cannot resolve input file")
+            raise OSError("Cannot resolve input file")
         self.__file = file_content
         isatab_reader: ISATabReader = ISATabReader(file_content)
         self.__df_dict = isatab_reader.run()
@@ -468,6 +468,7 @@ class ISATabInvestigationLoader(ISATabLoaderMixin):
         if not self.__df_dict["investigation"].empty:
             row = self.__df_dict["investigation"].iloc[0]
             self.__investigation.identifier = str(row["Investigation Identifier"])
+            self.__investigation.filename = path.basename(self.file.name)
             self.__investigation.title = row["Investigation Title"]
             self.__investigation.description = row["Investigation Description"]
             self.__investigation.submission_date = row["Investigation Submission Date"]
@@ -649,21 +650,19 @@ class ISATabAssayLoader(ISATabLoaderMixin, ISATabLoaderStudyAssayMixin):
     def load(self):
         """Create the assay object from the dataframes"""
         self.assay = Assay(
-            **{
-                "filename": self.__row["Study Assay File Name"],
-                "measurement_type": self.get_ontology_annotation(
-                    self.__row["Study Assay Measurement Type"],
-                    self.__row["Study Assay Measurement Type Term Accession Number"],
-                    self.__row["Study Assay Measurement Type Term Source REF"],
-                ),
-                "technology_type": self.get_ontology_annotation(
-                    self.__row["Study Assay Technology Type"],
-                    self.__row["Study Assay Technology Type Term Accession Number"],
-                    self.__row["Study Assay Technology Type Term Source REF"],
-                ),
-                "technology_platform": self.__row["Study Assay Technology Platform"],
-                "comments": self.get_comments_row(self.__columns, self.__row),
-            }
+            filename=self.__row["Study Assay File Name"],
+            measurement_type=self.get_ontology_annotation(
+                self.__row["Study Assay Measurement Type"],
+                self.__row["Study Assay Measurement Type Term Accession Number"],
+                self.__row["Study Assay Measurement Type Term Source REF"],
+            ),
+            technology_type=self.get_ontology_annotation(
+                self.__row["Study Assay Technology Type"],
+                self.__row["Study Assay Technology Type Term Accession Number"],
+                self.__row["Study Assay Technology Type Term Source REF"],
+            ),
+            technology_platform=self.__row["Study Assay Technology Platform"],
+            comments=self.get_comments_row(self.__columns, self.__row),
         )
         if not self.skip_load_tables:
             self.load_tables()
@@ -745,13 +744,13 @@ def load_table(fp):
             val = hits[0].strip()
             new_label = ""
             if "Comment" in label:
-                new_label = "Comment[{val}]".format(val=val)
+                new_label = f"Comment[{val}]"
             elif "Characteristics" in label:
-                new_label = "Characteristics[{val}]".format(val=val)
+                new_label = f"Characteristics[{val}]"
             elif "Parameter Value" in label:
-                new_label = "Parameter Value[{val}]".format(val=val)
+                new_label = f"Parameter Value[{val}]"
             elif "Factor Value" in label:
-                new_label = "Factor Value[{val}]".format(val=val)
+                new_label = f"Factor Value[{val}]"
             new_labels.append(new_label)
         elif label == "Material Type":
             new_label = "Characteristics[Material Type]"
@@ -778,7 +777,7 @@ def read_tfile(tfile_path: str, index_col=None, factor_filter=None) -> IsaTabDat
         tfile_df = IsaTabDataFrame(csv)
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
-        return tfile_df[tfile_df["Factor Value[{}]".format(factor_filter[0])] == factor_filter[1]]
+        return tfile_df[tfile_df[f"Factor Value[{factor_filter[0]}]"] == factor_filter[1]]
     return tfile_df
 
 

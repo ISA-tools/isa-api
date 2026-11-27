@@ -13,7 +13,8 @@ To convert from a directory `./tabdir/` containing valid ISA-Tab files
 
 ```python
 from isatools.convert import isatab2json
-isa_json = isatab2json.convert('./tabdir/', validate_first=True, use_new_parser=True)
+
+isa_json = isatab2json.convert("./tabdir/", validate_first=True, use_new_parser=True)
 ```
 
 
@@ -44,8 +45,8 @@ ISA-Tab files: in our example, this directory is `./outdir/`, Therefore, the cod
 ```python
 from isatools.convert import json2isatab
 
-with open('isa.json') as file_pointer:
-    json2isatab.convert(file_pointer, './outdir/')
+with open("isa.json") as file_pointer:
+    json2isatab.convert(file_pointer, "./outdir/")
 ```
 
 To turn off pre-conversion validation, use
@@ -55,8 +56,8 @@ To turn off pre-conversion validation, use
 ```python
 from isatools.convert import json2isatab
 
-with open('isa.json') as file_pointer:
-    json2isatab.convert(file_pointer, './outdir/', validate_first=False)
+with open("isa.json") as file_pointer:
+    json2isatab.convert(file_pointer, "./outdir/", validate_first=False)
 ```
 
 ```{note}

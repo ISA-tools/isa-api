@@ -102,7 +102,7 @@ class TestSample(TestCase):
             "derives_from=0 Source objects\n\t"
             "comments=0 Comment objects\n)"
         )
-        self.assertTrue((str(self.sample) == expected_str))
+        self.assertTrue(str(self.sample) == expected_str)
 
     def test_equalities(self):
         first_sample = Sample(name="sample1")

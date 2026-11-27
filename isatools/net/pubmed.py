@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """Functions for querying PubMed.
 
 This module connects to the PubMed API via Entrez.
 If you have problems with it, check that it's working at
 https://www.ncbi.nlm.nih.gov/pubmed/
 """
-
-from __future__ import absolute_import
 
 import logging
 

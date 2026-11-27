@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for importing from MetabolomicsWorkbench"""
 
 import ftplib
@@ -187,26 +186,7 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
                         for key in dd:
                             # print(dd[key]["analysis_id"])
                             if dd[key]["analysis_id"] == mw_analysis_id:
-                                if "other_id" in dd.items():
-                                    record_values = (
-                                        key
-                                        + "\t"
-                                        + dd[key]["metabolite_name"]
-                                        + "\t"
-                                        + dd[key]["metabolite_id"]
-                                        + "\t"
-                                        + dd[key]["pubchem_id"]
-                                        + "\t"
-                                        + dd[key]["other_id"]
-                                        + "\t"
-                                        + dd[key]["other_id_type"]
-                                    )
-
-                                    for value in dd[key]["DATA"].values():
-                                        record_values = record_values + "\t" + str(value)
-                                    fh.writelines(record_values)
-                                    fh.writelines("\n")
-                                elif "pubchem_id" in dd.items():
+                                if "other_id" in dd.items() or "pubchem_id" in dd.items():
                                     record_values = (
                                         key
                                         + "\t"
@@ -244,7 +224,7 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
                 else:
                     print("Dictionary expected, List Found, error in MW REST API")
                     # TODO: need feedback from NIH MW to implement a fallback
-            except IOError:
+            except OSError:
                 print("input not recognized")
 
         else:
@@ -253,7 +233,7 @@ def generate_maf_file(write_dir, mw_study_id, mw_analysis_id):
             if len(metabolites) == 0:
                 print("no json feed for metabolites!")
 
-    except IOError:
+    except OSError:
         print("Error: in generate_maf_file() method, situation not recognized")
 
 
@@ -301,7 +281,7 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, ass
 
         # DOC: writing header for ISA assay file:
         for this_item in assay_wf_header:
-            assay_file.write('"{0}"'.format(this_item))
+            assay_file.write(f'"{this_item}"')
             assay_file.write("\t")
             # print('"{0}"'.format(this_item))
         assay_file.write("\n")
@@ -320,7 +300,7 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, ass
 
                 # writing the record to file
                 for this_item in assayrecords[my_key][0]:
-                    assay_file.write('"{0}"'.format(this_item))
+                    assay_file.write(f'"{this_item}"')
                     assay_file.write("\t")
                 assay_file.write("\n")
             assay_file.write("\n")
@@ -338,13 +318,13 @@ def write_assay(write_dir, technotype, accnum, mw_analysis_nb, assayrecords, ass
 
                 # writing the record to file
                 for this_item in assayrecords[my_key][0]:
-                    assay_file.write('"{0}"'.format(this_item))
+                    assay_file.write(f'"{this_item}"')
                     assay_file.write("\t")
                 assay_file.write("\n")
             assay_file.write("\n")
 
         assay_file.close()
-    except IOError:
+    except OSError:
         print("Error: in write_assay() method, situation not recognized")
 
 
@@ -690,7 +670,7 @@ def create_nmr_assay_records(list_of_lines, study_id, analysis_id, fv_records):
 
         return longrecords, assay_wf_header, nmr_maf_qt, nmr_rawdata_qt
 
-    except IOError:
+    except OSError:
         print("Error in create_nmr_assay_records() method.")
 
 
@@ -869,7 +849,7 @@ def create_ms_assay_records(lol, input_study_id, input_analysis_id, fv_records):
 
         return longrecords, assay_wf_header, ms_rawdata_qt, ms_maf_qt
 
-    except IOError:
+    except OSError:
         print("Error: in create_ms_assay_records() method.")
 
 
@@ -920,7 +900,7 @@ def get_fv_records(lol):
                         factor = factor.strip()
                         newrecord.append(value.strip())
 
-                        if factor in factors.keys():
+                        if factor in factors:
                             factors[factor] += 1
                         else:
                             factors[factor] = 1
@@ -932,7 +912,7 @@ def get_fv_records(lol):
                     else:
                         value = elements[1]
 
-                    if factor in factors.keys():
+                    if factor in factors:
                         factors[factor] += 1
                     else:
                         factors[factor] = 1
@@ -941,7 +921,7 @@ def get_fv_records(lol):
 
                 records.append(newrecord)
 
-    for my_key in factors.keys():
+    for my_key in factors:
         restofrecordheader.append("Factor Value[" + my_key + "]")
 
     return records, factors, restofrecordheader
@@ -960,7 +940,7 @@ def get_mwfile_as_lol(input_url):
             lines = line.split("\\t")
             mw_as_lol.append(lines)
         return mw_as_lol
-    except IOError:
+    except OSError:
         print("IOError in get_mwfile_as_lol() method: can not open file or read data")
 
 
@@ -985,7 +965,7 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
             # write study header to file
             # studyfileheader = studyfileheader+factorheader
             for this_element in study_file_header:
-                study_file.write('"{0}"'.format(this_element))
+                study_file.write(f'"{this_element}"')
                 # print('"{0}"'.format(this_element))
                 study_file.write("\t")
             study_file.write("\n")
@@ -1006,10 +986,10 @@ def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
 
             study_file.close()
 
-        except IOError:
+        except OSError:
             print("IOError in write_study_file method(): can not write to file.")
 
-    except IOError:
+    except OSError:
         print("IOError in write_study_file() method: can not open file or read data ")
 
 
@@ -1023,7 +1003,7 @@ def get_raw_data(study_accession_number):
     try:
         ftp_download_url = "ftp://www.metabolomicsworkbench.org/Studies/" + study_accession_number + ".zip"
         urlopen(url=ftp_download_url)
-    except IOError:
+    except OSError:
         print("IOError in get_raw_data() method: no permission to download or wrong url")
 
 
@@ -2169,7 +2149,7 @@ def mw2isa_convert(**kwargs):
                 print("writing 'investigation information' to file...")
                 print(isatab.dumps(investigation))
                 isatab.dump(investigation, outputpath)
-            except IOError:
+            except OSError:
                 print("Error: in main() method can't open file or write data")
 
             # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:

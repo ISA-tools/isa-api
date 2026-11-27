@@ -97,7 +97,7 @@ class StudyTest(TestCase):
         self.assertIsInstance(default_protocol, Protocol)
         self.assertEqual([], default_protocol.parameters)
 
-        for protocol in parameter_list_index.keys():
+        for protocol in parameter_list_index:
             default_protocol = self.study._Study__get_default_protocol(protocol)
             self.assertIsInstance(default_protocol, Protocol)
             for parameter in default_protocol.parameters:

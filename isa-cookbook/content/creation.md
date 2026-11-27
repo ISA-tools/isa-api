@@ -36,6 +36,7 @@ investigation with one study, you might use the following code:
 
 ```python
 from isatools.model import *
+
 investigation = Investigation()
 investigation.studies.append(Study())  # adds a new default Study object to investigation
 ```
@@ -60,7 +61,7 @@ investigation.studies[0].assays
 * Checking if the `Investigation` object has a `title` attribute filled:
 ```python
 investigation.title
-''
+""
 ```
 
 Since we have not set any data in our ISA objects, these are by default
@@ -72,7 +73,7 @@ investigation.title = "My ISA Investigation"
 ```
 ```python
 investigation.title
-'My ISA Investigation'
+"My ISA Investigation"
 ```
 
 ```python
@@ -80,7 +81,7 @@ investigation.studies[0].title = "My ISA Study"
 ```
 ```python
 investigation.studies[0].title
-'My ISA Study'
+"My ISA Study"
 ```
 
 ```python

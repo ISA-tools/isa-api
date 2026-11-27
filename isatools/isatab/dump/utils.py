@@ -12,7 +12,7 @@ def get_seen_comments(target: list) -> dict:
     seen_comments = {}
     for item in target:
         for current_comment in item.comments:
-            if current_comment.name in seen_comments.keys():
+            if current_comment.name in seen_comments:
                 seen_comments[current_comment.name].append(current_comment.value)
             else:
                 seen_comments[current_comment.name] = [current_comment.value]

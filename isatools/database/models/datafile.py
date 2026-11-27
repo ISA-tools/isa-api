@@ -48,5 +48,5 @@ def make_datafile_methods():
         session.add(datafile)
         return datafile
 
-    setattr(DataFileModel, "to_sql", to_sql)
-    setattr(DataFileModel, "get_table", make_get_table_method(Datafile))
+    DataFileModel.to_sql = to_sql
+    DataFileModel.get_table = make_get_table_method(Datafile)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 """Convert ISA-JSOn to MAGE-TAB"""
 
 import logging

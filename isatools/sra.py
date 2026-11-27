@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for reading and writing SRA-XML.
 
 Functions for reading and writing SRA-XML. SRA-XML content is loaded into
@@ -53,7 +52,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
     def get_comment(assay, name):
         hits = [c for c in assay.comments if c.name.lower() == name.lower()]
         if len(hits) > 1:
-            raise AttributeError("Multiple comments of label '{}' found".format(name))
+            raise AttributeError(f"Multiple comments of label '{name}' found")
         elif len(hits) < 1:
             return None
         else:
@@ -75,7 +74,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
             if pv.category.parameter_name.term.lower().replace("_", " ") == name.lower().replace("_", " ")
         ]
         if len(hits) > 1:
-            raise AttributeError("Multiple parameter values of category '{}' found".format(name))
+            raise AttributeError(f"Multiple parameter values of category '{name}' found")
         elif len(hits) < 1:
             return None
         else:
@@ -119,10 +118,10 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 has_sra_contact = True
         if not has_sra_contact:
             raise ValueError(
-                "The study '{0}' has either no SRA contact or no "
+                f"The study '{istudy.identifier}' has either no SRA contact or no "
                 "email specified for the contact. Please ensure you have one "
                 "contact with a 'Role' as 'SRA Inform On Status', otherwise "
-                "we cannot export to SRA.".format(istudy.identifier)
+                "we cannot export to SRA."
             )
 
         if istudy.submission_date is None or istudy.submission_date == "":
@@ -170,11 +169,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                     if get_comment(assay_seq_process, "export") is not None:
                         log.debug("HAS EXPORT COMMENT IN ASSAY")
                         export = get_comment(assay_seq_process, "export").value
-                        log.debug("export is {}".format(export))
+                        log.debug(f"export is {export}")
                         do_export = export.lower() != "no"
                     else:
                         log.debug("NO EXPORT COMMENT FOUND")
-                    log.debug("Perform export? {}".format(str(do_export)))
+                    log.debug(f"Perform export? {do_export!s}")
                     if do_export:
                         sample = None
                         curr_process = assay_seq_process
@@ -183,10 +182,10 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             curr_process = curr_process.prev_process
                         assay_to_export = {
                             "sample": sample,
-                            "sample_alias": "{0}:sample:{1}".format(study_acc, sample.name),
-                            "run_alias": "{0}:assay:{1}".format(study_acc, assay_seq_process.name),
+                            "sample_alias": f"{study_acc}:sample:{sample.name}",
+                            "run_alias": f"{study_acc}:assay:{assay_seq_process.name}",
                             "exp_alias": "{0}:generic_assay:{1}".format(
-                                study_acc, "{0}:{1}".format(iassay.filename[:-4], assay_seq_process.name)
+                                study_acc, f"{iassay.filename[:-4]}:{assay_seq_process.name}"
                             ),
                             "data_files": [],
                         }
@@ -207,8 +206,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 except IndexError:
                                     log.warning(
                                         "Could not infer SRA filetype for "
-                                        "data file {filename}; defaulting to "
-                                        "'other'".format(filename=datafile.filename)
+                                        f"data file {datafile.filename}; defaulting to "
+                                        "'other'"
                                     )
                                     filetype = "other"
                             else:
@@ -245,27 +244,21 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_source = get_pv(assay_to_export["library construction"], "library source")
                             if library_source.upper() not in ["GENOMIC", "GENOMIC SINGLE CELL", "METAGENOMIC", "OTHER"]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_source
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_source}"
                                 )
                                 library_source = "OTHER"
 
                             library_strategy = get_pv(assay_to_export["library construction"], "library strategy")
                             if library_strategy.upper() not in ["WGS", "OTHER"]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_strategy
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_strategy}"
                                 )
                                 library_strategy = "OTHER"
 
                             library_selection = get_pv(assay_to_export["library construction"], "library selection")
                             if library_selection not in ["RANDOM", "UNSPECIFIED"]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_selection
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_selection}"
                                 )
                                 library_selection = "unspecified"
 
@@ -274,7 +267,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             )
                             mid_pv = get_pv(assay_to_export["library construction"], "mid")
                             if mid_pv is not None:
-                                protocol += "\n mid: {}".format(mid_pv.value)
+                                protocol += f"\n mid: {mid_pv.value}"
 
                             assay_to_export["library_source"] = library_source
                             assay_to_export["library_strategy"] = library_strategy
@@ -302,29 +295,29 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             )
                             mid_pv = get_pv(assay_to_export["library construction"], "mid")
                             if mid_pv is not None:
-                                protocol += "\n mid: {}".format(mid_pv)
+                                protocol += f"\n mid: {mid_pv}"
                                 assay_to_export["barcode"] = mid_pv
                                 assay_to_export["min_match"] = len(mid_pv)
                             if nucl_acid_amp is not None:
-                                protocol += "\n nucl_acid_amp: {}".format(nucl_acid_amp.value)
+                                protocol += f"\n nucl_acid_amp: {nucl_acid_amp.value}"
                             url = get_pv(assay_to_export["library construction"], "url")
                             if url is not None:
-                                protocol += "\n url: {}".format(nucl_acid_amp.value)
+                                protocol += f"\n url: {nucl_acid_amp.value}"
                             target_taxon = assay_to_export["target_taxon"]
                             if target_taxon is not None:
-                                protocol += "\n target_taxon: {}".format(target_taxon)
+                                protocol += f"\n target_taxon: {target_taxon}"
                             target_gene = get_pv(assay_to_export["library construction"], "target_gene")
                             if target_gene is not None:
-                                protocol += "\n target_gene: {}".format(target_gene)
+                                protocol += f"\n target_gene: {target_gene}"
                             target_subfragment = get_pv(assay_to_export["library construction"], "target_subfragment")
                             if target_subfragment is not None:
-                                protocol += "\n target_subfragment: {}".format(target_subfragment)
+                                protocol += f"\n target_subfragment: {target_subfragment}"
                             pcr_primers = get_pv(assay_to_export["library construction"], "pcr_primers")
                             if pcr_primers is not None:
-                                protocol += "\n pcr_primers: {}".format(pcr_primers)
+                                protocol += f"\n pcr_primers: {pcr_primers}"
                             pcr_cond = get_pv(assay_to_export["library construction"], "pcr_cond")
                             if pcr_cond is not None:
-                                protocol += "\n pcr_cond: {}".format(pcr_cond)
+                                protocol += f"\n pcr_cond: {pcr_cond}"
                             assay_to_export["library_construction_protocol"] = protocol
 
                             if target_gene is not None:
@@ -337,18 +330,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_strategy = get_pv(assay_to_export["library construction"], "library strategy")
                             if library_strategy.upper() not in ["WGS", "OTHER"]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_strategy
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_strategy}"
                                 )
                                 library_strategy = "OTHER"
 
                             library_selection = get_pv(assay_to_export["library construction"], "library selection")
                             if library_selection not in ["RANDOM", "UNSPECIFIED"]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_selection
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_selection}"
                                 )
                                 library_selection = "unspecified"
 
@@ -357,7 +346,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             )
                             mid_pv = get_pv(assay_to_export["library construction"], "mid")
                             if mid_pv is not None:
-                                protocol += "\n mid: {}".format(mid_pv.value)
+                                protocol += f"\n mid: {mid_pv.value}"
 
                             assay_to_export["library_source"] = library_source
                             assay_to_export["library_strategy"] = library_strategy
@@ -382,9 +371,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 "OTHER",
                             ]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_source
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_source}"
                                 )
                                 library_source = "OTHER"
 
@@ -399,9 +386,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 "OTHER",
                             ]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_strategy
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_strategy}"
                                 )
                                 library_strategy = "OTHER"
 
@@ -420,9 +405,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 "other",
                             ]:
                                 log.warning(
-                                    "ERROR:value supplied is not compatible with SRA1.5 schema {}".format(
-                                        library_selection
-                                    )
+                                    f"ERROR:value supplied is not compatible with SRA1.5 schema {library_selection}"
                                 )
                                 library_selection = "other"
 
@@ -438,7 +421,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export["library_layout"] = library_layout.lower()
                         # END transciption profiling library selection
                         else:
-                            log.error("ERROR:Unsupported measurement type: {}".format(iassay.measurement_type.term))
+                            log.error(f"ERROR:Unsupported measurement type: {iassay.measurement_type.term}")
                         mid_pv = get_pv(assay_to_export["library construction"], "mid")
                         assay_to_export["poolingstrategy"] = mid_pv
                         seq_instrument = get_pv(assay_to_export["nucleic acid sequencing"], "sequencing instrument")
@@ -446,9 +429,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         assays_to_export.append(assay_to_export)
             else:
                 log.error(
-                    "ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(
-                        iassay.measurement_type.term, iassay.technology_type.term
-                    )
+                    f"ERROR:Unsupported measurement/technology type {iassay.measurement_type.term}/{iassay.technology_type.term}, skipping assays"
                 )
 
         xexp_set_template = env.get_template("experiment_set.xml")
@@ -498,7 +479,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         try:
                             schema.assertValid(doc)
                         except etree.DocumentInvalid as e:
-                            log.error("Schema validation failed on {}".format("{0}:\n{1}".format(docpath, str(e))))
+                            log.error("Schema validation failed on {}".format(f"{docpath}:\n{e!s}"))
                 except etree.XMLSchemaParseError as e:
                     log.error(e)
 
@@ -519,7 +500,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 print(prettify(xsample_set), file=xsample_set_file)
             validate(os.path.join(export_path, "sample_set.xml"), "SRA.sample.xsd")
         else:
-            raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
+            raise NotADirectoryError(f"export path '{export_path}' is not a directory")
 
 
 def create_datafile_hashes(fileroot, filenames):
@@ -554,5 +535,5 @@ def create_datafile_hashes(fileroot, filenames):
         if isfile(join(fileroot, file)):
             datafilehashes[file] = md5sum(filename=join(fileroot, file))
         else:
-            raise FileNotFoundError("{} is not a file".format(join(fileroot, file)))
+            raise FileNotFoundError(f"{join(fileroot, file)} is not a file")
     return datafilehashes

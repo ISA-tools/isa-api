@@ -141,9 +141,9 @@ class TestProcess(TestCase):
             "comments=0 Comment objects\n)"
         )
         expected_str = (
-            'isatools.model.process.Process(id="test". name="", executes_protocol={0}, '
+            f'isatools.model.process.Process(id="test". name="", executes_protocol={expected_protocol_str}, '
             'date="None", performer="None", inputs=[], outputs=[])'
-        ).format(expected_protocol_str)
+        )
         self.assertEqual(expected_str, repr(self.process))
         self.assertEqual(hash(self.process), hash(repr(self.process)))
 

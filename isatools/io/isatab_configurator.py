@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Generated Thu Jan 21 10:45:32 2016 by generateDS.py version 2.18a.
 #
@@ -75,7 +74,7 @@ try:
     from generatedssuper import GeneratedsSuper
 except ImportError:
 
-    class GeneratedsSuper(object):
+    class GeneratedsSuper:
         tzoff_pattern = re_.compile(r"(\+|-)((0\d|1[0-3]):[0-5]\d|14:00)$")
 
         class _FixedOffsetTZ(datetime_.tzinfo):
@@ -219,7 +218,7 @@ except ImportError:
                             _svalue += "+"
                         hours = total_seconds // 3600
                         minutes = (total_seconds - (hours * 3600)) // 60
-                        _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
+                        _svalue += f"{hours:02d}:{minutes:02d}"
             return _svalue
 
         @classmethod
@@ -274,7 +273,7 @@ except ImportError:
                                 _svalue += "+"
                             hours = total_seconds // 3600
                             minutes = (total_seconds - (hours * 3600)) // 60
-                            _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
+                            _svalue += f"{hours:02d}:{minutes:02d}"
             except AttributeError:
                 pass
             return _svalue
@@ -329,7 +328,7 @@ except ImportError:
                             _svalue += "+"
                         hours = total_seconds // 3600
                         minutes = (total_seconds - (hours * 3600)) // 60
-                        _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
+                        _svalue += f"{hours:02d}:{minutes:02d}"
             return _svalue
 
         def gds_validate_simple_patterns(self, patterns, target):
@@ -638,13 +637,7 @@ class MixedContainer:
         return text
 
     def exportLiteral(self, outfile, level, name):
-        if self.category == MixedContainer.CategoryText:
-            showIndent(outfile, level)
-            outfile.write(
-                'model_.MixedContainer(%d, %d, "%s", "%s"),\n'
-                % (self.category, self.content_type, self.name, self.value)
-            )
-        elif self.category == MixedContainer.CategorySimple:
+        if self.category == MixedContainer.CategoryText or self.category == MixedContainer.CategorySimple:
             showIndent(outfile, level)
             outfile.write(
                 'model_.MixedContainer(%d, %d, "%s", "%s"),\n'
@@ -665,7 +658,7 @@ class MixedContainer:
             outfile.write(")\n")
 
 
-class MemberSpec_(object):
+class MemberSpec_:
     def __init__(self, name="", data_type="", container=0):
         self.name = name
         self.data_type = data_type

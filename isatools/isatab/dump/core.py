@@ -42,7 +42,7 @@ def dump(
 
     if not _RX_I_FILE_NAME.match(i_file_name):
         log.debug("investigation filename=", i_file_name)
-        raise NameError("Investigation file must match pattern i_*.txt, got {}".format(i_file_name))
+        raise NameError(f"Investigation file must match pattern i_*.txt, got {i_file_name}")
 
     if path.exists(output_path):
         fp = open(path.join(output_path, i_file_name), "wb")
@@ -197,7 +197,7 @@ def dumps(isa_obj, skip_dump_tables=False, write_fvs_in_assay_table=False):
     :return: String output of the ISA-Tab files
     """
     tmp = None
-    output = str()
+    output = ""
     try:
         tmp = mkdtemp()
         dump(

@@ -1,0 +1,9 @@
+Sample Name	Protocol REF	Assay Name	Raw Data File	Comment[raw signal]	Factor Value[drug]	Factor Value[environment]	Comment[treatment]	Factor Value[monitoring day]	Unit	Term Source REF	Term Accession Number
+animal-1-sample-1	data acquisition	assay1	activity_count-animal-1.txt	99	vehicle	standard	vehicle-standard	1	day		
+animal-2-sample-1	data acquisition	assay2	activity_count-animal-2.txt	105	vehicle	standard	vehicle-standard	1	day		
+animal-3-sample-1	data acquisition	assay3	activity_count-animal-3.txt	106	vehicle	enriched	vehicle-enriched	1	day		
+animal-4-sample-1	data acquisition	assay4	activity_count-animal-4.txt	107	vehicle	enriched	vehicle-enriched	1	day		
+animal-5-sample-1	data acquisition	assay5	activity_count-animal-4.txt	114	active	standard	active-standard	1	day		
+animal-6-sample-1	data acquisition	assay6	activity_count-animal-1.txt	116	active	standard	active-standard	1	day		
+animal-7-sample-1	data acquisition	assay7	activity_count-animal-1.txt	122	active	enriched	active-enriched	1	day		
+animal-8-sample-1	data acquisition	assay8	activity_count-animal-1.txt	121	active	enriched	active-enriched	1	day		

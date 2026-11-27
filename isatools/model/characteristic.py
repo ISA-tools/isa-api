@@ -56,7 +56,7 @@ class Characteristic(Commentable):
         return self.__value
 
     @value.setter
-    def value(self, val: str | int | float | OntologyAnnotation | None):
+    def value(self, val: str | float | OntologyAnnotation | None):
         if val is not None and not isinstance(val, (str, int, float, OntologyAnnotation)):
             error_msg = "Characteristic.value must be a string, numeric, an OntologyAnnotation, or None; got {0}:{1}"
             error_msg = error_msg.format(val, type(val))
@@ -79,8 +79,8 @@ class Characteristic(Commentable):
     def __repr__(self):
         return (
             "isatools.model.Characteristic("
-            "category={category}, value={value}, unit={unit}, comments={characteristic.comments})"
-        ).format(characteristic=self, category=repr(self.category), value=repr(self.value), unit=repr(self.unit))
+            f"category={self.category!r}, value={self.value!r}, unit={self.unit!r}, comments={self.comments})"
+        )
 
     def __str__(self):
         value = (
@@ -148,7 +148,7 @@ class Characteristic(Commentable):
                 self.value = value
                 self.unit = None
             except KeyError as ke:
-                raise IOError("Can't create value as annotation: " + str(ke) + " object: " + str(characteristic))
+                raise OSError("Can't create value as annotation: " + str(ke) + " object: " + str(characteristic))
         elif isinstance(value_data, (int, float)):
             try:
                 unit = indexes.get_unit(characteristic["unit"]["@id"])
@@ -158,7 +158,7 @@ class Characteristic(Commentable):
             finally:
                 self.value = value_data
         elif not isinstance(value_data, str):
-            raise IOError("Unexpected type in characteristic value")
+            raise OSError("Unexpected type in characteristic value")
         else:
             self.value = value_data
             self.unit = None

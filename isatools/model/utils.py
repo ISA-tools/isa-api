@@ -279,7 +279,7 @@ def batch_create_materials(material=None, n=1):
     """
     material_list = list()
     if isinstance(material, (Source, Sample, Material)):
-        for x in range(0, n):
+        for x in range(n):
             new_obj = _deep_copy(material)
             new_obj.name = material.name + "-" + str(x)
             if hasattr(material, "derives_from"):
@@ -331,7 +331,7 @@ def batch_create_assays(*args, n=1):
     material_a = None
     process = None
     material_b = None
-    for x in range(0, n):
+    for x in range(n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
                 if isinstance(arg[0], (Source, Sample, Material)):

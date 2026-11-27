@@ -1,31 +1,14 @@
-# -*- coding: utf-8 -*-
 """Functions for importing SRA from various sources"""
 
-from __future__ import absolute_import
-
-import functools
 import logging
 import pdb
 import re
 import subprocess
 import tempfile
-import warnings
 from io import BytesIO
 from os import listdir, path, remove, walk
 from shutil import rmtree
 from zipfile import ZipFile
-
-
-def deprecated(func):
-    @functools.wraps(func)
-    def new_func(*args, **kwargs):
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn("Call to deprecated function %s." % func.__name__, category=DeprecationWarning, stacklevel=2)
-        warnings.simplefilter("default", DeprecationWarning)
-        return func(*args, **kwargs)
-
-    return new_func
-
 
 __author__ = "massi"
 
@@ -49,34 +32,6 @@ def format_acc_numbers(sra_acc_numbers):
     sra_acc_numbers = sra_acc_numbers.split(",") if isinstance(sra_acc_numbers, str) else sra_acc_numbers
     sra_acc_numbers = [elem.strip().upper() for elem in sra_acc_numbers]
     return [elem for elem in sra_acc_numbers if _RX_ACCESSION_VALIDATION.match(elem)]
-
-
-@deprecated
-def create_isatab_xslt(sra_acc_numbers, saxon_jar_path=None):
-    """
-    THIS METHOD IS DEPRECATED. USE sra_to_isatab_batch_convert INSTEAD.
-    Given one or more SRA accession numbers (either to studies or submisssions),
-    retrieve the files from the European Nucleotide Archive (ENA) server
-    and convert them to ISA-tab using an XSL 2.0 transformation.
-    The XSLT is invoked using an executable script.
-
-    Notice: this method depend on SAXON XSLT Processor
-
-    Parameters:
-         :param sra_acc_numbers (str or list) - if a string must contain only
-            comma separated valid SRA accession numbers
-         :param saxon_jar_path str - if provided, must be a valid path
-            pointing to SAXON Java JAR file. Otherwise, the
-            default Saxon HE JAR will be used, if installed
-
-
-    Returns:
-        :returns zipfile.ZipFile if at least one of the SRA instances has been
-            successfully converted
-        :returns the output error otherwise (should this me modified?)
-
-    """
-    raise DeprecationWarning("create_isatab_xslt() is deprecated, please use sra_to_isatab_batch_convert() instead")
 
 
 def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EXECUTABLE):
@@ -118,8 +73,9 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
         for acc_number in formatted_sra_acc_numbers:
             try:
+                # TODO: Remove temporary subprocess output capture once Saxon diagnosis is complete.
                 if acc_number.startswith("SRA") or acc_number.startswith("ERA"):
-                    res = subprocess.call(
+                    res = subprocess.run(
                         [
                             "java",
                             "-jar",
@@ -128,11 +84,13 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                             STUDY_XSL_FILE,
                             "acc-number=" + acc_number,
                             "outputdir=" + destination_dir,
-                        ]
+                        ],
+                        capture_output=True,
+                        text=True,
                     )
 
                 elif acc_number.startswith("SRP") or acc_number.startswith("ERP"):
-                    res = subprocess.call(
+                    res = subprocess.run(
                         [
                             "java",
                             "-jar",
@@ -141,10 +99,21 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                             SUBMISSION_XSL_FILE,
                             "acc-number=" + acc_number,
                             "outputdir=" + destination_dir,
-                        ]
+                        ],
+                        capture_output=True,
+                        text=True,
                     )
 
-                log.info("Subprocess Saxon exited with code: %d", res)
+                # TODO: Remove temporary diagnostics at ERROR level once Saxon diagnosis is complete.
+                # ERROR ensures the diagnostics are visible with the default logging configuration.
+                log.error(
+                    "Saxon diagnostics for %s: exit code %d\nstdout:\n%s\nstderr:\n%s",
+                    acc_number,
+                    res.returncode,
+                    res.stdout,
+                    res.stderr,
+                )
+                log.info("Subprocess Saxon exited with code: %d", res.returncode)
 
                 # post-process concatenation of a_ files written out
                 output_folder = path.join(dir_name, acc_number)
@@ -159,7 +128,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                         df_list.append(df.from_csv(a_path, sep="\t"))
                         remove(a_path)
                     merged_a_file = pd.concat(df_list)
-                    merged_a_file.to_csv(path.join(dir_name, acc_number, "a_{}.txt".format(acc_number)), sep="\t")
+                    merged_a_file.to_csv(path.join(dir_name, acc_number, f"a_{acc_number}.txt"), sep="\t")
 
                 with ZipFile(buffer, "w") as zip_file:
                     zipdir(dir_name, zip_file)

@@ -35,8 +35,10 @@ providing the XML configurations. :
 
 ```python
 from isatools import isatab
-my_json_report = isatab.validate(open(os.path.join('./tabdir/', 'i_investigation.txt')),
-								 './my_custom_covid_study_isaconfig_v2021/')
+
+my_json_report = isatab.validate(
+    open(os.path.join("./tabdir/", "i_investigation.txt")), "./my_custom_covid_study_isaconfig_v2021/"
+)
 ```
 
 
@@ -119,7 +121,8 @@ specification you can use do so by doing this by doing something like:
 
 ```python
 from isatools import isajson
-my_json_report = isajson.validate(open('isa.json'))
+
+my_json_report = isajson.validate(open("isa.json"))
 ```
 
 The rules we check for in the new validators are documented in [this
@@ -145,22 +148,18 @@ To validate a batch of ISA-Tabs, you can do something like:
 
 ```python
 from isatools import isatab
-my_tabs = [
-    '/path/to/study1/',
-    '/path/to/study2/'
-]
-my_json_report = isatab.batch_validate(my_tabs, '/path/to/report.txt')
+
+my_tabs = ["/path/to/study1/", "/path/to/study2/"]
+my_json_report = isatab.batch_validate(my_tabs, "/path/to/report.txt")
 ```
 
 To validate a batch of ISA-JSONs, you can do something like
 
 ```python
 from isatools import isajson
-my_jsons = [
-    '/path/to/study1.json',
-    '/path/to/study2.json'
-]
-my_json_report = isajson.batch_validate(my_jsons, '/path/to/report.txt')
+
+my_jsons = ["/path/to/study1.json", "/path/to/study2.json"]
+my_json_report = isajson.batch_validate(my_jsons, "/path/to/report.txt")
 ```
 
 In both cases, the batch validation will return a JSON-formatted report
@@ -178,6 +177,7 @@ you can do something like:
 
 ```python
 from isatools import utils
-with open('report.txt', 'w') as report_file:
-     report_file.write(utils.format_report_csv(my_json_report))
+
+with open("report.txt", "w") as report_file:
+    report_file.write(utils.format_report_csv(my_json_report))
 ```

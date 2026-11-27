@@ -82,7 +82,7 @@ def make_ontology_annotation_methods() -> None:
         if oa:
             return oa
         term_source_id = self.term_source.to_sql(session) if self.term_source else None
-        comments_objs = [c.to_sql(session) for c in self.comments]
+        comments_objs = [c.to_sql() for c in self.comments]
 
         oa = OntologyAnnotation(
             ontology_annotation_id=self.id,
@@ -94,5 +94,5 @@ def make_ontology_annotation_methods() -> None:
         session.add(oa)
         return oa
 
-    setattr(OntologyAnnotationModel, "to_sql", to_sql)
-    setattr(OntologyAnnotationModel, "get_table", make_get_table_method(OntologyAnnotation))
+    OntologyAnnotationModel.to_sql = to_sql
+    OntologyAnnotationModel.get_table = make_get_table_method(OntologyAnnotation)

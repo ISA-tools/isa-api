@@ -18,7 +18,7 @@ from isatools.model.sample import Sample
 from isatools.model.source import Source
 
 
-class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
+class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin):
     """Study is the central unit, containing information on the subject under
     study, its characteristics and any treatments applied.
 
@@ -142,7 +142,7 @@ class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
                 self.__design_descriptors = list(val)
         else:
             raise AttributeError(
-                "{}.design_descriptors must be iterable containing OntologyAnnotations".format(type(self).__name__)
+                f"{type(self).__name__}.design_descriptors must be iterable containing OntologyAnnotations"
             )
 
     @property
@@ -206,7 +206,7 @@ class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
 
     def add_prot(self, protocol_name="", protocol_type=None, use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared in the study'.format(protocol_name))
+            log.warning(f'A protocol with name "{protocol_name}" has already been declared in the study')
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
@@ -227,13 +227,13 @@ class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            log.warning('A factor with name "{}" has already been declared in the study'.format(name))
+            log.warning(f'A factor with name "{name}" has already been declared in the study')
         else:
             self.factors.append(StudyFactor(name=name, factor_type=OntologyAnnotation(term=factor_type)))
 
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
-            log.warning('A factor with name "{}" has not been found in the study'.format(name))
+            log.warning(f'A factor with name "{name}" has not been found in the study')
         else:
             if are_you_sure:  # force user to say yes, to be sure to be sure
                 self.factors.remove(self.get_factor(name=name))
@@ -257,7 +257,7 @@ class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, Assay) for x in val):
                 self.__assays = list(val)
         else:
-            raise AttributeError("{}.assays must be iterable containing Assays".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.assays must be iterable containing Assays")
 
     @property
     def factors(self):
@@ -271,63 +271,48 @@ class Study(Commentable, Identifiable, StudyAssayMixin, MetadataMixin, object):
             if val == [] or all(isinstance(x, StudyFactor) for x in val):
                 self.__factors = list(val)
         else:
-            raise AttributeError("{}.factors must be iterable containing StudyFactors".format(type(self).__name__))
+            raise AttributeError(f"{type(self).__name__}.factors must be iterable containing StudyFactors")
 
     def __repr__(self):
         return (
-            "isatools.model.Study(filename='{study.filename}', "
-            "identifier='{study.identifier}', title='{study.title}', "
-            "description='{study.description}', "
-            "submission_date='{study.submission_date}', "
-            "public_release_date='{study.public_release_date}', "
-            "contacts={study.contacts}, "
-            "design_descriptors={study.design_descriptors}, "
-            "publications={study.publications}, factors={study.factors}, "
-            "protocols={study.protocols}, assays={study.assays}, "
-            "sources={study.sources}, samples={study.samples}, "
-            "process_sequence={study.process_sequence}, "
-            "other_material={study.other_material}, "
-            "characteristic_categories={study.characteristic_categories},"
-            " comments={study.comments}, units={study.units})".format(study=self)
+            f"isatools.model.Study(filename='{self.filename}', "
+            f"identifier='{self.identifier}', title='{self.title}', "
+            f"description='{self.description}', "
+            f"submission_date='{self.submission_date}', "
+            f"public_release_date='{self.public_release_date}', "
+            f"contacts={self.contacts}, "
+            f"design_descriptors={self.design_descriptors}, "
+            f"publications={self.publications}, factors={self.factors}, "
+            f"protocols={self.protocols}, assays={self.assays}, "
+            f"sources={self.sources}, samples={self.samples}, "
+            f"process_sequence={self.process_sequence}, "
+            f"other_material={self.other_material}, "
+            f"characteristic_categories={self.characteristic_categories},"
+            f" comments={self.comments}, units={self.units})"
         )
 
     def __str__(self):
-        return """Study(
-    identifier={study.identifier}
-    filename={study.filename}
-    title={study.title}
-    description={study.description}
-    submission_date={study.submission_date}
-    public_release_date={study.public_release_date}
-    contacts={num_contacts} Person objects
-    design_descriptors={num_design_descriptors} OntologyAnnotation objects
-    publications={num_publications} Publication objects
-    factors={num_study_factors} StudyFactor objects
-    protocols={num_protocols} Protocol objects
-    assays={num_assays} Assay objects
-    sources={num_sources} Source objects
-    samples={num_samples} Sample objects
-    process_sequence={num_processes} Process objects
-    other_material={num_other_material} Material objects
-    characteristic_categories={num_characteristic_categories} OntologyAnnots
-    comments={num_comments} Comment objects
-    units={num_units} Unit objects
-)""".format(
-            study=self,
-            num_contacts=len(self.contacts),
-            num_design_descriptors=len(self.design_descriptors),
-            num_publications=len(self.publications),
-            num_study_factors=len(self.factors),
-            num_protocols=len(self.protocols),
-            num_assays=len(self.assays),
-            num_sources=len(self.sources),
-            num_samples=len(self.samples),
-            num_processes=len(self.process_sequence),
-            num_other_material=len(self.other_material),
-            num_characteristic_categories=len(self.characteristic_categories),
-            num_comments=len(self.comments),
-            num_units=len(self.units),
-        )
+        return f"""Study(
+    identifier={self.identifier}
+    filename={self.filename}
+    title={self.title}
+    description={self.description}
+    submission_date={self.submission_date}
+    public_release_date={self.public_release_date}
+    contacts={len(self.contacts)} Person objects
+    design_descriptors={len(self.design_descriptors)} OntologyAnnotation objects
+    publications={len(self.publications)} Publication objects
+    factors={len(self.factors)} StudyFactor objects
+    protocols={len(self.protocols)} Protocol objects
+    assays={len(self.assays)} Assay objects
+    sources={len(self.sources)} Source objects
+    samples={len(self.samples)} Sample objects
+    process_sequence={len(self.process_sequence)} Process objects
+    other_material={len(self.other_material)} Material objects
+    characteristic_categories={len(self.characteristic_categories)} OntologyAnnots
+    comments={len(self.comments)} Comment objects
+    units={len(self.units)} Unit objects
+)"""
 
     def __hash__(self):
         return hash(repr(self))

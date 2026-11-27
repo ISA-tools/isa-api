@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for importing from BioCrates"""
 
 import fileinput
@@ -114,24 +113,19 @@ def merge_biocrates_files(input_dir):
     # them without further alignment heuristic
 
     metabolites = list(set(metabolites))
-    for element in metabolites:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in metabolites)
 
     plate_set = list(set(plate_set))
-    for element in plate_set:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in plate_set)
 
     projects = list(set(projects))
-    for element in projects:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in projects)
 
     samples = list(set(samples))
-    for element in samples:
-        fh.write(str(element))
+    fh.writelines(str(element) for element in samples)
 
     contacts = list(set(contacts))
-    for element in contacts:
-        fh.write(str(element.encode("utf-8")))
+    fh.writelines(str(element.encode("utf-8")) for element in contacts)
 
     fh.write("</data>")
     fh.close()
@@ -299,8 +293,7 @@ def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir, uniqueAttr
             # writing out the header
             file_handler.write("metabolite_identification")
             for ua in uniqueAttrs:
-                for myattr in uniqueAttrs[ua]:
-                    file_handler.write("\t" + ua + "[" + myattr + "]")
+                file_handler.writelines("\t" + ua + "[" + myattr + "]" for myattr in uniqueAttrs[ua])
             # now the rest of the rows
             for myMetabolite in uniqueMetaboliteIdentifiers[usedop + "-" + platebarcode + "-" + polarity.lower()]:
                 file_handler.write("\n" + myMetabolite)
@@ -489,7 +482,7 @@ if __name__ == "__main__":
     parseSample(biocrates_filename="biocrates-merged-output.xml")
     add_sample_metadata("EX0003_sample_metadata.csv", "s_study_biocrates.txt")
     end = time()
-    logger.debug("The conversion took {:.2f} s.".format(end - start))
+    logger.debug(f"The conversion took {end - start:.2f} s.")
 # parseSample(sys.argv[1])
 # uncomment to run test
 # merged = merge_biocrates_files("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates-XML-files/all-biocrates-xml-files/")

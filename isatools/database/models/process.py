@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+import dateutil.parser as date
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, update
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
@@ -105,7 +106,7 @@ def make_process_methods():
             outputs.append(out_in)
 
         if self.date:
-            cleaned_date = self.date
+            cleaned_date = date.parse(self.date)
         else:
             cleaned_date = None
 
@@ -115,7 +116,7 @@ def make_process_methods():
             performer=self.performer,
             date=cleaned_date,
             comments=[comment.to_sql() for comment in self.comments],
-            protocol_id=self.executes_protocol.id,
+            protocol=self.executes_protocol.to_sql(session),
             inputs=inputs,
             outputs=outputs,
             parameter_values=[parameter_value.to_sql(session) for parameter_value in self.parameter_values],
@@ -139,8 +140,7 @@ def make_process_methods():
             )
         )
         session.execute(statement)
-        session.commit()
 
-    setattr(ProcessModel, "to_sql", to_sql)
-    setattr(ProcessModel, "update_plink", update_plink)
-    setattr(ProcessModel, "get_table", make_get_table_method(Process))
+    ProcessModel.to_sql = to_sql
+    ProcessModel.update_plink = update_plink
+    ProcessModel.get_table = make_get_table_method(Process)

@@ -44,18 +44,18 @@ def make_print():
     def to_str(self):
         return (
             "LoaderStore:\n\t"
-            "characteristic_categories: {indexes.characteristic_categories},\n\t"
-            "factors: {indexes.factors},\n\t"
-            "parameters: {indexes.parameters},\n\t"
-            "protocols: {indexes.protocols},\n\t"
-            "units: {indexes.units},\n\t"
-            "samples: {indexes.samples},\n\t"
-            "sources: {indexes.sources},\n\t"
-            "processes: {indexes.processes},\n\t"
-            "term_sources: {indexes.term_sources},\n\t"
-            "data_files: {indexes.data_files},\n\t"
-            "other_materials: {indexes.other_materials}"
-        ).format(indexes=self)
+            f"characteristic_categories: {self.characteristic_categories},\n\t"
+            f"factors: {self.factors},\n\t"
+            f"parameters: {self.parameters},\n\t"
+            f"protocols: {self.protocols},\n\t"
+            f"units: {self.units},\n\t"
+            f"samples: {self.samples},\n\t"
+            f"sources: {self.sources},\n\t"
+            f"processes: {self.processes},\n\t"
+            f"term_sources: {self.term_sources},\n\t"
+            f"data_files: {self.data_files},\n\t"
+            f"other_materials: {self.other_materials}"
+        )
 
     return to_str
 

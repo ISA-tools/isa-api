@@ -14,8 +14,8 @@ log.disabled = True
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
         raise FileNotFoundError(
-            "Could not fine test data directory in {0}. Ensure you have cloned the data repository using "
-            "git clone -b tests --single-branch git@github.com:ISA-tools/data {0}".format(utils.DATA_DIR)
+            f"Could not fine test data directory in {utils.DATA_DIR}. Ensure you have cloned the data repository using "
+            f"git clone -b tests --single-branch git@github.com:ISA-tools/data {utils.DATA_DIR}"
         )
 
 
@@ -307,7 +307,7 @@ class TestValidateIsaJson(unittest.TestCase):
         """Tests against 4001"""
         try:
             isajson.load_config(os.path.join(self._configs_json_data_dir))
-        except IOError as e:
+        except OSError as e:
             self.fail("Could not load config because... " + str(e))
 
     def test_validate_isajson_get_config(self):
@@ -318,7 +318,7 @@ class TestValidateIsaJson(unittest.TestCase):
                 self.fail("There was a problem and config is null")
             else:
                 self.assertIsNotNone(configs[("metagenome sequencing", "nucleotide sequencing")])
-        except IOError as e:
+        except OSError as e:
             self.fail("Could not load config because... " + str(e))
 
     def test_validate_isajson_study_config_validation(self):
@@ -432,7 +432,6 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                 report["info"],
             )
 
-    @unittest.skip("Not working after fixing lint. Test data and/or expected value must be updated.")
     def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
         test_case = "BII-I-1"
         with open(
@@ -443,7 +442,7 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
             )
             self.assertIn(
                 {
-                    "message": "Reported study group size does not match table",
+                    "message": "Reported study group size 18 does not match table s_BII-S-1.txt",
                     "supplemental": "Study group size reported as 7 but found 18 in s_BII-S-1.txt",
                     "code": 5002,
                 },

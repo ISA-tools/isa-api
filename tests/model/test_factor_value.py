@@ -124,9 +124,7 @@ class TestFactorValue(TestCase):
             "term='', term_source=None, term_accession='', comments=[]), comments=[])"
         )
         unit_str = "isatools.model.OntologyAnnotation(term='mg', term_source=None, term_accession='', comments=[])"
-        expected_str = "isatools.model.FactorValue(factor_name={0}, value=12, unit={1})".format(
-            factor_name_str, unit_str
-        )
+        expected_str = f"isatools.model.FactorValue(factor_name={factor_name_str}, value=12, unit={unit_str})"
         self.assertEqual(repr(self.factor_value), expected_str)
         self.assertEqual(hash(self.factor_value), hash(expected_str))
 

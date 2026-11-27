@@ -4,6 +4,7 @@
     "wd": "http://www.wikidata.org/entity/",
     "wdp": "http://www.wikidata.org/prop/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "OntologyAnnotation": "wd:Q857525",
     "annotationValue": {
       "@id": "wdp:P527",
