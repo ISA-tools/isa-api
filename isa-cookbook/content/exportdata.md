@@ -18,16 +18,16 @@ validating against a given configuration in
 ```python
 from isatools.convert import isatab2sra
 
-sra_settings={
-         "sra_broker": "MYORG",
-         "sra_center": "MYORG",
-         "sra_project": "MYORG",
-         "sra_broker_inform_on_status": "support@myorg.org",
-         "sra_broker_inform_on_error": "support@myorg.org",
-         "sra_broker_contact_name": "Support"
-     }
+sra_settings = {
+    "sra_broker": "MYORG",
+    "sra_center": "MYORG",
+    "sra_project": "MYORG",
+    "sra_broker_inform_on_status": "support@myorg.org",
+    "sra_broker_inform_on_error": "support@myorg.org",
+    "sra_broker_contact_name": "Support",
+}
 
-isatab2sra.convert('./tabdir/', './outdir/', sra_settings=sra_settings)
+isatab2sra.convert("./tabdir/", "./outdir/", sra_settings=sra_settings)
 ```
 
 This method writes the SRA files out to `./outdir/`.
@@ -46,16 +46,16 @@ XML files to a target directory `./outdir/`:
 ```python
 from isatools.convert import json2sra
 
-sra_settings={
-         "sra_broker": "MYORG",
-         "sra_center": "MYORG",
-         "sra_project": "MYORG",
-         "sra_broker_inform_on_status": "support@myorg.org",
-         "sra_broker_inform_on_error": "support@myorg.org",
-         "sra_broker_contact_name": "Support"
-     }
+sra_settings = {
+    "sra_broker": "MYORG",
+    "sra_center": "MYORG",
+    "sra_project": "MYORG",
+    "sra_broker_inform_on_status": "support@myorg.org",
+    "sra_broker_inform_on_error": "support@myorg.org",
+    "sra_broker_contact_name": "Support",
+}
 
-json2sra.convert(open('isa.json'), './outdir/', sra_settings=sra_settings)
+json2sra.convert(open("isa.json"), "./outdir/", sra_settings=sra_settings)
 ```
 
 This method writes the SRA files out to `./outdir/`.
@@ -77,8 +77,8 @@ database), you can do the following to export a ISA-Tab to MAGE-TAB:
 ```python
 from isatools.convert import isatab2magetab
 
-with open('your/path/to/i_investigation.txt', 'r') as input_investigation_file:
-    isatab2magetab.convert(input_investigation_file, 'your/output/path/')
+with open("your/path/to/i_investigation.txt", "r") as input_investigation_file:
+    isatab2magetab.convert(input_investigation_file, "your/output/path/")
 ```
 
 To export an ISA JSON file to MAGE-TAB, you can do:
@@ -86,6 +86,6 @@ To export an ISA JSON file to MAGE-TAB, you can do:
 ```python
 from isatools.convert import json2magetab
 
-with open('your/path/to/i.json', 'r') as input_isajson_file:
-    json2magetab.convert(input_isajson_file, 'your/output/path/')
+with open("your/path/to/i.json", "r") as input_isajson_file:
+    json2magetab.convert(input_isajson_file, "your/output/path/")
 ```
