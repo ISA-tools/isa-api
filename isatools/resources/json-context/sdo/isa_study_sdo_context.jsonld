@@ -64,7 +64,13 @@
       "@id": "sdo:hasPart",
       "@type": "sdo:PropertyValue"
     },
-    "unitCategories": {},
-    "comments": {}
+    "unitCategories": {
+      "@id": "sdo:unitCode",
+      "@type": "sdo:DefinedTermSet"
+    },
+    "comments": {
+      "@id": "sdo:comment",
+      "@type": "sdo:Comment"
+    }
   }
 }

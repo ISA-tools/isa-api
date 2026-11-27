@@ -118,8 +118,8 @@ class ISATabReader:
             .dropna(axis=1, how="all")
             .T
         )
-        df.replace(nan, "", regex=True, inplace=True)  # Strip out the nan entries
-        df.reset_index(inplace=True)  # Reset study_index so it is accessible as column
+        df = df.replace(nan, "", regex=True)  # Strip out the nan entries
+        df.reset_index()  # Reset study_index so it is accessible as column
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
         return df.reindex(df.index.drop(0))  # Return the re-indexed DataFrame
 

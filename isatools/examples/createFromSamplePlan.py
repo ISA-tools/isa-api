@@ -31,7 +31,7 @@ def create_descriptor():
     study = StudyDesignFactory(plan, treatment_sequence).create_study_from_plan()
     study.filename = "s_study.txt"
     investigation.studies = [study]
-    print(isatab.dumps(investigation))
+    # print(isatab.dumps(investigation))
 
 
 if __name__ == "__main__":

@@ -67,7 +67,13 @@
       "@id": "obo:RO_0000086",
       "@type": "obo:OBI_0000245"
     },
-    "unitCategories": {},
-    "comments": {}
+    "unitCategories": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:UO_0000000"
+    },
+    "comments": {
+      "@id": "obo:IAO_0000235",
+      "@type": "obo:IAO_0000300"
+    }
   }
 }
